@@ -1,0 +1,21 @@
+<div class="Heading">
+  <h1><%= @product.manufacturer.name %> <span><%= @product.name %></span></h1>
+  <% if @product.discontinued %>
+    <p><span class="Tag"><%= t('discontinued') %></span></p>
+  <% end %>
+</div>
+
+<dl>
+  <div>
+    <dt><%= t('headings.manufacturer').html_safe %></dt>
+    <dd><%= link_to @product.manufacturer.name, manufacturer_path(id: @product.manufacturer_id) %></dd>
+  </div>
+  <div>
+    <dt><%= t('headings.category').html_safe %></dt>
+    <dd><%= link_to @product.category.name, category_path(id: @product.category_id) %></dd>
+  </div>
+  <div>
+    <dt><%= t('headings.sub_category').html_safe %></dt>
+    <dd><%= @product.sub_category ? (link_to @product.sub_category.name, category_sub_category_path(sub_category_id: @product.sub_category_id, category_id: @product.category_id)) : "-" %></dd>
+  </div>
+</dl>

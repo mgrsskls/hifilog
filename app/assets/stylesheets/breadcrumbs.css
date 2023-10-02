@@ -1,0 +1,21 @@
+.Breadcrumbs {
+  --gap: 0.5rem;
+
+  color: var(--color-secondary);
+  font-size: 0.875em;
+  margin-block-start: 1rem;
+  list-style: none;
+}
+
+.Breadcrumbs-list {
+  padding-inline-start: 0;
+}
+
+.Breadcrumbs li {
+  display: inline;
+}
+
+.Breadcrumbs li:not(:first-child)::before {
+  content: "/";
+  margin-inline: var(--gap);
+}

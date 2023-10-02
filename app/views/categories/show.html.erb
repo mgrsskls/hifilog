@@ -1,0 +1,24 @@
+<div class="Heading">
+  <h1><%= @category.name %></h1>
+</div>
+
+<% if @sub_categories.size > 0 %>
+  <table>
+    <thead>
+      <th><%= t('name') %></th>
+      <th><%= t('headings.products') %></th>
+    </thead>
+    <tbody>
+      <% @sub_categories.each do |sub_category| %>
+        <tr>
+          <tr>
+            <th scope="row"><%= link_to sub_category.name, category_sub_category_path(sub_category_id: sub_category.id, category_id: @category.id) %></th>
+            <td><%= @category.products.select{ |p| p.sub_category_id == sub_category.id }.size > 0 ? @category.products.select{ |p| p.sub_category_id == sub_category.id }.size : "-" %></td>
+          </tr>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p><%= t('empty_state.sub_categories') %></p>
+<% end %>
