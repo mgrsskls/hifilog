@@ -1,0 +1,24 @@
+<div class="Heading">
+  <h1><%= t('headings.categories').html_safe %></h1>
+</div>
+
+<% if @categories.size > 0 %>
+  <table>
+    <thead>
+      <th><%= t('name') %></th>
+      <th><%= t('headings.products') %></th>
+    </thead>
+    <tbody>
+      <% @categories.each do |category| %>
+        <tr>
+          <tr>
+            <th scope="row"><%= link_to category.name, category_path(id: category.id) %></th>
+            <td><%= category.products.size > 0 ? category.products.size : "-" %></td>
+          </tr>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p><%= t('empty_state.categories') %></p>
+<% end %>

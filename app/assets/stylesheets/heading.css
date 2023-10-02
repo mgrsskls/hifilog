@@ -1,0 +1,12 @@
+.Heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 0 2rem;
+  margin-block-end: 2.5rem;
+}
+
+@media (max-width: 48em) {
+  .Heading {
+    flex-direction: column;
+  }
+}

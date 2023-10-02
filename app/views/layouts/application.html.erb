@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>HiFi Gear</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header>
+      <a class="Skip" href="#content"><%= t('skip_to_main_content') %></a>
+      <nav aria-label="Main" class="Menu u-container">
+        <ul class="Menu-list">
+          <li>
+            <a href="<%= root_url %>"<% if is_current_page?(root_path) %> aria-current="page"<% end %>>HiFi Gear</a>
+          </li>
+          <li>
+            <a href="<%= manufacturers_path %>"<%= active_menu_state(:manufacturers) %>>
+              <%= t('headings.manufacturers').html_safe %>
+            </a>
+          </li>
+          <li>
+            <a href="<%= categories_path %>"<%= active_menu_state(:categories) %>>
+              <%= t('headings.categories').html_safe %>
+            </a>
+          </li>
+          <li>
+            <a href="<%= products_path %>"<%= active_menu_state(:products) %>>
+              <%= t('headings.products') %>
+            </a>
+          </li>
+        </ul>
+      </a>
+    </header>
+    <nav aria-label="Breadcrumbs" class="Breadcrumbs u-container">
+      <ol class="Breadcrumbs-list"><%= render_breadcrumbs :tag => :li, :separator => "" %></ol>
+    </nav>
+    <main class="u-container" id="content">
+      <%= yield %>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+<div class="Heading">
+  <h1><%= @manufacturer.name %></h1>
+</div>
+
+<% if @products.size > 0 %>
+  <% @products.each do |category| %>
+    <h2><%= category[:title] %></h2>
+
+    <% category[:sub_categories].each do |sub_category| %>
+      <% if sub_category[:title] %>
+        <h3><%= sub_category[:title] %></h3>
+      <% end %>
+
+      <table>
+        <thead>
+          <th colspan="2"><%= t('headings.product') %></th>
+        </thead>
+        <tbody>
+          <% sub_category[:products].each do |product| %>
+            <tr>
+              <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.id, manufacturer_id: product.manufacturer_id) %></th>
+              <td>
+                <% if product.discontinued %><span class="Tag"><%= t('discontinued') %></span><% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+
+  <% end %>
+<% else %>
+  <p><%= t('empty_state.products') %></p>
+<% end %>

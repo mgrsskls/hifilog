@@ -1,0 +1,167 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require breadcrumbs
+ *= require heading
+ *= require menu
+ *= require pagination
+ *= require tag
+ *= require utils
+ */
+
+@layer reset, global, components, utils;
+
+@layer global {
+  body {
+    --hue: 225, 25%;
+    --lightness-bg: 100%;
+    --lightness-copy: 10%;
+    --lightness-copy-secondary: 40%;
+    --border: 0.0625rem solid hsla(var(--hue), var(--lightness-copy), 10%);
+    --color-bg: hsl(var(--hue), var(--lightness-bg));
+    --color-copy: hsl(var(--hue), var(--lightness-copy));
+    --color-secondary: hsl(var(--hue), var(--lightness-copy-secondary));
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
+    line-height: 1.75;
+    margin: 0;
+    color-scheme: light dark;
+    background: var(--color-bg);
+    color: var(--color-copy);
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 0.125em;
+  }
+
+  a:focus-visible {
+    outline: 0.125em solid hsl(325, 90%, 45%);
+    outline-offset: 0.1875em;
+  }
+
+  header {
+    background: hsl(var(--hue), var(--lightness-header-bg, 10%));
+    color: #fff;
+  }
+
+  main {
+    padding-block: clamp(2rem, 4vw, 4rem) 4rem;
+  }
+
+  h1 {
+    font-size: 3.2rem;
+    line-height: 1.1;
+    margin-block: 0;
+  }
+
+  h1 span {
+    font-weight: lighter;
+  }
+
+  h2 {
+    font-size: 2.4rem;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  table {
+    border-collapse: collapse;
+    inline-size: 100%;
+    table-layout: fixed;
+  }
+
+  nav + :is(table, sortable-table) {
+    margin-block-start: 2rem;
+  }
+
+  th {
+    text-align: start;
+  }
+
+  :is(th, td) {
+    padding-block: 0.75rem;
+    vertical-align: top;
+  }
+
+  :is(th, td):not(:last-child) {
+    padding-inline-end: 1rem;
+  }
+
+  thead {
+    position: sticky;
+    inset-block-start: 0;
+    background: var(--color-bg);
+    z-index: 1;
+  }
+
+  thead th {
+    color: var(--color-secondary);
+    font-size: 0.875em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td,
+  tbody th {
+    border-block-start: var(--border);
+  }
+
+  dl div {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  dl div + div {
+    margin-block-start: 0.5rem;
+  }
+
+  dt {
+    inline-size: 8.5em;
+    font-weight: bold;
+  }
+
+  dd {
+    flex: 1;
+    margin: 0;
+  }
+
+  .Skip {
+    display: block;
+    position: absolute;
+    transform: translate(-50%, -100%);
+    inset-inline-start: 50%;
+    inset-block-start: 0;
+  }
+
+  .Skip:focus {
+    transform: translate(-50%, 0);
+  }
+
+  @media (max-width: 32em) {
+    h1 {
+      font-size: 2.8rem;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      --lightness-bg: 10%;
+      --lightness-header-bg: 7.5%;
+      --lightness-copy: 85%;
+      --lightness-copy-secondary: 70%;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+.Pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.Pagination a {
+  display: block;
+  padding-block: 0.25em;
+  inline-size: 2em;
+  border: var(--border);
+  font-size: 0.875em;
+  text-decoration: none;
+  text-align: center;
+}
+
+.Pagination :not(:first-child) > a {
+  text-transform: uppercase;
+}
+
+.Pagination a[aria-current="true"] {
+  border-color: currentColor;
+}

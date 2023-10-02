@@ -1,0 +1,28 @@
+<div class="Heading">
+  <h1><%= t('headings.manufacturers').html_safe %></h1>
+</div>
+
+<% if @manufacturers.size > 0 %>
+  <%= render "shared/abc", filter_path: manufacturers_path %>
+
+  <table>
+    <thead>
+      <th><%= t('name') %></th>
+      <th><%= t('headings.categories').html_safe %></th>
+      <th><%= t('headings.products') %></th>
+    </thead>
+    <tbody>
+      <% @manufacturers.each do |manufacturer| %>
+        <tr>
+          <th scope="row"><%= link_to manufacturer.name, manufacturer_path(id: manufacturer.id) %></th>
+          <td>
+            <%= manufacturer.products.map{ |p| p.category }.size > 0 ? manufacturer.products.map{ |p| p.category.name }.uniq.sort_by{|c| c.downcase}.join(", ").html_safe : "-" %>
+          </td>
+          <td><%= manufacturer.products.size > 0 ? manufacturer.products.size : "-"  %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p><%= t('empty_state.manufacturers') %></p>
+<% end %>

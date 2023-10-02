@@ -1,0 +1,48 @@
+.Menu {
+  container: menu / inline-size;
+}
+
+.Menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem 0;
+  display: flex;
+  gap: 1rem 2rem;
+}
+
+.Menu a {
+  display: block;
+  color: hsl(220, 20%, 80%);
+  text-decoration: none;
+}
+
+.Menu a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 0.375em;
+}
+
+.Menu-list li:first-child a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #fff;
+}
+
+@container menu (max-inline-size: 32em) {
+  .Menu-list {
+    gap: 1rem;
+  }
+
+  .Menu-list li:first-child {
+    margin-inline-end: auto;
+  }
+}
+
+@container menu (max-inline-size: 24em) {
+  .Menu-list {
+    flex-wrap: wrap;
+  }
+
+  .Menu-list li:first-child {
+    flex: 0 0 100%;
+  }
+}
