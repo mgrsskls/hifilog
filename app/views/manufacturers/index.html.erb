@@ -1,28 +1,50 @@
 <div class="Heading">
   <h1><%= t('headings.manufacturers').html_safe %></h1>
+  <div class="Heading-amount">
+    <%= t('amount_manufacturers', count: @total_size) %>
+  </div>
 </div>
 
-<% if @manufacturers.size > 0 %>
-  <%= render "shared/abc", filter_path: manufacturers_path %>
+<nav class="Pagination Pagination--abc" aria-label="Filter by letter">
+  <ol class="Pagination-list">
+    <li>
+      <a class="Pagination-all" href="<%= manufacturers_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>>All</a>
+    </li>
+    <% ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'].each do |letter| %>
+      <li>
+        <a href="<%= letter_manufacturers_path(letter: letter) %>"<%= ' aria-current="true"'.html_safe if params[:letter] == letter %>><%= letter %></a>
+      </li>
+    <% end %>
+  </ol>
+</nav>
 
+<% if @manufacturers.any? %>
   <table>
     <thead>
       <th><%= t('name') %></th>
       <th><%= t('headings.categories').html_safe %></th>
-      <th><%= t('headings.products') %></th>
+      <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+      <th class="Table-symbols"></th>
     </thead>
     <tbody>
       <% @manufacturers.each do |manufacturer| %>
         <tr>
-          <th scope="row"><%= link_to manufacturer.name, manufacturer_path(id: manufacturer.id) %></th>
+          <th scope="row"><%= link_to manufacturer.name, manufacturer_path(id: manufacturer.friendly_id) %></th>
           <td>
-            <%= manufacturer.products.map{ |p| p.category }.size > 0 ? manufacturer.products.map{ |p| p.category.name }.uniq.sort_by{|c| c.downcase}.join(", ").html_safe : "-" %>
+            <%= manufacturer.categories.any? ? manufacturer.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
           </td>
-          <td><%= manufacturer.products.size > 0 ? manufacturer.products.size : "-"  %></td>
+          <td class="Table-products u-alignCenter"><%= manufacturer.products.any? ? manufacturer.products.size : "-"  %></td>
+          <td>
+            <%= render "shared/symbols", manufacturer: manufacturer %>
+          </td>
         </tr>
       <% end %>
     </tbody>
   </table>
+
+  <%= paginate @manufacturers %>
 <% else %>
-  <p><%= t('empty_state.manufacturers') %></p>
+  <%= render "shared/empty_state", message: t('empty_state.manufacturers') %>
 <% end %>
+
+<%= render "shared/page_actions" %>

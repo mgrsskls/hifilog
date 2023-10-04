@@ -1,5 +1,15 @@
 .Menu {
   container: menu / inline-size;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.Menu-home {
+  text-decoration: none;
+  font-weight: bold;
+  color: #fff;
 }
 
 .Menu-list {
@@ -10,39 +20,33 @@
   gap: 1rem 2rem;
 }
 
-.Menu a {
+.Menu-list :is(a, button) {
   display: block;
-  color: hsl(220, 20%, 80%);
+  color: var(--color-header-copy);
   text-decoration: none;
 }
 
-.Menu a[aria-current="page"] {
-  text-decoration: underline;
-  text-underline-offset: 0.375em;
-}
-
-.Menu-list li:first-child a {
-  text-decoration: none;
-  font-weight: bold;
+.Menu-list :is(a, button):is(:hover, :focus) {
   color: #fff;
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  text-decoration-thickness: var(--underline-width);
 }
 
-@container menu (max-inline-size: 32em) {
+.Menu-list a[aria-current="true"] {
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  text-decoration-thickness: var(--underline-width);
+}
+
+@container menu (max-inline-size: 40em) {
   .Menu-list {
     gap: 1rem;
   }
 
-  .Menu-list li:first-child {
-    margin-inline-end: auto;
-  }
-}
-
-@container menu (max-inline-size: 24em) {
-  .Menu-list {
-    flex-wrap: wrap;
-  }
-
-  .Menu-list li:first-child {
-    flex: 0 0 100%;
+  .Menu-list--main {
+    flex: 0 100%;
+    order: 1;
+    justify-content: center;
   }
 }

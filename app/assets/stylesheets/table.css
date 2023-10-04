@@ -1,0 +1,58 @@
+table {
+  border-collapse: collapse;
+  inline-size: 100%;
+  table-layout: fixed;
+}
+
+.TableWrapper {
+  overflow-x: auto;
+}
+
+nav + table {
+  margin-block-start: 2rem;
+}
+
+th {
+  text-align: start;
+}
+
+th small {
+  font-weight: normal;
+}
+
+thead th {
+  vertical-align: top;
+  color: var(--color-secondary);
+  font-size: 0.875em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td,
+tbody th {
+  vertical-align: center;
+}
+
+th,
+td {
+  border-block-end: var(--border-light);
+  padding-block: 0.75rem;
+  padding-inline: 0.5rem;
+}
+
+:is(th, td):not(:last-child) {
+  padding-inline-end: 1rem;
+}
+
+.Table-symbols {
+  width: 5em;
+}
+
+.Table-products {
+  width: 7.5em;
+}
+
+.Table-symbols {
+  width: 5em;
+}

@@ -1,0 +1,11 @@
+.Rte > * {
+  margin-block-end: 0;
+}
+
+.Rte > *:first-child {
+  margin-block-start: 0;
+}
+
+.Rte > * + * {
+  margin-block-start: calc(var(--line-height) * 1em);
+}

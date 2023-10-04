@@ -1,0 +1,12 @@
+<% back_link ||= false %>
+
+<div class="PageActions">
+  <% if back_link %>
+    <div class="PageAction PageAction--odd">
+      <%= render "shared/back_link" %>
+    </div>
+  <% end %>
+  <div class="PageAction PageAction--even">
+    <%= render "shared/symbols_legend" %>
+  </div>
+</div>

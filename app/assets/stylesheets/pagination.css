@@ -1,4 +1,9 @@
-.Pagination {
+.Pagination--centered {
+  display: flex;
+  justify-content: center;
+}
+
+.Pagination-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -7,20 +12,41 @@
   list-style: none;
 }
 
+.Pagination-all {
+  font-weight: bold;
+}
+
 .Pagination a {
+  border-radius: var(--border-radius);
+  color: var(--color-copy);
   display: block;
-  padding-block: 0.25em;
-  inline-size: 2em;
-  border: var(--border);
-  font-size: 0.875em;
+  padding-block: 0.15em;
+  border: var(--border-light);
   text-decoration: none;
   text-align: center;
 }
 
-.Pagination :not(:first-child) > a {
-  text-transform: uppercase;
+.Pagination:not(.Pagination--abc) a {
+  padding-inline: 0.75em;
+}
+
+.Pagination a:hover {
+  border-color: currentColor;
 }
 
 .Pagination a[aria-current="true"] {
   border-color: currentColor;
+  color: var(--color-accent);
+}
+
+.Pagination--abc a {
+  inline-size: 2em;
+}
+
+.Pagination--abc :not(:first-child) > a {
+  text-transform: uppercase;
+}
+
+table + .Pagination {
+  margin-block-start: 3rem;
 }

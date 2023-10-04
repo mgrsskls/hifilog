@@ -1,0 +1,23 @@
+.Product dl div {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Product dl div + div {
+  margin-block-start: 0.5rem;
+}
+
+.Product dt {
+  inline-size: 8.5em;
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.Product dd {
+  flex: 1;
+}
+
+.Product-actions {
+  padding-block-start: 3rem;
+  border-block-start: var(--border-light);
+}

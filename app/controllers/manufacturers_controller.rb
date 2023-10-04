@@ -1,30 +1,38 @@
 class ManufacturersController < ApplicationController
   add_breadcrumb "Hifi Gear", :root_path
-  add_breadcrumb I18n.t("headings.manufacturers"), :manufacturers_path
+  add_breadcrumb I18n.t("headings.manufacturers").html_safe, :manufacturers_path
 
   def index
     @active_menu = :manufacturers
 
     if params[:letter]
-      @manufacturers = Manufacturer.where("name LIKE :prefix", prefix: "#{params[:letter]}%").sort_by{|m| m[:name].downcase}
+      add_breadcrumb params[:letter].upcase
+      all_manufacturers = Manufacturer.where("name LIKE :prefix", prefix: "#{params[:letter]}%")
     else
-      @manufacturers = Manufacturer.all.sort_by{|m| m[:name].downcase}
+      all_manufacturers = Manufacturer.all
     end
+
+    @manufacturers = all_manufacturers.order("LOWER(name)").page(params[:page])
+    @total_size = all_manufacturers.size
   end
 
   def show
     @active_menu = :manufacturers
 
-    @manufacturer = Manufacturer.find_by(id: params[:id])
-    @products = @manufacturer.products.group_by{|p| p.category_id}.map{ |category| {
-      title: Category.find(category[0].kind_of?(Array) ? category[0][0] : category[0]).name,
-      sub_categories: category[1].group_by{|e| e.sub_category_id}.map{ |sub_category| {
-        title: sub_category[0] ? SubCategory.find(sub_category[0]).name : nil,
-        products: sub_category[1].sort_by{|c| c[:name].downcase},
-      } }
-    } }.sort_by{|m| m[:title].downcase}
+    @manufacturer = Manufacturer.friendly.find(params[:id])
+    @products = @manufacturer.products.order("LOWER(name)").page(params[:page])
 
     add_breadcrumb @manufacturer.name
+  end
+
+  def category
+    sub_category = SubCategory.friendly.find(params[:category])
+    @manufacturer = Manufacturer.friendly.find(params[:manufacturer_id])
+    @products = sub_category.products.where(manufacturer_id: @manufacturer.id).order("LOWER(name)").page(params[:page])
+    add_breadcrumb @manufacturer.name, manufacturer_path(id: @manufacturer.friendly_id)
+    add_breadcrumb sub_category.name
+
+    render :show
   end
 
   def new

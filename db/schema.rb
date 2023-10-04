@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_03_191805) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_15_091333) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -41,12 +41,28 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_191805) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
+    t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "friendly_id_slugs", force: :cascade do |t|
+    t.string "slug", null: false
+    t.integer "sluggable_id", null: false
+    t.string "sluggable_type", limit: 50
+    t.string "scope"
+    t.datetime "created_at"
+    t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
+    t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
+    t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
   create_table "manufacturers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "closed"
+    t.string "slug"
+    t.index ["slug"], name: "index_manufacturers_on_slug", unique: true
   end
 
   create_table "products", force: :cascade do |t|
@@ -54,20 +70,46 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_191805) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "manufacturer_id", null: false
-    t.integer "category_id"
-    t.integer "sub_category_id"
     t.boolean "discontinued"
-    t.index ["category_id"], name: "index_products_on_category_id"
+    t.string "slug"
     t.index ["manufacturer_id"], name: "index_products_on_manufacturer_id"
-    t.index ["sub_category_id"], name: "index_products_on_sub_category_id"
+    t.index ["slug"], name: "index_products_on_slug", unique: true
+  end
+
+  create_table "products_rooms", id: false, force: :cascade do |t|
+    t.integer "room_id", null: false
+    t.integer "product_id", null: false
+  end
+
+  create_table "products_sub_categories", id: false, force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.integer "sub_category_id", null: false
+  end
+
+  create_table "products_users", id: false, force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.integer "user_id", null: false
+  end
+
+  create_table "rooms", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "rooms_users", id: false, force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "room_id", null: false
   end
 
   create_table "sub_categories", force: :cascade do |t|
     t.string "name"
-    t.integer "category_id", null: false
+    t.integer "category_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
     t.index ["category_id"], name: "index_sub_categories_on_category_id"
+    t.index ["slug"], name: "index_sub_categories_on_slug", unique: true
   end
 
   create_table "tags", force: :cascade do |t|
@@ -88,8 +130,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_191805) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "products", "categories"
   add_foreign_key "products", "manufacturers"
-  add_foreign_key "products", "sub_categories"
   add_foreign_key "sub_categories", "categories"
 end

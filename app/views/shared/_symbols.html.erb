@@ -1,0 +1,27 @@
+<% show_labels ||= false %>
+<% product ||= nil %>
+<% manufacturer ||= nil %>
+
+<div class="Symbols">
+
+  <% if product && product.discontinued || manufacturer && manufacturer.closed %>
+    <div class="Symbols-item">
+      <% if show_labels %>
+        <span class="Symbol"><%= t('symbols.discontinued') %></span>
+      <% else %>
+        <span class="Symbol Symbol--iconOnly" title="<%= t('symbols.discontinued') %>" aria-label="<%= t('symbols.discontinued') %>">D</span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if user_has_product?(product) %>
+    <div class="Symbols-item">
+      <% if show_labels %>
+        <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
+      <% else %>
+        <span class="Symbol Symbol--positive Symbol--iconOnly" title="<%= t('symbols.in_your_collection') %>" aria-label="<%= t('symbols.in_your_collection') %>">✓</span>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>

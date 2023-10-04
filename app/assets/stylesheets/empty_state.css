@@ -1,0 +1,7 @@
+.EmptyState {
+  background: var(--color-bg2);
+  margin-block-start: 3rem;
+  text-align: center;
+  padding: 0 1rem;
+  border: var(--border-medium);
+}

@@ -1,0 +1,29 @@
+.FlashMessages {
+  margin-block-end: 3rem;
+}
+
+.FlashMessage {
+  margin-block: 0;
+  border-radius: var(--border-radius);
+  border: var(--border);
+  padding: 1rem;
+  text-align: center;
+}
+
+.FlashMessage + .FlashMessage {
+  margin-block-start: 1rem;
+}
+
+.FlashMessage--notice {
+  background: var(--color-success-bg);
+  color: var(--color-success-copy);
+}
+
+.FlashMessage--alert {
+  background: var(--color-invalid-bg);
+  color: var(--color-invalid-copy);
+}
+
+.FlashMessage a {
+  color: inherit;
+}

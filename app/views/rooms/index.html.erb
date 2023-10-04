@@ -1,0 +1,35 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('rooms') %></h1>
+  </div>
+
+  <% if @rooms.any? %>
+    <table>
+      <thead>
+        <th><%= t("headings.name") %></th>
+        <th class="u-alignCenter"><%= t("headings.products") %></th>
+      </thead>
+      <tbody>
+        <% @rooms.each do |room| %>
+          <tr>
+            <th><%= link_to room.name, dashboard_room_path(room) %></th>
+            <td class="u-alignCenter"><%= room.products.any? ? room.products.size : "-" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <%= render "shared/empty_state", message: "<p><b>You haven't created any rooms yet.</b></p><p>You can create rooms below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple rooms on its product page.</p>" %>
+  <% end %>
+
+  <div class="Rooms-add">
+    <h2>Add a room</h2>
+    <%= form_for(:room) do |f| %>
+      <div class="Rooms-form">
+        <%= f.label :name, class: 'UserForm-label' %>
+        <%= f.text_field :name, placeholder: "e.g. Living Room or Office" %>
+        <button type="submit" class="Button"><%= t('add') %></button>
+      </div>
+    <% end %>
+  </div>
+<% end %>

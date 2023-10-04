@@ -1,0 +1,36 @@
+<div class="UserForm UserForm--loggedOut">
+  <div class="Heading">
+    <h1><%= t('user_form.login') %></h1>
+  </div>
+
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+    <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
+
+    <div class="UserForm-field">
+      <%= f.label :email, class: "UserForm-label" %>
+      <%= f.email_field :email, autocomplete: "email" %>
+    </div>
+
+    <div class="UserForm-field">
+      <%= f.label :password, class: "UserForm-label" %>
+      <%= f.password_field :password, autocomplete: "current-password" %>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="UserForm-field">
+        <%= f.check_box :remember_me %>
+        <%= f.label :remember_me %>
+      </div>
+    <% end %>
+
+    <div class="UserForm-submit">
+      <button type="submit" class="Button"><%= t('user_form.login') %></button>
+    </div>
+  <% end %>
+
+  <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+    <div class="UserForm-links">
+      <%= link_to "Forgot your password?", new_password_path(resource_name) %><br />
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,5 @@
+<% if request.referer %>
+  <%= link_to request.referer, class: 'BackLink' do %>
+    &larr; <span class="BackLink-label"><%= t('back') %></span>
+  <% end %>
+<% end %>

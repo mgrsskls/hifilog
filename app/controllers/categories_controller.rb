@@ -1,44 +1,27 @@
 class CategoriesController < ApplicationController
   add_breadcrumb "Hifi Gear", :root_path
-  add_breadcrumb I18n.t("headings.categories"), :categories_path
+  add_breadcrumb I18n.t("headings.categories").html_safe, :categories_path
 
   def index
     @active_menu = :categories
 
     @categories = Category.all.sort_by{|c| c[:name].downcase}
+
+    if params[:id].present?
+      @sub_categories = SubCategory.select{ |sub_category| sub_category.category_id == params[:id].to_i }.sort_by{|c| c[:name].downcase}
+    else
+      @sub_categories = SubCategory.all.sort_by{|c| c[:name].downcase}
+    end
   end
 
   def show
     @active_menu = :categories
 
-    @category = Category.find(params[:id])
-
-    if @category.sub_categories.size > 0
-      @sub_categories = @category.sub_categories
-    else
-      @products = @category.products
-      render "sub_category"
-    end
-
-    # if @category.sub_categories.size > 0
-    #   @sub_categories = @category.products.group_by(&:sub_category).sort_by{|c| c[0].name.downcase}
-    # else
-    #   @sub_categories = [[nil, @category.products.sort_by{|p| p.name.downcase}]]
-    # end
+    @category = Category.friendly.find(params[:id])
+    @categories = Category.all.sort_by{|c| c[:name].downcase}
+    @sub_categories = @category.sub_categories.sort_by{|c| c[:name].downcase}
 
     add_breadcrumb @category.name, category_path(@category)
-  end
-
-  def sub_category
-    @active_menu = :categories
-
-    category = Category.find(params[:category_id])
-
-    @category = SubCategory.find(params[:sub_category_id])
-    @products = category.products.select{ |p| p.sub_category_id == params[:sub_category_id].to_i }
-
-    add_breadcrumb category.name, category_path(category)
-    add_breadcrumb @category.name
   end
 
   def new

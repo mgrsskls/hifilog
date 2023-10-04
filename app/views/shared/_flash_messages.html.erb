@@ -1,0 +1,7 @@
+<div class="FlashMessages">
+  <% messages.each do |name, message| %>
+    <p class="FlashMessage FlashMessage--<%= name %>">
+      <%= message.html_safe %>
+    </p>
+  <% end %>
+</div>

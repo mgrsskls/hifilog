@@ -1,34 +1,54 @@
 <div class="Heading">
   <h1><%= @manufacturer.name %></h1>
+  <div class="Heading-amount">
+    <%= t('amount_products', count: @products.size) %>
+  </div>
 </div>
 
-<% if @products.size > 0 %>
-  <% @products.each do |category| %>
-    <h2><%= category[:title] %></h2>
-
-    <% category[:sub_categories].each do |sub_category| %>
-      <% if sub_category[:title] %>
-        <h3><%= sub_category[:title] %></h3>
+<% if @manufacturer.sub_categories.size > 1 %>
+  <nav class="Pagination" aria-label="Filter by category">
+    <ol class="Pagination-list">
+      <li>
+        <a class="Pagination-all" href="<%= manufacturer_path(id: @manufacturer.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>>All</a>
+      </li>
+      <% @manufacturer.sub_categories.each do |sub_category| %>
+        <li>
+          <a href="<%= manufacturer_category_path(manufacturer_id: @manufacturer.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
+        </li>
       <% end %>
-
-      <table>
-        <thead>
-          <th colspan="2"><%= t('headings.product') %></th>
-        </thead>
-        <tbody>
-          <% sub_category[:products].each do |product| %>
-            <tr>
-              <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.id, manufacturer_id: product.manufacturer_id) %></th>
-              <td>
-                <% if product.discontinued %><span class="Tag"><%= t('discontinued') %></span><% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% end %>
-
-  <% end %>
-<% else %>
-  <p><%= t('empty_state.products') %></p>
+    </ol>
+  </nav>
 <% end %>
+
+<% if @products.any? %>
+  <table>
+    <thead>
+      <th><%= t('name') %></th>
+      <th><%= t('headings.category').html_safe %></th>
+      <th class="Table-symbols"></th>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <tr<% if user_has_product?(product) %> class="is-positive"<% end %>>
+          <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.friendly_id, manufacturer_id: @manufacturer.friendly_id) %></th>
+          <td>
+            <% if product.sub_categories.any? %>
+              <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+            <% else %>
+              <%= product.categories.map{ |category| category.name }.join(", ") %>
+            <% end %>
+          </td>
+          <td>
+            <%= render "shared/symbols", product: product %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= paginate @products %>
+<% else %>
+  <%= render "shared/empty_state", message: t('empty_state.products') %>
+<% end %>
+
+<%= render "shared/page_actions", back_link: true %>

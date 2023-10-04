@@ -1,28 +1,47 @@
 <div class="Heading">
   <h1><%= t('headings.products') %></h1>
+  <div class="Heading-amount">
+    <%= t('amount_products', count: @total_size) %>
+  </div>
 </div>
 
-<% if @products.size > 0 %>
-  <%= render "shared/abc", filter_path: products_path %>
+<nav class="Pagination Pagination--abc" aria-label="Filter by letter">
+  <ol class="Pagination-list">
+    <li>
+      <a class="Pagination-all" href="<%= products_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>>All</a>
+    </li>
+    <% ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'].each do |letter| %>
+      <li>
+        <a href="<%= letter_products_path(letter: letter) %>"<%= ' aria-current="true"'.html_safe if params[:letter] == letter %>><%= letter %></a>
+      </li>
+    <% end %>
+  </ol>
+</nav>
 
+<% if @products.any? %>
   <table>
     <thead>
       <th><%= t('headings.manufacturer').html_safe %></th>
       <th><%= t('name') %></th>
-      <th><%= t('headings.category').html_safe %></th>
-      <th><%= t('headings.sub_category').html_safe %></th>
+      <th colspan="2"><%= t('headings.category').html_safe %></th>
     </thead>
     <tbody>
       <% @products.each do |product| %>
-        <tr>
+        <tr<% if user_has_product?(product) %> class="is-positive"<% end %>>
           <td><%= product.manufacturer.name %></td>
-          <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.id, manufacturer_id: product.manufacturer_id) %></th>
-          <td><%= product.category.name %></td>
-          <td><%= product.sub_category ? product.sub_category.name : "-" %></td>
+          <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.friendly_id, manufacturer_id: product.manufacturer.friendly_id) %></th>
+          <td><%= product.sub_categories.any? ? product.sub_categories.map { |sub_category| sub_category.name }.join(", ") : "-" %></td>
+          <td>
+            <%= render "shared/symbols", product: product %>
+          </td>
         </tr>
       <% end %>
     </tbody>
   </table>
+
+  <%= paginate @products %>
 <% else %>
-  <p><%= t('empty_state.products') %></p>
+  <%= render "shared/empty_state", message: t('empty_state.products') %>
 <% end %>
+
+<%= render "shared/page_actions" %>

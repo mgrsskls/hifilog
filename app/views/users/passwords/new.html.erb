@@ -1,0 +1,18 @@
+<div class="UserForm UserForm--loggedOut">
+  <div class="Heading">
+    <h1><%= t('user_form.forgot_password.heading') %></h1>
+  </div>
+
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+    <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
+
+    <div class="UserForm-field">
+      <%= f.label :email, class: "UserForm-label" %>
+      <%= f.email_field :email, autocomplete: "email" %>
+    </div>
+
+    <div class="UserForm-submit">
+      <button class="Button" type="submit"><%= t('user_form.forgot_password.submit') %></button>
+    </div>
+  <% end %>
+</div>
