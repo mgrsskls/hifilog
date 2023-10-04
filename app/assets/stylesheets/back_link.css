@@ -1,0 +1,8 @@
+.BackLink {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.BackLink-label {
+  text-decoration: underline;
+}

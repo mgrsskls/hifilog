@@ -1,0 +1,31 @@
+<div class="UserForm UserForm--loggedOut">
+  <div class="Heading">
+    <h1><%= t('user_form.signup') %></h1>
+  </div>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
+
+    <div class="UserForm-field">
+      <%= f.label :email, class: 'UserForm-label' %>
+      <%= f.email_field :email, autocomplete: "email" %>
+    </div>
+
+    <div class="UserForm-field">
+      <%= f.label :password, class: 'UserForm-label' %>
+      <%= f.password_field :password, autocomplete: "new-password" %>
+      <% if @minimum_password_length %>
+        <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
+      <% end %>
+    </div>
+
+    <div class="UserForm-field">
+      <%= f.label :password_confirmation, class: 'UserForm-label' %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    </div>
+
+    <div class="UserForm-submit">
+      <button type="submit" class="Button"><%= t('user_form.signup') %></button>
+    </div>
+  <% end %>
+</div>

@@ -1,67 +1,137 @@
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
- * vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
- *
  *= require_self
+ *= require accordion_tabs
+ *= require back_link
  *= require breadcrumbs
+ *= require button
+ *= require dashboard
+ *= require empty_state
+ *= require flash_messages
  *= require heading
  *= require menu
+ *= require page_actions
  *= require pagination
- *= require tag
+ *= require product
+ *= require rooms
+ *= require rte
+ *= require skip
+ *= require symbol
+ *= require table
+ *= require user_form
  *= require utils
  */
 
-@layer reset, global, components, utils;
-
 @layer global {
-  body {
-    --hue: 225, 25%;
-    --lightness-bg: 100%;
-    --lightness-copy: 10%;
-    --lightness-copy-secondary: 40%;
-    --border: 0.0625rem solid hsla(var(--hue), var(--lightness-copy), 10%);
-    --color-bg: hsl(var(--hue), var(--lightness-bg));
-    --color-copy: hsl(var(--hue), var(--lightness-copy));
-    --color-secondary: hsl(var(--hue), var(--lightness-copy-secondary));
+  html {
+    --underline-offset: 0.275em;
+    --underline-width: 0.0625rem;
+    --border: 0.0625rem solid;
+    --border-light: var(--border) var(--color-border-light);
+    --border-medium: var(--border) var(--color-border-medium);
+    --border-dark: var(--border) var(--color-border-dark);
+    --border-radius: 0.1875rem;
+    --line-height: 1.75;
+    --input-padding: 0.325em 1em;
 
+    --hue: 208;
+    --hue-sat: var(--hue), 25%;
+    --hue-accent: 312;
+
+    --color-copy: hsl(var(--hue), 30%, var(--copy-l));
+    --color-secondary: hsl(var(--hue), 30%, var(--secondary-l));
+    --color-bg: hsl(var(--bg-h-s), var(--bg-l));
+    --color-bg2: hsl(var(--bg-h-s), calc(var(--bg-l) - 2.5%));
+    --color-header-bg: hsl(var(--hue-sat), 10%);
+    --color-header-copy: hsl(var(--hue-sat), 80%);
+    --color-button-bg: hsl(var(--hue-sat), 40%);
+    --color-button-box-shadow: hsla(0, 0%, 0%, var(--button-box-shadow-a));
+    --color-input-bg: var(--color-bg2);
+    --color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
+    --color-border-h-s: 0, 0%;
+    --color-border-light: hsla(var(--color-border-h-s), var(--border-l), 15%);
+    --color-border-medium: hsla(var(--color-border-h-s), var(--border-l), 30%);
+    --color-border-dark: hsla(var(--color-border-h-s), var(--border-l), 50%);
+    --color-accent: hsl(var(--hue-accent), 34%, var(--accent-l));
+    --color-focus-outline: hsl(var(--hue-accent), 100%, 50%);
+
+    /* light mode */
+
+    --bg-h-s: 204, 18.5%;
+    --bg-l: 100%;
+    --button-box-shadow-a: 20%;
+    --input-box-shadow-a: 10%;
+    --secondary-l: 40%;
+    --copy-l: 20%;
+    --accent-l: 25%;
+    --border-l: 0%;
+
+    --color-button-copy: #fff;
+    --color-invalid-light: hsl(330, 50%, 85%);
+    --color-invalid-dark: hsl(330, 100%, 20%);
+    --color-invalid-bg: var(--color-invalid-light);
+    --color-invalid-copy: var(--color-invalid-dark);
+    --color-success-light: hsl(165, 50%, 85%);
+    --color-success-dark: hsl(165, 100%, 20%);
+    --color-success-bg: var(--color-success-light);
+    --color-success-copy: var(--color-success-dark);
+    --color-positive: hsl(160, 50%, 95%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html {
+      --bg-h-s: 208, 40%;
+      --bg-l: 15%;
+      --button-box-shadow-a: 50%;
+      --input-box-shadow-a: 50%;
+      --secondary-l: 60%;
+      --copy-l: 80%;
+      --accent-l: 75%;
+      --border-l: 100%;
+
+      --color-invalid-bg: var(--color-invalid-dark);
+      --color-invalid-copy: var(--color-invalid-light);
+      --color-success-bg: var(--color-success-dark);
+      --color-success-copy: var(--color-success-light);
+      --color-positive: hsl(190, 40%, 15%);
+    }
+  }
+
+  body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
       Helvetica, Arial, sans-serif;
-    line-height: 1.75;
+    line-height: var(--line-height);
     margin: 0;
     color-scheme: light dark;
     background: var(--color-bg);
     color: var(--color-copy);
+    accent-color: var(--color-accent);
   }
 
   a {
-    color: inherit;
-    text-underline-offset: 0.125em;
+    color: var(--color-accent);
+    text-underline-offset: var(--underline-offset);
+    text-decoration-thickness: var(--underline-width);
   }
 
-  a:focus-visible {
-    outline: 0.125em solid hsl(325, 90%, 45%);
+  a:hover {
+    color: var(--color-copy);
+  }
+
+  :is(a, input, button):focus-visible {
+    outline: 0.125em solid var(--color-focus-outline);
     outline-offset: 0.1875em;
   }
 
   header {
-    background: hsl(var(--hue), var(--lightness-header-bg, 10%));
-    color: #fff;
+    background: var(--color-header-bg);
   }
 
   main {
-    padding-block: clamp(2rem, 4vw, 4rem) 4rem;
+    padding-block: clamp(2rem, 4vw, 3rem) 4rem;
   }
 
   h1 {
-    font-size: 3.2rem;
+    font-size: 3rem;
     line-height: 1.1;
     margin-block: 0;
   }
@@ -71,97 +141,65 @@
   }
 
   h2 {
-    font-size: 2.4rem;
     line-height: 1.2;
-    font-weight: 600;
-  }
-
-  table {
-    border-collapse: collapse;
-    inline-size: 100%;
-    table-layout: fixed;
-  }
-
-  nav + :is(table, sortable-table) {
-    margin-block-start: 2rem;
-  }
-
-  th {
-    text-align: start;
-  }
-
-  :is(th, td) {
-    padding-block: 0.75rem;
-    vertical-align: top;
-  }
-
-  :is(th, td):not(:last-child) {
-    padding-inline-end: 1rem;
-  }
-
-  thead {
-    position: sticky;
-    inset-block-start: 0;
-    background: var(--color-bg);
-    z-index: 1;
-  }
-
-  thead th {
+    font-weight: 500;
     color: var(--color-secondary);
-    font-size: 0.875em;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
   }
 
-  td,
-  tbody th {
-    border-block-start: var(--border);
-  }
-
-  dl div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  dl div + div {
-    margin-block-start: 0.5rem;
-  }
-
-  dt {
-    inline-size: 8.5em;
-    font-weight: bold;
+  h3 {
+    font-size: 1.4rem;
   }
 
   dd {
-    flex: 1;
     margin: 0;
   }
 
-  .Skip {
-    display: block;
-    position: absolute;
-    transform: translate(-50%, -100%);
-    inset-inline-start: 50%;
-    inset-block-start: 0;
+  input:not([type="checkbox"], [type="hidden"]) {
+    all: unset;
   }
 
-  .Skip:focus {
-    transform: translate(-50%, 0);
+  select {
+    background: none;
+  }
+
+  select,
+  input:not([type="checkbox"], [type="hidden"]) {
+    font: inherit;
+    padding: var(--input-padding);
+    border: var(--border-medium);
+    border-radius: var(--border-radius);
+    background: var(--color-input-bg);
+    box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
+    inline-size: 100%;
+    box-sizing: border-box;
+    block-size: 2.525rem;
+  }
+
+  .field_with_errors input:not([type="checkbox"], [type="hidden"]) {
+    border-color: var(--color-invalid-copy);
+  }
+
+  .field_with_errors label {
+    color: var(--color-invalid-copy);
+  }
+
+  button {
+    all: unset;
+    border: var(--border) transparent;
+    cursor: pointer;
+  }
+
+  svg {
+    display: block;
+  }
+
+  .is-positive {
+    background: var(--color-positive);
   }
 
   @media (max-width: 32em) {
     h1 {
       font-size: 2.8rem;
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    body {
-      --lightness-bg: 10%;
-      --lightness-header-bg: 7.5%;
-      --lightness-copy: 85%;
-      --lightness-copy-secondary: 70%;
     }
   }
 }

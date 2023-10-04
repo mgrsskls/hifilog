@@ -1,6 +1,10 @@
 class SubCategory < ApplicationRecord
-  belongs_to :category, optional: true
-  has_many :product
+  extend FriendlyId
+
+  belongs_to :category
+  has_and_belongs_to_many :products
+
+  friendly_id :name, use: :scoped, scope: :category
 
   def self.ransackable_attributes(auth_object = nil)
     ["category_id", "created_at", "id", "name", "updated_at"]
@@ -8,5 +12,9 @@ class SubCategory < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     ["category", "product"]
+  end
+
+  def friendly_category_id
+    category.friendly_id
   end
 end

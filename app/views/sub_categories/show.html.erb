@@ -1,0 +1,46 @@
+<div class="Heading">
+  <h1><%= @sub_category.name %></h1>
+  <div class="Heading-amount">
+    <%= t('amount_products', count: @products.size) %>
+  </div>
+</div>
+
+<nav class="Pagination Pagination--abc" aria-label="Filter by letter">
+  <ol class="Pagination-list">
+    <li>
+      <a class="Pagination-all" href="<%= @filter_all_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>>All</a>
+    </li>
+    <% @filter_paths.each do |filter| %>
+      <li>
+        <a href="<%= filter[:path] %>"<%= ' aria-current="true"'.html_safe if params[:letter] == filter[:letter] %>><%= filter[:letter].upcase %></a>
+      </li>
+    <% end %>
+  </ol>
+</nav>
+
+<% if @products.any? %>
+  <table>
+    <thead>
+      <th><%= t('headings.manufacturer').html_safe %></th>
+      <th><%= t('name') %></th>
+      <th class="Table-symbols"></th>
+    </thead>
+    <tbody>
+      <% @products.sort_by{|c| c[:name].downcase}.each do |product| %>
+        <tr<% if user_has_product?(product) %> class="is-positive"<% end %>>
+          <td><%= product.manufacturer.name %></td>
+          <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.friendly_id, manufacturer_id: product.manufacturer.friendly_id) %></th>
+          <td class="Table-symbols">
+            <%= render "shared/symbols", product: product %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= paginate @products %>
+<% else %>
+  <%= render "shared/empty_state", message: t('empty_state.products') %>
+<% end %>
+
+<%= render "shared/page_actions", back_link: true %>

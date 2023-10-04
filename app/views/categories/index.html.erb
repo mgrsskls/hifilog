@@ -1,24 +1,44 @@
 <div class="Heading">
   <h1><%= t('headings.categories').html_safe %></h1>
+  <div class="Heading-amount">
+    <%= t('amount_categories', count: @sub_categories.size) %>
+  </div>
 </div>
 
-<% if @categories.size > 0 %>
+<nav class="Pagination" aria-label="Filter by category">
+  <ol class="Pagination-list">
+    <li>
+      <a class="Pagination-all" href="<%= categories_path %>"<%= ' aria-current="true"'.html_safe unless params[:id].present? %>>All</a>
+    </li>
+    <% @categories.each do |category| %>
+      <li>
+        <a href="<%= category_path(id: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:id].to_i == category[:id] %>><%= category[:name] %></a>
+      </li>
+    <% end %>
+  </ol>
+</nav>
+
+<% if @sub_categories.any? %>
   <table>
     <thead>
       <th><%= t('name') %></th>
-      <th><%= t('headings.products') %></th>
+      <th class="u-alignCenter"><%= t('headings.products') %></th>
     </thead>
     <tbody>
-      <% @categories.each do |category| %>
+      <% @sub_categories.each do |sub_category| %>
         <tr>
           <tr>
-            <th scope="row"><%= link_to category.name, category_path(id: category.id) %></th>
-            <td><%= category.products.size > 0 ? category.products.size : "-" %></td>
+            <th scope="row">
+              <%= link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) %><br>
+            </th>
+            <td class="u-alignCenter"><%= sub_category.products.any? ? sub_category.products.size : "-" %></td>
           </tr>
         </tr>
       <% end %>
     </tbody>
   </table>
 <% else %>
-  <p><%= t('empty_state.categories') %></p>
+  <%= render "shared/empty_state", message: t('empty_state.categories') %>
 <% end %>
+
+<%= render "shared/page_actions" %>

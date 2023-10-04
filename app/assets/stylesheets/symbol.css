@@ -1,0 +1,63 @@
+.Symbols {
+  display: flex;
+  gap: 0.5rem;
+}
+
+table .Symbols {
+  justify-content: flex-end;
+}
+
+.Symbols-item {
+  flex: 0 0 var(--size);
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.Symbol {
+  --hue: 0;
+  --saturation: 0%;
+  --size: 1.75em;
+  --color: var(--hue), var(--saturation), 40%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding-block: 0.25em;
+  background: hsla(var(--color), 10%);
+  color: hsl(var(--color));
+  border: var(--border);
+  border-radius: var(--border-radius);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  block-size: var(--size);
+}
+
+.Symbol:not(.Symbol--iconOnly) {
+  padding-inline: 0.5em;
+}
+
+.Symbol--iconOnly {
+  inline-size: var(--size);
+}
+
+.Symbol--positive {
+  --hue: 160;
+  --saturation: 30%;
+}
+
+.SymbolsLegend {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-block: 0;
+  font-size: 0.875em;
+}
+
+.SymbolsLegend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}

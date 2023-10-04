@@ -1,21 +1,49 @@
-<div class="Heading">
-  <h1><%= @product.manufacturer.name %> <span><%= @product.name %></span></h1>
-  <% if @product.discontinued %>
-    <p><span class="Tag"><%= t('discontinued') %></span></p>
-  <% end %>
-</div>
+<div class="Product">
+  <div class="Product-details">
+    <div class="Heading">
+      <h1><span><%= @product.manufacturer.name %></span> <%= @product.name %></h1>
+      <%= render "shared/symbols", product: @product, show_labels: true %>
+    </div>
 
-<dl>
-  <div>
-    <dt><%= t('headings.manufacturer').html_safe %></dt>
-    <dd><%= link_to @product.manufacturer.name, manufacturer_path(id: @product.manufacturer_id) %></dd>
+    <dl>
+      <div>
+        <dt><%= t('headings.manufacturer').html_safe %></dt>
+        <dd><%= link_to @product.manufacturer.name, manufacturer_path(id: @product.manufacturer.friendly_id) %></dd>
+      </div>
+      <div>
+        <dt><%= t('headings.category').html_safe %></dt>
+        <dd>
+          <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) }.join(", ").html_safe %>
+        </dd>
+      </div>
+    </dl>
   </div>
-  <div>
-    <dt><%= t('headings.category').html_safe %></dt>
-    <dd><%= link_to @product.category.name, category_path(id: @product.category_id) %></dd>
+
+  <div class="PageActions Product-actions">
+    <div class="PageAction">
+      <%= render "shared/back_link" %>
+    </div>
+    <% if user_signed_in? %>
+      <div class="PageAction">
+        <div class="u-flex u-alignEnd u-flexWrap u-gap-md">
+          <% if user_has_product?(@product) %>
+            <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "DeleteButton Button Button--negative", "data-msg": "Are you sure you want to remove this product from your collection?" %>
+
+            <% if current_user.rooms.any? %>
+              <% current_user.rooms.each do |room| %>
+                <% if @rooms.include?(room) %>
+                  <%= button_to t('remove_from', name: room.name), room_product_path(product_id: @product.id, room_id: room.id), method: :delete, class: "Button Button--negative" %>
+                <% else %>
+                  <%= button_to t('add_to', name: room.name), room_products_path(product_id: @product.id, room_id: room.id), method: :post, class: "Button" %>
+                <% end %>
+              <% end %>
+
+            <% end %>
+          <% else %>
+            <%= button_to t('add_product'), user_products_path(id: @product.id), class: "Button" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   </div>
-  <div>
-    <dt><%= t('headings.sub_category').html_safe %></dt>
-    <dd><%= @product.sub_category ? (link_to @product.sub_category.name, category_sub_category_path(sub_category_id: @product.sub_category_id, category_id: @product.category_id)) : "-" %></dd>
-  </div>
-</dl>
+</div>

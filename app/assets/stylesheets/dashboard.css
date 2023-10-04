@@ -1,0 +1,51 @@
+.Dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.Dashboard-menu {
+  background: var(--color-bg2);
+  flex: 1;
+  min-inline-size: 12rem;
+  container: menu / inline-size;
+}
+
+.Dashboard-products {
+  flex: 4;
+  min-inline-size: min(32rem, 100%);
+}
+
+.Dashboard-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding: 1rem;
+}
+
+@container menu (max-inline-size: 16rem) {
+  .Dashboard-links {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 2rem;
+  }
+}
+
+.Dashboard-link {
+  text-decoration: none;
+}
+
+.Dashboard-link:is(:hover, :focus) {
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  text-decoration-thickness: var(--underline-width);
+}
+
+.Dashboard-link[aria-current="true"] {
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  text-decoration-thickness: var(--underline-width);
+}

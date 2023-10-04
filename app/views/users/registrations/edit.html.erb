@@ -1,0 +1,71 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('account') %></h1>
+  </div>
+
+  <div class="UserForm">
+    <h2>Edit my account</h2>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+      <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
+
+      <div class="UserForm-field">
+        <%= f.label :email, class: "UserForm-label" %>
+        <%= f.email_field :email, autocomplete: "email" %>
+      </div>
+
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+      <% end %>
+
+      <div class="UserForm-field">
+        <%= f.label :password, class: "UserForm-label" do %>
+          Password <small><i>(leave blank if you don't want to change it)</i></small>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password" %>
+        <% if @minimum_password_length %>
+          <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
+        <% end %>
+      </div>
+
+      <div class="UserForm-field">
+        <%= f.label :password_confirmation, class: "UserForm-label" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+      </div>
+
+      <div class="UserForm-field">
+        <%= f.label :current_password, class: "UserForm-label" %>
+        <%= f.password_field :current_password, autocomplete: "current-password" %>
+        <small class="UserForm-hint">We need your current password to confirm your changes.</small>
+      </div>
+
+      <div class="UserForm-submit">
+        <%= f.button "Update", type: "submit", class: "Button" %>
+      </div>
+    <% end %>
+
+  </div>
+
+  <div class="UserForm">
+    <h2>Delete my account</h2>
+
+    <p>If you delete your account, all data associated with your account will immediately be deleted.</p>
+
+    <%= button_to "Delete my account", registration_path(current_user), method: :delete, class: "DeleteAccount Button Button--negative", "data-msg": 'Are you sure you want to delete your account? All data will be deleted immediately.' %>
+
+    <script>
+      {
+        const button = document.querySelector(".DeleteAccount");
+
+        if (button) {
+
+          button.closest("form").addEventListener("submit", (event) => {
+            if (!window.confirm(button.dataset.msg)) {
+              event.preventDefault();
+            }
+          });
+        }
+      }
+    </script>
+  </div>
+<% end %>

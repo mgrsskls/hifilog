@@ -6,16 +6,23 @@ class ProductsController < ApplicationController
     @active_menu = :products
 
     if params[:letter]
-      @products = Product.where("name LIKE :prefix", prefix: "#{params[:letter]}%").sort_by{|p| p[:name].downcase}
+      add_breadcrumb params[:letter].upcase
+      all_products = Product.where("name LIKE :prefix", prefix: "#{params[:letter]}%")
     else
-      @products = Product.all.sort_by{|p| p[:name].downcase}
+      all_products = Product.all
     end
+
+    @products = all_products.order("LOWER(name)").page(params[:page])
+    @total_size = all_products.size
   end
 
   def show
     @active_menu = :products
 
-    @product = Product.find(params[:id])
+    @manufacturer = Manufacturer.friendly.find(params[:manufacturer_id])
+    @product = @manufacturer.products.friendly.find(params[:id])
+    @user_has_product = user_signed_in? ? current_user.products.include?(@product) : false;
+    @rooms = user_signed_in? ? current_user.rooms.select { |room| room.products.include?(@product) } : []
 
     add_breadcrumb @product.manufacturer.name, manufacturer_path(@product.manufacturer)
     add_breadcrumb @product.name

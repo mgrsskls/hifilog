@@ -1,7 +1,41 @@
-@layer utils {
-  .u-container {
-    max-inline-size: 72rem;
-    margin-inline: auto;
-    padding-inline: 1rem;
-  }
+.u-container {
+  max-inline-size: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.u-flex {
+  display: flex;
+}
+
+.u-flexWrap {
+  flex-wrap: wrap;
+}
+
+.u-alignCenter {
+  align-items: center;
+  text-align: center;
+}
+
+.u-alignEnd {
+  align-items: end;
+  text-align: end;
+}
+
+.u-gap-sm {
+  gap: 0.25rem;
+}
+
+.u-gap-md {
+  gap: 1rem;
+}
+
+.u-underline {
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  text-decoration-thickness: var(--underline-width);
+}
+
+.u-fontSmall {
+  font-size: 0.875em;
 }

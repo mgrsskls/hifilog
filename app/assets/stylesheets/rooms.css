@@ -1,0 +1,10 @@
+.Rooms-add {
+  margin-block-start: 4rem;
+  max-inline-size: 28rem;
+}
+
+.Rooms-form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

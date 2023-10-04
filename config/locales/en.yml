@@ -30,9 +30,42 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  discontinued: Discontinued
-  skip_to_main_content: Skip to main content
+  symbols:
+    discontinued: Discontinued
+    in_your_collection: In your collection
+  account: Account
+  add: Add
+  add_to: Add to "%{name}"
+  add_product: Add to my collection
+  amount_categories:
+    zero: 0 Categories
+    one: 1 Category
+    other: "%{count} Categories"
+  amount_manufacturers:
+    zero: 0 Manufacturers
+    one: 1 Manufacturer
+    other: "%{count} Manufacturers"
+  amount_products:
+    zero: 0 Products
+    one: 1 Product
+    other: "%{count} Products"
+  confirm_removing_product: Do you really want to remove this product from your collection?
+  dashboard: Dashboard
+  delete_room: Delete this room
   name: Name
+  overview: Overview
+  remove_from: Remove from "%{name}"
+  remove_from_collection: Remove from my collection
+  rooms: Rooms
+  settings: Settings
+  skip_to_main_content: Skip to main content
+  user_form:
+    login: Log in
+    logout: Log out
+    signup: Sign up
+    forgot_password:
+      heading: Forgot your password?
+      submit: Send me reset instructions
   headings:
     category: Category
     categories: Categories
@@ -40,10 +73,13 @@ en:
     manufacturers: Manu&shy;facturers
     product: Product
     products: Products
+    rooms: Rooms
     sub_category: Sub&shy;category
     sub_categories: Sub&shy;categories
   empty_state:
-    categories: There are no categories yet.
-    manufacturers: There are no manufacturers yet.
-    products: There are no products yet.
-    sub_categories: There are no subcategories yet.
+    categories: <p><b>There are no categories yet.</b></p>
+    manufacturers: <p><b>There are no manufacturers yet.</b></p>
+    products: <p><b>There are no products yet.</b></p>
+    sub_categories: <p><b>There are no subcategories yet.</b></p>
+    room_products: "<p><b>You have not added any products to this room yet.</b></p><p>After adding a product to your collection, you can assign it to a room on its product page.</p>"
+    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{manufacturers_path}">manufacturers</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'

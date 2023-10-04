@@ -1,0 +1,12 @@
+.PageActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-start: 4rem;
+}
+
+.PageAction--even {
+  margin-inline-start: auto;
+}

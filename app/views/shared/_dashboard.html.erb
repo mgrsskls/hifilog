@@ -1,0 +1,25 @@
+<div class="Dashboard">
+  <nav class="Dashboard-menu">
+    <ul class="Dashboard-links">
+      <li>
+        <a class="Dashboard-link" href="<%= dashboard_root_path %>"<%= active_dashboard_menu_state(:overview) %>><%= t('overview') %></a>
+      </li>
+      <li>
+        <a class="Dashboard-link" href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(:products) %>><%= t('headings.products') %></a>
+      </li>
+      <li>
+        <a class="Dashboard-link" href="<%= dashboard_rooms_path %>"<%= active_dashboard_menu_state(:rooms) %>><%= t('rooms') %></a>
+      </li>
+      <li>
+        <a class="Dashboard-link" href="<%=  %>"<%= active_dashboard_menu_state(:settings) %>><%= t('settings') %></a>
+      </li>
+      <li>
+        <a class="Dashboard-link" href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(:account) %>><%= t('account') %></a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="Dashboard-products">
+    <%= yield %>
+  </div>
+</div>
