@@ -17,8 +17,8 @@
         <a class="Menu-home" href="<%= root_url %>"<% if is_current_page?(root_path) %> aria-current="page"<% end %>>HiFi Gear</a>
         <ul class="Menu-list Menu-list--main">
           <li>
-            <a href="<%= manufacturers_path %>"<%= active_menu_state(:manufacturers) %>>
-              <%= t('headings.manufacturers').html_safe %>
+            <a href="<%= brands_path %>"<%= active_menu_state(:brands) %>>
+              <%= t('headings.brands').html_safe %>
             </a>
           </li>
           <li>

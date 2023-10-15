@@ -1,10 +1,10 @@
 <% show_labels ||= false %>
 <% product ||= nil %>
-<% manufacturer ||= nil %>
+<% brand ||= nil %>
 
 <div class="Symbols">
 
-  <% if product && product.discontinued || manufacturer && manufacturer.closed %>
+  <% if product && product.discontinued || brand && brand.closed %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol"><%= t('symbols.discontinued') %></span>

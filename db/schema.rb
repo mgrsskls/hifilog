@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_15_091333) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_15_174808) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -37,6 +37,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_15_091333) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
+  create_table "brands", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "closed"
+    t.string "slug"
+    t.index ["slug"], name: "index_brands_on_slug", unique: true
+  end
+
   create_table "categories", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -56,23 +65,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_15_091333) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
-  create_table "manufacturers", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "closed"
-    t.string "slug"
-    t.index ["slug"], name: "index_manufacturers_on_slug", unique: true
-  end
-
   create_table "products", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "manufacturer_id", null: false
+    t.integer "brand_id", null: false
     t.boolean "discontinued"
     t.string "slug"
-    t.index ["manufacturer_id"], name: "index_products_on_manufacturer_id"
+    t.index ["brand_id"], name: "index_products_on_brand_id"
     t.index ["slug"], name: "index_products_on_slug", unique: true
   end
 
@@ -130,6 +130,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_15_091333) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "products", "manufacturers"
+  add_foreign_key "products", "brands"
   add_foreign_key "sub_categories", "categories"
 end

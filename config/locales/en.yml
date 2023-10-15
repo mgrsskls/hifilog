@@ -41,10 +41,10 @@ en:
     zero: 0 Categories
     one: 1 Category
     other: "%{count} Categories"
-  amount_manufacturers:
-    zero: 0 Manufacturers
-    one: 1 Manufacturer
-    other: "%{count} Manufacturers"
+  amount_brands:
+    zero: 0 Brands
+    one: 1 Brand
+    other: "%{count} Brands"
   amount_products:
     zero: 0 Products
     one: 1 Product
@@ -69,8 +69,8 @@ en:
   headings:
     category: Category
     categories: Categories
-    manufacturer: Manu&shy;facturer
-    manufacturers: Manu&shy;facturers
+    brand: Brand
+    brands: Brands
     product: Product
     products: Products
     rooms: Rooms
@@ -78,8 +78,8 @@ en:
     sub_categories: Sub&shy;categories
   empty_state:
     categories: <p><b>There are no categories yet.</b></p>
-    manufacturers: <p><b>There are no manufacturers yet.</b></p>
+    brands: <p><b>There are no brands yet.</b></p>
     products: <p><b>There are no products yet.</b></p>
     sub_categories: <p><b>There are no subcategories yet.</b></p>
     room_products: "<p><b>You have not added any products to this room yet.</b></p><p>After adding a product to your collection, you can assign it to a room on its product page.</p>"
-    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{manufacturers_path}">manufacturers</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
+    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'

@@ -10,7 +10,7 @@
     <accordion-tabs breakpoint="20rem">
       <details>
         <summary>All</summary>
-        <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', manufacturers_path: manufacturers_path, categories_path: categories_path, products_path: products_path) %>
+        <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, categories_path: categories_path, products_path: products_path) %>
       </details>
       <% current_user.rooms.each do |room| %>
         <details>
@@ -26,6 +26,6 @@
       <% end %>
     </accordion-tabs>
   <% else %>
-    <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', manufacturers_path: manufacturers_path, categories_path: categories_path, products_path: products_path) %>
+    <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, categories_path: categories_path, products_path: products_path) %>
   <% end %>
 <% end %>

@@ -1,4 +1,4 @@
-ActiveAdmin.register Manufacturer do
+ActiveAdmin.register Brand do
 
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
@@ -17,7 +17,7 @@ ActiveAdmin.register Manufacturer do
 
   sidebar "Products", only: [:show, :edit] do
     ul do
-      li link_to "All",    admin_manufacturer_products_path(resource)
+      li link_to "All",    admin_brand_products_path(resource)
     end
   end
 end

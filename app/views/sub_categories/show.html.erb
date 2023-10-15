@@ -21,15 +21,15 @@
 <% if @products.any? %>
   <table>
     <thead>
-      <th><%= t('headings.manufacturer').html_safe %></th>
+      <th><%= t('headings.brand').html_safe %></th>
       <th><%= t('name') %></th>
       <th class="Table-symbols"></th>
     </thead>
     <tbody>
       <% @products.sort_by{|c| c[:name].downcase}.each do |product| %>
         <tr<% if user_has_product?(product) %> class="is-positive"<% end %>>
-          <td><%= product.manufacturer.name %></td>
-          <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.friendly_id, manufacturer_id: product.manufacturer.friendly_id) %></th>
+          <td><%= product.brand.name %></td>
+          <th scope="row"><%= link_to product.name, brand_product_path(id: product.friendly_id, brand_id: product.brand.friendly_id) %></th>
           <td class="Table-symbols">
             <%= render "shared/symbols", product: product %>
           </td>
