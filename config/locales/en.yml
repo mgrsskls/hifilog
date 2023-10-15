@@ -35,7 +35,7 @@ en:
     in_your_collection: In your collection
   account: Account
   add: Add
-  add_to: Add to "%{name}"
+  add_to: Add to &ldquo;%{name}&rdquo;
   add_product: Add to my collection
   amount_categories:
     zero: 0 Categories
@@ -54,9 +54,15 @@ en:
   delete_room: Delete this room
   name: Name
   overview: Overview
-  remove_from: Remove from "%{name}"
+  remove_from: Remove from &ldquo;%{name}&rdquo;
   remove_from_collection: Remove from my collection
   rooms: Rooms
+  search: Search
+  search_results:
+    heading: Search results for <span>&ldquo;%{query}&rdquo;</span>
+    none:
+      products: No products found for &ldquo;<i>%{query}</i>&rdquo;.
+      brands: No brands found for &ldquo;<i>%{query}</i>&rdquo;.
   settings: Settings
   skip_to_main_content: Skip to main content
   user_form:

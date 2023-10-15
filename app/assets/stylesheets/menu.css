@@ -1,9 +1,6 @@
 .Menu {
-  container: menu / inline-size;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
 }
 
 .Menu-home {
@@ -17,7 +14,7 @@
   margin: 0;
   padding: 0.75rem 0;
   display: flex;
-  gap: 1rem 2rem;
+  gap: 2rem;
 }
 
 .Menu-list :is(a, button) {
@@ -39,14 +36,14 @@
   text-decoration-thickness: var(--underline-width);
 }
 
-@container menu (max-inline-size: 40em) {
+@media (max-width: 48rem) {
+  .Menu-list {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 56em) {
   .Menu-list {
     gap: 1rem;
-  }
-
-  .Menu-list--main {
-    flex: 0 100%;
-    order: 1;
-    justify-content: center;
   }
 }

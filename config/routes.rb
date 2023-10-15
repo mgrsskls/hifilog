@@ -59,5 +59,7 @@ Rails.application.routes.draw do
   # /:brand/:product
   get ':brand_id/:id', as: :brand_product, to: 'products#show', constraints: { id: /.{2,}/ }
 
+  get '/search', to: "search#results"
+
   root "application#index"
 end

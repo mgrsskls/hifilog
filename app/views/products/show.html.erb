@@ -32,9 +32,9 @@
             <% if current_user.rooms.any? %>
               <% current_user.rooms.each do |room| %>
                 <% if @rooms.include?(room) %>
-                  <%= button_to t('remove_from', name: room.name), room_product_path(product_id: @product.id, room_id: room.id), method: :delete, class: "Button Button--negative" %>
+                  <%= button_to t('remove_from', name: room.name).html_safe, room_product_path(product_id: @product.id, room_id: room.id), method: :delete, class: "Button Button--negative" %>
                 <% else %>
-                  <%= button_to t('add_to', name: room.name), room_products_path(product_id: @product.id, room_id: room.id), method: :post, class: "Button" %>
+                  <%= button_to t('add_to', name: room.name).html_safe, room_products_path(product_id: @product.id, room_id: room.id), method: :post, class: "Button" %>
                 <% end %>
               <% end %>
 

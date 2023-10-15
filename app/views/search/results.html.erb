@@ -1,0 +1,26 @@
+<% unless flash.any? %>
+  <div class="Heading">
+    <h1><%= t('search_results.heading', query: @query).html_safe %></h1>
+  </div>
+
+  <div class="SearchResults">
+    <div class="SearchResults-section">
+      <h2><%= t('headings.products') %></h2>
+      <% if @products.any? %>
+        <%= render "shared/products_table", products: @products, mark: @query %>
+      <% else %>
+        <%= render "shared/empty_state", message: "<p>" + t('search_results.none.products', query: @query).html_safe + "</p>" %>
+      <% end %>
+    </div>
+    <div class="SearchResults-section">
+      <h2><%= t('headings.brands') %></h2>
+      <% if @brands.any? %>
+        <%= render "shared/brands_table", brands: @brands, mark: @query %>
+      <% else %>
+        <%= render "shared/empty_state", message: "<p>" + t('search_results.none.brands', query: @query).html_safe + "</p>" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "shared/page_actions" %>
+<% end %>

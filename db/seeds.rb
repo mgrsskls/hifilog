@@ -6,6 +6,7 @@
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
 AdminUser.create!(email: 'admin@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
+# file deepcode ignore HardcodedPassword: <please specify a reason of ignoring this>
 user = User.create!(email: 'user@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
 user_without_room = User.create!(email: 'user2@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
 
@@ -1106,7 +1107,6 @@ Product.create!(name: 'TT3', brand_id: 4, sub_category_ids: [18])
 Product.create!(name: 'TT2', brand_id: 4, sub_category_ids: [18])
 Product.create!(name: 'MM Concept v2', brand_id: 4, sub_category_ids: [13])
 Product.create!(name: 'MM Jubilee', brand_id: 4, sub_category_ids: [13])
-Product.create!(name: 'Concept MC', brand_id: 4, sub_category_ids: [14])
 Product.create!(name: 'Essence MC', brand_id: 4, sub_category_ids: [14])
 
 # Denon

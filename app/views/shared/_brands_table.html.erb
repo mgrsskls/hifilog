@@ -1,0 +1,24 @@
+<% mark ||= nil %>
+
+<table>
+  <thead>
+    <th><%= t('name') %></th>
+    <th><%= t('headings.categories').html_safe %></th>
+    <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+    <th class="Table-symbols"></th>
+  </thead>
+  <tbody>
+    <% brands.each do |brand| %>
+      <tr>
+        <th scope="row"><%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %></th>
+        <td>
+          <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
+        </td>
+        <td class="Table-products u-alignCenter"><%= brand.products.any? ? brand.products.size : "-"  %></td>
+        <td>
+          <%= render "shared/symbols", brand: brand %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
