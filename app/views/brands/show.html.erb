@@ -1,19 +1,19 @@
 <div class="Heading">
-  <h1><%= @manufacturer.name %></h1>
+  <h1><%= @brand.name %></h1>
   <div class="Heading-amount">
     <%= t('amount_products', count: @products.size) %>
   </div>
 </div>
 
-<% if @manufacturer.sub_categories.size > 1 %>
+<% if @brand.sub_categories.size > 1 %>
   <nav class="Pagination" aria-label="Filter by category">
     <ol class="Pagination-list">
       <li>
-        <a class="Pagination-all" href="<%= manufacturer_path(id: @manufacturer.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>>All</a>
+        <a class="Pagination-all" href="<%= brand_path(id: @brand.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>>All</a>
       </li>
-      <% @manufacturer.sub_categories.each do |sub_category| %>
+      <% @brand.sub_categories.each do |sub_category| %>
         <li>
-          <a href="<%= manufacturer_category_path(manufacturer_id: @manufacturer.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
+          <a href="<%= brand_category_path(brand_id: @brand.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
         </li>
       <% end %>
     </ol>
@@ -30,7 +30,7 @@
     <tbody>
       <% @products.each do |product| %>
         <tr<% if user_has_product?(product) %> class="is-positive"<% end %>>
-          <th scope="row"><%= link_to product.name, manufacturer_product_path(id: product.friendly_id, manufacturer_id: @manufacturer.friendly_id) %></th>
+          <th scope="row"><%= link_to product.name, brand_product_path(id: product.friendly_id, brand_id: @brand.friendly_id) %></th>
           <td>
             <% if product.sub_categories.any? %>
               <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>

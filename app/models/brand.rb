@@ -1,4 +1,4 @@
-class Manufacturer < ApplicationRecord
+class Brand < ApplicationRecord
   extend FriendlyId
 
   has_many :products
