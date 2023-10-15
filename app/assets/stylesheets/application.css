@@ -7,6 +7,7 @@
  *= require dashboard
  *= require empty_state
  *= require flash_messages
+ *= require header
  *= require heading
  *= require menu
  *= require page_actions
@@ -14,6 +15,7 @@
  *= require product
  *= require rooms
  *= require rte
+ *= require search_results
  *= require skip
  *= require symbol
  *= require table
@@ -32,6 +34,7 @@
     --border-radius: 0.1875rem;
     --line-height: 1.75;
     --input-padding: 0.325em 1em;
+    --page-spacing: 0.75rem;
 
     --hue: 208;
     --hue-sat: var(--hue), 25%;
@@ -75,6 +78,7 @@
     --color-success-bg: var(--color-success-light);
     --color-success-copy: var(--color-success-dark);
     --color-positive: hsl(160, 50%, 95%);
+    --color-search-button-outline: var(--color-header-copy);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -93,6 +97,7 @@
       --color-success-bg: var(--color-success-dark);
       --color-success-copy: var(--color-success-light);
       --color-positive: hsl(190, 40%, 15%);
+      --color-search-button-outline: var(--color-border-medium);
     }
   }
 
@@ -141,6 +146,7 @@
   }
 
   h2 {
+    font-size: 1.8rem;
     line-height: 1.2;
     font-weight: 500;
     color: var(--color-secondary);
@@ -199,7 +205,7 @@
 
   @media (max-width: 32em) {
     h1 {
-      font-size: 2.8rem;
+      font-size: 2.4rem;
     }
   }
 }

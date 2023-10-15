@@ -1,0 +1,113 @@
+.Header {
+  --gap: 2rem;
+  --height: 3.75rem;
+
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  align-items: center;
+  block-size: var(--height);
+}
+
+.Header-menu {
+  display: flex;
+  gap: var(--gap);
+}
+
+.Search {
+  display: flex;
+  background: var(--color-input-bg);
+  box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
+  padding: 0.1875em;
+  border-radius: var(--border-radius);
+}
+
+.Search-input {
+  border: none;
+  box-shadow: none;
+}
+
+.Search-button {
+  background: var(--color-button-bg);
+  color: var(--color-search-button-outline);
+  border-radius: calc(var(--border-radius));
+  border-inline-start: none;
+  padding-inline: var(--padding);
+}
+
+@media (max-width: 48rem) {
+  .Header {
+    justify-content: space-between;
+  }
+
+  .Header-toggle {
+    background: var(--color-button-bg);
+    color: var(--color-search-button-outline);
+    border-radius: calc(var(--border-radius));
+    padding: 0.375em;
+  }
+
+  .Header-toggle[aria-expanded="false"] + .Header-menuContainer {
+    display: none;
+  }
+
+  .Header-toggle[aria-expanded="false"] .Header-toggleIcon--close,
+  .Header-toggle[aria-expanded="true"] .Header-toggleIcon--open {
+    display: none;
+  }
+
+  .Header-menuContainer {
+    position: fixed;
+    inset: var(--height) 0 0 0;
+    background: hsl(208, 40%, 15%);
+    padding: calc(2 * var(--page-spacing)) var(--page-spacing);
+  }
+
+  .Header-menu {
+    flex-direction: column-reverse;
+    border-block-end: var(--border) hsla(0, 0%, 100%, 20%);
+    padding-block-end: 1rem;
+    margin-block-end: 1rem;
+  }
+
+  .Search {
+    --padding: 0.75em;
+  }
+}
+
+@media (min-width: 48.0625rem) {
+  .Header-toggle {
+    display: none;
+  }
+
+  .Header-menuContainer {
+    flex: 1;
+    display: flex;
+    gap: var(--gap);
+  }
+
+  .Header-menu {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .Header-search {
+    align-self: center;
+    inline-size: 14em;
+  }
+
+  .Search {
+    --padding: 0.5em;
+  }
+
+  .Search-input {
+    padding: 0 var(--padding);
+    block-size: 2rem;
+  }
+}
+
+@media (max-width: 56rem) {
+  .Header {
+    --gap: 1rem;
+  }
+}

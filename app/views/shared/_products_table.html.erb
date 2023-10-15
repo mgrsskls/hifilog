@@ -1,0 +1,21 @@
+<% mark ||= nil %>
+
+<table>
+  <thead>
+    <th><%= t('headings.brand').html_safe %></th>
+    <th><%= t('name') %></th>
+    <th colspan="2"><%= t('headings.category').html_safe %></th>
+  </thead>
+  <tbody>
+    <% products.each do |product| %>
+      <tr<% if user_has_product?(product) %> class="is-positive"<% end %>>
+        <td><%= product.brand.name %></td>
+        <th scope="row"><%= link_to (mark ? highlight(product.name, mark) : product.name), brand_product_path(id: product.friendly_id, brand_id: product.brand.friendly_id) %></th>
+        <td><%= product.sub_categories.any? ? product.sub_categories.map { |sub_category| sub_category.name }.join(", ") : "-" %></td>
+        <td>
+          <%= render "shared/symbols", product: product %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
