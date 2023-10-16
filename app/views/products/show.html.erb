@@ -27,7 +27,7 @@
       <div class="PageAction">
         <div class="u-flex u-alignEnd u-flexWrap u-gap-md">
           <% if user_has_product?(@product) %>
-            <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "DeleteButton Button Button--negative", "data-msg": "Are you sure you want to remove this product from your collection?" %>
+            <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "Button Button--negative" %>
 
             <% if current_user.rooms.any? %>
               <% current_user.rooms.each do |room| %>

@@ -5,12 +5,12 @@
   </div>
 </div>
 
-<nav class="Pagination Pagination--abc" aria-label="Filter by letter">
+<nav class="Pagination Pagination--abc" aria-label="<%= t('filter.abc.label') %>">
   <ol class="Pagination-list">
     <li>
-      <a class="Pagination-all" href="<%= brands_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>>All</a>
+      <a class="Pagination-all" href="<%= brands_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>><%= t('filter.all') %></a>
     </li>
-    <% ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'].each do |letter| %>
+    <% abc.each do |letter| %>
       <li>
         <a href="<%= letter_brands_path(letter: letter) %>"<%= ' aria-current="true"'.html_safe if params[:letter] == letter %>><%= letter %></a>
       </li>

@@ -6,10 +6,10 @@
 </div>
 
 <% if @brand.sub_categories.size > 1 %>
-  <nav class="Pagination" aria-label="Filter by category">
+  <nav class="Pagination" aria-label="<%= t('filter.category.label') %>">
     <ol class="Pagination-list">
       <li>
-        <a class="Pagination-all" href="<%= brand_path(id: @brand.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>>All</a>
+        <a class="Pagination-all" href="<%= brand_path(id: @brand.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
       </li>
       <% @brand.sub_categories.each do |sub_category| %>
         <li>

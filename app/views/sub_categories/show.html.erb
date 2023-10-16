@@ -5,10 +5,10 @@
   </div>
 </div>
 
-<nav class="Pagination Pagination--abc" aria-label="Filter by letter">
+<nav class="Pagination Pagination--abc" aria-label="<%= t('filter.abc.label') %>">
   <ol class="Pagination-list">
     <li>
-      <a class="Pagination-all" href="<%= @filter_all_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>>All</a>
+      <a class="Pagination-all" href="<%= @filter_all_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>><%= t('filter.all') %></a>
     </li>
     <% @filter_paths.each do |filter| %>
       <li>
