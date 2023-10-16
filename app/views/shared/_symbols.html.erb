@@ -14,6 +14,16 @@
     </div>
   <% end %>
 
+  <% if user_has_brand?(brand) %>
+    <div class="Symbols-item">
+      <% if show_labels %>
+        <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
+      <% else %>
+        <span class="Symbol Symbol--positive Symbol--iconOnly" title="<%= t('symbols.in_your_collection') %>" aria-label="<%= t('symbols.in_your_collection') %>">✓</span>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if user_has_product?(product) %>
     <div class="Symbols-item">
       <% if show_labels %>
