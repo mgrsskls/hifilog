@@ -7,6 +7,9 @@
     <% content_for :js do %>
       <%= javascript_include_tag "accordion_tabs" %>
     <% end %>
+    <% content_for :css do %>
+      <%= stylesheet_link_tag "accordion_tabs" %>
+    <% end %>
     <accordion-tabs breakpoint="20rem">
       <details>
         <summary><%= t('filter.all') %></summary>

@@ -1,26 +1,20 @@
 /*
  *= require_self
- *= require accordion_tabs
- *= require back_link
- *= require breadcrumbs
- *= require button
- *= require dashboard
- *= require empty_state
- *= require flash_messages
- *= require header
- *= require heading
- *= require menu
- *= require page_actions
- *= require pagination
- *= require product
- *= require rooms
- *= require rte
- *= require search_results
- *= require skip
- *= require symbol
- *= require table
- *= require user_form
- *= require utils
+ *= require application/back_link
+ *= require application/breadcrumbs
+ *= require application/button
+ *= require application/empty_state
+ *= require application/flash_messages
+ *= require application/header
+ *= require application/heading
+ *= require application/menu
+ *= require application/page_actions
+ *= require application/pagination
+ *= require application/rte
+ *= require application/skip
+ *= require application/symbol
+ *= require application/table
+ *= require application/utils
  */
 
 @layer global {

@@ -1,4 +1,7 @@
 <% unless flash.any? %>
+  <% content_for :css do %>
+    <%= stylesheet_link_tag "search_results" %>
+  <% end %>
   <div class="Heading">
     <h1><%= t('search_results.heading', query: @query).html_safe %></h1>
   </div>
