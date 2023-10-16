@@ -19,7 +19,7 @@
       </tbody>
     </table>
   <% else %>
-    <%= render "shared/empty_state", message: "<p><b>You haven't created any rooms yet.</b></p><p>You can create rooms below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple rooms on its product page.</p>" %>
+    <%= render "shared/empty_state", message: t('empty_state.rooms') %>
   <% end %>
 
   <div class="Rooms-add">
