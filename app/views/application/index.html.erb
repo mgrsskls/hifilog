@@ -1,3 +1,45 @@
-<div class="Heading">
-  <h1>Welcome</h1>
+<% content_for :css do %>
+  <%= stylesheet_link_tag "home" %>
+<% end %>
+
+<div class="Home">
+  <div>
+  <p class="Home-intro">
+    <%= t('home.intro', products_size: @products.size, products_path: products_path, brands_size: @brands.size, brands_path: brands_path, categories_size: @categories.size, categories_path: categories_path).html_safe %>
+  </p>
+
+  <p class="Home-signUp"><%= t('home.sign_up').html_safe %></p>
+
+    </div>
+  <div class="Home-latest">
+    <h2><%= t('home.recently_added') %></h2>
+
+    <div class="u-flex u-flexWrap u-gap-lg">
+    <div>
+      <h3><%= t('headings.products') %></h3>
+      <ol>
+        <% @newest_products.each do |product| %>
+          <li>
+            <time datetime="<%= product.created_at.strftime("%Y-%m-%d") %>"><%= product.created_at.strftime("%Y-%m-%d") %></time>:
+            <%= link_to product.brand.name + " " + product.name, brand_product_path(id: product.friendly_id, brand_id: product.brand.friendly_id) %>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+    <div>
+      <h3><%= t('headings.brands') %></h3>
+      <ol>
+        <% @newest_brands.each do |brand| %>
+          <li>
+            <time datetime="<%= brand.created_at.strftime("%Y-%m-%d") %>"><%= brand.created_at.strftime("%Y-%m-%d") %></time>:
+            <%= link_to brand.name, brand_path(id: brand.friendly_id) %>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleDateString())
+  </script>
 </div>
