@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+    before_action :configure_permitted_parameters, if: :devise_controller?
+
     helper_method :current_user
     helper_method :user_has_product?
     helper_method :user_has_brand?
@@ -28,5 +30,11 @@ class ApplicationController < ActionController::Base
     def user_has_brand?(brand)
         return if !brand
         user_signed_in? && current_user.products.select { |p| p.brand_id == brand.id }.any?
+    end
+
+    protected
+
+    def configure_permitted_parameters
+        devise_parameter_sanitizer.permit(:account_update, keys: [:profile_visibility])
     end
 end

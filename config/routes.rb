@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :rooms
   end
 
+
   devise_for :admin_users, ActiveAdmin::Devise.config
 
   ActiveAdmin.routes(self)
@@ -15,6 +16,8 @@ Rails.application.routes.draw do
     registrations: "users/registrations",
     sessions: "users/sessions",
   }
+
+  resources :users, only: [:show]
 
   resources :user_products, only: [:create, :destroy]
   resources :room_products, only: [:create, :destroy]

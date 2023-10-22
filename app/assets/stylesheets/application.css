@@ -156,7 +156,7 @@
     margin: 0;
   }
 
-  input:not([type="checkbox"], [type="hidden"]) {
+  input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
     all: unset;
   }
 
@@ -165,7 +165,7 @@
   }
 
   select,
-  input:not([type="checkbox"], [type="hidden"]) {
+  input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
     font: inherit;
     padding: var(--input-padding);
     border: var(--border-medium);
@@ -177,7 +177,8 @@
     block-size: 2.525rem;
   }
 
-  .field_with_errors input:not([type="checkbox"], [type="hidden"]) {
+  .field_with_errors
+    input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
     border-color: var(--color-invalid-copy);
   }
 

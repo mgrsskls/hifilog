@@ -10,6 +10,10 @@ class DashboardController < ApplicationController
     @active_dashboard_menu = :overview
   end
 
+  def show
+    @user = User.find(params[:id])
+  end
+
   def products
     add_breadcrumb I18n.t("headings.products"), :dashboard_products_path
 
