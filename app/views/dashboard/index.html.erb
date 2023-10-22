@@ -2,4 +2,10 @@
   <div class="Heading">
     <h1>Dashboard</h1>
   </div>
+
+  <div class="Dashboard">
+    <p class="Dashboard-intro">
+      <%= t('dashboard.intro', products_size: @products.size, products_path: products_path, brands_size: @brands.size, brands_path: brands_path, categories_size: @categories.size, categories_path: categories_path).html_safe %>
+    </p>
+  </div>
 <% end %>

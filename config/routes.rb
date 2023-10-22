@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   scope '/dashboard', as: :dashboard do
-    root 'dashboard#index'
     get '/products', to: 'dashboard#products'
     get '/products/:category', to: 'dashboard#products', as: :products_category
     resources :rooms

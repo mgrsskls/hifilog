@@ -3,14 +3,12 @@
 <% end %>
 
 <div class="Home">
-  <div>
   <p class="Home-intro">
     <%= t('home.intro', products_size: @products.size, products_path: products_path, brands_size: @brands.size, brands_path: brands_path, categories_size: @categories.size, categories_path: categories_path).html_safe %>
   </p>
 
   <p class="Home-signUp"><%= t('home.sign_up').html_safe %></p>
 
-    </div>
   <div class="Home-latest">
     <h2><%= t('home.recently_added') %></h2>
 
