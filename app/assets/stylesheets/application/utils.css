@@ -30,6 +30,10 @@
   gap: 1rem;
 }
 
+.u-gap-lg {
+  gap: 3rem;
+}
+
 .u-underline {
   text-decoration: underline;
   text-underline-offset: var(--underline-offset);

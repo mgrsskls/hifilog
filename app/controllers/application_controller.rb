@@ -3,6 +3,15 @@ class ApplicationController < ActionController::Base
     helper_method :user_has_product?
     helper_method :user_has_brand?
 
+    def index
+        @products = Product.all
+        @brands = Brand.all
+        @categories = SubCategory.all
+
+        @newest_products = @products.order(created_at: :desc).limit(10)
+        @newest_brands = @brands.order(created_at: :desc).limit(10)
+    end
+
     def current_user=(user)
         @current_user = user
     end

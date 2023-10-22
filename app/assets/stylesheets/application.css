@@ -63,6 +63,7 @@
     --border-l: 0%;
 
     --color-button-copy: #fff;
+    --color-highlight: var(--color-accent);
     --color-invalid-light: hsl(330, 50%, 85%);
     --color-invalid-dark: hsl(330, 100%, 20%);
     --color-invalid-bg: var(--color-invalid-light);
@@ -86,6 +87,7 @@
       --accent-l: 75%;
       --border-l: 100%;
 
+      --color-highlight: #fff;
       --color-invalid-bg: var(--color-invalid-dark);
       --color-invalid-copy: var(--color-invalid-light);
       --color-success-bg: var(--color-success-dark);
