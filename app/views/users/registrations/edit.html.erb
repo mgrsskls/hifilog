@@ -6,11 +6,31 @@
     <h1><%= t('account') %></h1>
   </div>
 
+  <h2>Update your account</h2>
+
   <div class="UserForm">
-    <h2>Edit my account</h2>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
+
+      <h3>Profile visibility</h3>
+
+      <div class="UserForm-field">
+        <div>
+          <%= f.radio_button :profile_visibility, 0, checked: current_user.profile_visibility == 0 %>
+          <%= f.label :profile_visibility_0, "No one can see my profile." %>
+        </div>
+        <div>
+          <%= f.radio_button :profile_visibility, 1, checked: current_user.profile_visibility == 1 %>
+          <%= f.label :profile_visibility_1, "Only logged in users can see my profile." %>
+        </div>
+        <div>
+          <%= f.radio_button :profile_visibility, 2, checked: current_user.profile_visibility == 2 %>
+          <%= f.label :profile_visibility_2, "Logged in and logged out users can see my profile." %>
+        </div>
+      </div>
+
+      <h3>E-mail address</h3>
 
       <div class="UserForm-field">
         <%= f.label :email, class: "UserForm-label" %>
@@ -31,10 +51,14 @@
         <% end %>
       </div>
 
+      <h3>Password</h3>
+
       <div class="UserForm-field">
         <%= f.label :password_confirmation, class: "UserForm-label" %>
         <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
       </div>
+
+      <h3>Save your changes</h3>
 
       <div class="UserForm-field">
         <%= f.label :current_password, class: "UserForm-label" %>
@@ -46,7 +70,6 @@
         <%= f.button "Update", type: "submit", class: "Button" %>
       </div>
     <% end %>
-
   </div>
 
   <div class="UserForm">

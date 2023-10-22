@@ -81,7 +81,6 @@ en:
     none:
       products: No products found for &ldquo;<i>%{query}</i>&rdquo;.
       brands: No brands found for &ldquo;<i>%{query}</i>&rdquo;.
-  settings: Settings
   skip_to_main_content: Skip to main content
   user_form:
     login: Log in
