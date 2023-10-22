@@ -49,3 +49,7 @@
   text-underline-offset: var(--underline-offset);
   text-decoration-thickness: var(--underline-width);
 }
+
+.Dashboard-intro {
+  margin-block-end: 3rem;
+}

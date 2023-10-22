@@ -4,12 +4,6 @@ class DashboardController < ApplicationController
   add_breadcrumb "Hifi Gear", :root_path
   add_breadcrumb I18n.t("dashboard")
 
-  def index
-    add_breadcrumb I18n.t("overview")
-    @active_menu = :dashboard
-    @active_dashboard_menu = :overview
-  end
-
   def show
     @user = User.find(params[:id])
   end
@@ -19,6 +13,9 @@ class DashboardController < ApplicationController
 
     @active_menu = :dashboard
     @active_dashboard_menu = :products
+
+
+
 
     all_products = current_user.products.all.order("LOWER(name)")
     if params[:category]
