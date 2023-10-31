@@ -24,15 +24,18 @@ table .Symbols {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding-block: 0.25em;
   background: hsla(var(--color), 10%);
   color: hsl(var(--color));
   border: var(--border);
   border-radius: var(--border-radius);
-  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1;
   block-size: var(--size);
+}
+
+.Symbol:not(.Symbol--large) {
+  font-size: 0.8125rem;
+  padding-block: 0.25em;
 }
 
 .Symbol:not(.Symbol--iconOnly) {
@@ -46,6 +49,10 @@ table .Symbols {
 .Symbol--positive {
   --hue: 160;
   --saturation: 30%;
+}
+
+.Symbol--large {
+  padding-block: 1em;
 }
 
 .SymbolsLegend {

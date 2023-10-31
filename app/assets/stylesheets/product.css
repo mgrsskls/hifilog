@@ -29,6 +29,7 @@
 
 .Product-main dl div {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
 }
 
@@ -41,10 +42,41 @@
 }
 
 .Product-actions {
-  padding-block-start: 3rem;
-  border-block-start: var(--border-light);
+  margin-block-start: 1rem;
+}
+
+.Product-action--add + .Product-action--remove {
+  margin-block-start: 0.5rem;
+}
+
+.Product-sub .Button {
+  inline-size: 100%;
+  text-align: center;
+}
+
+.Product-sub hr {
+  margin-block: 1.5rem;
+  border-top: var(--border-medium);
+  border-bottom: none;
 }
 
 .Product-sub dd + dt {
   margin-block-start: 1em;
+}
+
+.TextButton {
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  font-size: 0.875em;
+  font-weight: 600;
+}
+
+.TextButton--negative {
+  color: var(--color-invalid-copy);
+}
+
+.ProductBackLink {
+  margin-block-start: 3rem;
+  padding-block-start: 3rem;
+  border-block-start: var(--border-light);
 }
