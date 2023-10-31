@@ -36,6 +36,10 @@ class ProductsController < ApplicationController
     @product = Product.new
     @brands = Brand.all.order("LOWER(name)")
     @categories = Category.all
+
+    if params[:brand_id]
+      @product.brand_id = params[:brand_id]
+    end
   end
 
   def create
