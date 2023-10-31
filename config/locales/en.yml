@@ -75,6 +75,10 @@ en:
     recently_added: Recently added to HifiGear.com
     sign_up: Sign up to <b>add new products and brands</b> or edit existing ones, add products to <b>your own collection</b> and <b>keep track of all the products</b> you have ever owned.
   name: Name
+  new_brand:
+    heading: Add new Brand
+    link: Add Brand
+    submit: Submit
   new_product:
     heading: Add new Product
     filter_brands: Search for brand

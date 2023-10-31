@@ -36,6 +36,8 @@ class BrandsController < ApplicationController
   end
 
   def new
+    add_breadcrumb t("add")
+
     @brand = Brand.new
   end
 

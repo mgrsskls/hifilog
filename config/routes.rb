@@ -40,7 +40,7 @@ Rails.application.routes.draw do
   # /brands/page/2
   # /brands/:brand
   # /brands/:brand/:category
-  resources :brands, only: [:index, :show] do
+  resources :brands, only: [:index, :show, :new, :create] do
     get ':letter', action: :index, on: :collection, as: :letter, constraints: { letter: /[a-z]/ }
     get ':letter/page/:page', action: :index, on: :collection, constraints: { letter: /[a-z]/ }
     get 'page/:page', action: :index, on: :collection

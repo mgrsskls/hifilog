@@ -29,7 +29,7 @@ class ProductsController < ApplicationController
   end
 
   def new
-    add_breadcrumb "Add"
+    add_breadcrumb t("add")
 
     @product = Product.new
     @brands = Brand.all.order("LOWER(name)")
@@ -38,6 +38,7 @@ class ProductsController < ApplicationController
 
   def create
     @product = Product.new(product_params)
+
     if @product.save
       redirect_to brand_product_url(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
     else

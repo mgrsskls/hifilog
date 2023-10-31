@@ -3,6 +3,7 @@
   <div class="Heading-amount">
     <%= t('amount_brands', count: @total_size) %>
   </div>
+  <%= link_to t('new_brand.link'), user_signed_in? ? new_brand_path : new_user_session_path(redirect: new_brand_path), class: "Button" %>
 </div>
 
 <nav class="Pagination Pagination--abc" aria-label="<%= t('filter.abc.label') %>">

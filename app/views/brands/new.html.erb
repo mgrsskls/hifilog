@@ -1,0 +1,25 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "user_form" %>
+  <%= stylesheet_link_tag "new_product" %>
+<% end %>
+
+<div class="Heading">
+  <h1><%= t('new_brand.heading') %></h1>
+</div>
+
+<% if @brand.errors.any? %>
+  <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } %>
+<% end %>
+
+<%= form_for @brand, html: { class: "UserForm NewProduct", method: :post } do |f| %>
+  <div class="UserForm-field">
+    <h2>
+      <%= f.label :name, class: "UserForm-label" %>
+    </h2>
+    <%= f.text_field :name, required: true %>
+  </div>
+
+  <div class="UserForm-submit">
+    <%= f.button t('new_brand.submit'), type: "submit", class: "Button" %>
+  </div>
+<% end %>
