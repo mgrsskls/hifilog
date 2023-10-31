@@ -1,4 +1,6 @@
 class BrandsController < ApplicationController
+  before_action :authenticate_user!, only: [:create]
+
   add_breadcrumb "Hifi Gear", :root_path
   add_breadcrumb I18n.t("headings.brands").html_safe, :brands_path
 
