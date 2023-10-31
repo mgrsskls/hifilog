@@ -8,7 +8,7 @@ class Brand < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "id", "name", "updated_at"]
+    ["created_at", "id", "name", "updated_at", "closed", "slug"]
   end
 
   def self.ransackable_associations(auth_object = nil)

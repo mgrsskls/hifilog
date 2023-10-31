@@ -5,19 +5,19 @@ ActiveAdmin.register Brand do
   #
   # Uncomment all parameters which should be permitted for assignment
   #
-  permit_params :name
+  # permit_params :name, :closed, :slug
   #
   # or
   #
   # permit_params do
-  #   permitted = [:name]
+  #   permitted = [:name, :closed, :slug]
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end
 
-  sidebar "Products", only: [:show, :edit] do
-    ul do
-      li link_to "All",    admin_brand_products_path(resource)
+  controller do
+    def find_resource
+      scoped_collection.friendly.find(params[:id])
     end
   end
 end

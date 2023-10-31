@@ -10,5 +10,11 @@
 .Heading-amount {
   color: var(--color-secondary);
   font-weight: 600;
-  font-size: 1.2rem;
+  margin-inline-start: auto;
+}
+
+@media (min-width: 32rem) {
+  .Heading-amount {
+    font-size: 1.2rem;
+  }
 }

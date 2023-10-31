@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
     before_action :configure_permitted_parameters, if: :devise_controller?
 
+    rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+
     helper_method :current_user
     helper_method :user_has_product?
     helper_method :user_has_brand?
@@ -19,7 +21,13 @@ class ApplicationController < ActionController::Base
     end
 
     def after_sign_in_path_for(user)
-        dashboard_root_path
+        if user.class == AdminUser
+            admin_root_path
+        elsif request.parameters[:redirect]
+            request.parameters[:redirect]
+        else
+            dashboard_products_path
+        end
     end
 
     def user_has_product?(product)
@@ -32,9 +40,17 @@ class ApplicationController < ActionController::Base
         user_signed_in? && current_user.products.select { |p| p.brand_id == brand.id }.any?
     end
 
+    def content_not_found
+      render file: "#{Rails.root}/public/404.html", layout: true, status: :not_found
+    end
+
     protected
 
     def configure_permitted_parameters
         devise_parameter_sanitizer.permit(:account_update, keys: [:profile_visibility])
+    end
+
+    def record_not_found
+      render "404", layout: true, status: :not_found
     end
 end
