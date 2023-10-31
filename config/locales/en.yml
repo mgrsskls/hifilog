@@ -49,6 +49,10 @@ en:
     zero: 0 Products
     one: 1 Product
     other: "%{count} Products"
+  amount_users:
+    zero: 0 Users
+    one: 1 User
+    other: "%{count} Users"
   confirm_removing_product: Do you really want to remove this product from your collection?
   dashboard: Dashboard
   delete_room:

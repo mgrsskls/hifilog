@@ -14,4 +14,12 @@ module ApplicationHelper
   def abc
     ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
   end
+
+  def formatted_date(date)
+    date.strftime("%Y-%m-%d")
+  end
+
+  def formatted_datetime(datetime)
+    datetime.strftime("%Y-%m-%dT%H:%M")
+  end
 end
