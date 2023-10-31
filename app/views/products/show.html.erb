@@ -5,11 +5,18 @@
   <div class="Product-main">
     <div class="Product-details">
       <div class="Heading">
-        <h1><span><%= @product.brand.name %></span> <%= @product.name %></h1>
-        <%= render "shared/symbols", product: @product, show_labels: true %>
+        <h1>
+          <span><%= @product.brand.name %></span> <%= @product.name %>
+        </h1>
       </div>
 
       <dl>
+        <% if @product.discontinued %>
+          <div>
+            <dt><%= t('status') %></dt>
+            <dd><%= render "shared/symbols", product: @product, show_labels: true, only: [:discontinued] %></dd>
+          </div>
+        <% end %>
         <div>
           <dt><%= t('headings.brand').html_safe %></dt>
           <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
@@ -22,36 +29,31 @@
         </div>
       </dl>
     </div>
-
-    <div class="PageActions Product-actions">
-      <div class="PageAction">
-        <%= render "shared/back_link" %>
-      </div>
-      <% if user_signed_in? %>
-        <div class="PageAction">
-          <div class="u-flex u-alignEnd u-flexWrap u-gap-md">
-            <% if user_has_product?(@product) %>
-              <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "Button Button--negative" %>
-
-              <% if current_user.setups.any? %>
-                <% current_user.setups.each do |setup| %>
-                  <% if @setups.include?(setup) %>
-                    <%= button_to t('remove_from', name: setup.name).html_safe, setup_product_path(product_id: @product.id, setup_id: setup.id), method: :delete, class: "Button Button--negative" %>
-                  <% else %>
-                    <%= button_to t('add_to', name: setup.name).html_safe, setup_products_path(product_id: @product.id, setup_id: setup.id), method: :post, class: "Button" %>
-                  <% end %>
-                <% end %>
-
-              <% end %>
-            <% else %>
-              <%= button_to t('add_product'), user_products_path(id: @product.id), class: "Button" %>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-    </div>
   </div>
   <div class="Product-sub">
+    <% if user_has_product?(@product) %>
+      <span class="Symbol Symbol--positive Symbol--large">✓ <%= t('symbols.in_your_collection') %></span>
+
+      <div class="Product-actions">
+        <% if current_user.setups.any? %>
+          <% current_user.setups.each do |setup| %>
+            <div class="Product-action Product-action--add">
+              <% if @setups.include?(setup) %>
+                <%= button_to t('remove_from', name: setup.name).html_safe, setup_product_path(product_id: @product.id, setup_id: setup.id), method: :delete, class: "TextButton TextButton--negative" %>
+              <% else %>
+                <%= button_to t('add_to', name: setup.name).html_safe, setup_products_path(product_id: @product.id, setup_id: setup.id), method: :post, class: "TextButton" %>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+        <div class="Product-action Product-action--remove">
+          <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "TextButton TextButton--negative" %>
+        </div>
+      </div>
+    <% else %>
+      <%= button_to t('add_product'), user_products_path(id: @product.id), class: "Button" %>
+    <% end %>
+    <hr>
     <dl>
       <dt>Owned by</dt>
       <dd><%= t('amount_users', count: @product.users.size) %></dd>
@@ -70,7 +72,20 @@
     </dl>
   </div>
 </div>
+<% if request.referer != request.url %>
+  <div class="ProductBackLink">
+    <%= render "shared/back_link" %>
+  </div>
+<% end %>
 
 <script>
-  document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleString())
+  document.querySelectorAll("time").forEach(time => {
+    time.textContent = new Date(time.dateTime).toLocaleString([], {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  });
 </script>

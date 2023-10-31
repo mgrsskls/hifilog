@@ -90,6 +90,7 @@ en:
       products: No products found for &ldquo;<i>%{query}</i>&rdquo;.
       brands: No brands found for &ldquo;<i>%{query}</i>&rdquo;.
   skip_to_main_content: Skip to main content
+  status: Status
   user_form:
     login: Log in
     logout: Log out

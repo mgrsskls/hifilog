@@ -1,10 +1,11 @@
 <% show_labels ||= false %>
 <% product ||= nil %>
 <% brand ||= nil %>
+<% only ||= [:discontinued, :closed, :has_brand, :has_product] %>
 
 <div class="Symbols">
 
-  <% if product && product.discontinued || brand && brand.closed %>
+  <% if only.include?(:discontinued) && product && product.discontinued || only.include?(:closed) && brand && brand.closed %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol"><%= t('symbols.discontinued') %></span>
@@ -14,7 +15,7 @@
     </div>
   <% end %>
 
-  <% if user_has_brand?(brand) %>
+  <% if only.include?(:has_brand) && user_has_brand?(brand) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
@@ -24,7 +25,7 @@
     </div>
   <% end %>
 
-  <% if user_has_product?(product) %>
+  <% if only.include?(:has_product) && user_has_product?(product) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
