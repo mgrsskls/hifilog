@@ -3,7 +3,7 @@ class Brand < ApplicationRecord
 
   has_many :products
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   friendly_id :name, use: :slugged
 
