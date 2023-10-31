@@ -28,6 +28,8 @@ class BrandsController < ApplicationController
   end
 
   def category
+    @active_menu = :brands
+
     sub_category = SubCategory.friendly.find(params[:category])
     @brand = Brand.friendly.find(params[:brand_id])
     @products = sub_category.products.where(brand_id: @brand.id).order("LOWER(name)").page(params[:page])
@@ -38,12 +40,16 @@ class BrandsController < ApplicationController
   end
 
   def new
+    @active_menu = :brands
+
     add_breadcrumb t("add")
 
     @brand = Brand.new
   end
 
   def create
+    @active_menu = :brands
+
     @brand = Brand.new(brand_params)
 
     if @brand.save

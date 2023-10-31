@@ -31,6 +31,8 @@ class ProductsController < ApplicationController
   end
 
   def new
+    @active_menu = :products
+
     add_breadcrumb t("add")
 
     @product = Product.new
@@ -43,6 +45,7 @@ class ProductsController < ApplicationController
   end
 
   def create
+    @active_menu = :products
     @product = Product.new(product_params)
 
     if @product.save
