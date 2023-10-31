@@ -25,6 +25,16 @@
   padding-block-end: 0.25em;
 }
 
+.UserForm-options {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.UserForm-options label + input {
+  margin-inline-start: 1em;
+}
+
 .UserForm-hint {
   color: var(--color-secondary);
 }
