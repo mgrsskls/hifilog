@@ -2,51 +2,75 @@
   <%= stylesheet_link_tag "product" %>
 <% end %>
 <div class="Product">
-  <div class="Product-details">
-    <div class="Heading">
-      <h1><span><%= @product.brand.name %></span> <%= @product.name %></h1>
-      <%= render "shared/symbols", product: @product, show_labels: true %>
+  <div class="Product-main">
+    <div class="Product-details">
+      <div class="Heading">
+        <h1><span><%= @product.brand.name %></span> <%= @product.name %></h1>
+        <%= render "shared/symbols", product: @product, show_labels: true %>
+      </div>
+
+      <dl>
+        <div>
+          <dt><%= t('headings.brand').html_safe %></dt>
+          <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
+        </div>
+        <div>
+          <dt><%= t('headings.category').html_safe %></dt>
+          <dd>
+            <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) }.join(", ").html_safe %>
+          </dd>
+        </div>
+      </dl>
     </div>
 
+    <div class="PageActions Product-actions">
+      <div class="PageAction">
+        <%= render "shared/back_link" %>
+      </div>
+      <% if user_signed_in? %>
+        <div class="PageAction">
+          <div class="u-flex u-alignEnd u-flexWrap u-gap-md">
+            <% if user_has_product?(@product) %>
+              <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "Button Button--negative" %>
+
+              <% if current_user.rooms.any? %>
+                <% current_user.rooms.each do |room| %>
+                  <% if @rooms.include?(room) %>
+                    <%= button_to t('remove_from', name: room.name).html_safe, room_product_path(product_id: @product.id, room_id: room.id), method: :delete, class: "Button Button--negative" %>
+                  <% else %>
+                    <%= button_to t('add_to', name: room.name).html_safe, room_products_path(product_id: @product.id, room_id: room.id), method: :post, class: "Button" %>
+                  <% end %>
+                <% end %>
+
+              <% end %>
+            <% else %>
+              <%= button_to t('add_product'), user_products_path(id: @product.id), class: "Button" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="Product-sub">
     <dl>
-      <div>
-        <dt><%= t('headings.brand').html_safe %></dt>
-        <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
-      </div>
-      <div>
-        <dt><%= t('headings.category').html_safe %></dt>
-        <dd>
-          <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) }.join(", ").html_safe %>
-        </dd>
-      </div>
+      <dt>Owned by</dt>
+      <dd><%= t('amount_users', count: @product.users.size) %></dd>
+      <dt>Added</dt>
+      <dd>
+        <time datetime="<%= formatted_datetime @product.created_at %>"><%= formatted_datetime @product.created_at %></time>
+      </dd>
+      <dt>Last edit</dt>
+      <dd>
+        <% if @product.created_at != @product.updated_at %>
+          <time datetime="<%= formatted_datetime @product.updated_at %>"><%= formatted_datetime @product.updated_at %></time>
+        <% else %>
+          &ndash;
+        <% end %>
+      </dd>
     </dl>
   </div>
-
-  <div class="PageActions Product-actions">
-    <div class="PageAction">
-      <%= render "shared/back_link" %>
-    </div>
-    <% if user_signed_in? %>
-      <div class="PageAction">
-        <div class="u-flex u-alignEnd u-flexWrap u-gap-md">
-          <% if user_has_product?(@product) %>
-            <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "Button Button--negative" %>
-
-            <% if current_user.rooms.any? %>
-              <% current_user.rooms.each do |room| %>
-                <% if @rooms.include?(room) %>
-                  <%= button_to t('remove_from', name: room.name).html_safe, room_product_path(product_id: @product.id, room_id: room.id), method: :delete, class: "Button Button--negative" %>
-                <% else %>
-                  <%= button_to t('add_to', name: room.name).html_safe, room_products_path(product_id: @product.id, room_id: room.id), method: :post, class: "Button" %>
-                <% end %>
-              <% end %>
-
-            <% end %>
-          <% else %>
-            <%= button_to t('add_product'), user_products_path(id: @product.id), class: "Button" %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-  </div>
 </div>
+
+<script>
+  document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleString())
+</script>

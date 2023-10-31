@@ -1,10 +1,24 @@
-.Product dl div {
+.Product {
   display: flex;
   flex-wrap: wrap;
+  gap: 2rem;
 }
 
-.Product dl div + div {
-  margin-block-start: 0.5rem;
+.Product-main {
+  flex: 4;
+  min-inline-size: min(32rem, 100%);
+}
+
+.Product-sub {
+  background: var(--color-bg2);
+  flex: 1;
+  min-inline-size: 12rem;
+  container: menu / inline-size;
+  padding: 1rem;
+}
+
+.Product dl {
+  margin-block: 0;
 }
 
 .Product dt {
@@ -13,11 +27,24 @@
   color: var(--color-secondary);
 }
 
-.Product dd {
+.Product-main dl div {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Product-main dl div + div {
+  margin-block-start: 0.5rem;
+}
+
+.Product-main dd {
   flex: 1;
 }
 
 .Product-actions {
   padding-block-start: 3rem;
   border-block-start: var(--border-light);
+}
+
+.Product-sub dd + dt {
+  margin-block-start: 1em;
 }
