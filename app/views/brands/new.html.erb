@@ -21,9 +21,9 @@
     <div class="UserForm-field">
       <h2><%= t('symbols.discontinued') %></h2>
       <div class="UserForm-options">
-        <%= f.radio_button :discontinued, 0, checked: true %>
+        <%= f.radio_button :discontinued, 0, checked: @brand.discontinued.nil? || @brand.discontinued == false %>
         <%= f.label :discontinued, "No", value: 0 %>
-        <%= f.radio_button :discontinued, 1 %>
+        <%= f.radio_button :discontinued, 1, checked: @brand.discontinued == true %>
         <%= f.label :discontinued, "Yes", value: 1  %>
       </div>
     </div>
