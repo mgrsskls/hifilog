@@ -1,13 +1,13 @@
 class Product < ApplicationRecord
   extend FriendlyId
 
-  belongs_to :brand, optional: true
+  belongs_to :brand
   has_and_belongs_to_many :sub_categories
   has_and_belongs_to_many :users
   has_and_belongs_to_many :setups
 
   validates :name, presence: true
-  validates :brand_id, presence: true
+  validates_uniqueness_of :name, scope: :brand
   validates :sub_categories, presence: true
 
   friendly_id :name, use: :scoped, scope: :brand

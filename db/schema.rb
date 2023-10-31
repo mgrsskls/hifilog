@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_31_181310) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_31_191344) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -73,7 +73,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_31_181310) do
     t.boolean "discontinued"
     t.string "slug"
     t.index ["brand_id"], name: "index_products_on_brand_id"
-    t.index ["slug"], name: "index_products_on_slug", unique: true
+    t.index ["slug"], name: "index_products_on_slug"
   end
 
   create_table "products_setups", id: false, force: :cascade do |t|
