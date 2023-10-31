@@ -4,7 +4,7 @@ class Product < ApplicationRecord
   belongs_to :brand, optional: true
   has_and_belongs_to_many :sub_categories
   has_and_belongs_to_many :users
-  has_and_belongs_to_many :rooms
+  has_and_belongs_to_many :setups
 
   validates :name, presence: true
   validates :brand_id, presence: true
@@ -24,6 +24,6 @@ class Product < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["brand", "rooms", "sub_categories", "users"]
+    ["brand", "setups", "sub_categories", "users"]
   end
 end

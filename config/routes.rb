@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   scope '/dashboard', as: :dashboard do
     get '/products', to: 'dashboard#products'
     get '/products/:category', to: 'dashboard#products', as: :products_category
-    resources :rooms
+    resources :setups
   end
 
   devise_for :admin_users, ActiveAdmin::Devise.config
@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   resources :users, only: [:show]
 
   resources :user_products, only: [:create, :destroy]
-  resources :room_products, only: [:create, :destroy]
+  resources :setup_products, only: [:create, :destroy]
 
   # /categories
   # /categories/:category

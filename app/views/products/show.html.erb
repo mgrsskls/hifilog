@@ -33,12 +33,12 @@
             <% if user_has_product?(@product) %>
               <%= button_to t('remove_from_collection'), user_product_path(id: @product.id), method: :delete, class: "Button Button--negative" %>
 
-              <% if current_user.rooms.any? %>
-                <% current_user.rooms.each do |room| %>
-                  <% if @rooms.include?(room) %>
-                    <%= button_to t('remove_from', name: room.name).html_safe, room_product_path(product_id: @product.id, room_id: room.id), method: :delete, class: "Button Button--negative" %>
+              <% if current_user.setups.any? %>
+                <% current_user.setups.each do |setup| %>
+                  <% if @setups.include?(setup) %>
+                    <%= button_to t('remove_from', name: setup.name).html_safe, setup_product_path(product_id: @product.id, setup_id: setup.id), method: :delete, class: "Button Button--negative" %>
                   <% else %>
-                    <%= button_to t('add_to', name: room.name).html_safe, room_products_path(product_id: @product.id, room_id: room.id), method: :post, class: "Button" %>
+                    <%= button_to t('add_to', name: setup.name).html_safe, setup_products_path(product_id: @product.id, setup_id: setup.id), method: :post, class: "Button" %>
                   <% end %>
                 <% end %>
 

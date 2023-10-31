@@ -1,24 +1,24 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
-    <h1><%= @room.name %></h1>
+    <h1><%= @setup.name %></h1>
     <div class="Heading-amount">
-      <%= t('amount_products', count: @room.products.size) %>
+      <%= t('amount_products', count: @setup.products.size) %>
     </div>
   </div>
 
-  <%= render "shared/products", products: @room.products, empty_state: t('empty_state.room_products') %>
+  <%= render "shared/products", products: @setup.products, empty_state: t('empty_state.setup_products') %>
 
   <div class="PageActions">
     <div class="PageAction">
       <%= render "shared/back_link" %>
     </div>
     <div class="PageAction">
-      <%= button_to t('delete_room.label'), dashboard_room_path(id: @room.id), method: :delete, class: "DeleteButton Button Button--negative" %>
+      <%= button_to t('delete_setup.label'), dashboard_setup_path(id: @setup.id), method: :delete, class: "DeleteButton Button Button--negative" %>
 
       <script>
         Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {
           button.closest("form").addEventListener("submit", (event) => {
-            if (!window.confirm("<%= t('delete_room.confirm') %>")) {
+            if (!window.confirm("<%= t('delete_setup.confirm') %>")) {
               event.preventDefault();
             }
           });

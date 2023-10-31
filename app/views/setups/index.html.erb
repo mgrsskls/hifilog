@@ -1,0 +1,38 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "setups" %>
+<% end %>
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.setups') %></h1>
+  </div>
+
+  <% if @setups.any? %>
+    <table>
+      <thead>
+        <th><%= t("headings.name") %></th>
+        <th class="u-alignCenter"><%= t("headings.products") %></th>
+      </thead>
+      <tbody>
+        <% @setups.each do |setup| %>
+          <tr>
+            <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
+            <td class="u-alignCenter"><%= setup.products.any? ? setup.products.size : "-" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.setups') %>
+  <% end %>
+
+  <div class="Setups-add">
+    <h2>Add a setup</h2>
+    <%= form_for(:setup) do |f| %>
+      <div class="Setups-form">
+        <%= f.label :name, class: 'UserForm-label' %>
+        <%= f.text_field :name, placeholder: "e.g. Living setup or Office" %>
+        <button type="submit" class="Button"><%= t('add') %></button>
+      </div>
+    <% end %>
+  </div>
+<% end %>
