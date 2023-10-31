@@ -3,26 +3,28 @@
   <%= stylesheet_link_tag "new_product" %>
 <% end %>
 
-<div class="Heading">
-  <h1><%= t('new_brand.heading') %></h1>
+<div class="UserForm UserForm--centered">
+  <div class="Heading">
+    <h1><%= t('new_brand.heading') %></h1>
+  </div>
+
+  <% if @brand.errors.any? %>
+    <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } %>
+  <% end %>
+
+  <%= form_for @brand, html: { class: "UserForm NewProduct", method: :post } do |f| %>
+    <div class="UserForm-field">
+      <%= f.label :name, class: "UserForm-label" %>
+      <%= f.text_field :name, required: true %>
+    </div>
+
+    <div class="UserForm-field">
+      <%= f.check_box :discontinued %>
+      <%= f.label :discontinued, class: "UserForm-label" %>
+    </div>
+
+    <div class="UserForm-submit">
+      <%= f.button t('new_brand.submit'), type: "submit", class: "Button" %>
+    </div>
+  <% end %>
 </div>
-
-<% if @brand.errors.any? %>
-  <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } %>
-<% end %>
-
-<%= form_for @brand, html: { class: "UserForm NewProduct", method: :post } do |f| %>
-  <div class="UserForm-field">
-    <%= f.label :name, class: "UserForm-label" %>
-    <%= f.text_field :name, required: true %>
-  </div>
-
-  <div class="UserForm-field">
-    <%= f.check_box :discontinued %>
-    <%= f.label :discontinued, class: "UserForm-label" %>
-  </div>
-
-  <div class="UserForm-submit">
-    <%= f.button t('new_brand.submit'), type: "submit", class: "Button" %>
-  </div>
-<% end %>

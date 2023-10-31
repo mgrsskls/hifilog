@@ -3,84 +3,86 @@
   <%= stylesheet_link_tag "new_product" %>
 <% end %>
 
-<div class="Heading">
-  <h1><%= t('new_product.heading') %></h1>
-</div>
-
-<% if @product.errors.any? %>
-  <%= render "shared/flash_messages", messages: @product.errors.map { |error| ["alert", error.full_message] } %>
-<% end %>
-
-<%= form_for @product, html: { class: "UserForm NewProduct", method: :post } do |f| %>
-  <div class="UserForm-field">
-    <h2>
-      <%= f.label :name, class: "UserForm-label" %>
-    </h2>
-    <%= f.text_field :name, required: true %>
+<div class="UserForm UserForm--centered">
+  <div class="Heading">
+    <h1><%= t('new_product.heading') %></h1>
   </div>
 
-  <div class="UserForm-field">
-    <h2><%= t('headings.brand') %></h2>
+  <% if @product.errors.any? %>
+    <%= render "shared/flash_messages", messages: @product.errors.map { |error| ["alert", error.full_message] } %>
+  <% end %>
+
+  <%= form_for @product, html: { class: "NewProduct", method: :post } do |f| %>
     <div class="UserForm-field">
-      <label for="brand-filter" class="UserForm-label"><%= t('new_product.filter_brands') %></label>
-      <input type="text" name="brand" id="brand-filter" autocomplete="off" value="<%= @product.brand_id ? Brand.find(@product.brand_id).name : "" %>">
+      <h2>
+        <%= f.label :name %>
+      </h2>
+      <%= f.text_field :name, required: true %>
     </div>
-    <div class="UserForm-field Options Options--brands">
-      <% @brands.each do |brand| %>
-        <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
-          <%= f.radio_button :brand_id, brand.id, checked: @product.brand_id == brand.id %>
-          <%= f.label :brand_id, brand.name, { value: brand.id } %>
-        </div>
-      <% end %>
-    </div>
-    <script>
-      {
-        const input = document.querySelector('[name="brand"]');
-        const brands = document.querySelectorAll("[data-brand]");
 
-        function render(input, brands) {
-          const value = input.value.trim().toLowerCase();
+    <div class="UserForm-field">
+      <h2><%= t('headings.brand') %></h2>
+      <div class="UserForm-field">
+        <label for="brand-filter" class="UserForm-label"><%= t('new_product.filter_brands') %></label>
+        <input type="text" name="brand" id="brand-filter" autocomplete="off" value="<%= @product.brand_id ? Brand.find(@product.brand_id).name : "" %>">
+      </div>
+      <div class="UserForm-field Options Options--brands">
+        <% @brands.each do |brand| %>
+          <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
+            <%= f.radio_button :brand_id, brand.id, checked: @product.brand_id == brand.id %>
+            <%= f.label :brand_id, brand.name, { value: brand.id } %>
+          </div>
+        <% end %>
+      </div>
+      <script>
+        {
+          const input = document.querySelector('[name="brand"]');
+          const brands = document.querySelectorAll("[data-brand]");
 
-          if (value.length > 0) {
-            brands.forEach(brand => {
-              if (brand.dataset.brand.startsWith(value)) {
-                brand.hidden = false;
-              } else {
-                brand.hidden = true;
-              }
+          function render(input, brands) {
+            const value = input.value.trim().toLowerCase();
+
+            if (value.length > 0) {
+              brands.forEach(brand => {
+                if (brand.dataset.brand.startsWith(value)) {
+                  brand.hidden = false;
+                } else {
+                  brand.hidden = true;
+                }
+              });
+            }
+          }
+
+          if (input) {
+            input.addEventListener("input", ({ target }) => {
+              render(target, brands);
             });
+
+            render(input, brands);
           }
         }
+      </script>
+    </div>
 
-        if (input) {
-          input.addEventListener("input", ({ target }) => {
-            render(target, brands);
-          });
+    <div class="UserForm-field">
+      <h2><%= t('headings.categories') %></h2>
+      <% @categories.each do |category| %>
+        <details>
+          <summary><%= category.name %></summary>
+            <div class="Options">
+            <% category.sub_categories.each do |sub_category| %>
+              <div class="Options-item">
+                <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, false, name: "product[sub_category_ids][]" %>
+                <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
+              </div>
+            <% end %>
+          </div>
+        </details>
+      <% end %>
+    </div>
 
-          render(input, brands);
-        }
-      }
-    </script>
-  </div>
-
-  <div class="UserForm-field">
-    <h2><%= t('headings.categories') %></h2>
-    <% @categories.each do |category| %>
-      <details>
-        <summary><%= category.name %></summary>
-          <div class="Options">
-          <% category.sub_categories.each do |sub_category| %>
-            <div class="Options-item">
-              <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, false, name: "product[sub_category_ids][]" %>
-              <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
-            </div>
-          <% end %>
-        </div>
-      </details>
-    <% end %>
-  </div>
-
-  <div class="UserForm-submit">
-    <%= f.button t('new_product.submit'), type: "submit", class: "Button" %>
-  </div>
-<% end %>
+    <div class="UserForm-submit">
+      <%= f.button t('new_product.submit'), type: "submit", class: "Button" %>
+    </div>
+  <% end %>
+</div>

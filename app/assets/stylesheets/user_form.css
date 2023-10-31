@@ -1,4 +1,4 @@
-.UserForm--loggedOut {
+.UserForm--centered {
   inline-size: 100%;
   max-inline-size: 28rem;
   margin-inline: auto;
@@ -22,6 +22,7 @@
 
 .UserForm-label {
   display: inline-block;
+  padding-block-end: 0.25em;
 }
 
 .UserForm-hint {
