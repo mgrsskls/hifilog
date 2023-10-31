@@ -3,7 +3,7 @@
     <h1><%= t('headings.products') %></h1>
   </div>
 
-  <% if current_user.rooms.any? %>
+  <% if current_user.setups.any? %>
     <% content_for :js do %>
       <%= javascript_include_tag "accordion_tabs" %>
     <% end %>
@@ -15,16 +15,16 @@
         <summary><%= t('filter.all') %></summary>
         <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, categories_path: categories_path, products_path: products_path) %>
       </details>
-      <% current_user.rooms.each do |room| %>
+      <% current_user.setups.each do |setup| %>
         <details>
-          <summary><%= room.name %></summary>
-          <%= render "shared/products", products: room.products.sort_by{|c| c[:name].downcase}, empty_state: t('empty_state.room_products') %>
+          <summary><%= setup.name %></summary>
+          <%= render "shared/products", products: setup.products.sort_by{|c| c[:name].downcase}, empty_state: t('empty_state.setup_products') %>
         </details>
       <% end %>
-      <% if @products_without_room.any? %>
+      <% if @products_without_setup.any? %>
         <details>
           <summary>Other</summary>
-          <%= render "shared/products", products: @products_without_room %>
+          <%= render "shared/products", products: @products_without_setup %>
         </details>
       <% end %>
     </accordion-tabs>

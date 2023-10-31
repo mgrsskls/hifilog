@@ -8,7 +8,7 @@
 AdminUser.create!(email: 'admin@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
 # file deepcode ignore HardcodedPassword: <please specify a reason of ignoring this>
 user = User.create!(email: 'user@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
-user_without_room = User.create!(email: 'user2@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
+user_without_setup = User.create!(email: 'user2@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
 
 Category.create!(name: 'Amplifiers', id: 1)
 Category.create!(name: 'Headphones', id: 4)
@@ -1052,17 +1052,17 @@ products.each do |product|
   user.products << product
 end
 
-living_room = Room.create!(name: 'Living Room')
-office = Room.create!(name: 'Office')
+living_room = Setup.create!(name: 'Living Room')
+office = Setup.create!(name: 'Office')
 
-user.rooms << living_room
-user.rooms << office
+user.setups << living_room
+user.setups << office
 user.save
 
 products.each do |product|
-  user_without_room.products << product
+  user_without_setup.products << product
 end
-user_without_room.save
+user_without_setup.save
 
 living_room.products << products[1]
 living_room.products << products[3]

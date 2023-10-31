@@ -14,7 +14,7 @@ Rails.application.config.assets.precompile += %w(
   dashboard.css
   new_product.css
   product.css
-  rooms.css
+  setups.css
   search_results.css
   user_form.css
 )

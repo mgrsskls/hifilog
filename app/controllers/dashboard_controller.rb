@@ -24,7 +24,7 @@ class DashboardController < ApplicationController
 
     @all_categories = all_products.flat_map{ |product| product.sub_categories }.uniq.sort_by{|c| c[:name].downcase}
 
-    products_with_room = current_user.rooms.flat_map { |room| room.products }
-    @products_without_room = (all_products - products_with_room)
+    products_with_setup = current_user.setups.flat_map { |setup| setup.products }
+    @products_without_setup = (all_products - products_with_setup)
   end
 end

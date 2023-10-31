@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   has_and_belongs_to_many :products
-  has_many :rooms
+  has_many :setups
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -22,6 +22,6 @@ class User < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["products", "rooms"]
+    ["products", "setups"]
   end
 end

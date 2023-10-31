@@ -22,7 +22,7 @@ class ProductsController < ApplicationController
     @brand = Brand.friendly.find(params[:brand_id])
     @product = @brand.products.friendly.find(params[:id])
     @user_has_product = user_signed_in? ? current_user.products.include?(@product) : false;
-    @rooms = user_signed_in? ? current_user.rooms.select { |room| room.products.include?(@product) } : []
+    @setups = user_signed_in? ? current_user.setups.select { |setup| setup.products.include?(@product) } : []
 
     add_breadcrumb @product.brand.name, brand_path(@product.brand)
     add_breadcrumb @product.name

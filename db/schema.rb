@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_29_160141) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_31_125807) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -76,8 +76,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_29_160141) do
     t.index ["slug"], name: "index_products_on_slug", unique: true
   end
 
-  create_table "products_rooms", id: false, force: :cascade do |t|
-    t.integer "room_id", null: false
+  create_table "products_setups", id: false, force: :cascade do |t|
+    t.integer "setup_id", null: false
     t.integer "product_id", null: false
   end
 
@@ -91,7 +91,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_29_160141) do
     t.integer "user_id", null: false
   end
 
-  create_table "rooms", force: :cascade do |t|
+  create_table "setups", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

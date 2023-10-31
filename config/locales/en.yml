@@ -55,9 +55,9 @@ en:
     other: "%{count} Users"
   confirm_removing_product: Do you really want to remove this product from your collection?
   dashboard: Dashboard
-  delete_room:
-    label: Delete this room
-    confirm: Are you sure you want to delete this room?
+  delete_setup:
+    label: Delete this setup
+    confirm: Are you sure you want to delete this setup?
   filter:
     all: All
     abc:
@@ -83,7 +83,6 @@ en:
   overview: Overview
   remove_from: Remove from &ldquo;%{name}&rdquo;
   remove_from_collection: Remove from my collection
-  rooms: Rooms
   search: Search
   search_results:
     heading: Search results for <span>&ldquo;%{query}&rdquo;</span>
@@ -105,7 +104,7 @@ en:
     brands: Brands
     product: Product
     products: Products
-    rooms: Rooms
+    setups: Setups
     sub_category: Sub&shy;category
     sub_categories: Sub&shy;categories
   empty_state:
@@ -113,6 +112,6 @@ en:
     brands: <p><b>There are no brands yet.</b></p>
     products: <p><b>There are no products yet.</b></p>
     sub_categories: <p><b>There are no subcategories yet.</b></p>
-    rooms: "<p><b>You haven't created any rooms yet.</b></p><p>You can create rooms below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple rooms on its product page.</p>"
-    room_products: "<p><b>You have not added any products to this room yet.</b></p><p>After adding a product to your collection, you can assign it to a room on its product page.</p>"
+    setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
+    setup_products: "<p><b>You have not added any products to this setup yet.</b></p><p>After adding a product to your collection, you can assign it to a setup on its product page.</p>"
     user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
