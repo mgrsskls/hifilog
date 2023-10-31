@@ -1,11 +1,11 @@
 <% show_labels ||= false %>
 <% product ||= nil %>
 <% brand ||= nil %>
-<% only ||= [:discontinued, :closed, :has_brand, :has_product] %>
+<% only ||= [:discontinued, :has_brand, :has_product] %>
 
 <div class="Symbols">
 
-  <% if only.include?(:discontinued) && product && product.discontinued || only.include?(:closed) && brand && brand.closed %>
+  <% if only.include?(:discontinued) && (product && product.discontinued || brand && brand.discontinued) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol"><%= t('symbols.discontinued') %></span>

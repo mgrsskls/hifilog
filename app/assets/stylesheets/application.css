@@ -135,7 +135,8 @@
     padding-block: clamp(2rem, 4vw, 3rem) 4rem;
   }
 
-  h1 {
+  h1,
+  .h1 {
     font-size: 3rem;
     line-height: 1.1;
     margin-block: 0;
@@ -145,7 +146,8 @@
     font-weight: lighter;
   }
 
-  h2 {
+  h2,
+  .h2 {
     font-size: 1.8rem;
     line-height: 1.2;
     font-weight: 500;
@@ -153,7 +155,8 @@
     margin-block-start: 1.25em;
   }
 
-  h3 {
+  h3,
+  .h3 {
     font-size: 1.4rem;
   }
 
@@ -211,7 +214,8 @@
   }
 
   @media (max-width: 32em) {
-    h1 {
+    h1,
+    .h1 {
       font-size: 2.4rem;
     }
   }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_31_125807) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_31_181310) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -41,7 +41,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_31_125807) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "closed"
+    t.boolean "discontinued"
     t.string "slug"
     t.index ["slug"], name: "index_brands_on_slug", unique: true
   end

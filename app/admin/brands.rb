@@ -5,12 +5,12 @@ ActiveAdmin.register Brand do
   #
   # Uncomment all parameters which should be permitted for assignment
   #
-  # permit_params :name, :closed, :slug
+  # permit_params :name, :discontinued, :slug
   #
   # or
   #
   # permit_params do
-  #   permitted = [:name, :closed, :slug]
+  #   permitted = [:name, :discontinued, :slug]
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end

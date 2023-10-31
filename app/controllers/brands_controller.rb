@@ -56,6 +56,6 @@ class BrandsController < ApplicationController
   private
 
   def brand_params
-    params.require(:brand).permit(:name)
+    params.require(:brand).permit(:name, :discontinued)
   end
 end
