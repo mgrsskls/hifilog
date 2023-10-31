@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_22_180329) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_29_160141) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -95,11 +95,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_22_180329) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "rooms_users", id: false, force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "room_id", null: false
+    t.integer "user_id"
   end
 
   create_table "sub_categories", force: :cascade do |t|
@@ -110,12 +106,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_22_180329) do
     t.string "slug"
     t.index ["category_id"], name: "index_sub_categories_on_category_id"
     t.index ["slug"], name: "index_sub_categories_on_slug", unique: true
-  end
-
-  create_table "tags", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

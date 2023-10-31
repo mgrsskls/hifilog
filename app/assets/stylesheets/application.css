@@ -38,11 +38,13 @@
     --color-secondary: hsl(var(--hue), 30%, var(--secondary-l));
     --color-bg: hsl(var(--bg-h-s), var(--bg-l));
     --color-bg2: hsl(var(--bg-h-s), calc(var(--bg-l) - 2.5%));
+    --color-bg-selection: hsl(204, 18.5%, 75%);
     --color-header-bg: hsl(var(--hue-sat), 10%);
     --color-header-copy: hsl(var(--hue-sat), 80%);
     --color-button-bg: hsl(var(--hue-sat), 40%);
     --color-button-box-shadow: hsla(0, 0%, 0%, var(--button-box-shadow-a));
-    --color-input-bg: var(--color-bg2);
+    --color-input: hsl(208, 30%, 20%);
+    --color-input-bg: #fff;
     --color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
     --color-border-h-s: 0, 0%;
     --color-border-light: hsla(var(--color-border-h-s), var(--border-l), 15%);
@@ -64,6 +66,7 @@
 
     --color-button-copy: #fff;
     --color-highlight: var(--color-accent);
+    --color-highlight-copy: #fff;
     --color-invalid-light: hsl(330, 50%, 85%);
     --color-invalid-dark: hsl(330, 100%, 20%);
     --color-invalid-bg: var(--color-invalid-light);
@@ -73,7 +76,6 @@
     --color-success-bg: var(--color-success-light);
     --color-success-copy: var(--color-success-dark);
     --color-positive: hsl(160, 50%, 95%);
-    --color-search-button-outline: var(--color-header-copy);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -81,19 +83,19 @@
       --bg-h-s: 208, 40%;
       --bg-l: 15%;
       --button-box-shadow-a: 50%;
-      --input-box-shadow-a: 50%;
+      --input-box-shadow-a: 30%;
       --secondary-l: 60%;
       --copy-l: 80%;
       --accent-l: 75%;
       --border-l: 100%;
 
-      --color-highlight: #fff;
+      --color-highlight: var(--color-accent);
+      --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
       --color-invalid-bg: var(--color-invalid-dark);
       --color-invalid-copy: var(--color-invalid-light);
       --color-success-bg: var(--color-success-dark);
       --color-success-copy: var(--color-success-light);
       --color-positive: hsl(190, 40%, 15%);
-      --color-search-button-outline: var(--color-border-medium);
     }
   }
 
@@ -125,6 +127,8 @@
 
   header {
     background: var(--color-header-bg);
+    position: relative;
+    z-index: 1;
   }
 
   main {
@@ -146,6 +150,7 @@
     line-height: 1.2;
     font-weight: 500;
     color: var(--color-secondary);
+    margin-block-start: 1.25em;
   }
 
   h3 {
@@ -167,6 +172,7 @@
   select,
   input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
     font: inherit;
+    color: var(--color-input);
     padding: var(--input-padding);
     border: var(--border-medium);
     border-radius: var(--border-radius);
@@ -194,6 +200,10 @@
 
   svg {
     display: block;
+  }
+
+  summary {
+    cursor: default;
   }
 
   .is-positive {

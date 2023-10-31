@@ -6,11 +6,17 @@ class Category < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "id", "name", "updated_at"]
+    [
+      "created_at",
+      "id",
+      "name",
+      "slug",
+      "updated_at",
+    ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["products", "sub_categories"]
+    ["sub_categories"]
   end
 
   def products

@@ -37,9 +37,6 @@ SubCategory.create!(name: 'Tonearms', category_id: 7, id: 18)
 SubCategory.create!(name: 'Streamers', category_id: 8, id: 19)
 SubCategory.create!(name: 'Receivers', category_id: 1, id: 20)
 
-Tag.create!(name: 'Solid State')
-Tag.create!(name: 'Tube')
-
 Brand.create!(name: 'Audeze', id: 1)
 Brand.create!(name: 'Bluesound', id: 2)
 Brand.create!(name: 'Canton', id: 3)

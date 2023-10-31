@@ -29,7 +29,7 @@
 
 .Search-button {
   background: var(--color-button-bg);
-  color: var(--color-search-button-outline);
+  color: #fff;
   border-radius: calc(var(--border-radius));
   border-inline-start: none;
   padding-inline: var(--padding);
@@ -42,7 +42,7 @@
 
   .Header-toggle {
     background: var(--color-button-bg);
-    color: var(--color-search-button-outline);
+    color: #fff;
     border-radius: calc(var(--border-radius));
     padding: 0.375em;
   }

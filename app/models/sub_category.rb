@@ -7,11 +7,18 @@ class SubCategory < ApplicationRecord
   friendly_id :name, use: :scoped, scope: :category
 
   def self.ransackable_attributes(auth_object = nil)
-    ["category_id", "created_at", "id", "name", "updated_at"]
+    [
+      "category_id",
+      "created_at",
+      "id",
+      "name",
+      "slug",
+      "updated_at",
+    ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["category", "product"]
+    ["category", "products"]
   end
 
   def friendly_category_id

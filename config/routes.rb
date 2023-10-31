@@ -5,7 +5,6 @@ Rails.application.routes.draw do
     resources :rooms
   end
 
-
   devise_for :admin_users, ActiveAdmin::Devise.config
 
   ActiveAdmin.routes(self)
@@ -52,7 +51,7 @@ Rails.application.routes.draw do
   # /products/a
   # /products/a/page/2
   # /products/page/2
-  resources :products, only: [:index] do
+  resources :products, only: [:index, :new, :create] do
     get ':letter', action: :index, on: :collection, as: :letter, constraints: { letter: /[a-z]/ }
     get ':letter/page/:page', action: :index, on: :collection, constraints: { letter: /[a-z]/ }
     get 'page/:page', action: :index, on: :collection

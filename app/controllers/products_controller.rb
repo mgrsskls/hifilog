@@ -29,15 +29,20 @@ class ProductsController < ApplicationController
   end
 
   def new
+    add_breadcrumb "Add"
+
     @product = Product.new
+    @brands = Brand.all.order("LOWER(name)")
+    @categories = Category.all
   end
 
   def create
     @product = Product.new(product_params)
-
     if @product.save
-      redirect_to @product
+      redirect_to brand_product_url(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
     else
+      @brands = Brand.all.order("LOWER(name)")
+      @categories = Category.all
       render :new, status: :unprocessable_entity
     end
   end
@@ -45,6 +50,6 @@ class ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :brand_id)
+    params.require(:product).permit(:name, :brand_id, sub_category_ids: [])
   end
 end

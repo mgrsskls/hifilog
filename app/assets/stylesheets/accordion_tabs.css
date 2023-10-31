@@ -3,11 +3,11 @@ accordion-tabs {
 }
 
 accordion-tabs details {
-  border-block-end: var(--border-dark);
+  border-block-end: var(--border-medium);
 }
 
 accordion-tabs details:first-child {
-  border-block-start: var(--border-dark);
+  border-block-start: var(--border-medium);
 }
 
 accordion-tabs summary {

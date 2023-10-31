@@ -8,14 +8,22 @@ class Product < ApplicationRecord
 
   validates :name, presence: true
   validates :brand_id, presence: true
+  validates :sub_categories, presence: true
 
   friendly_id :name, use: :scoped, scope: :brand
 
   def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "id", "name", "brand_id", "updated_at"]
+    [
+      "created_at",
+      "discontinued",
+      "id",
+      "name",
+      "slug",
+      "updated_at",
+    ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["category", "brand", "sub_category"]
+    ["brand", "rooms", "sub_categories", "users"]
   end
 end

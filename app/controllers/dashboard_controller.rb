@@ -14,9 +14,6 @@ class DashboardController < ApplicationController
     @active_menu = :dashboard
     @active_dashboard_menu = :products
 
-
-
-
     all_products = current_user.products.all.order("LOWER(name)")
     if params[:category]
       @sub_category = SubCategory.friendly.find(params[:category])

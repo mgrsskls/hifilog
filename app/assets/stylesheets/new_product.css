@@ -1,0 +1,90 @@
+.Options {
+  color: var(--color-input);
+  background: var(--color-input-bg);
+  padding: 0.5em;
+  border: var(--border-medium);
+  border-radius: var(--border-radius);
+}
+
+.Options-item {
+  position: relative;
+}
+
+.Options-item + .Options-item {
+  margin-block-start: 0.0625rem;
+}
+
+.Options-item input {
+  position: absolute;
+  inset-inline-start: 0.5em;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+
+.Options-item label {
+  display: block;
+  cursor: pointer;
+  padding: 0.25em 0.5em 0.25em 1.75em;
+}
+
+.Options-item input:checked + label {
+  background: var(--color-bg-selection);
+}
+
+.Options--brands {
+  max-height: 12.2em;
+  overflow-y: scroll;
+}
+
+.Options--brands:not(:has([data-brand]:not([hidden]))) {
+  display: none;
+}
+
+.NewProduct details {
+  border-block-end: var(--border-medium);
+}
+
+.NewProduct details[open] {
+  padding-block-end: 1rem;
+}
+
+.NewProduct details:first-child {
+  border-block-start: var(--border-medium);
+}
+
+.NewProduct summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 0.75em;
+  list-style: none;
+  font-weight: 600;
+}
+
+.NewProduct details:not(:is(details + details)) summary {
+  padding-block-start: 0;
+}
+
+.NewProduct summary::-webkit-details-marker {
+  display: none;
+}
+
+.NewProduct summary::after {
+  display: block;
+  content: "";
+  inline-size: 1em;
+  block-size: 0.5625em;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  .NewProduct summary::after {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+  }
+
+  .Options {
+    accent-color: hsl(var(--hue-accent), 34%, 25%);
+    color-scheme: light;
+  }
+}

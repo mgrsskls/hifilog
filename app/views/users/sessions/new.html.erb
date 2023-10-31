@@ -7,6 +7,9 @@
   </div>
 
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+    <% if params[:redirect] %>
+      <input type="hidden" name="redirect" value="<%= params[:redirect] %>">
+    <% end %>
     <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
     <div class="UserForm-field">

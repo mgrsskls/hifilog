@@ -12,6 +12,7 @@ Rails.application.config.assets.version = "1.0"
 Rails.application.config.assets.precompile += %w(
   accordion_tabs.css
   dashboard.css
+  new_product.css
   product.css
   rooms.css
   search_results.css
