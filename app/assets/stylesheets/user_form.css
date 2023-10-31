@@ -21,7 +21,7 @@
 }
 
 .UserForm-label {
-  display: block;
+  display: inline-block;
 }
 
 .UserForm-hint {
