@@ -1,7 +1,7 @@
 <% show_labels ||= false %>
 <% product ||= nil %>
 <% brand ||= nil %>
-<% only ||= [:discontinued, :has_brand, :has_product] %>
+<% only ||= [:discontinued, :has_brand, :has_product, :has_bookmark] %>
 
 <div class="Symbols">
 
@@ -31,6 +31,16 @@
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
       <% else %>
         <span class="Symbol Symbol--positive Symbol--iconOnly" title="<%= t('symbols.in_your_collection') %>" aria-label="<%= t('symbols.in_your_collection') %>">✓</span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if only.include?(:has_bookmark) && user_has_bookmark?(product) %>
+    <div class="Symbols-item">
+      <% if show_labels %>
+        <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_bookmarks') %></span>
+      <% else %>
+        <span class="Symbol Symbol--positive Symbol--iconOnly" title="<%= t('symbols.in_your_bookmarks') %>" aria-label="<%= t('symbols.in_your_bookmarks') %>">B</span>
       <% end %>
     </div>
   <% end %>

@@ -32,11 +32,13 @@
 en:
   symbols:
     discontinued: Discontinued
-    in_your_collection: In your collection
+    in_your_collection: In my collection
+    in_your_bookmarks: In my bookmarks
   account: Account
   add: Add
   add_to: Add to &ldquo;%{name}&rdquo;
-  add_product: Add to my collection
+  add_to_bookmarks: Add to bookmarks
+  add_to_collection: Add to collection
   amount_categories:
     zero: 0 Categories
     one: 1 Category
@@ -86,7 +88,8 @@ en:
     submit: Submit
   overview: Overview
   remove_from: Remove from &ldquo;%{name}&rdquo;
-  remove_from_collection: Remove from my collection
+  remove_from_collection: Remove from collection
+  remove_from_bookmarks: Remove from bookmarks
   search: Search
   search_results:
     heading: Search results for <span>&ldquo;%{query}&rdquo;</span>
@@ -103,6 +106,7 @@ en:
       heading: Forgot your password?
       submit: Send me reset instructions
   headings:
+    bookmarks: Bookmarks
     category: Category
     categories: Categories
     brand: Brand
@@ -120,3 +124,4 @@ en:
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
     setup_products: "<p><b>You have not added any products to this setup yet.</b></p><p>After adding a product to your collection, you can assign it to a setup on its product page.</p>"
     user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
+    bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"

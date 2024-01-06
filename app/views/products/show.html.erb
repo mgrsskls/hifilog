@@ -51,8 +51,26 @@
         </div>
       </div>
     <% else %>
-      <%= button_to t('add_product'), user_products_path(id: @product.id), class: "Button" %>
+      <% if @bookmark %>
+        <%= button_to t('add_to_collection'), user_products_path(id: @product.id, bookmark_id: @bookmark.id), class: "Button" %>
+
+        <div class="Product-bookmark">
+          <span class="Symbol Symbol--positive Symbol--large">✓ <%= t('symbols.in_your_bookmarks') %></span>
+
+          <div class="Product-actions">
+            <div class="Product-action Product-action--remove">
+              <%= button_to t('remove_from_bookmarks'), bookmark_path(id: @bookmark.id), method: :delete, class: "TextButton TextButton--negative" %>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <%= button_to t('add_to_collection'), user_products_path(id: @product.id), class: "Button" %>
+        <div class="Product-bookmark">
+          <%= button_to t('add_to_bookmarks'), bookmarks_path(id: @product.id), class: "Button" %>
+        </div>
+      <% end %>
     <% end %>
+
     <hr>
     <dl>
       <dt>Owned by</dt>
