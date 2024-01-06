@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
     helper_method :current_user
     helper_method :user_has_product?
     helper_method :user_has_brand?
+    helper_method :user_has_bookmark?
 
     def index
         @products = Product.all
@@ -33,6 +34,11 @@ class ApplicationController < ActionController::Base
     def user_has_product?(product)
         return if !product
         user_signed_in? && current_user.products.include?(product)
+    end
+
+    def user_has_bookmark?(product)
+        return if !product
+        user_signed_in? && Bookmark.where(product_id: product.id, user_id: current_user.id).any?
     end
 
     def user_has_brand?(brand)

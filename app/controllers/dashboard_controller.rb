@@ -27,4 +27,14 @@ class DashboardController < ApplicationController
     products_with_setup = current_user.setups.flat_map { |setup| setup.products }
     @products_without_setup = (all_products - products_with_setup)
   end
+
+  def bookmarks
+    add_breadcrumb I18n.t("headings.bookmarks"), :dashboard_bookmarks_path
+
+    @active_menu = :dashboard
+    @active_dashboard_menu = :bookmarks
+
+    bookmarks = Bookmark.where(user_id: current_user.id)
+    @products = bookmarks.map { |bookmark| Product.find(bookmark.product_id) }
+  end
 end

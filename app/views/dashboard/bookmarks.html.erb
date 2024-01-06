@@ -1,0 +1,7 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.bookmarks') %></h1>
+  </div>
+
+  <%= render "shared/products", products: @products.sort_by{|c| c[:name].downcase}, empty_state: t('empty_state.bookmarks') %>
+<% end %>

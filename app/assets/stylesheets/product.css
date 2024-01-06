@@ -17,6 +17,10 @@
   padding: 1rem;
 }
 
+.Product-bookmark {
+  margin-block-start: 1rem;
+}
+
 .Product dl {
   margin-block: 0;
 }

@@ -24,9 +24,6 @@
   color: hsl(var(--color));
   border: var(--border);
   border-radius: var(--border-radius);
-  font-weight: 600;
-  line-height: 1;
-  block-size: var(--size);
 }
 
 .Symbol:not(.Symbol--large) {
@@ -39,7 +36,9 @@
 }
 
 .Symbol--iconOnly {
+  line-height: 1;
   inline-size: var(--size);
+  block-size: var(--size);
 }
 
 .Symbol--positive {
@@ -48,7 +47,7 @@
 }
 
 .Symbol--large {
-  padding-block: 1em;
+  padding: var(--input-padding);
 }
 
 .SymbolsLegend {

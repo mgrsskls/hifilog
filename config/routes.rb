@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   scope '/dashboard', as: :dashboard do
     get '/products', to: 'dashboard#products'
+    get '/bookmarks', to: 'dashboard#bookmarks'
     get '/products/:category', to: 'dashboard#products', as: :products_category
     resources :setups
   end
@@ -19,6 +20,7 @@ Rails.application.routes.draw do
 
   resources :user_products, only: [:create, :destroy]
   resources :setup_products, only: [:create, :destroy]
+  resources :bookmarks, only: [:create, :destroy]
 
   # /categories
   # /categories/:category
