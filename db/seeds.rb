@@ -53,6 +53,7 @@ Brand.create!(name: 'SMSL', id: 13)
 Brand.create!(name: 'Sony', id: 14)
 Brand.create!(name: 'Wharfedale', id: 15)
 Brand.create!(name: 'Willsenton', id: 16)
+Brand.create!(name: 'Sennheiser', id: 17)
 Brand.create!(name: 'A & M Limited')
 Brand.create!(name: 'A.R. Electronics')
 Brand.create!(name: 'A.R.I.A. Advanced Research in Audio')
@@ -799,7 +800,6 @@ Brand.create!(name: 'Schrödinger Audio (Confield Technology Limited)')
 Brand.create!(name: 'Schroers & Schroers GmbH & Co. KG')
 Brand.create!(name: 'Sehring Audio Systeme GmbH')
 Brand.create!(name: 'SEKIGUCHI MACHINE SALES CO.,LTD')
-Brand.create!(name: 'Sennheiser')
 Brand.create!(name: 'Sequence Design')
 Brand.create!(name: 'Seventh Veil')
 Brand.create!(name: 'Shahinian Acoustics Ltd.')
@@ -1035,6 +1035,8 @@ products = [
   Product.create!(name: 'M5Si', brand_id: 10, sub_category_ids: [3]),
   # Oppo
   Product.create!(name: 'PM-3', brand_id: 11, sub_category_ids: [8]),
+  # Sennheiser
+  Product.create!(name: 'HD 650', brand_id: 17, sub_category_ids: [8]),
   # Shure
   Product.create!(name: 'SE215-CL', brand_id: 12, sub_category_ids: [6]),
   # SMSL
