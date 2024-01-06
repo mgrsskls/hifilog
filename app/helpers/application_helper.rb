@@ -22,4 +22,14 @@ module ApplicationHelper
   def formatted_datetime(datetime)
     datetime.strftime("%Y-%m-%dT%H:%M")
   end
+
+  def user_amount
+    if user_signed_in?
+      {
+        products: current_user.products.size,
+        bookmarks: Bookmark.where(user_id: current_user.id).size,
+        setups: current_user.setups.size,
+      }
+    end
+  end
 end

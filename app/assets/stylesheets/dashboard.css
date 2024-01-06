@@ -23,6 +23,18 @@
   padding: 0;
   margin: 0;
   padding: 1rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  li:last-child {
+    border-block-start: var(--border-medium);
+    margin-block-start: 1rem;
+    padding-block-start: 1rem;
+  }
 }
 
 @container menu (max-inline-size: 16rem) {
