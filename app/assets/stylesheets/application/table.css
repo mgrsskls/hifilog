@@ -1,58 +1,102 @@
-table {
-  border-collapse: collapse;
-  inline-size: 100%;
-  table-layout: fixed;
+@layer {
+  nav + :is(table, table-saw) {
+    margin-block-start: 2rem;
+  }
+
+  table {
+    border-collapse: collapse;
+    inline-size: 100%;
+    table-layout: fixed;
+  }
+
+  tbody tr:nth-child(odd) :is(th, td) {
+    background: var(--color-bg2);
+  }
+
+  th {
+    text-align: start;
+  }
+
+  thead th {
+    color: var(--color-secondary);
+    font-size: 0.875em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    vertical-align: top;
+  }
+
+  th small {
+    font-weight: normal;
+  }
+
+  td,
+  tbody th {
+    vertical-align: center;
+  }
+
+  th,
+  td {
+    border-block-end: var(--border-light);
+    padding-block: 0.75rem;
+    padding-inline: 0.5rem;
+  }
+
+  :is(th, td):not(:last-child) {
+    padding-inline-end: 1rem;
+  }
+
+  .Table-products {
+    width: 7.5em;
+  }
+
+  .Table-symbols {
+    width: 5em;
+  }
+
+  table .Symbols {
+    justify-content: flex-end;
+  }
 }
 
-.TableWrapper {
-  overflow-x: auto;
-}
+@media (max-width: 39.9375em) and (scripting: enabled) {
+  table-saw {
+    table {
+      inline-size: 100%;
+    }
 
-nav + table {
-  margin-block-start: 2rem;
-}
+    tr {
+      border-block-end: var(--border-light);
+      padding-block: 1rem;
+    }
 
-th {
-  text-align: start;
-}
+    :is(tbody, tfoot) tr {
+      margin-block-end: 0 !important;
+    }
 
-th small {
-  font-weight: normal;
-}
+    th,
+    td {
+      padding-block: 0;
+      border-block-end: 0;
+      background-color: transparent;
+    }
 
-thead th {
-  vertical-align: top;
-  color: var(--color-secondary);
-  font-size: 0.875em;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
+    :is(tbody, tfoot) :is(th, td)::before {
+      color: var(--color-secondary);
+      font-size: 0.75em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: calc(var(--line-height) * 1rem);
+    }
 
-td,
-tbody th {
-  vertical-align: center;
-}
+    .Table-products,
+    .Table-symbols {
+      width: auto;
+    }
 
-th,
-td {
-  border-block-end: var(--border-light);
-  padding-block: 0.75rem;
-  padding-inline: 0.5rem;
-}
-
-:is(th, td):not(:last-child) {
-  padding-inline-end: 1rem;
-}
-
-.Table-symbols {
-  width: 5em;
-}
-
-.Table-products {
-  width: 7.5em;
-}
-
-.Table-symbols {
-  width: 5em;
+    .Symbols:has(.Symbols-item) {
+      justify-content: flex-start;
+      margin-block-start: 0.5rem;
+    }
+  }
 }
