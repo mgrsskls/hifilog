@@ -70,6 +70,10 @@
       padding-block: 1rem;
     }
 
+    tr:last-child:is(accordion-tabs tr) {
+      border-block-end: none;
+    }
+
     :is(tbody, tfoot) tr {
       margin-block-end: 0 !important;
     }
