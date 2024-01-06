@@ -47,6 +47,6 @@
   text-transform: uppercase;
 }
 
-table + .Pagination {
+:is(table, table-saw) + .Pagination {
   margin-block-start: 3rem;
 }
