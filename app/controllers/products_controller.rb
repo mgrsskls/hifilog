@@ -41,6 +41,7 @@ class ProductsController < ApplicationController
 
     if params[:brand_id]
       @product.brand_id = params[:brand_id]
+      @brand = Brand.find(params[:brand_id])
     end
   end
 
@@ -53,6 +54,9 @@ class ProductsController < ApplicationController
     else
       @brands = Brand.all.order("LOWER(name)")
       @categories = Category.all
+      if @product.brand_id
+        @brand = Brand.find(@product.brand_id)
+      end
       render :new, status: :unprocessable_entity
     end
   end
