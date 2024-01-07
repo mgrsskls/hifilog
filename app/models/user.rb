@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  before_create :assing_random_username
+
   has_and_belongs_to_many :products
   has_many :setups
 
@@ -23,5 +25,11 @@ class User < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     ["products", "setups"]
+  end
+
+  private
+
+  def assing_random_username
+    self.random_username = SecureRandom.alphanumeric(8)
   end
 end
