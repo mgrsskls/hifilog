@@ -33,6 +33,11 @@ h3:has(+ .UserForm-field) {
   padding-block-end: 0.25em;
 }
 
+.UserForm-label small {
+  color: var(--color-secondary);
+  font-size: 0.875em;
+}
+
 .UserForm-options {
   display: flex;
   align-items: center;

@@ -16,8 +16,10 @@ Rails.application.routes.draw do
     sessions: "users/sessions",
   }
 
-  resources :users, only: [:show]
-  get '/user/:random_username', as: :random_username, to: 'users#show', constraints: { username: /[a-zA-Z0-9]{8}/ }
+  scope '/user' do
+    get ':username', as: :username, to: 'users#show'
+    get 'r/:random_username', as: :random_username, to: 'users#show', constraints: { username: /[a-zA-Z0-9]{8}/ }
+  end
 
   resources :user_products, only: [:create, :destroy]
   resources :setup_products, only: [:create, :destroy]

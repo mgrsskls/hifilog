@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
     protected
 
     def configure_permitted_parameters
-        devise_parameter_sanitizer.permit(:account_update, keys: [:profile_visibility])
+        devise_parameter_sanitizer.permit(:account_update, keys: [:profile_visibility, :user_name])
     end
 
     def record_not_found

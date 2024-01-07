@@ -10,12 +10,23 @@
     <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
     <div class="UserForm-field">
-      <%= f.label :email, class: 'UserForm-label' %>
+      <%= f.label :user_name, class: 'UserForm-label' do %>
+        Username <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_field :user_name %>
+    </div>
+
+    <div class="UserForm-field">
+      <%= f.label :email, class: 'UserForm-label' do %>
+        Email <small><i>(required)</i></small>
+      <% end %>
       <%= f.email_field :email, autocomplete: "email" %>
     </div>
 
     <div class="UserForm-field">
-      <%= f.label :password, class: 'UserForm-label' %>
+      <%= f.label :password, class: 'UserForm-label' do %>
+        Password <small><i>(required)</i></small>
+      <% end %>
       <%= f.password_field :password, autocomplete: "new-password" %>
       <% if @minimum_password_length %>
         <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
@@ -23,7 +34,9 @@
     </div>
 
     <div class="UserForm-field">
-      <%= f.label :password_confirmation, class: 'UserForm-label' %>
+      <%= f.label :password_confirmation, class: 'UserForm-label' do %>
+        Password confirmation <small><i>(required)</i></small>
+      <% end %>
       <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
     </div>
 
