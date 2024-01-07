@@ -16,6 +16,14 @@
   margin-block-start: 1rem;
 }
 
+.UserForm-field + h3 {
+  margin-block-start: 2rem;
+}
+
+h3:has(+ .UserForm-field) {
+  margin-block-end: 1rem;
+}
+
 .UserForm-submit {
   margin-block-start: 2rem;
 }

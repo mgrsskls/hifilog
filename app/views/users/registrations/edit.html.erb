@@ -46,6 +46,9 @@
         <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
       <% end %>
 
+
+      <h3>Password</h3>
+
       <div class="UserForm-field">
         <%= f.label :password, class: "UserForm-label" do %>
           Password <small><i>(leave blank if you don't want to change it)</i></small>
@@ -55,8 +58,6 @@
           <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
         <% end %>
       </div>
-
-      <h3>Password</h3>
 
       <div class="UserForm-field">
         <%= f.label :password_confirmation, class: "UserForm-label" %>
