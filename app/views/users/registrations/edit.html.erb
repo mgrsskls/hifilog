@@ -18,7 +18,7 @@
       <div class="UserForm-field">
         <div>
           <%= f.radio_button :profile_visibility, 0, checked: current_user.profile_visibility == 0 %>
-          <%= f.label :profile_visibility_0, "No one can see my profile." %>
+          <%= f.label :profile_visibility_0, "No one but me can see my profile." %>
         </div>
         <div>
           <%= f.radio_button :profile_visibility, 1, checked: current_user.profile_visibility == 1 %>
@@ -28,6 +28,11 @@
           <%= f.radio_button :profile_visibility, 2, checked: current_user.profile_visibility == 2 %>
           <%= f.label :profile_visibility_2, "Logged in and logged out users can see my profile." %>
         </div>
+
+        <p>
+          Your profile is visible at the following URL:<br>
+          <a href="<%= random_username_url(random_username: current_user.random_username) %>"><b><%= random_username_url(random_username: current_user.random_username) %></b></a>
+        </p>
       </div>
 
       <h3>E-mail address</h3>

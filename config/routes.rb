@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   }
 
   resources :users, only: [:show]
+  get '/user/:random_username', as: :random_username, to: 'users#show', constraints: { username: /[a-zA-Z0-9]{8}/ }
 
   resources :user_products, only: [:create, :destroy]
   resources :setup_products, only: [:create, :destroy]

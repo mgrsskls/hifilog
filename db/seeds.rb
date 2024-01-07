@@ -7,8 +7,8 @@
 #   Character.create(name: "Luke", movie: movies.first)
 AdminUser.create!(email: 'admin@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
 # file deepcode ignore HardcodedPassword: <please specify a reason of ignoring this>
-user = User.create!(email: 'user@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
-user_without_setup = User.create!(email: 'user2@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
+user = User.create!(email: 'user@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword', random_username: '9b7884bf84') if Rails.env.development?
+user_without_setup = User.create!(email: 'user2@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword', random_username: '2709d24799') if Rails.env.development?
 
 Category.create!(name: 'Amplifiers', id: 1)
 Category.create!(name: 'Headphones', id: 4)

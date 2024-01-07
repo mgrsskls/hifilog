@@ -1,9 +1,13 @@
 class UsersController < ApplicationController
   add_breadcrumb "Hifi Gear", :root_path
-  add_breadcrumb I18n.t("dashboard")
+  add_breadcrumb I18n.t("users")
 
   def show
-    @user = User.find(params[:id])
+    if params[:random_username]
+      @user = User.where(random_username: params[:random_username]).first
+    else
+      @user = User.find(params[:id])
+    end
 
     # if the visited profile is not visible to anyone and the visiting user is a different user
     if @user.profile_visibility == 0 && current_user != @user
@@ -19,10 +23,7 @@ class UsersController < ApplicationController
       redirect_to new_user_session_url
     end
 
-    add_breadcrumb I18n.t("headings.products"), :dashboard_products_path
-
-    @active_menu = :dashboard
-    @active_dashboard_menu = :products
+    add_breadcrumb @user.random_username
 
     all_products = @user.products.all.order("LOWER(name)")
     if params[:category]
