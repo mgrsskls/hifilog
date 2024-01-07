@@ -13,8 +13,6 @@
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
-      <h3>Profile visibility</h3>
-
       <div class="UserForm-field">
         <div>
           <%= f.radio_button :profile_visibility, 0, checked: current_user.profile_visibility == 0 %>
@@ -31,23 +29,27 @@
 
         <p>
           Your profile is visible at the following URL:<br>
-          <a href="<%= random_username_url(random_username: current_user.random_username) %>"><b><%= random_username_url(random_username: current_user.random_username) %></b></a>
+          <a href="<%= current_user.profile_path %>"><b><%= request.protocol + request.host_with_port + current_user.profile_path %></b></a>
         </p>
       </div>
 
-      <h3>E-mail address</h3>
+      <div class="UserForm-field">
+        <%= f.label :user_name, class: "UserForm-label" do %>
+          Username <small><i>(optional)</i></small>
+        <% end %>
+        <%= f.text_field :user_name %>
+      </div>
 
       <div class="UserForm-field">
-        <%= f.label :email, class: "UserForm-label" %>
+        <%= f.label :email, class: "UserForm-label" do %>
+          Email <small><i>(required)</i></small>
+        <% end %>
         <%= f.email_field :email, autocomplete: "email" %>
       </div>
 
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
         <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
       <% end %>
-
-
-      <h3>Password</h3>
 
       <div class="UserForm-field">
         <%= f.label :password, class: "UserForm-label" do %>
@@ -67,7 +69,9 @@
       <h3>Save your changes</h3>
 
       <div class="UserForm-field">
-        <%= f.label :current_password, class: "UserForm-label" %>
+        <%= f.label :current_password, class: "UserForm-label" do %>
+          Current password <small><i>(required)</i></small>
+        <% end %>
         <%= f.password_field :current_password, autocomplete: "current-password" %>
         <small class="UserForm-hint">We need your current password to confirm your changes.</small>
       </div>

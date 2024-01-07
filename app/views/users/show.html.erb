@@ -1,5 +1,5 @@
 <div class="Heading">
-  <h1><%= t('headings.products') %> <span>of <%= @user.random_username %><span></h1>
+  <h1><%= @user.display_name %></h1>
 </div>
 
 <% if @user.setups.any? %>
