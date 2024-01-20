@@ -12,6 +12,7 @@ AllCops:
     - Gemfile
     - Rakefile
     - config.ru
+    - vendor/**/*
 
 require:
   - rubocop-rails
