@@ -96,6 +96,9 @@ en:
     none:
       products: No products found for &ldquo;<i>%{query}</i>&rdquo;.
       brands: No brands found for &ldquo;<i>%{query}</i>&rdquo;.
+  setups:
+    created: The setup %{link} has been created.
+    deleted: The setup <b>%{name}</b> has been deleted.
   skip_to_main_content: Skip to main content
   status: Status
   users: Users

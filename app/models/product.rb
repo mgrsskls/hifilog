@@ -7,23 +7,23 @@ class Product < ApplicationRecord
   has_and_belongs_to_many :setups
 
   validates :name, presence: true
-  validates_uniqueness_of :name, scope: :brand
+  validates :name, uniqueness: { scope: :brand }
   validates :sub_categories, presence: true
 
   friendly_id :name, use: :scoped, scope: :brand
 
-  def self.ransackable_attributes(auth_object = nil)
-    [
-      "created_at",
-      "discontinued",
-      "id",
-      "name",
-      "slug",
-      "updated_at",
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[
+      created_at
+      discontinued
+      id
+      name
+      slug
+      updated_at
     ]
   end
 
-  def self.ransackable_associations(auth_object = nil)
-    ["brand", "setups", "sub_categories", "users"]
+  def self.ransackable_associations(_auth_object = nil)
+    %w[brand setups sub_categories users]
   end
 end

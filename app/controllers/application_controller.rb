@@ -1,63 +1,64 @@
 class ApplicationController < ActionController::Base
-    before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
-    rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
-    helper_method :current_user
-    helper_method :user_has_product?
-    helper_method :user_has_brand?
-    helper_method :user_has_bookmark?
+  helper_method :current_user
+  helper_method :user_has_product?
+  helper_method :user_has_brand?
+  helper_method :user_has_bookmark?
 
-    def index
-        @products = Product.all
-        @brands = Brand.all
-        @categories = SubCategory.all
+  def index
+    @products = Product.all
+    @brands = Brand.all
+    @categories = SubCategory.all
 
-        @newest_products = @products.order(created_at: :desc).limit(10)
-        @newest_brands = @brands.order(created_at: :desc).limit(10)
+    @newest_products = @products.order(created_at: :desc).limit(10)
+    @newest_brands = @brands.order(created_at: :desc).limit(10)
+  end
+
+  attr_writer :current_user
+
+  def after_sign_in_path_for(_)
+    if instance_of?(AdminUser)
+      admin_root_path
+    elsif request.parameters[:redirect]
+      request.parameters[:redirect]
+    else
+      dashboard_products_path
     end
+  end
 
-    def current_user=(user)
-        @current_user = user
-    end
+  def user_has_product?(product)
+    return unless product
 
-    def after_sign_in_path_for(user)
-        if user.class == AdminUser
-            admin_root_path
-        elsif request.parameters[:redirect]
-            request.parameters[:redirect]
-        else
-            dashboard_products_path
-        end
-    end
+    user_signed_in? && current_user.products.include?(product)
+  end
 
-    def user_has_product?(product)
-        return if !product
-        user_signed_in? && current_user.products.include?(product)
-    end
+  def user_has_bookmark?(product)
+    return unless product
 
-    def user_has_bookmark?(product)
-        return if !product
-        user_signed_in? && Bookmark.where(product_id: product.id, user_id: current_user.id).any?
-    end
+    user_signed_in? && Bookmark.where(product_id: product.id, user_id: current_user.id).any?
+  end
 
-    def user_has_brand?(brand)
-        return if !brand
-        user_signed_in? && current_user.products.select { |p| p.brand_id == brand.id }.any?
-    end
+  def user_has_brand?(brand)
+    return unless brand
 
-    def content_not_found
-      render file: "#{Rails.root}/public/404.html", layout: true, status: :not_found
-    end
+    user_signed_in? && current_user.products.select { |p| p.brand_id == brand.id }.any?
+  end
 
-    protected
+  def content_not_found
+    render file: Rails.root.join('public/404.html').to_s, layout: true, status: :not_found
+  end
 
-    def configure_permitted_parameters
-        devise_parameter_sanitizer.permit(:sign_up, keys: [:user_name])
-        devise_parameter_sanitizer.permit(:account_update, keys: [:profile_visibility, :user_name])
-    end
+  protected
 
-    def record_not_found
-      render "404", layout: true, status: :not_found
-    end
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:user_name])
+    devise_parameter_sanitizer.permit(:account_update, keys: %i[profile_visibility user_name])
+  end
+
+  def record_not_found
+    render '404', layout: true, status: :not_found
+  end
 end
