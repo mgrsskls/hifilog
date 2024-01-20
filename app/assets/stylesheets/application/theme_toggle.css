@@ -1,0 +1,36 @@
+.ThemeToggle {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.ThemeToggle label {
+	border-radius: var(--border-radius);
+	padding: 0.25em;
+}
+
+.ThemeToggle input:checked + label {
+	background: var(--color-secondary);
+	color: var(--color-bg2);
+}
+
+.ThemeToggle input:focus + label {
+	outline: 0.125em solid var(--color-focus-outline);
+  outline-offset: 0.1875em;
+}
+
+.ThemeToggle-icon {
+	--size: 1.25rem;
+
+	display: block;
+	inline-size: var(--size);
+	block-size: var(--size);
+}
+
+.ThemeToggle-icon--auto,
+.ThemeToggle-icon--light {
+	stroke: currentColor;
+}
+
+.ThemeToggle-icon--dark {
+	fill: currentColor;
+}
