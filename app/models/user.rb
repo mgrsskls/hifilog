@@ -24,6 +24,8 @@ class User < ApplicationRecord
       "reset_password_sent_at",
       "reset_password_token",
       "updated_at",
+      "random_username",
+      "user_name"
     ]
   end
 
