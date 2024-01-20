@@ -30,7 +30,7 @@ Style/NumericPredicate:
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact
 
-Style/Metrics/MethodLength:
+Metrics/MethodLength:
   Enabled: false
 
 Rails/HasAndBelongsToMany:
