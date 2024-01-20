@@ -7,17 +7,24 @@ class ApplicationController < ActionController::Base
   helper_method :user_has_product?
   helper_method :user_has_brand?
   helper_method :user_has_bookmark?
+  helper_method :newest_products
+  helper_method :newest_brands
 
   def index
     @products = Product.all
     @brands = Brand.all
     @categories = SubCategory.all
-
-    @newest_products = @products.order(created_at: :desc).limit(10)
-    @newest_brands = @brands.order(created_at: :desc).limit(10)
   end
 
   attr_writer :current_user
+
+  def newest_products
+    Product.all.order(created_at: :desc).limit(10)
+  end
+
+  def newest_brands
+    Brand.all.order(created_at: :desc).limit(10)
+  end
 
   def after_sign_in_path_for(_)
     if instance_of?(AdminUser)
