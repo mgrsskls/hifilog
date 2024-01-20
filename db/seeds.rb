@@ -1049,36 +1049,38 @@ products = [
   Product.create!(name: 'R300', brand_id: 16, sub_category_ids: [3])
 ]
 
-products.each do |product|
-  user.products << product
+if Rails.env.development?
+  products.each do |product|
+    user.products << product
+  end
+
+  living_room = Setup.create!(name: 'Living Room')
+  office = Setup.create!(name: 'Office')
+
+  user.setups << living_room
+  user.setups << office
+  user.save
+
+  products.each do |product|
+    user_without_setup.products << product
+  end
+  user_without_setup.save
+
+  living_room.products << products[1]
+  living_room.products << products[3]
+  living_room.products << products[4]
+  living_room.products << products[6]
+  living_room.products << products[11]
+  living_room.products << products[12]
+  living_room.products << products[17]
+  living_room.products << products[18]
+  living_room.save
+
+  office.products << products[2]
+  office.products << products[7]
+  office.products << products[15]
+  office.save
 end
-
-living_room = Setup.create!(name: 'Living Room')
-office = Setup.create!(name: 'Office')
-
-user.setups << living_room
-user.setups << office
-user.save
-
-products.each do |product|
-  user_without_setup.products << product
-end
-user_without_setup.save
-
-living_room.products << products[1]
-living_room.products << products[3]
-living_room.products << products[4]
-living_room.products << products[6]
-living_room.products << products[11]
-living_room.products << products[12]
-living_room.products << products[17]
-living_room.products << products[18]
-living_room.save
-
-office.products << products[2]
-office.products << products[7]
-office.products << products[15]
-office.save
 
 # Clearaudio
 Product.create!(name: 'Concept Active', brand_id: 4, sub_category_ids: [17])
