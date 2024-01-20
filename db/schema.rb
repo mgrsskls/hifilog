@@ -11,13 +11,16 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
     t.string "resource_type"
-    t.integer "resource_id"
+    t.bigint "resource_id"
     t.string "author_type"
-    t.integer "author_id"
+    t.bigint "author_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author"
@@ -38,8 +41,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
   end
 
   create_table "bookmarks", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "product_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id", "user_id"], name: "index_bookmarks_on_product_id_and_user_id", unique: true
@@ -79,7 +82,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "brand_id", null: false
+    t.bigint "brand_id", null: false
     t.boolean "discontinued"
     t.string "slug"
     t.index ["brand_id"], name: "index_products_on_brand_id"
@@ -87,18 +90,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
   end
 
   create_table "products_setups", id: false, force: :cascade do |t|
-    t.integer "setup_id", null: false
-    t.integer "product_id", null: false
+    t.bigint "setup_id", null: false
+    t.bigint "product_id", null: false
   end
 
   create_table "products_sub_categories", id: false, force: :cascade do |t|
-    t.integer "product_id", null: false
-    t.integer "sub_category_id", null: false
+    t.bigint "product_id", null: false
+    t.bigint "sub_category_id", null: false
   end
 
   create_table "products_users", id: false, force: :cascade do |t|
-    t.integer "product_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "product_id", null: false
+    t.bigint "user_id", null: false
   end
 
   create_table "setups", force: :cascade do |t|
@@ -110,7 +113,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
 
   create_table "sub_categories", force: :cascade do |t|
     t.string "name"
-    t.integer "category_id"
+    t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "slug"
