@@ -1,13 +1,13 @@
 require "test_helper"
 
-class ProductsControllerTest < ActionDispatch::IntegrationTest
+class CategoriesControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
-    get products_url
+    get categories_url
     assert_response :success
   end
 
   test "should get show" do
-    get brand_product_url(id: "elise", brand_id: "feliks-audio")
+    get category_url(id: "amplifiers")
     assert_response :success
   end
 end
