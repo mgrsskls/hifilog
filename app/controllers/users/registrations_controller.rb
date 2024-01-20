@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
-  add_breadcrumb "Hifi Gear", :root_path
+  add_breadcrumb 'Hifi Gear', :root_path
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
 
   # GET /resource/sign_up
   def new
-    add_breadcrumb I18n.t("user_form.signup"), :new_user_registration_path
+    add_breadcrumb I18n.t('user_form.signup'), :new_user_registration_path
     @active_menu = :signup
     super
   end
@@ -20,8 +20,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # GET /resource/edit
   def edit
-    add_breadcrumb I18n.t("dashboard")
-    add_breadcrumb I18n.t("account"), :edit_user_registration_path
+    add_breadcrumb I18n.t('dashboard')
+    add_breadcrumb I18n.t('account'), :edit_user_registration_path
     @active_menu = :dashboard
     @active_dashboard_menu = :account
 
@@ -30,8 +30,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # PUT /resource
   def update
-    add_breadcrumb I18n.t("dashboard")
-    add_breadcrumb I18n.t("account")
+    add_breadcrumb I18n.t('dashboard')
+    add_breadcrumb I18n.t('account')
     @active_menu = :dashboard
     @active_dashboard_menu = :account
 
@@ -54,10 +54,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   protected
 
-  def after_update_path_for(resource)
+  def after_update_path_for(_resource)
     edit_user_registration_path
   end
-
 
   # If you have extra params to permit, append them to the sanitizer.
   # def configure_sign_up_params

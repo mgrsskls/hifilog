@@ -13,20 +13,20 @@ class Setup < ApplicationRecord
       end
     end
 
-    categories.uniq.sort_by{|c| c.name.downcase}
+    categories.uniq.sort_by { |c| c.name.downcase }
   end
 
-  def self.ransackable_attributes(auth_object = nil)
-    [
-      "created_at",
-      "id",
-      "name",
-      "updated_at",
-      "user_id"
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[
+      created_at
+      id
+      name
+      updated_at
+      user_id
     ]
   end
 
-  def self.ransackable_associations(auth_object = nil)
-    ["products", "user"]
+  def self.ransackable_associations(_auth_object = nil)
+    %w[products user]
   end
 end

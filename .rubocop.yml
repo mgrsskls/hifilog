@@ -1,0 +1,46 @@
+AllCops:
+  Exclude:
+    - db/migrate/**/*
+    - db/schema.rb
+    - config/**/*
+    - script/**/*
+    - bin/**/*
+    - app/admin/**/*
+    - app/channels/**/*
+    - app/jobs/**/*
+    - node_modules/**/*
+    - Gemfile
+    - Rakefile
+    - config.ru
+
+require:
+  - rubocop-rails
+
+Style/Documentation:
+  Description: 'Document classes and non-namespace modules.'
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Description: To help transition from Ruby 2.3.0 to Ruby 3.0.
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+
+Style/Metrics/MethodLength:
+  Enabled: false
+
+Rails/HasAndBelongsToMany:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false

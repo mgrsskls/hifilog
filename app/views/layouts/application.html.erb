@@ -15,7 +15,7 @@
     <header>
       <div class="Header u-container">
         <a class="Skip" href="#content"><%= t('skip_to_main_content') %></a>
-        <a class="Menu-home" href="<%= root_url %>"<% if is_current_page?(root_path) %> aria-current="page"<% end %>>HiFi Gear</a>
+        <a class="Menu-home" href="<%= root_url %>"<% if current_page?(root_path) %> aria-current="page"<% end %>>HiFi Gear</a>
         <button type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false" class="Header-toggle" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')">
           <svg class="Header-toggleIcon Header-toggleIcon--open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -29,17 +29,17 @@
             <nav aria-label="Main" class="Menu">
               <ul class="Menu-list Menu-list--main">
                 <li>
-                  <a href="<%= products_path %>"<%= active_menu_state(:products) %>>
+                  <a href="<%= products_path %>"<%= active_menu_state(@active_menu, :products) %>>
                     <%= t('headings.products') %>
                   </a>
                 </li>
                 <li>
-                  <a href="<%= brands_path %>"<%= active_menu_state(:brands) %>>
+                  <a href="<%= brands_path %>"<%= active_menu_state(@active_menu, :brands) %>>
                     <%= t('headings.brands').html_safe %>
                   </a>
                 </li>
                 <li>
-                  <a href="<%= categories_path %>"<%= active_menu_state(:categories) %>>
+                  <a href="<%= categories_path %>"<%= active_menu_state(@active_menu, :categories) %>>
                     <%= t('headings.categories').html_safe %>
                   </a>
                 </li>
@@ -60,7 +60,7 @@
             <ul class="Menu-list">
               <% if user_signed_in? %>
                 <li>
-                  <a href="<%= dashboard_products_path %>"<%= active_menu_state(:dashboard) %>>
+                  <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
                     <%= t('dashboard') %>
                   </a>
                 </li>
@@ -69,12 +69,12 @@
                 </li>
               <% else %>
                 <li>
-                  <a href="<%= new_user_registration_path %>"<%= active_menu_state(:signup) %>>
+                  <a href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
                     <%= t('user_form.signup') %>
                   </a>
                 </li>
                 <li>
-                  <a href="<%= new_user_session_path %>"<%= active_menu_state(:login) %>>
+                  <a href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
                     <%= t('user_form.login') %>
                   </a>
                 </li>

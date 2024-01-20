@@ -1,18 +1,18 @@
 class Brand < ApplicationRecord
   extend FriendlyId
 
-  has_many :products
+  has_many :products, dependent: :destroy
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   friendly_id :name, use: :slugged
 
-  def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "id", "name", "updated_at", "discontinued", "slug"]
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[created_at id name updated_at discontinued slug]
   end
 
-  def self.ransackable_associations(auth_object = nil)
-    ["products"]
+  def self.ransackable_associations(_auth_object = nil)
+    ['products']
   end
 
   def sub_categories
@@ -24,7 +24,7 @@ class Brand < ApplicationRecord
       end
     end
 
-    sub_categories.uniq.sort_by{|c| c.name.downcase}
+    sub_categories.uniq.sort_by { |c| c.name.downcase }
   end
 
   def categories
@@ -36,6 +36,6 @@ class Brand < ApplicationRecord
       end
     end
 
-    categories.uniq.sort_by{|c| c.name.downcase}
+    categories.uniq.sort_by { |c| c.name.downcase }
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_20_213636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,6 +56,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
     t.datetime "updated_at", null: false
     t.boolean "discontinued"
     t.string "slug"
+    t.index ["name"], name: "index_brands_on_name", unique: true
     t.index ["slug"], name: "index_brands_on_slug", unique: true
   end
 
@@ -85,7 +86,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_07_053905) do
     t.bigint "brand_id", null: false
     t.boolean "discontinued"
     t.string "slug"
-    t.index ["brand_id"], name: "index_products_on_brand_id"
+    t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
     t.index ["slug"], name: "index_products_on_slug"
   end
 

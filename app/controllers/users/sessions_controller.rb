@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
-  add_breadcrumb "Hifi Gear", :root_path
-  add_breadcrumb I18n.t("user_form.login"), :new_user_session_path
+  add_breadcrumb 'Hifi Gear', :root_path
+  add_breadcrumb I18n.t('user_form.login'), :new_user_session_path
 
   # before_action :configure_sign_in_params, only: [:create]
 

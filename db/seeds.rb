@@ -5,10 +5,23 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
-AdminUser.create!(email: 'admin@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword') if Rails.env.development?
+if Rails.env.development?
+  AdminUser.create!(email: 'admin@example.com', password: 'passwordpassword',
+                    password_confirmation: 'passwordpassword')
+end
 # file deepcode ignore HardcodedPassword: <please specify a reason of ignoring this>
-user = User.create!(email: 'user@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword', random_username: '9b7884bf84') if Rails.env.development?
-user_without_setup = User.create!(email: 'user2@example.com', password: 'passwordpassword', password_confirmation: 'passwordpassword', random_username: '2709d24799') if Rails.env.development?
+if Rails.env.development?
+  user = User.create!(
+    email: 'user@example.com',
+    password: 'passwordpassword',
+    password_confirmation: 'passwordpassword',
+    random_username: '9b7884bf84'
+  )
+end
+if Rails.env.development?
+  user_without_setup = User.create!(email: 'user2@example.com', password: 'passwordpassword',
+                                    password_confirmation: 'passwordpassword', random_username: '2709d24799')
+end
 
 Category.create!(name: 'Amplifiers', id: 1)
 Category.create!(name: 'Headphones', id: 2)
@@ -81,7 +94,6 @@ Brand.create!(name: 'AKG')
 Brand.create!(name: 'AkustyK')
 Brand.create!(name: 'Albedo')
 Brand.create!(name: 'Alcons Audio')
-#
 Brand.create!(name: 'Aletheia AV')
 Brand.create!(name: 'Aliante')
 Brand.create!(name: 'Alicja Unterschuetz acuhorn')
