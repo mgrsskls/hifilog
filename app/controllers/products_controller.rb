@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
-      all_products = Product.where('name LIKE :prefix', prefix: "#{params[:letter]}%")
+      all_products = Product.where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
     else
       all_products = Product.all
     end

@@ -9,7 +9,7 @@ class BrandsController < ApplicationController
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
-      all_brands = Brand.where('name LIKE :prefix', prefix: "#{params[:letter]}%")
+      all_brands = Brand.where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
     else
       all_brands = Brand.all
     end
