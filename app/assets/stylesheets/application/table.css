@@ -60,47 +60,44 @@
 }
 
 @media (max-width: 39.9375em) {
-  table-saw {
-    table {
-      inline-size: 100%;
-    }
+  table-saw table {
+    inline-size: 100%;
+  }
 
-    tr {
-      border-block-end: var(--border-light);
-      padding-block: 1rem;
-    }
+  table-saw tr {
+    border-block-end: var(--border-light);
+    padding-block: 1rem;
+  }
 
-    tr:last-child:is(accordion-tabs tr) {
-      border-block-end: none;
-    }
+  table-saw tr:last-child:is(accordion-tabs tr) {
+    border-block-end: none;
+  }
 
-    :is(tbody, tfoot) tr {
-      margin-block-end: 0 !important;
-    }
+  table-saw :is(tbody, tfoot) tr {
+    margin-block-end: 0 !important;
+  }
 
-    th,
-    td {
-      padding-block: 0;
-      border-block-end: 0;
-      background-color: transparent;
-    }
+  table-saw :is(th, td) {
+    padding-block: 0;
+    border-block-end: 0;
+    background-color: transparent;
+  }
 
-    :is(tbody, tfoot) :is(th, td)::before {
-      color: var(--color-secondary);
-      font-size: 0.75em;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      line-height: calc(var(--line-height) * 1rem);
-    }
+  table-saw :is(tbody, tfoot) :is(th, td)::before {
+    color: var(--color-secondary);
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: calc(var(--line-height) * 1rem);
+  }
 
-    .Table-products,
-    .Table-symbols {
-      width: auto;
-    }
 
-    .Symbols:has(.Symbols-item) {
-      justify-content: flex-start;
-      margin-block-start: 0.5rem;
-    }
+  table-saw :is(.Table-products,.Table-symbols) {
+    width: auto;
+  }
+
+  table-saw .Symbols:has(.Symbols-item) {
+    justify-content: flex-start;
+    margin-block-start: 0.5rem;
   }
 }
