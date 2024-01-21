@@ -12,6 +12,11 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <meta name="description" content="<%= strip_tags t('home.intro', products_size: app_size[:products].size, products_path: products_path, brands_size: app_size[:brands].size, brands_path: brands_path, categories_size: app_size[:categories].size, categories_path: categories_path).squish %>">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/svg" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
   </head>
 
   <body>
