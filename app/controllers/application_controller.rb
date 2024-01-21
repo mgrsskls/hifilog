@@ -26,8 +26,8 @@ class ApplicationController < ActionController::Base
     Brand.all.order(created_at: :desc).limit(10)
   end
 
-  def after_sign_in_path_for(_)
-    if instance_of?(AdminUser)
+  def after_sign_in_path_for(user)
+    if user.instance_of?(AdminUser)
       admin_root_path
     elsif request.parameters[:redirect]
       request.parameters[:redirect]
