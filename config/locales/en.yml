@@ -68,12 +68,7 @@ en:
       label: Filter by category
   home:
     intro: >
-      <span class="AppName">HiFi<span>Log</span></span> is a community-driven platform with
-      <span>
-        <a href="%{products_path}">%{products_size} products</a> by
-        <a href="%{brands_path}">%{brands_size} brands</a> in
-        <a href="%{categories_path}">%{categories_size} categories</a><span class="Home-introDot">.</span>
-      </span>
+      <span class="AppName">HiFi<span>Log</span></span> is a community-driven platform with <span><a href="%{products_path}">%{products_size} products</a> by <a href="%{brands_path}">%{brands_size} brands</a> in <a href="%{categories_path}">%{categories_size} categories</a><span class="Home-introDot">.</span></span>
     recently_added: Recently added to HiFiLog
     sign_up: Sign up to <b>add new products and brands</b> or edit existing ones, add products to <b>your own collection</b> and <b>keep track of all the products</b> you have ever owned.
   name: Name

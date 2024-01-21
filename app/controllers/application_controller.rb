@@ -11,9 +11,6 @@ class ApplicationController < ActionController::Base
   helper_method :newest_brands
 
   def index
-    @products = Product.all
-    @brands = Brand.all
-    @categories = SubCategory.all
     @is_home = true
   end
 
