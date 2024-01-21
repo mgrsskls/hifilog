@@ -1,2 +1,2 @@
 //= link_tree ../builds
-//= link ../javascripts/active_admin.js
+//= require ./active_admin.js
