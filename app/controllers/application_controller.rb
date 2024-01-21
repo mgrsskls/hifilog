@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
     @products = Product.all
     @brands = Brand.all
     @categories = SubCategory.all
+    @is_home = true
   end
 
   attr_writer :current_user

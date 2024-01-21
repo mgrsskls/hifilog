@@ -16,9 +16,15 @@
     <header>
       <div class="Header u-container">
         <a class="Skip" href="#content"><%= t('skip_to_main_content') %></a>
-        <a class="Menu-home" href="<%= root_url %>"<% if current_page?(root_path) %> aria-current="page"<% end %>>
-          <span>HiFi</span><span>log</span>
-        </a>
+        <% if @is_home %>
+          <h1 class="Menu-home">
+            <span>HiFi</span><span>log</span>
+          </h1>
+        <% else %>
+          <a class="Menu-home" href="<%= root_url %>"<% if current_page?(root_path) %> aria-current="page"<% end %>>
+            <span>HiFi</span><span>log</span>
+          </a>
+        <% end %>
         <button type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false" class="Header-toggle" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')">
           <svg class="Header-toggleIcon Header-toggleIcon--open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
