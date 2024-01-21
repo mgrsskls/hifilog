@@ -45,3 +45,6 @@ Metrics/PerceivedComplexity:
 
 Metrics/AbcSize:
   Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
