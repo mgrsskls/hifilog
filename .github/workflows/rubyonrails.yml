@@ -23,6 +23,9 @@ jobs:
       - name: Lint Ruby files
         run: bundle exec rubocop --parallel
   test:
+    strategy:
+      matrix:
+        node-version: ['18.19.0']
     runs-on: ubuntu-latest
     services:
       postgres:
