@@ -145,7 +145,7 @@
     line-height: var(--line-height);
     margin: 0;
     color-scheme: light dark;
-    background: var(--color-bg);
+    background: red;
     color: var(--color-copy);
     accent-color: var(--color-accent);
     display: flex;
