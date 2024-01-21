@@ -70,13 +70,13 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: ENV["MAIL_HOST"] }
   config.action_mailer.smtp_settings = {
-    address: ENV["MAIL_ADDRESS"],
-    port: ENV["MAIL_PORT"],
-    domain: ENV["MAIL_DOMAIN"],
+    address: ENV["MAILGUN_SMTP_SERVER"],
+    port: ENV["MAILGUN_SMTP_PORT"],
+    domain: ENV["MAILGUN_DOMAIN"],
     authentication: "plain",
     enable_starttls_auto: true,
-    user_name: ENV["MAIL_USERNAME"],
-    password: ENV["MAIL_PASSWORD"]
+    user_name: ENV["MAILGUN_SMTP_LOGIN"],
+    password: ENV["MAILGUN_SMTP_PASSWORD"]
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
