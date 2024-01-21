@@ -52,6 +52,7 @@
 
 .SymbolsLegend {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1.5rem;
   margin-block: 0;
