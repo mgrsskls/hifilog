@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  add_breadcrumb 'Hifi Gear', :root_path
+  add_breadcrumb APP_NAME, :root_path
   add_breadcrumb I18n.t('users')
 
   def show

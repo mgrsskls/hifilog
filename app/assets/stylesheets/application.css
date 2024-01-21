@@ -18,6 +18,20 @@
 @import url("./application/theme_toggle.css") layer(components);
 @import url("./application/utils.css") layer(utils);
 
+@font-face {
+  font-family: 'Bungee';
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/bungee.woff2") format('woff2');
+}
+
+@font-face {
+  font-family: 'Bungee Outline';
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/bungee-outline.woff2") format('woff2');
+}
+
 @layer global {
   html {
     block-size: 100%;
