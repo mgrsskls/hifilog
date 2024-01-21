@@ -46,7 +46,7 @@
     --color-blue-100: hsl(208, 40%, 10%);
 
     --color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
-    --color-accent-on-dark: hsl(var(--hue-accent), 34%, 75%);
+    --color-accent-on-dark: hsl(var(--hue-accent), 50%, 85%);
     --color-copy-on-light: hsl(var(--hue), 30%, 20%);
     --color-copy-on-dark: hsl(var(--hue), 30%, 80%);
     --color-secondary-on-light: hsl(var(--hue), 30%, 40%);

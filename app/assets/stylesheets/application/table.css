@@ -59,7 +59,7 @@
   }
 }
 
-@media (max-width: 39.9375em) and (scripting: enabled) {
+@media (max-width: 39.9375em) {
   table-saw {
     table {
       inline-size: 100%;
