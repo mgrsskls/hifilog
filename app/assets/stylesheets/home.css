@@ -1,5 +1,12 @@
 .Home {
   container: home / inline-size;
+  padding-block: 1rem;
+}
+
+@media (max-width: 78rem) {
+  .Home {
+    padding-inline: 2rem;
+  }
 }
 
 .Home-intro,

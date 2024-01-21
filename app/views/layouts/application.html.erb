@@ -100,9 +100,11 @@
         </div>
       </div>
     </header>
-    <nav aria-label="Breadcrumbs" class="Breadcrumbs">
-      <ol class="Breadcrumbs-list u-container"><%= render_breadcrumbs :tag => :li, :separator => "" %></ol>
-    </nav>
+    <% unless render_breadcrumbs.empty? %>
+      <nav aria-label="Breadcrumbs" class="Breadcrumbs">
+        <ol class="Breadcrumbs-list u-container"><%= render_breadcrumbs :tag => :li, :separator => "" %></ol>
+      </nav>
+    <% end %>
     <main id="content">
       <div class="u-container">
         <%= render "shared/flash_messages", messages: flash if flash.any? %>
@@ -115,7 +117,7 @@
           <div class="u-container">
             <h2><%= t('home.recently_added') %></h2>
 
-            <div class="u-flex u-flexWrap u-gap-lg">
+            <div class="Newest-lists u-flex u-flexWrap">
               <% if newest_products.any? %>
                 <div>
                   <h3><%= t('headings.products') %></h3>

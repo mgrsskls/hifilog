@@ -26,10 +26,10 @@
 }
 
 @font-face {
-  font-family: 'Bungee Outline';
+  font-family: 'Satisfy';
   font-style: normal;
   font-weight: 400;
-  src: url("/fonts/bungee-outline.woff2") format('woff2');
+  src: url("/fonts/satisfy.woff2") format('woff2');
 }
 
 @layer global {
@@ -169,6 +169,7 @@
 
    body > :is(header, nav, main, footer) {
     inline-size: 100%;
+    box-sizing: content-box;
    }
 
   a {
@@ -194,7 +195,7 @@
 
   main {
     flex: 1;
-    padding-block: clamp(2rem, 4vw, 3rem);
+    padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
   }
 
   h1,
