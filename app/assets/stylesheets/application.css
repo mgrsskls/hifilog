@@ -257,10 +257,6 @@
     cursor: default;
   }
 
-  .is-positive {
-    background: var(--color-positive);
-  }
-
   @media (max-width: 32em) {
     h1,
     .h1 {
