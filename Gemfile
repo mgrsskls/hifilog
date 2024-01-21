@@ -32,7 +32,6 @@ gem "friendly_id"
 gem "pg"
 gem "rubocop", require: false
 gem "rubocop-rails", require: false
-gem "sassc-rails"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
@@ -78,3 +77,5 @@ group :test do
 end
 
 gem "dockerfile-rails", ">= 1.6", :group => :development
+
+gem "cssbundling-rails", "~> 1.3"

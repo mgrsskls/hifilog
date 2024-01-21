@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "postcss": "^8.4.33",
+    "postcss-cli": "^11.0.0",
+    "postcss-import": "^16.0.0"
+  },
+  "scripts": {
+    "build:css": "postcss ./app/assets/stylesheets/*.css --dir ./app/assets/builds/ --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mgrsskls/hifi-gear.git"
+  }
+}
