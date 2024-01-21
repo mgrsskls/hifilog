@@ -36,7 +36,7 @@ class UsersController < ApplicationController
       @all_products = all_products
     end
 
-    @all_categories = all_products.flat_map(&:product.sub_categories).uniq.sort_by { |c| c[:name].downcase }
+    @all_categories = all_products.flat_map(&:sub_categories).uniq.sort_by { |c| c[:name].downcase }
 
     products_with_setup = @user.setups.flat_map(&:products)
     @products_without_setup = (all_products - products_with_setup)
