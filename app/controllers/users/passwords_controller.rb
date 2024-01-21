@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
-  add_breadcrumb 'Hifi Gear', :root_path
+  add_breadcrumb APP_NAME, :root_path
   add_breadcrumb I18n.t('user_form.login'), :new_user_session_path
 
   # GET /resource/password/new
