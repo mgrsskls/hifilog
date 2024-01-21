@@ -11,7 +11,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :confirmable
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
@@ -26,6 +27,8 @@ class User < ApplicationRecord
       updated_at
       random_username
       user_name
+      confirmation_token
+      unconfirmed_email
     ]
   end
 
