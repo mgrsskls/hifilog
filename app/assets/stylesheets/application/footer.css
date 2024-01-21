@@ -1,5 +1,5 @@
 .Footer {
-  background: var(--color-header-bg);
+  background: var(--color-blue-90);
   padding-block: 1rem;
   color: var(--color-header-copy);
   font-size: .875em;
@@ -10,7 +10,7 @@
 }
 
 .Newest {
-  background: var(--color-blue-90);
+  background: var(--color-header-bg);
   margin-block-start: 3rem;
   padding-block: 3rem;
 }
