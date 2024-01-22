@@ -8,6 +8,10 @@
   display: flex;
 }
 
+.u-flexGrow {
+  flex-grow: 1;
+}
+
 .u-spaceBetween {
   justify-content: space-between;
 }
