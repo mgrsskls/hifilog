@@ -40,6 +40,17 @@
     justify-content: space-between;
   }
 
+  .Header-toggleLabel {
+    color: var(--color-copy-on-dark);
+    font-size: .75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    align-self: center;
+    margin-inline-start: auto;
+    margin-inline-end: .5rem;
+  }
+
   .Header-toggle {
     background: var(--color-button-bg);
     color: #fff;
@@ -76,7 +87,8 @@
 }
 
 @media (min-width: 50.0625rem) {
-  .Header-toggle {
+  .Header-toggle,
+  .Header-toggleLabel {
     display: none;
   }
 

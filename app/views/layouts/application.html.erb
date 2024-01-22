@@ -32,71 +32,74 @@
             <span>HiFi</span><span>log</span>
           </a>
         <% end %>
-        <button type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false" class="Header-toggle" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')">
-          <svg class="Header-toggleIcon Header-toggleIcon--open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
-          <svg class="Header-toggleIcon Header-toggleIcon--close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <div class="Header-menuContainer" id="menu">
-          <div class="Header-menu">
-            <nav aria-label="Main" class="Menu">
-              <ul class="Menu-list Menu-list--main">
-                <li>
-                  <a href="<%= products_path %>"<%= active_menu_state(@active_menu, :products) %>>
-                    <%= t('headings.products') %>
-                  </a>
-                </li>
-                <li>
-                  <a href="<%= brands_path %>"<%= active_menu_state(@active_menu, :brands) %>>
-                    <%= t('headings.brands').html_safe %>
-                  </a>
-                </li>
-                <li>
-                  <a href="<%= categories_path %>"<%= active_menu_state(@active_menu, :categories) %>>
-                    <%= t('headings.categories').html_safe %>
-                  </a>
-                </li>
+        <div class="u-flex u-flexGrow">
+          <span class="Header-toggleLabel" id="Menu-button-label">Menu</span>
+          <button type="button" aria-labelledby="Menu-button-label" aria-controls="menu" aria-expanded="false" class="Header-toggle" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')">
+            <svg class="Header-toggleIcon Header-toggleIcon--open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <svg class="Header-toggleIcon Header-toggleIcon--close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div class="Header-menuContainer" id="menu">
+            <div class="Header-menu">
+              <nav aria-label="Main" class="Menu">
+                <ul class="Menu-list Menu-list--main">
+                  <li>
+                    <a href="<%= products_path %>"<%= active_menu_state(@active_menu, :products) %>>
+                      <%= t('headings.products') %>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="<%= brands_path %>"<%= active_menu_state(@active_menu, :brands) %>>
+                      <%= t('headings.brands').html_safe %>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="<%= categories_path %>"<%= active_menu_state(@active_menu, :categories) %>>
+                      <%= t('headings.categories').html_safe %>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+              <search class="Header-search">
+                <%= form_tag search_path, method: :get, class: "Search" do %>
+                  <%= text_field_tag :query, nil, type: 'search', value: '', class: 'Search-input', placeholder: t('search') + " …", minlength: 1, required: true %>
+                  <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                  <% end %>
+                <% end %>
+              </search>
+            </div>
+            <nav aria-label="Account">
+              <ul class="Menu-list">
+                <% if user_signed_in? %>
+                  <li>
+                    <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
+                      <%= t('dashboard') %>
+                    </a>
+                  </li>
+                  <li>
+                    <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete  %>
+                  </li>
+                <% else %>
+                  <li>
+                    <a href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
+                      <%= t('user_form.signup') %>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
+                      <%= t('user_form.login') %>
+                    </a>
+                  </li>
+                <% end %>
               </ul>
             </nav>
-            <search class="Header-search">
-              <%= form_tag search_path, method: :get, class: "Search" do %>
-                <%= text_field_tag :query, nil, type: 'search', value: '', class: 'Search-input', placeholder: t('search') + " …", minlength: 1, required: true %>
-                <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                  </svg>
-                <% end %>
-              <% end %>
-            </search>
           </div>
-          <nav aria-label="Account">
-            <ul class="Menu-list">
-              <% if user_signed_in? %>
-                <li>
-                  <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
-                    <%= t('dashboard') %>
-                  </a>
-                </li>
-                <li>
-                  <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete  %>
-                </li>
-              <% else %>
-                <li>
-                  <a href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
-                    <%= t('user_form.signup') %>
-                  </a>
-                </li>
-                <li>
-                  <a href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
-                    <%= t('user_form.login') %>
-                  </a>
-                </li>
-              <% end %>
-            </ul>
-          </nav>
         </div>
       </div>
     </header>
