@@ -4,9 +4,9 @@ class UsersController < ApplicationController
 
   def show
     if params[:random_username]
-      @user = User.where(random_username: params[:random_username]).first
+      @user = User.find_by(random_username: params[:random_username])
     elsif params[:username]
-      @user = User.where(user_name: params[:username]).first
+      @user = User.find_by(user_name: params[:username])
     end
 
     if @user.nil?
