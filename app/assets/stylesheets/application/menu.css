@@ -3,30 +3,8 @@
   align-items: center;
 }
 
-.Menu-home {
-  text-decoration: none;
-  font-size: 2rem;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  gap: .2rem;
-}
-
 .Menu-home svg {
-  aspect-ratio: 1;
-  block-size: 1em;
-  fill: var(--color-secondary-on-dark);
-}
-
-.Menu-home span {
-  font-weight: normal;
-  font-family: "Bungee";
-  color: var(--color-white);
-}
-
-.Menu-home span:nth-of-type(2) {
-  font-family: "Bungee";
-  color: var(--color-accent-on-dark);
+  block-size: .6em;
 }
 
 .Menu-list {
