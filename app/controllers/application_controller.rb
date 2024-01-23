@@ -75,7 +75,10 @@ class ApplicationController < ActionController::Base
 
       m.add products_path
       Product.find_each do |product|
-        m.add brand_product_path(id: product.friendly_id, brand_id: product.brand.friendly_id), updated: product.updated_at
+        m.add brand_product_path(
+          id: product.friendly_id,
+          brand_id: product.brand.friendly_id
+        ), updated: product.updated_at
       end
 
       SubCategory.find_each do |sub_category|
