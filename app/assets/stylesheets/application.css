@@ -22,14 +22,7 @@
   font-family: 'Bungee';
   font-style: normal;
   font-weight: 400;
-  src: url("/fonts/bungee.woff2") format('woff2');
-}
-
-@font-face {
-  font-family: 'Satisfy';
-  font-style: normal;
-  font-weight: 400;
-  src: url("/fonts/satisfy.woff2") format('woff2');
+  src: url("/fonts/bungee.woff2?v=2") format('woff2');
 }
 
 @layer global {
