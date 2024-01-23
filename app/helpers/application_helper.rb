@@ -26,9 +26,9 @@ module ApplicationHelper
 
   def app_size
     {
-      products: Product.all,
-      brands: Brand.all,
-      categories: SubCategory.all,
+      products: Product.all.size,
+      brands: Brand.all.size,
+      categories: SubCategory.all.size,
     }
   end
 
