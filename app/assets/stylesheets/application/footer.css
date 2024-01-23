@@ -9,6 +9,11 @@
   color: inherit;
 }
 
+theme-toggle {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .Newest {
   background: var(--color-header-bg);
   padding-block: 3rem;
