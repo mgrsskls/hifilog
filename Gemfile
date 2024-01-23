@@ -76,5 +76,6 @@ end
 gem "cssbundling-rails", "~> 1.4"
 gem "jsbundling-rails"
 
+gem "stackprof"
 gem "sentry-ruby"
 gem "sentry-rails"
