@@ -20,14 +20,14 @@ ActiveAdmin.register Product do
     end
   end
 
-  form do |f|
-    f.inputs do
-      f.has_many :sub_categories_id, new_record: false do |sub_category|
-        sub_category.inputs "Photos" do
-          sub_category.input :name
-          #repeat as necessary for all fields
-        end
-      end
-    end
-  end
+  # form do |f|
+  #   f.inputs do
+  #     f.has_many :sub_categories_id, new_record: false do |sub_category|
+  #       sub_category.inputs "Photos" do
+  #         sub_category.input :name
+  #         #repeat as necessary for all fields
+  #       end
+  #     end
+  #   end
+  # end
 end

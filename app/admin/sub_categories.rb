@@ -5,7 +5,7 @@ ActiveAdmin.register SubCategory do
   #
   # Uncomment all parameters which should be permitted for assignment
   #
-  # permit_params :name, :category_id
+  permit_params :name, :category_id, :slug
   #
   # or
   #
