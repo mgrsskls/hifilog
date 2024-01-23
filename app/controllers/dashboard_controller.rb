@@ -17,8 +17,8 @@ class DashboardController < ApplicationController
     all_products = current_user.products.all.order('LOWER(name)')
 
     if params[:category]
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @all_products = current_user.products.select { |product| @sub_category.products.include?(product) }
+      sub_category = SubCategory.friendly.find(params[:category])
+      @all_products = all_products.select { |product| sub_category.products.include?(product) }
     else
       @all_products = all_products
     end

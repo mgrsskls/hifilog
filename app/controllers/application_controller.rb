@@ -48,8 +48,9 @@ class ApplicationController < ActionController::Base
 
   def user_has_brand?(brand)
     return unless brand
+    return unless user_signed_in?
 
-    user_signed_in? && current_user.products.select { |p| p.brand_id == brand.id }.any?
+    current_user.products.where(brand_id: brand.id).any?
   end
 
   def content_not_found
