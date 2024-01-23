@@ -32,6 +32,7 @@ class UsersController < ApplicationController
     if params[:category]
       @sub_category = SubCategory.friendly.find(params[:category])
       @all_products = @user.products.select { |product| @sub_category.products.include?(product) }
+      @all_products = @user.products.where(sub_category_ids)
     else
       @all_products = all_products
     end
