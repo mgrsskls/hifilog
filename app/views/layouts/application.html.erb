@@ -114,7 +114,7 @@
       <% if newest_products.any? or newest_brands.any? %>
         <div class="Newest is-dark">
           <div class="u-container">
-            <h2><%= t('home.recently_added') %></h2>
+            <h2><%= t('home.recently_added').html_safe %></h2>
 
             <div class="Newest-lists u-flex u-flexWrap">
               <% if newest_products.any? %>

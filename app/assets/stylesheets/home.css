@@ -1,6 +1,6 @@
 .Home {
   container: home / inline-size;
-  padding-block: 1rem;
+  padding-block: clamp(1rem, 8vi, 8rem);
 }
 
 @media (max-width: 78rem) {
