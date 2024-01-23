@@ -56,6 +56,10 @@ class ApplicationController < ActionController::Base
     render file: Rails.root.join('public/404.html').to_s, layout: true, status: :not_found
   end
 
+  def not_found
+    record_not_found
+  end
+
   protected
 
   def configure_permitted_parameters

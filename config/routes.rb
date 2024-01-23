@@ -68,4 +68,7 @@ Rails.application.routes.draw do
   get '/search', to: "search#results"
 
   root "application#index"
+
+  match '/' => 'application#not_found', via: [:post, :put, :patch, :delete, :options]
+  match '*url' => 'application#not_found', via: :all
 end
