@@ -30,7 +30,7 @@
         <% end %>
         <div class="u-flex u-flexGrow">
           <span class="Header-toggleLabel" id="Menu-button-label">Menu</span>
-          <button type="button" aria-labelledby="Menu-button-label" aria-controls="menu" aria-expanded="false" class="Header-toggle" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')">
+          <button type="button" aria-labelledby="Menu-button-label" aria-controls="menu" aria-expanded="false" class="Header-toggle" onclick="onMenuToggle(this)">
             <svg class="Header-toggleIcon Header-toggleIcon--open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
@@ -179,6 +179,21 @@
       </div>
     </footer>
     <script>
+      let scrollY = 0;
+
+      function onMenuToggle(button) {
+        const shouldOpen = button.getAttribute('aria-expanded') === 'false';
+
+        if (shouldOpen) {
+          scrollY = window.scrollY;
+          button.setAttribute('aria-expanded', 'true');
+        } else {
+          button.setAttribute('aria-expanded', 'false');
+          window.requestAnimationFrame(() => window.scrollTo(0, scrollY));
+
+        }
+      }
+
       document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleDateString())
     </script>
   </body>

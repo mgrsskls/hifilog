@@ -35,7 +35,7 @@
   padding-inline: var(--padding);
 }
 
-@media (max-width: 50rem) {
+@media (max-width: 52rem) {
   .Header {
     justify-content: space-between;
   }
@@ -67,11 +67,16 @@
     display: none;
   }
 
+  body:has(.Header-toggle[aria-expanded="true"]) {
+    position: fixed;
+  }
+
   .Header-menuContainer {
     position: fixed;
     inset: var(--height) 0 0 0;
     background: hsl(208, 40%, 15%);
     padding: calc(2 * var(--page-spacing)) var(--page-spacing);
+    overscroll-behavior: contain;
   }
 
   .Header-menu {
@@ -86,7 +91,7 @@
   }
 }
 
-@media (min-width: 50.0625rem) {
+@media (min-width: 52.0625rem) {
   .Header-toggle,
   .Header-toggleLabel {
     display: none;

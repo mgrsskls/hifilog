@@ -4,7 +4,7 @@
 }
 
 .Menu-home svg {
-  block-size: .6em;
+  block-size: .5em;
 }
 
 .Menu-list {
@@ -34,7 +34,7 @@
   text-decoration-thickness: var(--underline-width);
 }
 
-@media (max-width: 50rem) {
+@media (max-width: 52rem) {
   .Menu-list {
     flex-direction: column;
   }
