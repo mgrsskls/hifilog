@@ -62,7 +62,7 @@ class ApplicationController < ActionController::Base
   end
 
   def sitemap
-    map = XmlSitemap::Map.new('hifilog.com') do |m|
+    map = XmlSitemap::Map.new('www.hifilog.com', secure: true) do |m|
       m.add brands_path
       Brand.find_each do |brand|
         m.add brand_path(brand)
