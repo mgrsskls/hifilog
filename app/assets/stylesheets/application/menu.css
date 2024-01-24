@@ -3,8 +3,9 @@
   align-items: center;
 }
 
-.Menu-home svg {
-  block-size: .5em;
+.Menu-home {
+  display: block;
+  flex: 0 0 9.75rem;
 }
 
 .Menu-list {
