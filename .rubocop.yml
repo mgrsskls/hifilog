@@ -48,3 +48,6 @@ Metrics/AbcSize:
 
 Style/TrailingCommaInHashLiteral:
   Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: false

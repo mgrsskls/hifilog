@@ -1,11 +1,4 @@
 Rails.application.routes.draw do
-  scope '/dashboard', as: :dashboard do
-    get '/products', to: 'dashboard#products'
-    get '/bookmarks', to: 'dashboard#bookmarks'
-    get '/products/:category', to: 'dashboard#products', as: :products_category
-    resources :setups
-  end
-
   devise_for :admin_users, ActiveAdmin::Devise.config
 
   ActiveAdmin.routes(self)
@@ -16,9 +9,16 @@ Rails.application.routes.draw do
     sessions: "users/sessions",
   }
 
-  scope '/user' do
-    get ':username', as: :username, to: 'users#show'
-    get 'r/:random_username', as: :random_username, to: 'users#show', constraints: { username: /[a-zA-Z0-9]{8}/ }
+  scope '/users/:user_name', as: :users do
+    get '/', to: 'user#products'
+    get ':category', to: 'user#products', as: :products_category
+  end
+
+  scope '/user', as: :user do
+    get 'products', to: 'user#products', as: :products
+    get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
+    get 'products/:category', to: 'user#products', as: :products_category
+    resources :setups
   end
 
   resources :user_products, only: [:create, :destroy]

@@ -1,12 +1,10 @@
 class User < ApplicationRecord
   include Rails.application.routes.url_helpers
 
-  before_create :assing_random_username
-
   has_and_belongs_to_many :products
   has_many :setups, dependent: :destroy
 
-  validates :user_name, uniqueness: { allow_blank: true }
+  validates :user_name, uniqueness: { allow_blank: true }, presence: true, if: :public_profile?
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -25,7 +23,6 @@ class User < ApplicationRecord
       reset_password_sent_at
       reset_password_token
       updated_at
-      random_username
       user_name
       confirmation_token
       unconfirmed_email
@@ -36,21 +33,15 @@ class User < ApplicationRecord
     %w[products setups]
   end
 
-  def display_name
-    return user_name if user_name.present?
-
-    random_username
-  end
-
   def profile_path
-    return username_path(username: user_name) if user_name.present?
+    return if user_name.nil?
 
-    random_username_path(random_username:)
+    users_path(user_name)
   end
 
   private
 
-  def assing_random_username
-    self.random_username = SecureRandom.alphanumeric(8)
+  def public_profile?
+    profile_visibility != 0
   end
 end

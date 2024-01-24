@@ -5,19 +5,19 @@
   <nav class="Dashboard-menu">
     <ul class="Dashboard-links">
       <li>
-        <a class="Dashboard-link" href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
+        <a class="Dashboard-link" href="<%= user_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
           <%= t('headings.products') %>
         </a>
         <small><%= user_amount[:products] %></small>
       </li>
       <li>
-        <a class="Dashboard-link" href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
+        <a class="Dashboard-link" href="<%= user_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
           <%= t('headings.bookmarks') %>
         </a>
         <small><%= user_amount[:bookmarks] %></small>
       </li>
       <li>
-        <a class="Dashboard-link" href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
+        <a class="Dashboard-link" href="<%= user_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
           <%= t('headings.setups') %>
         </a>
         <small><%= user_amount[:setups] %></small>

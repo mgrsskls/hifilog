@@ -27,10 +27,14 @@
           <%= f.label :profile_visibility_2, "Logged in and logged out users can see my profile." %>
         </div>
 
-        <p>
-          Your profile is visible at the following URL:<br>
-          <a href="<%= current_user.profile_path %>"><b><%= request.protocol + request.host_with_port + current_user.profile_path %></b></a>
-        </p>
+        <small class="UserForm-hint"><%= t('user_form.user_name_necessary_if_public') %></small>
+
+        <% unless current_user.profile_visibility == 0 %>
+          <p>
+            Your profile is visible at the following URL:<br>
+            <a href="<%= current_user.profile_path %>"><b><%= request.protocol + request.host_with_port + current_user.profile_path %></b></a>
+          </p>
+        <% end %>
       </div>
 
       <div class="UserForm-field">

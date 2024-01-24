@@ -5,11 +5,11 @@
   <nav class="Pagination" aria-label="<%= t('filter.category.label') %>">
     <ol class="Pagination-list">
       <li>
-        <a class="Pagination-all" href="<%= dashboard_products_path %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
+        <a class="Pagination-all" href="<%= @is_public_profile ? users_path(user_name: @user.user_name) : user_products_path %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
       </li>
       <% categories.each do |category| %>
         <li>
-          <a href="<%= dashboard_products_category_path(category: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == category.friendly_id %>><%= category.name %></a>
+          <a href="<%= @is_public_profile ? users_products_category_path(user_name: @user.user_name, category: category.friendly_id) : user_products_category_path(category: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == category.friendly_id %>><%= category.name %></a>
         </li>
       <% end %>
     </ol>

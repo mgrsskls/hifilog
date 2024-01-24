@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     elsif request.parameters[:redirect]
       request.parameters[:redirect]
     else
-      dashboard_products_path
+      user_products_path(id: user.id)
     end
   end
 
