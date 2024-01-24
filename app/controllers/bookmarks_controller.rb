@@ -7,7 +7,7 @@ class BookmarksController < ApplicationController
     @bookmark = Bookmark.new(product_id: @product.id, user_id: current_user.id)
     @bookmark.save
 
-    redirect_to brand_product_path(id: @product.id, brand_id: @product.brand_id)
+    redirect_to brand_product_path(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
   end
 
   def destroy
