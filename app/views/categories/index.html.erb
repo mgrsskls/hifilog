@@ -21,8 +21,10 @@
 <% if @sub_categories.any? %>
   <table>
     <thead>
-      <th><%= t('name') %></th>
-      <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+      <tr>
+        <th><%= t('name') %></th>
+        <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+      </tr>
     </thead>
     <tbody>
       <% @sub_categories.each do |sub_category| %>

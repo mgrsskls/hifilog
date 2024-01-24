@@ -6,10 +6,12 @@
 <table-saw text-align>
   <table>
     <thead>
-      <th><%= t('name') %></th>
-      <th><%= t('headings.categories').html_safe %></th>
-      <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
-      <th class="Table-symbols"></th>
+      <tr>
+        <th><%= t('name') %></th>
+        <th><%= t('headings.categories').html_safe %></th>
+        <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+        <th class="Table-symbols"></th>
+      </tr>
     </thead>
     <tbody>
       <% brands.each do |brand| %>
