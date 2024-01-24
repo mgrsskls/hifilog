@@ -83,14 +83,14 @@ class ApplicationController < ActionController::Base
       end
 
       m.add products_path
-      Product.find_each do |product|
+      Product.includes([:brand]).find_each do |product|
         m.add brand_product_path(
           id: product.friendly_id,
           brand_id: product.brand.friendly_id
         ), updated: product.updated_at
       end
 
-      SubCategory.find_each do |sub_category|
+      SubCategory.includes([:category]).find_each do |sub_category|
         m.add category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id)
       end
     end
@@ -99,7 +99,7 @@ class ApplicationController < ActionController::Base
   end
 
   def feed
-    products = Product.all
+    products = Product.all.includes([:brand])
     brands = Brand.all
 
     @all = (products + brands).sort_by(&:created_at)
