@@ -9,8 +9,10 @@
   <% if @setups.any? %>
     <table>
       <thead>
-        <th><%= t("headings.name") %></th>
-        <th class="u-alignCenter"><%= t("headings.products") %></th>
+        <tr>
+          <th><%= t("headings.name") %></th>
+          <th class="u-alignCenter"><%= t("headings.products") %></th>
+        </tr>
       </thead>
       <tbody>
         <% @setups.each do |setup| %>

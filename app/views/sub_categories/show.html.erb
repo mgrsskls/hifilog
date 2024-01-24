@@ -21,9 +21,11 @@
 <% if @products.any? %>
   <table>
     <thead>
-      <th><%= t('headings.brand').html_safe %></th>
-      <th><%= t('name') %></th>
-      <th class="Table-symbols"></th>
+      <tr>
+        <th><%= t('headings.brand').html_safe %></th>
+        <th><%= t('name') %></th>
+        <th class="Table-symbols"></th>
+      </tr>
     </thead>
     <tbody>
       <% @products.sort_by{|c| c[:name].downcase}.each do |product| %>

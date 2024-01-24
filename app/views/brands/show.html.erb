@@ -28,9 +28,11 @@
   <table-saw>
     <table>
       <thead>
-        <th><%= t('name') %></th>
-        <th><%= t('headings.category').html_safe %></th>
-        <th class="Table-symbols"></th>
+        <tr>
+          <th><%= t('name') %></th>
+          <th><%= t('headings.category').html_safe %></th>
+          <th class="Table-symbols"></th>
+        </tr>
       </thead>
       <tbody>
         <% @products.each do |product| %>

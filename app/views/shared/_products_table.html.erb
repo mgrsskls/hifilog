@@ -6,9 +6,11 @@
 <table-saw>
   <table>
     <thead>
-      <th><%= t('name') %></th>
-      <th><%= t('headings.brand').html_safe %></th>
-      <th colspan="2"><%= t('headings.category').html_safe %></th>
+      <tr>
+        <th><%= t('name') %></th>
+        <th><%= t('headings.brand').html_safe %></th>
+        <th colspan="2"><%= t('headings.category').html_safe %></th>
+      </tr>
     </thead>
     <tbody>
       <% products.each do |product| %>
