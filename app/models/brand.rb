@@ -1,4 +1,6 @@
 class Brand < ApplicationRecord
+  include Rails.application.routes.url_helpers
+
   extend FriendlyId
 
   has_many :products, dependent: :destroy
@@ -37,5 +39,13 @@ class Brand < ApplicationRecord
     end
 
     categories.uniq.sort_by { |c| c.name.downcase }
+  end
+
+  def display_name
+    name
+  end
+
+  def url
+    brand_url(id: friendly_id)
   end
 end

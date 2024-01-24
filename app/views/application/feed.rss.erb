@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title><%= APP_NAME %></title>
+    <description><%= t('meta_description', products_size: app_size[:products], products_path: products_path, brands_size: app_size[:brands], brands_path: brands_path, categories_size: app_size[:categories], categories_path: categories_path) %></description>
+    <link><%= root_url %></link>
+    <atom:link href="<%= rss_url %>" rel="self" type="application/rss+xml" />
+
+    <% @all.each do |item| %>
+      <item>
+        <title><%= item.display_name %></title>
+        <pubDate><%= item.created_at.to_formatted_s(:rfc822) %></pubDate>
+        <link><%= item.url %></link>
+        <guid><%= item.url %></guid>
+      </item>
+    <% end %>
+  </channel>
+</rss>

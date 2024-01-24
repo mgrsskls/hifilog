@@ -89,6 +89,17 @@ class ApplicationController < ActionController::Base
     render xml: map.render
   end
 
+  def feed
+    products = Product.all
+    brands = Brand.all
+
+    @all = (products + brands).sort_by(&:created_at)
+
+    respond_to do |format|
+      format.rss { render layout: false }
+    end
+  end
+
   protected
 
   def configure_permitted_parameters

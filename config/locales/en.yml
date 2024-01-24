@@ -66,6 +66,7 @@ en:
       label: Filter by letter
     category:
       label: Filter by category
+  meta_description: HiFi Log is a community-driven platform with %{products_size} products by %{brands_size} brands in %{categories_size} categories.
   home:
     intro: >
       <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a community-driven platform with <span><a href="%{products_path}">%{products_size} products</a> by <a href="%{brands_path}">%{brands_size} brands</a> in <a href="%{categories_path}">%{categories_size} categories</a><span class="Home-introDot">.</span></span>
