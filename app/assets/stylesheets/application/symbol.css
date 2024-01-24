@@ -24,6 +24,7 @@
   color: hsl(var(--color));
   border: var(--border);
   border-radius: var(--border-radius);
+  font-weight: 600;
 }
 
 .Symbol:not(.Symbol--large) {

@@ -57,6 +57,10 @@
   table .Symbols {
     justify-content: flex-end;
   }
+
+  tr.is-positive {
+    font-weight: bold;
+  }
 }
 
 @media (max-width: 39.9375em) {
