@@ -1,4 +1,6 @@
 class Product < ApplicationRecord
+  include Rails.application.routes.url_helpers
+
   extend FriendlyId
 
   belongs_to :brand
@@ -25,5 +27,13 @@ class Product < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[brand setups sub_categories users]
+  end
+
+  def display_name
+    "#{brand.name} #{name}"
+  end
+
+  def url
+    brand_product_url(id: friendly_id, brand_id: brand.friendly_id)
   end
 end

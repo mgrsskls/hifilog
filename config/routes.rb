@@ -70,6 +70,7 @@ Rails.application.routes.draw do
   root "application#index"
 
   get '/sitemap.xml', to: 'application#sitemap'
+  get '/feed.rss', to: 'application#feed', as: :rss
 
   match '/' => 'application#not_found', via: [:post, :put, :patch, :delete, :options]
   match '*url' => 'application#not_found', via: :all

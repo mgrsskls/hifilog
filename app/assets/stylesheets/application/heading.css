@@ -4,7 +4,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem 2rem;
-  margin-block-end: 2.5rem;
+  margin-block-end: clamp(1.5rem, 4vi, 2.5rem);
 }
 
 .Heading-amount {

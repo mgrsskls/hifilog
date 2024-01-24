@@ -16,7 +16,7 @@ theme-toggle {
 
 .Newest {
   background: var(--color-header-bg);
-  padding-block: 3rem;
+  padding-block: clamp(2rem, 4vi, 3rem);
 }
 
 .Newest-lists {
@@ -24,8 +24,7 @@ theme-toggle {
 }
 
 .Newest h2 {
-  margin-block-start: 0;
-  margin-block-end: 2rem;
+  margin-block: 0;
   line-height: 1;
   font-size: 0.875rem;
   font-weight: 600;
@@ -52,4 +51,17 @@ theme-toggle {
   font-weight: normal;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.025em;
+}
+
+.RssFeed {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--color-white);
+}
+
+.RssFeed svg {
+  aspect-ratio: 1;
+  block-size: 1.6875em;
+  border-radius: var(--border-radius);
 }
