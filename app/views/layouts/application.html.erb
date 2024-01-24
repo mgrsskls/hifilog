@@ -74,7 +74,7 @@
               <ul class="Menu-list">
                 <% if user_signed_in? %>
                   <li>
-                    <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
+                    <a href="<%= user_products_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
                       <%= t('dashboard') %>
                     </a>
                   </li>

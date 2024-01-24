@@ -15,7 +15,7 @@
       <tbody>
         <% @setups.each do |setup| %>
           <tr>
-            <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
+            <th><%= link_to setup.name, user_setup_path(setup) %></th>
             <td class="u-alignCenter"><%= setup.products.any? ? setup.products.size : "-" %></td>
           </tr>
         <% end %>

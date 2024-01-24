@@ -99,12 +99,14 @@ en:
   status: Status
   users: Users
   user_form:
+    user_name_necessary_if_public: You must enter a user name if you set your profile to public.
     login: Log in
     logout: Log out
     signup: Sign up
     forgot_password:
       heading: Forgot your password?
       submit: Send me reset instructions
+  your_profile: Your profile
   headings:
     bookmarks: Bookmarks
     category: Category

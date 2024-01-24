@@ -20,7 +20,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # GET /resource/edit
   def edit
-    add_breadcrumb I18n.t('dashboard')
+    add_breadcrumb I18n.t('your_profile')
     add_breadcrumb I18n.t('account'), :edit_user_registration_path
     @active_menu = :dashboard
     @active_dashboard_menu = :account
@@ -30,7 +30,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # PUT /resource
   def update
-    add_breadcrumb I18n.t('dashboard')
+    add_breadcrumb I18n.t('your_profile')
     add_breadcrumb I18n.t('account')
     @active_menu = :dashboard
     @active_dashboard_menu = :account
