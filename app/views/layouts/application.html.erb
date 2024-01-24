@@ -9,7 +9,7 @@
     <%= yield :css %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <meta name="description" content="<%= t('meta_description', products_size: app_size[:products], products_path: products_path, brands_size: app_size[:brands], brands_path: brands_path, categories_size: app_size[:categories], categories_path: categories_path) %>">
+    <meta name="description" content="<%= t('meta_description', products_size: all_records[:products].count, products_path: products_path, brands_size: all_records[:brands].count, brands_path: brands_path, categories_size: all_records[:categories].count, categories_path: categories_path) %>">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=4">
     <link rel="icon" type="image/svg" href="/favicon.svg?v=2">
     <link rel="manifest" href="/site.webmanifest">

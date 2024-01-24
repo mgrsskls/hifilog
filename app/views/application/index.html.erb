@@ -4,7 +4,7 @@
 
 <div class="Home">
   <p class="Home-intro">
-    <%= t('home.intro', products_size: app_size[:products], products_path: products_path, brands_size: app_size[:brands], brands_path: brands_path, categories_size: app_size[:categories], categories_path: categories_path).html_safe %>
+    <%= t('home.intro', products_size: all_records[:products].count, products_path: products_path, brands_size: all_records[:brands].count, brands_path: brands_path, categories_size: all_records[:categories].count, categories_path: categories_path).html_safe %>
   </p>
 
   <p class="Home-signUp"><%= t('home.sign_up', sign_up_path: new_user_registration_path).html_safe %></p>

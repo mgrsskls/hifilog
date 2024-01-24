@@ -24,14 +24,6 @@ module ApplicationHelper
     datetime.strftime('%Y-%m-%dT%H:%M')
   end
 
-  def app_size
-    {
-      products: Product.all.size,
-      brands: Brand.all.size,
-      categories: SubCategory.all.size,
-    }
-  end
-
   def user_amount
     return unless user_signed_in?
 

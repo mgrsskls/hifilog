@@ -6,7 +6,7 @@
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
 </div>
 
-<% if @brand.sub_categories.size > 1 %>
+<% if @brand.sub_categories.any? %>
   <nav class="Pagination" aria-label="<%= t('filter.category.label') %>">
     <ol class="Pagination-list">
       <li>

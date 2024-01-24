@@ -9,9 +9,9 @@ class BrandsController < ApplicationController
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
-      all_brands = Brand.where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
+      all_brands = Brand.where('name ILIKE :prefix', prefix: "#{params[:letter]}%").includes([:products])
     else
-      all_brands = Brand.all
+      all_brands = Brand.all.includes([:products])
     end
 
     @brands = all_brands.order('LOWER(name)').page(params[:page])
@@ -22,7 +22,7 @@ class BrandsController < ApplicationController
     @active_menu = :brands
 
     @brand = Brand.friendly.find(params[:id])
-    @products = @brand.products.order('LOWER(name)').page(params[:page])
+    @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
 
     add_breadcrumb @brand.name
   end
@@ -32,7 +32,7 @@ class BrandsController < ApplicationController
 
     sub_category = SubCategory.friendly.find(params[:category])
     @brand = Brand.friendly.find(params[:brand_id])
-    @products = sub_category.products.where(brand_id: @brand.id).order('LOWER(name)').page(params[:page])
+    @products = sub_category.products.includes([:sub_categories]).where(brand_id: @brand.id).order('LOWER(name)').page(params[:page])
     add_breadcrumb @brand.name, brand_path(id: @brand.friendly_id)
     add_breadcrumb sub_category.name
 
