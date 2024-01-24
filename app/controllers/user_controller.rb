@@ -42,7 +42,7 @@ class UserController < ApplicationController
       return
     end
 
-    all_products = @user.products.all.order('LOWER(name)')
+    all_products = @user.products.all.includes([:sub_categories, :brand]).order('LOWER(name)')
 
     if params[:category]
       sub_category = SubCategory.friendly.find(params[:category])
@@ -53,7 +53,7 @@ class UserController < ApplicationController
 
     @all_categories = all_products.flat_map(&:sub_categories).uniq.sort_by { |c| c[:name].downcase }
 
-    products_with_setup = @user.setups.flat_map(&:products)
+    products_with_setup = @user.setups.includes([:products]).flat_map(&:products)
     @products_without_setup = (all_products - products_with_setup)
 
     if params[:user_name]

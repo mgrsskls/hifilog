@@ -18,11 +18,11 @@ class SubCategoriesController < ApplicationController
     if params[:letter]
       add_breadcrumb @sub_category.name, category_sub_category_path(@sub_category)
       add_breadcrumb params[:letter].upcase
-      @products = @sub_category.products.where('name ILIKE :prefix',
+      @products = @sub_category.products.includes([:brand]).where('name ILIKE :prefix',
                                                prefix: "#{params[:letter]}%").order('LOWER(name)').page(params[:page])
     else
       add_breadcrumb @sub_category.name
-      @products = @sub_category.products.order('LOWER(name)').page(params[:page])
+      @products = @sub_category.products.includes([:brand]).order('LOWER(name)').page(params[:page])
     end
   end
 end

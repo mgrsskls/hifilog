@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   helper_method :user_has_product?
   helper_method :user_has_brand?
   helper_method :user_has_bookmark?
+  helper_method :all_records
   helper_method :newest_products
   helper_method :newest_brands
 
@@ -16,12 +17,20 @@ class ApplicationController < ActionController::Base
 
   attr_writer :current_user
 
+  def all_records
+    {
+      products: Product.all.includes([:brand]),
+      brands: Brand.all,
+      categories: SubCategory.all,
+    }
+  end
+
   def newest_products
-    Product.all.order(created_at: :desc).limit(10)
+    all_records[:products].limit(10).order(created_at: :desc)
   end
 
   def newest_brands
-    Brand.all.order(created_at: :desc).limit(10)
+    all_records[:brands].limit(10).order(created_at: :desc)
   end
 
   def after_sign_in_path_for(user)

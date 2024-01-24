@@ -8,9 +8,9 @@ class CategoriesController < ApplicationController
     @categories = Category.all.sort_by { |c| c[:name].downcase }
 
     sub_categories = if params[:id].present?
-                       SubCategory.where(category_id: params[:id].to_i)
+                       SubCategory.where(category_id: params[:id].to_i).includes([:category])
                      else
-                       SubCategory.all
+                       SubCategory.all.includes([:category])
                      end
     @sub_categories = sub_categories.sort_by { |c| c[:name].downcase }
   end
