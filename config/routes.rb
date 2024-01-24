@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     resources :setups
   end
 
-  resources :user_products, only: [:create, :destroy]
+  resources :user_products, only: [:create, :destroy], as: :owned_products
   resources :setup_products, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
 
