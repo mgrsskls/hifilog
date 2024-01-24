@@ -51,3 +51,6 @@ Style/TrailingCommaInHashLiteral:
 
 Style/TrailingCommaInArguments:
   Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets

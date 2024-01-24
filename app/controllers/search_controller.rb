@@ -10,8 +10,10 @@ class SearchController < ApplicationController
     else
       query = "%#{params[:query]}%"
 
-      @products = Product.where('name ILIKE ?', query).includes([:brand, :sub_categories]).sort_by { |a| -(query.length - a.name.length) }
-      @brands = Brand.where('name ILIKE ?', query).includes([:products]).sort_by { |a| -(query.length - a.name.length) }
+      @products = Product.where('name ILIKE ?', query).includes([:brand, :sub_categories])
+                         .sort_by { |a| -(query.length - a.name.length) }
+      @brands = Brand.where('name ILIKE ?', query).includes([:products])
+                     .sort_by { |a| -(query.length - a.name.length) }
     end
   end
 end

@@ -32,7 +32,8 @@ class BrandsController < ApplicationController
 
     sub_category = SubCategory.friendly.find(params[:category])
     @brand = Brand.friendly.find(params[:brand_id])
-    @products = sub_category.products.includes([:sub_categories]).where(brand_id: @brand.id).order('LOWER(name)').page(params[:page])
+    @products = sub_category.products.includes([:sub_categories]).where(brand_id: @brand.id)
+                            .order('LOWER(name)').page(params[:page])
     add_breadcrumb @brand.name, brand_path(id: @brand.friendly_id)
     add_breadcrumb sub_category.name
 
