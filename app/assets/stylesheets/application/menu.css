@@ -89,8 +89,8 @@
     position: absolute;
     inset-block-start: var(--height);
     inset-inline-start: -1rem;
-    background: var(--color-blue-90);
-    padding: 1rem;
+    background: var(--color-header-bg);
+    padding: 0 1rem 1rem;
   }
 
   .Menu-list li:has(.Menu-subList):is(:hover, :focus-within) .Menu-subList {
