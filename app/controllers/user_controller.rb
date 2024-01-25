@@ -19,10 +19,7 @@ class UserController < ApplicationController
     if params[:user_name]
       @user = User.find_by(user_name: params[:user_name])
 
-      unless @user
-        redirect_to root_path
-        return
-      end
+      raise ActiveRecord::RecordNotFound unless @user
 
       @is_public_profile = true
       add_breadcrumb I18n.t('users')
@@ -33,11 +30,6 @@ class UserController < ApplicationController
       @user = current_user
       add_breadcrumb I18n.t('dashboard'), dashboard_root_path
       add_breadcrumb I18n.t('headings.products'), dashboard_products_path
-    end
-
-    if @user.nil?
-      render '404', layout: true, status: :not_found
-      return
     end
 
     # if the visited profile is not visible to anyone and the visiting user is a different user
