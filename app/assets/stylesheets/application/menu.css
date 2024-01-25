@@ -21,6 +21,7 @@
   align-items: center;
   color: var(--color-header-copy);
   text-decoration: none;
+  border: none;
 }
 
 .Menu-list :is(a, button):is(:hover, :focus) {

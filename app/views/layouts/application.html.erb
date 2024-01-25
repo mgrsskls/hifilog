@@ -125,15 +125,17 @@
       </div>
     </header>
     <% unless render_breadcrumbs.empty? %>
-      <nav aria-label="Breadcrumbs" class="Breadcrumbs u-container">
-        <ol class="Breadcrumbs-list">
-          <li>
-            <%= link_to root_path, class: "Breadcrumbs-home" do %>
-              <svg aria-label="Home" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><path d="M9 2a1 1 0 0 0-2 0L2 8a1 1 0 0 0 1 1h1v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V9h1a1 1 0 0 0 1-1L9 2Z"/></svg>
-            <% end %>
-          </li>
-          <%= render_breadcrumbs :tag => :li, :separator => "" %>
-        </ol>
+      <nav aria-label="Breadcrumbs" class="Breadcrumbs">
+        <div class="u-container">
+          <ol class="Breadcrumbs-list">
+            <li>
+              <%= link_to root_path, class: "Breadcrumbs-home" do %>
+                <svg aria-label="Home" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><path d="M9 2a1 1 0 0 0-2 0L2 8a1 1 0 0 0 1 1h1v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V9h1a1 1 0 0 0 1-1L9 2Z"/></svg>
+              <% end %>
+            </li>
+            <%= render_breadcrumbs :tag => :li, :separator => "" %>
+          </ol>
+        </div>
       </nav>
     <% end %>
     <main id="content">
