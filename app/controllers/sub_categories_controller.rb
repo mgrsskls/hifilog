@@ -5,7 +5,7 @@ class SubCategoriesController < ApplicationController
     @active_menu = :categories
 
     @sub_category = SubCategory.friendly.find(params[:id])
-    @category = Category.find(@sub_category.category.id)
+    @category = Category.friendly.find(params[:category_id])
     @filter_all_path = category_sub_category_path(id: params[:id], category_id: params[:category_id])
     @filter_paths = helpers.abc.map do |letter|
       { path: letter_category_sub_categories_path(id: params[:id], category_id: params[:category_id], letter:),

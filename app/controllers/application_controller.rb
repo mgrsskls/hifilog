@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+  rescue_from ActionController::RoutingError, with: :not_found
 
   helper_method :current_user
   helper_method :user_has_product?
@@ -62,12 +63,8 @@ class ApplicationController < ActionController::Base
     current_user.products.where(brand_id: brand.id).any?
   end
 
-  def content_not_found
-    render file: Rails.root.join('public/404.html').to_s, layout: true, status: :not_found
-  end
-
   def not_found
-    record_not_found
+    render 'not_found', status: :not_found
   end
 
   def sitemap
@@ -114,9 +111,5 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:user_name])
     devise_parameter_sanitizer.permit(:account_update, keys: [:profile_visibility, :user_name])
-  end
-
-  def record_not_found
-    render '404', layout: true, status: :not_found
   end
 end

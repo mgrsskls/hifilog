@@ -90,6 +90,7 @@ en:
     filter_brands: Search for brand
     link: Add Product
     submit: Submit
+  not_found: We could not find what you were looking for.
   overview: Overview
   remove_from: Remove from &ldquo;%{name}&rdquo;
   remove_from_collection: Remove from collection
