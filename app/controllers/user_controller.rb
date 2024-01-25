@@ -3,7 +3,7 @@ class UserController < ApplicationController
     add_breadcrumb I18n.t('dashboard')
 
     unless user_signed_in?
-      redirect_to new_user_session_url
+      redirect_to new_user_session_url(redirect: dashboard_root_path)
       return
     end
 
@@ -37,14 +37,14 @@ class UserController < ApplicationController
       if user_signed_in?
         redirect_to root_url
       else
-        redirect_to new_user_session_url
+        redirect_to root_path
       end
       return
     end
 
     # if visited profile is not visible to logged out users and the current user is not logged in
     if @user.profile_visibility == 1 && !user_signed_in?
-      redirect_to new_user_session_url
+      redirect_to new_user_session_url(redirect: user_path(user_name: @user.user_name))
       return
     end
 
