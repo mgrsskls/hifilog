@@ -1,14 +1,17 @@
 .Breadcrumbs {
   --gap: 0.5rem;
 
-  color: var(--color-secondary);
-  font-size: 0.875em;
   margin-block-start: 1rem;
-  list-style: none;
 }
 
 .Breadcrumbs-list {
-  padding-inline-start: 0;
+  list-style: "";
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.875em;
+  color: var(--color-secondary);
 }
 
 .Breadcrumbs li {
@@ -18,4 +21,17 @@
 .Breadcrumbs li:not(:first-child)::before {
   content: "/";
   margin-inline: var(--gap);
+}
+
+.Breadcrumbs-home {
+  text-decoration: none;
+}
+
+.Breadcrumbs-home svg {
+  --size: 1.2em;
+
+  display: flex;
+  block-size: 1.2em;
+  inline-size: 1.2em;
+  fill: var(--color-secondary);
 }

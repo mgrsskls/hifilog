@@ -13,7 +13,7 @@
       <%= render "shared/back_link" %>
     </div>
     <div class="PageAction">
-      <%= button_to t('delete_setup.label'), user_setup_path(id: @setup.id), method: :delete, class: "DeleteButton Button Button--negative" %>
+      <%= button_to t('delete_setup.label'), dashboard_setup_path(id: @setup.id), method: :delete, class: "DeleteButton Button Button--negative" %>
 
       <script>
         Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {

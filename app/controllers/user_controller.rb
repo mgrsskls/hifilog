@@ -1,5 +1,15 @@
 class UserController < ApplicationController
-  add_breadcrumb APP_NAME, :root_path
+
+  def dashboard
+    add_breadcrumb I18n.t('dashboard')
+
+    @active_menu = :dashboard
+    @active_dashboard_menu = :dashboard
+
+    @products_count = current_user.products.count
+    @bookmarks_count = Bookmark.where(user_id: current_user.id).count
+    @setups_count = current_user.setups.count
+  end
 
   def products
     if params[:user_name]
@@ -14,11 +24,11 @@ class UserController < ApplicationController
       add_breadcrumb I18n.t('users')
       add_breadcrumb @user.user_name
     elsif user_signed_in?
-      @active_menu = :dashboard
+
       @active_dashboard_menu = :products
       @user = current_user
-      add_breadcrumb I18n.t('your_profile')
-      add_breadcrumb I18n.t('headings.products'), user_products_path
+      add_breadcrumb I18n.t('dashboard'), dashboard_root_path
+      add_breadcrumb I18n.t('headings.products'), dashboard_products_path
     end
 
     if @user.nil?
@@ -64,10 +74,9 @@ class UserController < ApplicationController
   end
 
   def bookmarks
-    add_breadcrumb I18n.t('your_profile')
-    add_breadcrumb I18n.t('headings.bookmarks'), user_bookmarks_path
+    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
+    add_breadcrumb I18n.t('headings.bookmarks'), dashboard_bookmarks_path
 
-    @active_menu = :dashboard
     @active_dashboard_menu = :bookmarks
 
     bookmarks = Bookmark.where(user_id: current_user.id)

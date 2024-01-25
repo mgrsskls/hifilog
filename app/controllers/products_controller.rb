@@ -1,7 +1,6 @@
 class ProductsController < ApplicationController
   before_action :authenticate_user!, only: [:create]
 
-  add_breadcrumb APP_NAME, :root_path
   add_breadcrumb I18n.t('headings.products'), :products_path
 
   def index

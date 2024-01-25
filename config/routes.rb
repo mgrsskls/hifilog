@@ -14,7 +14,8 @@ Rails.application.routes.draw do
     get ':category', to: 'user#products', as: :products_category
   end
 
-  scope '/user', as: :user do
+  scope '/dashboard', as: :dashboard do
+    root 'user#dashboard'
     get 'products', to: 'user#products', as: :products
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
     get 'products/:category', to: 'user#products', as: :products_category

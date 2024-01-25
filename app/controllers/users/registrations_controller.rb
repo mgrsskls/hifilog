@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
-  add_breadcrumb APP_NAME, :root_path
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
 
@@ -20,7 +19,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # GET /resource/edit
   def edit
-    add_breadcrumb I18n.t('your_profile')
+    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('account'), :edit_user_registration_path
     @active_menu = :dashboard
     @active_dashboard_menu = :account

@@ -1,0 +1,26 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= current_user.user_name ? t('headings.dashboard_name', name: current_user.user_name) : t('headings.dashboard') %></h1>
+  </div>
+
+  <ul class="DashboardStats">
+    <li>
+      <%= link_to dashboard_products_path, class: "DashboardStat" do %>
+        <h2 class="DashboardStat-heading"><%= t('heading.products') %></h2>
+        <span class="DashboardStat-value"><%= @products_count %></span>
+      <% end %>
+    </li>
+    <li>
+      <%= link_to dashboard_bookmarks_path, class: "DashboardStat" do %>
+        <h2 class="DashboardStat-heading"><%= t('heading.bookmarks') %></h2>
+        <span class="DashboardStat-value"><%= @bookmarks_count %></span>
+      <% end %>
+    </li>
+    <li>
+      <%= link_to dashboard_setups_path, class: "DashboardStat" do %>
+        <h2 class="DashboardStat-heading"><%= t('heading.setups') %></h2>
+        <span class="DashboardStat-value"><%= @setups_count %></span>
+      <% end %>
+    </li>
+  </ul>
+<% end %>
