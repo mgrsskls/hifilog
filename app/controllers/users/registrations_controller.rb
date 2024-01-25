@@ -21,7 +21,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def edit
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('account'), :edit_user_registration_path
-    @active_menu = :dashboard
     @active_dashboard_menu = :account
 
     super
@@ -31,7 +30,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def update
     add_breadcrumb I18n.t('your_profile')
     add_breadcrumb I18n.t('account')
-    @active_menu = :dashboard
     @active_dashboard_menu = :account
 
     super

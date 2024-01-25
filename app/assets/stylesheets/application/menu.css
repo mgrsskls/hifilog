@@ -37,12 +37,6 @@
   text-decoration-thickness: var(--underline-width);
 }
 
-@media (max-width: 52rem) {
-  .Menu-list {
-    flex-direction: column;
-  }
-}
-
 @media (max-width: 60em) {
   .Menu-list {
     gap: 1rem;
@@ -54,7 +48,7 @@
   list-style: "";
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: .5rem;
 }
 
 .Menu-subList li {
@@ -62,18 +56,31 @@
   align-items: center;
 }
 
-@media (max-width: 52rem) {
+.Menu-subList-separator {
+  border-block-start: var(--border) var(--color-secondary-on-dark);
+}
+
+@media (max-width: 48rem) {
+  .Menu-list {
+    flex-direction: column;
+  }
+
   .Menu-subList {
-    padding-inline-start: 1rem;
+    padding-inline-start: 0;
     padding-block-start: 1rem;
   }
 
   .Menu-subList li {
     gap: 1rem;
   }
+
+  .Menu-subList-separator {
+    margin-block-start: .5rem;
+    padding-block-start: 1rem;
+  }
 }
 
-@media (min-width: 52.0625rem) {
+@media (min-width: 48.0625rem) {
   .Menu-list li {
     position: relative;
     justify-content: space-between;
@@ -97,12 +104,11 @@
     display: flex;
   }
 
-  .Menu-subList li:last-child {
-    padding-block-start: 1rem;
-    border-block-start: var(--border) var(--color-secondary-on-dark);
+  .Menu-subList :is(a, button) {
+    block-size: auto;
   }
 
-  .Menu-subList a {
-    block-size: auto;
+  .Menu-subList-separator {
+    padding-block-start: .5rem;
   }
 }

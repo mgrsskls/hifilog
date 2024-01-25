@@ -8,7 +8,7 @@
 @media (min-width: 48.0625rem) {
   .Dashboard {
     display: flex;
-    gap: 2rem;
+    gap: clamp(2rem, 4vi, 4rem);
   }
 
   .Dashboard-menu {
@@ -33,6 +33,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 1rem;
     }
 
     li:first-child {
@@ -40,12 +41,12 @@
       margin-block-end: 1rem;
       padding-block-end: 1rem;
     }
+  }
 
-    li:last-child {
-      border-block-start: var(--border-medium);
-      margin-block-start: 1rem;
-      padding-block-start: 1rem;
-    }
+  .Dashboard-separator {
+    border-block-start: var(--border-medium);
+    margin-block-start: 1rem;
+    padding-block-start: 1rem;
   }
 
   .Dashboard-link {
@@ -73,7 +74,6 @@
 .DashboardStats {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
-  gap: 2rem;
   margin: 0;
   padding: 0;
   list-style: "";
@@ -81,9 +81,7 @@
 
 .DashboardStat {
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
-  aspect-ratio: 1.6;
   border: var(--border-medium);
   border-radius: var(--border-radius);
   text-decoration: none;
@@ -99,4 +97,21 @@
   font-size: 3rem;
   font-weight: bold;
   line-height: 1;
+}
+
+@media (max-width: 30rem) {
+  .DashboardStats {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 30.0625rem) {
+  .DashboardStats {
+    gap: 2rem;
+  }
+
+  .DashboardStat {
+    flex-direction: column;
+    aspect-ratio: 1.6;
+  }
 }

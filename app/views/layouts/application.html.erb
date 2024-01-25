@@ -98,13 +98,13 @@
                         </a>
                         <small><%= user_amount[:setups] %></small>
                       </li>
-                      <li>
+                      <li class="Menu-subList-separator">
                         <a href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>><%= t('account') %></a>
                       </li>
+                      <li>
+                        <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete  %>
+                      </li>
                     </ul>
-                  </li>
-                  <li>
-                    <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete  %>
                   </li>
                 <% else %>
                   <li>

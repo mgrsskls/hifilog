@@ -35,7 +35,7 @@
   padding-inline: var(--padding);
 }
 
-@media (max-width: 52rem) {
+@media (max-width: 48rem) {
   .Header {
     justify-content: space-between;
   }
@@ -81,7 +81,7 @@
 
   .Header-menu {
     flex-direction: column-reverse;
-    border-block-end: var(--border) hsla(0, 0%, 100%, 20%);
+    border-block-end: var(--border) var(--color-secondary-on-dark);
     padding-block-end: 1rem;
     margin-block-end: 1rem;
   }
@@ -91,7 +91,7 @@
   }
 }
 
-@media (min-width: 52.0625rem) {
+@media (min-width: 48.0625rem) {
   .Header-toggle,
   .Header-toggleLabel {
     display: none;

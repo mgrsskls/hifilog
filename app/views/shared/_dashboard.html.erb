@@ -27,8 +27,11 @@
         </a>
         <small><%= user_amount[:setups] %></small>
       </li>
-      <li>
+      <li class="Dashboard-separator">
         <a class="Dashboard-link" href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>><%= t('account') %></a>
+      </li>
+      <li>
+        <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete, class: "Dashboard-link"  %>
       </li>
     </ul>
   </nav>
