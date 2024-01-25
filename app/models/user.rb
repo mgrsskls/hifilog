@@ -36,7 +36,7 @@ class User < ApplicationRecord
   def profile_path
     return if user_name.nil?
 
-    users_path(user_name)
+    user_path(user_name)
   end
 
   private

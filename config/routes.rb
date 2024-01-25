@@ -9,7 +9,7 @@ Rails.application.routes.draw do
     sessions: "users/sessions",
   }
 
-  scope '/users/:user_name', as: :users do
+  scope '/user/:user_name', as: :user do
     get '/', to: 'user#products'
     get ':category', to: 'user#products', as: :products_category
   end
