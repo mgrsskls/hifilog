@@ -1,67 +1,102 @@
-.Dashboard {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
+
+@media (max-width: 48rem) {
+  .Dashboard-menu {
+    display: none;
+  }
 }
 
-.Dashboard-menu {
-  background: var(--color-bg2);
-  flex: 1;
-  min-inline-size: 12rem;
-  container: menu / inline-size;
-}
-
-.Dashboard-products {
-  flex: 4;
-  min-inline-size: min(32rem, 100%);
-}
-
-.Dashboard-links {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  padding: 1rem;
-
-  li {
+@media (min-width: 48.0625rem) {
+  .Dashboard {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    gap: 2rem;
   }
 
-  li:last-child {
-    border-block-start: var(--border-medium);
-    margin-block-start: 1rem;
-    padding-block-start: 1rem;
+  .Dashboard-menu {
+    background: var(--color-bg2);
+    flex: 1;
   }
-}
 
-@container menu (max-inline-size: 16rem) {
+  .Dashboard-products {
+    flex: 4;
+  }
+
   .Dashboard-links {
+    display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
     padding: 2rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    li:first-child {
+      border-block-end: var(--border-medium);
+      margin-block-end: 1rem;
+      padding-block-end: 1rem;
+    }
+
+    li:last-child {
+      border-block-start: var(--border-medium);
+      margin-block-start: 1rem;
+      padding-block-start: 1rem;
+    }
   }
-}
 
-.Dashboard-link {
-  text-decoration: none;
-}
+  .Dashboard-link {
+    text-decoration: none;
+  }
 
-.Dashboard-link:is(:hover, :focus) {
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
-  text-decoration-thickness: var(--underline-width);
-}
+  .Dashboard-link:is(:hover, :focus) {
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+    text-decoration-thickness: var(--underline-width);
+  }
 
-.Dashboard-link[aria-current="true"] {
-  font-weight: bold;
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
-  text-decoration-thickness: var(--underline-width);
+  .Dashboard-link[aria-current="true"] {
+    font-weight: bold;
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+    text-decoration-thickness: var(--underline-width);
+  }
 }
 
 .Dashboard-intro {
   margin-block-end: 3rem;
+}
+
+.DashboardStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: "";
+}
+
+.DashboardStat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 1.6;
+  border: var(--border-medium);
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  padding: 1rem;
+}
+
+.DashboardStat-heading {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.DashboardStat-value {
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 1;
 }

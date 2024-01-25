@@ -47,10 +47,18 @@ en:
     zero: 0 Brands
     one: 1 Brand
     other: "%{count} Brands"
+  amount_bookmarks:
+    zero: 0 Bookmarks
+    one: 1 Bookmark
+    other: "%{count} Bookmarks"
   amount_products:
     zero: 0 Products
     one: 1 Product
     other: "%{count} Products"
+  amount_setups:
+    zero: 0 Setups
+    one: 1 Setup
+    other: "%{count} Setups"
   amount_users:
     zero: 0 Users
     one: 1 User
@@ -109,10 +117,12 @@ en:
   your_profile: Your profile
   headings:
     bookmarks: Bookmarks
-    category: Category
-    categories: Categories
     brand: Brand
     brands: Brands
+    category: Category
+    categories: Categories
+    dashboard: Welcome back!
+    dashboard_name: Welcome back, %{name}!
     product: Product
     products: Products
     setups: Setups

@@ -76,9 +76,32 @@
               <ul class="Menu-list">
                 <% if user_signed_in? %>
                   <li>
-                    <a href="<%= user_products_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
+                    <a href="<%= dashboard_root_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
                       <%= t('dashboard') %>
                     </a>
+                    <ul class="Menu-subList">
+                      <li>
+                        <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
+                          <%= t('headings.products') %>
+                        </a>
+                        <small><%= user_amount[:products] %></small>
+                      </li>
+                      <li>
+                        <a href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
+                          <%= t('headings.bookmarks') %>
+                        </a>
+                        <small><%= user_amount[:bookmarks] %></small>
+                      </li>
+                      <li>
+                        <a href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
+                          <%= t('headings.setups') %>
+                        </a>
+                        <small><%= user_amount[:setups] %></small>
+                      </li>
+                      <li>
+                        <a href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>><%= t('account') %></a>
+                      </li>
+                    </ul>
                   </li>
                   <li>
                     <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete  %>
@@ -102,8 +125,15 @@
       </div>
     </header>
     <% unless render_breadcrumbs.empty? %>
-      <nav aria-label="Breadcrumbs" class="Breadcrumbs">
-        <ol class="Breadcrumbs-list u-container"><%= render_breadcrumbs :tag => :li, :separator => "" %></ol>
+      <nav aria-label="Breadcrumbs" class="Breadcrumbs u-container">
+        <ol class="Breadcrumbs-list">
+          <li>
+            <%= link_to root_path, class: "Breadcrumbs-home" do %>
+              <svg aria-label="Home" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><path d="M9 2a1 1 0 0 0-2 0L2 8a1 1 0 0 0 1 1h1v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V9h1a1 1 0 0 0 1-1L9 2Z"/></svg>
+            <% end %>
+          </li>
+          <%= render_breadcrumbs :tag => :li, :separator => "" %>
+        </ol>
       </nav>
     <% end %>
     <main id="content">

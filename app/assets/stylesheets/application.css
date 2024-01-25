@@ -42,7 +42,7 @@
 
     --color-white: #fff;
     --color-blue-10: hsl(204, 18.5%, 97.5%);
-    --color-blue-90: hsl(208, 40%, 12.5%);
+    --color-blue-90: hsl(209, 40%, 15%);
     --color-blue-100: hsl(208, 40%, 10%);
 
     --color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
@@ -155,7 +155,7 @@
 
    body > :is(header, nav, main, footer) {
     inline-size: 100%;
-    box-sizing: content-box;
+    box-sizing: border-box;
    }
 
   a {

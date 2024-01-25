@@ -1,5 +1,4 @@
 class SubCategoriesController < ApplicationController
-  add_breadcrumb APP_NAME, :root_path
   add_breadcrumb I18n.t('headings.categories').html_safe, :categories_path
 
   def show
