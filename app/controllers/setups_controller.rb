@@ -1,7 +1,6 @@
 class SetupsController < ApplicationController
   before_action :authenticate_user!
 
-
   def index
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path

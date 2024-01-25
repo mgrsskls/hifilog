@@ -1,5 +1,4 @@
 class UserController < ApplicationController
-
   def dashboard
     add_breadcrumb I18n.t('dashboard')
 
