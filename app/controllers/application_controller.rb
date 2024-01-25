@@ -1,3 +1,5 @@
+require 'redcarpet'
+
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -104,6 +106,12 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.rss { render layout: false }
     end
+  end
+
+  def changelog
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new)
+
+    @changelog = markdown.render(File.read("#{Rails.root}/CHANGELOG.md"))
   end
 
   protected
