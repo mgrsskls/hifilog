@@ -66,3 +66,5 @@ gem "sentry-rails"
 gem "xml-sitemap"
 
 gem "rss"
+
+gem "redcarpet"
