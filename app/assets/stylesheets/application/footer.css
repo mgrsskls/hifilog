@@ -9,6 +9,10 @@
   color: inherit;
 }
 
+.Footer a[aria-current="page"] {
+  color: var(--color-white);
+}
+
 theme-toggle {
   display: flex;
   justify-content: flex-end;
