@@ -111,7 +111,8 @@ class ApplicationController < ActionController::Base
   def changelog
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new)
 
-    @changelog = markdown.render(File.read("#{Rails.root}/CHANGELOG.md"))
+    @changelog = markdown.render(File.read(Rails.root.join('CHANGELOG.md')))
+    @page_title = 'Changelog'
   end
 
   protected

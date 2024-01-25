@@ -8,6 +8,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def new
     add_breadcrumb I18n.t('user_form.signup'), :new_user_registration_path
     @active_menu = :signup
+    @page_title = I18n.t('user_form.signup')
     super
   end
 
@@ -21,6 +22,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def edit
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('account'), :edit_user_registration_path
+    @page_title = I18n.t('account')
     @active_dashboard_menu = :account
 
     super

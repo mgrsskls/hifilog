@@ -1,6 +1,7 @@
 class UserController < ApplicationController
   def dashboard
     add_breadcrumb I18n.t('dashboard')
+    @page_title = I18n.t('dashboard')
 
     unless user_signed_in?
       redirect_to new_user_session_url(redirect: dashboard_root_path)
@@ -24,12 +25,14 @@ class UserController < ApplicationController
       @is_public_profile = true
       add_breadcrumb I18n.t('users')
       add_breadcrumb @user.user_name
+      @page_title = @user.user_name
     elsif user_signed_in?
 
       @active_dashboard_menu = :products
       @user = current_user
       add_breadcrumb I18n.t('dashboard'), dashboard_root_path
       add_breadcrumb I18n.t('headings.products'), dashboard_products_path
+      @page_title = I18n.t('headings.products')
     end
 
     # if the visited profile is not visible to anyone and the visiting user is a different user
@@ -72,6 +75,7 @@ class UserController < ApplicationController
   def bookmarks
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.bookmarks'), dashboard_bookmarks_path
+    @page_title = I18n.t('headings.bookmarks')
 
     @active_dashboard_menu = :bookmarks
 

@@ -5,6 +5,7 @@ class BrandsController < ApplicationController
 
   def index
     @active_menu = :brands
+    @page_title = I18n.t('headings.brands')
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
@@ -24,6 +25,7 @@ class BrandsController < ApplicationController
     @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
 
     add_breadcrumb @brand.name
+    @page_title = @brand.name
   end
 
   def category
@@ -36,11 +38,14 @@ class BrandsController < ApplicationController
     add_breadcrumb @brand.name, brand_path(id: @brand.friendly_id)
     add_breadcrumb sub_category.name
 
+    @page_title = @brand.name
+
     render :show
   end
 
   def new
     @active_menu = :brands
+    @page_title = I18n.t('new_brand.heading')
 
     add_breadcrumb t('add')
 

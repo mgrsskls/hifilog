@@ -5,6 +5,7 @@ class ProductsController < ApplicationController
 
   def index
     @active_menu = :products
+    @page_title = I18n.t('headings.products')
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
@@ -29,10 +30,12 @@ class ProductsController < ApplicationController
 
     add_breadcrumb @product.brand.name, brand_path(@product.brand)
     add_breadcrumb @product.name
+    @page_title = "#{@product.brand.name} #{@product.name}"
   end
 
   def new
     @active_menu = :products
+    @page_title = I18n.t('new_product.heading')
 
     add_breadcrumb t('add')
 
