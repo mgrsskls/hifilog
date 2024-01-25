@@ -35,6 +35,7 @@
     --line-height: 1.75;
     --input-padding: 0.325em 1em;
     --page-spacing: 0.75rem;
+    --header-height: 3.75rem;
 
     --hue: 208;
     --hue-sat: var(--hue), 25%;

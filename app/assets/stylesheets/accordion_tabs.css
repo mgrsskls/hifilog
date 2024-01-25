@@ -4,6 +4,7 @@ accordion-tabs {
 
 accordion-tabs details {
   border-block-end: var(--border-medium);
+  scroll-margin-block-start: var(--header-height);
 }
 
 accordion-tabs details:first-child {

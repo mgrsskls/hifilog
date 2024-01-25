@@ -192,6 +192,12 @@ class AccordionTabsAccordion {
         }
       });
       this.AccordionTabs.index = i;
+
+      window.requestAnimationFrame(() => {
+        if (element.getBoundingClientRect().top < 0) {
+          element.scrollIntoView();
+        }
+      });
     } else {
       this.AccordionTabs.index = null;
     }
