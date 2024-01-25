@@ -1,4 +1,4 @@
-@layer global, components, utils;
+@layer reset, global, components, utils;
 
 @import url("./application/back_link.css") layer(components);
 @import url("./application/breadcrumbs.css") layer(components);
@@ -17,6 +17,34 @@
 @import url("./application/table.css") layer(components);
 @import url("./application/theme_toggle.css") layer(components);
 @import url("./application/utils.css") layer(utils);
+
+@layer reset {
+  dd {
+    margin: 0;
+  }
+
+  input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
+    all: unset;
+  }
+
+  select {
+    background: none;
+  }
+
+  button {
+    all: unset;
+    border: var(--border) transparent;
+    cursor: pointer;
+  }
+
+  svg {
+    display: block;
+  }
+
+  summary {
+    cursor: default;
+  }
+}
 
 @layer global {
   html {
@@ -43,7 +71,7 @@
 
     --color-white: #fff;
     --color-blue-10: hsl(204, 18.5%, 97.5%);
-    --color-blue-90: hsl(209, 40%, 15%);
+    --color-blue-90: hsl(208, 40%, 12.5%);
     --color-blue-100: hsl(208, 40%, 10%);
 
     --color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
@@ -160,13 +188,15 @@
     box-sizing: border-box;
    }
 
-  a {
+  a,
+  button {
     color: var(--color-accent);
     text-underline-offset: var(--underline-offset);
     text-decoration-thickness: var(--underline-width);
   }
 
-  a:hover {
+  a:hover,
+  button:hover {
     color: var(--color-copy);
   }
 
@@ -212,18 +242,6 @@
     font-size: 1.4rem;
   }
 
-  dd {
-    margin: 0;
-  }
-
-  input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
-    all: unset;
-  }
-
-  select {
-    background: none;
-  }
-
   select,
   input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
     font: inherit;
@@ -245,20 +263,6 @@
 
   .field_with_errors label {
     color: var(--color-invalid-copy);
-  }
-
-  button {
-    all: unset;
-    border: var(--border) transparent;
-    cursor: pointer;
-  }
-
-  svg {
-    display: block;
-  }
-
-  summary {
-    cursor: default;
   }
 
   @media (max-width: 32em) {
