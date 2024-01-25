@@ -136,7 +136,7 @@
       --color-invalid-copy: var(--color-invalid-light);
       --color-success-bg: var(--color-success-dark);
       --color-success-copy: var(--color-success-light);
-      --color-positive: hsl(190, 40%, 15%);
+      --color-positive: hsl(190, 40%, 20%);
 
       --color-bg2: var(--color-blue-90);
       --color-accent: var(--color-accent-on-dark);
@@ -158,7 +158,7 @@
     --color-invalid-copy: var(--color-invalid-light);
     --color-success-bg: var(--color-success-dark);
     --color-success-copy: var(--color-success-light);
-    --color-positive: hsl(190, 40%, 15%);
+    --color-positive: hsl(190, 40%, 20%);
 
     --color-bg2: var(--color-blue-90);
     --color-accent: var(--color-accent-on-dark);
