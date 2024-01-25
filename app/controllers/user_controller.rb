@@ -2,6 +2,11 @@ class UserController < ApplicationController
   def dashboard
     add_breadcrumb I18n.t('dashboard')
 
+    unless user_signed_in?
+      redirect_to new_user_session_url
+      return
+    end
+
     @active_menu = :dashboard
     @active_dashboard_menu = :dashboard
 
