@@ -6,7 +6,7 @@ class Users::PasswordsController < Devise::PasswordsController
   # GET /resource/password/new
   def new
     add_breadcrumb I18n.t('user_form.forgot_password.heading')
-
+    @page_title = I18n.t('user_form.forgot_password.heading')
     @active_menu = :login
     super
   end

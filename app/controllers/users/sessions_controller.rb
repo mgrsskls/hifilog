@@ -8,6 +8,7 @@ class Users::SessionsController < Devise::SessionsController
   # GET /resource/sign_in
   def new
     @active_menu = :login
+    @page_title = I18n.t('user_form.login')
     super
   end
 

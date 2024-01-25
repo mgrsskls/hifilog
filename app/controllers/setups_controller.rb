@@ -4,6 +4,7 @@ class SetupsController < ApplicationController
   def index
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
+    @page_title = I18n.t('headings.setups')
     @active_dashboard_menu = :setups
     @setups = current_user.setups.sort_by { |c| c[:name].downcase }
   end
@@ -15,6 +16,7 @@ class SetupsController < ApplicationController
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
     add_breadcrumb @setup.name, dashboard_setup_path(@setup)
+    @page_title = @setup.name
   end
 
   def create

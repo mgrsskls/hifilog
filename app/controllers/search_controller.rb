@@ -2,6 +2,7 @@ class SearchController < ApplicationController
   add_breadcrumb I18n.t('search')
 
   def results
+    @page_title = I18n.t('search')
     @query = params[:query].strip
 
     if params[:query].length < 3

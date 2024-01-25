@@ -24,5 +24,7 @@ class SubCategoriesController < ApplicationController
       add_breadcrumb @sub_category.name
       @products = @sub_category.products.includes([:brand]).order('LOWER(name)').page(params[:page])
     end
+
+    @page_title = @sub_category.name
   end
 end
