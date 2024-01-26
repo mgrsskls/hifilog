@@ -73,6 +73,7 @@ Rails.application.routes.draw do
   get '/sitemap.xml', to: 'application#sitemap'
   get '/feed.rss', to: 'application#feed', as: :rss
   get '/changelog', to: 'application#changelog'
+  get '/about', to: 'application#about'
 
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
   get '*url', to: 'application#not_found', via: :all, format: 'html'

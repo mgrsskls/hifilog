@@ -5,12 +5,40 @@
   font-size: .875em;
 }
 
+.Footer-nav {
+  --gap: .75em;
+
+  list-style: "";
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.Footer-nav li {
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+}
+
+.Footer-nav li:not(:first-child)::before {
+  content: "";
+  display: block;
+  background: currentColor;
+  block-size: .1rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
 .Footer a {
   color: inherit;
+  text-decoration: none;
 }
 
 .Footer a[aria-current="page"] {
   color: var(--color-white);
+  text-decoration: underline;
 }
 
 theme-toggle {

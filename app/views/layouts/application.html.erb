@@ -199,7 +199,14 @@
         <div class="u-container">
           <div class="u-flex u-spaceBetween u-alignCenter">
             <nav>
-              <%= link_to "Changelog", changelog_path, "aria-current": params[:controller] == "application" && params[:action] == "changelog" ? "page" : "false" %>
+              <ul class="Footer-nav">
+                <li>
+                  <%= link_to "About", about_path, "aria-current": params[:controller] == "application" && params[:action] == "about" ? "page" : "false" %>
+                </li>
+                <li>
+                  <%= link_to "Changelog", changelog_path, "aria-current": params[:controller] == "application" && params[:action] == "changelog" ? "page" : "false" %>
+                </li>
+              </ul>
             </nav>
             <theme-toggle>
               <div class="ThemeToggle">
@@ -242,11 +249,10 @@
         } else {
           button.setAttribute('aria-expanded', 'false');
           window.requestAnimationFrame(() => window.scrollTo(0, scrollY));
-
         }
       }
 
-      document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleDateString())
+      document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleDateString());
     </script>
   </body>
 </html>

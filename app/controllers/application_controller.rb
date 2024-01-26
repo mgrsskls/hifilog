@@ -115,6 +115,13 @@ class ApplicationController < ActionController::Base
     @page_title = 'Changelog'
   end
 
+  def about
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new)
+
+    @html = markdown.render(File.read(Rails.root.join('README.md')))
+    @page_title = 'About'
+  end
+
   protected
 
   def configure_permitted_parameters
