@@ -7,7 +7,7 @@
     "postcss-import": "^16.0.0"
   },
   "scripts": {
-    "watch:css": "postcss ./app/assets/stylesheets/**/*.css --dir ./app/assets/builds/ --watch",
+    "watch:css": "postcss ./app/assets/stylesheets/*.css --dir ./app/assets/builds/ --watch",
     "build:css": "postcss ./app/assets/stylesheets/*.css --dir ./app/assets/builds/",
     "build": "esbuild ./app/assets/javascripts/*.js --target=es2020 --bundle --minify --outdir=./app/assets/builds/"
   },

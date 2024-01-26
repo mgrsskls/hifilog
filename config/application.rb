@@ -13,10 +13,6 @@ module HiFiLog
 
     config.middleware.use Rack::Deflater
 
-    config.public_file_server.headers = {
-      'Cache-Control' => 'max-age=2147483648, immutable'
-    }
-
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
