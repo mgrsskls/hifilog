@@ -1,24 +1,16 @@
-# README
+# About HiFi&hairsp;Log
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+**_HiFi&hairsp;Log_ is a platform developed by a hi-fi enthusiast for the hi-fi community.**
 
-Things you may want to cover:
+Its aim is to create an all-encompassing database of audio brands and their products, both existing and discontinued.
+It is designed to help users discover new products while also allowing them to keep track of what they currently own and have owned in the past. People who are addicted to this hobby often call it a journey, and _HiFi&thinsp;Log_ tries to support them along the way.
 
-* Ruby version
+But while a platform like this can be built by a few, it needs many to enter the thousands of brands and millions of products. That is why I hope that _HiFi&thinsp;Log_ will inspire enough people to help build the largest hi-fi database in the world.
 
-* System dependencies
+Happy listening,
 
-* Configuration
+Michael
 
-* Database creation
+## About the Author
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+_HiFi&hairsp;Log_ has been designed and developed by [Michael Großklaus](https://www.mgrossklaus.de), a hi-fi lover and professional web developer from Hamburg, Germany.
