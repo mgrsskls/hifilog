@@ -36,6 +36,10 @@
   text-decoration: none;
 }
 
+.Footer a:hover {
+  text-decoration: underline;
+}
+
 .Footer a[aria-current="page"] {
   color: var(--color-white);
   text-decoration: underline;
