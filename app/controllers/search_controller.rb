@@ -3,6 +3,7 @@ class SearchController < ApplicationController
 
   def results
     @page_title = I18n.t('search')
+    @no_index = true
     @query = params[:query].strip
 
     if params[:query].length < 3
