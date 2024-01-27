@@ -160,7 +160,7 @@
                 <%= t('home.recently_added').html_safe %>
               </h2>
               <%= link_to rss_url, class: "RssFeed" do %>
-                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 455.7 455.7"><path d="M0 0h456v456H0z" style="fill:#f78422"/><path d="M296 159C234 97 152 63 65 63v65a261 261 0 0 1 263 263h64c0-88-34-170-96-232z" style="fill:#fff"/><path d="M64 172v65c85 0 154 69 154 154h64c0-121-97-219-218-219z" style="fill:#fff"/><circle cx="109.8" cy="346.3" r="46.1" style="fill:#fff"/></svg> RSS
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 455.7 455.7"><path d="M0 0h456v456H0z" fill="#f78422"/><path d="M296 159C234 97 152 63 65 63v65a261 261 0 0 1 263 263h64c0-88-34-170-96-232z" fill="#fff"/><path d="M64 172v65c85 0 154 69 154 154h64c0-121-97-219-218-219z" fill="#fff"/><circle cx="109.8" cy="346.3" r="46.1" fill="#fff"/></svg> RSS
               <% end %>
             </div>
 
@@ -240,7 +240,7 @@
         </div>
       </div>
     </footer>
-    <script>
+    <%= javascript_tag nonce: true do %>
       let scrollY = 0;
 
       function onMenuToggle(button) {
@@ -256,6 +256,6 @@
       }
 
       document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleDateString());
-    </script>
+    <% end %>
   </body>
 </html>
