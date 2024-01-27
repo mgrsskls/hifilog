@@ -30,38 +30,18 @@ Rails.application.routes.draw do
   # /categories/:category
   resources :categories, only: [:index, :show] do
     # /categories/:category/:sub_category
-    # /categories/:category/:sub_category/a
-    # /categories/:category/:sub_category/a/page/2
-    # /categories/:category/:sub_category/page/2
-    resources :sub_categories, path: '', only: [:show] do
-      get ':id/:letter', to: 'sub_categories#show', on: :collection, as: :letter, constraints: { letter: /[a-z]/ }
-      get ':id/:letter/page/:page', to: 'sub_categories#show', on: :collection, constraints: { letter: /[a-z]/ }
-      get ':id/page/:page', to: 'sub_categories#show', on: :collection
-    end
+    resources :sub_categories, path: '', only: [:show]
   end
 
   # /brands
-  # /brands/a
-  # /brands/a/page/2
-  # /brands/page/2
   # /brands/:brand
   # /brands/:brand/:category
   resources :brands, only: [:index, :show, :new, :create] do
-    get ':letter', action: :index, on: :collection, as: :letter, constraints: { letter: /[a-z]/ }
-    get ':letter/page/:page', action: :index, on: :collection, constraints: { letter: /[a-z]/ }
-    get 'page/:page', action: :index, on: :collection
     get ':category', action: :category, as: :category
   end
 
   # /products
-  # /products/a
-  # /products/a/page/2
-  # /products/page/2
-  resources :products, only: [:index, :new, :create] do
-    get ':letter', action: :index, on: :collection, as: :letter, constraints: { letter: /[a-z]/ }
-    get ':letter/page/:page', action: :index, on: :collection, constraints: { letter: /[a-z]/ }
-    get 'page/:page', action: :index, on: :collection
-  end
+  resources :products, only: [:index, :new, :create]
 
   # /:brand/:product
   get ':brand_id/:id', as: :brand_product, to: 'products#show', constraints: { id: /.{2,}/ }

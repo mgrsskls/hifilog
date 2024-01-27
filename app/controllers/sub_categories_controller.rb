@@ -8,8 +8,10 @@ class SubCategoriesController < ApplicationController
     @category = Category.friendly.find(params[:category_id])
     @filter_all_path = category_sub_category_path(id: params[:id], category_id: params[:category_id])
     @filter_paths = helpers.abc.map do |letter|
-      { path: letter_category_sub_categories_path(id: params[:id], category_id: params[:category_id], letter:),
-        letter: }
+      {
+        path: category_sub_category_path(id: params[:id], category_id: params[:category_id], letter:),
+        letter:
+      }
     end
 
     add_breadcrumb @category.name, category_path(@category)

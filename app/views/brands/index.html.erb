@@ -13,7 +13,7 @@
     </li>
     <% abc.each do |letter| %>
       <li>
-        <a href="<%= letter_brands_path(letter: letter) %>"<%= ' aria-current="true"'.html_safe if params[:letter] == letter %>><%= letter %></a>
+        <a href="<%= brands_path(letter: letter) %>"<%= ' aria-current="true"'.html_safe if params[:letter] == letter %>><%= letter %></a>
       </li>
     <% end %>
   </ol>
