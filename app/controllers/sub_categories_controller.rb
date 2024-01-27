@@ -1,4 +1,6 @@
 class SubCategoriesController < ApplicationController
+  include ApplicationHelper
+
   add_breadcrumb I18n.t('headings.categories').html_safe, :categories_path
 
   def show
@@ -16,16 +18,20 @@ class SubCategoriesController < ApplicationController
 
     add_breadcrumb @category.name, category_path(@category)
 
-    if params[:letter]
+    if abc.include?(params[:letter])
       add_breadcrumb @sub_category.name, category_sub_category_path(@sub_category)
       add_breadcrumb params[:letter].upcase
-      @products = @sub_category.products.includes([:brand])
+      all_products = @sub_category.products.includes([:brand])
                                .where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
-                               .order('LOWER(name)').page(params[:page])
     else
       add_breadcrumb @sub_category.name
-      @products = @sub_category.products.includes([:brand]).order('LOWER(name)').page(params[:page])
+      all_products = @sub_category.products.includes([:brand])
     end
+
+    ordered = all_products.order('LOWER(name)')
+    paginated = ordered.page(params[:page])
+
+    @products = params[:page].to_i > paginated.total_pages ? ordered.page(1) : paginated
 
     @page_title = @sub_category.name
   end

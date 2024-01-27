@@ -1,4 +1,6 @@
 class ProductsController < ApplicationController
+  include ApplicationHelper
+
   before_action :authenticate_user!, only: [:create]
 
   add_breadcrumb I18n.t('headings.products'), :products_path
@@ -7,7 +9,7 @@ class ProductsController < ApplicationController
     @active_menu = :products
     @page_title = I18n.t('headings.products')
 
-    if params[:letter]
+    if abc.include?(params[:letter])
       add_breadcrumb params[:letter].upcase
       all_products = Product.where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
                             .includes([:brand, :sub_categories])
@@ -15,7 +17,10 @@ class ProductsController < ApplicationController
       all_products = Product.all.includes([:brand, :sub_categories])
     end
 
-    @products = all_products.order('LOWER(name)').page(params[:page])
+    ordered = all_products.order('LOWER(name)')
+    paginated = ordered.page(params[:page])
+
+    @products = params[:page].to_i > paginated.total_pages ? ordered.page(1) : paginated
     @total_size = all_products.size
   end
 
