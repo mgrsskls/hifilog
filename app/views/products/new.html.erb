@@ -41,7 +41,7 @@
             </div>
           <% end %>
         </div>
-        <script>
+        <%= javascript_tag nonce: true do %>
           {
             const input = document.querySelector('[name="brand"]');
             const brands = document.querySelectorAll("[data-brand]");
@@ -68,7 +68,7 @@
               render(input, brands);
             }
           }
-        </script>
+        <% end %>
       </div>
     <% end %>
 

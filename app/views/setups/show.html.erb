@@ -15,7 +15,7 @@
     <div class="PageAction">
       <%= button_to t('delete_setup.label'), dashboard_setup_path(id: @setup.id), method: :delete, class: "DeleteButton Button Button--negative" %>
 
-      <script>
+      <%= javascript_tag nonce: true do %>
         Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {
           button.closest("form").addEventListener("submit", (event) => {
             if (!window.confirm("<%= t('delete_setup.confirm') %>")) {
@@ -23,7 +23,7 @@
             }
           });
         });
-      </script>
+      <% end %>
     </div>
   </div>
 

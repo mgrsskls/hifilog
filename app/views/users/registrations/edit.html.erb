@@ -93,7 +93,7 @@
 
     <%= button_to "Delete my account", registration_path(current_user), method: :delete, class: "DeleteAccount Button Button--negative", "data-msg": 'Are you sure you want to delete your account? All data will be deleted immediately.' %>
 
-    <script>
+    <%= javascript_tag nonce: true do %>
       {
         const button = document.querySelector(".DeleteAccount");
 
@@ -106,6 +106,6 @@
           });
         }
       }
-    </script>
+    <% end %>
   </div>
 <% end %>
