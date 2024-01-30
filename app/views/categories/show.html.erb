@@ -1,22 +1,17 @@
 <div class="Heading">
   <h1><%= @category.name %></h1>
-  <div class="Heading-amount">
-    <%= t('amount_categories', count: @sub_categories.size) %>
-  </div>
 </div>
 
-<nav class="Pagination" aria-label="<%= t('filter.category.label') %>">
-  <ol class="Pagination-list">
+<ol class="Pagination">
+  <li>
+    <a class="Pagination-all" href="<%= categories_path %>"<%= ' aria-current="true"'.html_safe unless params[:id].present? %>><%= t('filter.all') %></a>
+  </li>
+  <% @categories.each do |category| %>
     <li>
-      <a class="Pagination-all" href="<%= categories_path %>"<%= ' aria-current="true"'.html_safe unless params[:id].present? %>><%= t('filter.all') %></a>
+      <a href="<%= category_path(id: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:id] == category.friendly_id %>><%= category[:name] %></a>
     </li>
-    <% @categories.each do |category| %>
-      <li>
-        <a href="<%= category_path(id: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:id] == category.friendly_id %>><%= category[:name] %></a>
-      </li>
-    <% end %>
-  </ol>
-</nav>
+  <% end %>
+</ol>
 
 <% if @sub_categories.any? %>
   <table>

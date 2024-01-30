@@ -18,3 +18,9 @@
 
   border-color: currentColor;
 }
+
+.Button--secondary {
+  background-color: transparent;
+  border-color: currentColor;
+  color: var(--color-secondary);
+}

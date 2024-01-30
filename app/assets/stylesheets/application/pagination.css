@@ -1,12 +1,7 @@
-.Pagination--centered {
-  display: flex;
-  justify-content: center;
-}
-
-.Pagination-list {
+.Pagination {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -16,37 +11,71 @@
   font-weight: 600;
 }
 
-.Pagination a {
+.Pagination :is(a, label, span) {
   border-radius: var(--border-radius);
   color: var(--color-copy);
   display: block;
   padding-block: 0.15em;
+  padding-inline: 0.75em;
   border: var(--border-light);
   text-decoration: none;
   text-align: center;
 }
 
-.Pagination:not(.Pagination--abc) a {
-  padding-inline: 0.75em;
+.Pagination :is(a, label) {
+  cursor: pointer;
 }
 
-.Pagination a:hover {
+.Pagination :is(a, label):hover {
   border-color: currentColor;
 }
 
-.Pagination a[aria-current="true"] {
+.Pagination :is(a[aria-current="true"], label:has(:checked)) {
   border-color: currentColor;
   color: var(--color-accent);
 }
 
-.Pagination--abc a {
+.Pagination--abc :not(.Pagination-all) :is(a, label):not(.Pagination-all) {
   inline-size: 2em;
-}
-
-.Pagination--abc :not(:first-child) > a {
   text-transform: uppercase;
+  padding-inline: 0;
 }
 
-:is(table, table-saw) + .Pagination {
-  margin-block-start: 3rem;
+.Pagination [type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0.01;
+}
+
+.Pagination--pages span {
+  visibility: hidden;
+}
+
+@media (max-width: 32em) {
+  :is(table, table-saw) + .Pagination {
+    margin-block-start: 2rem;
+  }
+
+  .Pagination--pages li:not(.Pagination--pages-prev, .Pagination--pages-next) {
+    display: none;
+  }
+
+  .Pagination--pages-next {
+    margin-inline-start: auto;
+  }
+}
+
+@media (min-width: 32.0625em) {
+  :is(table, table-saw) + .Pagination {
+    margin-block-start: 3rem;
+  }
+
+  .Pagination--pages-prev {
+    margin-inline-end: auto;
+  }
+
+  .Pagination--pages-next {
+    margin-inline-start: auto;
+  }
 }

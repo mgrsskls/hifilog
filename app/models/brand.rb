@@ -4,13 +4,14 @@ class Brand < ApplicationRecord
   extend FriendlyId
 
   has_many :products, dependent: :destroy
+  has_and_belongs_to_many :categories
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   friendly_id :name, use: :slugged
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[created_at id name updated_at discontinued slug]
+    %w[created_at id name updated_at discontinued slug categories_id]
   end
 
   def self.ransackable_associations(_auth_object = nil)

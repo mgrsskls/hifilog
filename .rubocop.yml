@@ -54,3 +54,6 @@ Style/TrailingCommaInArguments:
 
 Style/SymbolArray:
   EnforcedStyle: brackets
+
+Metrics/ClassLength:
+  Enabled: false

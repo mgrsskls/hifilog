@@ -1,22 +1,8 @@
 <div class="Heading">
   <h1><%= @sub_category.name %></h1>
-  <div class="Heading-amount">
-    <%= t('amount_products', count: @products.size) %>
-  </div>
 </div>
 
-<nav class="Pagination Pagination--abc" aria-label="<%= t('filter.abc.label') %>">
-  <ol class="Pagination-list">
-    <li>
-      <a class="Pagination-all" href="<%= @filter_all_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>><%= t('filter.all') %></a>
-    </li>
-    <% @filter_paths.each do |filter| %>
-      <li>
-        <a href="<%= filter[:path] %>"<%= ' aria-current="true"'.html_safe if params[:letter] == filter[:letter] %>><%= filter[:letter].upcase %></a>
-      </li>
-    <% end %>
-  </ol>
-</nav>
+<%= render "shared/filter", reset_path: category_sub_category_path(id: params[:id], category_id: params[:category_id]), collection: @products, render_abc: true, render_categories: false, sub_categories: @sub_categories %>
 
 <% if @products.any? %>
   <table>
@@ -45,4 +31,4 @@
   <%= render "shared/empty_state", message: t('empty_state.products') %>
 <% end %>
 
-<%= render "shared/page_actions", back_link: true %>
+<%= render "shared/page_actions" %>

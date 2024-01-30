@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_04_015220) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_05_044423) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_trgm"
@@ -56,7 +56,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_04_015220) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "discontinued"
+    t.boolean "discontinued", default: false
     t.string "slug"
     t.integer "products_count"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_brands_name_prefix"
@@ -89,7 +89,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_04_015220) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "brand_id", null: false
-    t.boolean "discontinued"
+    t.boolean "discontinued", default: false
     t.string "slug"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_products_name_prefix"
     t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true

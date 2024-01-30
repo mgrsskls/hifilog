@@ -7,21 +7,19 @@
     paginator:     the paginator that renders the pagination tags inside
 -%>
 <%= paginator.render do -%>
-  <nav class="Pagination Pagination--centered" aria-label="Pagination">
-    <ol class="Pagination-list">
-      <%= first_page_tag unless current_page.first? %>
-      <%= prev_page_tag unless current_page.first? %>
-      <% each_page do |page| -%>
-        <% if page.display_tag? -%>
-          <%= page_tag page %>
-        <% elsif !page.was_truncated? -%>
-          <%= gap_tag %>
-        <% end -%>
+  <ol class="Pagination Pagination--centered Pagination--pages">
+    <%= prev_page_tag %>
+    <%= first_page_tag unless current_page.first? %>
+    <% each_page do |page| -%>
+      <% if page.display_tag? -%>
+        <%= page_tag page %>
+      <% elsif !page.was_truncated? -%>
+        <%= gap_tag %>
       <% end -%>
-      <% unless current_page.out_of_range? %>
-        <%= next_page_tag unless current_page.last? %>
-        <%= last_page_tag unless current_page.last? %>
-      <% end %>
-    </ol>
-  </nav>
+    <% end -%>
+    <% unless current_page.out_of_range? %>
+      <%= last_page_tag unless current_page.last? %>
+    <% end %>
+    <%= next_page_tag %>
+  </ol>
 <% end -%>

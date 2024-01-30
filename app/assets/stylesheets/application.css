@@ -7,6 +7,7 @@
 @import url("./application/flash_messages.css") layer(components);
 @import url("./application/header.css") layer(components);
 @import url("./application/heading.css") layer(components);
+@import url("./application/filter.css") layer(components);
 @import url("./application/footer.css") layer(components);
 @import url("./application/menu.css") layer(components);
 @import url("./application/page_actions.css") layer(components);

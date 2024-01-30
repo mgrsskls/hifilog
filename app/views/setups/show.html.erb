@@ -1,9 +1,6 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= @setup.name %></h1>
-    <div class="Heading-amount">
-      <%= t('amount_products', count: @setup.products.size) %>
-    </div>
   </div>
 
   <%= render "shared/products", products: @setup.products, empty_state: t('empty_state.setup_products') %>

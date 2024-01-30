@@ -36,6 +36,7 @@ class User < ApplicationRecord
       user_name
       confirmation_token
       unconfirmed_email
+      bookmarks_id
     ]
   end
 

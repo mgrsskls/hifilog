@@ -3,7 +3,7 @@
     display: block;
   }
 
-  nav + :is(table, table-saw) {
+  :is(nav, .Pagination, .FilterInfo) + :is(table, table-saw) {
     margin-block-start: 2rem;
   }
 
@@ -34,16 +34,10 @@
     font-weight: normal;
   }
 
-  td,
-  tbody th {
-    vertical-align: center;
-  }
-
   th,
   td {
     border-block-end: var(--border-light);
-    padding-block: 0.75rem;
-    padding-inline: 0.5rem;
+    padding: 0.75rem;
   }
 
   :is(th, td):not(:last-child) {

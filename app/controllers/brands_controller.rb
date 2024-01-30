@@ -1,22 +1,80 @@
 class BrandsController < ApplicationController
-  before_action :authenticate_user!, only: [:create]
+  STATUSES = %w[discontinued continued].freeze
 
-  add_breadcrumb I18n.t('headings.brands').html_safe, :brands_path
+  before_action :authenticate_user!, only: [:create]
 
   def index
     @active_menu = :brands
     @page_title = I18n.t('headings.brands')
 
-    if params[:letter]
-      add_breadcrumb params[:letter].upcase
-      @brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
-                     .order('LOWER(name)')
-                     .page(params[:page])
+    if params[:letter].present? || params[:category].present? || params[:status].present?
+      add_breadcrumb I18n.t('headings.brands'), proc { :brands }
     else
-      @brands = Brand.all.order('LOWER(name)').page(params[:page])
+      add_breadcrumb I18n.t('headings.brands')
     end
 
-    @total_size = @brands.size
+    if params[:letter].present? && params[:category].present? && params[:status].present?
+      @category = Category.find(params[:category])
+      add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
+      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
+      add_breadcrumb I18n.t(params[:status])
+      @brands = Brand.joins(:products)
+                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
+                     .where({ sub_categories: { category_id: params[:category] } })
+                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                     .includes(products: :sub_categories)
+                     .order('LOWER(brands.name)')
+                     .page(params[:page])
+    elsif params[:letter].present? && params[:category].present?
+      @category = Category.find(params[:category])
+      add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
+      add_breadcrumb @category.name
+      @brands = Brand.joins(:products)
+                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
+                     .where({ sub_categories: { category_id: params[:category] } })
+                     .includes(products: :sub_categories)
+                     .order('LOWER(brands.name)')
+                     .page(params[:page])
+    elsif params[:letter].present? && params[:status].present?
+      add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
+      add_breadcrumb I18n.t(params[:status])
+      @brands = Brand.where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
+                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                     .includes(products: :sub_categories)
+                     .order('LOWER(name)')
+                     .page(params[:page])
+    elsif params[:category].present? && params[:status].present?
+      @category = Category.find(params[:category])
+      add_breadcrumb @category.name, brands_path(category: params[:category])
+      add_breadcrumb I18n.t(params[:status])
+      @brands = Brand.joins(:products)
+                     .where({ sub_categories: { category_id: params[:category] } })
+                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                     .includes(products: :sub_categories)
+                     .order('LOWER(brands.name)')
+                     .page(params[:page])
+    elsif params[:letter].present?
+      add_breadcrumb params[:letter].upcase
+      @brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
+                     .includes(products: :sub_categories)
+                     .order('LOWER(name)')
+                     .page(params[:page])
+    elsif params[:category].present?
+      @category = Category.find(params[:category])
+      add_breadcrumb @category.name
+      @brands = Brand.joins(:products)
+                     .where({ sub_categories: { category_id: params[:category] } })
+                     .includes(products: :sub_categories)
+                     .order('LOWER(brands.name)')
+                     .page(params[:page])
+    elsif params[:status].present?
+      add_breadcrumb I18n.t(params[:status])
+      @brands = Brand.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                     .order('LOWER(brands.name)')
+                     .page(params[:page])
+    else
+      @brands = Brand.all.includes(products: :sub_categories).order('LOWER(name)').page(params[:page])
+    end
   end
 
   def show

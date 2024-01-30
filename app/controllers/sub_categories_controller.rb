@@ -6,17 +6,10 @@ class SubCategoriesController < ApplicationController
 
     @sub_category = SubCategory.friendly.find(params[:id])
     @category = Category.friendly.find(params[:category_id])
-    @filter_all_path = category_sub_category_path(id: params[:id], category_id: params[:category_id])
-    @filter_paths = helpers.abc.map do |letter|
-      {
-        path: category_sub_category_path(id: params[:id], category_id: params[:category_id], letter:),
-        letter:
-      }
-    end
 
     add_breadcrumb @category.name, category_path(@category)
 
-    if params[:letter]
+    if params[:letter].present?
       add_breadcrumb @sub_category.name, category_sub_category_path(@sub_category)
       add_breadcrumb params[:letter].upcase
       @products = @sub_category.products.includes([:brand])

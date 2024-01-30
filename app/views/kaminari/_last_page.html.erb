@@ -6,6 +6,8 @@
     per_page:      number of items to fetch per page
     remote:        data-remote
 -%>
-<li>
-  <%= link_to t('views.pagination.last').html_safe, url, {remote: remote} %>
-</li>
+<% if current_page < total_pages - 3 %>
+  <li>
+    <%= link_to total_pages, url, {remote: remote} %>
+  </li>
+<% end %>

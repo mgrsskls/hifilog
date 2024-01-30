@@ -1,27 +1,23 @@
 <div class="Heading">
   <h1><%= @brand.name %></h1>
-  <div class="Heading-amount">
-    <%= t('amount_products', count: @products.size) %>
-  </div>
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
 </div>
 
-<% if @brand.sub_categories.any? %>
-  <nav class="Pagination" aria-label="<%= t('filter.category.label') %>">
-    <ol class="Pagination-list">
+<% if @brand.sub_categories.any? && @brand.sub_categories.size > 1 %>
+  <ol class="Pagination">
+    <li>
+      <a class="Pagination-all" href="<%= brand_path(id: @brand.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
+    </li>
+    <% @brand.sub_categories.each do |sub_category| %>
       <li>
-        <a class="Pagination-all" href="<%= brand_path(id: @brand.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
+        <a href="<%= brand_category_path(brand_id: @brand.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
       </li>
-      <% @brand.sub_categories.each do |sub_category| %>
-        <li>
-          <a href="<%= brand_category_path(brand_id: @brand.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
-        </li>
-      <% end %>
-    </ol>
-  </nav>
+    <% end %>
+  </ol>
 <% end %>
 
 <% if @products.any? %>
+  <p class="Filter-info"><small><%= page_entries_info @products %></small></p>
   <table-saw>
     <table>
       <thead>
@@ -56,4 +52,4 @@
   <%= render "shared/empty_state", message: t('empty_state.products') %>
 <% end %>
 
-<%= render "shared/page_actions", back_link: true %>
+<%= render "shared/page_actions" %>

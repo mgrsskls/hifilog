@@ -1,23 +1,9 @@
 <div class="Heading">
   <h1><%= t('headings.products') %></h1>
-  <div class="Heading-amount">
-    <%= t('amount_products', count: @total_size) %>
-  </div>
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path : new_user_session_path(redirect: new_product_path), class: "Button" %>
 </div>
 
-<nav class="Pagination Pagination--abc" aria-label="<%= t('filter.abc.label') %>">
-  <ol class="Pagination-list">
-    <li>
-      <a class="Pagination-all" href="<%= products_path %>"<%= ' aria-current="true"'.html_safe unless params[:letter].present? %>><%= t('filter.all') %></a>
-    </li>
-    <% abc.each do |letter| %>
-      <li>
-        <a href="<%= products_path(letter: letter) %>"<%= ' aria-current="true"'.html_safe if params[:letter] == letter %>><%= letter %></a>
-      </li>
-    <% end %>
-  </ol>
-</nav>
+<%= render "shared/filter", reset_path: products_path, collection: @products, render_abc: true, render_categories: true, render_status: true %>
 
 <% if @products.any? %>
   <%= render "shared/products_table", products: @products %>

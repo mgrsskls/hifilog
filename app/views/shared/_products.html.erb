@@ -2,18 +2,16 @@
 <% empty_state ||= "" %>
 
 <% if categories.any? %>
-  <nav class="Pagination" aria-label="<%= t('filter.category.label') %>">
-    <ol class="Pagination-list">
+  <ol class="Pagination">
+    <li>
+      <a class="Pagination-all" href="<%= @is_public_profile ? user_path(user_name: @user.user_name) : dashboard_products_path %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
+    </li>
+    <% categories.each do |category| %>
       <li>
-        <a class="Pagination-all" href="<%= @is_public_profile ? user_path(user_name: @user.user_name) : dashboard_products_path %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
+        <a href="<%= @is_public_profile ? user_products_category_path(user_name: @user.user_name, category: category.friendly_id) : dashboard_products_category_path(category: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == category.friendly_id %>><%= category.name %></a>
       </li>
-      <% categories.each do |category| %>
-        <li>
-          <a href="<%= @is_public_profile ? user_products_category_path(user_name: @user.user_name, category: category.friendly_id) : dashboard_products_category_path(category: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == category.friendly_id %>><%= category.name %></a>
-        </li>
-      <% end %>
-    </ol>
-  </nav>
+    <% end %>
+  </ol>
 <% end %>
 
 <% if products.any? %>

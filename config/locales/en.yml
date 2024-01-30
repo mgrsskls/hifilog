@@ -109,6 +109,8 @@ en:
     deleted: The setup <b>%{name}</b> has been deleted.
   skip_to_main_content: Skip to main content
   status: Status
+  continued: Continued
+  discontinued: Discontinued
   users: Users
   user_form:
     login: Log in
@@ -173,4 +175,8 @@ en:
         intro: If you delete your account, all data associated with your account will immediately be deleted.
         confirm: Are you sure you want to delete your account? All data will be deleted immediately.
         submit: Delete my account
+  views:
+    pagination:
+      previous: "&larr; Previous"
+      next: "Next &rarr;"
 
