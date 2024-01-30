@@ -6,13 +6,13 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::RoutingError, with: :not_found
 
-  helper_method :current_user
-  helper_method :user_has_product?
-  helper_method :user_has_brand?
-  helper_method :user_has_bookmark?
-  helper_method :all_records
-  helper_method :newest_products
-  helper_method :newest_brands
+  helper_method :current_user,
+                :all_records,
+                :newest_brands,
+                :newest_products,
+                :user_has_bookmark?,
+                :user_has_brand?,
+                :user_has_product?
 
   def index
     @is_home = true
