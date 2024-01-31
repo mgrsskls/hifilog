@@ -50,7 +50,7 @@ Rails.application.routes.draw do
 
   root "application#index"
 
-  get '/sitemap.xml', to: 'application#sitemap'
+  get '/sitemap.xml', to: 'sitemap#xml'
   get '/feed.rss', to: 'feed#rss', as: :rss
 
   get '/changelog', to: 'static#changelog'
