@@ -16,7 +16,7 @@ class ProductsController < ApplicationController
     end
 
     @products = all_products.order('LOWER(name)').page(params[:page])
-    @total_size = all_products.size
+    @total_size = all_products.count
   end
 
   def show
