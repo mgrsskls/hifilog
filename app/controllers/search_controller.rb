@@ -2,11 +2,13 @@ class SearchController < ApplicationController
   add_breadcrumb I18n.t('search')
 
   def results
+    min_chars = 2
+
     @page_title = I18n.t('search')
     @query = params[:query].strip
 
-    if params[:query].length < 3
-      flash.now[:alert] = 'Please enter at least 3 characters.'
+    if params[:query].length < min_chars
+      flash.now[:alert] = I18n.t('search_results.alert.minimum_chars', min: min_chars)
     else
       query = "%#{params[:query]}%"
 
