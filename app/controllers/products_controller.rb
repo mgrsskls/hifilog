@@ -41,7 +41,7 @@ class ProductsController < ApplicationController
 
     @product = Product.new
     @brands = Brand.all.order('LOWER(name)')
-    @categories = Category.all
+    @categories = Category.ordered
 
     return unless params[:brand_id]
 
@@ -57,7 +57,7 @@ class ProductsController < ApplicationController
       redirect_to brand_product_url(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
     else
       @brands = Brand.all.order('LOWER(name)')
-      @categories = Category.all
+      @categories = Category.ordered
       @brand = Brand.find(@product.brand_id) if @product.brand_id
       render :new, status: :unprocessable_entity
     end

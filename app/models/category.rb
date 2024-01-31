@@ -22,4 +22,8 @@ class Category < ApplicationRecord
   def products
     sub_categories.flat_map(&:products)
   end
+
+  def self.ordered
+    order('LOWER(name)')
+  end
 end
