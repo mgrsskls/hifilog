@@ -8,11 +8,11 @@ class CategoriesController < ApplicationController
     @categories = Category.ordered
 
     sub_categories = if params[:id].present?
-                       SubCategory.where(category_id: params[:id].to_i).includes([:category])
+                       SubCategory.where(category_id: params[:id].to_i).includes([:category]).order('LOWER(name)')
                      else
-                       SubCategory.all.includes([:category])
+                       SubCategory.all.includes([:category]).order('LOWER(name)')
                      end
-    @sub_categories = sub_categories.sort_by { |c| c[:name].downcase }
+    @sub_categories = sub_categories
   end
 
   def show
@@ -20,7 +20,7 @@ class CategoriesController < ApplicationController
 
     @category = Category.friendly.find(params[:id])
     @categories = Category.ordered
-    @sub_categories = @category.sub_categories.sort_by { |c| c[:name].downcase }
+    @sub_categories = @category.sub_categories.order('LOWER(name)')
 
     add_breadcrumb @category.name, category_path(@category)
     @page_title = @category.name
