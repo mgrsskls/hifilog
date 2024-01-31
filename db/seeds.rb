@@ -1070,7 +1070,7 @@ if Rails.env.development?
 
   user.setups << living_room
   user.setups << office
-  user.save
+  user.save!
 
   products.each do |product|
     user_without_setup.products << product
