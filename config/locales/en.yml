@@ -101,6 +101,8 @@ en:
     none:
       products: No products found for &ldquo;<i>%{query}</i>&rdquo;.
       brands: No brands found for &ldquo;<i>%{query}</i>&rdquo;.
+    alert:
+      minimum_chars: Please enter at least %{min} characters.
   setups:
     created: The setup %{link} has been created.
     deleted: The setup <b>%{name}</b> has been deleted.
