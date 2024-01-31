@@ -6,13 +6,7 @@ class CategoriesController < ApplicationController
     @page_title = I18n.t('headings.categories')
 
     @categories = Category.ordered
-
-    sub_categories = if params[:id].present?
-                       SubCategory.where(category_id: params[:id].to_i).includes([:category]).order('LOWER(name)')
-                     else
-                       SubCategory.all.includes([:category]).order('LOWER(name)')
-                     end
-    @sub_categories = sub_categories
+    @sub_categories = SubCategory.all.includes([:category]).order('LOWER(name)')
   end
 
   def show
