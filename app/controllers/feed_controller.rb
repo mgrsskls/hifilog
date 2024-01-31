@@ -1,7 +1,7 @@
 class FeedController < ApplicationController
   def rss
-    products = Product.all.includes([:brand])
-    brands = Brand.all
+    products = Product.includes([:brand]).order(created_at: :desc).limit(10)
+    brands = Brand.order(created_at: :desc).limit(10)
 
     @all = (products + brands).sort_by(&:created_at)
 
