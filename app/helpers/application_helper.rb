@@ -1,4 +1,6 @@
 module ApplicationHelper
+  ABC = ('a'..'z').to_a.freeze
+
   def current_page?(test_path)
     request.path == test_path
   end
@@ -12,8 +14,7 @@ module ApplicationHelper
   end
 
   def abc
-    %w[a b c d e f g h i j k l m n o p q r s t u v w
-       x y z]
+    ABC
   end
 
   def formatted_date(date)
