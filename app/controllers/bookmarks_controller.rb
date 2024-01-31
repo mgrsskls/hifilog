@@ -13,6 +13,6 @@ class BookmarksController < ApplicationController
   def destroy
     @bookmark = Bookmark.find(params[:id]).destroy!
 
-    redirect_to request.referer
+    redirect_back fallback_location: root_url
   end
 end
