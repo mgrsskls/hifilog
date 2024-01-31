@@ -6,7 +6,7 @@ class SetupsController < ApplicationController
     add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
     @page_title = I18n.t('headings.setups')
     @active_dashboard_menu = :setups
-    @setups = current_user.setups.sort_by { |c| c[:name].downcase }
+    @setups = current_user.setups.order('LOWER(name)')
   end
 
   def show
@@ -31,7 +31,7 @@ class SetupsController < ApplicationController
       redirect_to dashboard_setups_path
     else
       @active_dashboard_menu = :setups
-      @setups = current_user.setups.sort_by { |c| c[:name].downcase }
+      @setups = current_user.setups.order('LOWER(name)')
       flash[:alert] = 'An error occured. Please try again.'
       render :index, status: :unprocessable_entity
     end
