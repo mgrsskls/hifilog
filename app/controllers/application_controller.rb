@@ -55,10 +55,7 @@ class ApplicationController < ActionController::Base
   end
 
   def user_has_brand?(brand)
-    return unless brand
-    return unless user_signed_in?
-
-    current_user.products.where(brand_id: brand.id).any?
+    brand && user_signed_in? && current_user.products.where(brand_id: brand.id).exists?
   end
 
   def not_found
