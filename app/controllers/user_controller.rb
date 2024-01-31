@@ -77,7 +77,7 @@ class UserController < ApplicationController
 
     @active_dashboard_menu = :bookmarks
 
-    bookmarks = Bookmark.where(user_id: current_user.id)
-    @products = bookmarks.map { |bookmark| Product.find(bookmark.product_id) }
+    bookmarks = Bookmark.where(user_id: current_user.id).includes(:product)
+    @products = bookmarks.map(&:product)
   end
 end
