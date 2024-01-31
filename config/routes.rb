@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     get 'products', to: 'user#products', as: :products
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
     get 'products/:category', to: 'user#products', as: :products_category
-    resources :setups
+    resources :setups, only: [:index, :show, :create, :destroy]
   end
 
   resources :user_products, only: [:create, :destroy], as: :owned_products
