@@ -47,9 +47,7 @@ class ApplicationController < ActionController::Base
   end
 
   def user_has_product?(product)
-    return unless product
-
-    user_signed_in? && current_user.products.include?(product)
+    product && user_signed_in? && current_user.products.where(id: product.id).exists?
   end
 
   def user_has_bookmark?(product)
