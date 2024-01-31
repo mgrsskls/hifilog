@@ -18,9 +18,7 @@ class UserController < ApplicationController
 
   def products
     if params[:user_name]
-      @user = User.find_by(user_name: params[:user_name])
-
-      raise ActiveRecord::RecordNotFound unless @user
+      @user = User.find_by!(user_name: params[:user_name])
 
       @is_public_profile = true
       add_breadcrumb I18n.t('users')
