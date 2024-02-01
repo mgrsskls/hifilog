@@ -1,6 +1,12 @@
 class User < ApplicationRecord
   include Rails.application.routes.url_helpers
 
+  enum profile_visibility: {
+    hidden: 0,
+    logged_in_only: 1,
+    visible: 2,
+  }
+
   has_and_belongs_to_many :products
   has_many :setups, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
@@ -43,6 +49,6 @@ class User < ApplicationRecord
   private
 
   def public_profile?
-    profile_visibility != 0
+    profile_visibility != 'hidden'
   end
 end

@@ -30,7 +30,7 @@ class UserController < ApplicationController
     end
 
     # if the visited profile is not visible to anyone and the visiting user is a different user
-    if @user.profile_visibility == 0 && current_user != @user
+    if @user.hidden? && current_user != @user
       if user_signed_in?
         redirect_to root_url
       else
@@ -40,7 +40,7 @@ class UserController < ApplicationController
     end
 
     # if visited profile is not visible to logged out users and the current user is not logged in
-    if @user.profile_visibility == 1 && !user_signed_in?
+    if @user.logged_in_only? && !user_signed_in?
       redirect_to new_user_session_url(redirect: user_path(user_name: @user.user_name))
       return
     end
