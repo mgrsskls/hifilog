@@ -2,7 +2,7 @@ class Setup < ApplicationRecord
   belongs_to :user, optional: true
   has_and_belongs_to_many :products
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { scope: :user, case_sensitive: false }
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
