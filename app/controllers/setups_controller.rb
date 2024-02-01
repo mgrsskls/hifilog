@@ -39,7 +39,7 @@ class SetupsController < ApplicationController
 
   def destroy
     @setup = current_user.setups.find(params[:id])
-    @setup.destroy!
+    @setup.destroy
     flash[:notice] = I18n.t('setups.deleted', name: @setup.name)
     redirect_to dashboard_setups_path
   end
