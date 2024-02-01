@@ -74,10 +74,10 @@ en:
       label: Filter by letter
     category:
       label: Filter by category
-  meta_description: HiFi Log is a community-driven platform with %{products_size} products by %{brands_size} brands in %{categories_size} categories.
+  meta_description: HiFi Log is a community-driven platform with %{products_count} products by %{brands_count} brands in %{categories_count} categories.
   home:
     intro: >
-      <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a community-driven platform with <span><a href="%{products_path}">%{products_size} products</a> by <a href="%{brands_path}">%{brands_size} brands</a> in <a href="%{categories_path}">%{categories_size} categories</a><span class="Home-introDot">.</span></span>
+      <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a community-driven platform with <span><a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in <a href="%{categories_path}">%{categories_count} categories</a><span class="Home-introDot">.</span></span>
     recently_added: Recently added to HiFi&hairsp;Log
     sign_up: <a href="%{sign_up_path}">Sign up</a> to <b>add new products and brands</b> or edit existing ones, add products to <b>your own collection</b> and <b>keep track of all the products</b> you have ever owned.
   name: Name

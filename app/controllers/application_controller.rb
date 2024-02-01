@@ -7,7 +7,9 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::RoutingError, with: :not_found
 
   helper_method :current_user,
-                :all_records,
+                :products_count,
+                :brands_count,
+                :categories_count,
                 :newest_brands,
                 :newest_products,
                 :user_has_bookmark?,
@@ -20,20 +22,24 @@ class ApplicationController < ActionController::Base
 
   attr_writer :current_user
 
-  def all_records
-    {
-      products: Product.all.includes([:brand]),
-      brands: Brand.all,
-      categories: SubCategory.all,
-    }
+  def products_count
+    @products_count ||= Product.all.count
+  end
+
+  def brands_count
+    @brands_count ||= Brand.all.count
+  end
+
+  def categories_count
+    @categories_count ||= SubCategory.all.count
   end
 
   def newest_products
-    all_records[:products].limit(10).order(created_at: :desc)
+    @newest_products ||= Product.limit(10).order(created_at: :desc).includes([:brand])
   end
 
   def newest_brands
-    all_records[:brands].limit(10).order(created_at: :desc)
+    @newest_brands ||= Brand.limit(10).order(created_at: :desc)
   end
 
   def after_sign_in_path_for(user)
