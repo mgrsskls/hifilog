@@ -11,7 +11,7 @@ class BookmarksController < ApplicationController
   end
 
   def destroy
-    @bookmark = current_user.bookmarks.find_by(id: params[:id])&.destroy!
+    @bookmark = current_user.bookmarks.find_by(id: params[:id])&.destroy
 
     redirect_back fallback_location: root_url
   end

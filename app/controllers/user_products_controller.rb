@@ -4,7 +4,7 @@ class UserProductsController < ApplicationController
   def create
     @product = Product.find(params[:id])
 
-    current_user.bookmarks.find(params[:bookmark_id].to_i).destroy! if params[:bookmark_id]
+    current_user.bookmarks.find(params[:bookmark_id].to_i).destroy if params[:bookmark_id]
 
     current_user.products << @product
     current_user.save
