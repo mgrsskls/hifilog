@@ -12,10 +12,20 @@ class SearchController < ApplicationController
     else
       query = "%#{params[:query]}%"
 
-      @products = Product.where('name ILIKE ?', query).includes([:brand, :sub_categories])
-                         .sort_by { |a| -(query.length - a.name.length) }
-      @brands = Brand.where('name ILIKE ?', query).includes([:products])
-                     .sort_by { |a| -(query.length - a.name.length) }
+      @products = Product.where('name ILIKE ?', query)
+                         .limit(20)
+                         .order('CHAR_LENGTH(name)')
+                         .includes([:brand, :sub_categories])
+                         .group_by { |product| product.name.length }
+                         .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(params[:query]) } }
+
+      @brands = Brand.where('name ILIKE ?', query)
+                     .limit(20)
+                     .order('CHAR_LENGTH(name)')
+                     .includes([:products])
+                     .group_by { |brand| brand.name.length }
+                     .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(params[:query]) } }
+
     end
   end
 end
