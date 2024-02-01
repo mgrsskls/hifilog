@@ -29,9 +29,9 @@ module ApplicationHelper
     return unless user_signed_in?
 
     {
-      products: current_user.products.size,
-      bookmarks: Bookmark.where(user_id: current_user.id).size,
-      setups: current_user.setups.size
+      products: current_user.products.count,
+      bookmarks: current_user.bookmarks.count,
+      setups: current_user.setups.count
     }
   end
 end
