@@ -11,7 +11,7 @@ class SetupsController < ApplicationController
 
   def show
     @active_dashboard_menu = :setups
-    @setup = Setup.find(params[:id])
+    @setup = current_user.setups.find(params[:id])
 
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
@@ -38,7 +38,7 @@ class SetupsController < ApplicationController
   end
 
   def destroy
-    @setup = Setup.find(params[:id])
+    @setup = current_user.setups.find(params[:id])
     @setup.destroy!
     flash[:notice] = I18n.t('setups.deleted', name: @setup.name)
     redirect_to dashboard_setups_path
