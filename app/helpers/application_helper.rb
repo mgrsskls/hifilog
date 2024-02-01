@@ -25,13 +25,21 @@ module ApplicationHelper
     datetime.strftime('%Y-%m-%dT%H:%M')
   end
 
-  def user_amount
+  def current_user_products_count
     return unless user_signed_in?
 
-    {
-      products: current_user.products.count,
-      bookmarks: current_user.bookmarks.count,
-      setups: current_user.setups.count
-    }
+    @current_user_products_count ||= current_user.products.count
+  end
+
+  def current_user_bookmarks_count
+    return unless user_signed_in?
+
+    @current_user_bookmarks_count ||= current_user.bookmarks.count
+  end
+
+  def current_user_setups_count
+    return unless user_signed_in?
+
+    @current_user_setups_count ||= current_user.setups.count
   end
 end
