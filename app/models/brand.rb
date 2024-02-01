@@ -18,7 +18,7 @@ class Brand < ApplicationRecord
   end
 
   def sub_categories
-    @sub_categories ||= products.includes(:sub_categories).flat_map(&:sub_categories).uniq.sort_by(&:name)
+    @sub_categories ||= SubCategory.joins(:products).where(products:).order(:name).distinct
   end
 
   def categories
