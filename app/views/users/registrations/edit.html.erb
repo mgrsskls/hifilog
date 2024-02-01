@@ -15,21 +15,21 @@
 
       <div class="UserForm-field">
         <div>
-          <%= f.radio_button :profile_visibility, 0, checked: current_user.profile_visibility == 0 %>
-          <%= f.label :profile_visibility_0, "No one but me can see my profile." %>
+          <%= f.radio_button :profile_visibility, :hidden, checked: current_user.hidden? %>
+          <%= f.label :profile_visibility_hidden, "No one but me can see my profile." %>
         </div>
         <div>
-          <%= f.radio_button :profile_visibility, 1, checked: current_user.profile_visibility == 1 %>
-          <%= f.label :profile_visibility_1, "Only logged in users can see my profile." %>
+          <%= f.radio_button :profile_visibility, :logged_in_only, checked: current_user.logged_in_only? %>
+          <%= f.label :profile_visibility_logged_in_only, "Only logged in users can see my profile." %>
         </div>
         <div>
-          <%= f.radio_button :profile_visibility, 2, checked: current_user.profile_visibility == 2 %>
-          <%= f.label :profile_visibility_2, "Logged in and logged out users can see my profile." %>
+          <%= f.radio_button :profile_visibility, :visible, checked: current_user.visible? %>
+          <%= f.label :profile_visibility_visible, "Logged in and logged out users can see my profile." %>
         </div>
 
         <small class="UserForm-hint"><%= t('user_form.user_name_necessary_if_public') %></small>
 
-        <% unless current_user.profile_visibility == 0 %>
+        <% unless current_user.hidden? %>
           <p>
             Your profile is visible at the following URL:<br>
             <a href="<%= current_user.profile_path %>"><b><%= request.protocol + request.host_with_port + current_user.profile_path %></b></a>
