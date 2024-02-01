@@ -8,12 +8,12 @@ class UserProductsController < ApplicationController
 
     current_user.products << @product
     current_user.save
-    redirect_to request.referer
+    redirect_back fallback_location: root_url
   end
 
   def destroy
     @product = Product.find(params[:id])
     current_user.products.delete(@product)
-    redirect_to request.referer
+    redirect_back fallback_location: root_url
   end
 end
