@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
   end
 
   def user_has_bookmark?(product)
-    product && user_signed_in? && Bookmark.where(product_id: product.id, user_id: current_user.id).exists?
+    product && user_signed_in? && current_user.bookmarks.where(product_id: product.id).exists?
   end
 
   def user_has_brand?(brand)

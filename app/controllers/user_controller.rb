@@ -12,7 +12,7 @@ class UserController < ApplicationController
     @active_dashboard_menu = :dashboard
 
     @products_count = current_user.products.count
-    @bookmarks_count = Bookmark.where(user_id: current_user.id).count
+    @bookmarks_count = current_user.bookmarks.count
     @setups_count = current_user.setups.count
   end
 
@@ -77,7 +77,7 @@ class UserController < ApplicationController
 
     @active_dashboard_menu = :bookmarks
 
-    bookmarks = Bookmark.where(user_id: current_user.id).includes(:product)
+    bookmarks = current_user.bookmarks.includes(:product)
     @products = bookmarks.map(&:product)
   end
 end
