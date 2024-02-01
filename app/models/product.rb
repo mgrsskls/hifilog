@@ -9,7 +9,7 @@ class Product < ApplicationRecord
   has_and_belongs_to_many :setups
 
   validates :name, presence: true
-  validates :name, uniqueness: { scope: :brand }
+  validates :name, uniqueness: { scope: :brand, case_sensitive: false }
   validates :sub_categories, presence: true
 
   friendly_id :name, use: :scoped, scope: :brand
