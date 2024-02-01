@@ -18,27 +18,11 @@ class Brand < ApplicationRecord
   end
 
   def sub_categories
-    sub_categories = []
-
-    products.each do |product|
-      product.sub_categories.each do |sub_category|
-        sub_categories << sub_category
-      end
-    end
-
-    sub_categories.uniq.sort_by { |c| c.name.downcase }
+    @sub_categories ||= products.includes(:sub_categories).flat_map(&:sub_categories).uniq.sort_by(&:name)
   end
 
   def categories
-    categories = []
-
-    products.each do |product|
-      product.sub_categories.each do |sub_category|
-        categories << sub_category.category
-      end
-    end
-
-    categories.uniq.sort_by { |c| c.name.downcase }
+    @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
   end
 
   def display_name
