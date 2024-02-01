@@ -24,9 +24,11 @@ class ProductsController < ApplicationController
 
     @brand = Brand.friendly.find(params[:brand_id])
     @product = @brand.products.friendly.find(params[:id])
-    @user_has_product = user_signed_in? ? current_user.products.include?(@product) : false
-    @setups = user_signed_in? ? current_user.setups.select { |setup| setup.products.include?(@product) } : []
-    @bookmark = Bookmark.find_by(product_id: @product.id, user_id: current_user.id) if user_signed_in?
+
+    if user_signed_in?
+      @bookmark = current_user.bookmarks.find_by(product_id: @product.id)
+      @setups = current_user.setups.includes(:products)
+    end
 
     add_breadcrumb @product.brand.name, brand_path(@product.brand)
     add_breadcrumb @product.name

@@ -35,16 +35,14 @@
       <span class="Symbol Symbol--positive Symbol--large">✓ <%= t('symbols.in_your_collection') %></span>
 
       <div class="Product-actions">
-        <% if current_user.setups.any? %>
-          <% current_user.setups.each do |setup| %>
-            <div class="Product-action Product-action--add">
-              <% if @setups.include?(setup) %>
-                <%= button_to t('remove_from', name: setup.name).html_safe, setup_product_path(product_id: @product.id, setup_id: setup.id), method: :delete, class: "TextButton TextButton--negative" %>
-              <% else %>
-                <%= button_to t('add_to', name: setup.name).html_safe, setup_products_path(product_id: @product.id, setup_id: setup.id), method: :post, class: "TextButton" %>
-              <% end %>
-            </div>
-          <% end %>
+        <% @setups.each do |setup| %>
+          <div class="Product-action Product-action--add">
+            <% if setup.products.include?(@product) %>
+              <%= button_to t('remove_from', name: setup.name).html_safe, setup_product_path(product_id: @product.id, setup_id: setup.id), method: :delete, class: "TextButton TextButton--negative" %>
+            <% else %>
+              <%= button_to t('add_to', name: setup.name).html_safe, setup_products_path(product_id: @product.id, setup_id: setup.id), method: :post, class: "TextButton" %>
+            <% end %>
+          </div>
         <% end %>
         <div class="Product-action Product-action--remove">
           <%= button_to t('remove_from_collection'), owned_product_path(id: @product.id), method: :delete, class: "TextButton TextButton--negative" %>
