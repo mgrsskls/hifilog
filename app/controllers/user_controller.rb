@@ -10,10 +10,6 @@ class UserController < ApplicationController
 
     @active_menu = :dashboard
     @active_dashboard_menu = :dashboard
-
-    @products_count = current_user.products.count
-    @bookmarks_count = current_user.bookmarks.count
-    @setups_count = current_user.setups.count
   end
 
   def products
