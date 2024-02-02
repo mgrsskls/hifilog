@@ -17,9 +17,6 @@
 <% end %>
 
 <% if products.any? %>
-  <% content_for :js do %>
-    <%= javascript_include_tag "table_saw", type: "module" %>
-  <% end %>
   <table-saw>
     <table>
       <thead>
