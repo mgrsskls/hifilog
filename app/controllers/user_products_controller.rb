@@ -16,6 +16,8 @@ class UserProductsController < ApplicationController
 
   def destroy
     @product = Product.find(params[:id])
+    setup_with_product = current_user.setups.select { |setup| setup.products.include?(@product) }.first
+    setup_with_product&.products&.delete(@product)
     current_user.products.delete(@product)
     redirect_back fallback_location: root_url
   end
