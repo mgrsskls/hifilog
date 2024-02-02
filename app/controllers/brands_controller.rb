@@ -59,7 +59,7 @@ class BrandsController < ApplicationController
     @brand = Brand.new(brand_params)
 
     if @brand.save
-      redirect_to @brand
+      redirect_to brand_path(@brand)
     else
       render :new, status: :unprocessable_entity
     end
