@@ -32,7 +32,7 @@ class SetupsController < ApplicationController
     else
       @active_dashboard_menu = :setups
       @setups = current_user.setups.order('LOWER(name)')
-      flash[:alert] = 'An error occured. Please try again.'
+      flash[:alert] = I18n.t(:generic_error_message)
       render :index, status: :unprocessable_entity
     end
   end

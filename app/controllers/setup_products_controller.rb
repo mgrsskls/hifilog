@@ -6,7 +6,7 @@ class SetupProductsController < ApplicationController
       @product = Product.find(params[:product_id])
       @setup = Setup.find(params[:setup_id])
       @setup.products << @product
-      @setup.save
+      flash[:alert] = I18n.t(:generic_error_message) unless @setup.save
       redirect_back fallback_location: root_url
     else
       destroy

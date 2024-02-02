@@ -74,6 +74,7 @@ en:
       label: Filter by letter
     category:
       label: Filter by category
+  generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
   meta_description: HiFi Log is a community-driven platform with %{products_count} products by %{brands_count} brands in %{categories_count} categories.
   home:
     intro: >

@@ -5,7 +5,8 @@ class BookmarksController < ApplicationController
     @product = Product.find(params[:id])
 
     @bookmark = current_user.bookmarks.new(product: @product)
-    @bookmark.save
+
+    flash[:alert] = I18n.t(:generic_error_message) unless @bookmark.save
 
     redirect_to brand_product_path(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
   end
