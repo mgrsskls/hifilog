@@ -201,7 +201,7 @@
       <% end %>
       <div class="Footer">
         <div class="u-container">
-          <div class="u-flex u-spaceBetween u-alignCenter">
+          <div class="u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
             <nav>
               <ul class="Footer-nav">
                 <li>
@@ -262,7 +262,13 @@
 
       document.querySelector(".Header-toggle").addEventListener("click", onMenuToggle);
 
-      document.querySelectorAll("time").forEach(time => time.textContent = new Date(time.dateTime).toLocaleDateString());
+      document.querySelectorAll("time").forEach(time => {
+        time.textContent = new Date(time.dateTime).toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+      });
     <% end %>
   </body>
 </html>
