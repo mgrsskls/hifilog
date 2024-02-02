@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_02_042756) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_02_044729) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
+  enable_extension "pg_trgm"
   enable_extension "plpgsql"
 
   create_table "active_admin_comments", force: :cascade do |t|
@@ -59,6 +60,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_02_042756) do
     t.string "slug"
     t.integer "products_count"
     t.index "lower((name)::text)", name: "index_brands_on_name", unique: true
+    t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["slug"], name: "index_brands_on_slug", unique: true
   end
 
@@ -89,6 +91,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_02_042756) do
     t.boolean "discontinued"
     t.string "slug"
     t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
+    t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["slug"], name: "index_products_on_slug"
   end
 
