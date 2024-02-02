@@ -6,8 +6,11 @@ class UserProductsController < ApplicationController
 
     current_user.bookmarks.find(params[:bookmark_id].to_i).destroy if params[:bookmark_id]
 
-    current_user.products << @product
-    flash[:alert] = I18n.t(:generic_error_message) unless current_user.save
+    unless current_user.products.include?(@product)
+      current_user.products << @product
+      flash[:alert] = I18n.t(:generic_error_message) unless current_user.save
+    end
+
     redirect_back fallback_location: root_url
   end
 
