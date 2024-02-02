@@ -6,7 +6,7 @@ class SetupsController < ApplicationController
     add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
     @page_title = I18n.t('headings.setups')
     @active_dashboard_menu = :setups
-    @setups = current_user.setups.order('LOWER(name)')
+    @setups = current_user.setups.includes(:products).order('LOWER(name)')
   end
 
   def show
