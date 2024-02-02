@@ -9,13 +9,14 @@ class BrandsController < ApplicationController
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
-      all_brands = Brand.where('name ILIKE :prefix', prefix: "#{params[:letter]}%").includes([:products])
+      @brands = Brand.where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
+                     .order('LOWER(name)')
+                     .page(params[:page])
     else
-      all_brands = Brand.all.includes([:products])
+      @brands = Brand.all.order('LOWER(name)').page(params[:page])
     end
 
-    @brands = all_brands.order('LOWER(name)').page(params[:page])
-    @total_size = all_brands.size
+    @total_size = @brands.size
   end
 
   def show
