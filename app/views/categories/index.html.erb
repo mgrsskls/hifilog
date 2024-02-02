@@ -18,27 +18,23 @@
   </ol>
 </nav>
 
-<% if @sub_categories.any? %>
-  <table>
-    <thead>
+<table>
+  <thead>
+    <tr>
+      <th><%= t('name') %></th>
+      <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @sub_categories.each do |sub_category| %>
       <tr>
-        <th><%= t('name') %></th>
-        <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+        <th scope="row">
+          <%= link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.friendly_category_id) %><br>
+        </th>
+        <td class="u-alignCenter"><%= sub_category.products.count %></td>
       </tr>
-    </thead>
-    <tbody>
-      <% @sub_categories.each do |sub_category| %>
-        <tr>
-          <th scope="row">
-            <%= link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) %><br>
-          </th>
-          <td class="u-alignCenter"><%= sub_category.products.any? ? sub_category.products.size : "-" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <%= render "shared/empty_state", message: t('empty_state.categories') %>
-<% end %>
+    <% end %>
+  </tbody>
+</table>
 
 <%= render "shared/page_actions" %>

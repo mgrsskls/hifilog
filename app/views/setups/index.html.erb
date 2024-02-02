@@ -11,14 +11,14 @@
       <thead>
         <tr>
           <th><%= t("headings.name") %></th>
-          <th class="u-alignCenter"><%= t("headings.products") %></th>
+          <th class="Table-products u-alignCenter"><%= t("headings.products") %></th>
         </tr>
       </thead>
       <tbody>
         <% @setups.each do |setup| %>
           <tr>
             <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
-            <td class="u-alignCenter"><%= setup.products.any? ? setup.products.size : "-" %></td>
+            <td class="Table-products u-alignCenter"><%= setup.products.size %></td>
           </tr>
         <% end %>
       </tbody>

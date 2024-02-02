@@ -23,16 +23,14 @@
     <thead>
       <tr>
         <th><%= t('name') %></th>
-        <th><%= t('headings.products') %></th>
+        <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
       </tr>
     </thead>
     <tbody>
       <% @sub_categories.each do |sub_category| %>
         <tr>
-          <tr>
-            <th scope="row"><%= link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: @category.friendly_id) %></th>
-            <td><%= sub_category.products.any? ? sub_category.products.size : "-" %></td>
-          </tr>
+          <th scope="row"><%= link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: @category.friendly_id) %></th>
+          <td class="u-alignCenter"><%= sub_category.products.size %></td>
         </tr>
       <% end %>
     </tbody>
