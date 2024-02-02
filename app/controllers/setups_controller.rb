@@ -11,7 +11,7 @@ class SetupsController < ApplicationController
 
   def show
     @active_dashboard_menu = :setups
-    @setup = current_user.setups.find(params[:id])
+    @setup = current_user.setups.includes(products: :brand).find(params[:id])
 
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
