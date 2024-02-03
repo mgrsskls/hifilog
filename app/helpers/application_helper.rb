@@ -42,4 +42,9 @@ module ApplicationHelper
 
     @current_user_setups_count ||= current_user.setups.count
   end
+
+  def rounddown(num)
+    x = Math.log10(num).floor
+    (num / (10.0**x)).floor * 10**x
+  end
 end

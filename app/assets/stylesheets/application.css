@@ -98,7 +98,6 @@
     --color-focus-outline: hsl(var(--hue-accent), 100%, 50%);
     --color-accent: var(--color-accent-on-light);
     --color-highlight: var(--color-accent);
-    --color-accent: var(--color-accent-on-light);
     --color-copy: var(--color-copy-on-light);
     --color-secondary: var(--color-secondary-on-light);
 
@@ -212,8 +211,7 @@
     z-index: 1;
   }
 
-  main {
-    flex: 1;
+  main:not(:has(.Home)) {
     padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
   }
 

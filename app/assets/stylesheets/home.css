@@ -1,12 +1,55 @@
-.Home {
-  container: home / inline-size;
-  padding-block: clamp(1rem, 8vi, 8rem);
+.Home-register {
+  position: relative;
+  display: grid;
+  align-items: center;
+  padding: 2rem;
 }
 
-@media (max-width: 78rem) {
-  .Home {
-    padding-inline: 2rem;
-  }
+.Home-register picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-image: linear-gradient(45deg, var(--color-blue-100), var(--color-accent-on-light));
+}
+
+.Home img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  mix-blend-mode: screen;
+}
+
+.Home-register .UserForm {
+  background: hsla(312, 50%, 7.5%, 85%);
+  max-inline-size: 26rem;
+  margin-inline: auto;
+  padding: 2rem;
+  position: relative;
+  color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: 0.1rem 0.1rem 1rem hsla(312, 50%, 5%, 50%);
+}
+
+.Home-register h2 {
+  margin-block: 0 1rem;
+  color: inherit;
+  font-size: 1.4rem;
+}
+
+.Home-register label {
+  font-size: .875em;
+}
+
+.Home-register input {
+  background: var(--color-blue-10);
+}
+
+.Home-content {
+  container: home / inline-size;
+  padding-block: clamp(1rem, 8vi, 8rem);
+  display: grid;
+  align-content: center;
 }
 
 .Home-intro,
@@ -37,17 +80,17 @@
   white-space: nowrap;
 }
 
-@container home (min-inline-size: 48em) {
+@container home (min-inline-size: 32em) {
   .Home-intro > span:not(.AppName) {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.25em 0.5em;
-    margin-block-start: 0.25em;
+    line-height: 1.2;
   }
 
   .Home-intro a {
-    font-size: clamp(1.4em, 4vi, 1.8em);
+    font-size: clamp(1.4em, 4vi, 1.6em);
     text-underline-offset: 0.1em;
     text-decoration-thickness: 0.0375em;
   }
@@ -60,4 +103,42 @@
 .Home-signUp {
   max-inline-size: 46ch;
   margin-block: 3rem 0;
+}
+
+@media (max-width: 56em) {
+  .Home-content {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 56.0625em) {
+  .Home {
+    position: relative;
+    display: grid;
+    max-inline-size: 94rem;
+    grid-template-columns: repeat(24, 1fr);
+    margin-inline: auto;
+  }
+
+  .Home-content {
+    grid-column-start: 3;
+    grid-column-end: 12;
+    grid-row: 1;
+    padding-inline-end: 1rem;
+  }
+
+  .Home-register {
+    grid-column-start: 13;
+    grid-column-end: -1;
+    grid-row: 1;
+  }
+
+  .Home-picture {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .Home-register form {
+    margin-inline: auto;
+  }
 }

@@ -150,10 +150,14 @@
       </nav>
     <% end %>
     <main id="content">
-      <div class="u-container">
-        <%= render "shared/flash_messages", messages: flash if flash.any? %>
+      <% if params[:controller] == "application" && params[:action] == "index" %>
         <%= yield %>
-      </div>
+      <% else %>
+        <div class="u-container">
+          <%= render "shared/flash_messages", messages: flash if flash.any? %>
+          <%= yield %>
+        </div>
+      <% end %>
     </main>
     <footer class="is-dark">
       <% if newest_products.any? or newest_brands.any? %>

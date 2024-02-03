@@ -9,3 +9,6 @@ It is designed to help users discover new products while also allowing them to k
 
 _HiFi&hairsp;Log_ has been designed and developed by [Michael Großklaus](https://www.mgrossklaus.de), a hi-fi lover and professional web developer from Hamburg, Germany.
 
+## Credit
+
+Picture on the homepage by <a href="https://unsplash.com/de/@dorienmonnens">Dorien Monnens</a> on <a href="https://unsplash.com/de/fotos/vinyl-plattenspieler-auf-dem-tisch-UaSpWm8pTOc">Unsplash</a>.

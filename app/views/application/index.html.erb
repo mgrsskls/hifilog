@@ -1,11 +1,56 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "home" %>
+  <%= stylesheet_link_tag "user_form" %>
 <% end %>
 
 <div class="Home">
-  <p class="Home-intro">
-    <%= t('home.intro', products_count: products_count, products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count, categories_path: categories_path).html_safe %>
-  </p>
+  <div class="Home-content">
+    <% if flash.any? %>
+      <%= render "shared/flash_messages", messages: flash %>
+    <% else %>
+      <p class="Home-intro">
+        <%= t('home.intro', products_count: rounddown(products_count), products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count, categories_path: categories_path).html_safe %>
+      </p>
+      <p class="Home-signUp"><%= t('home.sign_up', sign_up_path: new_user_registration_path).html_safe %></p>
+    <% end %>
+  </div>
+  <div class="Home-register">
+    <picture>
+      <source srcset="/home/01.avif" type="image/avif">
+      <img src="/home/01.jpg" aria-hidden="true" alt="">
+    </picture>
+    <div class="UserForm">
+      <h2><%= t('user_form.signup') %></h2>
 
-  <p class="Home-signUp"><%= t('home.sign_up', sign_up_path: new_user_registration_path).html_safe %></p>
+      <%= form_for(User.new, url: user_registration_path) do |f| %>
+        <div class="UserForm-field">
+          <%= f.label :email, class: 'UserForm-label' do %>
+            Email
+          <% end %>
+          <%= f.email_field :email, autocomplete: "email" %>
+        </div>
+
+        <div class="UserForm-field">
+          <%= f.label :password, class: 'UserForm-label' do %>
+            Password
+          <% end %>
+          <%= f.password_field :password, autocomplete: "new-password" %>
+          <% if @minimum_password_length %>
+            <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
+          <% end %>
+        </div>
+
+        <div class="UserForm-field">
+          <%= f.label :password_confirmation, class: 'UserForm-label' do %>
+            Password confirmation
+          <% end %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+        </div>
+
+        <div class="UserForm-submit">
+          <button type="submit" class="Button"><%= t('user_form.signup') %></button>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
