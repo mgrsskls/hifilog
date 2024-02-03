@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <% if params[:controller] == "application" && params[:action] == "index" %>
+      <link rel="prefetch" href="/home/01.avif" as="image" type="image/avif">
+    <% end %>
     <title><%= "#{@page_title} — " if @page_title.present? %><%= APP_NAME %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= yield :js %>
