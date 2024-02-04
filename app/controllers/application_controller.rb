@@ -11,10 +11,7 @@ class ApplicationController < ActionController::Base
                 :brands_count,
                 :categories_count,
                 :newest_brands,
-                :newest_products,
-                :user_has_bookmark?,
-                :user_has_brand?,
-                :user_has_product?
+                :newest_products
 
   def index
     @is_home = true
@@ -50,18 +47,6 @@ class ApplicationController < ActionController::Base
     else
       dashboard_root_path
     end
-  end
-
-  def user_has_product?(product)
-    product && user_signed_in? && current_user.products.where(id: product.id).exists?
-  end
-
-  def user_has_bookmark?(product)
-    product && user_signed_in? && current_user.bookmarks.where(product_id: product.id).exists?
-  end
-
-  def user_has_brand?(brand)
-    brand && user_signed_in? && current_user.products.where(brand_id: brand.id).exists?
   end
 
   def not_found

@@ -25,26 +25,38 @@ module ApplicationHelper
     datetime.strftime('%Y-%m-%dT%H:%M')
   end
 
-  def current_user_products_count
-    return unless user_signed_in?
+  def user_products_count(user)
+    return unless user
 
-    @current_user_products_count ||= current_user.products.count
+    user.products.count
   end
 
-  def current_user_bookmarks_count
-    return unless user_signed_in?
+  def user_bookmarks_count(user)
+    return unless user
 
-    @current_user_bookmarks_count ||= current_user.bookmarks.count
+    user.bookmarks.count
   end
 
-  def current_user_setups_count
-    return unless user_signed_in?
+  def user_setups_count(user)
+    return unless user
 
-    @current_user_setups_count ||= current_user.setups.count
+    user.setups.count
   end
 
   def rounddown(num)
     x = Math.log10(num).floor
     (num / (10.0**x)).floor * 10**x
+  end
+
+  def user_has_product?(user, product)
+    product && user && user.products.where(id: product.id).exists?
+  end
+
+  def user_has_bookmark?(user, product)
+    product && user && user.bookmarks.where(product_id: product.id).exists?
+  end
+
+  def user_has_brand?(user, brand)
+    brand && user && user.products.where(brand_id: brand.id).exists?
   end
 end

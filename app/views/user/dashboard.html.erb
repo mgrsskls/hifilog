@@ -7,19 +7,19 @@
     <li>
       <%= link_to dashboard_products_path, class: "DashboardStat" do %>
         <h2 class="DashboardStat-heading"><%= t('heading.products') %></h2>
-        <span class="DashboardStat-value"><%= current_user_products_count %></span>
+        <span class="DashboardStat-value"><%= user_products_count(current_user) %></span>
       <% end %>
     </li>
     <li>
       <%= link_to dashboard_bookmarks_path, class: "DashboardStat" do %>
         <h2 class="DashboardStat-heading"><%= t('heading.bookmarks') %></h2>
-        <span class="DashboardStat-value"><%= current_user_bookmarks_count %></span>
+        <span class="DashboardStat-value"><%= user_bookmarks_count(current_user) %></span>
       <% end %>
     </li>
     <li>
       <%= link_to dashboard_setups_path, class: "DashboardStat" do %>
         <h2 class="DashboardStat-heading"><%= t('heading.setups') %></h2>
-        <span class="DashboardStat-value"><%= current_user_setups_count %></span>
+        <span class="DashboardStat-value"><%= user_setups_count(current_user) %></span>
       <% end %>
     </li>
   </ul>

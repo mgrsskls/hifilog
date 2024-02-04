@@ -13,19 +13,19 @@
         <a class="Dashboard-link" href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
           <%= t('headings.products') %>
         </a>
-        <small><%= current_user_products_count %></small>
+        <small><%= user_products_count(current_user) %></small>
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
           <%= t('headings.bookmarks') %>
         </a>
-        <small><%= current_user_bookmarks_count %></small>
+        <small><%= user_bookmarks_count(current_user) %></small>
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
           <%= t('headings.setups') %>
         </a>
-        <small><%= current_user_setups_count %></small>
+        <small><%= user_setups_count(current_user) %></small>
       </li>
       <li class="Dashboard-separator">
         <a class="Dashboard-link" href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>><%= t('account') %></a>

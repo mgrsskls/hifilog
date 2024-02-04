@@ -31,7 +31,7 @@
     </div>
   </div>
   <div class="Product-sub">
-    <% if user_has_product?(@product) %>
+    <% if user_has_product?(current_user, @product) %>
       <span class="Symbol Symbol--positive Symbol--large">✓ <%= t('symbols.in_your_collection') %></span>
 
       <div class="Product-actions">

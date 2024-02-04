@@ -2,6 +2,8 @@
 
 one:
   name: Living Room
+  user: one
 
 two:
   name: Office
+  user: one

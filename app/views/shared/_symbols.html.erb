@@ -15,7 +15,7 @@
     </div>
   <% end %>
 
-  <% if only.include?(:has_brand) && user_has_brand?(brand) %>
+  <% if only.include?(:has_brand) && user_has_brand?(current_user, brand) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
@@ -25,7 +25,7 @@
     </div>
   <% end %>
 
-  <% if only.include?(:has_product) && user_has_product?(product) %>
+  <% if only.include?(:has_product) && user_has_product?(current_user, product) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
@@ -35,7 +35,7 @@
     </div>
   <% end %>
 
-  <% if only.include?(:has_bookmark) && user_has_bookmark?(product) %>
+  <% if only.include?(:has_bookmark) && user_has_bookmark?(current_user, product) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_bookmarks') %></span>

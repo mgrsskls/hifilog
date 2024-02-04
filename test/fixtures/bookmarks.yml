@@ -5,5 +5,5 @@ one:
   product: one
 
 two:
-  user: two
+  user: one
   product: two

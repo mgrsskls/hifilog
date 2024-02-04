@@ -33,7 +33,7 @@
       </thead>
       <tbody>
         <% @products.each do |product| %>
-          <tr<% if user_has_product?(product) %> class="is-positive"<% end %>>
+          <tr<% if user_has_product?(current_user, product) %> class="is-positive"<% end %>>
             <th scope="row"><%= link_to product.name, brand_product_path(id: product.friendly_id, brand_id: @brand.friendly_id) %></th>
             <td>
               <% if product.sub_categories.any? %>
