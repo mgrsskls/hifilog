@@ -15,23 +15,26 @@
     <% end %>
   </div>
   <div class="Home-register">
-    <picture>
-      <source srcset="/home/01.avif" type="image/avif">
-      <img src="/home/01.jpg" aria-hidden="true" alt="" fetchpriority="high">
-    </picture>
     <div class="UserForm">
       <h2><%= t('user_form.signup') %></h2>
 
       <%= form_for(User.new, url: user_registration_path) do |f| %>
-        <div class="UserForm-field">
-          <%= f.label :email, class: 'UserForm-label' do %>
+        <div>
+          <%= f.label :email do %>
             Email
           <% end %>
           <%= f.email_field :email, autocomplete: "email" %>
         </div>
 
-        <div class="UserForm-field">
-          <%= f.label :password, class: 'UserForm-label' do %>
+        <div>
+          <%= f.label :user_name do %>
+            Username <small><i>(optional)</i></small>
+          <% end %>
+          <%= f.text_field :user_name %>
+        </div>
+
+        <div>
+          <%= f.label :password do %>
             Password
           <% end %>
           <%= f.password_field :password, autocomplete: "new-password" %>
@@ -40,17 +43,21 @@
           <% end %>
         </div>
 
-        <div class="UserForm-field">
-          <%= f.label :password_confirmation, class: 'UserForm-label' do %>
+        <div>
+          <%= f.label :password_confirmation do %>
             Password confirmation
           <% end %>
           <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
         </div>
 
-        <div class="UserForm-submit">
+        <div class="Home-submit">
           <button type="submit" class="Button"><%= t('user_form.signup') %></button>
         </div>
       <% end %>
     </div>
   </div>
+  <picture class="Home-picture">
+    <source srcset="/home/01.avif" type="image/avif">
+    <img src="/home/01.jpg" aria-hidden="true" alt="" fetchpriority="high">
+  </picture>
 </div>

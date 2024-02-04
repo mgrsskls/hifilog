@@ -140,7 +140,7 @@
     </header>
     <% unless render_breadcrumbs.empty? %>
       <nav aria-label="Breadcrumbs" class="Breadcrumbs">
-        <div class="u-container">
+        <div class="u-container u-container--sm">
           <ol class="Breadcrumbs-list">
             <li>
               <%= link_to root_path, class: "Breadcrumbs-home" do %>
@@ -156,7 +156,7 @@
       <% if params[:controller] == "application" && params[:action] == "index" %>
         <%= yield %>
       <% else %>
-        <div class="u-container">
+        <div class="u-container u-container--sm">
           <%= render "shared/flash_messages", messages: flash if flash.any? %>
           <%= yield %>
         </div>
