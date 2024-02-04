@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
-      all_products = Product.where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
+      all_products = Product.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
                             .includes([:brand, :sub_categories])
     else
       all_products = Product.all.includes([:brand, :sub_categories])

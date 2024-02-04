@@ -9,7 +9,7 @@ class BrandsController < ApplicationController
 
     if params[:letter]
       add_breadcrumb params[:letter].upcase
-      @brands = Brand.where('name ILIKE :prefix', prefix: "#{params[:letter]}%")
+      @brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
                      .order('LOWER(name)')
                      .page(params[:page])
     else
