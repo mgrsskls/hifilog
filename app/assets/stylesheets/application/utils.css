@@ -1,11 +1,7 @@
 .u-container {
-  max-inline-size: 92rem;
+  max-inline-size: 78.5rem;
   margin-inline: auto;
   padding-inline: var(--page-spacing);
-}
-
-.u-container--sm {
-  max-inline-size: 78.125rem;
 }
 
 .u-flex {

@@ -124,7 +124,7 @@
 
   .Home {
     position: relative;
-    max-inline-size: 98rem;
+    max-inline-size: 95rem;
     margin-inline: auto;
     background: var(--color-bg);
   }

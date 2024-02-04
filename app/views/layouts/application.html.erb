@@ -144,7 +144,7 @@
     </header>
     <% unless render_breadcrumbs.empty? %>
       <nav aria-label="Breadcrumbs" class="Breadcrumbs">
-        <div class="u-container u-container--sm">
+        <div class="u-container">
           <ol class="Breadcrumbs-list">
             <li>
               <%= link_to root_path, class: "Breadcrumbs-home" do %>
@@ -160,7 +160,7 @@
       <% if params[:controller] == "application" && params[:action] == "index" %>
         <%= yield %>
       <% else %>
-        <div class="u-container u-container--sm">
+        <div class="u-container">
           <%= render "shared/flash_messages", messages: flash if flash.any? %>
           <%= yield %>
         </div>
@@ -169,7 +169,7 @@
     <footer class="is-dark">
       <% if newest_products.any? or newest_brands.any? %>
         <div class="Newest">
-          <div class="u-container u-container--sm">
+          <div class="u-container">
             <div class="Heading">
               <h2>
                 <%= t('home.recently_added').html_safe %>
@@ -211,7 +211,7 @@
         </div>
       <% end %>
       <div class="Footer">
-        <div class="u-container u-container--sm">
+        <div class="u-container">
           <div class="u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
             <nav>
               <ul class="Footer-nav">

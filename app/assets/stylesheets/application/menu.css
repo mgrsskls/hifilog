@@ -13,7 +13,7 @@
   margin: 0;
   padding: 0;
   display: flex;
-  gap: 2rem;
+  gap: var(--gap);
 }
 
 .Menu-list :is(a, button) {
