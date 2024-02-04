@@ -1,4 +1,8 @@
 @layer {
+  table-saw {
+    display: block;
+  }
+
   nav + :is(table, table-saw) {
     margin-block-start: 2rem;
   }
