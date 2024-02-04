@@ -68,3 +68,5 @@ gem "xml-sitemap"
 gem "rss"
 
 gem "redcarpet"
+
+gem "strip_attributes"

@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   include Rails.application.routes.url_helpers
 
+  strip_attributes
+
   enum profile_visibility: {
     hidden: 0,
     logged_in_only: 1,
@@ -11,7 +13,8 @@ class User < ApplicationRecord
   has_many :setups, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
 
-  validates :user_name, uniqueness: { allow_blank: true }, presence: true, if: :public_profile?
+  validates :user_name, uniqueness: true, allow_nil: true
+  validates :user_name, presence: true, if: :public_profile?
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
