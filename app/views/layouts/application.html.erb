@@ -7,7 +7,7 @@
     <title><%= "#{@page_title} — " if @page_title.present? %><%= APP_NAME %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= yield :js %>
-    <%= javascript_include_tag "theme_toggle", defer: true %>
+    <%= javascript_include_tag "application", type: "module" %>
     <%= javascript_include_tag "table_saw", type: "module" %>
     <%= stylesheet_link_tag "application" %>
     <%= yield :css %>
@@ -252,23 +252,6 @@
       </div>
     </footer>
     <%= javascript_tag nonce: true do %>
-      let scrollY = 0;
-
-      function onMenuToggle({ currentTarget }) {
-        const button = currentTarget;
-        const shouldOpen = button.getAttribute('aria-expanded') === 'false';
-
-        if (shouldOpen) {
-          scrollY = window.scrollY;
-          button.setAttribute('aria-expanded', 'true');
-        } else {
-          button.setAttribute('aria-expanded', 'false');
-          window.requestAnimationFrame(() => window.scrollTo(0, scrollY));
-        }
-      }
-
-      document.querySelector(".Header-toggle").addEventListener("click", onMenuToggle);
-
       document.querySelectorAll("time").forEach(time => {
         time.textContent = new Date(time.dateTime).toLocaleDateString(undefined, {
           year: "numeric",

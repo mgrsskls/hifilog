@@ -19,6 +19,7 @@ Rails.application.config.assets.precompile += %w(
   setups.css
   user_form.css
 
+  application.js
   accordion_tabs.js
   table_saw.js
   theme_toggle.js
