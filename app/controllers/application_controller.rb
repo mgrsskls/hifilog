@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
                 :newest_products
 
   def index
-    @is_home = true
+    redirect_to dashboard_root_path if user_signed_in?
   end
 
   attr_writer :current_user

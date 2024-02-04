@@ -52,12 +52,14 @@
 
 .Home-content .AppName span {
   color: var(--color-accent);
+  font-weight: inherit;
 }
 
 .Home-intro {
   margin-block: 0;
   font-size: 1.5em;
   line-height: 1.4;
+  font-weight: normal;
 }
 
 .Home-content a {
@@ -65,7 +67,7 @@
   white-space: nowrap;
 }
 
-.Home-content p + p {
+.Home-content p {
   margin-block: 2em 0;
 }
 
