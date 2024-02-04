@@ -1,26 +1,14 @@
 .Home-register {
-  padding: 2rem;
-}
-
-.Home-picture {
-  background-image: linear-gradient(45deg, var(--color-blue-100), var(--color-accent-on-light));
-  display: block;
-}
-
-.Home img {
-  display: block;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-  mix-blend-mode: screen;
-}
-
-.Home-register {
   background: var(--color-accent);
   padding: 2rem;
   color: #fff;
   padding-inline: 2rem;
   padding-block: clamp(1rem, 8vi, 4rem);
+}
+
+.Home-register label {
+  display: block;
+  margin-block-end: .5em;
 }
 
 .Home-register form {
@@ -32,11 +20,6 @@
 .Home-register h2 {
   margin-block: 0 2rem;
   color: inherit;
-}
-
-.Home-register label {
-  display: block;
-  margin-block-end: .5em;
 }
 
 .Home-register label small {
@@ -76,13 +59,26 @@
   line-height: 1.4;
 }
 
-.Home-intro a {
+.Home-content a {
   font-weight: 700;
   white-space: nowrap;
 }
 
 .Home-content p + p {
   margin-block: 2em 0;
+}
+
+.Home-picture {
+  background-image: linear-gradient(45deg, var(--color-blue-100), var(--color-accent-on-light));
+  display: block;
+}
+
+.Home-picture img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  mix-blend-mode: screen;
 }
 
 @media (max-width: 48em) {
@@ -144,7 +140,7 @@
     grid-template-columns: subgrid;
   }
 
-  .Home-register .UserForm {
+  .Home-form {
     grid-column: 3 / 11;
   }
 
