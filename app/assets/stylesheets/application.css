@@ -62,7 +62,6 @@
     --border-radius: 0.1875rem;
     --line-height: 1.75;
     --input-padding: 0.325em 1em;
-    --page-spacing: 0.75rem;
     --header-height: 3.75rem;
 
     --hue: 208;
@@ -273,5 +272,17 @@
     .h2 {
       font-size: 1.6rem;
     }
+  }
+}
+
+@media (max-width: 48em) {
+  html {
+    --page-spacing: 0.75rem;
+  }
+}
+
+@media (min-width: 48.0625em) {
+  html {
+    --page-spacing: 1.5rem;
   }
 }

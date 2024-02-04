@@ -9,6 +9,7 @@
 .Home-register label {
   display: block;
   margin-block-end: .5em;
+  white-space: nowrap;
 }
 
 .Home-register form {
