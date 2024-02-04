@@ -111,7 +111,6 @@ en:
   status: Status
   users: Users
   user_form:
-    user_name_necessary_if_public: You must enter a user name if you set your profile to public.
     login: Log in
     logout: Log out
     signup: Sign up
@@ -141,3 +140,37 @@ en:
     setup_products: "<p><b>You have not added any products to this setup yet.</b></p><p>After adding a product to your collection, you can assign it to a setup on its product page.</p>"
     user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
+  product:
+    meta:
+      owned_by: Owned by
+      added: Added
+      last_edit: Last edit
+  user:
+    edit:
+      update:
+        heading: Update your account
+        profile_visibility:
+          hidden: No one but me can see my profile.
+          logged_in_only: Only logged in users can see my profile.
+          visible: Logged in and logged out users can see my profile.
+        profile_url: "Your profile is visible at the following URL:"
+        user_name_necessary_if_public: You must enter a user name if you set your profile to public.
+        optional: optional
+        required: required
+        leave_blank: leave blank if you don't want to change it
+        minimum_password_length: "%{minimum} characters minimum"
+        fields:
+          user_name: Username
+          email: Email
+          password: Password
+          current_password: Current password
+        save:
+          heading: Save your changes
+          confirm_with_password: We need your current password to confirm your changes.
+          submit: Save
+      delete:
+        heading: Delete your account
+        intro: If you delete your account, all data associated with your account will immediately be deleted.
+        confirm: Are you sure you want to delete your account? All data will be deleted immediately.
+        submit: Delete my account
+

@@ -71,13 +71,13 @@
 
     <hr>
     <dl>
-      <dt>Owned by</dt>
+      <dt><%= t('product.meta.owned_by') %></dt>
       <dd><%= t('amount_users', count: @product.users.size) %></dd>
-      <dt>Added</dt>
+      <dt><%= t('product.meta.added') %></dt>
       <dd>
         <time datetime="<%= formatted_datetime @product.created_at %>"><%= formatted_datetime @product.created_at %></time>
       </dd>
-      <dt>Last edit</dt>
+      <dt><%= t('product.meta.last_edit') %></dt>
       <dd>
         <% if @product.created_at != @product.updated_at %>
           <time datetime="<%= formatted_datetime @product.updated_at %>"><%= formatted_datetime @product.updated_at %></time>
