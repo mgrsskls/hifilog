@@ -11,6 +11,7 @@ Rails.application.config.assets.version = "1.0"
 # folder are already added.
 Rails.application.config.assets.precompile += %w(
   accordion_tabs.css
+  application.css
   dashboard.css
   home.css
   new_product.css
