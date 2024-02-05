@@ -2,7 +2,7 @@ class SubCategory < ApplicationRecord
   extend FriendlyId
 
   belongs_to :category
-  has_and_belongs_to_many :products
+  has_and_belongs_to_many :products, join_table: :products_sub_categories
 
   friendly_id :name, use: :scoped, scope: :category
 

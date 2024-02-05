@@ -14,20 +14,36 @@ ActiveAdmin.register Product do
   #   permitted
   # end
 
+  form do |f|
+    f.inputs do
+      f.input :name
+      f.input :brand
+      f.input :discontinued
+      f.input :slug
+      f.input :sub_category_ids, label: "Subcategories", as: :check_boxes, collection: SubCategory.all
+    end
+    f.submit
+  end
+
+  show do
+    attributes_table do
+      row :name
+      row :created_at
+      row :updated_at
+      row :brand
+      row :discontinued
+      row :slug
+      row :sub_categories do |product|
+        product.sub_categories
+      end
+    end
+
+    active_admin_comments_for(resource)
+  end
+
   controller do
     def find_resource
       scoped_collection.friendly.find(params[:id])
     end
   end
-
-  # form do |f|
-  #   f.inputs do
-  #     f.has_many :sub_categories_id, new_record: false do |sub_category|
-  #       sub_category.inputs "Photos" do
-  #         sub_category.input :name
-  #         #repeat as necessary for all fields
-  #       end
-  #     end
-  #   end
-  # end
 end

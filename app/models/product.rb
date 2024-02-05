@@ -4,7 +4,7 @@ class Product < ApplicationRecord
   extend FriendlyId
 
   belongs_to :brand, counter_cache: :products_count
-  has_and_belongs_to_many :sub_categories
+  has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
   has_and_belongs_to_many :users
   has_and_belongs_to_many :setups
 
