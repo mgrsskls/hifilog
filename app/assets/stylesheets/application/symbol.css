@@ -29,6 +29,7 @@
 
 .Symbol:not(.Symbol--large) {
   font-size: 0.8125rem;
+  line-height: 1.5;
   padding-block: 0.25em;
 }
 

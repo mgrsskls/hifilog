@@ -287,3 +287,23 @@
     --page-spacing: 1.5rem;
   }
 }
+
+.Data {
+  margin-block: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .5rem 1.5rem;
+}
+
+.Data dt {
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.Data div + div {
+  margin-block-start: 0.5rem;
+}
+
+.Data dd {
+  flex: 1;
+}

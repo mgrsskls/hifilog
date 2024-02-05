@@ -24,6 +24,11 @@
     </div>
 
     <div class="UserForm-field">
+      <%= f.label :country_code, class: "UserForm-label" do %>Country<% end %>
+      <%= f.country_select :country_code %>
+    </div>
+
+    <div class="UserForm-field">
       <span class="UserForm-label"><%= t('symbols.discontinued') %></span>
       <div class="UserForm-options">
         <%= f.radio_button :discontinued, 0, checked: @brand.discontinued.nil? || @brand.discontinued == false %>

@@ -1,13 +1,30 @@
-<div class="Heading">
+<% content_for :css do %>
+  <%= stylesheet_link_tag "product" %>
+<% end %>
+<div class="Heading Heading--divider">
   <h1><%= @brand.name %></h1>
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
 
-  <% if @brand.website %>
-    <div class="Heading-website">
-      <%= link_to @brand.website, @brand.website %>
+  <% if @brand.discontinued || @brand.country_name.present? || @brand.website.present? %>
+    <div class="Heading-info">
+      <dl class="Data">
+        <% if @brand.discontinued %>
+          <dt><%= t('status') %></dt>
+          <dd><%= render "shared/symbols", brand: @brand, show_labels: true, only: [:discontinued] %></dd>
+        <% end %>
+        <% if @brand.country_name.present? %>
+          <dt><%= t('country').html_safe %></dt>
+          <dd><%= @brand.country_name %></dd>
+        <% end %>
+        <% if @brand.website.present? %>
+          <dt><%= t('website') %></dt>
+          <dd><%= link_to(@brand.website) %></dd>
+        <% end %>
+      </dl>
     </div>
   <% end %>
 </div>
+
 
 <% if @brand.sub_categories.any? && @brand.sub_categories.size > 1 %>
   <ol class="Pagination">

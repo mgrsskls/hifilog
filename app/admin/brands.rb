@@ -5,7 +5,7 @@ ActiveAdmin.register Brand do
   #
   # Uncomment all parameters which should be permitted for assignment
   #
-  permit_params :name, :discontinued, :slug, :website
+  permit_params :name, :discontinued, :slug, :website, :country_code
   #
   # or
   #

@@ -11,7 +11,7 @@ class Brand < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[created_at id name updated_at discontinued slug categories_id website]
+    %w[created_at id name updated_at discontinued slug categories_id website country_code]
   end
 
   def self.ransackable_associations(_auth_object = nil)
@@ -32,5 +32,12 @@ class Brand < ApplicationRecord
 
   def url
     brand_url(id: friendly_id)
+  end
+
+  def country_name
+    return if country_code.nil?
+
+    country = ISO3166::Country[country_code]
+    country.translations[I18n.locale.to_s] || country.common_name || country.iso_short_name
   end
 end

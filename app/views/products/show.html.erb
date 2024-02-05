@@ -10,23 +10,17 @@
         </h1>
       </div>
 
-      <dl>
+      <dl class="Data">
         <% if @product.discontinued %>
-          <div>
-            <dt><%= t('status') %></dt>
-            <dd><%= render "shared/symbols", product: @product, show_labels: true, only: [:discontinued] %></dd>
-          </div>
+          <dt><%= t('status') %></dt>
+          <dd><%= render "shared/symbols", product: @product, show_labels: true, only: [:discontinued] %></dd>
         <% end %>
-        <div>
-          <dt><%= t('headings.brand').html_safe %></dt>
-          <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
-        </div>
-        <div>
-          <dt><%= t('headings.category').html_safe %></dt>
-          <dd>
-            <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) }.join(", ").html_safe %>
-          </dd>
-        </div>
+        <dt><%= t('headings.brand').html_safe %></dt>
+        <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
+        <dt><%= t('headings.category').html_safe %></dt>
+        <dd>
+          <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) }.join(", ").html_safe %>
+        </dd>
       </dl>
     </div>
   </div>
