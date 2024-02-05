@@ -1,6 +1,12 @@
 <div class="Heading">
   <h1><%= @brand.name %></h1>
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
+
+  <% if @brand.website %>
+    <div class="Heading-website">
+      <%= link_to @brand.website, @brand.website %>
+    </div>
+  <% end %>
 </div>
 
 <% if @brand.sub_categories.any? && @brand.sub_categories.size > 1 %>

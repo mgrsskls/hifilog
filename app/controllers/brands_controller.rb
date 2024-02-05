@@ -83,6 +83,7 @@ class BrandsController < ApplicationController
     @brand = Brand.friendly.find(params[:id])
     @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
 
+    add_breadcrumb I18n.t('headings.brands'), brands_path
     add_breadcrumb @brand.name
     @page_title = @brand.name
   end
@@ -94,6 +95,8 @@ class BrandsController < ApplicationController
     @brand = Brand.friendly.find(params[:brand_id])
     @products = sub_category.products.includes([:sub_categories]).where(brand_id: @brand.id)
                             .order('LOWER(name)').page(params[:page])
+
+    add_breadcrumb I18n.t('headings.brands'), brands_path
     add_breadcrumb @brand.name, brand_path(id: @brand.friendly_id)
     add_breadcrumb sub_category.name
 
@@ -106,7 +109,8 @@ class BrandsController < ApplicationController
     @active_menu = :brands
     @page_title = I18n.t('new_brand.heading')
 
-    add_breadcrumb t('add')
+    add_breadcrumb I18n.t('headings.brands'), brands_path
+    add_breadcrumb I18n.t('new_brand.heading')
 
     @brand = Brand.new
   end
