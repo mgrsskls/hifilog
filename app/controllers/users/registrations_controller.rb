@@ -6,7 +6,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # GET /resource/sign_up
   def new
-    add_breadcrumb I18n.t('user_form.signup'), :new_user_registration_path
     @active_menu = :signup
     @page_title = I18n.t('user_form.signup')
     super

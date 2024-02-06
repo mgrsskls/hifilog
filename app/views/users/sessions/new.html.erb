@@ -34,9 +34,5 @@
     </div>
   <% end %>
 
-  <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-    <div class="UserForm-links">
-      <%= link_to "Forgot your password?", new_password_path(resource_name) %><br />
-    </div>
-  <% end %>
+  <%= render "users/shared/links" %>
 </div>

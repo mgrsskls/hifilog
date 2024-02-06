@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
-  add_breadcrumb I18n.t('user_form.login'), :new_user_session_path
-
   # GET /resource/password/new
   def new
-    add_breadcrumb I18n.t('user_form.forgot_password.heading')
     @page_title = I18n.t('user_form.forgot_password.heading')
     @active_menu = :login
     super

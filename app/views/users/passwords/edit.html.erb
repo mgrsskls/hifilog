@@ -1,25 +1,31 @@
-<h2>Change your password</h2>
-
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
-  <%= f.hidden_field :reset_password_token %>
-
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
-    <% end %>
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
+<% content_for :css do %>
+  <%= stylesheet_link_tag "user_form" %>
 <% end %>
+<div class="UserForm UserForm--centered">
+  <div class="Heading">
+    <h1>Change your password</h1>
+  </div>
 
-<%= render "users/shared/links" %>
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+    <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
+    <%= f.hidden_field :reset_password_token %>
+
+    <div class="UserForm-field">
+      <%= f.label :password, "New password", class: "UserForm-label" %>
+      <%= f.password_field :password, autocomplete: "new-password" %>
+      <% if @minimum_password_length %>
+        <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
+      <% end %>
+    </div>
+
+    <div class="UserForm-field">
+      <%= f.label :password_confirmation, "Confirm new password", class: "UserForm-label" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    </div>
+
+    <div class="UserForm-submit">
+      <%= f.button "Change my password", class: "Button" %>
+    </div>
+  <% end %>
+
+  <%= render "users/shared/links" %>
