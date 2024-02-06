@@ -179,7 +179,7 @@
                     <% newest_products.each do |product| %>
                       <li>
                         <time datetime="<%= formatted_date product.created_at %>"><%= formatted_date product.created_at %></time>:
-                        <%= link_to product.brand.name + " " + product.name, product_path(id: product.friendly_id) %>
+                        <%= link_to product.display_name, product_path(id: product.friendly_id) %>
                       </li>
                     <% end %>
                   </ol>

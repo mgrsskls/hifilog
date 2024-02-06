@@ -39,7 +39,7 @@ class Brand < ApplicationRecord
   end
 
   def categories
-    @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
+    @categories ||= sub_categories.includes([:category]).map(&:category).uniq.sort_by(&:name)
   end
 
   def display_name

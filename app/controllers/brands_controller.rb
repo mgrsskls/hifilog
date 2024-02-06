@@ -42,7 +42,6 @@ class BrandsController < ApplicationController
       add_breadcrumb I18n.t(params[:status])
       @brands = Brand.where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
                      .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                     .includes(products: :sub_categories)
                      .order('LOWER(name)')
                      .page(params[:page])
     elsif params[:category].present? && params[:status].present?
@@ -58,7 +57,6 @@ class BrandsController < ApplicationController
     elsif params[:letter].present?
       add_breadcrumb params[:letter].upcase
       @brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
-                     .includes(products: :sub_categories)
                      .order('LOWER(name)')
                      .page(params[:page])
     elsif params[:category].present?
@@ -75,7 +73,7 @@ class BrandsController < ApplicationController
                      .order('LOWER(brands.name)')
                      .page(params[:page])
     else
-      @brands = Brand.all.includes(products: :sub_categories).order('LOWER(name)').page(params[:page])
+      @brands = Brand.all.order('LOWER(name)').page(params[:page])
     end
   end
 
