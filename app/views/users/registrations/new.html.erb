@@ -11,23 +11,23 @@
 
     <div class="UserForm-field">
       <%= f.label :user_name, class: 'UserForm-label' do %>
-        Username <small><i>(optional)</i></small>
+        <%= t('user.edit.update.fields.user_name') %>
       <% end %>
-      <%= f.text_field :user_name %>
+      <%= f.text_field :user_name, required: true %>
     </div>
 
     <div class="UserForm-field">
       <%= f.label :email, class: 'UserForm-label' do %>
-        Email <small><i>(required)</i></small>
+        Email
       <% end %>
-      <%= f.email_field :email, autocomplete: "email" %>
+      <%= f.email_field :email, required: true, autocomplete: "email" %>
     </div>
 
     <div class="UserForm-field">
       <%= f.label :password, class: 'UserForm-label' do %>
-        Password <small><i>(required)</i></small>
+        Password
       <% end %>
-      <%= f.password_field :password, autocomplete: "new-password" %>
+      <%= f.password_field :password, required: true, autocomplete: "new-password" %>
       <% if @minimum_password_length %>
         <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
       <% end %>
@@ -35,9 +35,9 @@
 
     <div class="UserForm-field">
       <%= f.label :password_confirmation, class: 'UserForm-label' do %>
-        Password confirmation <small><i>(required)</i></small>
+        Password confirmation
       <% end %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+      <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
     </div>
 
     <div class="UserForm-submit">

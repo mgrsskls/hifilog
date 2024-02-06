@@ -74,3 +74,5 @@ gem "redcarpet"
 gem "strip_attributes"
 
 gem "country_select"
+
+gem "paper_trail"

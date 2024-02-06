@@ -19,8 +19,3 @@ three:
   profile_visibility: visible
   user_name: username3
   products: []
-
-no_user_name:
-  email: user4@example.com
-  profile_visibility: hidden
-  products: []

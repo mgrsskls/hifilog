@@ -36,15 +36,17 @@ Rails.application.routes.draw do
   # /brands
   # /brands/:brand
   # /brands/:brand/:category
-  resources :brands, only: [:index, :show, :new, :create] do
-    get ':category', action: :category, as: :category
+  resources :brands do
+    get '/changelog', action: :changelog
   end
 
   # /products
-  resources :products, only: [:index, :new, :create]
+  resources :products, only: [:index, :new, :create, :update]
 
   # /:brand/:product
-  get ':brand_id/:id', as: :brand_product, to: 'products#show', constraints: { id: /.{2,}/ }
+  get ':brand_id/:id', as: :brand_product, to: 'products#show'
+  get ':brand_id/:id/edit', as: :edit_brand_product, to: 'products#edit'
+  get ':brand_id/:id/changelog', as: :changelog_brand_product, to: 'products#changelog'
 
   get '/search', to: "search#results"
 

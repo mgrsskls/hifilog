@@ -15,11 +15,12 @@ if Rails.env.development?
     email: 'user@example.com',
     password: 'passwordpassword',
     password_confirmation: 'passwordpassword',
+    user_name: 'funkyfish'
   )
 end
 if Rails.env.development?
   user_without_setup = User.create!(email: 'user2@example.com', password: 'passwordpassword',
-                                    password_confirmation: 'passwordpassword')
+                                    password_confirmation: 'passwordpassword', user_name: 'testuser')
 end
 
 Category.create!(name: 'Amplifiers', id: 1)

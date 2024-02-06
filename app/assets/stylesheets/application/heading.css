@@ -7,12 +7,10 @@
   margin-block-end: 2.5rem;
 }
 
-.Heading--divider {
-  padding-block-end: 2rem;
-  border-block-end: var(--border-light);
-}
-
 .Heading-info {
+  display: flex;
+  align-items: end;
+  gap: 2rem;
   flex: 0 0 100%;
   margin-block-start: .5rem;
 }

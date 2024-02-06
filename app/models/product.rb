@@ -1,6 +1,8 @@
 class Product < ApplicationRecord
   include Rails.application.routes.url_helpers
 
+  has_paper_trail skip: :updated_at
+
   extend FriendlyId
 
   belongs_to :brand, counter_cache: :products_count

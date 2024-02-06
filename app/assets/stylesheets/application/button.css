@@ -6,6 +6,8 @@
   color: var(--color-button-copy);
   box-shadow: 0.15rem 0.15rem 0.5rem var(--color-button-box-shadow);
   text-decoration: none;
+  border: var(--border) transparent;
+  display: inline-block;
 }
 
 .Button:active {

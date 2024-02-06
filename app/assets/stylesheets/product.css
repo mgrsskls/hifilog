@@ -2,18 +2,20 @@
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
+  padding-block-end: 3rem;
+  margin-block-end: 3rem;
+  border-block-end: var(--border-light);
 }
 
 .Product-main {
   flex: 4;
-  min-inline-size: min(32rem, 100%);
+  min-inline-size: min(24rem, 100%);
 }
 
 .Product-sub {
   background: var(--color-bg2);
   flex: 1;
-  min-inline-size: 12rem;
-  container: menu / inline-size;
+  min-inline-size: 14rem;
   padding: 1rem;
 }
 
@@ -54,6 +56,36 @@
   margin-block-start: 1em;
 }
 
+.Product-metaLinks {
+  --gap: .75em;
+
+  list-style: "";
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  font-size: .875em;
+  margin-block-start: 1.5rem;
+  padding-block-start: 1.5rem;
+  border-block-start: var(--border-medium);
+}
+
+.Product-metaLinks li {
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+}
+
+.Product-metaLinks li:not(:first-child)::before {
+  content: "";
+  display: block;
+  background: currentColor;
+  block-size: .1rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
 .TextButton {
   text-decoration: underline;
   text-underline-offset: var(--underline-offset);
@@ -63,10 +95,4 @@
 
 .TextButton--negative {
   color: var(--color-invalid-copy);
-}
-
-.ProductBackLink {
-  margin-block-start: 3rem;
-  padding-block-start: 3rem;
-  border-block-start: var(--border-light);
 }

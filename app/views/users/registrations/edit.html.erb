@@ -27,8 +27,6 @@
           <%= f.label :profile_visibility_visible, t("user.edit.update.profile_visibility.visible") %>
         </div>
 
-        <small class="UserForm-hint"><%= t('user.edit.update.user_name_necessary_if_public') %></small>
-
         <% unless current_user.hidden? %>
           <p>
             <%= t('user.edit.update.profile_url') %><br>
@@ -39,16 +37,16 @@
 
       <div class="UserForm-field">
         <%= f.label :user_name, class: "UserForm-label" do %>
-          <%= t('user.edit.update.fields.user_name') %> <small><i>(<%= t('user.edit.update.optional') %>)</i></small>
+          <%= t('user.edit.update.fields.user_name') %>
         <% end %>
-        <%= f.text_field :user_name %>
+        <%= f.text_field :user_name, required: true %>
       </div>
 
       <div class="UserForm-field">
         <%= f.label :email, class: "UserForm-label" do %>
-          <%= t('user.edit.update.fields.email') %> <small><i>(<%= t('user.edit.update.required') %>)</i></small>
+          <%= t('user.edit.update.fields.email') %>
         <% end %>
-        <%= f.email_field :email, autocomplete: "email" %>
+        <%= f.email_field :email, required: true, autocomplete: "email" %>
       </div>
 
       <div class="UserForm-field">
@@ -62,17 +60,17 @@
       </div>
 
       <div class="UserForm-field">
-        <%= f.label :password_confirmation, class: "UserForm-label" %>
+        <%= f.label :password_confirmation, class: "UserForm-label" do %>
+          <%= t('user.edit.update.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
+        <% end %>
         <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
       </div>
 
       <h3><%= t('user.edit.update.save.heading') %></h3>
 
       <div class="UserForm-field">
-        <%= f.label :current_password, class: "UserForm-label" do %>
-          <%= t('user.edit.update.fields.confirm_password') %> <small><i>(<%= t('user.edit.update.required') %>)</i></small>
-        <% end %>
-        <%= f.password_field :current_password, autocomplete: "current-password" %>
+        <%= f.label :current_password, class: "UserForm-label" %>
+        <%= f.password_field :current_password, required: true, autocomplete: "current-password" %>
         <small class="UserForm-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
       </div>
 

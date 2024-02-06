@@ -59,4 +59,8 @@ module ApplicationHelper
   def user_has_brand?(user, brand)
     brand && user && user.products.where(brand_id: brand.id).exists?
   end
+
+  def changelog(changes)
+    PaperTrail::Serializers::YAML.load(changes)
+  end
 end

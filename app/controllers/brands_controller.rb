@@ -1,7 +1,8 @@
 class BrandsController < ApplicationController
   STATUSES = %w[discontinued continued].freeze
 
-  before_action :authenticate_user!, only: [:create]
+  before_action :set_paper_trail_whodunnit, only: [:create, :update]
+  before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
 
   def index
     @active_menu = :brands
@@ -79,30 +80,22 @@ class BrandsController < ApplicationController
 
   def show
     @active_menu = :brands
+    add_breadcrumb I18n.t('headings.brands'), brands_path
 
     @brand = Brand.friendly.find(params[:id])
-    @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
 
-    add_breadcrumb I18n.t('headings.brands'), brands_path
-    add_breadcrumb @brand.name
-    @page_title = @brand.name
-  end
-
-  def category
-    @active_menu = :brands
-
-    sub_category = SubCategory.friendly.find(params[:category])
-    @brand = Brand.friendly.find(params[:brand_id])
-    @products = sub_category.products.includes([:sub_categories]).where(brand_id: @brand.id)
-                            .order('LOWER(name)').page(params[:page])
-
-    add_breadcrumb I18n.t('headings.brands'), brands_path
-    add_breadcrumb @brand.name, brand_path(id: @brand.friendly_id)
-    add_breadcrumb sub_category.name
+    if params[:category]
+      sub_category = SubCategory.friendly.find(params[:category])
+      @products = sub_category.products.includes([:sub_categories]).where(brand_id: @brand.id)
+                              .order('LOWER(name)').page(params[:page])
+      add_breadcrumb @brand.name, proc { :brand }
+      add_breadcrumb sub_category.name
+    else
+      @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
+      add_breadcrumb @brand.name
+    end
 
     @page_title = @brand.name
-
-    render :show
   end
 
   def new
@@ -125,6 +118,34 @@ class BrandsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def edit
+    @active_menu = :brands
+    @brand = Brand.friendly.find(params[:id])
+    @page_title = I18n.t('edit_record', name: @brand.name)
+
+    add_breadcrumb I18n.t('headings.brands'), brands_path
+    add_breadcrumb @brand.name, brand_path(@brand)
+    add_breadcrumb I18n.t('edit')
+  end
+
+  def update
+    @brand = Brand.friendly.find(params[:id])
+
+    if @brand.update(brand_params)
+      redirect_to brand_path(@brand)
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def changelog
+    @brand = Brand.friendly.find(params[:brand_id])
+
+    add_breadcrumb I18n.t('headings.brands'), brands_path
+    add_breadcrumb @brand.name, brand_path(@brand)
+    add_breadcrumb I18n.t('headings.changelog')
   end
 
   private

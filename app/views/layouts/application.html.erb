@@ -249,11 +249,24 @@
     </footer>
     <%= javascript_tag nonce: true do %>
       document.querySelectorAll("time").forEach(time => {
-        time.textContent = new Date(time.dateTime).toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        });
+        const date = new Date(time.dateTime);
+
+        if (time.dataset.time) {
+          time.textContent = `${date.toLocaleDateString([], {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })}, ${date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          })}`;
+        } else {
+          time.textContent = date.toLocaleDateString([], {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+        }
       });
     <% end %>
   </body>

@@ -68,23 +68,18 @@
     <dl>
       <dt><%= t('product.meta.owned_by') %></dt>
       <dd><%= t('amount_users', count: @product.users.size) %></dd>
-      <dt><%= t('product.meta.added') %></dt>
-      <dd>
-        <time datetime="<%= formatted_datetime @product.created_at %>"><%= formatted_datetime @product.created_at %></time>
-      </dd>
-      <dt><%= t('product.meta.last_edit') %></dt>
-      <dd>
-        <% if @product.created_at != @product.updated_at %>
-          <time datetime="<%= formatted_datetime @product.updated_at %>"><%= formatted_datetime @product.updated_at %></time>
-        <% else %>
-          &ndash;
-        <% end %>
-      </dd>
     </dl>
+
+    <ul class="Product-metaLinks">
+      <li>
+        <%= link_to t('edit'), user_signed_in? ? edit_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id)) %>
+      </li>
+      <li>
+        <%= link_to t('headings.changelog'), user_signed_in? ? changelog_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id) : new_user_session_path(redirect: changelog_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id)) %>
+      </li>
+    </ul>
   </div>
 </div>
 <% if request.referer != request.url %>
-  <div class="ProductBackLink">
-    <%= render "shared/back_link" %>
-  </div>
+  <%= render "shared/back_link" %>
 <% end %>

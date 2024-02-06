@@ -3,9 +3,22 @@ import "./theme_toggle.js";
 {
   let scrollY = 0;
 
-  document.querySelector(".Header-toggle").addEventListener("click", onMenuToggle);
-  document.querySelector(".Filter-open").addEventListener("click", onOpenFilter);
-  document.querySelector(".Filter-close").addEventListener("click", onCloseFilter);
+  const headerToggle = document.querySelector(".Header-toggle");
+  const filterOpen = document.querySelector(".Filter-open");
+  const filterClose = document.querySelector(".Filter-close");
+
+  if (headerToggle) {
+    headerToggle.addEventListener("click", onMenuToggle)
+  }
+
+  if (filterOpen) {
+    filterOpen.addEventListener("click", onOpenFilter)
+  }
+
+  if (filterClose) {
+    filterClose.addEventListener("click", onCloseFilter)
+  }
+
   document.querySelectorAll(".Pagination input").forEach(input => {
     input.addEventListener("click", onFilterInput);
   });

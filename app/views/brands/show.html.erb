@@ -1,34 +1,48 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "product" %>
 <% end %>
-<div class="Heading Heading--divider">
-  <div>
-    <h1><%= @brand.name %></h1>
-    <% if @brand.full_name %><small><%= @brand.full_name %></small><% end %>
-  </div>
+<div class="Product">
+  <div class="Product-main">
+    <div class="Product-details">
+      <div class="Heading">
+        <div>
+          <h1><%= @brand.name %></h1>
+          <% if @brand.full_name %><small><%= @brand.full_name %></small><% end %>
+        </div>
+      </div>
 
-  <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
-
-  <% if @brand.discontinued || @brand.country_name.present? || @brand.website.present? %>
-    <div class="Heading-info">
       <dl class="Data">
         <% if @brand.discontinued %>
           <dt><%= t('status') %></dt>
           <dd><%= render "shared/symbols", brand: @brand, show_labels: true, only: [:discontinued] %></dd>
         <% end %>
-        <% if @brand.country_name.present? %>
-          <dt><%= t('country').html_safe %></dt>
-          <dd><%= @brand.country_name %></dd>
-        <% end %>
-        <% if @brand.website.present? %>
-          <dt><%= t('website') %></dt>
-          <dd><%= link_to @brand.website, @brand.website %></dd>
-        <% end %>
+        <dt><%= t('country').html_safe %></dt>
+        <dd><%= @brand.country_name.present? ? @brand.country_name : "-" %></dd>
+        <dt><%= t('website') %></dt>
+        <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website) : "-" %></dd>
       </dl>
     </div>
-  <% end %>
-</div>
+  </div>
 
+  <div class="Product-sub">
+    <dl>
+      <dt><%= t('product.meta.owned_by') %></dt>
+      <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>
+    </dl>
+
+    <ul class="Product-metaLinks">
+      <li>
+        <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
+      </li>
+      <li>
+        <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
+      </li>
+      <li>
+        <%= link_to t('headings.changelog'), user_signed_in? ? brand_changelog_path(@brand) : new_user_session_path(redirect: brand_changelog_path(@brand)) %>
+      </li>
+    </ul>
+  </div>
+</div>
 
 <% if @brand.sub_categories.any? && @brand.sub_categories.size > 1 %>
   <ol class="Pagination">
@@ -37,7 +51,7 @@
     </li>
     <% @brand.sub_categories.each do |sub_category| %>
       <li>
-        <a href="<%= brand_category_path(brand_id: @brand.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
+        <a href="<%= brand_path(brand_id: @brand.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
       </li>
     <% end %>
   </ol>
@@ -80,3 +94,4 @@
 <% end %>
 
 <%= render "shared/page_actions" %>
+

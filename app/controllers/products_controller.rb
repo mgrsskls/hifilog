@@ -1,6 +1,7 @@
 class ProductsController < ApplicationController
   STATUSES = %w[discontinued continued].freeze
 
+  before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:create]
 
   def index
@@ -105,16 +106,19 @@ class ProductsController < ApplicationController
     @active_menu = :products
     @page_title = I18n.t('new_product.heading')
 
-    add_breadcrumb t('add')
-
     @product = Product.new
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.ordered
 
-    return unless params[:brand_id]
+    if params[:brand_id]
+      @product.brand_id = params[:brand_id]
+      @brand = Brand.find(params[:brand_id])
 
-    @product.brand_id = params[:brand_id]
-    @brand = Brand.find(params[:brand_id])
+      add_breadcrumb t('headings.brands'), brands_path
+      add_breadcrumb @brand.name, brand_path(@brand)
+    end
+
+    add_breadcrumb t('add_product')
   end
 
   def create
@@ -131,9 +135,49 @@ class ProductsController < ApplicationController
     end
   end
 
+  def edit
+    @active_menu = :products
+    @page_title = I18n.t('new_product.heading')
+
+    @brand = Brand.friendly.find(params[:brand_id])
+    @product = @brand.products.friendly.find(params[:id])
+    @brands = Brand.all.order('LOWER(name)')
+    @categories = Category.ordered
+
+    add_breadcrumb @brand.name, brand_path(@brand)
+    add_breadcrumb @product.name, brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id)
+    add_breadcrumb I18n.t('edit')
+  end
+
+  def update
+    @active_menu = :products
+    @product = Product.find(params[:id])
+
+    if @product.update(product_update_params)
+      redirect_to brand_product_url(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
+    else
+      @brands = Brand.all.order('LOWER(name)')
+      @categories = Category.ordered
+      @brand = Brand.find(@product.brand_id)
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def changelog
+    @brand = Brand.friendly.find(params[:brand_id])
+    @product = @brand.products.friendly.find(params[:id])
+
+    add_breadcrumb @product.name, brand_product_path(id: @product.id, brand_id: @product.brand.friendly_id)
+    add_breadcrumb I18n.t('headings.changelog')
+  end
+
   private
 
   def product_params
     params.require(:product).permit(:name, :brand_id, :discontinued, sub_category_ids: [])
+  end
+
+  def product_update_params
+    params.require(:product).permit(:name, :discontinued, sub_category_ids: [])
   end
 end

@@ -36,6 +36,7 @@ en:
     in_your_bookmarks: In my bookmarks
   account: Account
   add: Add
+  add_product: Add Product
   add_to: Add to &ldquo;%{name}&rdquo;
   add_to_bookmarks: Add to bookmarks
   add_to_collection: Add to collection
@@ -63,11 +64,27 @@ en:
     zero: 0 Users
     one: 1 User
     other: "%{count} Users"
+  brand:
+    name: Name
+    website: Website
+    full_name: Full name
+    country: Country
+    discontinued: Discontinued
+  changelog:
+    change: "%{number}. change"
+    events:
+      update: Updated by
+      create: Created by
+    attribute: Attribute
+    before: From
+    after: To
   confirm_removing_product: Do you really want to remove this product from your collection?
   dashboard: Dashboard
   delete_setup:
     label: Delete this setup
     confirm: Are you sure you want to delete this setup?
+  edit: Edit
+  edit_record: Edit %{name}
   filter:
     all: All
     abc:
@@ -126,6 +143,7 @@ en:
     brands: Brands
     category: Category
     categories: Categories
+    changelog: Changelog
     dashboard: Welcome back!
     dashboard_name: Welcome back, %{name}!
     product: Product
@@ -145,8 +163,6 @@ en:
   product:
     meta:
       owned_by: Owned by
-      added: Added
-      last_edit: Last edit
   user:
     edit:
       update:
@@ -156,7 +172,6 @@ en:
           logged_in_only: Only logged in users can see my profile.
           visible: Logged in and logged out users can see my profile.
         profile_url: "Your profile is visible at the following URL:"
-        user_name_necessary_if_public: You must enter a user name if you set your profile to public.
         optional: optional
         required: required
         leave_blank: leave blank if you don't want to change it

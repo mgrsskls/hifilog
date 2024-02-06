@@ -1,5 +1,8 @@
-<% if request.referer != request.url %>
-  <%= link_to request.referer, class: 'BackLink' do %>
-    &larr; <span class="BackLink-label"><%= t('back') %></span>
-  <% end %>
+<% path ||= nil %>
+<% if path.nil? && request.referer != request.url %>
+  <% path = request.referer %>
+<% end %>
+
+<%= link_to path, class: 'BackLink' do %>
+  &larr; <span class="BackLink-label"><%= t('back') %></span>
 <% end %>

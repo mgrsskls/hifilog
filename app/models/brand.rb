@@ -1,6 +1,8 @@
 class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
 
+  has_paper_trail skip: :updated_at
+
   extend FriendlyId
 
   has_many :products, dependent: :destroy
