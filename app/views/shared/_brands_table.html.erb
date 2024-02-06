@@ -4,9 +4,10 @@
   <table>
     <thead>
       <tr>
-        <th><%= t('name') %></th>
+        <th class="Table-name"><%= t('name') %></th>
         <th><%= t('headings.categories').html_safe %></th>
-        <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+        <th class="u-alignCenter"><%= t('headings.products') %></th>
+        <th>Country</th>
         <th class="Table-symbols"></th>
       </tr>
     </thead>
@@ -17,7 +18,10 @@
           <td>
             <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
           </td>
-          <td class="Table-products u-alignCenter"><%= brand.products.size  %></td>
+          <td class="u-alignCenter"><%= brand.products.size  %></td>
+          <td>
+            <%= brand.country_name.present? ? brand.country_name : "-" %>
+          </td>
           <td>
             <%= render "shared/symbols", brand: brand %>
           </td>

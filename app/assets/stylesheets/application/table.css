@@ -44,6 +44,10 @@
     padding-inline-end: 1rem;
   }
 
+  .Table-name {
+    width: 30%;
+  }
+
   .Table-products {
     width: 7.5em;
   }
