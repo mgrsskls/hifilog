@@ -11,7 +11,18 @@ class Brand < ApplicationRecord
   friendly_id :name, use: :slugged
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[created_at id name updated_at discontinued slug categories_id website country_code]
+    %w[
+      categories_id
+      country_code
+      created_at
+      discontinued
+      full_name
+      id
+      name
+      slug
+      updated_at
+      website
+    ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
