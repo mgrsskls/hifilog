@@ -199,6 +199,9 @@ GEM
       timeout
     net-smtp (0.4.0.1)
       net-protocol
+    nilify_blanks (1.4.0)
+      activerecord (>= 4.0.0)
+      activesupport (>= 4.0.0)
     nio4r (2.7.0)
     nokogiri (1.16.2-aarch64-linux)
       racc (~> 1.4)
@@ -378,6 +381,7 @@ DEPENDENCIES
   friendly_id
   jsbundling-rails
   kaminari
+  nilify_blanks
   paper_trail
   pg
   puma (~> 6.4)

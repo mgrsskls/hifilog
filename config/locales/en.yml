@@ -71,10 +71,8 @@ en:
     country: Country
     discontinued: Discontinued
   changelog:
-    change: "%{number}. change"
-    events:
-      update: Updated by
-      create: Created by
+    change: "%{number}. update"
+    by: by
     attribute: Attribute
     before: From
     after: To

@@ -10,13 +10,18 @@
       <% user = version.whodunnit.present? ? User.find(version.whodunnit) : nil %>
       <li class="Changelog-item">
         <p>
-          <b>
-            <%= t('changelog.change', number: model.versions.size - i) %></b>:
-            <%= t('changelog.events.' + version.event) %>
+            <b>
+            <% if version.event == "create" %>
+              <b>Created</b>
+            <% else %>
+              <%= t('changelog.change', number: model.versions.size - i - 1) %>
+            <% end %>
+            </b>
+            <%= t('changelog.by') %>
             <% if user %>
               <%= user.profile_visibility === "hidden" ? user.user_name : link_to(user.user_name, user_path(user.user_name)) %>
             <% else %>
-              unknown
+              hifilog.com
             <% end %>
             &mdash;
             <time data-time="true" datetime="<%= formatted_datetime version.created_at %>"><%= formatted_datetime version.created_at %></time>

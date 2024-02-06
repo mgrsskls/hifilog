@@ -1,6 +1,8 @@
 class Product < ApplicationRecord
   include Rails.application.routes.url_helpers
 
+  nilify_blanks
+
   has_paper_trail skip: :updated_at
 
   extend FriendlyId

@@ -1,7 +1,9 @@
 class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
 
-  has_paper_trail skip: :updated_at
+  nilify_blanks
+
+  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug]
 
   extend FriendlyId
 

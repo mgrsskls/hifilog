@@ -76,3 +76,5 @@ gem "strip_attributes"
 gem "country_select"
 
 gem "paper_trail"
+
+gem "nilify_blanks"
