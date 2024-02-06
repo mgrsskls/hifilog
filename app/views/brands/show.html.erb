@@ -22,7 +22,7 @@
         <% end %>
         <% if @brand.website.present? %>
           <dt><%= t('website') %></dt>
-          <dd><%= link_to(@brand.website) %></dd>
+          <dd><%= link_to @brand.website, @brand.website %></dd>
         <% end %>
       </dl>
     </div>
