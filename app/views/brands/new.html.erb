@@ -19,13 +19,24 @@
     </div>
 
     <div class="UserForm-field">
-      <%= f.label :website, class: "UserForm-label" %>
+      <%= f.label :full_name, class: "UserForm-label" do %>
+        Full name <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_field :full_name %>
+    </div>
+
+    <div class="UserForm-field">
+      <%= f.label :website, class: "UserForm-label" do %>
+        Website <small><i>(optional)</i></small>
+      <% end %>
       <%= f.url_field :website %>
     </div>
 
     <div class="UserForm-field">
-      <%= f.label :country_code, class: "UserForm-label" do %>Country<% end %>
-      <%= f.country_select :country_code %>
+      <%= f.label :country_code, class: "UserForm-label" do %>
+        Country <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.country_select :country_code, include_blank: true %>
     </div>
 
     <div class="UserForm-field">
