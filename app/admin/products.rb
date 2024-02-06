@@ -45,5 +45,14 @@ ActiveAdmin.register Product do
     def find_resource
       scoped_collection.friendly.find(params[:id])
     end
+
+    def show
+      @product = Product.includes(versions: :item).friendly.find(params[:id])
+      @versions = @product.versions
+      @product = @product.versions[params[:version].to_i].reify if params[:version]
+      show! #it seems to need this
+    end
   end
+
+  sidebar :versionate, partial: "layouts/admin/version", only: :show
 end

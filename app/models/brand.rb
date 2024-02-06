@@ -26,6 +26,7 @@ class Brand < ApplicationRecord
       slug
       updated_at
       website
+      versions_id
     ]
   end
 

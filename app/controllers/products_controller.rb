@@ -3,6 +3,7 @@ class ProductsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:create]
+  before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
 
   def index
     @active_menu = :products
@@ -89,8 +90,8 @@ class ProductsController < ApplicationController
   def show
     @active_menu = :products
 
-    @brand = Brand.friendly.find(params[:brand_id])
-    @product = @brand.products.friendly.find(params[:id])
+    @product = Product.friendly.find(params[:id])
+    @brand = @product.brand
 
     if user_signed_in?
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id)
@@ -114,7 +115,6 @@ class ProductsController < ApplicationController
       @product.brand_id = params[:brand_id]
       @brand = Brand.find(params[:brand_id])
 
-      add_breadcrumb t('headings.brands'), brands_path
       add_breadcrumb @brand.name, brand_path(@brand)
     end
 
@@ -126,7 +126,7 @@ class ProductsController < ApplicationController
     @product = Product.new(product_params)
 
     if @product.save
-      redirect_to brand_product_url(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
+      redirect_to product_url(id: @product.friendly_id)
     else
       @brands = Brand.all.order('LOWER(name)')
       @categories = Category.ordered
@@ -139,13 +139,13 @@ class ProductsController < ApplicationController
     @active_menu = :products
     @page_title = I18n.t('new_product.heading')
 
-    @brand = Brand.friendly.find(params[:brand_id])
-    @product = @brand.products.friendly.find(params[:id])
+    @product = Product.friendly.find(params[:id])
+    @brand = @product.brand
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.ordered
 
     add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb @product.name, brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id)
+    add_breadcrumb @product.name, product_path(id: @product.friendly_id)
     add_breadcrumb I18n.t('edit')
   end
 
@@ -154,7 +154,7 @@ class ProductsController < ApplicationController
     @product = Product.find(params[:id])
 
     if @product.update(product_update_params)
-      redirect_to brand_product_url(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
+      redirect_to product_url(id: @product.friendly_id)
     else
       @brands = Brand.all.order('LOWER(name)')
       @categories = Category.ordered
@@ -164,15 +164,19 @@ class ProductsController < ApplicationController
   end
 
   def changelog
-    @brand = Brand.friendly.find(params[:brand_id])
-    @product = @brand.products.friendly.find(params[:id])
+    @product = Product.friendly.find(params[:product_id])
+    @brand = @product.brand
 
     add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb @product.name, brand_product_path(id: @product.id, brand_id: @product.brand.friendly_id)
+    add_breadcrumb @product.name, product_path(id: @product.id)
     add_breadcrumb I18n.t('headings.changelog')
   end
 
   private
+
+  def set_breadcrumb
+    add_breadcrumb I18n.t('headings.products'), products_path
+  end
 
   def product_params
     params.require(:product).permit(:name, :brand_id, :discontinued, sub_category_ids: [])

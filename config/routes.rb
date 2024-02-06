@@ -41,12 +41,9 @@ Rails.application.routes.draw do
   end
 
   # /products
-  resources :products, only: [:index, :new, :create, :update]
-
-  # /:brand/:product
-  get ':brand_id/:id', as: :brand_product, to: 'products#show'
-  get ':brand_id/:id/edit', as: :edit_brand_product, to: 'products#edit'
-  get ':brand_id/:id/changelog', as: :changelog_brand_product, to: 'products#changelog'
+  resources :products, only: [:show, :index, :new, :create, :edit, :update] do
+    get '/changelog', action: :changelog
+  end
 
   get '/search', to: "search#results"
 

@@ -13,9 +13,8 @@ class SitemapController < ApplicationController
 
       m.add products_path
       Product.includes([:brand]).find_each do |product|
-        m.add brand_product_path(
+        m.add product_path(
           id: product.friendly_id,
-          brand_id: product.brand.friendly_id
         ), updated: product.updated_at
       end
 

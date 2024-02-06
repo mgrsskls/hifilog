@@ -7,7 +7,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show' do
-    get brand_product_url(id: 'elise', brand_id: 'feliks-audio')
+    get product_url(id: 'feliks-audio-elise')
     assert_response :success
   end
 end

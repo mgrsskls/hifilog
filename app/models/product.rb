@@ -16,7 +16,7 @@ class Product < ApplicationRecord
   validates :name, uniqueness: { scope: :brand, case_sensitive: false }
   validates :sub_categories, presence: true
 
-  friendly_id :name, use: :scoped, scope: :brand
+  friendly_id :url_slug, use: :slugged
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
@@ -26,6 +26,7 @@ class Product < ApplicationRecord
       name
       slug
       updated_at
+      versions_id
     ]
   end
 
@@ -37,7 +38,11 @@ class Product < ApplicationRecord
     "#{brand.name} #{name}"
   end
 
+  def url_slug
+    display_name.parameterize
+  end
+
   def url
-    brand_product_url(id: friendly_id, brand_id: brand.friendly_id)
+    product_url(id: friendly_id)
   end
 end

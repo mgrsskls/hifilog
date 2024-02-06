@@ -3,10 +3,12 @@ ActiveAdmin.register_page "Dashboard" do
   menu priority: 1, label: proc { I18n.t("active_admin.dashboard") }
 
   content title: proc { I18n.t("active_admin.dashboard") } do
-    div class: "blank_slate_container", id: "dashboard_default_message" do
-      span class: "blank_slate" do
-        span I18n.t("active_admin.dashboard_welcome.welcome")
-        small I18n.t("active_admin.dashboard_welcome.call_to_action")
+    section do
+      h2 "Recently updated content"
+      table_for PaperTrail::Version.order('id desc').limit(50) do
+        column ("Item") { |v| v.item }
+        column ("Type") { |v| v.item_type.underscore.humanize }
+        column ("User") { |v| v.whodunnit ? (v.link_to User.find(v.whodunnit).email, [:admin, User.find(v.whodunnit)]) : "hifilog.com" }
       end
     end
 

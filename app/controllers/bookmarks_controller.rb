@@ -8,7 +8,7 @@ class BookmarksController < ApplicationController
 
     flash[:alert] = I18n.t(:generic_error_message) unless @bookmark.save
 
-    redirect_to brand_product_path(id: @product.friendly_id, brand_id: @product.brand.friendly_id)
+    redirect_to product_path(id: @product.friendly_id)
   end
 
   def destroy

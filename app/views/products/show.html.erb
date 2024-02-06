@@ -72,10 +72,10 @@
 
     <ul class="Product-metaLinks">
       <li>
-        <%= link_to t('edit'), user_signed_in? ? edit_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id)) %>
+        <%= link_to t('edit'), user_signed_in? ? edit_product_path(id: @product.friendly_id) : new_user_session_path(redirect: edit_product_path(id: @product.friendly_id)) %>
       </li>
       <li>
-        <%= link_to t('headings.changelog'), user_signed_in? ? changelog_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id) : new_user_session_path(redirect: changelog_brand_product_path(id: @product.friendly_id, brand_id: @brand.friendly_id)) %>
+        <%= link_to t('headings.changelog'), user_signed_in? ? product_changelog_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_changelog_path(product_id: @product.friendly_id)) %>
       </li>
     </ul>
   </div>

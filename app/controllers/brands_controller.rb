@@ -3,6 +3,7 @@ class BrandsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
+  before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
 
   def index
     @active_menu = :brands
@@ -80,7 +81,6 @@ class BrandsController < ApplicationController
 
   def show
     @active_menu = :brands
-    add_breadcrumb I18n.t('headings.brands'), brands_path
 
     @brand = Brand.friendly.find(params[:id])
 
@@ -102,7 +102,6 @@ class BrandsController < ApplicationController
     @active_menu = :brands
     @page_title = I18n.t('new_brand.heading')
 
-    add_breadcrumb I18n.t('headings.brands'), brands_path
     add_breadcrumb I18n.t('new_brand.heading')
 
     @brand = Brand.new
@@ -125,7 +124,6 @@ class BrandsController < ApplicationController
     @brand = Brand.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @brand.name)
 
-    add_breadcrumb I18n.t('headings.brands'), brands_path
     add_breadcrumb @brand.name, brand_path(@brand)
     add_breadcrumb I18n.t('edit')
   end
@@ -143,12 +141,15 @@ class BrandsController < ApplicationController
   def changelog
     @brand = Brand.friendly.find(params[:brand_id])
 
-    add_breadcrumb I18n.t('headings.brands'), brands_path
     add_breadcrumb @brand.name, brand_path(@brand)
     add_breadcrumb I18n.t('headings.changelog')
   end
 
   private
+
+  def set_breadcrumb
+    add_breadcrumb I18n.t('headings.brands'), brands_path
+  end
 
   def brand_params
     params.require(:brand).permit(:name, :discontinued, :full_name, :website, :country_code)

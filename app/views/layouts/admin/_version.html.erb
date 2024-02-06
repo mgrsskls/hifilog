@@ -1,0 +1,40 @@
+<% if !@versions.empty? %>
+  <h3>Current Version: <%= @versions.length %></h3>
+
+  <b>Created At:</b>
+  <%= @versions.last.created_at%>
+  <br>
+  <b>User</b>:
+  <% if @versions.last.whodunnit.present? %>
+    <% user = User.find(@versions[(params[:version].to_i - 1)].whodunnit) %>
+    <%= link_to user.email, admin_user_path(user)%>
+  <% else %>
+    hifilog.com
+  <% end %>
+  <br>
+  <% if @versions.length.to_i > 1 %>
+    <% if params[:version].to_i > 1 || !params[:version] %>
+      <%= link_to "Previous version", {:version => (params[:version] || @versions.length).to_i - 1}%>
+      <br>
+    <% end %>
+    <% if params[:version] %>
+      <h3>This is version <%= "#{params[:version]}"%></h3>
+
+      <b>Modify at:</b>
+      <%= @versions[(params[:version].to_i - 1)].created_at %>
+      <br>
+      <b>User</b>:
+      <% if @versions[(params[:version].to_i - 1)].whodunnit.present? %>
+        <% user = User.find(@versions[(params[:version].to_i - 1)].whodunnit) %>
+        <%= link_to user.email, admin_user_path(user)%>
+      <% else %>
+        hifilog.com
+      <% end %>
+      <br>
+
+      <%= link_to "Go to current version"%>
+    <% end %>
+  <% end %>
+<% else %>
+  <p>This item does not have any registered version.</p>
+<% end %>

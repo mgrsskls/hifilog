@@ -3,13 +3,13 @@
 one:
   name: Elise
   brand: one
-  slug: elise
+  slug: feliks-audio-elise
   sub_categories:
     - one
 
 two:
   name: Atrium Open
   brand: two
-  slug: atrium-open
+  slug: zmf-atrium-open
   sub_categories:
     - two
