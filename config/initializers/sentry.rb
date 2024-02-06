@@ -4,5 +4,6 @@ if Rails.env.production?
     config.breadcrumbs_logger = [:active_support_logger, :http_logger]
     config.traces_sample_rate = 1.0
     config.profiles_sample_rate = 1.0
+    config.rails.skippable_job_adapters = ['ActiveAdmin']
   end
 end
