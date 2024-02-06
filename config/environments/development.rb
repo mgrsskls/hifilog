@@ -86,5 +86,6 @@ Rails.application.configure do
     Bullet.rollbar = false
     Bullet.add_footer = false
     Bullet.skip_html_injection = false
+    Bullet.stacktrace_excludes = ['admin']
   end
 end
