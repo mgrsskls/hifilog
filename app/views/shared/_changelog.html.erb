@@ -40,10 +40,38 @@
               <tr>
                 <td><%= t('brand.' + change[0]) %></td>
                 <td>
-                  <span class="Changelog-old"><%= change[1][0] %></span>
+                  <span class="Changelog-old">
+                   <% if change[0] == "brand_id" && change[1][0].present? %>
+                      <%= Brand.find(change[1][0]).name %>
+                    <% elsif change[0] == "country_code" && change[1][0].present? %>
+                      <%= country_name(change[1][0]) %>
+                    <% else %>
+                      <% if change[1][0] == false %>
+                        No
+                      <% elsif change[1][0] == true %>
+                        Yes
+                      <% else %>
+                        <%= change[1][0] %>
+                      <% end %>
+                    <% end %>
+                  </span>
                 </td>
                 <td>
-                  <span class="Changelog-new"><%= change[1][1] %></span>
+                  <span class="Changelog-new">
+                    <% if change[0] == "brand_id" && change[1][1].present? %>
+                      <%= Brand.find(change[1][1]).name %>
+                    <% elsif change[0] == "country_code" && change[1][1].present? %>
+                      <%= country_name(change[1][1]) %>
+                    <% else %>
+                      <% if change[1][1] == false %>
+                        No
+                      <% elsif change[1][1] == true %>
+                        Yes
+                      <% else %>
+                        <%= change[1][1] %>
+                      <% end %>
+                    <% end %>
+                  </span>
                 </td>
               </tr>
             <% end %>

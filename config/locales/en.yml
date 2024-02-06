@@ -68,7 +68,7 @@ en:
     name: Name
     website: Website
     full_name: Full name
-    country: Country
+    country_code: Country
     discontinued: Discontinued
   changelog:
     change: "%{number}. update"
