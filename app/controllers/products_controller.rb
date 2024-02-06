@@ -167,6 +167,7 @@ class ProductsController < ApplicationController
     @brand = Brand.friendly.find(params[:brand_id])
     @product = @brand.products.friendly.find(params[:id])
 
+    add_breadcrumb @brand.name, brand_path(@brand)
     add_breadcrumb @product.name, brand_product_path(id: @product.id, brand_id: @product.brand.friendly_id)
     add_breadcrumb I18n.t('headings.changelog')
   end
