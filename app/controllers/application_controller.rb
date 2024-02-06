@@ -50,7 +50,11 @@ class ApplicationController < ActionController::Base
   end
 
   def not_found
-    render 'not_found', status: :not_found
+    if action_name == 'changelog'
+      render
+    else
+      render 'not_found', status: :not_found
+    end
   end
 
   protected
