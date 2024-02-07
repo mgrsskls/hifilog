@@ -8,24 +8,24 @@ class SearchController < ApplicationController
     @no_index = true
     @query = params[:query].strip
 
-    if params[:query].length < min_chars
+    if @query.length < min_chars
       flash.now[:alert] = I18n.t('search_results.alert.minimum_chars', min: min_chars)
     else
-      query = "%#{params[:query]}%"
+      query = "%#{@query}%"
 
       @products = Product.where('name ILIKE ?', query)
                          .limit(20)
                          .order('CHAR_LENGTH(name)')
                          .includes([:brand, :sub_categories])
                          .group_by { |product| product.name.length }
-                         .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(params[:query]) } }
+                         .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(@query) } }
 
       @brands = Brand.where('name ILIKE ?', query)
                      .limit(20)
                      .order('CHAR_LENGTH(name)')
                      .includes([:products])
                      .group_by { |brand| brand.name.length }
-                     .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(params[:query]) } }
+                     .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(@query) } }
 
     end
   end
