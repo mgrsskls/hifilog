@@ -1,9 +1,10 @@
 .Options {
   color: var(--color-input);
-  background: var(--color-input-bg);
-  padding: 0.5em;
+  padding: var(--input-padding);
   border: var(--border-medium);
   border-radius: var(--border-radius);
+  background: var(--color-input-bg);
+  box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
 }
 
 .Options-item {
@@ -28,10 +29,6 @@
   padding: 0.25em 0.5em 0.25em 1.75em;
 }
 
-.Options-item input:checked + label {
-  background: var(--color-bg-selection);
-}
-
 .Options--brands {
   max-height: 12.2em;
   overflow-y: scroll;
@@ -41,16 +38,17 @@
   display: none;
 }
 
-.NewProduct details {
-  border-block-end: var(--border-medium);
+.NewProduct,
+html:has([name="theme"][value="light"]:checked) .NewProduct {
+  --category-divider: var(--color-border-light);
+}
+
+.NewProduct details:not(:last-child) {
+  border-block-end: var(--border) var(--category-divider);
 }
 
 .NewProduct details[open] {
   padding-block-end: 1rem;
-}
-
-.NewProduct details:first-child {
-  border-block-start: var(--border-medium);
 }
 
 .NewProduct summary {
@@ -60,10 +58,6 @@
   padding-block: 0.75em;
   list-style: none;
   font-weight: 600;
-}
-
-.NewProduct details:not(:is(details + details)) summary {
-  padding-block-start: 0;
 }
 
 .NewProduct summary::-webkit-details-marker {
@@ -86,7 +80,17 @@ html:has([name="theme"][value="light"]:checked) .NewProduct summary::after {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
 }
 
+.NewProduct-date {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+
 @media (prefers-color-scheme: dark) {
+  .NewProduct {
+    --category-divider: var(--color-blue-50);
+  }
+
   .NewProduct summary::after {
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%234E6880' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
   }
@@ -95,6 +99,13 @@ html:has([name="theme"][value="light"]:checked) .NewProduct summary::after {
     accent-color: hsl(var(--hue-accent), 34%, 25%);
     color-scheme: light;
   }
+}
+
+:is(
+  html:has([name="theme"][value="dark"]:checked),
+  .is-dark
+) .NewProduct {
+  --category-divider: var(--color-blue-50);
 }
 
 :is(

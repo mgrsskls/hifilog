@@ -13,3 +13,50 @@ two:
   slug: zmf-atrium-open
   sub_categories:
     - two
+
+release_date_ymd:
+  name: release_date_ymd
+  brand: one
+  slug: release-date-ymd
+  release_year: 2020
+  release_month: 6
+  release_day: 1
+
+release_date_ym:
+  name: release_date_ym
+  brand: one
+  slug: release-date-ym
+  release_year: 2020
+  release_month: 6
+
+release_date_yd:
+  name: release_date_yd
+  brand: one
+  slug: release-date-yd
+  release_year: 2020
+  release_day: 1
+
+release_date_md:
+  name: release_date_md
+  brand: one
+  slug: release-date-md
+  release_month: 6
+  release_day: 1
+
+release_date_y:
+  name: release_date_y
+  brand: one
+  slug: release-date-y
+  release_year: 2020
+
+release_date_m:
+  name: release_date_m
+  brand: one
+  slug: release-date-m
+  release_month: 6
+
+release_date_d:
+  name: release_date_d
+  brand: one
+  slug: release-date-d
+  release_day: 1

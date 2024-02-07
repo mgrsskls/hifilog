@@ -16,6 +16,16 @@
   margin-block-start: 1rem;
 }
 
+.UserForm-field--inline {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.UserForm-field--inline .UserForm-label {
+  padding-block-end: 0;
+}
+
 .UserForm-field + h3 {
   margin-block-start: 2rem;
 }

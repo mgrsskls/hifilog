@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_06_081914) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_07_054142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_trgm"
@@ -94,6 +94,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_06_081914) do
     t.bigint "brand_id", null: false
     t.boolean "discontinued", default: false
     t.string "slug"
+    t.integer "release_day"
+    t.integer "release_month"
+    t.integer "release_year"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_products_name_prefix"
     t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin

@@ -174,10 +174,27 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :brand_id, :discontinued, sub_category_ids: [])
+    params.require(:product)
+          .permit(
+            :name,
+            :brand_id,
+            :discontinued,
+            :release_day,
+            :release_month,
+            :release_year,
+            sub_category_ids: []
+          )
   end
 
   def product_update_params
-    params.require(:product).permit(:name, :discontinued, sub_category_ids: [])
+    params.require(:product)
+          .permit(
+            :name,
+            :discontinued,
+            :release_day,
+            :release_month,
+            :release_year,
+            sub_category_ids: []
+          )
   end
 end

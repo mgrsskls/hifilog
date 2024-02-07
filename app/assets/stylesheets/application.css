@@ -72,6 +72,7 @@
     --color-white: #fff;
     --color-blue-10: hsl(204, 18.5%, 97.5%);
     --color-blue-20: hsl(204, 18.5%, 92.5%);
+    --color-blue-50: hsl(204, 18.5%, 50%);
     --color-blue-90: hsl(208, 40%, 12.5%);
     --color-blue-100: hsl(208, 40%, 10%);
 
@@ -262,6 +263,7 @@
 
   select,
   input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
+    display: block;
     font: inherit;
     color: var(--color-input);
     padding: var(--input-padding);

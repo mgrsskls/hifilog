@@ -45,4 +45,17 @@ class Product < ApplicationRecord
   def url
     product_url(id: friendly_id)
   end
+
+  def release_date
+    return nil if release_year.nil?
+    return release_year.to_s if release_month.nil?
+
+    formatted_month = release_month.to_s.rjust(2, '0')
+
+    return "#{release_year}/#{formatted_month}" if release_day.nil?
+
+    formatted_day = release_day.to_s.rjust(2, '0')
+
+    "#{release_year}/#{formatted_month}/#{formatted_day}"
+  end
 end

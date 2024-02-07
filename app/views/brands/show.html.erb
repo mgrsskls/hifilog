@@ -76,7 +76,7 @@
               <% if product.sub_categories.any? %>
                 <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
               <% else %>
-                <%= product.categories.map{ |category| category.name }.join(", ") %>
+                -
               <% end %>
             </td>
             <td>

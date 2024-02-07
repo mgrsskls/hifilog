@@ -39,60 +39,49 @@
           </div>
         <% end %>
       </div>
-      <%= javascript_tag nonce: true do %>
-        {
-          const input = document.querySelector('[name="brand"]');
-          const brands = document.querySelectorAll("[data-brand]");
-
-          function render(input, brands) {
-            const value = input.value.trim().toLowerCase();
-
-            if (value.length > 0) {
-              brands.forEach(brand => {
-                if (brand.dataset.brand.startsWith(value)) {
-                  brand.hidden = false;
-                } else {
-                  brand.hidden = true;
-                }
-              });
-            } else {
-              brands.forEach(brand => {
-                brand.hidden = true;
-                brand.querySelector("input").checked = false;
-              });
-            }
-          }
-
-          if (input) {
-            input.addEventListener("input", ({ target }) => {
-              render(target, brands);
-            });
-
-            render(input, brands);
-          }
-        }
-      <% end %>
     <% end %>
 
     <div class="UserForm-field">
-      <h2><%= t('headings.categories') %></h2>
-      <% @categories.each do |category| %>
-        <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
-          <summary><%= category.name %></summary>
-            <div class="Options">
+      <div class="UserForm-label"><%= t('headings.categories') %></div>
+      <div class="Options">
+        <% @categories.each do |category| %>
+          <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
+            <summary><%= category.name %></summary>
             <% category.sub_categories.each do |sub_category| %>
               <div class="Options-item">
                 <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, @product.sub_category_ids.include?(sub_category.id), name: "product[sub_category_ids][]" %>
                 <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
               </div>
             <% end %>
-          </div>
-        </details>
-      <% end %>
+          </details>
+        <% end %>
+      </div>
     </div>
 
     <div class="UserForm-field">
-      <h2><%= t('symbols.discontinued') %></h2>
+      <%= f.label :release_date, class: "UserForm-label" do %>
+        Release date <small><i>(optional)</i></small>
+      <% end %>
+      <div class="NewProduct-date">
+        <%= f.select :release_day do %>
+          <option value="">Day</option>
+          <% (1..31).each do |day| %>
+            <option value="<%= day %>"<%= " selected" if @product.release_day == day %>><%= day %></option>
+          <% end %>
+        <% end %>
+        <%= select_month(@product.release_month, field_name: "release_month", prefix: "product", prompt: "Month") %>
+        <%= f.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year" %>
+      </div>
+      <small>If you for example only know the year, you can also omit day and month.</small>
+      <datalist id="years">
+        <% (1900..2024).to_a.reverse.each do |year| %>
+          <option value="<%= year %>"></option>
+        <% end %>
+      </datalist>
+    </div>
+
+    <div class="UserForm-field UserForm-field--inline">
+      <span class="UserForm-label"><%= t('symbols.discontinued') %></span>
       <div class="UserForm-options">
         <%= f.radio_button :discontinued, 0, checked: (@product.discontinued.nil? || @product.discontinued == false) %>
         <%= f.label :discontinued, "No", value: 0 %>
@@ -106,3 +95,39 @@
     </div>
   <% end %>
 </div>
+
+<% unless @brand %>
+  <%= javascript_tag nonce: true do %>
+    {
+      const input = document.querySelector('[name="brand"]');
+      const brands = document.querySelectorAll("[data-brand]");
+
+      function render(input, brands) {
+        const value = input.value.trim().toLowerCase();
+
+        if (value.length > 0) {
+          brands.forEach(brand => {
+            if (brand.dataset.brand.startsWith(value)) {
+              brand.hidden = false;
+            } else {
+              brand.hidden = true;
+            }
+          });
+        } else {
+          brands.forEach(brand => {
+            brand.hidden = true;
+            brand.querySelector("input").checked = false;
+          });
+        }
+      }
+
+      if (input) {
+        input.addEventListener("input", ({ target }) => {
+          render(target, brands);
+        });
+
+        render(input, brands);
+      }
+    }
+  <% end %>
+<% end %>
