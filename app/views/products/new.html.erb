@@ -22,54 +22,56 @@
     <%= f.hidden_field :brand_id, value: @brand.id if @brand %>
 
     <div class="UserForm-field">
-      <h2><%= f.label :name %></h2>
+      <%= f.label :name, class: "UserForm-label" %>
       <%= f.text_field :name, required: true %>
     </div>
 
     <% unless @brand %>
       <div class="UserForm-field">
-        <h2><%= t('headings.brand') %></h2>
-        <div class="UserForm-field">
-          <label for="brand-filter" class="UserForm-label"><%= t('new_product.filter_brands') %></label>
-          <input type="text" name="brand" id="brand-filter" autocomplete="off" value="">
-        </div>
-        <div class="UserForm-field Options Options--brands">
-          <% @brands.each do |brand| %>
-            <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
-              <%= f.radio_button :brand_id, brand.id %>
-              <%= f.label :brand_id, brand.name, { value: brand.id } %>
-            </div>
-          <% end %>
-        </div>
-        <%= javascript_tag nonce: true do %>
-          {
-            const input = document.querySelector('[name="brand"]');
-            const brands = document.querySelectorAll("[data-brand]");
-
-            function render(input, brands) {
-              const value = input.value.trim().toLowerCase();
-
-              if (value.length > 0) {
-                brands.forEach(brand => {
-                  if (brand.dataset.brand.startsWith(value)) {
-                    brand.hidden = false;
-                  } else {
-                    brand.hidden = true;
-                  }
-                });
-              }
-            }
-
-            if (input) {
-              input.addEventListener("input", ({ target }) => {
-                render(target, brands);
-              });
-
-              render(input, brands);
-            }
-          }
+        <%= f.label :brand, class: "UserForm-label" %>
+        <input type="text" name="brand" id="brand-filter" autocomplete="off" value="">
+      </div>
+      <div class="UserForm-field Options Options--brands">
+        <% @brands.each do |brand| %>
+          <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
+            <%= f.radio_button :brand_id, brand.id %>
+            <%= f.label :brand_id, brand.name, { value: brand.id } %>
+          </div>
         <% end %>
       </div>
+      <%= javascript_tag nonce: true do %>
+        {
+          const input = document.querySelector('[name="brand"]');
+          const brands = document.querySelectorAll("[data-brand]");
+
+          function render(input, brands) {
+            const value = input.value.trim().toLowerCase();
+
+            if (value.length > 0) {
+              brands.forEach(brand => {
+                if (brand.dataset.brand.startsWith(value)) {
+                  brand.hidden = false;
+                } else {
+                  brand.hidden = true;
+                }
+              });
+            } else {
+              brands.forEach(brand => {
+                brand.hidden = true;
+                brand.querySelector("input").checked = false;
+              });
+            }
+          }
+
+          if (input) {
+            input.addEventListener("input", ({ target }) => {
+              render(target, brands);
+            });
+
+            render(input, brands);
+          }
+        }
+      <% end %>
     <% end %>
 
     <div class="UserForm-field">
