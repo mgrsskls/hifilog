@@ -105,7 +105,7 @@ class ProductsController < ApplicationController
 
     @product = Product.new
     @brands = Brand.all.order('LOWER(name)')
-    @categories = Category.ordered
+    @categories = Category.ordered.includes([:sub_categories])
 
     if params[:brand_id]
       @product.brand_id = params[:brand_id]
