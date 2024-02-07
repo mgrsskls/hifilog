@@ -146,7 +146,7 @@ class ProductsController < ApplicationController
     @product = Product.find(params[:id])
 
     if @product.update(product_update_params)
-      redirect_to product_url(id: @product.friendly_id)
+      redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
       @brands = Brand.all.order('LOWER(name)')
       @categories = Category.ordered
