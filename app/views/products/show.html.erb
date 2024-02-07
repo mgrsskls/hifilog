@@ -21,7 +21,7 @@
         <dd>
           <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, category_sub_category_path(id: sub_category.friendly_id, category_id: sub_category.category.friendly_id) }.join(", ").html_safe %>
         </dd>
-        <dt>Released</dt>
+        <dt>Release Date</dt>
         <dd>
           <% if @product.release_date.present? %>
             <time datetime="<%= @product.release_date %>" data-format="false"><%= @product.release_date %></time>
