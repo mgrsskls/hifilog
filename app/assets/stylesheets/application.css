@@ -92,7 +92,7 @@
     --color-input: hsl(208, 30%, 20%);
     --color-input-bg: #fff;
     --color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
-    --color-border-h-s: 0, 0%;
+    --color-border-h-s: var(--hue), 20%;
     --color-border-light: hsla(var(--color-border-h-s), var(--border-l), 15%);
     --color-border-medium: hsla(var(--color-border-h-s), var(--border-l), 30%);
     --color-border-dark: hsla(var(--color-border-h-s), var(--border-l), 50%);
@@ -121,6 +121,8 @@
     --color-success-bg: var(--color-success-light);
     --color-success-copy: var(--color-success-dark);
     --color-positive: hsl(160, 50%, 95%);
+
+    color-scheme: light;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -129,7 +131,7 @@
       --bg-l: 15%;
       --button-box-shadow-a: 50%;
       --input-box-shadow-a: 30%;
-      --border-l: 100%;
+      --border-l: 60%;
 
       --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
       --color-invalid-bg: var(--color-invalid-dark);
@@ -142,6 +144,8 @@
       --color-accent: var(--color-accent-on-dark);
       --color-copy: var(--color-copy-on-dark);
       --color-secondary: var(--color-secondary-on-dark);
+
+      color-scheme: dark;
     }
   }
 
@@ -151,7 +155,7 @@
     --bg-l: 15%;
     --button-box-shadow-a: 50%;
     --input-box-shadow-a: 30%;
-    --border-l: 100%;
+    --border-l: 60%;
 
     --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
     --color-invalid-bg: var(--color-invalid-dark);
@@ -166,6 +170,8 @@
     --color-secondary: var(--color-secondary-on-dark);
 
     color: var(--color-copy);
+
+    color-scheme: dark;
   }
 
   body {
@@ -173,7 +179,6 @@
       Helvetica, Arial, sans-serif;
     line-height: var(--line-height);
     margin: 0;
-    color-scheme: light dark;
     background: var(--color-bg);
     color: var(--color-copy);
     accent-color: var(--color-accent);

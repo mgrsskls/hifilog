@@ -2,7 +2,7 @@
   <%= stylesheet_link_tag "dashboard" %>
 <% end %>
 <div class="Dashboard">
-  <nav class="Dashboard-menu">
+  <nav class="Dashboard-menu" aria-label="<%= t('headings.dashboard') %>">
     <ul class="Dashboard-links">
       <li>
         <a class="Dashboard-link" href="<%= dashboard_root_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :dashboard) %>>

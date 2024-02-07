@@ -11,10 +11,11 @@
 }
 
 .Symbol {
-  --hue: 0;
-  --saturation: 0%;
+  --hue: 208;
+  --saturation: 20%;
+  --lightness: 40%;
   --size: 1.75em;
-  --color: var(--hue), var(--saturation), 40%;
+  --color: var(--hue), var(--saturation), var(--lightness);
 
   display: flex;
   align-items: center;
@@ -25,6 +26,23 @@
   border: var(--border);
   border-radius: var(--border-radius);
   font-weight: 600;
+}
+
+html:has([name="theme"][value="light"]:checked) .Symbol {
+  --lightness: 40%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .Symbol {
+    --lightness: 70%;
+  }
+}
+
+:is(
+  html:has([name="theme"][value="dark"]:checked),
+  .is-dark
+) .Symbol:not(.Symbol--positive) {
+  --lightness: 70%;
 }
 
 .Symbol:not(.Symbol--large) {

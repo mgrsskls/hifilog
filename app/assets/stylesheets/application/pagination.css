@@ -44,6 +44,19 @@
   background: var(--color-blue-20);
 }
 
+@media (prefers-color-scheme: dark) {
+  .Pagination label:has([aria-current="true"]) {
+    background: rgba(200, 200, 255, .1);
+  }
+}
+
+:is(
+  html:has([name="theme"][value="dark"]:checked),
+  .is-dark
+) .Pagination label:has([aria-current="true"]) {
+  background: rgba(200, 200, 255, .1);
+}
+
 .Pagination--abc :not(.Pagination-all) :is(a, label):not(.Pagination-all) {
   inline-size: 2em;
   text-transform: uppercase;
