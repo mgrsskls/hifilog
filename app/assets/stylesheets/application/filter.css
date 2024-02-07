@@ -11,6 +11,12 @@
   font-weight: 600;
 }
 
+.Filter-close,
+.Filter-reset {
+  font-weight: 600;
+  text-decoration: none;
+}
+
 @media (max-width: 42rem) {
   .Filter {
     display: grid;
@@ -51,6 +57,7 @@
   .Filter-open {
     grid-column: 2;
     grid-row: 1;
+    position: relative;
   }
 
   .Filter-open:not([aria-expanded="true"]) + .Filter-form {
@@ -93,18 +100,31 @@
 @media (min-width: 42.0625rem) {
   .Filter-open,
   .Filter-status,
-  .Filter-form .Button {
+  .Filter-close {
     display: none;
   }
 
   .Filter-options {
     display: grid;
     gap: .75rem 1rem;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr auto;
   }
 
-  .Filter-options span {
+  .Filter-option {
     line-height: 1.875rem;
+    grid-column: 1;
+  }
+
+  .Filter .Pagination {
+    grid-column: 2 / 3;
+  }
+
+  .Filter .Pagination--abc {
+    grid-column: 2 / -1;
+  }
+
+  .Filter-actions {
+    grid-column: 3 / -1;
   }
 }
 

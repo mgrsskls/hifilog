@@ -71,6 +71,7 @@
 
     --color-white: #fff;
     --color-blue-10: hsl(204, 18.5%, 97.5%);
+    --color-blue-20: hsl(204, 18.5%, 92.5%);
     --color-blue-90: hsl(208, 40%, 12.5%);
     --color-blue-100: hsl(208, 40%, 10%);
 
@@ -95,7 +96,7 @@
     --color-border-light: hsla(var(--color-border-h-s), var(--border-l), 15%);
     --color-border-medium: hsla(var(--color-border-h-s), var(--border-l), 30%);
     --color-border-dark: hsla(var(--color-border-h-s), var(--border-l), 50%);
-    --color-focus-outline: hsl(var(--hue-accent), 100%, 50%);
+    --color-focus-outline: hsl(var(--hue-accent), 75%, 50%);
     --color-accent: var(--color-accent-on-light);
     --color-highlight: var(--color-accent);
     --color-copy: var(--color-copy-on-light);
@@ -199,9 +200,13 @@
     color: var(--color-copy);
   }
 
+  :is(a, input, button) {
+    border-radius: var(--border-radius);
+  }
+
   :is(a, input, button):focus-visible {
-    outline: 0.125em solid var(--color-focus-outline);
-    outline-offset: 0.1875em;
+    outline: 0.125rem solid var(--color-focus-outline);
+    outline-offset: 0.1875rem;
   }
 
   header {

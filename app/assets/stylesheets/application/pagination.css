@@ -30,9 +30,18 @@
   border-color: currentColor;
 }
 
+.Pagination :is(a:focus-visible, label:has(:focus-visible)) {
+  outline: 0.125rem solid var(--color-focus-outline);
+  outline-offset: 0.1875rem;
+}
+
 .Pagination :is(a[aria-current="true"], label:has(:checked)) {
   border-color: currentColor;
   color: var(--color-accent);
+}
+
+.Pagination label:has([aria-current="true"]) {
+  background: var(--color-blue-20);
 }
 
 .Pagination--abc :not(.Pagination-all) :is(a, label):not(.Pagination-all) {

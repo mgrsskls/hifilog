@@ -52,17 +52,17 @@
                 <ul class="Menu-list Menu-list--main">
                   <li>
                     <a href="<%= products_path %>"<%= active_menu_state(@active_menu, :products) %>>
-                      <%= t('headings.products') %>
+                      <span><%= t('headings.products') %></span>
                     </a>
                   </li>
                   <li>
                     <a href="<%= brands_path %>"<%= active_menu_state(@active_menu, :brands) %>>
-                      <%= t('headings.brands').html_safe %>
+                      <span><%= t('headings.brands').html_safe %></span>
                     </a>
                   </li>
                   <li>
                     <a href="<%= categories_path %>"<%= active_menu_state(@active_menu, :categories) %>>
-                      <%= t('headings.categories').html_safe %>
+                      <span><%= t('headings.categories').html_safe %></span>
                     </a>
                   </li>
                 </ul>

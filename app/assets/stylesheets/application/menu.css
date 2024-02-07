@@ -17,15 +17,13 @@
 }
 
 .Menu-list :is(a, button) {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  display: inline-flex;
   color: var(--color-header-copy);
   text-decoration: none;
   border: none;
 }
 
-.Menu-list :is(a, button):is(:hover, :focus) {
+.Menu-list :is(a, button):is(:hover, :focus) span {
   text-decoration: underline;
   text-underline-offset: var(--underline-offset);
   text-decoration-thickness: var(--underline-width);
@@ -74,7 +72,9 @@
     padding-block-start: 1rem;
   }
 
-  .Menu-subList li {
+  .Menu-subList :is(a, button) {
+    display: flex;
+    align-items: center;
     gap: 1rem;
   }
 
@@ -86,12 +86,14 @@
 
 @media (min-width: 50.0625rem) {
   .Menu-list > li {
+    display: flex;
+    align-items: center;
     position: relative;
     justify-content: space-between;
     gap: 2rem;
   }
 
-  .Menu-list :is(a, button) {
+  .Menu-list > li {
     block-size: var(--height);
   }
 
@@ -109,9 +111,13 @@
     display: flex;
   }
 
+  .Menu-subList li > * {
+    flex: 1;
+  }
+
   .Menu-subList :is(a, button) {
     display: flex;
-    flex: 1;
+    inline-size: 100%;
     justify-content: space-between;
     align-items: center;
     block-size: auto;

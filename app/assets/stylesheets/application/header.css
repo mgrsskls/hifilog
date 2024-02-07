@@ -22,9 +22,18 @@
   border-radius: var(--border-radius);
 }
 
+.Search:has(.Search-input:focus) {
+  outline: 0.125rem solid var(--color-focus-outline);
+  outline-offset: 0.1875rem;
+}
+
 .Search-input {
   border: none;
   box-shadow: none;
+}
+
+.Search-input:focus {
+  outline: none;
 }
 
 .Search-button {

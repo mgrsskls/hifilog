@@ -12,14 +12,14 @@
         <ol class="Pagination Pagination--abc">
           <li class="Pagination-all">
             <label>
-              <input type="radio" name="letter" value=""<%= ' checked'.html_safe if params[:letter].blank? %>>
+              <input type="radio" name="letter" value=""<%= ' checked aria-current="true"'.html_safe if params[:letter].blank? %>>
               <%= t('filter.all') %>
             </label>
           </li>
           <% abc.each do |letter| %>
             <li class="Pagination-item">
               <label>
-                <input type="radio" name="letter" value="<%= letter %>"<%= ' checked'.html_safe if params[:letter] == letter %>>
+                <input type="radio" name="letter" value="<%= letter %>"<%= ' checked aria-current="true"'.html_safe if params[:letter] == letter %>>
                 <%= letter %>
               </label>
             </li>
@@ -32,14 +32,14 @@
         <ol class="Pagination">
           <li class="Pagination-all">
             <label>
-              <input type="radio" name="category" value=""<%= ' checked'.html_safe if params[:category].blank? %>>
+              <input type="radio" name="category" value=""<%= ' checked aria-current="true"'.html_safe if params[:category].blank? %>>
               <%= t('filter.all') %>
             </label>
           </li>
           <% Category.all.each do |category| %>
             <li class="Pagination-item">
               <label>
-                <input type="radio" name="category" value="<%= category.id %>"<%= ' checked'.html_safe if params[:category].to_i == category.id %>>
+                <input type="radio" name="category" value="<%= category.id %>"<%= ' checked aria-current="true"'.html_safe if params[:category].to_i == category.id %>>
                 <%= category.name %>
               </label>
             </li>
@@ -52,29 +52,32 @@
         <ol class="Pagination">
           <li class="Pagination-all">
             <label>
-              <input type="radio" name="status" value=""<%= ' checked'.html_safe if params[:status].blank? %>>
+              <input type="radio" name="status" value=""<%= ' checked aria-current="true"'.html_safe if params[:status].blank? %>>
               <%= t('filter.all') %>
             </label>
           </li>
           <li class="Pagination-item">
             <label>
-              <input type="radio" name="status" value="continued"<%= ' checked'.html_safe if params[:status] == "continued" %>>
+              <input type="radio" name="status" value="continued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "continued" %>>
               <%= t('continued') %>
             </label>
           </li>
           <li class="Pagination-item">
             <label>
-              <input type="radio" name="status" value="discontinued"<%= ' checked'.html_safe if params[:status] == "discontinued" %>>
+              <input type="radio" name="status" value="discontinued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "discontinued" %>>
               <%= t('discontinued') %>
             </label>
           </li>
         </ol>
       <% end %>
-    </div>
 
-    <div class="Filter-actions u-flex u-spaceBetween">
-      <%= link_to "Reset all", reset_path, class: "Button" %>
-      <button class="Button Button--secondary Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
+      <div class="Filter-actions u-flex u-gap-md u-spaceBetween">
+        <button class="Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
+        <div class="u-flex u-gap-md u-alignCenter">
+          <%= link_to "Reset all", reset_path, class: "Filter-reset" %>
+          <button class="Button Button--sm" type="submit">Filter</button>
+        </div>
+      </div>
     </div>
   <% end %>
 

@@ -19,26 +19,6 @@ import "./theme_toggle.js";
     filterClose.addEventListener("click", onCloseFilter)
   }
 
-  document.querySelectorAll(".Pagination input").forEach(input => {
-    input.addEventListener("click", onFilterInput);
-  });
-
-  function onFilterInput2() {
-    console.log(2)
-  }
-
-  function onFilterInput(e) {
-    e.preventDefault();
-
-    const input = e.target;
-
-    if (input.hasAttribute("checked")) {
-      input.checked = false;
-    }
-
-    input.closest("form").submit();
-  }
-
   function onMenuToggle({ currentTarget: button }) {
     const shouldOpen = button.getAttribute('aria-expanded') === 'false';
 

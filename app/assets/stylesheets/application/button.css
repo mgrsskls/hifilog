@@ -26,3 +26,8 @@
   border-color: currentColor;
   color: var(--color-secondary);
 }
+
+.Button--sm {
+  padding: .6em .75em;
+  line-height: 1;
+}
