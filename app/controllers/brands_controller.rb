@@ -4,9 +4,9 @@ class BrandsController < ApplicationController
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
   before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
+  before_action :set_active_menu
 
   def index
-    @active_menu = :brands
     @page_title = I18n.t('headings.brands')
 
     if params[:letter].present? || params[:category].present? || params[:status].present?
@@ -78,8 +78,6 @@ class BrandsController < ApplicationController
   end
 
   def show
-    @active_menu = :brands
-
     @brand = Brand.friendly.find(params[:id])
 
     if params[:category]
@@ -97,7 +95,6 @@ class BrandsController < ApplicationController
   end
 
   def new
-    @active_menu = :brands
     @page_title = I18n.t('new_brand.heading')
 
     add_breadcrumb I18n.t('new_brand.heading')
@@ -106,8 +103,6 @@ class BrandsController < ApplicationController
   end
 
   def create
-    @active_menu = :brands
-
     @brand = Brand.new(brand_params)
 
     if @brand.save
@@ -118,7 +113,6 @@ class BrandsController < ApplicationController
   end
 
   def edit
-    @active_menu = :brands
     @brand = Brand.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @brand.name)
 
@@ -144,6 +138,10 @@ class BrandsController < ApplicationController
   end
 
   private
+
+  def set_active_menu
+    @active_menu = :brands
+  end
 
   def set_breadcrumb
     add_breadcrumb I18n.t('headings.brands'), brands_path

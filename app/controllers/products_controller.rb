@@ -4,9 +4,9 @@ class ProductsController < ApplicationController
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:create]
   before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
+  before_action :set_active_menu
 
   def index
-    @active_menu = :products
     @page_title = I18n.t('headings.products')
 
     if params[:letter].present? || params[:category].present? || params[:status].present?
@@ -88,8 +88,6 @@ class ProductsController < ApplicationController
   end
 
   def show
-    @active_menu = :products
-
     @product = Product.friendly.find(params[:id])
     @brand = @product.brand
 
@@ -98,13 +96,11 @@ class ProductsController < ApplicationController
       @setups = current_user.setups.includes(:products)
     end
 
-    add_breadcrumb @product.brand.name, brand_path(@product.brand)
-    add_breadcrumb @product.name
+    add_breadcrumb @product.display_name
     @page_title = "#{@product.brand.name} #{@product.name}"
   end
 
   def new
-    @active_menu = :products
     @page_title = I18n.t('new_product.heading')
 
     @product = Product.new
@@ -115,14 +111,13 @@ class ProductsController < ApplicationController
       @product.brand_id = params[:brand_id]
       @brand = Brand.find(params[:brand_id])
 
-      add_breadcrumb @brand.name, brand_path(@brand)
+      add_breadcrumb @brand.display_name, brand_path(@brand)
     end
 
     add_breadcrumb t('add_product')
   end
 
   def create
-    @active_menu = :products
     @product = Product.new(product_params)
 
     if @product.save
@@ -136,7 +131,6 @@ class ProductsController < ApplicationController
   end
 
   def edit
-    @active_menu = :products
     @page_title = I18n.t('new_product.heading')
 
     @product = Product.friendly.find(params[:id])
@@ -144,13 +138,11 @@ class ProductsController < ApplicationController
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.ordered
 
-    add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb @product.name, product_path(id: @product.friendly_id)
+    add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
     add_breadcrumb I18n.t('edit')
   end
 
   def update
-    @active_menu = :products
     @product = Product.find(params[:id])
 
     if @product.update(product_update_params)
@@ -167,12 +159,15 @@ class ProductsController < ApplicationController
     @product = Product.friendly.find(params[:product_id])
     @brand = @product.brand
 
-    add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb @product.name, product_path(id: @product.id)
+    add_breadcrumb @product.display_name, product_path(id: @product.id)
     add_breadcrumb I18n.t('headings.changelog')
   end
 
   private
+
+  def set_active_menu
+    @active_menu = :products
+  end
 
   def set_breadcrumb
     add_breadcrumb I18n.t('headings.products'), products_path
