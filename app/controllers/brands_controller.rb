@@ -73,7 +73,7 @@ class BrandsController < ApplicationController
                      .order('LOWER(brands.name)')
                      .page(params[:page])
     else
-      @brands = Brand.all.order('LOWER(name)').page(params[:page])
+      @brands = Brand.all.includes(products: :sub_categories).order('LOWER(name)').page(params[:page])
     end
   end
 
