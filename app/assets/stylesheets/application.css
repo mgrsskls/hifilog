@@ -90,7 +90,6 @@
     --color-button-bg: hsl(var(--hue-sat), 40%);
     --color-button-box-shadow: hsla(0, 0%, 0%, var(--button-box-shadow-a));
     --color-input: hsl(208, 30%, 20%);
-    --color-input-bg: #fff;
     --color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
     --color-border-h-s: var(--hue), 20%;
     --color-border-light: hsla(var(--color-border-h-s), var(--border-l), 15%);
@@ -112,6 +111,8 @@
 
     --color-button-copy: #fff;
     --color-highlight-copy: #fff;
+    --color-input-bg: #fff;
+    --color-input-placeholder: hsl(208, 20%, 60%);
     --color-invalid-light: hsl(330, 50%, 85%);
     --color-invalid-dark: hsl(330, 100%, 20%);
     --color-invalid-bg: var(--color-invalid-light);
@@ -134,6 +135,8 @@
       --border-l: 60%;
 
       --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
+      --color-input-bg: hsl(208, 20%, 75%);
+      --color-input-placeholder: hsl(208, 20%, 40%);
       --color-invalid-bg: var(--color-invalid-dark);
       --color-invalid-copy: var(--color-invalid-light);
       --color-success-bg: var(--color-success-dark);
@@ -158,6 +161,8 @@
     --border-l: 60%;
 
     --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
+    --color-input-bg: hsl(208, 20%, 75%);
+    --color-input-placeholder: hsl(208, 20%, 40%);
     --color-invalid-bg: var(--color-invalid-dark);
     --color-invalid-copy: var(--color-invalid-light);
     --color-success-bg: var(--color-success-dark);
@@ -228,6 +233,7 @@
   h1,
   .h1 {
     font-size: 3rem;
+    font-weight: 600;
     line-height: 1.1;
     margin-block: 0;
   }
@@ -248,6 +254,10 @@
   h3,
   .h3 {
     font-size: 1.4rem;
+  }
+
+  input::placeholder {
+    color: var(--color-input-placeholder);
   }
 
   select,
