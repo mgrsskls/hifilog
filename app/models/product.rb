@@ -52,10 +52,10 @@ class Product < ApplicationRecord
 
     formatted_month = release_month.to_s.rjust(2, '0')
 
-    return "#{release_year}/#{formatted_month}" if release_day.nil?
+    return "#{formatted_month}/#{release_year}" if release_day.nil?
 
     formatted_day = release_day.to_s.rjust(2, '0')
 
-    "#{release_year}/#{formatted_month}/#{formatted_day}"
+    "#{formatted_day}/#{formatted_month}/#{release_year}"
   end
 end
