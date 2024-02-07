@@ -2,7 +2,7 @@
   <h1><%= @sub_category.name %></h1>
 </div>
 
-<%= render "shared/filter", reset_path: category_sub_category_path(id: params[:id], category_id: params[:category_id]), collection: @products, render_abc: true, render_categories: false, sub_categories: @sub_categories %>
+<%= render "shared/filter", reset_path: category_sub_category_path(id: @sub_category.friendly_id, category_id: @sub_category.category.friendly_id), collection: @products, render_abc: true, render_categories: false, sub_categories: @sub_categories %>
 
 <% if @products.any? %>
   <table>
