@@ -1,0 +1,24 @@
+.Users {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 4rem;
+  align-items: start;
+}
+
+.Users-ranking {
+  flex: 3;
+  min-inline-size: min(32rem, 100%);
+}
+
+.Users-info {
+  padding: 2rem;
+  background: var(--color-bg2);
+  flex: 1;
+  min-inline-size: min(16rem, 100%);
+}
+
+@media (min-width: 40em) {
+  .Users-rank {
+    inline-size: 3rem;
+  }
+}

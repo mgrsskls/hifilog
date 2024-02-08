@@ -1,0 +1,45 @@
+<div class="Heading">
+  <h1>Users</h1>
+</div>
+
+<% content_for :css do %>
+  <%= stylesheet_link_tag "users" %>
+<% end %>
+<div class="Users">
+  <div class="Users-ranking">
+    <table-saw>
+      <table>
+        <thead>
+          <tr>
+            <th class="Users-rank">Rank</th>
+            <th>User</th>
+            <th>Score</th>
+            <th>Member since</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users_by_products.each_with_index do |user, i| %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td>
+                <% if user["profile_visibility"] == 0 %>
+                  <%= user["user_name"] %>
+                <% else %>
+                  <%= link_to user["user_name"], user_path(user["user_name"]) %>
+                <% end %>
+              </td>
+              <td><%= user["count"] %></td>
+              <td>
+                <time datetime="<%= formatted_date user["created_at"] %>"><%= formatted_date user["created_at"] %></time>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </table-saw>
+  </div>
+  <div class="Users-info Rte">
+    <p>The score is the sum of all brands and products that a user has either created or edited.</p>
+    <p>Only users that created and/or edited a brand or a product are shown here.</p>
+  </div>
+</div>

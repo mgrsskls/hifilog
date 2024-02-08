@@ -19,6 +19,7 @@ Rails.application.config.assets.precompile += %w(
   product.css
   search_results.css
   setups.css
+  users.css
   user_form.css
 
   application.js

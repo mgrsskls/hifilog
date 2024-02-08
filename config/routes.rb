@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   resources :user_products, only: [:create, :destroy], as: :owned_products
   resources :setup_products, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
+  resources :users, only: [:index]
 
   # /categories
   # /categories/:category
