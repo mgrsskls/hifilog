@@ -59,6 +59,6 @@ class UsersController < ApplicationController
   private
 
   def get_data(data, model, event)
-    data[[model, event]]
+    data[[model, event]] || 0
   end
 end
