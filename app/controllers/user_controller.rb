@@ -20,37 +20,11 @@ class UserController < ApplicationController
   end
 
   def products
-    if params[:user_name]
-      @user = User.find_by!(user_name: params[:user_name])
-
-      @is_public_profile = true
-      add_breadcrumb I18n.t('users')
-      add_breadcrumb @user.user_name
-      @page_title = @user.user_name
-    elsif user_signed_in?
-
-      @active_dashboard_menu = :products
-      @user = current_user
-      add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-      add_breadcrumb I18n.t('headings.products'), dashboard_products_path
-      @page_title = I18n.t('headings.products')
-    end
-
-    # if the visited profile is not visible to anyone and the visiting user is a different user
-    if @user.hidden? && current_user != @user
-      if user_signed_in?
-        redirect_to root_url
-      else
-        redirect_to root_path
-      end
-      return
-    end
-
-    # if visited profile is not visible to logged out users and the current user is not logged in
-    if @user.logged_in_only? && !user_signed_in?
-      redirect_to new_user_session_url(redirect: URI.parse(user_path(user_name: @user.user_name)).path)
-      return
-    end
+    @active_dashboard_menu = :products
+    @user = current_user
+    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
+    add_breadcrumb I18n.t('headings.products'), dashboard_products_path
+    @page_title = I18n.t('headings.products')
 
     all_products = @user.products.all.includes([:sub_categories, :brand]).order('LOWER(name)')
 
@@ -65,12 +39,6 @@ class UserController < ApplicationController
 
     products_with_setup = @user.setups.includes([:products]).flat_map(&:products)
     @products_without_setup = (all_products - products_with_setup)
-
-    if params[:user_name]
-      render 'show'
-    else
-      render 'products'
-    end
   end
 
   def bookmarks

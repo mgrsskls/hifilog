@@ -9,11 +9,6 @@ Rails.application.routes.draw do
     sessions: "users/sessions",
   }
 
-  scope '/user/:user_name', as: :user do
-    get '/', to: 'user#products'
-    get ':category', to: 'user#products', as: :products_category
-  end
-
   scope '/dashboard', as: :dashboard do
     root 'user#dashboard'
     get 'products', to: 'user#products', as: :products
@@ -25,7 +20,7 @@ Rails.application.routes.draw do
   resources :user_products, only: [:create, :destroy], as: :owned_products
   resources :setup_products, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
-  resources :users, only: [:index]
+  resources :users, only: [:index, :show]
 
   # /categories
   # /categories/:category

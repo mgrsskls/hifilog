@@ -1,0 +1,23 @@
+.Profile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 4rem;
+  align-items: start;
+}
+
+.Profile-products {
+  flex: 3;
+  min-inline-size: min(32rem, 100%);
+}
+
+.Profile-meta {
+  padding: clamp(1rem, 4vi, 2rem);
+  background: var(--color-bg2);
+  flex: 1;
+  min-inline-size: min(16rem, 100%);
+}
+
+.Profile-meta h1 {
+  margin-block-end: 1.5rem;
+  font-size: 2rem;
+}

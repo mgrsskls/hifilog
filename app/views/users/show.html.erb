@@ -1,0 +1,27 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "profile" %>
+<% end %>
+
+<div class="Profile">
+  <div class="Profile-meta">
+    <h1><%= @user.user_name %></h1>
+    <dl class="Data">
+      <dt>Member since</dt>
+      <dd>
+        <time datetime="<%= formatted_date @user.created_at %>"><%= formatted_date @user.created_at %></time>
+      </dd>
+      <dt class="Data-divider">Products created</dt>
+      <dd><%= @products_created %></dd>
+      <dt>Products edited</dt>
+      <dd><%= @products_edited %></dd>
+      <dt>Brands created</dt>
+      <dd><%= @brands_created %></dd>
+      <dt>Brands edited</dt>
+      <dd><%= @brands_edited %></dd>
+    </dl>
+  </div>
+  <div class="Profile-products">
+    <h2><%= t('amount_products', count: @user.products.size) %></h2>
+    <%= render 'user/shared', user: @user %>
+  </div>
+</div>
