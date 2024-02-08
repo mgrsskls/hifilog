@@ -285,7 +285,7 @@
     color: var(--color-invalid-copy);
   }
 
-  @media (max-width: 32em) {
+  @media (max-width: 36em) {
     h1,
     .h1 {
       font-size: 2.2rem;
@@ -301,6 +301,15 @@
 @media (max-width: 48em) {
   html {
     --page-spacing: 0.75rem;
+  }
+
+  main:not(:has(.Home)),
+  .u-pullIn {
+    padding-inline: var(--page-spacing);
+  }
+
+  .u-pullOut {
+    margin-inline: calc(-1 * var(--page-spacing));
   }
 }
 

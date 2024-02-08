@@ -15,7 +15,7 @@ accordion-tabs summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-block: 0.75em;
+  padding: 0.75em var(--page-spacing);
   list-style: none;
   font-weight: 600;
 }

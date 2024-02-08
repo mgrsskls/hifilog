@@ -7,22 +7,24 @@
   </div>
 
   <% if @setups.any? %>
-    <table>
-      <thead>
-        <tr>
-          <th><%= t("headings.name") %></th>
-          <th class="Table-products u-alignCenter"><%= t("headings.products") %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @setups.each do |setup| %>
+    <div class="u-pullOut">
+      <table>
+        <thead>
           <tr>
-            <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
-            <td class="Table-products u-alignCenter"><%= setup.products.size %></td>
+            <th><%= t("headings.name") %></th>
+            <th class="Table-products u-alignCenter"><%= t("headings.products") %></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @setups.each do |setup| %>
+            <tr>
+              <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
+              <td class="Table-products u-alignCenter"><%= setup.products.size %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% else %>
     <%= render "shared/empty_state", message: t('empty_state.setups') %>
   <% end %>

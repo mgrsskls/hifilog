@@ -1,16 +1,20 @@
-<h2>Resend unlock instructions</h2>
-
-<%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
-
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autocomplete: "email" %>
+<div class="UserForm UserForm--centered">
+  <div class="Heading">
+    <h1>Resend unlock instructions</h1>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Resend unlock instructions" %>
-  </div>
-<% end %>
+  <%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
+    <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
-<%= render "users/shared/links" %>
+    <div class="UserForm-field">
+      <%= f.label :email, class: "UserForm-label" %>
+      <%= f.email_field :email, autocomplete: "email" %>
+    </div>
+
+    <div class="UserForm-submit">
+      <%= f.submit "Resend unlock instructions" %>
+    </div>
+  <% end %>
+
+  <%= render "users/shared/links" %>
+</div>

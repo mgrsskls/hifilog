@@ -1,22 +1,39 @@
 .Product {
   display: flex;
-  flex-wrap: wrap;
   gap: 2rem;
   padding-block-end: 3rem;
   margin-block-end: 3rem;
   border-block-end: var(--border-light);
 }
 
-.Product-main {
-  flex: 4;
-  min-inline-size: min(24rem, 100%);
-}
-
 .Product-sub {
   background: var(--color-bg2);
-  flex: 1;
-  min-inline-size: 14rem;
-  padding: 1rem;
+}
+
+@media (max-width: 48rem) {
+  .Product {
+    flex-direction: column;
+  }
+
+  .Product-sub {
+    padding: 1rem var(--page-spacing);
+  }
+}
+
+@media (min-width: 48.065rem) {
+  .Product {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .Product-main {
+    flex: 1;
+  }
+
+  .Product-sub {
+    flex: 0 0 14rem;
+    padding: 1rem;
+  }
 }
 
 .Product-bookmark {

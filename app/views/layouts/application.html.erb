@@ -83,7 +83,7 @@
                 <% if user_signed_in? %>
                   <li>
                     <a href="<%= dashboard_root_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
-                      <%= t('dashboard') %>
+                      <span><%= t('dashboard') %></span>
                     </a>
                     <ul class="Menu-subList">
                       <li>

@@ -1,24 +1,45 @@
 .Users {
   display: flex;
-  flex-wrap: wrap;
   gap: 2rem 4rem;
   align-items: start;
 }
 
-.Users-ranking {
-  flex: 3;
-  min-inline-size: min(32rem, 100%);
+.Users-ranking table {
+  table-layout: initial;
 }
 
 .Users-info {
-  padding: 2rem;
   background: var(--color-bg2);
-  flex: 1;
-  min-inline-size: min(16rem, 100%);
 }
+
 
 @media (min-width: 40em) {
   .Users-rank {
     inline-size: 3rem;
+  }
+}
+
+@media (max-width: 56rem) {
+  .Users {
+    flex-direction: column;
+  }
+
+  .Users-ranking {
+    inline-size: 100%;
+  }
+
+  .Users-info {
+    padding: calc(2 * var(--page-spacing));
+  }
+}
+
+@media (min-width: 56.065rem) {
+  .Users-ranking {
+    flex: 1;
+  }
+
+  .Users-info {
+    padding: 2rem;
+    flex: 0 0 16rem;
   }
 }

@@ -117,7 +117,7 @@
 }
 
 .DashboardStats {
-  margin-block-start: 3rem;
+  margin-block-start: 1rem;
   container: stats / inline-size;
 }
 

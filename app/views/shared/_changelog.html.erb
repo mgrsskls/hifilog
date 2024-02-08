@@ -5,7 +5,7 @@
 <h1><%= t('headings.changelog') %> <span><%= model.name %></span></h1>
 
 <% if model.versions.any? %>
-  <ol reversed class="Changelog">
+  <ol reversed class="Changelog u-pullOut">
     <% model.versions.reverse.each_with_index do |version, i| %>
       <%
         if version.whodunnit.nil?

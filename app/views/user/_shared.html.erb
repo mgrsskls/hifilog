@@ -1,28 +1,30 @@
-<% if user.setups.any? %>
-  <% content_for :js do %>
-    <%= javascript_include_tag "accordion_tabs" %>
-  <% end %>
-  <% content_for :css do %>
-    <%= stylesheet_link_tag "accordion_tabs" %>
-  <% end %>
-  <accordion-tabs breakpoint="32rem">
-    <details>
-      <summary><%= t('filter.all') %></summary>
-      <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, categories_path: categories_path, products_path: products_path) %>
-    </details>
-    <% user.setups.each do |setup| %>
-      <details>
-        <summary><%= setup.name %></summary>
-        <%= render "shared/products", products: setup.products.sort_by{|c| c[:name].downcase}, empty_state: t('empty_state.setup_products') %>
-      </details>
+<div class="u-pullOut">
+  <% if user.setups.any? %>
+    <% content_for :js do %>
+      <%= javascript_include_tag "accordion_tabs" %>
     <% end %>
-    <% if @products_without_setup.any? %>
-      <details>
-        <summary>Other</summary>
-        <%= render "shared/products", products: @products_without_setup %>
-      </details>
+    <% content_for :css do %>
+      <%= stylesheet_link_tag "accordion_tabs" %>
     <% end %>
-  </accordion-tabs>
-<% else %>
-  <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, categories_path: categories_path, products_path: products_path) %>
-<% end %>
+    <accordion-tabs breakpoint="32rem">
+      <details>
+        <summary><%= t('filter.all') %></summary>
+        <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, categories_path: categories_path, products_path: products_path) %>
+      </details>
+      <% user.setups.each do |setup| %>
+        <details>
+          <summary><%= setup.name %></summary>
+          <%= render "shared/products", products: setup.products.sort_by{|c| c[:name].downcase}, empty_state: t('empty_state.setup_products') %>
+        </details>
+      <% end %>
+      <% if @products_without_setup.any? %>
+        <details>
+          <summary>Other</summary>
+          <%= render "shared/products", products: @products_without_setup %>
+        </details>
+      <% end %>
+    </accordion-tabs>
+  <% else %>
+    <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, categories_path: categories_path, products_path: products_path) %>
+  <% end %>
+</div>

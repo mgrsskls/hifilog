@@ -1,23 +1,38 @@
-.Profile {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 4rem;
-  align-items: start;
-}
-
-.Profile-products {
-  flex: 3;
-  min-inline-size: min(32rem, 100%);
-}
-
 .Profile-meta {
-  padding: clamp(1rem, 4vi, 2rem);
   background: var(--color-bg2);
-  flex: 1;
-  min-inline-size: min(16rem, 100%);
 }
 
 .Profile-meta h1 {
   margin-block-end: 1.5rem;
   font-size: 2rem;
+}
+
+@media (max-width: 48rem) {
+  .Profile-products {
+    padding-inline: var(--page-spacing);
+  }
+
+  .Profile-meta {
+    padding-block: 1rem;
+    padding-inline: calc(2 * var(--page-spacing));
+    margin-inline: calc(-1 * var(--page-spacing));
+  }
+}
+
+@media (min-width: 48.0625rem) {
+  .Profile {
+    display: flex;
+    align-items: start;
+    gap: 4rem;
+  }
+
+  .Profile-products {
+    flex: 1;
+  }
+
+  .Profile-meta {
+    background: var(--color-bg2);
+    flex: 0 0 16rem;
+    padding: 2rem;
+  }
 }

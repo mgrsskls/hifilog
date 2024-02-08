@@ -29,7 +29,7 @@
   text-decoration-thickness: var(--underline-width);
 }
 
-.Menu-list a[aria-current="true"] {
+.Menu-list a[aria-current="true"] span {
   color: #fff;
   text-decoration: underline;
   text-underline-offset: var(--underline-offset);
