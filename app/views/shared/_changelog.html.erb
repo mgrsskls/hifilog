@@ -12,7 +12,7 @@
           user_fallback = "hifilog.com"
         else
           if User.find_by(id: version.whodunnit).nil?
-            user_fallback = "<i>Unknown</i>"
+            user_fallback = "<i>Deleted</i>"
           else
             user = User.find(version.whodunnit)
           end
