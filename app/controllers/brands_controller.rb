@@ -88,7 +88,7 @@ class BrandsController < ApplicationController
                      .order(update_for_joined_tables(order))
                      .page(params[:page])
     else
-      @brands = Brand.all.includes(products: :sub_categories).order(order).page(params[:page])
+      @brands = Brand.all.order(order).page(params[:page])
     end
   end
 

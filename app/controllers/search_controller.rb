@@ -23,7 +23,6 @@ class SearchController < ApplicationController
       @brands = Brand.where('name ILIKE ?', query)
                      .limit(20)
                      .order('CHAR_LENGTH(name)')
-                     .includes([:products])
                      .group_by { |brand| brand.name.length }
                      .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(@query) } }
 

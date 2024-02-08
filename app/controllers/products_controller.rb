@@ -165,7 +165,7 @@ class ProductsController < ApplicationController
     @product = Product.friendly.find(params[:id])
     @brand = @product.brand
     @brands = Brand.all.order('LOWER(name)')
-    @categories = Category.ordered
+    @categories = Category.includes([:sub_categories]).ordered
 
     add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
     add_breadcrumb I18n.t('edit')
