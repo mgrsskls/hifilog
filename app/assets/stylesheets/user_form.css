@@ -60,6 +60,7 @@ h3:has(+ .UserForm-field) {
 
 .UserForm-hint {
   color: var(--color-secondary);
+  line-height: 1.2;
 }
 
 .UserForm-links {

@@ -139,8 +139,15 @@ class BrandsController < ApplicationController
 
   def update
     @brand = Brand.friendly.find(params[:id])
+    is_discontinued = @brand.discontinued
 
     if @brand.update(brand_params)
+      if is_discontinued == false && @brand.discontinued == true
+        @brand.products.each do |product|
+          product.update(discontinued: true)
+        end
+      end
+
       redirect_to brand_path(@brand)
     else
       render :edit, status: :unprocessable_entity
