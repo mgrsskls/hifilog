@@ -48,7 +48,7 @@ class UsersController < ApplicationController
     products_with_setup = @user.setups.includes([:products]).flat_map(&:products)
     @products_without_setup = (all_products - products_with_setup)
 
-    data = PaperTrail::Version.where(whodunnit: current_user.id).group('item_type', 'event').count
+    data = PaperTrail::Version.where(whodunnit: @user.id).group('item_type', 'event').count
 
     @products_created = get_data(data, 'Product', 'create')
     @products_edited = get_data(data, 'Product', 'update')
