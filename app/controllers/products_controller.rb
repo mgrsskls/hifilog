@@ -16,6 +16,8 @@ class ProductsController < ApplicationController
     end
 
     if params[:sort].present?
+      order = 'LOWER(name) ASC' if params[:sort] == 'name_asc'
+      order = 'LOWER(name) DESC' if params[:sort] == 'name_desc'
       if params[:sort] == 'release_date_asc'
         order = 'release_year ASC NULLS LAST, release_month ASC NULLS LAST, release_day ASC NULLS LAST, LOWER(name)'
       end
@@ -26,9 +28,8 @@ class ProductsController < ApplicationController
       order = 'created_at DESC, LOWER(name)' if params[:sort] == 'added_desc'
       order = 'updated_at ASC, LOWER(name)' if params[:sort] == 'updated_asc'
       order = 'updated_at DESC, LOWER(name)' if params[:sort] == 'updated_desc'
-      order = 'LOWER(name)' if params[:sort] == 'name'
     else
-      order = 'LOWER(name)'
+      order = 'LOWER(name) ASC'
     end
 
     if params[:letter].present? && params[:category].present? && params[:status].present?

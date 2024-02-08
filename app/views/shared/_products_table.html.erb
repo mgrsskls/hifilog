@@ -1,11 +1,14 @@
 <% mark ||= nil %>
+<% hide_brand ||= false %>
 
 <table-saw>
   <table>
     <thead>
       <tr>
         <th><%= t('name') %></th>
-        <th><%= t('headings.brand').html_safe %></th>
+        <% unless hide_brand %>
+          <th><%= t('headings.brand').html_safe %></th>
+        <% end %>
         <th><%= t('headings.category').html_safe %></th>
         <th colspan="2"><%= t('product.release_date').html_safe %></th>
       </tr>
@@ -14,7 +17,9 @@
       <% products.each do |product| %>
         <tr<% if user_has_product?(current_user, product) %> class="is-positive"<% end %>>
           <th scope="row"><%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %></th>
-          <td><%= product.brand.name %></td>
+          <% unless hide_brand %>
+            <td><%= product.brand.name %></td>
+          <% end %>
           <td><%= product.sub_categories.any? ? product.sub_categories.map { |sub_category| sub_category.name }.join(", ") : "-" %></td>
           <td><%= product.release_date.present? ? product.release_date : "-" %></td>
           <td>

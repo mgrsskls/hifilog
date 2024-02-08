@@ -95,12 +95,14 @@ class BrandsController < ApplicationController
   def show
     @brand = Brand.friendly.find(params[:id])
 
-    if params[:category]
-      sub_category = SubCategory.friendly.find(params[:category])
-      @products = sub_category.products.includes([:sub_categories]).where(brand_id: @brand.id)
-                              .order('LOWER(name)').page(params[:page])
+    if params[:category].present?
+      @category = SubCategory.friendly.find(params[:category])
+      @products = @category.products.includes([:sub_categories])
+                           .where(brand_id: @brand.id)
+                           .order('LOWER(name)')
+                           .page(params[:page])
       add_breadcrumb @brand.name, proc { :brand }
-      add_breadcrumb sub_category.name
+      add_breadcrumb @category.name
     else
       @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
       add_breadcrumb @brand.name

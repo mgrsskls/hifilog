@@ -1,107 +1,109 @@
 <% collection ||= nil %>
 <% render_abc ||= false %>
-<% render_categories ||= false %>
 <% render_status ||= false %>
+<% categories ||= [] %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
-  <div class="Filter">
-    <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>
-    <div class="Filter-form">
-      <div class="Filter-options">
-        <% if render_abc %>
-          <span class="Filter-option">Name</span>
-          <ol class="Pagination Pagination--abc">
-            <li class="Pagination-all">
-              <label>
-                <input type="radio" name="letter" value=""<%= ' checked aria-current="true"'.html_safe if params[:letter].blank? %>>
-                <%= t('filter.all') %>
-              </label>
-            </li>
-            <% abc.each do |letter| %>
-              <li class="Pagination-item">
+  <% if render_abc || render_status || categories.any? %>
+    <div class="Filter">
+      <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>
+      <div class="Filter-form">
+        <div class="Filter-options">
+          <% if render_abc %>
+            <span class="Filter-option">Name</span>
+            <ol class="Pagination Pagination--abc">
+              <li class="Pagination-all">
                 <label>
-                  <input type="radio" name="letter" value="<%= letter %>"<%= ' checked aria-current="true"'.html_safe if params[:letter] == letter %>>
-                  <%= letter %>
+                  <input type="radio" name="letter" value=""<%= ' checked aria-current="true"'.html_safe if params[:letter].blank? %>>
+                  <%= t('filter.all') %>
                 </label>
               </li>
-            <% end %>
-          </ol>
-        <% end %>
+              <% abc.each do |letter| %>
+                <li class="Pagination-item">
+                  <label>
+                    <input type="radio" name="letter" value="<%= letter %>"<%= ' checked aria-current="true"'.html_safe if params[:letter] == letter %>>
+                    <%= letter %>
+                  </label>
+                </li>
+              <% end %>
+            </ol>
+          <% end %>
 
-        <% if render_categories %>
-          <span class="Filter-option"><%= t('headings.categories') %></span>
-          <ol class="Pagination">
-            <li class="Pagination-all">
-              <label>
-                <input type="radio" name="category" value=""<%= ' checked aria-current="true"'.html_safe if params[:category].blank? %>>
-                <%= t('filter.all') %>
-              </label>
-            </li>
-            <% Category.all.each do |category| %>
-              <li class="Pagination-item">
+          <% if categories.any? %>
+            <span class="Filter-option"><%= t('headings.categories') %></span>
+            <ol class="Pagination Pagination--category">
+              <li class="Pagination-all">
                 <label>
-                  <input type="radio" name="category" value="<%= category.id %>"<%= ' checked aria-current="true"'.html_safe if params[:category].to_i == category.id %>>
-                  <%= category.name %>
+                  <input type="radio" name="category" value=""<%= ' checked aria-current="true"'.html_safe if params[:category].blank? %>>
+                  <%= t('filter.all') %>
                 </label>
               </li>
-            <% end %>
-          </ol>
-        <% end %>
+              <% categories.each do |category| %>
+                <li class="Pagination-item">
+                  <label>
+                    <input type="radio" name="category" value="<%= category.id %>"<%= ' checked aria-current="true"'.html_safe if params[:category].to_i == category.id %>>
+                    <%= category.name %>
+                  </label>
+                </li>
+              <% end %>
+            </ol>
+          <% end %>
 
-        <% if render_status %>
-          <span class="Filter-option"><%= t('status') %></span>
-          <ol class="Pagination">
-            <li class="Pagination-all">
-              <label>
-                <input type="radio" name="status" value=""<%= ' checked aria-current="true"'.html_safe if params[:status].blank? %>>
-                <%= t('filter.all') %>
-              </label>
-            </li>
-            <li class="Pagination-item">
-              <label>
-                <input type="radio" name="status" value="continued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "continued" %>>
-                <%= t('continued') %>
-              </label>
-            </li>
-            <li class="Pagination-item">
-              <label>
-                <input type="radio" name="status" value="discontinued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "discontinued" %>>
-                <%= t('discontinued') %>
-              </label>
-            </li>
-          </ol>
-        <% end %>
+          <% if render_status %>
+            <span class="Filter-option"><%= t('status') %></span>
+            <ol class="Pagination Pagination--status">
+              <li class="Pagination-all">
+                <label>
+                  <input type="radio" name="status" value=""<%= ' checked aria-current="true"'.html_safe if params[:status].blank? %>>
+                  <%= t('filter.all') %>
+                </label>
+              </li>
+              <li class="Pagination-item">
+                <label>
+                  <input type="radio" name="status" value="continued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "continued" %>>
+                  <%= t('continued') %>
+                </label>
+              </li>
+              <li class="Pagination-item">
+                <label>
+                  <input type="radio" name="status" value="discontinued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "discontinued" %>>
+                  <%= t('discontinued') %>
+                </label>
+              </li>
+            </ol>
+          <% end %>
 
-        <div class="Filter-actions u-flex u-gap-md u-spaceBetween">
-          <button class="Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
-          <div class="u-flex u-gap-md u-alignCenter">
-            <%= link_to "Reset all", reset_path, class: "Filter-reset" %>
-            <button class="Button Button--sm" type="submit">Filter</button>
+          <div class="Filter-actions u-flex u-gap-md u-spaceBetween u-alignEnd">
+            <button class="Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
+            <div class="u-flex u-gap-md u-alignCenter">
+              <%= link_to "Reset", reset_path, class: "Filter-reset" %>
+              <button class="Button Button--sm" type="submit">Filter</button>
+            </div>
           </div>
         </div>
       </div>
+
+      <% if params[:letter].present? or params[:category].present? %>
+        <ul class="Filter-status">
+          <% if params[:letter].present? %>
+            <li>
+              <b>Name:</b> <%= params[:letter].upcase %>
+            </li>
+          <% end %>
+
+          <% if params[:category].present? %>
+            <li>
+              <b>Category:</b> <%= @category.name %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="Filter-status">
+          <i>No filters set.</i>
+        </p>
+      <% end %>
     </div>
-
-    <% if params[:letter].present? or params[:category].present? %>
-      <ul class="Filter-status">
-        <% if params[:letter].present? %>
-          <li>
-            <b>Name:</b> <%= params[:letter].upcase %>
-          </li>
-        <% end %>
-
-        <% if params[:category].present? %>
-          <li>
-            <b>Category:</b> <%= @category.name %>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="Filter-status">
-        <i>No filters set.</i>
-      </p>
-    <% end %>
-  </div>
+  <% end %>
 
   <div class="FilterExtra">
     <% if collection %>

@@ -44,50 +44,27 @@
   </div>
 </div>
 
-<% if @brand.sub_categories.any? && @brand.sub_categories.size > 1 %>
-  <ol class="Pagination">
-    <li>
-      <a class="Pagination-all" href="<%= brand_path(id: @brand.friendly_id) %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
-    </li>
-    <% @brand.sub_categories.each do |sub_category| %>
-      <li>
-        <a href="<%= brand_path(brand_id: @brand.friendly_id, category: sub_category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == sub_category.friendly_id %>><%= sub_category[:name] %></a>
-      </li>
-    <% end %>
-  </ol>
-<% end %>
+<h2><%= t('headings.products') %></h2>
 
 <% if @products.any? %>
-  <p class="Filter-info"><small><%= page_entries_info @products %></small></p>
-  <table-saw>
-    <table>
-      <thead>
-        <tr>
-          <th><%= t('name') %></th>
-          <th><%= t('headings.category').html_safe %></th>
-          <th class="Table-symbols"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @products.each do |product| %>
-          <tr<% if user_has_product?(current_user, product) %> class="is-positive"<% end %>>
-            <th scope="row"><%= link_to product.name, product_path(id: product.friendly_id) %></th>
-            <td>
-              <% if product.sub_categories.any? %>
-                <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
-              <% else %>
-                -
-              <% end %>
-            </td>
-            <td>
-              <%= render "shared/symbols", product: product %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </table-saw>
-
+  <%= render "shared/filter", reset_path: brands_path, collection: @products, categories: @brand.sub_categories.any? && @brand.sub_categories.size > 1 ? @brand.sub_categories : [] do %>
+    <div class="FilterSort">
+      <div class="u-flex u-alignCenter u-gap-md">
+        <label for="sort">Sort by</label>
+        <select name="sort" id="sort">
+          <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
+          <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
+          <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
+          <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
+          <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
+          <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
+          <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
+          <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>>Updated: Oldest first</option>
+        </select>
+      </div>
+    </div>
+  <% end %>
+  <%= render "shared/products_table", products: @products, hide_brand: true %>
   <%= paginate @products %>
 <% else %>
   <%= render "shared/empty_state", message: t('empty_state.products') %>

@@ -3,7 +3,7 @@
   <%= link_to t('new_brand.link'), user_signed_in? ? new_brand_path : new_user_session_path(redirect: new_brand_path), class: "Button" %>
 </div>
 
-<%= render "shared/filter", reset_path: brands_path, collection: @brands, render_abc: true, render_categories: true, render_status: true do %>
+<%= render "shared/filter", reset_path: brands_path, collection: @brands, render_abc: true, categories: Category.all, render_status: true do %>
   <div class="u-flex u-alignCenter u-gap-md">
     <label for="sort">Sort by</label>
     <select name="sort" id="sort">
