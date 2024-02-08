@@ -15,6 +15,22 @@ class ProductsController < ApplicationController
       add_breadcrumb I18n.t('headings.products')
     end
 
+    if params[:sort].present?
+      if params[:sort] == 'release_date_asc'
+        order = 'release_year ASC NULLS LAST, release_month ASC NULLS LAST, release_day ASC NULLS LAST, LOWER(name)'
+      end
+      if params[:sort] == 'release_date_desc'
+        order = 'release_year DESC NULLS LAST, release_month DESC NULLS LAST, release_day DESC NULLS LAST, LOWER(name)'
+      end
+      order = 'created_at ASC, LOWER(name)' if params[:sort] == 'added_asc'
+      order = 'created_at DESC, LOWER(name)' if params[:sort] == 'added_desc'
+      order = 'updated_at ASC, LOWER(name)' if params[:sort] == 'updated_asc'
+      order = 'updated_at DESC, LOWER(name)' if params[:sort] == 'updated_desc'
+      order = 'LOWER(name)' if params[:sort] == 'name'
+    else
+      order = 'LOWER(name)'
+    end
+
     if params[:letter].present? && params[:category].present? && params[:status].present?
       @category = Category.find(params[:category])
       add_breadcrumb params[:letter].upcase, products_path(letter: params[:letter])
@@ -27,7 +43,7 @@ class ProductsController < ApplicationController
                            discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
                          )
                          .includes([:brand, :sub_categories])
-                         .order('LOWER(products.name)')
+                         .order(update_for_joined_tables(order))
                          .page(params[:page])
     elsif params[:letter].present? && params[:category].present?
       @category = Category.find(params[:category])
@@ -37,7 +53,7 @@ class ProductsController < ApplicationController
                          .where(sub_categories: { category_id: params[:category] })
                          .where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
                          .includes([:brand, :sub_categories])
-                         .order('LOWER(products.name)')
+                         .order(update_for_joined_tables(order))
                          .page(params[:page])
     elsif params[:letter].present? && params[:status].present?
       add_breadcrumb params[:letter].upcase, products_path(letter: params[:letter])
@@ -47,7 +63,7 @@ class ProductsController < ApplicationController
                            discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
                          )
                          .includes([:brand, :sub_categories])
-                         .order('LOWER(products.name)')
+                         .order(update_for_joined_tables(order))
                          .page(params[:page])
     elsif params[:category].present? && params[:status].present?
       @category = Category.find(params[:category])
@@ -59,13 +75,13 @@ class ProductsController < ApplicationController
                            discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
                          )
                          .includes([:brand, :sub_categories])
-                         .order('LOWER(products.name)')
+                         .order(update_for_joined_tables(order))
                          .page(params[:page])
     elsif params[:letter].present?
       add_breadcrumb params[:letter].upcase
       @products = Product.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
                          .includes([:brand, :sub_categories])
-                         .order('LOWER(name)')
+                         .order(order)
                          .page(params[:page])
     elsif params[:category].present?
       @category = Category.find(params[:category])
@@ -73,17 +89,20 @@ class ProductsController < ApplicationController
       @products = Product.joins(:sub_categories)
                          .where(sub_categories: { category_id: params[:category] })
                          .includes([:brand, :sub_categories])
-                         .order('LOWER(products.name)')
+                         .order(update_for_joined_tables(order))
                          .page(params[:page])
     elsif params[:status].present?
       add_breadcrumb I18n.t(params[:status])
       @products = Product.where(discontinued:
                            STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
                          .includes([:brand, :sub_categories])
-                         .order('LOWER(name)')
+                         .order(order)
                          .page(params[:page])
     else
-      @products = Product.all.includes([:brand, :sub_categories]).order('LOWER(name)').page(params[:page])
+      @products = Product.all
+                         .includes([:brand, :sub_categories])
+                         .order(order)
+                         .page(params[:page])
     end
   end
 
@@ -164,6 +183,16 @@ class ProductsController < ApplicationController
   end
 
   private
+
+  def update_for_joined_tables(order)
+    order
+      .sub('LOWER(name)', 'LOWER(products.name)')
+      .sub('release_year', 'products.release_year')
+      .sub('release_month', 'products.release_month')
+      .sub('release_day', 'products.release_day')
+      .sub('created_at', 'products.created_at')
+      .sub('updated_at', 'products.updated_at')
+  end
 
   def set_active_menu
     @active_menu = :products

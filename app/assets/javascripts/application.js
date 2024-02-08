@@ -6,6 +6,7 @@ import "./theme_toggle.js";
   const headerToggle = document.querySelector(".Header-toggle");
   const filterOpen = document.querySelector(".Filter-open");
   const filterClose = document.querySelector(".Filter-close");
+  const sort = document.querySelector("#sort");
 
   if (headerToggle) {
     headerToggle.addEventListener("click", onMenuToggle)
@@ -17,6 +18,10 @@ import "./theme_toggle.js";
 
   if (filterClose) {
     filterClose.addEventListener("click", onCloseFilter)
+  }
+
+  if (sort) {
+    sort.addEventListener("change", onSortChange);
   }
 
   function onMenuToggle({ currentTarget: button }) {
@@ -45,5 +50,9 @@ import "./theme_toggle.js";
         filterButton.setAttribute("aria-expanded", "false");
       }
     }
+  }
+
+  function onSortChange({ target }) {
+    target.closest("form").submit();
   }
 }

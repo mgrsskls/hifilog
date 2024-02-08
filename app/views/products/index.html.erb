@@ -3,7 +3,21 @@
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path : new_user_session_path(redirect: new_product_path), class: "Button" %>
 </div>
 
-<%= render "shared/filter", reset_path: products_path, collection: @products, render_abc: true, render_categories: true, render_status: true %>
+<%= render "shared/filter", reset_path: products_path, collection: @products, render_abc: true, render_categories: true, render_status: true do %>
+  <div class="u-flex u-alignCenter u-gap-md">
+    <label for="sort">Sort by</label>
+    <select name="sort" id="sort">
+      <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
+      <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
+      <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
+      <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
+      <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
+      <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
+      <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
+      <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>>Updated: Oldest first</option>
+    </select>
+  </div>
+<% end %>
 
 <% if @products.any? %>
   <%= render "shared/products_table", products: @products %>

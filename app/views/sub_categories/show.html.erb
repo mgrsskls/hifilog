@@ -2,7 +2,21 @@
   <h1><%= @sub_category.name %></h1>
 </div>
 
-<%= render "shared/filter", reset_path: category_sub_category_path(id: @sub_category.friendly_id, category_id: @sub_category.category.friendly_id), collection: @products, render_abc: true, render_categories: false, sub_categories: @sub_categories %>
+<%= render "shared/filter", reset_path: category_sub_category_path(id: @sub_category.friendly_id, category_id: @sub_category.category.friendly_id), collection: @products, render_abc: true, render_categories: false, sub_categories: @sub_categories do %>
+  <div class="u-flex u-alignCenter u-gap-md">
+    <label for="sort">Sort by</label>
+    <select name="sort" id="sort">
+      <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
+      <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
+      <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
+      <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
+      <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
+      <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
+      <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
+      <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>>Updated: Oldest first</option>
+    </select>
+  </div>
+<% end %>
 
 <% if @products.any? %>
   <table>
@@ -10,14 +24,16 @@
       <tr>
         <th><%= t('headings.brand').html_safe %></th>
         <th><%= t('name') %></th>
+        <th><%= t('product.release_date').html_safe %></th>
         <th class="Table-symbols"></th>
       </tr>
     </thead>
     <tbody>
-      <% @products.sort_by{|c| c[:name].downcase}.each do |product| %>
+      <% @products.each do |product| %>
         <tr<% if user_has_product?(current_user, product) %> class="is-positive"<% end %>>
           <td><%= product.brand.name %></td>
           <th scope="row"><%= link_to product.name, product_path(id: product.friendly_id) %></th>
+          <td><%= product.release_date.present? ? product.release_date : "-" %></td>
           <td class="Table-symbols">
             <%= render "shared/symbols", product: product %>
           </td>

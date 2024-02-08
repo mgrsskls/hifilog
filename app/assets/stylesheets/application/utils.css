@@ -8,6 +8,10 @@
   display: flex;
 }
 
+.u-flexWrap {
+  flex-wrap: wrap;
+}
+
 .u-flexGrow {
   flex-grow: 1;
 }

@@ -6,7 +6,8 @@
       <tr>
         <th><%= t('name') %></th>
         <th><%= t('headings.brand').html_safe %></th>
-        <th colspan="2"><%= t('headings.category').html_safe %></th>
+        <th><%= t('headings.category').html_safe %></th>
+        <th colspan="2"><%= t('product.release_date').html_safe %></th>
       </tr>
     </thead>
     <tbody>
@@ -15,6 +16,7 @@
           <th scope="row"><%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %></th>
           <td><%= product.brand.name %></td>
           <td><%= product.sub_categories.any? ? product.sub_categories.map { |sub_category| sub_category.name }.join(", ") : "-" %></td>
+          <td><%= product.release_date.present? ? product.release_date : "-" %></td>
           <td>
             <%= render "shared/symbols", product: product %>
           </td>

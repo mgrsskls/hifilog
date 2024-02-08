@@ -159,6 +159,7 @@ en:
     user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
   product:
+    release_date: Release date
     meta:
       owned_by: Owned by
   user:
