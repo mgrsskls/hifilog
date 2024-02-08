@@ -1,4 +1,4 @@
-<div class="UserForm UserForm--centered">
+<div class="Form Form--centered">
   <div class="Heading">
     <h1>Resend unlock instructions</h1>
   </div>
@@ -6,12 +6,12 @@
   <%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
     <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
-    <div class="UserForm-field">
-      <%= f.label :email, class: "UserForm-label" %>
+    <div class="Form-field">
+      <%= f.label :email, class: "Form-label" %>
       <%= f.email_field :email, autocomplete: "email" %>
     </div>
 
-    <div class="UserForm-submit">
+    <div class="Form-submit">
       <%= f.submit "Resend unlock instructions" %>
     </div>
   <% end %>

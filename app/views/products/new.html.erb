@@ -1,9 +1,9 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "user_form" %>
+  <%= stylesheet_link_tag "form" %>
   <%= stylesheet_link_tag "new_product" %>
 <% end %>
 
-<div class="UserForm UserForm--centered">
+<div class="Form Form--centered">
   <div class="Heading">
     <h1>
       <%= t('new_product.heading') %>
@@ -21,17 +21,17 @@
   <%= form_for @product, html: { class: "NewProduct", method: :post } do |f| %>
     <%= f.hidden_field :brand_id, value: @brand.id if @brand %>
 
-    <div class="UserForm-field">
-      <%= f.label :name, class: "UserForm-label" %>
+    <div class="Form-field">
+      <%= f.label :name, class: "Form-label" %>
       <%= f.text_field :name, required: true %>
     </div>
 
     <% unless @brand %>
-      <div class="UserForm-field">
-        <%= f.label :brand, class: "UserForm-label" %>
+      <div class="Form-field">
+        <%= f.label :brand, class: "Form-label" %>
         <input type="text" name="brand" id="brand-filter" autocomplete="off" value="">
       </div>
-      <div class="UserForm-field Options Options--brands">
+      <div class="Form-field Options Options--brands">
         <% @brands.each do |brand| %>
           <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
             <%= f.radio_button :brand_id, brand.id %>
@@ -41,8 +41,8 @@
       </div>
     <% end %>
 
-    <div class="UserForm-field">
-      <div class="UserForm-label"><%= t('headings.categories') %></div>
+    <div class="Form-field">
+      <div class="Form-label"><%= t('headings.categories') %></div>
       <div class="Options">
         <% @categories.each do |category| %>
           <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
@@ -58,8 +58,8 @@
       </div>
     </div>
 
-    <div class="UserForm-field">
-      <%= f.label :release_date, class: "UserForm-label" do %>
+    <div class="Form-field">
+      <%= f.label :release_date, class: "Form-label" do %>
         Release date <small><i>(optional)</i></small>
       <% end %>
       <div class="NewProduct-date">
@@ -80,9 +80,9 @@
       </datalist>
     </div>
 
-    <div class="UserForm-field UserForm-field--inline">
-      <span class="UserForm-label"><%= t('symbols.discontinued') %></span>
-      <div class="UserForm-options">
+    <div class="Form-field Form-field--inline">
+      <span class="Form-label"><%= t('symbols.discontinued') %></span>
+      <div class="Form-options">
         <%= f.radio_button :discontinued, 0, checked: (@product.discontinued.nil? || @product.discontinued == false) %>
         <%= f.label :discontinued, "No", value: 0 %>
         <%= f.radio_button :discontinued, 1, checked: (@product.discontinued == true) %>
@@ -90,7 +90,7 @@
       </div>
     </div>
 
-    <div class="UserForm-submit">
+    <div class="Form-submit">
       <%= f.button t('new_product.submit'), type: "submit", class: "Button" %>
     </div>
   <% end %>

@@ -31,3 +31,14 @@
   padding: .6em .75em;
   line-height: 1;
 }
+
+.TextButton {
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  font-size: 0.875em;
+  font-weight: 600;
+}
+
+.TextButton--negative {
+  color: var(--color-invalid-copy);
+}

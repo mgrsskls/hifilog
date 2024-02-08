@@ -1,8 +1,8 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "product" %>
+  <%= stylesheet_link_tag "entity" %>
 <% end %>
-<div class="Product">
-  <div class="Product-main">
+<div class="Entity">
+  <div class="Entity-main">
     <div class="Product-details">
       <div class="Heading">
         <div>
@@ -24,13 +24,13 @@
     </div>
   </div>
 
-  <div class="Product-sub u-pullOut">
+  <div class="Entity-sub u-pullOut">
     <dl>
       <dt><%= t('product.meta.owned_by') %></dt>
       <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>
     </dl>
 
-    <ul class="Product-metaLinks">
+    <ul class="Entity-metaLinks">
       <li>
         <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
       </li>

@@ -14,6 +14,7 @@ Rails.application.config.assets.precompile += %w(
   application.css
   changelog.css
   dashboard.css
+  entity.css
   home.css
   new_product.css
   product.css
@@ -21,7 +22,7 @@ Rails.application.config.assets.precompile += %w(
   search_results.css
   setups.css
   users.css
-  user_form.css
+  form.css
 
   application.js
   accordion_tabs.js

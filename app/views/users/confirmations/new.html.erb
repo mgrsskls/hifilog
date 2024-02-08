@@ -1,7 +1,7 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "user_form" %>
+  <%= stylesheet_link_tag "form" %>
 <% end %>
-<div class="UserForm UserForm--centered">
+<div class="Form Form--centered">
   <div class="Heading">
     <h1>Resend confirmation instructions</h1>
   </div>
@@ -9,12 +9,12 @@
   <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
     <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
-    <div class="UserForm-field">
-      <%= f.label :email, class: "UserForm-label" %>
+    <div class="Form-field">
+      <%= f.label :email, class: "Form-label" %>
       <%= f.email_field :email, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
     </div>
 
-    <div class="UserForm-submit">
+    <div class="Form-submit">
       <%= f.button "Resend confirmation instructions", type: "submit", class: "Button" %>
     </div>
   <% end %>

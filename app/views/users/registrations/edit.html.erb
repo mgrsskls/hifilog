@@ -1,5 +1,5 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "user_form" %>
+  <%= stylesheet_link_tag "form" %>
 <% end %>
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
@@ -8,12 +8,12 @@
 
   <h2><%= t("user.edit.update.heading") %></h2>
 
-  <div class="UserForm">
+  <div class="Form">
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
-      <div class="UserForm-field">
+      <div class="Form-field">
         <div>
           <%= f.radio_button :profile_visibility, :hidden, checked: current_user.hidden? %>
           <%= f.label :profile_visibility_hidden, t("user.edit.update.profile_visibility.hidden") %>
@@ -35,32 +35,32 @@
         <% end %>
       </div>
 
-      <div class="UserForm-field">
-        <%= f.label :user_name, class: "UserForm-label" do %>
+      <div class="Form-field">
+        <%= f.label :user_name, class: "Form-label" do %>
           <%= t('user.edit.update.fields.user_name') %>
         <% end %>
         <%= f.text_field :user_name, required: true %>
       </div>
 
-      <div class="UserForm-field">
-        <%= f.label :email, class: "UserForm-label" do %>
+      <div class="Form-field">
+        <%= f.label :email, class: "Form-label" do %>
           <%= t('user.edit.update.fields.email') %>
         <% end %>
         <%= f.email_field :email, required: true, autocomplete: "email" %>
       </div>
 
-      <div class="UserForm-field">
-        <%= f.label :password, class: "UserForm-label" do %>
+      <div class="Form-field">
+        <%= f.label :password, class: "Form-label" do %>
           <%= t('user.edit.update.password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
         <% end %>
         <%= f.password_field :password, autocomplete: "new-password" %>
         <% if @minimum_password_length %>
-          <small class="UserForm-hint"><%= t('user.edit.update.minimum_password_length', minimum: @minimum_password_length) %></small>
+          <small class="Form-hint"><%= t('user.edit.update.minimum_password_length', minimum: @minimum_password_length) %></small>
         <% end %>
       </div>
 
-      <div class="UserForm-field">
-        <%= f.label :password_confirmation, class: "UserForm-label" do %>
+      <div class="Form-field">
+        <%= f.label :password_confirmation, class: "Form-label" do %>
           <%= t('user.edit.update.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
         <% end %>
         <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
@@ -68,19 +68,19 @@
 
       <h3><%= t('user.edit.update.save.heading') %></h3>
 
-      <div class="UserForm-field">
-        <%= f.label :current_password, class: "UserForm-label" %>
+      <div class="Form-field">
+        <%= f.label :current_password, class: "Form-label" %>
         <%= f.password_field :current_password, required: true, autocomplete: "current-password" %>
-        <small class="UserForm-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
+        <small class="Form-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
       </div>
 
-      <div class="UserForm-submit">
+      <div class="Form-submit">
         <%= f.button t('user.edit.update.save.submit'), type: "submit", class: "Button" %>
       </div>
     <% end %>
   </div>
 
-  <div class="UserForm">
+  <div class="Form">
     <h2><%= t('user.edit.delete.heading') %></h2>
 
     <p><%= t('user.edit.delete.intro') %></p>

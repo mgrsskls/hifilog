@@ -119,12 +119,12 @@
                 <% else %>
                   <li>
                     <a href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
-                      <%= t('user_form.signup') %>
+                      <span><%= t('user_form.signup') %></span>
                     </a>
                   </li>
                   <li>
                     <a href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
-                      <%= t('user_form.login') %>
+                      <span><%= t('user_form.login') %></span>
                     </a>
                   </li>
                 <% end %>

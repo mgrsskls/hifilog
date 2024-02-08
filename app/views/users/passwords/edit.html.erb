@@ -1,7 +1,7 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "user_form" %>
+  <%= stylesheet_link_tag "form" %>
 <% end %>
-<div class="UserForm UserForm--centered">
+<div class="Form Form--centered">
   <div class="Heading">
     <h1>Change your password</h1>
   </div>
@@ -10,20 +10,20 @@
     <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
     <%= f.hidden_field :reset_password_token %>
 
-    <div class="UserForm-field">
-      <%= f.label :password, "New password", class: "UserForm-label" %>
+    <div class="Form-field">
+      <%= f.label :password, "New password", class: "Form-label" %>
       <%= f.password_field :password, autocomplete: "new-password" %>
       <% if @minimum_password_length %>
-        <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
+        <small class="Form-hint"><%= @minimum_password_length %> characters minimum</small>
       <% end %>
     </div>
 
-    <div class="UserForm-field">
-      <%= f.label :password_confirmation, "Confirm new password", class: "UserForm-label" %>
+    <div class="Form-field">
+      <%= f.label :password_confirmation, "Confirm new password", class: "Form-label" %>
       <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
     </div>
 
-    <div class="UserForm-submit">
+    <div class="Form-submit">
       <%= f.button "Change my password", class: "Button" %>
     </div>
   <% end %>

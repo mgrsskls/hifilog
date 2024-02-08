@@ -1,6 +1,6 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "home" %>
-  <%= stylesheet_link_tag "user_form" %>
+  <%= stylesheet_link_tag "form" %>
 <% end %>
 
 <div class="Home">
@@ -39,7 +39,7 @@
           <% end %>
           <%= f.password_field :password, required: true, autocomplete: "new-password" %>
           <% if @minimum_password_length %>
-            <small class="UserForm-hint"><%= @minimum_password_length %> characters minimum</small>
+            <small class="Form-hint"><%= @minimum_password_length %> characters minimum</small>
           <% end %>
         </div>
 

@@ -1,53 +1,5 @@
-.Product {
-  display: flex;
-  gap: 2rem;
-  padding-block-end: 3rem;
-  margin-block-end: 3rem;
-  border-block-end: var(--border-light);
-}
-
-.Product-sub {
-  background: var(--color-bg2);
-}
-
-@media (max-width: 48rem) {
-  .Product {
-    flex-direction: column;
-  }
-
-  .Product-sub {
-    padding: 1rem var(--page-spacing);
-  }
-}
-
-@media (min-width: 48.065rem) {
-  .Product {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .Product-main {
-    flex: 1;
-  }
-
-  .Product-sub {
-    flex: 0 0 14rem;
-    padding: 1rem;
-  }
-}
-
 .Product-bookmark {
   margin-block-start: 1rem;
-}
-
-.Product-sub dl {
-  margin-block: 0;
-}
-
-.Product-sub dt {
-  inline-size: 8.5em;
-  font-weight: 600;
-  color: var(--color-secondary);
 }
 
 .Product-actions {
@@ -61,55 +13,4 @@
 .Product-sub .Button {
   inline-size: 100%;
   text-align: center;
-}
-
-.Product-sub hr {
-  margin-block: 1.5rem;
-  border-top: var(--border-medium);
-  border-bottom: none;
-}
-
-.Product-sub dd + dt {
-  margin-block-start: 1em;
-}
-
-.Product-metaLinks {
-  --gap: .75em;
-
-  list-style: "";
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--gap);
-  font-size: .875em;
-  margin-block-start: 1.5rem;
-  padding-block-start: 1.5rem;
-  border-block-start: var(--border-medium);
-}
-
-.Product-metaLinks li {
-  display: flex;
-  gap: var(--gap);
-  align-items: center;
-}
-
-.Product-metaLinks li:not(:first-child)::before {
-  content: "";
-  display: block;
-  background: currentColor;
-  block-size: .1rem;
-  aspect-ratio: 1;
-  border-radius: 50%;
-}
-
-.TextButton {
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
-  font-size: 0.875em;
-  font-weight: 600;
-}
-
-.TextButton--negative {
-  color: var(--color-invalid-copy);
 }

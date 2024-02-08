@@ -1,7 +1,7 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "user_form" %>
+  <%= stylesheet_link_tag "form" %>
 <% end %>
-<div class="UserForm UserForm--centered">
+<div class="Form Form--centered">
   <div class="Heading">
     <h1><%= t('user_form.login') %></h1>
   </div>
@@ -12,24 +12,24 @@
     <% end %>
     <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
-    <div class="UserForm-field">
-      <%= f.label :email, class: "UserForm-label" %>
+    <div class="Form-field">
+      <%= f.label :email, class: "Form-label" %>
       <%= f.email_field :email, autocomplete: "email" %>
     </div>
 
-    <div class="UserForm-field">
-      <%= f.label :password, class: "UserForm-label" %>
+    <div class="Form-field">
+      <%= f.label :password, class: "Form-label" %>
       <%= f.password_field :password, autocomplete: "current-password" %>
     </div>
 
     <% if devise_mapping.rememberable? %>
-      <div class="UserForm-field">
+      <div class="Form-field">
         <%= f.check_box :remember_me %>
         <%= f.label :remember_me %>
       </div>
     <% end %>
 
-    <div class="UserForm-submit">
+    <div class="Form-submit">
       <button type="submit" class="Button"><%= t('user_form.login') %></button>
     </div>
   <% end %>

@@ -1,69 +1,73 @@
-.UserForm--centered {
+.Form--centered {
   inline-size: 100%;
   max-inline-size: 28rem;
   margin-inline: auto;
 }
 
-.UserForm + .UserForm {
+.Form h1 {
+  font-size: 2.2rem;
+}
+
+.Form + .Form {
   margin-block-start: 3rem;
 }
 
-.UserForm-field {
+.Form-field {
   max-inline-size: 28rem;
 }
 
-.UserForm-field + .UserForm-field {
+.Form-field + .Form-field {
   margin-block-start: 1rem;
 }
 
-.UserForm-field--inline {
+.Form-field--inline {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.UserForm-field--inline .UserForm-label {
+.Form-field--inline .Form-label {
   padding-block-end: 0;
 }
 
-.UserForm-field + h3 {
+.Form-field + h3 {
   margin-block-start: 2rem;
 }
 
-h3:has(+ .UserForm-field) {
+h3:has(+ .Form-field) {
   margin-block-end: 1rem;
 }
 
-.UserForm-submit {
+.Form-submit {
   margin-block-start: 2rem;
 }
 
-.UserForm-label {
+.Form-label {
   display: inline-block;
   padding-block-end: 0.25em;
 }
 
-.UserForm-label small {
+.Form-label small {
   color: var(--color-secondary);
   font-size: 0.875em;
 }
 
-.UserForm-options {
+.Form-options {
   display: flex;
   align-items: center;
   gap: 0.5em;
 }
 
-.UserForm-options label + input {
+.Form-options label + input {
   margin-inline-start: 1em;
 }
 
-.UserForm-hint {
+.Form-hint {
   color: var(--color-secondary);
   line-height: 1.2;
 }
 
-.UserForm-links {
+.Form-links {
   list-style: "";
   padding: 0;
   margin: 0;
