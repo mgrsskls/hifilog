@@ -71,7 +71,7 @@
   margin-block-end: 3rem;
 }
 
-.DashboardStats {
+.DashboardNumbers {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
   margin: 0;
@@ -79,7 +79,7 @@
   list-style: "";
 }
 
-.DashboardStat {
+.DashboardNumber {
   display: flex;
   justify-content: space-between;
   border: var(--border-medium);
@@ -88,30 +88,72 @@
   padding: 1rem;
 }
 
-.DashboardStat-heading {
+.DashboardNumber-heading {
   margin: 0;
   font-size: 1.2rem;
 }
 
-.DashboardStat-value {
+.DashboardNumber-value {
   font-size: 3rem;
   font-weight: bold;
   line-height: 1;
 }
 
 @media (max-width: 30rem) {
-  .DashboardStats {
+  .DashboardNumbers {
     gap: 1rem;
   }
 }
 
 @media (min-width: 30.0625rem) {
-  .DashboardStats {
+  .DashboardNumbers {
     gap: 2rem;
   }
 
-  .DashboardStat {
+  .DashboardNumber {
     flex-direction: column;
     aspect-ratio: 1.6;
+  }
+}
+
+.DashboardStats {
+  margin-block-start: 3rem;
+  container: stats / inline-size;
+}
+
+.DashboardStats tr {
+  background: transparent;
+}
+
+.DashboardStats tr:first-child th {
+  font-size: 1.2em;
+  letter-spacing: 0;
+  color: inherit;
+  text-transform: none;
+}
+
+.DashboardStats th,
+.DashboardStats td {
+  padding-inline-start: 0;
+}
+
+.DashboardStats td {
+  color: var(--color-accent);
+  font-weight: bold;
+}
+
+.DashboardStats span {
+  color: var(--color-secondary);
+  font-size: 0.875em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: calc(var(--line-height) * 1rem);
+  padding-inline-end: .5em;
+}
+
+@container stats (width < 36rem) {
+  .DashboardStats span {
+    display: block;
   }
 }

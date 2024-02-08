@@ -10,6 +10,13 @@ class UserController < ApplicationController
 
     @active_menu = :dashboard
     @active_dashboard_menu = :dashboard
+
+    data = PaperTrail::Version.where(whodunnit: current_user.id).group('item_type', 'event').count
+
+    @products_created = get_data(data, 'Product', 'create')
+    @products_edited = get_data(data, 'Product', 'update')
+    @brands_created = get_data(data, 'Brand', 'create')
+    @brands_edited = get_data(data, 'Brand', 'update')
   end
 
   def products
@@ -75,5 +82,11 @@ class UserController < ApplicationController
 
     bookmarks = current_user.bookmarks.includes(:product)
     @products = bookmarks.map(&:product)
+  end
+
+  private
+
+  def get_data(data, model, event)
+    data[[model, event]]
   end
 end
