@@ -41,8 +41,7 @@ class UserController < ApplicationController
 
     # if visited profile is not visible to logged out users and the current user is not logged in
     if @user.logged_in_only? && !user_signed_in?
-      uri = URI.parse(new_user_session_url(redirect: user_path(user_name: @user.user_name)))
-      redirect_to "#{uri.path}?#{uri.query}"
+      redirect_to new_user_session_url(redirect: URI.parse(user_path(user_name: @user.user_name)).path)
       return
     end
 
