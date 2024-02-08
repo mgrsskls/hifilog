@@ -116,6 +116,15 @@ class ProductsController < ApplicationController
       @setups = current_user.setups.includes(:products)
     end
 
+    @contributors = ActiveRecord::Base.connection.execute("
+      SELECT DISTINCT
+        users.id, users.user_name, users.profile_visibility,
+        versions.item_type, versions.item_id FROM users
+      JOIN versions
+      ON users.id = CAST(versions.whodunnit AS integer)
+      WHERE versions.item_id = #{@product.id} AND versions.item_type = 'Product'
+    ")
+
     add_breadcrumb @product.display_name
     @page_title = "#{@product.brand.name} #{@product.name}"
   end

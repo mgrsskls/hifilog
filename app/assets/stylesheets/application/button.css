@@ -36,7 +36,11 @@
   text-decoration: underline;
   text-underline-offset: var(--underline-offset);
   font-size: 0.875em;
+}
+
+.TextButton:not(.TextButton--negative) {
   font-weight: 600;
+  color: inherit;
 }
 
 .TextButton--negative {

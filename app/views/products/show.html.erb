@@ -79,14 +79,24 @@
       <dd><%= t('amount_users', count: @product.users.size) %></dd>
     </dl>
 
-    <ul class="Entity-metaLinks">
-      <li>
-        <%= link_to t('edit'), user_signed_in? ? edit_product_path(id: @product.friendly_id) : new_user_session_path(redirect: edit_product_path(id: @product.friendly_id)) %>
-      </li>
-      <li>
-        <%= link_to t('headings.changelog'), user_signed_in? ? product_changelog_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_changelog_path(product_id: @product.friendly_id)) %>
-      </li>
-    </ul>
+    <div class="Entity-meta">
+      <dl>
+        <dt><%= t('headings.contributors') %></dt>
+        <dd>
+          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"])) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
+          </ul>
+        </dd>
+      </dl>
+
+      <ul class="Entity-metaLinks">
+        <li>
+          <%= link_to t('edit'), user_signed_in? ? edit_product_path(id: @product.friendly_id) : new_user_session_path(redirect: edit_product_path(id: @product.friendly_id)) %>
+        </li>
+        <li>
+          <%= link_to t('headings.changelog'), user_signed_in? ? product_changelog_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_changelog_path(product_id: @product.friendly_id)) %>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 <% if request.referer != request.url %>

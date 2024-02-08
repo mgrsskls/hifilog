@@ -108,6 +108,15 @@ class BrandsController < ApplicationController
       add_breadcrumb @brand.name
     end
 
+    @contributors = ActiveRecord::Base.connection.execute("
+      SELECT DISTINCT
+        users.id, users.user_name, users.profile_visibility,
+        versions.item_type, versions.item_id FROM users
+      JOIN versions
+      ON users.id = CAST(versions.whodunnit AS integer)
+      WHERE versions.item_id = #{@brand.id} AND versions.item_type = 'Brand'
+    ")
+
     @page_title = @brand.name
   end
 

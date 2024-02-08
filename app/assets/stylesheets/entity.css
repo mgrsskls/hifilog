@@ -56,6 +56,12 @@
   }
 }
 
+.Entity-meta {
+  margin-block-start: 1.5rem;
+  padding-block-start: 1.5rem;
+  border-block-start: var(--border-medium);
+}
+
 .Entity-metaLinks {
   --gap: .75em;
 
@@ -67,8 +73,6 @@
   gap: var(--gap);
   font-size: .875em;
   margin-block-start: 1.5rem;
-  padding-block-start: 1.5rem;
-  border-block-start: var(--border-medium);
 }
 
 .Entity-metaLinks li {

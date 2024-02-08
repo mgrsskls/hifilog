@@ -30,17 +30,27 @@
       <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>
     </dl>
 
-    <ul class="Entity-metaLinks">
-      <li>
-        <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
-      </li>
-      <li>
-        <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
-      </li>
-      <li>
-        <%= link_to t('headings.changelog'), user_signed_in? ? brand_changelog_path(@brand) : new_user_session_path(redirect: brand_changelog_path(@brand)) %>
-      </li>
-    </ul>
+    <div class="Entity-meta">
+      <dl>
+        <dt><%= t('headings.contributors') %></dt>
+        <dd>
+          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"])) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
+          </ul>
+        </dd>
+      </dl>
+
+      <ul class="Entity-metaLinks">
+        <li>
+          <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
+        </li>
+        <li>
+          <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
+        </li>
+        <li>
+          <%= link_to t('headings.changelog'), user_signed_in? ? brand_changelog_path(@brand) : new_user_session_path(redirect: brand_changelog_path(@brand)) %>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 

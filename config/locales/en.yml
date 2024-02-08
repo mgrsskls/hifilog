@@ -142,6 +142,7 @@ en:
     category: Category
     categories: Categories
     changelog: Changelog
+    contributors: Contributors
     dashboard: Welcome back!
     dashboard_name: Welcome back, %{name}!
     product: Product
