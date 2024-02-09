@@ -20,21 +20,21 @@
 
     <div class="Form-field">
       <%= f.label :full_name, class: "Form-label" do %>
-        Full name <small><i>(optional)</i></small>
+        <%= t('brand.full_name') %> <small><i>(optional)</i></small>
       <% end %>
       <%= f.text_field :full_name %>
     </div>
 
     <div class="Form-field">
       <%= f.label :website, class: "Form-label" do %>
-        Website <small><i>(optional)</i></small>
+        <%= t('brand.website') %> <small><i>(optional)</i></small>
       <% end %>
       <%= f.url_field :website %>
     </div>
 
     <div class="Form-field">
       <%= f.label :year_founded, class: "Form-label" do %>
-        Founding year <small><i>(optional)</i></small>
+        <%= t('brand.year_founded') %> <small><i>(optional)</i></small>
       <% end %>
       <%= f.text_field :year_founded, inputmode: "number", list: "years" %>
       <datalist id="years">
@@ -46,7 +46,7 @@
 
     <div class="Form-field">
       <%= f.label :country_code, class: "Form-label" do %>
-        Country <small><i>(optional)</i></small>
+        <%= t('brand.country_code') %> <small><i>(optional)</i></small>
       <% end %>
       <%= f.country_select :country_code, include_blank: true %>
     </div>
