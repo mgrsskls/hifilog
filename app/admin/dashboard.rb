@@ -8,7 +8,7 @@ ActiveAdmin.register_page "Dashboard" do
       table_for PaperTrail::Version.order('id desc').limit(50) do
         column ("Item") { |v| v.item }
         column ("Type") { |v| v.item_type.underscore.humanize }
-        column ("User") { |v| v.whodunnit ? (v.link_to User.find(v.whodunnit).email, [:admin, User.find(v.whodunnit)]) : "hifilog.com" }
+        column ("User") { |v| v.whodunnit ? (link_to User.find(v.whodunnit).email, [:admin, User.find(v.whodunnit)]) : "hifilog.com" }
       end
     end
 
