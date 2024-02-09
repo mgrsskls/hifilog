@@ -24,6 +24,7 @@ class Brand < ApplicationRecord
       id
       name
       slug
+      slugs_id
       updated_at
       website
       versions_id

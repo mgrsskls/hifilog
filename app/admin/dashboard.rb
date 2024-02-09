@@ -6,9 +6,20 @@ ActiveAdmin.register_page "Dashboard" do
     section do
       h2 "Recently updated content"
       table_for PaperTrail::Version.order('id desc').limit(50) do
-        column ("Item") { |v| v.item }
-        column ("Type") { |v| v.item_type.underscore.humanize }
-        column ("User") { |v| v.whodunnit ? (link_to User.find(v.whodunnit).email, [:admin, User.find(v.whodunnit)]) : "hifilog.com" }
+        column :id
+        column :item_type
+        column ("Item") do |v|
+          if v.item_type == "Product"
+            Product.find(v.item_id)
+          elsif v.item_type == "Brand"
+            Brand.find(v.item_id)
+          end
+        end
+        column :event
+        column ("User") do |v|
+          v.whodunnit ? User.find(v.whodunnit) : "-"
+        end
+        column :created_at
       end
     end
 

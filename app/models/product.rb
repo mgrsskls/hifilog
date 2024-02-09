@@ -25,8 +25,12 @@ class Product < ApplicationRecord
       id
       name
       slug
+      slugs_id
       updated_at
       versions_id
+      release_day
+      release_month
+      release_year
     ]
   end
 
