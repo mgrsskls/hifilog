@@ -10,7 +10,7 @@ class StaticController < ApplicationController
   def about
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new)
 
-    @html = markdown.render(File.read(Rails.root.join('README.md')))
+    @html = markdown.render(File.read(Rails.root.join('about.md')))
     @page_title = 'About'
   end
 

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo Running pre-commit hook
+bundle exec rubocop
+bundle exec rails test
