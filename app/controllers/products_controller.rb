@@ -208,10 +208,12 @@ class ProductsController < ApplicationController
   def find_product
     @product = Product.friendly.find(params[:id])
 
+    return unless request.path != product_path(@product)
+
     # If an old id or a numeric id was used to find the record, then
     # the request path will not match the product_path, and we should do
     # a 301 redirect that uses the current friendly id.
-    redirect_to @product, status: :moved_permanently if request.path != product_path(@product)
+    redirect_to URI.parse(product_path(@product)).path, status: :moved_permanently
   end
 
   def update_for_joined_tables(order)
