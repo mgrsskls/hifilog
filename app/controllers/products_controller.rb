@@ -135,11 +135,12 @@ class ProductsController < ApplicationController
   def new
     @page_title = I18n.t('new_product.heading')
 
-    @product = Product.new
+    @sub_category = SubCategory.find(params[:sub_category]) if params[:sub_category].present?
+    @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.ordered.includes([:sub_categories])
 
-    if params[:brand_id]
+    if params[:brand_id].present?
       @product.brand_id = params[:brand_id]
       @brand = Brand.find(params[:brand_id])
 

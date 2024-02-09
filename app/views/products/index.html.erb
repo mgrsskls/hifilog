@@ -23,7 +23,7 @@
   <%= render "shared/products_table", products: @products %>
   <%= paginate @products %>
 <% else %>
-  <%= render "shared/empty_state", message: t('empty_state.products') %>
+  <%= render "shared/empty_state", message: t('empty_state.products_filter', path: new_product_path) %>
 <% end %>
 
 <%= render "shared/page_actions" %>

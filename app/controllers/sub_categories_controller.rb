@@ -35,9 +35,11 @@ class SubCategoriesController < ApplicationController
       @products = @sub_category.products.includes([:brand])
                                .where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
                                .order(order).page(params[:page])
+      @total_products_count = @sub_category.products.count
     else
       add_breadcrumb @sub_category.name
       @products = @sub_category.products.includes([:brand]).order(order).page(params[:page])
+      @total_products_count = @products.size
     end
 
     @page_title = @sub_category.name

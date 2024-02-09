@@ -25,7 +25,7 @@
   <%= render "shared/brands_table", brands: @brands %>
   <%= paginate @brands %>
 <% else %>
-  <%= render "shared/empty_state", message: t('empty_state.brands') %>
+  <%= render "shared/empty_state", message: t('empty_state.brands_filter', path: new_brand_path) %>
 <% end %>
 
 <%= render "shared/page_actions" %>

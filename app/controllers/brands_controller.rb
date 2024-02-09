@@ -104,10 +104,12 @@ class BrandsController < ApplicationController
                            .where(brand_id: @brand.id)
                            .order('LOWER(name)')
                            .page(params[:page])
+      @total_products_count = @brand.products.count
       add_breadcrumb @brand.name, proc { :brand }
       add_breadcrumb @category.name
     else
       @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
+      @total_products_count = @products.size
       add_breadcrumb @brand.name
     end
 
