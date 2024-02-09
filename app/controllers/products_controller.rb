@@ -1,10 +1,13 @@
 class ProductsController < ApplicationController
+  include ApplicationHelper
+
   STATUSES = %w[discontinued continued].freeze
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:create]
   before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
   before_action :set_active_menu
+  before_action :find_product, only: [:show]
 
   def index
     @page_title = I18n.t('headings.products')
@@ -174,6 +177,9 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
 
+    old_name = @product.name
+    @product.slug = nil if old_name != product_update_params[:name]
+
     if @product.update(product_update_params)
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
@@ -187,12 +193,25 @@ class ProductsController < ApplicationController
   def changelog
     @product = Product.friendly.find(params[:product_id])
     @brand = @product.brand
+    @versions = @product.versions.select do |v|
+      log = get_changelog(v.object_changes)
+      log.length > 1 || (log.length == 1 && log['slug'].nil?)
+    end
 
     add_breadcrumb @product.display_name, product_path(id: @product.id)
     add_breadcrumb I18n.t('headings.changelog')
   end
 
   private
+
+  def find_product
+    @product = Product.friendly.find(params[:id])
+
+    # If an old id or a numeric id was used to find the record, then
+    # the request path will not match the product_path, and we should do
+    # a 301 redirect that uses the current friendly id.
+    redirect_to @product, status: :moved_permanently if request.path != product_path(@product)
+  end
 
   def update_for_joined_tables(order)
     order

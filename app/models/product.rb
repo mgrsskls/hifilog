@@ -3,7 +3,7 @@ class Product < ApplicationRecord
 
   nilify_blanks
 
-  has_paper_trail skip: :updated_at
+  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug]
 
   extend FriendlyId
 
@@ -16,7 +16,7 @@ class Product < ApplicationRecord
   validates :name, uniqueness: { scope: :brand, case_sensitive: false }
   validates :sub_categories, presence: true
 
-  friendly_id :url_slug, use: :slugged
+  friendly_id :url_slug, use: [:slugged, :history]
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[

@@ -71,7 +71,7 @@ en:
     country_code: Country
     discontinued: Discontinued
   changelog:
-    change: "%{number}. update"
+    change: Edited
     by: by
     attribute: Attribute
     before: From

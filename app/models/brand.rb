@@ -12,7 +12,7 @@ class Brand < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
-  friendly_id :name, use: :slugged
+  friendly_id :name, use: [:slugged, :history]
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
