@@ -23,8 +23,8 @@
     <table>
       <thead>
         <tr>
-          <th><%= t('headings.brand').html_safe %></th>
           <th><%= t('name') %></th>
+          <th><%= t('headings.brand').html_safe %></th>
           <th><%= t('product.release_date').html_safe %></th>
           <th class="Table-symbols"></th>
         </tr>
@@ -32,8 +32,8 @@
       <tbody>
         <% @products.each do |product| %>
           <tr<% if user_has_product?(current_user, product) %> class="is-positive"<% end %>>
-            <td><%= product.brand.name %></td>
             <th scope="row"><%= link_to product.name, product_path(id: product.friendly_id) %></th>
+            <td><%= product.brand.name %></td>
             <td><%= product.release_date.present? ? product.release_date : "-" %></td>
             <td class="Table-symbols">
               <%= render "shared/symbols", product: product %>
