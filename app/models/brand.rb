@@ -8,7 +8,6 @@ class Brand < ApplicationRecord
   extend FriendlyId
 
   has_many :products, dependent: :destroy
-  has_and_belongs_to_many :categories
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
@@ -16,7 +15,6 @@ class Brand < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      categories_id
       country_code
       created_at
       discontinued

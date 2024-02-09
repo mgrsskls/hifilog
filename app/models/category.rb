@@ -2,7 +2,6 @@ class Category < ApplicationRecord
   extend FriendlyId
 
   has_many :sub_categories, dependent: :destroy
-  has_and_belongs_to_many :brands
 
   friendly_id :name, use: :slugged
 
@@ -13,7 +12,6 @@ class Category < ApplicationRecord
       name
       slug
       updated_at
-      brands_id
     ]
   end
 
