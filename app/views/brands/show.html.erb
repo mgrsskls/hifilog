@@ -18,8 +18,10 @@
         <% end %>
         <dt><%= t('country').html_safe %></dt>
         <dd><%= @brand.country_name.present? ? @brand.country_name : "-" %></dd>
-        <dt><%= t('website') %></dt>
+        <dt><%= t('brand.website') %></dt>
         <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website) : "-" %></dd>
+        <dt><%= t('brand.year_founded') %></dt>
+        <dd><%= @brand.year_founded.present? ? @brand.year_founded : "-" %></dd>
       </dl>
     </div>
   </div>

@@ -26,6 +26,7 @@ class Brand < ApplicationRecord
       updated_at
       website
       versions_id
+      year_founded
     ]
   end
 

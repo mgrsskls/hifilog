@@ -74,7 +74,7 @@
       </div>
       <small>If you for example only know the year, you can also omit day and month.</small>
       <datalist id="years">
-        <% (1900..2024).to_a.reverse.each do |year| %>
+        <% (1900..Date.today.year+1).to_a.reverse.each do |year| %>
           <option value="<%= year %>"></option>
         <% end %>
       </datalist>

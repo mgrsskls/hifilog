@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_07_054142) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_09_050137) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_trgm"
@@ -62,6 +62,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_054142) do
     t.string "website"
     t.string "country_code"
     t.string "full_name"
+    t.integer "year_founded"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_brands_name_prefix"
     t.index "lower((name)::text)", name: "index_brands_on_name", unique: true
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin

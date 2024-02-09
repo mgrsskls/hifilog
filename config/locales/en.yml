@@ -70,6 +70,7 @@ en:
     full_name: Full name
     country_code: Country
     discontinued: Discontinued
+    year_founded: Year founded
   changelog:
     change: Edited
     by: by

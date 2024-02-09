@@ -3,6 +3,8 @@ module PaperTrail
   class Version < ActiveRecord::Base
     # rubocop:enable Style/ClassAndModuleChildren, Rails/ApplicationRecord
 
+    include PaperTrail::VersionConcern
+
     def self.ransackable_attributes(_auth_object = nil)
       %w[
         created_at
