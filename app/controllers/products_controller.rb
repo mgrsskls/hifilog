@@ -153,10 +153,11 @@ class ProductsController < ApplicationController
 
   def create
     if product_params[:brand_id].present?
+      @brand = Brand.find(product_params[:brand_id]) if product_params[:brand_id]
       @product = Product.new(
         name: product_params[:name],
         brand_id: product_params[:brand_id],
-        discontinued: product_params[:discontinued],
+        discontinued: @brand.discontinued ? true : product_params[:discontinued],
         release_day: product_params[:release_day],
         release_month: product_params[:release_month],
         release_year: product_params[:release_year],
@@ -167,7 +168,6 @@ class ProductsController < ApplicationController
       else
         @brands = Brand.all.order('LOWER(name)')
         @categories = Category.ordered
-        @brand = Brand.find(@product.brand_id) if @product.brand_id
         render :new, status: :unprocessable_entity
       end
     else
@@ -177,7 +177,7 @@ class ProductsController < ApplicationController
         @product = Product.new(
           name: product_params[:name],
           brand_id: brand.id,
-          discontinued: product_params[:discontinued],
+          discontinued: brand.discontinued ? true : product_params[:discontinued],
           release_day: product_params[:release_day],
           release_month: product_params[:release_month],
           release_year: product_params[:release_year],

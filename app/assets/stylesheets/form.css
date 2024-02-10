@@ -4,6 +4,11 @@
   margin-inline: auto;
 }
 
+.Form small {
+  display: inline-block;
+  line-height: 1.4;
+}
+
 .Form h1 {
   font-size: 2.2rem;
 }
@@ -14,6 +19,10 @@
 
 .Form-field {
   max-inline-size: 28rem;
+}
+
+.Form-field p {
+  margin-block-start: 0;
 }
 
 .Form-field + .Form-field {
