@@ -77,3 +77,35 @@ h3:has(+ .Form-field) {
   font-size: 0.875em;
   margin-block-start: 2rem;
 }
+
+.Form legend {
+  float: left;
+  font-weight: 600;
+  margin-block-end: 1rem;
+}
+
+.Form legend + * {
+  clear: both;
+}
+
+.ProductFormAddBrand p {
+  color: var(--color-invalid-copy);
+  background: var(--color-invalid-bg);
+  padding: 1rem;
+}
+
+.ProductFormAddBrand p + p {
+  margin-block-end: 1.5rem;
+}
+
+.ProductFormAddBrand-fieldset {
+  padding: 1.5rem 2rem;
+  background: var(--color-bg2);
+  border-radius: var(--border-radius);
+  border: none;
+  margin-inline: 0;
+}
+
+.Form-field + .ProductFormAddBrand {
+  margin-block-start: 1.5rem;
+}

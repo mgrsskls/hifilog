@@ -2,6 +2,10 @@
   margin-block-end: 3rem;
 }
 
+.FlashMessages:has(+ .Form-field) {
+  margin-block-end: 1rem;
+}
+
 .FlashMessage {
   margin-block: 0;
   border-radius: var(--border-radius);

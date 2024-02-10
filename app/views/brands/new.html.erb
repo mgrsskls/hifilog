@@ -51,7 +51,7 @@
       <%= f.country_select :country_code, include_blank: true %>
     </div>
 
-    <div class="Form-field">
+    <div class="Form-field Form-field--inline">
       <span class="Form-label"><%= t('symbols.discontinued') %></span>
       <div class="Form-options">
         <%= f.radio_button :discontinued, 0, checked: @brand.discontinued.nil? || @brand.discontinued == false %>

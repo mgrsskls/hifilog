@@ -137,6 +137,7 @@ class ProductsController < ApplicationController
 
     @sub_category = SubCategory.find(params[:sub_category]) if params[:sub_category].present?
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
+    @product.build_brand
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.ordered.includes([:sub_categories])
 
@@ -151,15 +152,53 @@ class ProductsController < ApplicationController
   end
 
   def create
-    @product = Product.new(product_params)
-
-    if @product.save
-      redirect_to URI.parse(product_url(id: @product.friendly_id)).path
+    if product_params[:brand_id].present?
+      @product = Product.new(
+        name: product_params[:name],
+        brand_id: product_params[:brand_id],
+        discontinued: product_params[:discontinued],
+        release_day: product_params[:release_day],
+        release_month: product_params[:release_month],
+        release_year: product_params[:release_year],
+        sub_category_ids: product_params[:sub_category_ids],
+      )
+      if @product.save
+        redirect_to URI.parse(product_url(id: @product.friendly_id)).path
+      else
+        @brands = Brand.all.order('LOWER(name)')
+        @categories = Category.ordered
+        @brand = Brand.find(@product.brand_id) if @product.brand_id
+        render :new, status: :unprocessable_entity
+      end
     else
-      @brands = Brand.all.order('LOWER(name)')
-      @categories = Category.ordered
-      @brand = Brand.find(@product.brand_id) if @product.brand_id
-      render :new, status: :unprocessable_entity
+      brand = Brand.new(product_params[:brand_attributes])
+
+      if brand.save
+        @product = Product.new(
+          name: product_params[:name],
+          brand_id: brand.id,
+          discontinued: product_params[:discontinued],
+          release_day: product_params[:release_day],
+          release_month: product_params[:release_month],
+          release_year: product_params[:release_year],
+          sub_category_ids: product_params[:sub_category_ids],
+        )
+
+        if @product.save
+          redirect_to URI.parse(product_url(id: @product.friendly_id)).path
+        else
+          @brands = Brand.all.order('LOWER(name)')
+          @categories = Category.ordered
+          @brand = brand
+          render :new, status: :unprocessable_entity
+        end
+      else
+        @brands = Brand.all.order('LOWER(name)')
+        @categories = Category.ordered
+        @product = Product.new(product_params)
+        @brand = brand
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 
@@ -243,7 +282,8 @@ class ProductsController < ApplicationController
             :release_day,
             :release_month,
             :release_year,
-            sub_category_ids: []
+            sub_category_ids: [],
+            brand_attributes: [:name, :discontinued, :full_name, :website, :country_code, :year_founded]
           )
   end
 

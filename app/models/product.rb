@@ -12,6 +12,9 @@ class Product < ApplicationRecord
   has_and_belongs_to_many :users
   has_and_belongs_to_many :setups
 
+  accepts_nested_attributes_for :brand
+  validates_associated :brand
+
   validates :name, presence: true
   validates :name, uniqueness: { scope: :brand, case_sensitive: false }
   validates :sub_categories, presence: true

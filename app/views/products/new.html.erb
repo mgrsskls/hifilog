@@ -7,7 +7,7 @@
   <div class="Heading">
     <h1>
       <%= t('new_product.heading') %>
-      <% if @brand %>
+      <% if @brand && @brand.name %>
         <br>
         <span>to <%= @brand.name %></span>
       <% end %>
@@ -19,25 +19,85 @@
   <% end %>
 
   <%= form_for @product, html: { class: "NewProduct", method: :post } do |f| %>
-    <%= f.hidden_field :brand_id, value: @brand.id if @brand %>
+    <%= f.hidden_field :brand_id, value: @brand.id if @brand && @brand.id %>
 
     <div class="Form-field">
       <%= f.label :name, class: "Form-label" %>
       <%= f.text_field :name, required: true %>
     </div>
 
-    <% unless @brand %>
-      <div class="Form-field">
-        <%= f.label :brand, class: "Form-label" %>
-        <input type="text" name="brand" id="brand-filter" autocomplete="off" value="">
-      </div>
-      <div class="Form-field Options Options--brands">
-        <% @brands.each do |brand| %>
-          <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
-            <%= f.radio_button :brand_id, brand.id %>
-            <%= f.label :brand_id, brand.name, { value: brand.id } %>
-          </div>
+    <% unless @brand && @brand.id %>
+      <% unless @brand && @brand.errors.any? %>
+        <div class="Form-field">
+          <%= f.label :brand, class: "Form-label" %>
+          <input type="text" id="brand-filter" autocomplete="off" value="">
+        </div>
+        <div class="Form-field Options Options--brands">
+          <% @brands.each do |brand| %>
+            <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
+              <%= f.radio_button :brand_id, brand.id %>
+              <%= f.label :brand_id, brand.name, { value: brand.id } %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="Form-field ProductFormAddBrand" <%= "hidden" unless @brand && @brand.errors.any? %>>
+        <% unless @brand && @brand.errors.any? %>
+          <p><b>We could not find the brand you are looking for.</b><br>Please feel free to contribute it by adding it here:</p>
         <% end %>
+        <fieldset class="ProductFormAddBrand-fieldset">
+          <legend>Add new brand</legend>
+          <%= f.fields_for :brand do |brand_form| %>
+            <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } if @brand && @brand.errors.any? %>
+            <div class="Form-field">
+              <%= brand_form.label :name, class: "Form-label" %>
+              <%= brand_form.text_field :name %>
+            </div>
+
+            <div class="Form-field">
+              <%= brand_form.label :full_name, class: "Form-label" do %>
+                <%= t('brand.full_name') %> <small><i>(optional)</i></small>
+              <% end %>
+              <%= brand_form.text_field :full_name %>
+            </div>
+
+            <div class="Form-field">
+              <%= brand_form.label :website, class: "Form-label" do %>
+                <%= t('brand.website') %> <small><i>(optional)</i></small>
+              <% end %>
+              <%= brand_form.url_field :website %>
+            </div>
+
+            <div class="Form-field">
+              <%= brand_form.label :year_founded, class: "Form-label" do %>
+                <%= t('brand.year_founded') %> <small><i>(optional)</i></small>
+              <% end %>
+              <%= brand_form.text_field :year_founded, inputmode: "number", list: "brand-years" %>
+              <datalist id="brand-years">
+                <% (1900..Date.today.year).to_a.reverse.each do |year| %>
+                  <option value="<%= year %>"></option>
+                <% end %>
+              </datalist>
+            </div>
+
+            <div class="Form-field">
+              <%= brand_form.label :country_code, class: "Form-label" do %>
+                <%= t('brand.country_code') %> <small><i>(optional)</i></small>
+              <% end %>
+              <%= brand_form.country_select :country_code, include_blank: true %>
+            </div>
+
+            <div class="Form-field Form-field--inline">
+              <span class="Form-label"><%= t('symbols.discontinued') %></span>
+              <div class="Form-options">
+                <%= brand_form.radio_button :discontinued, 0, checked: @brand.nil? || (@brand.discontinued.nil? || @brand.discontinued) == false %>
+                <%= brand_form.label :discontinued, "No", value: 0 %>
+                <%= brand_form.radio_button :discontinued, 1, checked: !@brand.nil? && @brand.discontinued == true %>
+                <%= brand_form.label :discontinued, "Yes", value: 1  %>
+              </div>
+            </div>
+          <% end %>
+        </fieldset>
       </div>
     <% end %>
 
@@ -98,10 +158,11 @@
 <% unless @brand %>
   <%= javascript_tag nonce: true do %>
     {
-      const input = document.querySelector('[name="brand"]');
-      const brands = document.querySelectorAll("[data-brand]");
+      const input = document.querySelector("#brand-filter");
+      const brands = Array.from(document.querySelectorAll("[data-brand]"));
+      const addBrand = document.querySelector(".ProductFormAddBrand");
 
-      function render(input, brands) {
+      function render(input, brands, addBrandForm) {
         const value = input.value.trim().toLowerCase();
 
         if (value.length > 0) {
@@ -112,20 +173,26 @@
               brand.hidden = true;
             }
           });
+
+          if (addBrandForm) {
+            addBrandForm.hidden = !brands.map(brand => brand.hidden).every((v) => v === true);
+          }
         } else {
           brands.forEach(brand => {
             brand.hidden = true;
             brand.querySelector("input").checked = false;
           });
+
+          addBrandForm.hidden = true;
         }
       }
 
       if (input) {
         input.addEventListener("input", ({ target }) => {
-          render(target, brands);
+          render(target, brands, addBrand);
         });
 
-        render(input, brands);
+        render(input, brands, addBrand);
       }
     }
   <% end %>
