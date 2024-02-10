@@ -59,10 +59,10 @@
         <%= f.radio_button :discontinued, 1, checked: @brand.discontinued == true %>
         <%= f.label :discontinued, "Yes", value: 1  %>
       </div>
-      <p class="Form-hint">
-        <small><b>Note:</b> If a a brand is set to <i>Discontinued</i>, all its products are also set to <i>Discontinued</i>.</small>
-      </p>
     </div>
+    <p>
+      <small><b>Note:</b> If a a brand is set to <i>Discontinued</i>, all its products are also set to <i>Discontinued</i>.</small>
+    </p>
 
     <div class="Form-submit">
       <%= f.button t('new_brand.submit'), type: "submit", class: "Button" %>
