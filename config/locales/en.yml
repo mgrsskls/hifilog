@@ -125,7 +125,7 @@ en:
     deleted: The setup <b>%{name}</b> has been deleted.
   skip_to_main_content: Skip to main content
   status: Status
-  continued: Continued
+  continued: Existing / In Production
   discontinued: Discontinued
   users: Users
   user_form:
