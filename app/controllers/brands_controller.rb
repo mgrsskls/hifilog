@@ -187,10 +187,12 @@ class BrandsController < ApplicationController
   def find_brand
     @brand = Brand.friendly.find(params[:id])
 
+    return unless request.path != brand_path(@brand)
+
     # If an old id or a numeric id was used to find the record, then
     # the request path will not match the brand_path, and we should do
     # a 301 redirect that uses the current friendly id.
-    redirect_to @brand, status: :moved_permanently if request.path != brand_path(@brand)
+    redirect_to URI.parse(brand_path(id: @brand.friendly_id)).path, status: :moved_permanently
   end
 
   def update_for_joined_tables(order)
