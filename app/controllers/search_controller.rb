@@ -17,14 +17,16 @@ class SearchController < ApplicationController
                          .limit(20)
                          .order('CHAR_LENGTH(name)')
                          .includes([:brand, :sub_categories])
+                         .sort_by { |product| product.name.downcase.index(@query) }
                          .group_by { |product| product.name.length }
-                         .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(@query) } }
+                         .flat_map { |group| group[1] }
 
       @brands = Brand.where('name ILIKE ?', query)
                      .limit(20)
                      .order('CHAR_LENGTH(name)')
+                     .sort_by { |brand| brand.name.downcase.index(@query) }
                      .group_by { |brand| brand.name.length }
-                     .flat_map { |group| group[1].sort_by { |a| a.name.downcase.index(@query) } }
+                     .flat_map { |group| group[1] }
 
     end
   end
