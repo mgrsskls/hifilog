@@ -50,7 +50,7 @@ class ApplicationController < ActionController::Base
   end
 
   def not_found
-    if action_name == 'changelog'
+    if action_name == 'changelog' || controller_path.split('/').first == 'admin'
       render
     else
       render 'not_found', status: :not_found
