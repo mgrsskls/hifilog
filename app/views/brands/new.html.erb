@@ -51,6 +51,13 @@
       <%= f.country_select :country_code, include_blank: true %>
     </div>
 
+    <div class="Form-field">
+      <%= f.label :description, class: "Form-label" do %>
+        <%= t('brand.description') %> <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_area :description %>
+    </div>
+
     <div class="Form-field Form-field--inline">
       <span class="Form-label"><%= t('symbols.discontinued') %></span>
       <div class="Form-options">

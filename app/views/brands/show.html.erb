@@ -23,6 +23,12 @@
         <dt><%= t('brand.year_founded') %></dt>
         <dd><%= @brand.year_founded.present? ? @brand.year_founded : "-" %></dd>
       </dl>
+
+      <% if @brand.description.present? %>
+        <div class="Entity-description Rte">
+          <%= sanitize(simple_format(@brand.description.strip), tags: %w(b i strong em p br ul ol li table thead tbody tr th td)) %>
+        </div>
+      <% end %>
     </div>
   </div>
 

@@ -52,6 +52,13 @@
     </div>
 
     <div class="Form-field">
+      <%= f.label :description, class: "Form-label" do %>
+        <%= t('brand.description') %> <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_area :description %>
+    </div>
+
+    <div class="Form-field">
       <span class="Form-label"><%= t('symbols.discontinued') %></span>
       <div class="Form-options">
         <%= f.radio_button :discontinued, 0, checked: @brand.discontinued.nil? || @brand.discontinued == false %>

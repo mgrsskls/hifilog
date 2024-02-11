@@ -28,6 +28,11 @@
     all: unset;
   }
 
+  textarea {
+    form-sizing: normal;
+    min-block-size: 10em;
+  }
+
   select {
     background: none;
   }
@@ -211,11 +216,11 @@
     color: var(--color-copy);
   }
 
-  :is(a, input, button) {
+  :is(a, input, textarea, button) {
     border-radius: var(--border-radius);
   }
 
-  :is(a, input, button):focus-visible {
+  :is(a, input, textarea, button):focus-visible {
     outline: 0.125rem solid var(--color-focus-outline);
     outline-offset: 0.1875rem;
   }
@@ -257,12 +262,13 @@
     font-size: 1.4rem;
   }
 
-  input::placeholder {
+  :is(input, textarea)::placeholder {
     color: var(--color-input-placeholder);
   }
 
   select,
-  input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
+  input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+  textarea {
     display: block;
     font: inherit;
     color: var(--color-input);
@@ -277,7 +283,10 @@
   }
 
   .field_with_errors
-    input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
+    :is(
+      input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+      textarea
+     ) {
     border-color: var(--color-invalid-copy);
   }
 

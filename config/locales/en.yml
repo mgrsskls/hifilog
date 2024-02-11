@@ -71,6 +71,7 @@ en:
     country_code: Country
     discontinued: Discontinued
     year_founded: Year founded
+    description: Description
   changelog:
     change: Edited
     by: by

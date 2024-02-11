@@ -30,6 +30,10 @@
   margin-block-start: 1em;
 }
 
+.Entity-description {
+  margin-block-start: calc(var(--line-height) * 1em);
+}
+
 @media (max-width: 48rem) {
   .Entity {
     flex-direction: column;

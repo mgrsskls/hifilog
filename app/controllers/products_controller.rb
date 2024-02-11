@@ -283,7 +283,7 @@ class ProductsController < ApplicationController
             :release_month,
             :release_year,
             sub_category_ids: [],
-            brand_attributes: [:name, :discontinued, :full_name, :website, :country_code, :year_founded]
+            brand_attributes: [:name, :discontinued, :full_name, :website, :country_code, :year_founded, :description]
           )
   end
 

@@ -10,9 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_09_050137) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_11_032304) do
+  create_schema "heroku_ext"
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
+  enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
 
@@ -38,7 +41,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_050137) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_admin_users_on_email", unique: true
+    t.index "lower((email)::text)", name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
@@ -63,6 +66,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_050137) do
     t.string "country_code"
     t.string "full_name"
     t.integer "year_founded"
+    t.text "description"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_brands_name_prefix"
     t.index "lower((name)::text)", name: "index_brands_on_name", unique: true
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
