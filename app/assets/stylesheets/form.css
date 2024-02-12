@@ -21,10 +21,6 @@
   max-inline-size: 28rem;
 }
 
-.Form-field p {
-  margin-block-start: 0;
-}
-
 .Form-field + .Form-field {
   margin-block-start: 1rem;
 }
@@ -74,6 +70,7 @@ h3:has(+ .Form-field) {
 .Form-hint {
   color: var(--color-secondary);
   line-height: 1.2;
+  margin-block-start: .5em;
 }
 
 .Form-links {

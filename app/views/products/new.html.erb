@@ -139,7 +139,7 @@
         <%= select_month(@product.release_month, field_name: "release_month", prefix: "product", prompt: "Month") %>
         <%= f.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year" %>
       </div>
-      <p>
+      <p class="Form-hint">
         <small>
           If you for example only know the year, you can also omit day and month.
         </small>
@@ -167,7 +167,7 @@
           <%= f.label :discontinued, "Yes", value: 1  %>
         </div>
       </div>
-      <p>
+      <p class="Form-hint">
         <small>
           If you add this product to a brand that has been discontinued, the product will automatically be set to discontinued as well.
         </small>
