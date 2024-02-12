@@ -145,8 +145,11 @@ en:
     categories: Categories
     changelog: Changelog
     contributors: Contributors
+    contributions: Contributions
+    created: Created
     dashboard: Welcome back!
     dashboard_name: Welcome back, %{name}!
+    edited: Edited
     product: Product
     products: Products
     setups: Setups

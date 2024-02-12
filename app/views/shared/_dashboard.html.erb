@@ -28,6 +28,9 @@
         <small><%= user_setups_count(current_user) %></small>
       </li>
       <li class="Dashboard-separator">
+        <a class="Dashboard-link" href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>><%= t('headings.contributions') %></a>
+      </li>
+      <li>
         <a class="Dashboard-link" href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>><%= t('account') %></a>
       </li>
       <li>

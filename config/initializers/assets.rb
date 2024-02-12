@@ -13,6 +13,7 @@ Rails.application.config.assets.precompile += %w(
   accordion_tabs.css
   application.css
   changelog.css
+  contributions.css
   dashboard.css
   entity.css
   home.css

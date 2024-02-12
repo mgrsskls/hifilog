@@ -105,6 +105,11 @@
                         </a>
                       </li>
                       <li class="Menu-subList-separator">
+                        <a href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>>
+                          <span><%= t('headings.contributions') %></span>
+                        </a>
+                      </li>
+                      <li>
                         <a href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>>
                           <span><%= t('account') %></span>
                         </a>

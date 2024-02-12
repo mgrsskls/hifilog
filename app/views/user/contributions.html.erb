@@ -1,0 +1,57 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "contributions" %>
+<% end %>
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.contributions') %></h1>
+  </div>
+
+  <div class="Contributions u-flex u-flexWrap u-gap-lg">
+    <div class="Contributions-section Contributions-section--lvl1">
+      <h2><%= t('headings.products') %></h2>
+      <div class="u-flex u-flexWrap u-gap-lg">
+        <div class="Contributions-section Contributions-section--lvl2">
+          <h3><%= t('headings.created') %></h3>
+          <ol>
+            <% @products['create'].each do |product| %>
+              <li><%= link_to product.display_name, product %></li>
+            <% end %>
+          </ol>
+        </div>
+        <div class="Contributions-section Contributions-section--lvl2">
+          <h3><%= t('headings.edited') %></h3>
+          <% if @products['update'] %>
+            <ol>
+              <% @products['update'].each do |product| %>
+                <li><%= link_to product.display_name, product %></li>
+              <% end %>
+            </ol>
+          <% else %>
+            -
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="Contributions-section Contributions-section--lvl1">
+      <h2><%= t('headings.brands') %></h2>
+      <div class="u-flex u-flexWrap u-gap-lg">
+        <div class="Contributions-section Contributions-section--lvl2">
+          <h3><%= t('headings.created') %></h3>
+          <ol>
+            <% @brands['create'].each do |brand| %>
+              <li><%= link_to brand.name, brand %></li>
+            <% end %>
+          </ol>
+        </div>
+        <div class="Contributions-section Contributions-section--lvl2">
+          <h3><%= t('headings.edited') %></h3>
+          <ol>
+            <% @brands['update'].each do |brand| %>
+              <li><%= link_to brand.name, brand %></li>
+            <% end %>
+          </ol>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

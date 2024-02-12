@@ -21,7 +21,7 @@
         <p>
           <b>
           <% if version.event == "create" %>
-            <b>Created</b>
+            <b><%= t('headings.created') %></b>
           <% else %>
             <%= t('changelog.change') %>
           <% end %>

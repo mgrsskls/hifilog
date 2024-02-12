@@ -1,20 +1,15 @@
 class SetupsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_breadcrumb
 
   def index
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
     @page_title = I18n.t('headings.setups')
-    @active_dashboard_menu = :setups
     @setups = current_user.setups.order('LOWER(name)')
   end
 
   def show
-    @active_dashboard_menu = :setups
     @setup = current_user.setups.includes(products: [:sub_categories, :brand]).find(params[:id])
 
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
     add_breadcrumb @setup.name, dashboard_setup_path(@setup)
     @page_title = @setup.name
   end
@@ -45,6 +40,13 @@ class SetupsController < ApplicationController
   end
 
   private
+
+  def set_breadcrumb
+    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
+    add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
+    @active_dashboard_menu = :setups
+    @active_menu = :dashboard
+  end
 
   def setup_params
     params.require(:setup).permit(:name)
