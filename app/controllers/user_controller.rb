@@ -6,8 +6,11 @@ class UserController < ApplicationController
     @page_title = I18n.t('dashboard')
     @active_dashboard_menu = :dashboard
 
-    data = PaperTrail::Version.where(whodunnit: current_user.id).group('item_type', 'event').count
-
+    data = PaperTrail::Version.where(whodunnit: current_user.id)
+                              .select(:item_id)
+                              .distinct
+                              .group('item_type', 'event')
+                              .count
     @products_created = get_data(data, 'Product', 'create')
     @products_edited = get_data(data, 'Product', 'update')
     @brands_created = get_data(data, 'Brand', 'create')
