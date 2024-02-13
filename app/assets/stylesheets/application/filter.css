@@ -50,7 +50,7 @@
     line-height: 1;
   }
 
-  .Filter-options ol + .Filter-option {
+  .Filter-section + .Filter-section {
     margin-block-start: 2em;
   }
 
@@ -69,31 +69,9 @@
   }
 
   .Filter-status {
-    --gap: .5em;
-
     list-style: "";
     padding: 0;
     margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--gap);
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-
-  .Filter-status li {
-    display: flex;
-    gap: var(--gap);
-    align-items: center;
-  }
-
-  .Filter-status li:not(:first-child)::before {
-    content: "";
-    display: block;
-    background: currentColor;
-    block-size: .1.5rem;
-    aspect-ratio: 1;
-    border-radius: 50%;
   }
 }
 
@@ -110,6 +88,12 @@
     grid-template-columns: auto 1fr auto;
   }
 
+  .Filter-section:not([hidden]) {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+  }
+
   .Filter-option {
     line-height: 1.875rem;
     grid-column: 1;
@@ -119,7 +103,7 @@
     grid-column: 2 / -1;
   }
 
-  .Filter .Pagination:not(:has(~ .Pagination)) {
+  .Filter-section:not(:has(~ .Filter-section)) {
     grid-column-end: 3;
   }
 
@@ -139,10 +123,6 @@
   margin-block: 0;
 }
 
-.FilterSort {
-  white-space: nowrap;
-}
-
 @media (max-width: 32rem) {
   .FilterExtra {
     flex-direction: column;
@@ -156,6 +136,7 @@
   }
 
   .FilterSort {
+    white-space: nowrap;
     max-inline-size: 16rem;
   }
 }

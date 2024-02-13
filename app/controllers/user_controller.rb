@@ -54,6 +54,7 @@ class UserController < ApplicationController
 
     @products = Product.joins(:versions)
                        .distinct
+                       .includes([:brand])
                        .select('products.*, versions.event')
                        .where(versions: { item_type: 'Product', whodunnit: current_user.id })
                        .sort_by(&:display_name)

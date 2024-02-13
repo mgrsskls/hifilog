@@ -95,7 +95,7 @@ en:
   meta_description: HiFi Log is a community-driven platform with %{products_count} products by %{brands_count} brands in %{categories_count} categories.
   home:
     intro: >
-      <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a community-driven platform with more than <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in <a href="%{categories_path}">%{categories_count} categories</a>.
+      <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a community-driven platform with more than <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in %{categories_count} categories.
     recently_added: Recently added to HiFi&hairsp;Log
     sign_up: <a href="%{sign_up_path}">Sign up</a> to <b>add new products and brands</b> or edit existing ones, add products to <b>your own collection</b> and <b>keep track of all the products</b> you have ever owned.
   name: Name
@@ -165,7 +165,7 @@ en:
     sub_categories: <p><b>There are no subcategories yet.</b></p>
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
     setup_products: "<p><b>You have not added any products to this setup yet.</b></p><p>After adding a product to your collection, you can assign it to a setup on its product page.</p>"
-    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a>, via <a href="%{categories_path}">categories</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
+    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
   product:
     release_date: Release date

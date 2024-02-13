@@ -2,75 +2,62 @@
 <% render_abc ||= false %>
 <% render_status ||= false %>
 <% categories ||= [] %>
+<% sub_categories ||= [] %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
+  <%= hidden_field_tag :category, @category.id if @category %>
+  <%= hidden_field_tag :sub_category, @sub_category.id if @sub_category %>
   <% if render_abc || render_status || categories.any? %>
     <div class="Filter">
       <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>
       <div class="Filter-form">
         <div class="Filter-options">
           <% if render_abc %>
-            <span class="Filter-option">Name</span>
-            <ol class="Pagination Pagination--abc">
-              <li class="Pagination-all">
-                <label>
-                  <input type="radio" name="letter" value=""<%= ' checked aria-current="true"'.html_safe if params[:letter].blank? %>>
-                  <%= t('filter.all') %>
-                </label>
-              </li>
-              <% abc.each do |letter| %>
-                <li class="Pagination-item">
+            <div class="Filter-section">
+              <span class="Filter-option">Name</span>
+              <ol class="Pagination Pagination--abc">
+                <li class="Pagination-all">
                   <label>
-                    <input type="radio" name="letter" value="<%= letter %>"<%= ' checked aria-current="true"'.html_safe if params[:letter] == letter %>>
-                    <%= letter %>
+                    <input type="radio" name="letter" value=""<%= ' checked aria-current="true"'.html_safe if params[:letter].blank? %>>
+                    <%= t('filter.all') %>
                   </label>
                 </li>
-              <% end %>
-            </ol>
-          <% end %>
-
-          <% if categories.any? %>
-            <span class="Filter-option"><%= t('headings.categories') %></span>
-            <ol class="Pagination Pagination--category">
-              <li class="Pagination-all">
-                <label>
-                  <input type="radio" name="category" value=""<%= ' checked aria-current="true"'.html_safe if params[:category].blank? %>>
-                  <%= t('filter.all') %>
-                </label>
-              </li>
-              <% categories.each do |category| %>
-                <li class="Pagination-item">
-                  <label>
-                    <input type="radio" name="category" value="<%= category.id %>"<%= ' checked aria-current="true"'.html_safe if params[:category].to_i == category.id %>>
-                    <%= category.name %>
-                  </label>
-                </li>
-              <% end %>
-            </ol>
+                <% abc.each do |letter| %>
+                  <li class="Pagination-item">
+                    <label>
+                      <input type="radio" name="letter" value="<%= letter %>"<%= ' checked aria-current="true"'.html_safe if params[:letter] == letter %>>
+                      <%= letter %>
+                    </label>
+                  </li>
+                <% end %>
+              </ol>
+            </div>
           <% end %>
 
           <% if render_status %>
-            <span class="Filter-option"><%= t('status') %></span>
-            <ol class="Pagination Pagination--status">
-              <li class="Pagination-all">
-                <label>
-                  <input type="radio" name="status" value=""<%= ' checked aria-current="true"'.html_safe if params[:status].blank? %>>
-                  <%= t('filter.all') %>
-                </label>
-              </li>
-              <li class="Pagination-item">
-                <label>
-                  <input type="radio" name="status" value="continued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "continued" %>>
-                  <%= t('continued') %>
-                </label>
-              </li>
-              <li class="Pagination-item">
-                <label>
-                  <input type="radio" name="status" value="discontinued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "discontinued" %>>
-                  <%= t('discontinued') %>
-                </label>
-              </li>
-            </ol>
+            <div class="Filter-section">
+              <span class="Filter-option"><%= t('status') %></span>
+              <ol class="Pagination Pagination--status">
+                <li class="Pagination-all">
+                  <label>
+                    <input type="radio" name="status" value=""<%= ' checked aria-current="true"'.html_safe if params[:status].blank? %>>
+                    <%= t('filter.all') %>
+                  </label>
+                </li>
+                <li class="Pagination-item">
+                  <label>
+                    <input type="radio" name="status" value="continued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "continued" %>>
+                    <%= t('continued') %>
+                  </label>
+                </li>
+                <li class="Pagination-item">
+                  <label>
+                    <input type="radio" name="status" value="discontinued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "discontinued" %>>
+                    <%= t('discontinued') %>
+                  </label>
+                </li>
+              </ol>
+            </div>
           <% end %>
 
           <div class="Filter-actions u-flex u-gap-md u-spaceBetween u-alignEnd">
@@ -83,7 +70,7 @@
         </div>
       </div>
 
-      <% if params[:letter].present? or params[:category].present? %>
+      <% if params[:letter].present? or params[:category].present? or params[:sub_category].present? or params[:status].present? %>
         <ul class="Filter-status">
           <% if params[:letter].present? %>
             <li>
@@ -91,9 +78,15 @@
             </li>
           <% end %>
 
-          <% if params[:category].present? %>
+          <% if @category.present? %>
             <li>
-              <b>Category:</b> <%= @category.name %>
+              <b>Category:</b> <%= @category.name %><% if @sub_category.present? %> / <%= @sub_category.name %><% end %>
+            </li>
+          <% end %>
+
+          <% if params[:status].present? %>
+            <li>
+              <b><%= t('status') %>:</b> <%= t(params[:status]) %>
             </li>
           <% end %>
         </ul>
@@ -105,15 +98,15 @@
     </div>
   <% end %>
 
-  <div class="FilterExtra">
-    <% if collection %>
-      <p class="FilterInfo"><small><%= page_entries_info collection %></small></p>
-    <% end %>
+  <% if collection && collection.any? %>
+    <div class="FilterExtra">
+      <p class="FilterInfo"><%= page_entries_info collection %></p>
 
-    <% unless yield.blank? %>
-    <div class="FilterSort">
-      <%= yield %>
+      <% unless yield.blank? %>
+        <div class="FilterSort">
+          <%= yield %>
+        </div>
+      <% end %>
     </div>
-    <% end %>
-  </div>
+  <% end %>
 <% end %>

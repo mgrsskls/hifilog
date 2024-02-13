@@ -10,9 +10,9 @@ ActiveAdmin.register_page "Dashboard" do
         column :item_type
         column ("Item") do |v|
           if v.item_type == "Product"
-            Product.find(v.item_id)
+            Product.where(id: v.item_id).last || "deleted"
           elsif v.item_type == "Brand"
-            Brand.find(v.item_id)
+            Brand.where(id: v.item_id).last || "deleted"
           end
         end
         column :event

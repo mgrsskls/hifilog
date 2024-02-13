@@ -6,11 +6,11 @@ module ApplicationHelper
   end
 
   def active_menu_state(active_menu, page)
-    ' aria-current="true"'.html_safe if active_menu == page
+    " aria-current=#{active_menu == page ? 'true' : 'false'}"
   end
 
   def active_dashboard_menu_state(active_dashboard_menu, page)
-    ' aria-current="true"'.html_safe if active_dashboard_menu == page
+    " aria-current=#{active_dashboard_menu == page ? 'true' : 'false'}"
   end
 
   def abc

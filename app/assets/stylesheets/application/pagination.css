@@ -7,10 +7,6 @@
   list-style: none;
 }
 
-.Pagination-all {
-  font-weight: 600;
-}
-
 .Pagination :is(a, label, span) {
   border-radius: var(--border-radius);
   color: var(--color-copy);
@@ -20,6 +16,47 @@
   border: var(--border-light);
   text-decoration: none;
   text-align: center;
+}
+
+.Pagination--subCategory {
+  --gap: .75em;
+
+  list-style: "";
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0 var(--gap);
+}
+
+.Pagination--subCategory :is(a, label, span) {
+  border: none;
+  padding-inline: 0;
+}
+
+.Pagination--subCategory li {
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+}
+
+.Pagination--subCategory li:not(:last-child)::after {
+  content: "";
+  display: block;
+  background: currentColor;
+  block-size: .1rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.Pagination--subCategory label:is(:has(:checked), :hover) {
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+}
+
+.Pagination--subCategory label:has([aria-current="true"]) {
+  color: var(--color-accent);
+  font-weight: 600;
 }
 
 .Pagination :is(a, label) {
@@ -35,13 +72,14 @@
   outline-offset: 0.1875rem;
 }
 
-.Pagination :is(a[aria-current="true"], label:has(:checked)) {
+.Pagination:not(.Pagination--subCategory) :is(a[aria-current="true"], label:has(:checked)) {
   border-color: currentColor;
   color: var(--color-accent);
 }
 
-.Pagination label:has([aria-current="true"]) {
+.Pagination:not(.Pagination--subCategory) label:has([aria-current="true"]) {
   background: var(--color-blue-20);
+  font-weight: 600;
 }
 
 @media (prefers-color-scheme: dark) {

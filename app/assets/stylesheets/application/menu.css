@@ -1,3 +1,7 @@
+@import "./menu-account.css";
+@import "./menu-main.css";
+@import "./menu-mega.css";
+
 .Menu {
   display: flex;
   align-items: center;
@@ -8,50 +12,13 @@
   flex: 0 0 9.75rem;
 }
 
-.Menu-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.MenuList {
   display: flex;
-  gap: var(--gap);
-}
-
-.Menu-list :is(a, button) {
-  display: inline-flex;
-  color: var(--color-header-copy);
-  text-decoration: none;
-  border: none;
-}
-
-.Menu-list :is(a, button):is(:hover, :focus) span {
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
-  text-decoration-thickness: var(--underline-width);
-}
-
-.Menu-list a[aria-current="true"] span {
-  color: #fff;
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
-  text-decoration-thickness: var(--underline-width);
-}
-
-@media (max-width: 60em) {
-  .Menu-list {
-    gap: 1rem;
-  }
 }
 
 .Menu-subList {
   list-style: "";
   display: flex;
-  flex-direction: column;
-  gap: .5rem;
-}
-
-.Menu-subList li {
-  display: flex;
-  align-items: center;
 }
 
 .Menu-subList small {
@@ -62,76 +29,94 @@
   border-block-start: var(--border) var(--color-secondary-on-dark);
 }
 
+.MegaMenu {
+  flex: 1;
+}
+
+@layer {
+  .MegaMenu ul {
+    list-style: "";
+    padding: 0;
+  }
+
+  .MenuList,
+  .MenuList ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .MenuList :where(a, button) {
+    display: inline-flex;
+    color: var(--color-header-copy);
+    text-decoration: none;
+    border: none;
+  }
+
+  .MenuList :where(a, button):hover span {
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+    text-decoration-thickness: var(--underline-width);
+  }
+
+  .MenuList :is([aria-current="true"], [aria-current="page"]) span {
+    text-decoration: underline;
+    text-underline-offset: var(--underline-offset);
+    text-decoration-thickness: var(--underline-width);
+  }
+
+  .MenuList [aria-current="true"] span {
+    color: #fff;
+  }
+
+  .MenuList [aria-current="page"] span {
+    color: var(--color-accent);
+  }
+}
+
 @media (max-width: 50rem) {
-  .Menu-list {
+  .MenuList {
     flex-direction: column;
+    flex: 1;
+    gap: .5rem;
   }
 
   .Menu-subList {
-    padding-inline-start: 0;
+    padding-inline-start: 1rem;
     padding-block-start: 1rem;
   }
 
-  .Menu-subList :is(a, button) {
+  [aria-expanded="false"][aria-current="false"] + .Menu-subList {
+    display: none;
+  }
+
+  [aria-expanded="true"]:is([aria-current="true"], [aria-current="page"]) + .Menu-subList {
+    display: flex;
+  }
+
+  .Menu-subList > div {
+    flex: 1;
+  }
+
+  .Menu-subList :where(a, button) {
     display: flex;
     align-items: center;
     gap: 1rem;
   }
-
-  .Menu-subList-separator {
-    margin-block-start: .5rem;
-    padding-block-start: 1rem;
-  }
 }
 
 @media (min-width: 50.0625rem) {
-  .Menu-list > li {
-    display: flex;
-    align-items: center;
-    position: relative;
-    justify-content: space-between;
-    gap: 2rem;
-  }
-
-  .Menu-list > li {
-    block-size: var(--height);
-  }
-
   .Menu-subList {
-    display: none;
     position: absolute;
     inset-block-start: var(--height);
-    inset-inline-end: -1rem;
-    background: var(--color-header-bg);
-    padding: 0 1rem 1rem;
-    inline-size: 8rem;
+    background: var(--color-blue-90);
   }
 
-  .Menu-list li:has(.Menu-subList):is(:hover, :focus-within) .Menu-subList {
+  [aria-expanded="false"] + .Menu-subList {
+    display: none;
+  }
+
+  [aria-expanded="true"] + .Menu-subList {
     display: flex;
-  }
-
-  .Menu-subList li > * {
-    flex: 1;
-  }
-
-  .Menu-subList :is(a, button) {
-    display: flex;
-    inline-size: 100%;
-    justify-content: space-between;
-    align-items: center;
-    block-size: auto;
-  }
-
-  .Menu-subList :is(a, button):hover {
-    text-decoration: none;
-  }
-
-  .Menu-subList :is(a, button):hover span {
-    text-decoration: underline;
-  }
-
-  .Menu-subList-separator {
-    padding-block-start: .5rem;
   }
 }

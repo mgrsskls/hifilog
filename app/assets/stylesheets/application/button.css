@@ -8,6 +8,7 @@
   text-decoration: none;
   border: var(--border) transparent;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .Button:active {

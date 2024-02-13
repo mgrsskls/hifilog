@@ -33,7 +33,25 @@ class BrandsController < ApplicationController
       order = 'LOWER(name) ASC'
     end
 
-    if params[:letter].present? && params[:category].present? && params[:status].present?
+    if params[:letter].present? && params[:sub_category].present? && params[:status].present?
+      @sub_category = SubCategory.find(params[:sub_category])
+      @category = Category.find(@sub_category.category_id)
+      add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
+      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
+      add_breadcrumb @sub_category.name, brands_path(
+        letter: params[:letter],
+        category: params[:category],
+        sub_category: params[:sub_category],
+      )
+      add_breadcrumb I18n.t(params[:status])
+      @brands = Brand.joins(:products)
+                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
+                     .where({ sub_categories: { id: params[:sub_category] } })
+                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                     .includes(products: :sub_categories)
+                     .order(update_for_joined_tables(order))
+                     .page(params[:page])
+    elsif params[:letter].present? && params[:category].present? && params[:status].present?
       @category = Category.find(params[:category])
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
@@ -42,6 +60,18 @@ class BrandsController < ApplicationController
                      .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
                      .where({ sub_categories: { category_id: params[:category] } })
                      .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                     .includes(products: :sub_categories)
+                     .order(update_for_joined_tables(order))
+                     .page(params[:page])
+    elsif params[:letter].present? && params[:sub_category].present?
+      @sub_category = SubCategory.find(params[:sub_category])
+      @category = Category.find(@sub_category.category_id)
+      add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
+      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
+      add_breadcrumb @sub_category.name
+      @brands = Brand.joins(:products)
+                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
+                     .where({ sub_categories: { id: params[:sub_category] } })
                      .includes(products: :sub_categories)
                      .order(update_for_joined_tables(order))
                      .page(params[:page])
@@ -62,6 +92,18 @@ class BrandsController < ApplicationController
                      .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
                      .order(order)
                      .page(params[:page])
+    elsif params[:sub_category].present? && params[:status].present?
+      @sub_category = SubCategory.find(params[:sub_category])
+      @category = Category.find(@sub_category.category_id)
+      add_breadcrumb @category.name, brands_path(category: params[:category])
+      add_breadcrumb @sub_category.name, brands_path(category: params[:category], sub_category: params[:sub_category])
+      add_breadcrumb I18n.t(params[:status])
+      @brands = Brand.joins(:products)
+                     .where({ sub_categories: { category_id: params[:category] } })
+                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                     .includes(products: :sub_categories)
+                     .order(update_for_joined_tables(order))
+                     .page(params[:page])
     elsif params[:category].present? && params[:status].present?
       @category = Category.find(params[:category])
       add_breadcrumb @category.name, brands_path(category: params[:category])
@@ -76,6 +118,16 @@ class BrandsController < ApplicationController
       add_breadcrumb params[:letter].upcase
       @brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
                      .order(order)
+                     .page(params[:page])
+    elsif params[:sub_category].present?
+      @sub_category = SubCategory.find(params[:sub_category])
+      @category = Category.find(@sub_category.category_id)
+      add_breadcrumb @category.name, brands_path(category: params[:category])
+      add_breadcrumb @category.name
+      @brands = Brand.joins(:products)
+                     .where({ sub_categories: { id: params[:sub_category] } })
+                     .includes(products: :sub_categories)
+                     .order(update_for_joined_tables(order))
                      .page(params[:page])
     elsif params[:category].present?
       @category = Category.find(params[:category])

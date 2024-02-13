@@ -12,6 +12,7 @@ class Category < ApplicationRecord
       name
       slug
       updated_at
+      order
     ]
   end
 

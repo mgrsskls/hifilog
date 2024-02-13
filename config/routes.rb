@@ -23,13 +23,6 @@ Rails.application.routes.draw do
   resources :bookmarks, only: [:create, :destroy]
   resources :users, only: [:index, :show]
 
-  # /categories
-  # /categories/:category
-  resources :categories, only: [:index, :show] do
-    # /categories/:category/:sub_category
-    resources :sub_categories, path: '', only: [:show]
-  end
-
   # /brands
   # /brands/:brand
   # /brands/:brand/:category

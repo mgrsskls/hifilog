@@ -65,10 +65,10 @@
 <h2><%= t('headings.products') %></h2>
 
 <% if @total_products_count > 0 %>
-  <%= render "shared/filter", reset_path: brands_path, collection: @products, categories: @brand.sub_categories.any? && @brand.sub_categories.size > 1 ? @brand.sub_categories : [] do %>
+  <%= render "shared/filter", reset_path: brands_path, collection: @products do %>
     <div class="FilterSort">
       <div class="u-flex u-alignCenter u-gap-md">
-        <label for="sort">Sort by</label>
+        <label for="sort">Sort</label>
         <select name="sort" id="sort">
           <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
           <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>

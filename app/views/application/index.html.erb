@@ -9,7 +9,7 @@
       <%= render "shared/flash_messages", messages: flash %>
     <% else %>
       <h1 class="Home-intro">
-        <%= t('home.intro', products_count: rounddown(products_count), products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count, categories_path: categories_path).html_safe %>
+        <%= t('home.intro', products_count: rounddown(products_count), products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count).html_safe %>
       </h1>
       <p><%= t('home.sign_up', sign_up_path: new_user_registration_path).html_safe %></p>
     <% end %>

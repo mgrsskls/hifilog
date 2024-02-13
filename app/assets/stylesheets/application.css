@@ -78,7 +78,7 @@
     --color-blue-10: hsl(204, 18.5%, 97.5%);
     --color-blue-20: hsl(204, 18.5%, 92.5%);
     --color-blue-50: hsl(204, 18.5%, 50%);
-    --color-blue-90: hsl(208, 40%, 12.5%);
+    --color-blue-90: hsl(208, 40%, 15%);
     --color-blue-100: hsl(208, 40%, 10%);
 
     --color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
@@ -141,7 +141,7 @@
       --border-l: 60%;
 
       --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
-      --color-input-bg: hsl(208, 20%, 75%);
+      --color-input-bg: hsl(208, 20%, 95%);
       --color-input-placeholder: hsl(208, 20%, 40%);
       --color-invalid-bg: var(--color-invalid-dark);
       --color-invalid-copy: var(--color-invalid-light);
@@ -167,7 +167,7 @@
     --border-l: 60%;
 
     --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
-    --color-input-bg: hsl(208, 20%, 75%);
+    --color-input-bg: hsl(208, 20%, 95%);
     --color-input-placeholder: hsl(208, 20%, 40%);
     --color-invalid-bg: var(--color-invalid-dark);
     --color-invalid-copy: var(--color-invalid-light);
@@ -242,6 +242,14 @@
     font-weight: 600;
     line-height: 1.1;
     margin-block: 0;
+  }
+
+  h1 small {
+    font-size: 1rem;
+    font-weight: 500;
+    display: block;
+    color: var(--color-secondary);
+    margin-block-start: .25rem;
   }
 
   h1 span {
@@ -356,4 +364,11 @@
   border-block-start: var(--border-medium);
   margin-block-start: .5rem;
   padding-block-start: 1rem;
+}
+
+@media (hover: none) {
+  :is(a, button):hover,
+  :is(a, button):hover span {
+    text-decoration: none !important;
+  }
 }

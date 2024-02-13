@@ -86,6 +86,7 @@
     background: hsl(208, 40%, 15%);
     padding: calc(2 * var(--page-spacing)) var(--page-spacing);
     overscroll-behavior: contain;
+    overflow-y: auto;
   }
 
   .Header-menu {
@@ -101,6 +102,15 @@
 }
 
 @media (min-width: 50.0625rem) {
+  .Header:has(.MenuMain [aria-expanded="true"])::before {
+    content: "";
+    display: block;
+    position: fixed;
+    inset: var(--header-height) 0 0;
+    z-index: -1;
+    background: hsla(208, 40%, 10%, 75%);
+  }
+
   .Header-toggle,
   .Header-toggleLabel {
     display: none;

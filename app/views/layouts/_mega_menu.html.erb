@@ -1,0 +1,44 @@
+<% show_all_path = Rails.application.routes.url_helpers.public_send("#{entity}_path") %>
+
+<button class="MenuMain-link MenuMain-link--mega" aria-controls="menu-<%= entity %>" aria-expanded="false" <%= active_menu_state(@active_menu, symbol) %>>
+  <span><%= t("headings." + entity) %></span>
+</button>
+<div class="MenuMega Menu-subList" id="menu-<%= entity %>">
+  <div class="u-container">
+    <div class="MenuMega-header">
+      <div class="MenuMega-headerTitle">
+        <span class="h2"><%= t("headings." + entity) %></span>
+        <%= link_to "Show all", show_all_path %>
+      </div>
+      <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button" %>
+    </div>
+    <div class="MenuMega-container">
+      <% Category.all.order(:order).each_with_index do |category, i| %>
+        <% if i.even? %>
+          <div>
+        <% end %>
+            <div class="MenuMega-list">
+              <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: category.id }),
+                class: "MegaMenu MegaMenu-link MegaMenu-link--lvl1",
+                "aria-current": (request.path == show_all_path && params[:category].present? && params[:category].to_i == category.id && !params[:sub_category].present?) ? "page" : "false" do %>
+                <span><%= category.name %></span>
+              <% end %>
+              <ul>
+                <% category.sub_categories.order(:name).all.each do |sub_category| %>
+                  <li>
+                    <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: category.id, sub_category: sub_category.id }),
+                      class: "MegaMenu MegaMenu-link MegaMenu-link--lvl2",
+                      "aria-current": (request.path == show_all_path && params[:category].present? && params[:category].to_i == category.id && params[:sub_category].present? && params[:sub_category].to_i == sub_category.id) ? "page" : "false" do %>
+                      <span><%= sub_category.name %></span>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+        <% if i.odd? %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

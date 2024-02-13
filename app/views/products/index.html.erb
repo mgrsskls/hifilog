@@ -1,11 +1,18 @@
 <div class="Heading">
-  <h1><%= t('headings.products') %></h1>
+  <h1>
+    <%= t('headings.products') %>
+    <% if @sub_category %>
+      <small><%= @sub_category.name %></small>
+    <% elsif @category %>
+      <small><%= @category.name %></small>
+    <% end %>
+  </h1>
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path : new_user_session_path(redirect: new_product_path), class: "Button" %>
 </div>
 
-<%= render "shared/filter", reset_path: products_path, collection: @products, render_abc: true, categories: Category.all, render_status: true do %>
+<%= render "shared/filter", reset_path: products_path, collection: @products, render_abc: true, render_status: true do %>
   <div class="u-flex u-alignCenter u-gap-md">
-    <label for="sort">Sort by</label>
+    <label for="sort">Sort</label>
     <select name="sort" id="sort">
       <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
       <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>

@@ -13,7 +13,7 @@
     <%= yield :css %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <meta name="description" content="<%= t('meta_description', products_count: products_count, products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count, categories_path: categories_path) %>">
+    <meta name="description" content="<%= t('meta_description', products_count: products_count, products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count) %>">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=5">
     <link rel="icon" type="image/svg" href="/favicon.svg?v=5">
@@ -46,24 +46,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <div class="Header-menuContainer" id="menu">
+          <div class="Header-menuContainer is-dark" id="menu">
             <div class="Header-menu">
               <nav aria-label="Main" class="Menu">
-                <ul class="Menu-list Menu-list--main">
-                  <li>
-                    <a href="<%= products_path %>"<%= active_menu_state(@active_menu, :products) %>>
-                      <span><%= t('headings.products') %></span>
-                    </a>
+                <ul class="MenuMain MenuList">
+                  <li class="MenuMain-item">
+                    <%= render "layouts/mega_menu", entity: 'products', symbol: :products, cta_label: t('new_product.link'), cta_path: new_product_path %>
                   </li>
-                  <li>
-                    <a href="<%= brands_path %>"<%= active_menu_state(@active_menu, :brands) %>>
-                      <span><%= t('headings.brands').html_safe %></span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="<%= categories_path %>"<%= active_menu_state(@active_menu, :categories) %>>
-                      <span><%= t('headings.categories').html_safe %></span>
-                    </a>
+                  <li class="MenuMain-item">
+                    <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('new_brand.link'), cta_path: new_brand_path %>
                   </li>
                 </ul>
               </nav>
@@ -79,13 +70,13 @@
               </search>
             </div>
             <nav aria-label="Account">
-              <ul class="Menu-list">
+              <ul class="MenuAccount MenuList">
                 <% if user_signed_in? %>
-                  <li>
-                    <a href="<%= dashboard_root_path %>"<%= active_menu_state(@active_menu, :dashboard) %>>
+                  <li class="MenuMain-item MenuMain-item--account">
+                    <button class="MenuMain-link MenuMain-link--account" aria-controls="menu-account" aria-expanded="false" <%= active_menu_state(@active_menu, :dashboard) %>>
                       <span><%= t('dashboard') %></span>
-                    </a>
-                    <ul class="Menu-subList">
+                    </button>
+                    <ul class="MenuAccount-list Menu-subList" id="menu-account">
                       <li>
                         <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
                           <span><%= t('headings.products') %></span>
@@ -122,13 +113,13 @@
                     </ul>
                   </li>
                 <% else %>
-                  <li>
-                    <a href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
+                  <li class="MenuMain-item">
+                    <a class="MenuMain-link" href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
                       <span><%= t('user_form.signup') %></span>
                     </a>
                   </li>
-                  <li>
-                    <a href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
+                  <li class="MenuMain-item">
+                    <a class="MenuMain-link" href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
                       <span><%= t('user_form.login') %></span>
                     </a>
                   </li>
