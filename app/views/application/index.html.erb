@@ -38,9 +38,7 @@
             Password
           <% end %>
           <%= f.password_field :password, required: true, autocomplete: "new-password" %>
-          <% if @minimum_password_length %>
-            <small class="Form-hint"><%= @minimum_password_length %> characters minimum</small>
-          <% end %>
+          <small class="Form-hint">12 characters minimum</small>
         </div>
 
         <div>

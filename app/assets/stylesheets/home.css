@@ -1,4 +1,6 @@
 .Home-register {
+	--color-form-hint: var(--color-accent-on-dark);
+
 	background: var(--color-accent-on-light);
 	padding: 2rem;
 	color: #fff;
@@ -8,7 +10,7 @@
 
 .Home-register label {
 	display: block;
-	margin-block-end: 0.5em;
+	margin-block-end: 0.25em;
 	white-space: nowrap;
 }
 
