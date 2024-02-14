@@ -23,4 +23,8 @@ class Category < ApplicationRecord
   def self.ordered
     order('LOWER(name)')
   end
+
+  def ordered_sub_categories
+    sub_categories.order(&:name)
+  end
 end

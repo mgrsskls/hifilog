@@ -1,5 +1,6 @@
 class BrandsController < ApplicationController
   include ApplicationHelper
+  include BrandHelper
 
   STATUSES = %w[discontinued continued].freeze
 
@@ -261,14 +262,16 @@ class BrandsController < ApplicationController
       add_breadcrumb @brand.name
     end
 
-    @contributors = ActiveRecord::Base.connection.execute("
+    @contributors = User.find_by_sql(["
       SELECT DISTINCT
         users.id, users.user_name, users.profile_visibility,
         versions.item_type, versions.item_id FROM users
       JOIN versions
       ON users.id = CAST(versions.whodunnit AS integer)
-      WHERE versions.item_id = #{@brand.id} AND versions.item_type = 'Brand'
-    ")
+      WHERE versions.item_id = ? AND versions.item_type = 'Brand'
+    ", @brand.id])
+
+    @all_sub_categories ||= all_sub_categories(@brand).group_by(&:category).sort_by { |category| category[0].order }
 
     @page_title = @brand.name
   end
@@ -279,7 +282,7 @@ class BrandsController < ApplicationController
     add_breadcrumb I18n.t('new_brand.heading')
 
     @brand = Brand.new
-    @categories = Category.all.order(:order)
+    @categories = Category.includes([:sub_categories]).all.order(:order)
   end
 
   def create
@@ -288,7 +291,7 @@ class BrandsController < ApplicationController
     if @brand.save
       redirect_to brand_path(@brand)
     else
-      @categories = Category.all.order(:order)
+      @categories = Category.includes([:sub_categories]).all.order(:order)
       render :new, status: :unprocessable_entity
     end
   end
@@ -296,7 +299,7 @@ class BrandsController < ApplicationController
   def edit
     @brand = Brand.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @brand.name)
-    @categories = Category.all.order(:order)
+    @categories = Category.includes([:sub_categories]).all.order(:order)
 
     add_breadcrumb @brand.name, brand_path(@brand)
     add_breadcrumb I18n.t('edit')
@@ -318,7 +321,7 @@ class BrandsController < ApplicationController
 
       redirect_to brand_path(@brand)
     else
-      @categories = Category.all.order(:order)
+      @categories = Category.includes([:sub_categories]).all.order(:order)
       render :edit, status: :unprocessable_entity
     end
   end
