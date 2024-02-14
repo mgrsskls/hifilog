@@ -1,48 +1,48 @@
 .MenuAccount-list {
-  flex-direction: column;
-  gap: .5rem;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 .MenuAccount-list li {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 @media (max-width: 50rem) {
-  .Menu-subList-separator {
-    margin-block-start: .5rem;
-    padding-block-start: 1rem;
-  }
+	.Menu-subList-separator {
+		margin-block-start: 0.5rem;
+		padding-block-start: 1rem;
+	}
 }
 
 @media (min-width: 50.0625rem) {
-  .MenuMain-item:is(:hover, :focus-within) .Menu-subList--account {
-    display: flex;
-  }
+	.MenuMain-item:is(:hover, :focus-within) .Menu-subList--account {
+		display: flex;
+	}
 
-  .MenuAccount-list {
-    inset-inline-end: 0;
-    inline-size: 8rem;
-    padding: 1rem;
-  }
+	.MenuAccount-list {
+		inset-inline-end: 0;
+		inline-size: 8rem;
+		padding: 1rem;
+	}
 
-  .MenuAccount-item:is(:hover, :focus-within) {
-    background: var(--color-blue-90);
-  }
+	.MenuAccount-item:is(:hover, :focus-within) {
+		background: var(--color-blue-90);
+	}
 
-  .MenuAccount-list li > * {
-    flex: 1;
-  }
+	.MenuAccount-list li > * {
+		flex: 1;
+	}
 
-  .MenuAccount-list :where(a, button) {
-    display: flex;
-    inline-size: 100%;
-    justify-content: space-between;
-    align-items: center;
-    block-size: auto;
-  }
+	.MenuAccount-list :where(a, button) {
+		display: flex;
+		inline-size: 100%;
+		justify-content: space-between;
+		align-items: center;
+		block-size: auto;
+	}
 
-  .Menu-subList-separator {
-    padding-block-start: .5rem;
-  }
+	.Menu-subList-separator {
+		padding-block-start: 0.5rem;
+	}
 }

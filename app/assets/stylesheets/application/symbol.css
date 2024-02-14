@@ -1,86 +1,84 @@
 .Symbols {
-  display: flex;
-  gap: 0.5rem;
+	display: flex;
+	gap: 0.5rem;
 }
 
 .Symbols-item {
-  flex: 0 0 var(--size);
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
+	flex: 0 0 var(--size);
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
 }
 
 .Symbol {
-  --hue: 208;
-  --saturation: 20%;
-  --lightness: 40%;
-  --size: 1.75em;
-  --color: var(--hue), var(--saturation), var(--lightness);
+	--hue: 208;
+	--saturation: 20%;
+	--lightness: 40%;
+	--size: 1.75em;
+	--color: var(--hue), var(--saturation), var(--lightness);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  background: hsla(var(--color), 10%);
-  color: hsl(var(--color));
-  border: var(--border);
-  border-radius: var(--border-radius);
-  font-weight: 600;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	background: hsla(var(--color), 10%);
+	color: hsl(var(--color));
+	border: var(--border);
+	border-radius: var(--border-radius);
+	font-weight: 600;
 }
 
 html:has([name="theme"][value="light"]:checked) .Symbol {
-  --lightness: 40%;
+	--lightness: 40%;
 }
 
 @media (prefers-color-scheme: dark) {
-  .Symbol {
-    --lightness: 70%;
-  }
+	.Symbol {
+		--lightness: 70%;
+	}
 }
 
-:is(
-  html:has([name="theme"][value="dark"]:checked),
-  .is-dark
-) .Symbol:not(.Symbol--positive) {
-  --lightness: 70%;
+:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
+	.Symbol:not(.Symbol--positive) {
+	--lightness: 70%;
 }
 
 .Symbol:not(.Symbol--large) {
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  padding-block: 0.25em;
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	padding-block: 0.25em;
 }
 
 .Symbol:not(.Symbol--iconOnly) {
-  padding-inline: 0.5em;
+	padding-inline: 0.5em;
 }
 
 .Symbol--iconOnly {
-  line-height: 1;
-  inline-size: var(--size);
-  block-size: var(--size);
+	line-height: 1;
+	inline-size: var(--size);
+	block-size: var(--size);
 }
 
 .Symbol--positive {
-  --hue: 160;
-  --saturation: 50%;
+	--hue: 160;
+	--saturation: 50%;
 }
 
 .Symbol--large {
-  padding: var(--input-padding);
+	padding: var(--input-padding);
 }
 
 .SymbolsLegend {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1.5rem;
-  margin-block: 0;
-  font-size: 0.875em;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1.5rem;
+	margin-block: 0;
+	font-size: 0.875em;
 }
 
 .SymbolsLegend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75em;
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
 }

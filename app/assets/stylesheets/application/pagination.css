@@ -1,141 +1,141 @@
 .Pagination {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+	padding: 0;
+	margin: 0;
+	list-style: none;
 }
 
 .Pagination :is(a, label, span) {
-  border-radius: var(--border-radius);
-  color: var(--color-copy);
-  display: block;
-  padding-block: 0.15em;
-  padding-inline: 0.75em;
-  border: var(--border-light);
-  text-decoration: none;
-  text-align: center;
+	border-radius: var(--border-radius);
+	color: var(--color-copy);
+	display: block;
+	padding-block: 0.15em;
+	padding-inline: 0.75em;
+	border: var(--border-light);
+	text-decoration: none;
+	text-align: center;
 }
 
 .Pagination--subCategory {
-  --gap: .75em;
+	--gap: 0.75em;
 
-  list-style: "";
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0 var(--gap);
+	list-style: "";
+	padding: 0;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 0 var(--gap);
 }
 
 .Pagination--subCategory :is(a, label, span) {
-  border: none;
-  padding-inline: 0;
+	border: none;
+	padding-inline: 0;
 }
 
 .Pagination--subCategory li {
-  display: flex;
-  gap: var(--gap);
-  align-items: center;
+	display: flex;
+	gap: var(--gap);
+	align-items: center;
 }
 
 .Pagination--subCategory li:not(:last-child)::after {
-  content: "";
-  display: block;
-  background: currentColor;
-  block-size: .1rem;
-  aspect-ratio: 1;
-  border-radius: 50%;
+	content: "";
+	display: block;
+	background: currentColor;
+	block-size: 0.1rem;
+	aspect-ratio: 1;
+	border-radius: 50%;
 }
 
 .Pagination--subCategory label:is(:has(:checked), :hover) {
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
+	text-decoration: underline;
+	text-underline-offset: var(--underline-offset);
 }
 
 .Pagination--subCategory label:has([aria-current="true"]) {
-  color: var(--color-accent);
-  font-weight: 600;
+	color: var(--color-accent);
+	font-weight: 600;
 }
 
 .Pagination :is(a, label) {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .Pagination :is(a, label):hover {
-  border-color: currentColor;
+	border-color: currentColor;
 }
 
 .Pagination :is(a:focus-visible, label:has(:focus-visible)) {
-  outline: 0.125rem solid var(--color-focus-outline);
-  outline-offset: 0.1875rem;
+	outline: 0.125rem solid var(--color-focus-outline);
+	outline-offset: 0.1875rem;
 }
 
-.Pagination:not(.Pagination--subCategory) :is(a[aria-current="true"], label:has(:checked)) {
-  border-color: currentColor;
-  color: var(--color-accent);
+.Pagination:not(.Pagination--subCategory)
+	:is(a[aria-current="true"], label:has(:checked)) {
+	border-color: currentColor;
+	color: var(--color-accent);
 }
 
 .Pagination:not(.Pagination--subCategory) label:has([aria-current="true"]) {
-  background: var(--color-blue-20);
-  font-weight: 600;
+	background: var(--color-blue-20);
+	font-weight: 600;
 }
 
 @media (prefers-color-scheme: dark) {
-  .Pagination label:has([aria-current="true"]) {
-    background: rgba(200, 200, 255, .1);
-  }
+	.Pagination label:has([aria-current="true"]) {
+		background: rgba(200, 200, 255, 0.1);
+	}
 }
 
-:is(
-  html:has([name="theme"][value="dark"]:checked),
-  .is-dark
-) .Pagination label:has([aria-current="true"]) {
-  background: rgba(200, 200, 255, .1);
+:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
+	.Pagination
+	label:has([aria-current="true"]) {
+	background: rgba(200, 200, 255, 0.1);
 }
 
 .Pagination--abc :not(.Pagination-all) :is(a, label):not(.Pagination-all) {
-  inline-size: 2em;
-  text-transform: uppercase;
-  padding-inline: 0;
+	inline-size: 2em;
+	text-transform: uppercase;
+	padding-inline: 0;
 }
 
 .Pagination [type="radio"] {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0.01;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0.01;
 }
 
 .Pagination--pages span {
-  visibility: hidden;
+	visibility: hidden;
 }
 
 @media (max-width: 32em) {
-  :is(table, table-saw) + .Pagination {
-    margin-block-start: 2rem;
-  }
+	:is(table, table-saw) + .Pagination {
+		margin-block-start: 2rem;
+	}
 
-  .Pagination--pages li:not(.Pagination--pages-prev, .Pagination--pages-next) {
-    display: none;
-  }
+	.Pagination--pages li:not(.Pagination--pages-prev, .Pagination--pages-next) {
+		display: none;
+	}
 
-  .Pagination--pages-next {
-    margin-inline-start: auto;
-  }
+	.Pagination--pages-next {
+		margin-inline-start: auto;
+	}
 }
 
 @media (min-width: 32.0625em) {
-  :is(table, table-saw) + .Pagination {
-    margin-block-start: 3rem;
-  }
+	:is(table, table-saw) + .Pagination {
+		margin-block-start: 3rem;
+	}
 
-  .Pagination--pages-prev {
-    margin-inline-end: auto;
-  }
+	.Pagination--pages-prev {
+		margin-inline-end: auto;
+	}
 
-  .Pagination--pages-next {
-    margin-inline-start: auto;
-  }
+	.Pagination--pages-next {
+		margin-inline-start: auto;
+	}
 }

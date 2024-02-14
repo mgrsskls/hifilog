@@ -1,154 +1,158 @@
 .Home-register {
-  background: var(--color-accent-on-light);
-  padding: 2rem;
-  color: #fff;
-  padding-inline: 2rem;
-  padding-block: clamp(1rem, 8vi, 4rem);
+	background: var(--color-accent-on-light);
+	padding: 2rem;
+	color: #fff;
+	padding-inline: 2rem;
+	padding-block: clamp(1rem, 8vi, 4rem);
 }
 
 .Home-register label {
-  display: block;
-  margin-block-end: .5em;
-  white-space: nowrap;
+	display: block;
+	margin-block-end: 0.5em;
+	white-space: nowrap;
 }
 
 .Home-register form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
 }
 
 .Home-register h2 {
-  margin-block: 0 2rem;
-  color: inherit;
+	margin-block: 0 2rem;
+	color: inherit;
 }
 
 .Home-register label small {
-  opacity: .8;
+	opacity: 0.8;
 }
 
 .Home-register input {
-  background: var(--color-blue-10);
+	background: var(--color-blue-10);
 }
 
 .Home-submit {
-  margin-block-start: 1rem;
+	margin-block-start: 1rem;
 }
 
 .Home-content {
-  padding-block: clamp(1rem, 5vi, 5rem);
-  grid-area: copy;
-  font-size: 1.2rem;
+	padding-block: clamp(1rem, 5vi, 5rem);
+	grid-area: copy;
+	font-size: 1.2rem;
 }
 
 .Home-content b {
-  color: var(--color-highlight);
+	color: var(--color-highlight);
 }
 
 .Home-content .AppName {
-  color: var(--color-copy);
-  font-weight: bold;
+	color: var(--color-copy);
+	font-weight: bold;
 }
 
 .Home-content .AppName span {
-  color: var(--color-accent);
-  font-weight: inherit;
+	color: var(--color-accent);
+	font-weight: inherit;
 }
 
 .Home-intro {
-  margin-block: 0;
-  font-size: 1.5em;
-  line-height: 1.4;
-  font-weight: normal;
+	margin-block: 0;
+	font-size: 1.5em;
+	line-height: 1.4;
+	font-weight: normal;
 }
 
 .Home-content a {
-  font-weight: 700;
-  white-space: nowrap;
+	font-weight: 700;
+	white-space: nowrap;
 }
 
 .Home-content p {
-  margin-block: 2em 0;
+	margin-block: 2em 0;
 }
 
 .Home-picture {
-  background-image: linear-gradient(45deg, var(--color-blue-100), var(--color-accent-on-light));
-  display: block;
+	background-image: linear-gradient(
+		45deg,
+		var(--color-blue-100),
+		var(--color-accent-on-light)
+	);
+	display: block;
 }
 
 .Home-picture img {
-  display: block;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-  mix-blend-mode: screen;
+	display: block;
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+	mix-blend-mode: screen;
 }
 
 @media (max-width: 48em) {
-  .Home-content {
-    padding-inline: 2rem;
-  }
+	.Home-content {
+		padding-inline: 2rem;
+	}
 }
 
 @media (max-width: 62em) {
-  .Home-picture {
-    aspect-ratio: 2;
-  }
+	.Home-picture {
+		aspect-ratio: 2;
+	}
 }
 
 @media (min-width: 48.0625em) {
-  .Home {
-    display: grid;
-    grid-template-columns: repeat(24, 1fr);
-    grid-template-rows: auto auto;
-  }
+	.Home {
+		display: grid;
+		grid-template-columns: repeat(24, 1fr);
+		grid-template-rows: auto auto;
+	}
 
-  .Home-content {
-    grid-column: 2 / 12;
-    grid-row: 1;
-  }
+	.Home-content {
+		grid-column: 2 / 12;
+		grid-row: 1;
+	}
 
-  .Home-register {
-    grid-column: 13 / -1;
-    grid-row: 1;
-  }
+	.Home-register {
+		grid-column: 13 / -1;
+		grid-row: 1;
+	}
 
-  .Home-picture {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
+	.Home-picture {
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
 }
 
 @media (min-width: 62.0625em) {
-  main:has(.Home) {
-    background: var(--color-bg2);
-  }
+	main:has(.Home) {
+		background: var(--color-bg2);
+	}
 
-  .Home {
-    position: relative;
-    max-inline-size: 95rem;
-    margin-inline: auto;
-    background: var(--color-bg);
-  }
+	.Home {
+		position: relative;
+		max-inline-size: 95rem;
+		margin-inline: auto;
+		background: var(--color-bg);
+	}
 
-  .Home-content {
-    grid-column: 3 / 11;
-    grid-row: 1;
-  }
+	.Home-content {
+		grid-column: 3 / 11;
+		grid-row: 1;
+	}
 
-  .Home-register {
-    grid-column: 1 / 13;
-    grid-row: 2;
-    display: grid;
-    grid-template-columns: subgrid;
-  }
+	.Home-register {
+		grid-column: 1 / 13;
+		grid-row: 2;
+		display: grid;
+		grid-template-columns: subgrid;
+	}
 
-  .Home-form {
-    grid-column: 3 / 11;
-  }
+	.Home-form {
+		grid-column: 3 / 11;
+	}
 
-  .Home-picture {
-    grid-column: 13 / -1;
-    grid-row: 1 / -1;
-  }
+	.Home-picture {
+		grid-column: 13 / -1;
+		grid-row: 1 / -1;
+	}
 }

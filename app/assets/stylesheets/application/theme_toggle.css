@@ -15,7 +15,7 @@
 
 .ThemeToggle input:focus + label {
 	outline: 0.125em solid var(--color-focus-outline);
-  outline-offset: 0.1875em;
+	outline-offset: 0.1875em;
 }
 
 .ThemeToggle-icon {

@@ -3,120 +3,121 @@
 @import "./menu-mega.css";
 
 .Menu {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .Menu-home {
-  display: block;
-  flex: 0 0 9.75rem;
+	display: block;
+	flex: 0 0 9.75rem;
 }
 
 .MenuList {
-  display: flex;
+	display: flex;
 }
 
 .Menu-subList {
-  list-style: "";
-  display: flex;
+	list-style: "";
+	display: flex;
 }
 
 .Menu-subList small {
-  color: var(--color-accent-on-dark);
+	color: var(--color-accent-on-dark);
 }
 
 .Menu-subList-separator {
-  border-block-start: var(--border) var(--color-secondary-on-dark);
+	border-block-start: var(--border) var(--color-secondary-on-dark);
 }
 
 .MegaMenu {
-  flex: 1;
+	flex: 1;
 }
 
 @layer {
-  .MegaMenu ul {
-    list-style: "";
-    padding: 0;
-  }
+	.MegaMenu ul {
+		list-style: "";
+		padding: 0;
+	}
 
-  .MenuList,
-  .MenuList ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
+	.MenuList,
+	.MenuList ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
 
-  .MenuList :where(a, button) {
-    display: inline-flex;
-    color: var(--color-header-copy);
-    text-decoration: none;
-    border: none;
-  }
+	.MenuList :where(a, button) {
+		display: inline-flex;
+		color: var(--color-header-copy);
+		text-decoration: none;
+		border: none;
+	}
 
-  .MenuList :where(a, button):hover span {
-    text-decoration: underline;
-    text-underline-offset: var(--underline-offset);
-    text-decoration-thickness: var(--underline-width);
-  }
+	.MenuList :where(a, button):hover span {
+		text-decoration: underline;
+		text-underline-offset: var(--underline-offset);
+		text-decoration-thickness: var(--underline-width);
+	}
 
-  .MenuList :is([aria-current="true"], [aria-current="page"]) span {
-    text-decoration: underline;
-    text-underline-offset: var(--underline-offset);
-    text-decoration-thickness: var(--underline-width);
-  }
+	.MenuList :is([aria-current="true"], [aria-current="page"]) span {
+		text-decoration: underline;
+		text-underline-offset: var(--underline-offset);
+		text-decoration-thickness: var(--underline-width);
+	}
 
-  .MenuList [aria-current="true"] span {
-    color: #fff;
-  }
+	.MenuList [aria-current="true"] span {
+		color: #fff;
+	}
 
-  .MenuList [aria-current="page"] span {
-    color: var(--color-accent);
-  }
+	.MenuList [aria-current="page"] span {
+		color: var(--color-accent);
+	}
 }
 
 @media (max-width: 50rem) {
-  .MenuList {
-    flex-direction: column;
-    flex: 1;
-    gap: .5rem;
-  }
+	.MenuList {
+		flex-direction: column;
+		flex: 1;
+		gap: 0.5rem;
+	}
 
-  .Menu-subList {
-    padding-inline-start: 1rem;
-    padding-block-start: 1rem;
-  }
+	.Menu-subList {
+		padding-inline-start: 1rem;
+		padding-block-start: 1rem;
+	}
 
-  [aria-expanded="false"][aria-current="false"] + .Menu-subList {
-    display: none;
-  }
+	[aria-expanded="false"][aria-current="false"] + .Menu-subList {
+		display: none;
+	}
 
-  [aria-expanded="true"]:is([aria-current="true"], [aria-current="page"]) + .Menu-subList {
-    display: flex;
-  }
+	[aria-expanded="true"]:is([aria-current="true"], [aria-current="page"])
+		+ .Menu-subList {
+		display: flex;
+	}
 
-  .Menu-subList > div {
-    flex: 1;
-  }
+	.Menu-subList > div {
+		flex: 1;
+	}
 
-  .Menu-subList :where(a, button) {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+	.Menu-subList :where(a, button) {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
 }
 
 @media (min-width: 50.0625rem) {
-  .Menu-subList {
-    position: absolute;
-    inset-block-start: var(--height);
-    background: var(--color-blue-90);
-  }
+	.Menu-subList {
+		position: absolute;
+		inset-block-start: var(--height);
+		background: var(--color-blue-90);
+	}
 
-  [aria-expanded="false"] + .Menu-subList {
-    display: none;
-  }
+	[aria-expanded="false"] + .Menu-subList {
+		display: none;
+	}
 
-  [aria-expanded="true"] + .Menu-subList {
-    display: flex;
-  }
+	[aria-expanded="true"] + .Menu-subList {
+		display: flex;
+	}
 }

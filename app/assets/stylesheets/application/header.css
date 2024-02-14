@@ -1,149 +1,149 @@
 .Header {
-  --gap: 2rem;
-  --height: 3.75rem;
+	--gap: 2rem;
+	--height: 3.75rem;
 
-  display: flex;
-  gap: var(--gap);
-  flex-wrap: wrap;
-  align-items: center;
-  block-size: var(--height);
+	display: flex;
+	gap: var(--gap);
+	flex-wrap: wrap;
+	align-items: center;
+	block-size: var(--height);
 }
 
 .Header-menu {
-  display: flex;
-  gap: var(--gap);
+	display: flex;
+	gap: var(--gap);
 }
 
 .Search {
-  display: flex;
-  background: var(--color-input-bg);
-  box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
-  padding: 0.1875em;
-  border-radius: var(--border-radius);
+	display: flex;
+	background: var(--color-input-bg);
+	box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
+	padding: 0.1875em;
+	border-radius: var(--border-radius);
 }
 
 .Search:has(.Search-input:focus) {
-  outline: 0.125rem solid var(--color-focus-outline);
-  outline-offset: 0.1875rem;
+	outline: 0.125rem solid var(--color-focus-outline);
+	outline-offset: 0.1875rem;
 }
 
 .Search-input {
-  border: none;
-  box-shadow: none;
+	border: none;
+	box-shadow: none;
 }
 
 .Search-input:focus {
-  outline: none;
+	outline: none;
 }
 
 .Search-button {
-  background: var(--color-button-bg);
-  color: #fff;
-  border-radius: calc(var(--border-radius));
-  border-inline-start: none;
-  padding-inline: var(--padding);
+	background: var(--color-button-bg);
+	color: #fff;
+	border-radius: calc(var(--border-radius));
+	border-inline-start: none;
+	padding-inline: var(--padding);
 }
 
 @media (max-width: 50rem) {
-  .Header {
-    justify-content: space-between;
-  }
+	.Header {
+		justify-content: space-between;
+	}
 
-  .Header-toggleLabel {
-    color: var(--color-copy-on-dark);
-    font-size: .75em;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    align-self: center;
-    margin-inline-start: auto;
-    margin-inline-end: .5rem;
-  }
+	.Header-toggleLabel {
+		color: var(--color-copy-on-dark);
+		font-size: 0.75em;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		align-self: center;
+		margin-inline-start: auto;
+		margin-inline-end: 0.5rem;
+	}
 
-  .Header-toggle {
-    background: var(--color-button-bg);
-    color: #fff;
-    border-radius: calc(var(--border-radius));
-    padding: 0.375em;
-  }
+	.Header-toggle {
+		background: var(--color-button-bg);
+		color: #fff;
+		border-radius: calc(var(--border-radius));
+		padding: 0.375em;
+	}
 
-  .Header-toggle[aria-expanded="false"] + .Header-menuContainer {
-    display: none;
-  }
+	.Header-toggle[aria-expanded="false"] + .Header-menuContainer {
+		display: none;
+	}
 
-  .Header-toggle[aria-expanded="false"] .Header-toggleIcon--close,
-  .Header-toggle[aria-expanded="true"] .Header-toggleIcon--open {
-    display: none;
-  }
+	.Header-toggle[aria-expanded="false"] .Header-toggleIcon--close,
+	.Header-toggle[aria-expanded="true"] .Header-toggleIcon--open {
+		display: none;
+	}
 
-  body:has(.Header-toggle[aria-expanded="true"]) {
-    position: fixed;
-  }
+	body:has(.Header-toggle[aria-expanded="true"]) {
+		position: fixed;
+	}
 
-  .Header-menuContainer {
-    position: fixed;
-    inset: var(--height) 0 0 0;
-    background: hsl(208, 40%, 15%);
-    padding: calc(2 * var(--page-spacing)) var(--page-spacing);
-    overscroll-behavior: contain;
-    overflow-y: auto;
-  }
+	.Header-menuContainer {
+		position: fixed;
+		inset: var(--height) 0 0 0;
+		background: hsl(208, 40%, 15%);
+		padding: calc(2 * var(--page-spacing)) var(--page-spacing);
+		overscroll-behavior: contain;
+		overflow-y: auto;
+	}
 
-  .Header-menu {
-    flex-direction: column-reverse;
-    border-block-end: var(--border) var(--color-secondary-on-dark);
-    padding-block-end: 1rem;
-    margin-block-end: 1rem;
-  }
+	.Header-menu {
+		flex-direction: column-reverse;
+		border-block-end: var(--border) var(--color-secondary-on-dark);
+		padding-block-end: 1rem;
+		margin-block-end: 1rem;
+	}
 
-  .Search {
-    --padding: 0.75em;
-  }
+	.Search {
+		--padding: 0.75em;
+	}
 }
 
 @media (min-width: 50.0625rem) {
-  .Header:has(.MenuMain [aria-expanded="true"])::before {
-    content: "";
-    display: block;
-    position: fixed;
-    inset: var(--header-height) 0 0;
-    z-index: -1;
-    background: hsla(208, 40%, 10%, 75%);
-  }
+	.Header:has(.MenuMain [aria-expanded="true"])::before {
+		content: "";
+		display: block;
+		position: fixed;
+		inset: var(--header-height) 0 0;
+		z-index: -1;
+		background: hsla(208, 40%, 10%, 75%);
+	}
 
-  .Header-toggle,
-  .Header-toggleLabel {
-    display: none;
-  }
+	.Header-toggle,
+	.Header-toggleLabel {
+		display: none;
+	}
 
-  .Header-menuContainer {
-    flex: 1;
-    display: flex;
-    gap: var(--gap);
-  }
+	.Header-menuContainer {
+		flex: 1;
+		display: flex;
+		gap: var(--gap);
+	}
 
-  .Header-menu {
-    flex: 1;
-    justify-content: center;
-  }
+	.Header-menu {
+		flex: 1;
+		justify-content: center;
+	}
 
-  .Header-search {
-    align-self: center;
-    inline-size: 14em;
-  }
+	.Header-search {
+		align-self: center;
+		inline-size: 14em;
+	}
 
-  .Search {
-    --padding: 0.5em;
-  }
+	.Search {
+		--padding: 0.5em;
+	}
 
-  .Search-input {
-    padding: 0 var(--padding);
-    block-size: 2rem;
-  }
+	.Search-input {
+		padding: 0 var(--padding);
+		block-size: 2rem;
+	}
 }
 
 @media (max-width: 56rem) {
-  .Header {
-    --gap: 1rem;
-  }
+	.Header {
+		--gap: 1rem;
+	}
 }

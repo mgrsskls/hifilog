@@ -1,49 +1,49 @@
 .Button {
-  padding: var(--input-padding);
-  border-radius: var(--border-radius);
-  box-sizing: border-box;
-  background: var(--color-button-bg);
-  color: var(--color-button-copy);
-  box-shadow: 0.15rem 0.15rem 0.5rem var(--color-button-box-shadow);
-  text-decoration: none;
-  border: var(--border) transparent;
-  display: inline-block;
-  white-space: nowrap;
+	padding: var(--input-padding);
+	border-radius: var(--border-radius);
+	box-sizing: border-box;
+	background: var(--color-button-bg);
+	color: var(--color-button-copy);
+	box-shadow: 0.15rem 0.15rem 0.5rem var(--color-button-box-shadow);
+	text-decoration: none;
+	border: var(--border) transparent;
+	display: inline-block;
+	white-space: nowrap;
 }
 
 .Button:active {
-  transform: translate(0.0625rem, 0.0625rem);
+	transform: translate(0.0625rem, 0.0625rem);
 }
 
 .Button--negative {
-  --color-button-bg: transparent;
-  --color-button-copy: var(--color-invalid-copy);
+	--color-button-bg: transparent;
+	--color-button-copy: var(--color-invalid-copy);
 
-  border-color: currentColor;
+	border-color: currentColor;
 }
 
 .Button--secondary {
-  background-color: transparent;
-  border-color: currentColor;
-  color: var(--color-secondary);
+	background-color: transparent;
+	border-color: currentColor;
+	color: var(--color-secondary);
 }
 
 .Button--sm {
-  padding: .6em .75em;
-  line-height: 1;
+	padding: 0.6em 0.75em;
+	line-height: 1;
 }
 
 .TextButton {
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
-  font-size: 0.875em;
+	text-decoration: underline;
+	text-underline-offset: var(--underline-offset);
+	font-size: 0.875em;
 }
 
 .TextButton:not(.TextButton--negative) {
-  font-weight: 600;
-  color: inherit;
+	font-weight: 600;
+	color: inherit;
 }
 
 .TextButton--negative {
-  color: var(--color-invalid-copy);
+	color: var(--color-invalid-copy);
 }

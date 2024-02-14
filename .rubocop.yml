@@ -18,7 +18,7 @@ require:
   - rubocop-rails
 
 Style/Documentation:
-  Description: 'Document classes and non-namespace modules.'
+  Description: "Document classes and non-namespace modules."
   Enabled: false
 
 Style/FrozenStringLiteralComment:

@@ -1,38 +1,38 @@
 .Profile-meta {
-  background: var(--color-bg2);
+	background: var(--color-bg2);
 }
 
 .Profile-meta h1 {
-  margin-block-end: 1.5rem;
-  font-size: 2rem;
+	margin-block-end: 1.5rem;
+	font-size: 2rem;
 }
 
 @media (max-width: 48rem) {
-  .Profile-products {
-    padding-inline: var(--page-spacing);
-  }
+	.Profile-products {
+		padding-inline: var(--page-spacing);
+	}
 
-  .Profile-meta {
-    padding-block: 1rem;
-    padding-inline: calc(2 * var(--page-spacing));
-    margin-inline: calc(-1 * var(--page-spacing));
-  }
+	.Profile-meta {
+		padding-block: 1rem;
+		padding-inline: calc(2 * var(--page-spacing));
+		margin-inline: calc(-1 * var(--page-spacing));
+	}
 }
 
 @media (min-width: 48.0625rem) {
-  .Profile {
-    display: flex;
-    align-items: start;
-    gap: 4rem;
-  }
+	.Profile {
+		display: flex;
+		align-items: start;
+		gap: 4rem;
+	}
 
-  .Profile-products {
-    flex: 1;
-  }
+	.Profile-products {
+		flex: 1;
+	}
 
-  .Profile-meta {
-    background: var(--color-bg2);
-    flex: 0 0 16rem;
-    padding: 2rem;
-  }
+	.Profile-meta {
+		background: var(--color-bg2);
+		flex: 0 0 16rem;
+		padding: 2rem;
+	}
 }

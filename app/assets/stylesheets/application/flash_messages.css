@@ -1,33 +1,33 @@
 .FlashMessages {
-  margin-block-end: 3rem;
+	margin-block-end: 3rem;
 }
 
 .FlashMessages:has(+ .Form-field) {
-  margin-block-end: 1rem;
+	margin-block-end: 1rem;
 }
 
 .FlashMessage {
-  margin-block: 0;
-  border-radius: var(--border-radius);
-  border: var(--border);
-  padding: 1rem;
-  text-align: center;
+	margin-block: 0;
+	border-radius: var(--border-radius);
+	border: var(--border);
+	padding: 1rem;
+	text-align: center;
 }
 
 .FlashMessage + .FlashMessage {
-  margin-block-start: 1rem;
+	margin-block-start: 1rem;
 }
 
 .FlashMessage--notice {
-  background: var(--color-success-bg);
-  color: var(--color-success-copy);
+	background: var(--color-success-bg);
+	color: var(--color-success-copy);
 }
 
 .FlashMessage--alert {
-  background: var(--color-invalid-bg);
-  color: var(--color-invalid-copy);
+	background: var(--color-invalid-bg);
+	color: var(--color-invalid-copy);
 }
 
 .FlashMessage a {
-  color: inherit;
+	color: inherit;
 }

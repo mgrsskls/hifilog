@@ -1,21 +1,21 @@
 .Skip {
-  background: var(--color-header-bg);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  position: absolute;
-  transform: translate(-50%, -100%);
-  inset-inline-start: 50%;
-  inset-block-start: 0;
-  padding-inline: 1rem;
-  block-size: calc(var(--header-height) - 1em);
-  z-index: 1;
-  opacity: .01;
+	background: var(--color-header-bg);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	position: absolute;
+	transform: translate(-50%, -100%);
+	inset-inline-start: 50%;
+	inset-block-start: 0;
+	padding-inline: 1rem;
+	block-size: calc(var(--header-height) - 1em);
+	z-index: 1;
+	opacity: 0.01;
 }
 
 .Skip:focus {
-  inset-block-start: 50%;
-  transform: translate(-50%, -50%);
-  outline-offset: 0;
-  opacity: 1;
+	inset-block-start: 50%;
+	transform: translate(-50%, -50%);
+	outline-offset: 0;
+	opacity: 1;
 }

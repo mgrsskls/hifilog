@@ -16,7 +16,7 @@ customElements.define(
 
 		connectedCallback() {
 			this.#index = Array.from(
-				document.querySelectorAll("theme-toggle")
+				document.querySelectorAll("theme-toggle"),
 			).indexOf(this);
 
 			window.requestAnimationFrame(() => {
@@ -77,7 +77,7 @@ customElements.define(
 
 		#render() {
 			const input = this.#inputs.find(
-				(input) => input.value === this.#currentTheme
+				(input) => input.value === this.#currentTheme,
 			);
 
 			if (input) {
@@ -107,5 +107,5 @@ customElements.define(
 				return input;
 			});
 		}
-	}
+	},
 );

@@ -20,364 +20,364 @@
 @import url("./application/utils.css") layer(utils);
 
 @layer reset {
-  dd {
-    margin: 0;
-  }
+	dd {
+		margin: 0;
+	}
 
-  input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
-    all: unset;
-  }
+	input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
+		all: unset;
+	}
 
-  textarea {
-    form-sizing: normal;
-    min-block-size: 10em;
-  }
+	textarea {
+		form-sizing: normal;
+		min-block-size: 10em;
+	}
 
-  select {
-    background: none;
-  }
+	select {
+		background: none;
+	}
 
-  button {
-    all: unset;
-    border: var(--border) transparent;
-    cursor: pointer;
-  }
+	button {
+		all: unset;
+		border: var(--border) transparent;
+		cursor: pointer;
+	}
 
-  svg {
-    display: block;
-  }
+	svg {
+		display: block;
+	}
 
-  summary {
-    cursor: default;
-  }
+	summary {
+		cursor: default;
+	}
 }
 
 @layer global {
-  html {
-    block-size: 100%;
-  }
+	html {
+		block-size: 100%;
+	}
 
-  html,
-  html:has([name="theme"][value="light"]:checked) {
-    --underline-offset: 0.275em;
-    --underline-width: 0.0625rem;
-    --border: 0.0625rem solid;
-    --border-light: var(--border) var(--color-border-light);
-    --border-medium: var(--border) var(--color-border-medium);
-    --border-dark: var(--border) var(--color-border-dark);
-    --border-radius: 0.1875rem;
-    --line-height: 1.75;
-    --input-padding: 0.325em 1em;
-    --header-height: 3.75rem;
+	html,
+	html:has([name="theme"][value="light"]:checked) {
+		--underline-offset: 0.275em;
+		--underline-width: 0.0625rem;
+		--border: 0.0625rem solid;
+		--border-light: var(--border) var(--color-border-light);
+		--border-medium: var(--border) var(--color-border-medium);
+		--border-dark: var(--border) var(--color-border-dark);
+		--border-radius: 0.1875rem;
+		--line-height: 1.75;
+		--input-padding: 0.325em 1em;
+		--header-height: 3.75rem;
 
-    --hue: 208;
-    --hue-sat: var(--hue), 25%;
-    --hue-accent: 312;
+		--hue: 208;
+		--hue-sat: var(--hue), 25%;
+		--hue-accent: 312;
 
-    --color-white: #fff;
-    --color-blue-10: hsl(204, 18.5%, 97.5%);
-    --color-blue-20: hsl(204, 18.5%, 92.5%);
-    --color-blue-50: hsl(204, 18.5%, 50%);
-    --color-blue-90: hsl(208, 40%, 12.5%);
-    --color-blue-100: hsl(208, 40%, 10%);
+		--color-white: #fff;
+		--color-blue-10: hsl(204, 18.5%, 97.5%);
+		--color-blue-20: hsl(204, 18.5%, 92.5%);
+		--color-blue-50: hsl(204, 18.5%, 50%);
+		--color-blue-90: hsl(208, 40%, 12.5%);
+		--color-blue-100: hsl(208, 40%, 10%);
 
-    --color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
-    --color-accent-on-dark: hsl(var(--hue-accent), 50%, 85%);
-    --color-copy-on-light: hsl(var(--hue), 30%, 20%);
-    --color-copy-on-dark: hsl(var(--hue), 30%, 80%);
-    --color-secondary-on-light: hsl(var(--hue), 30%, 40%);
-    --color-secondary-on-dark: hsl(var(--hue), 30%, 60%);
+		--color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
+		--color-accent-on-dark: hsl(var(--hue-accent), 50%, 85%);
+		--color-copy-on-light: hsl(var(--hue), 30%, 20%);
+		--color-copy-on-dark: hsl(var(--hue), 30%, 80%);
+		--color-secondary-on-light: hsl(var(--hue), 30%, 40%);
+		--color-secondary-on-dark: hsl(var(--hue), 30%, 60%);
 
-    --color-bg: hsl(var(--bg-h-s), var(--bg-l));
-    --color-bg2: var(--color-blue-10);
-    --color-bg-selection: hsl(204, 18.5%, 75%);
-    --color-header-bg: var(--color-blue-100);
-    --color-header-copy: hsl(var(--hue-sat), 80%);
-    --color-button-bg: hsl(var(--hue-sat), 40%);
-    --color-button-box-shadow: hsla(0, 0%, 0%, var(--button-box-shadow-a));
-    --color-input: hsl(208, 30%, 20%);
-    --color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
-    --color-border-h-s: var(--hue), 20%;
-    --color-border-light: hsla(var(--color-border-h-s), var(--border-l), 15%);
-    --color-border-medium: hsla(var(--color-border-h-s), var(--border-l), 30%);
-    --color-border-dark: hsla(var(--color-border-h-s), var(--border-l), 50%);
-    --color-focus-outline: hsl(var(--hue-accent), 75%, 50%);
-    --color-accent: var(--color-accent-on-light);
-    --color-highlight: var(--color-accent);
-    --color-copy: var(--color-copy-on-light);
-    --color-secondary: var(--color-secondary-on-light);
+		--color-bg: hsl(var(--bg-h-s), var(--bg-l));
+		--color-bg2: var(--color-blue-10);
+		--color-bg-selection: hsl(204, 18.5%, 75%);
+		--color-header-bg: var(--color-blue-100);
+		--color-header-copy: hsl(var(--hue-sat), 80%);
+		--color-button-bg: hsl(var(--hue-sat), 40%);
+		--color-button-box-shadow: hsla(0, 0%, 0%, var(--button-box-shadow-a));
+		--color-input: hsl(208, 30%, 20%);
+		--color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
+		--color-border-h-s: var(--hue), 20%;
+		--color-border-light: hsla(var(--color-border-h-s), var(--border-l), 15%);
+		--color-border-medium: hsla(var(--color-border-h-s), var(--border-l), 30%);
+		--color-border-dark: hsla(var(--color-border-h-s), var(--border-l), 50%);
+		--color-focus-outline: hsl(var(--hue-accent), 75%, 50%);
+		--color-accent: var(--color-accent-on-light);
+		--color-highlight: var(--color-accent);
+		--color-copy: var(--color-copy-on-light);
+		--color-secondary: var(--color-secondary-on-light);
 
-    /* light mode */
+		/* light mode */
 
-    --bg-h-s: 204, 18.5%;
-    --bg-l: 100%;
-    --button-box-shadow-a: 20%;
-    --input-box-shadow-a: 10%;
-    --border-l: 0%;
+		--bg-h-s: 204, 18.5%;
+		--bg-l: 100%;
+		--button-box-shadow-a: 20%;
+		--input-box-shadow-a: 10%;
+		--border-l: 0%;
 
-    --color-button-copy: #fff;
-    --color-highlight-copy: #fff;
-    --color-input-bg: #fff;
-    --color-input-placeholder: hsl(208, 20%, 60%);
-    --color-invalid-light: hsl(330, 50%, 85%);
-    --color-invalid-dark: hsl(330, 100%, 20%);
-    --color-invalid-bg: var(--color-invalid-light);
-    --color-invalid-copy: var(--color-invalid-dark);
-    --color-success-light: hsl(165, 50%, 85%);
-    --color-success-dark: hsl(165, 100%, 20%);
-    --color-success-bg: var(--color-success-light);
-    --color-success-copy: var(--color-success-dark);
-    --color-positive: hsl(160, 50%, 95%);
+		--color-button-copy: #fff;
+		--color-highlight-copy: #fff;
+		--color-input-bg: #fff;
+		--color-input-placeholder: hsl(208, 20%, 60%);
+		--color-invalid-light: hsl(330, 50%, 85%);
+		--color-invalid-dark: hsl(330, 100%, 20%);
+		--color-invalid-bg: var(--color-invalid-light);
+		--color-invalid-copy: var(--color-invalid-dark);
+		--color-success-light: hsl(165, 50%, 85%);
+		--color-success-dark: hsl(165, 100%, 20%);
+		--color-success-bg: var(--color-success-light);
+		--color-success-copy: var(--color-success-dark);
+		--color-positive: hsl(160, 50%, 95%);
 
-    color-scheme: light;
-  }
+		color-scheme: light;
+	}
 
-  @media (prefers-color-scheme: dark) {
-    html {
-      --bg-h-s: 208, 40%;
-      --bg-l: 15%;
-      --button-box-shadow-a: 50%;
-      --input-box-shadow-a: 30%;
-      --border-l: 60%;
+	@media (prefers-color-scheme: dark) {
+		html {
+			--bg-h-s: 208, 40%;
+			--bg-l: 15%;
+			--button-box-shadow-a: 50%;
+			--input-box-shadow-a: 30%;
+			--border-l: 60%;
 
-      --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
-      --color-input-bg: hsl(208, 20%, 95%);
-      --color-input-placeholder: hsl(208, 20%, 40%);
-      --color-invalid-bg: var(--color-invalid-dark);
-      --color-invalid-copy: var(--color-invalid-light);
-      --color-success-bg: var(--color-success-dark);
-      --color-success-copy: var(--color-success-light);
-      --color-positive: hsl(190, 40%, 20%);
+			--color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
+			--color-input-bg: hsl(208, 20%, 95%);
+			--color-input-placeholder: hsl(208, 20%, 40%);
+			--color-invalid-bg: var(--color-invalid-dark);
+			--color-invalid-copy: var(--color-invalid-light);
+			--color-success-bg: var(--color-success-dark);
+			--color-success-copy: var(--color-success-light);
+			--color-positive: hsl(190, 40%, 20%);
 
-      --color-bg2: var(--color-blue-90);
-      --color-accent: var(--color-accent-on-dark);
-      --color-copy: var(--color-copy-on-dark);
-      --color-secondary: var(--color-secondary-on-dark);
+			--color-bg2: var(--color-blue-90);
+			--color-accent: var(--color-accent-on-dark);
+			--color-copy: var(--color-copy-on-dark);
+			--color-secondary: var(--color-secondary-on-dark);
 
-      color-scheme: dark;
-    }
-  }
+			color-scheme: dark;
+		}
+	}
 
-  html:has([name="theme"][value="dark"]:checked),
-  .is-dark {
-    --bg-h-s: 208, 40%;
-    --bg-l: 15%;
-    --button-box-shadow-a: 50%;
-    --input-box-shadow-a: 30%;
-    --border-l: 60%;
+	html:has([name="theme"][value="dark"]:checked),
+	.is-dark {
+		--bg-h-s: 208, 40%;
+		--bg-l: 15%;
+		--button-box-shadow-a: 50%;
+		--input-box-shadow-a: 30%;
+		--border-l: 60%;
 
-    --color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
-    --color-input-bg: hsl(208, 20%, 95%);
-    --color-input-placeholder: hsl(208, 20%, 40%);
-    --color-invalid-bg: var(--color-invalid-dark);
-    --color-invalid-copy: var(--color-invalid-light);
-    --color-success-bg: var(--color-success-dark);
-    --color-success-copy: var(--color-success-light);
-    --color-positive: hsl(190, 40%, 20%);
+		--color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
+		--color-input-bg: hsl(208, 20%, 95%);
+		--color-input-placeholder: hsl(208, 20%, 40%);
+		--color-invalid-bg: var(--color-invalid-dark);
+		--color-invalid-copy: var(--color-invalid-light);
+		--color-success-bg: var(--color-success-dark);
+		--color-success-copy: var(--color-success-light);
+		--color-positive: hsl(190, 40%, 20%);
 
-    --color-bg2: var(--color-blue-90);
-    --color-accent: var(--color-accent-on-dark);
-    --color-copy: var(--color-copy-on-dark);
-    --color-secondary: var(--color-secondary-on-dark);
+		--color-bg2: var(--color-blue-90);
+		--color-accent: var(--color-accent-on-dark);
+		--color-copy: var(--color-copy-on-dark);
+		--color-secondary: var(--color-secondary-on-dark);
 
-    color: var(--color-copy);
+		color: var(--color-copy);
 
-    color-scheme: dark;
-  }
+		color-scheme: dark;
+	}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif;
-    line-height: var(--line-height);
-    margin: 0;
-    background: var(--color-bg);
-    color: var(--color-copy);
-    accent-color: var(--color-accent);
-    display: flex;
-    flex-direction: column;
-    min-block-size: 100%;
-    inline-size: 100%;
-  }
+	body {
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+			Helvetica, Arial, sans-serif;
+		line-height: var(--line-height);
+		margin: 0;
+		background: var(--color-bg);
+		color: var(--color-copy);
+		accent-color: var(--color-accent);
+		display: flex;
+		flex-direction: column;
+		min-block-size: 100%;
+		inline-size: 100%;
+	}
 
-   body > :is(header, nav, main, footer) {
-    inline-size: 100%;
-    box-sizing: border-box;
-   }
+	body > :is(header, nav, main, footer) {
+		inline-size: 100%;
+		box-sizing: border-box;
+	}
 
-  a,
-  button {
-    color: var(--color-accent);
-    text-underline-offset: var(--underline-offset);
-    text-decoration-thickness: var(--underline-width);
-  }
+	a,
+	button {
+		color: var(--color-accent);
+		text-underline-offset: var(--underline-offset);
+		text-decoration-thickness: var(--underline-width);
+	}
 
-  a:hover,
-  button:hover {
-    color: var(--color-copy);
-  }
+	a:hover,
+	button:hover {
+		color: var(--color-copy);
+	}
 
-  :is(a, input, textarea, button) {
-    border-radius: var(--border-radius);
-  }
+	:is(a, input, textarea, button) {
+		border-radius: var(--border-radius);
+	}
 
-  :is(a, input, textarea, button):focus-visible {
-    outline: 0.125rem solid var(--color-focus-outline);
-    outline-offset: 0.1875rem;
-  }
+	:is(a, input, textarea, button):focus-visible {
+		outline: 0.125rem solid var(--color-focus-outline);
+		outline-offset: 0.1875rem;
+	}
 
-  header {
-    background: var(--color-header-bg);
-    position: sticky;
-    inset-block-start: 0;
-    z-index: 1;
-  }
+	header {
+		background: var(--color-header-bg);
+		position: sticky;
+		inset-block-start: 0;
+		z-index: 1;
+	}
 
-  main:not(:has(.Home)) {
-    padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
-  }
+	main:not(:has(.Home)) {
+		padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
+	}
 
-  h1,
-  .h1 {
-    font-size: 2.6rem;
-    font-weight: 600;
-    line-height: 1.1;
-    margin-block: 0;
-  }
+	h1,
+	.h1 {
+		font-size: 2.6rem;
+		font-weight: 600;
+		line-height: 1.1;
+		margin-block: 0;
+	}
 
-  h1 small {
-    font-size: 1rem;
-    font-weight: 500;
-    display: block;
-    color: var(--color-secondary);
-    margin-block-start: .25rem;
-  }
+	h1 small {
+		font-size: 1rem;
+		font-weight: 500;
+		display: block;
+		color: var(--color-secondary);
+		margin-block-start: 0.25rem;
+	}
 
-  h1 span {
-    font-weight: lighter;
-  }
+	h1 span {
+		font-weight: lighter;
+	}
 
-  h2,
-  .h2 {
-    font-size: 1.8rem;
-    line-height: 1.2;
-    font-weight: 600;
-    color: var(--color-secondary);
-    margin-block-start: 1.15em;
-  }
+	h2,
+	.h2 {
+		font-size: 1.8rem;
+		line-height: 1.2;
+		font-weight: 600;
+		color: var(--color-secondary);
+		margin-block-start: 1.15em;
+	}
 
-  h3,
-  .h3 {
-    font-size: 1.4rem;
-    font-weight: 600;
-  }
+	h3,
+	.h3 {
+		font-size: 1.4rem;
+		font-weight: 600;
+	}
 
-  :is(input, textarea)::placeholder {
-    color: var(--color-input-placeholder);
-  }
+	:is(input, textarea)::placeholder {
+		color: var(--color-input-placeholder);
+	}
 
-  select {
-    /* Necessary because iOS Safari uses it for the text, becomes unreadable */
-    accent-color: var(--color-accent-on-light);
-  }
+	select {
+		/* Necessary because iOS Safari uses it for the text, becomes unreadable */
+		accent-color: var(--color-accent-on-light);
+	}
 
-  select,
-  input:not([type="checkbox"], [type="radio"], [type="hidden"]),
-  textarea {
-    display: block;
-    font: inherit;
-    color: var(--color-input);
-    padding: var(--input-padding);
-    border: var(--border-medium);
-    border-radius: var(--border-radius);
-    background: var(--color-input-bg);
-    box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
-    inline-size: 100%;
-    box-sizing: border-box;
-    block-size: 2.525rem;
-  }
+	select,
+	input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+	textarea {
+		display: block;
+		font: inherit;
+		color: var(--color-input);
+		padding: var(--input-padding);
+		border: var(--border-medium);
+		border-radius: var(--border-radius);
+		background: var(--color-input-bg);
+		box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
+		inline-size: 100%;
+		box-sizing: border-box;
+		block-size: 2.525rem;
+	}
 
-  .field_with_errors
-    :is(
-      input:not([type="checkbox"], [type="radio"], [type="hidden"]),
-      textarea
-     ) {
-    border-color: var(--color-invalid-copy);
-  }
+	.field_with_errors
+		:is(
+			input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+			textarea
+		) {
+		border-color: var(--color-invalid-copy);
+	}
 
-  .field_with_errors label {
-    color: var(--color-invalid-copy);
-  }
+	.field_with_errors label {
+		color: var(--color-invalid-copy);
+	}
 
-  @media (max-width: 36em) {
-    h1,
-    .h1 {
-      font-size: 2.2rem;
-    }
+	@media (max-width: 36em) {
+		h1,
+		.h1 {
+			font-size: 2.2rem;
+		}
 
-    h2,
-    .h2 {
-      font-size: 1.6rem;
-    }
-  }
+		h2,
+		.h2 {
+			font-size: 1.6rem;
+		}
+	}
 }
 
 @media (max-width: 48em) {
-  html {
-    --page-spacing: 0.75rem;
-  }
+	html {
+		--page-spacing: 0.75rem;
+	}
 
-  main:not(:has(.Home)),
-  .u-pullIn {
-    padding-inline: var(--page-spacing);
-  }
+	main:not(:has(.Home)),
+	.u-pullIn {
+		padding-inline: var(--page-spacing);
+	}
 
-  .u-pullOut {
-    margin-inline: calc(-1 * var(--page-spacing));
-  }
+	.u-pullOut {
+		margin-inline: calc(-1 * var(--page-spacing));
+	}
 }
 
 @media (min-width: 48.0625em) {
-  html {
-    --page-spacing: 1.5rem;
-  }
+	html {
+		--page-spacing: 1.5rem;
+	}
 }
 
 .Data {
-  margin-block: 0;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: .5rem 0;
+	margin-block: 0;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.5rem 0;
 }
 
 .Data dt {
-  font-weight: 600;
-  color: var(--color-secondary);
-  padding-inline-end: 1.5rem;
+	font-weight: 600;
+	color: var(--color-secondary);
+	padding-inline-end: 1.5rem;
 }
 
 .Data div + div {
-  margin-block-start: 0.5rem;
+	margin-block-start: 0.5rem;
 }
 
 .Data dd {
-  flex: 1;
-  color: var(--color-accent);
+	flex: 1;
+	color: var(--color-accent);
 }
 
 .Data-divider,
 .Data-divider + dd {
-  border-block-start: var(--border-medium);
-  margin-block-start: .5rem;
-  padding-block-start: 1rem;
+	border-block-start: var(--border-medium);
+	margin-block-start: 0.5rem;
+	padding-block-start: 1rem;
 }
 
 @media (hover: none) {
-  :is(a, button):hover,
-  :is(a, button):hover span {
-    text-decoration: none !important;
-  }
+	:is(a, button):hover,
+	:is(a, button):hover span {
+		text-decoration: none !important;
+	}
 }
 
 #list {
-  scroll-margin-block-start: calc(var(--header-height) + 1.15em);
+	scroll-margin-block-start: calc(var(--header-height) + 1.15em);
 }

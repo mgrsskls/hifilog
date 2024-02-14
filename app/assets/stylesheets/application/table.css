@@ -1,109 +1,108 @@
 @layer {
-  table-saw {
-    display: block;
-  }
+	table-saw {
+		display: block;
+	}
 
-  :is(nav, .Pagination, .FilterInfo) + :is(table, table-saw) {
-    margin-block-start: 2rem;
-  }
+	:is(nav, .Pagination, .FilterInfo) + :is(table, table-saw) {
+		margin-block-start: 2rem;
+	}
 
-  table {
-    border-collapse: collapse;
-    inline-size: 100%;
-    table-layout: fixed;
-  }
+	table {
+		border-collapse: collapse;
+		inline-size: 100%;
+		table-layout: fixed;
+	}
 
-  tbody tr:nth-child(odd) {
-    background: var(--color-bg2);
-  }
+	tbody tr:nth-child(odd) {
+		background: var(--color-bg2);
+	}
 
-  th {
-    text-align: start;
-  }
+	th {
+		text-align: start;
+	}
 
-  thead th {
-    color: var(--color-secondary);
-    font-size: 0.875em;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    vertical-align: top;
-  }
+	thead th {
+		color: var(--color-secondary);
+		font-size: 0.875em;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		vertical-align: top;
+	}
 
-  th small {
-    font-weight: normal;
-  }
+	th small {
+		font-weight: normal;
+	}
 
-  th,
-  td {
-    border-block-end: var(--border-light);
-    padding: 0.75rem;
-  }
+	th,
+	td {
+		border-block-end: var(--border-light);
+		padding: 0.75rem;
+	}
 
-  :is(th, td):not(:last-child) {
-    padding-inline-end: 1rem;
-  }
+	:is(th, td):not(:last-child) {
+		padding-inline-end: 1rem;
+	}
 
-  .Table-name {
-    width: 30%;
-  }
+	.Table-name {
+		width: 30%;
+	}
 
-  .Table-products {
-    width: 7.5em;
-  }
+	.Table-products {
+		width: 7.5em;
+	}
 
-  .Table-symbols {
-    width: 5em;
-  }
+	.Table-symbols {
+		width: 5em;
+	}
 
-  table .Symbols {
-    justify-content: flex-end;
-  }
+	table .Symbols {
+		justify-content: flex-end;
+	}
 
-  tr.is-positive {
-    font-weight: bold;
-  }
+	tr.is-positive {
+		font-weight: bold;
+	}
 }
 
 @media (max-width: 39.9375em) {
-  table-saw table {
-    inline-size: 100%;
-  }
+	table-saw table {
+		inline-size: 100%;
+	}
 
-  table-saw tr {
-    border-block-end: var(--border-light);
-    padding-block: 1rem;
-  }
+	table-saw tr {
+		border-block-end: var(--border-light);
+		padding-block: 1rem;
+	}
 
-  table-saw tr:last-child:is(accordion-tabs tr) {
-    border-block-end: none;
-  }
+	table-saw tr:last-child:is(accordion-tabs tr) {
+		border-block-end: none;
+	}
 
-  table-saw :is(tbody, tfoot) tr {
-    margin-block-end: 0 !important;
-  }
+	table-saw :is(tbody, tfoot) tr {
+		margin-block-end: 0 !important;
+	}
 
-  table-saw :is(th, td) {
-    padding-block: 0;
-    border-block-end: 0;
-    background-color: transparent;
-  }
+	table-saw :is(th, td) {
+		padding-block: 0;
+		border-block-end: 0;
+		background-color: transparent;
+	}
 
-  table-saw :is(tbody, tfoot) :is(th, td)::before {
-    color: var(--color-secondary);
-    font-size: 0.75em;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    line-height: calc(var(--line-height) * 1rem);
-  }
+	table-saw :is(tbody, tfoot) :is(th, td)::before {
+		color: var(--color-secondary);
+		font-size: 0.75em;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		line-height: calc(var(--line-height) * 1rem);
+	}
 
+	table-saw :is(.Table-products, .Table-symbols) {
+		width: auto;
+	}
 
-  table-saw :is(.Table-products,.Table-symbols) {
-    width: auto;
-  }
-
-  table-saw .Symbols:has(.Symbols-item) {
-    justify-content: flex-start;
-    margin-block-start: 0.5rem;
-  }
+	table-saw .Symbols:has(.Symbols-item) {
+		justify-content: flex-start;
+		margin-block-start: 0.5rem;
+	}
 }

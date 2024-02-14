@@ -1,6 +1,3 @@
 module.exports = {
-  plugins: [
-    require('postcss-import'),
-    require('cssnano'),
-  ],
-}
+	plugins: [require("postcss-import"), require("cssnano")],
+};

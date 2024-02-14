@@ -1,23 +1,23 @@
 .PageActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2rem;
-  justify-content: center;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 2rem;
+	justify-content: center;
 }
 
 .PageActions:has(.PageAction:nth-child(2)) {
-  justify-content: space-between;
+	justify-content: space-between;
 }
 
 @media (max-width: 32em) {
-  .PageActions {
-    margin-block-start :2rem;
-  }
+	.PageActions {
+		margin-block-start: 2rem;
+	}
 }
 
 @media (min-width: 32.0625em) {
-  .PageActions {
-    margin-block-start :4rem;
-  }
+	.PageActions {
+		margin-block-start: 4rem;
+	}
 }

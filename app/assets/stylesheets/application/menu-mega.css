@@ -1,76 +1,76 @@
 .MegaMenu-link--lvl1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #fff;
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #fff;
 }
 
 .MegaMenu-link--lvl1 + ul {
-  margin-block-start: 1rem;
+	margin-block-start: 1rem;
 }
 
 .MegaMenu-link--lvl2 {
-  padding-block: .25em;
+	padding-block: 0.25em;
 }
 
 .MenuMega-list + .MenuMega-list {
-  margin-block-start: 1rem;
+	margin-block-start: 1rem;
 }
 
 @media (max-width: 50rem) {
-  .MenuMega {
-    --page-spacing: 0;
-  }
+	.MenuMega {
+		--page-spacing: 0;
+	}
 
-  .MenuMega-header {
-    display: none;
-  }
+	.MenuMega-header {
+		display: none;
+	}
 
-  .MenuMega-container {
-    padding-block-end: 1rem;
-  }
+	.MenuMega-container {
+		padding-block-end: 1rem;
+	}
 
-  .MenuMega-container > div + div {
-    margin-block-start: 1rem;
-  }
+	.MenuMega-container > div + div {
+		margin-block-start: 1rem;
+	}
 }
 
 @media (min-width: 50.0625rem) {
-  .MenuMega {
-    inset-inline: 0;
-    background: var(--color-blue-90);
-    padding-block: 2rem;
-  }
+	.MenuMega {
+		inset-inline: 0;
+		background: var(--color-blue-90);
+		padding-block: 2rem;
+	}
 
-  .MenuMega > div {
-    flex: 1;
-  }
+	.MenuMega > div {
+		flex: 1;
+	}
 
-  .MenuMega-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 2rem;
-    padding-block-end: 1rem;
-    margin-block-end: 1rem;
-    border-block-end: var(--border) rgba(255, 255, 255, .1);
-  }
+	.MenuMega-header {
+		display: flex;
+		justify-content: space-between;
+		gap: 2rem;
+		padding-block-end: 1rem;
+		margin-block-end: 1rem;
+		border-block-end: var(--border) rgba(255, 255, 255, 0.1);
+	}
 
-  .MenuMega-headerTitle a {
-    transform: translateY(-.2rem);
-    margin-inline-start: 1rem;
-    text-decoration: underline;
-    text-underline-offset: var(--underline-offset);
-    text-decoration-thickness: var(--underline-width);
-    font-size: .875rem;
-  }
+	.MenuMega-headerTitle a {
+		transform: translateY(-0.2rem);
+		margin-inline-start: 1rem;
+		text-decoration: underline;
+		text-underline-offset: var(--underline-offset);
+		text-decoration-thickness: var(--underline-width);
+		font-size: 0.875rem;
+	}
 
-  .MenuMega-headerTitle .h2 {
-    margin-block: 0;
-    color: #fff;
-  }
+	.MenuMega-headerTitle .h2 {
+		margin-block: 0;
+		color: #fff;
+	}
 
-  .MenuMega-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-  }
+	.MenuMega-container {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 2rem;
+	}
 }

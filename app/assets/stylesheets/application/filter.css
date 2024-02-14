@@ -1,142 +1,142 @@
 .Filter {
-  border: var(--border-light);
-  border-radius: var(--border-radius);
-  padding: .75rem;
-  margin-block-end: 1rem;
-  gap: 1rem 2rem;
-  font-size: .875em;
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	padding: 0.75rem;
+	margin-block-end: 1rem;
+	gap: 1rem 2rem;
+	font-size: 0.875em;
 }
 
 .Filter-option {
-  font-weight: 600;
+	font-weight: 600;
 }
 
 .Filter-close,
 .Filter-reset {
-  font-weight: 600;
-  text-decoration: none;
+	font-weight: 600;
+	text-decoration: none;
 }
 
 @media (max-width: 42rem) {
-  .Filter {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-  }
+	.Filter {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+	}
 
-  .Filter-form {
-    background: var(--color-bg);
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    position: fixed;
-    inset-inline: 1rem;
-    inset-block-end: 1rem;
-    transition: .25s opacity ease;
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
+	.Filter-form {
+		background: var(--color-bg);
+		padding: 1rem;
+		border-radius: var(--border-radius);
+		position: fixed;
+		inset-inline: 1rem;
+		inset-block-end: 1rem;
+		transition: 0.25s opacity ease;
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
 
-  .Filter:has([aria-expanded="true"])::before {
-    content: "";
-    display: block;
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, .5);
-  }
+	.Filter:has([aria-expanded="true"])::before {
+		content: "";
+		display: block;
+		position: fixed;
+		inset: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
 
-  .Filter-option {
-    display: block;
-    margin-block-end: 1em;
-    line-height: 1;
-  }
+	.Filter-option {
+		display: block;
+		margin-block-end: 1em;
+		line-height: 1;
+	}
 
-  .Filter-section + .Filter-section {
-    margin-block-start: 2em;
-  }
+	.Filter-section + .Filter-section {
+		margin-block-start: 2em;
+	}
 
-  .Filter-open {
-    grid-column: 2;
-    grid-row: 1;
-    position: relative;
-  }
+	.Filter-open {
+		grid-column: 2;
+		grid-row: 1;
+		position: relative;
+	}
 
-  .Filter-open:not([aria-expanded="true"]) + .Filter-form {
-    display: none;
-  }
+	.Filter-open:not([aria-expanded="true"]) + .Filter-form {
+		display: none;
+	}
 
-  .Filter-actions {
-    margin-block-start: 2rem;
-  }
+	.Filter-actions {
+		margin-block-start: 2rem;
+	}
 
-  .Filter-status {
-    list-style: "";
-    padding: 0;
-    margin: 0;
-  }
+	.Filter-status {
+		list-style: "";
+		padding: 0;
+		margin: 0;
+	}
 }
 
 @media (min-width: 42.0625rem) {
-  .Filter-open,
-  .Filter-status,
-  .Filter-close {
-    display: none;
-  }
+	.Filter-open,
+	.Filter-status,
+	.Filter-close {
+		display: none;
+	}
 
-  .Filter-options {
-    display: grid;
-    gap: .75rem 1rem;
-    grid-template-columns: auto 1fr auto;
-  }
+	.Filter-options {
+		display: grid;
+		gap: 0.75rem 1rem;
+		grid-template-columns: auto 1fr auto;
+	}
 
-  .Filter-section:not([hidden]) {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-column: 1 / -1;
-  }
+	.Filter-section:not([hidden]) {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / -1;
+	}
 
-  .Filter-option {
-    line-height: 1.875rem;
-    grid-column: 1;
-  }
+	.Filter-option {
+		line-height: 1.875rem;
+		grid-column: 1;
+	}
 
-  .Filter .Pagination {
-    grid-column: 2 / -1;
-  }
+	.Filter .Pagination {
+		grid-column: 2 / -1;
+	}
 
-  .Filter-section:not(:has(~ .Filter-section)) {
-    grid-column-end: 3;
-  }
+	.Filter-section:not(:has(~ .Filter-section)) {
+		grid-column-end: 3;
+	}
 
-  .Filter-actions {
-    grid-column: 3 / -1;
-  }
+	.Filter-actions {
+		grid-column: 3 / -1;
+	}
 }
 
 .FilterExtra {
-  margin-block: 1rem 2rem;
-  display: flex;
-  gap: 1rem;
+	margin-block: 1rem 2rem;
+	display: flex;
+	gap: 1rem;
 }
 
 .FilterInfo {
-  line-height: 1.2;
-  margin-block: 0;
+	line-height: 1.2;
+	margin-block: 0;
 }
 
 @media (max-width: 32rem) {
-  .FilterExtra {
-    flex-direction: column;
-  }
+	.FilterExtra {
+		flex-direction: column;
+	}
 }
 
 @media (min-width: 32.0625rem) {
-  .FilterExtra {
-    align-items: center;
-    justify-content: space-between;
-  }
+	.FilterExtra {
+		align-items: center;
+		justify-content: space-between;
+	}
 
-  .FilterSort {
-    white-space: nowrap;
-    max-inline-size: 16rem;
-  }
+	.FilterSort {
+		white-space: nowrap;
+		max-inline-size: 16rem;
+	}
 }
