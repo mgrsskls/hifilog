@@ -13,7 +13,7 @@
           <%= render "shared/products_table", products: @products, mark: @query %>
         <% else %>
           <div class="u-pullOut">
-            <%= render "shared/empty_state", message: "<p>" + t('search_results.none.products', query: @query).html_safe + "</p>" %>
+            <%= render "shared/empty_state", message: t('search_results.none.products', query: @query, path: new_product_path).html_safe %>
           </div>
         <% end %>
       </div>
@@ -23,7 +23,7 @@
           <%= render "shared/brands_table", brands: @brands, mark: @query %>
         <% else %>
           <div class="u-pullOut">
-            <%= render "shared/empty_state", message: "<p>" + t('search_results.none.brands', query: @query).html_safe + "</p>" %>
+            <%= render "shared/empty_state", message: t('search_results.none.brands', query: @query, path: new_brand_path).html_safe %>
           </div>
         <% end %>
       </div>

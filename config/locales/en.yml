@@ -117,8 +117,8 @@ en:
   search_results:
     heading: Search results for <span>&ldquo;%{query}&rdquo;</span>
     none:
-      products: No products found for &ldquo;<i>%{query}</i>&rdquo;.
-      brands: No brands found for &ldquo;<i>%{query}</i>&rdquo;.
+      products: <p><b>No products found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a product here</a>.</p>
+      brands: <p><b>No brands found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a brand here</a>.</p>
     alert:
       minimum_chars: Please enter at least %{min} characters.
   setups:
