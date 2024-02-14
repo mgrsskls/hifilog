@@ -99,7 +99,7 @@
   <% end %>
 
   <% if collection && collection.any? %>
-    <div class="FilterExtra">
+    <div class="FilterExtra" id="list">
       <p class="FilterInfo"><%= page_entries_info collection %></p>
 
       <% unless yield.blank? %>
