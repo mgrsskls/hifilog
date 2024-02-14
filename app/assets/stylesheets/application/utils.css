@@ -72,3 +72,15 @@
 .is-positive {
 	background: var(--color-positive);
 }
+
+@media (max-width: 50rem) {
+	.u-hide-sm {
+		display: none;
+	}
+}
+
+@media (min-width: 50.0625rem) {
+	.u-hide-lg {
+		display: none;
+	}
+}

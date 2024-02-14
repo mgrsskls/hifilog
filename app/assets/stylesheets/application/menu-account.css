@@ -9,25 +9,38 @@
 }
 
 @media (max-width: 50rem) {
+	.MenuMain-link--mega {
+		pointer-events: none;
+	}
+
 	.Menu-subList-separator {
 		margin-block-start: 0.5rem;
+		padding-block-start: 1rem;
+	}
+
+	.MenuAccount-list {
+		padding-inline-start: 1rem;
 		padding-block-start: 1rem;
 	}
 }
 
 @media (min-width: 50.0625rem) {
-	.MenuMain-item:is(:hover, :focus-within) .Menu-subList--account {
+	[aria-expanded="false"] ~ .MenuAccount-list {
+		display: none;
+	}
+
+	[aria-expanded="true"] ~ .MenuAccount-list {
 		display: flex;
 	}
 
 	.MenuAccount-list {
 		inset-inline-end: 0;
-		inline-size: 8rem;
+		inline-size: 11rem;
 		padding: 1rem;
 	}
 
 	.MenuAccount-item:is(:hover, :focus-within) {
-		background: var(--color-blue-90);
+		background: var(--color-menu-bg);
 	}
 
 	.MenuAccount-list li > * {

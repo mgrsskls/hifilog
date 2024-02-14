@@ -1,3 +1,11 @@
+@media (max-width: 50rem) {
+	.MenuMain-item {
+		margin-block-start: 2rem;
+		padding-block-start: 2rem;
+		border-block-start: var(--border) var(--divider-color);
+	}
+}
+
 @media (min-width: 50.0625rem) {
 	.MenuMain-link {
 		display: flex;
@@ -6,7 +14,7 @@
 	}
 
 	.MenuMain-link[aria-expanded="true"] {
-		background: var(--color-blue-90);
+		background: var(--color-menu-bg);
 	}
 
 	.MenuMain-item--account {

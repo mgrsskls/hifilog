@@ -73,9 +73,12 @@
               <ul class="MenuAccount MenuList">
                 <% if user_signed_in? %>
                   <li class="MenuMain-item MenuMain-item--account">
-                    <button class="MenuMain-link MenuMain-link--account" aria-controls="menu-account" aria-expanded="false" <%= active_menu_state(@active_menu, :dashboard) %>>
+                    <button class="MenuMain-link MenuMain-link--account u-hide-sm" aria-controls="menu-account" aria-expanded="false" <%= active_menu_state(@active_menu, :dashboard) %>>
                       <span><%= t('dashboard') %></span>
                     </button>
+                    <a href="<%= dashboard_root_path %>" class="Menu-link--lvl1 u-hide-lg" <%= active_menu_state(@active_menu, :dashboard) %>>
+                      <span><%= t('dashboard') %></span>
+                    </a>
                     <ul class="MenuAccount-list Menu-subList" id="menu-account">
                       <li>
                         <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>

@@ -78,6 +78,7 @@
 		--color-blue-10: hsl(204, 18.5%, 97.5%);
 		--color-blue-20: hsl(204, 18.5%, 92.5%);
 		--color-blue-50: hsl(204, 18.5%, 50%);
+		--color-blue-80: hsl(208, 40%, 20%);
 		--color-blue-90: hsl(208, 40%, 12.5%);
 		--color-blue-100: hsl(208, 40%, 10%);
 
@@ -88,6 +89,7 @@
 		--color-secondary-on-light: hsl(var(--hue), 30%, 40%);
 		--color-secondary-on-dark: hsl(var(--hue), 30%, 60%);
 
+		--color-menu-bg: var(--color-blue-80);
 		--color-bg: hsl(var(--bg-h-s), var(--bg-l));
 		--color-bg2: var(--color-blue-10);
 		--color-bg-selection: hsl(204, 18.5%, 75%);

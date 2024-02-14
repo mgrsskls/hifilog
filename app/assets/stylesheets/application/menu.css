@@ -26,7 +26,7 @@
 }
 
 .Menu-subList-separator {
-	border-block-start: var(--border) var(--color-secondary-on-dark);
+	border-block-start: var(--border) var(--divider-color);
 }
 
 .MegaMenu {
@@ -72,6 +72,12 @@
 	.MenuList [aria-current="page"] span {
 		color: var(--color-accent);
 	}
+
+	.Menu-link--lvl1 {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: #fff;
+	}
 }
 
 @media (max-width: 50rem) {
@@ -81,17 +87,11 @@
 		gap: 0.5rem;
 	}
 
-	.Menu-subList {
+	.Menu-link--lvl1 + ul {
 		padding-inline-start: 1rem;
-		padding-block-start: 1rem;
 	}
 
-	[aria-expanded="false"][aria-current="false"] + .Menu-subList {
-		display: none;
-	}
-
-	[aria-expanded="true"]:is([aria-current="true"], [aria-current="page"])
-		+ .Menu-subList {
+	.Menu-subList {
 		display: flex;
 	}
 
@@ -110,14 +110,10 @@
 	.Menu-subList {
 		position: absolute;
 		inset-block-start: var(--height);
-		background: var(--color-blue-90);
-	}
-
-	[aria-expanded="false"] + .Menu-subList {
-		display: none;
-	}
-
-	[aria-expanded="true"] + .Menu-subList {
-		display: flex;
+		background: var(--color-menu-bg);
+		max-block-size: calc(100dvb - var(--header-height));
+		overflow-y: auto;
+		box-sizing: border-box;
+		overscroll-behavior: contain;
 	}
 }

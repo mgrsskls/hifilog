@@ -1,6 +1,7 @@
 .Header {
 	--gap: 2rem;
 	--height: 3.75rem;
+	--divider-color: rgba(255, 255, 255, 0.25);
 
 	display: flex;
 	gap: var(--gap);
@@ -91,9 +92,6 @@
 
 	.Header-menu {
 		flex-direction: column-reverse;
-		border-block-end: var(--border) var(--color-secondary-on-dark);
-		padding-block-end: 1rem;
-		margin-block-end: 1rem;
 	}
 
 	.Search {

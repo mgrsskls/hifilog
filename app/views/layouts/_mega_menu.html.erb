@@ -8,7 +8,9 @@
     <div class="MenuMega-header">
       <div class="MenuMega-headerTitle">
         <span class="h2"><%= t("headings." + entity) %></span>
-        <%= link_to "Show all", show_all_path %>
+        <%= link_to show_all_path do %>
+          <span>Show all</span>
+        <% end %>
       </div>
       <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button" %>
     </div>
@@ -19,7 +21,7 @@
         <% end %>
             <div class="MenuMega-list">
               <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: category.id }),
-                class: "MegaMenu MegaMenu-link MegaMenu-link--lvl1",
+                class: "MegaMenu MegaMenu-link MegaMenu-link--lvl1 Menu-link--lvl1",
                 "aria-current": (request.path == show_all_path && params[:category].present? && params[:category].to_i == category.id && !params[:sub_category].present?) ? "page" : "false" do %>
                 <span><%= category.name %></span>
               <% end %>
