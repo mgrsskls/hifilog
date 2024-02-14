@@ -275,6 +275,11 @@
     color: var(--color-input-placeholder);
   }
 
+  select {
+    /* Necessary because iOS Safari uses it for the text, becomes unreadable */
+    accent-color: var(--color-accent-on-light);
+  }
+
   select,
   input:not([type="checkbox"], [type="radio"], [type="hidden"]),
   textarea {
