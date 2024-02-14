@@ -89,7 +89,7 @@ class BrandsController < ApplicationController
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          AND categories.id = ?
+          WHERE categories.id = ?
         ) AS brand WHERE left(lower(brand.name),1) = ? AND brand.discontinued = ? ORDER BY
       " + order, @category.id, @category.id, params[:letter].downcase, discontinued])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:sub_category].present?
@@ -132,7 +132,7 @@ class BrandsController < ApplicationController
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          AND categories.id = ?
+          WHERE categories.id = ?
         ) AS brand WHERE left(lower(brand.name),1) = ? ORDER BY
       " + order, @category.id, @category.id, params[:letter].downcase])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:status].present?
@@ -184,7 +184,7 @@ class BrandsController < ApplicationController
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          AND categories.id = ?
+          WHERE categories.id = ?
         ) AS brand WHERE brand.discontinued = ? ORDER BY
       " + order, @category.id, @category.id, discontinued])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter])
@@ -230,7 +230,7 @@ class BrandsController < ApplicationController
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          AND categories.id = ?
+          WHERE categories.id = ?
         ) AS brand ORDER BY
       " + order, @category.id, @category.id])).page(params[:page])
     elsif params[:status].present?
