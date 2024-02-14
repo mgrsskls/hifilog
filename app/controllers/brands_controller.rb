@@ -281,7 +281,8 @@ class BrandsController < ApplicationController
 
     add_breadcrumb I18n.t('new_brand.heading')
 
-    @brand = Brand.new
+    @sub_category = SubCategory.find(params[:sub_category]) if params[:sub_category].present?
+    @brand = @sub_category ? Brand.new(sub_category_ids: [@sub_category.id]) : Brand.new
     @categories = Category.includes([:sub_categories]).all.order(:order)
   end
 

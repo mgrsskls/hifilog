@@ -7,7 +7,7 @@
       <small><%= @category.name %></small>
     <% end %>
   </h1>
-  <%= link_to t('new_product.link'), user_signed_in? ? new_product_path : new_user_session_path(redirect: new_product_path), class: "Button" %>
+  <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button" %>
 </div>
 
 <%= render "shared/filter", reset_path: products_path, collection: @products, render_abc: true, render_status: true do %>
