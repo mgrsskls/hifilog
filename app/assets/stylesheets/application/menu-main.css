@@ -1,5 +1,6 @@
 @media (max-width: 50rem) {
-	.MenuMain-item {
+	.MenuMain .MenuMain-item,
+	.MenuAccount {
 		margin-block-start: 2rem;
 		padding-block-start: 2rem;
 		border-block-start: var(--border) var(--divider-color);
