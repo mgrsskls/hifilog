@@ -22,6 +22,8 @@
         <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website) : "-" %></dd>
         <dt><%= t('brand.year_founded') %></dt>
         <dd><%= @brand.year_founded.present? ? @brand.year_founded : "-" %></dd>
+        <dt><%= t('headings.categories') %></dt>
+        <dd><%= @brand.all_sub_categories.any? ? (@brand.all_sub_categories.map { |c| link_to c.name, products_path(sub_category: c.id, category: c.category_id) }.join(", ")).html_safe : "-" %></dd>
       </dl>
 
       <% if @brand.description.present? %>

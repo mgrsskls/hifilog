@@ -26,6 +26,23 @@
     </div>
 
     <div class="Form-field">
+      <div class="Form-label"><%= t('headings.categories') %></div>
+      <div class="Options">
+        <% @categories.each do |category| %>
+          <details <% if (category.sub_category_ids & @brand.sub_category_ids).any? %>open<% end %>>
+          <summary><%= category.name %></summary>
+            <% category.sub_categories.each do |sub_category| %>
+              <div class="Options-item">
+                <%= check_box_tag "brand[sub_category_ids][#{sub_category.id}]", sub_category.id, @brand.sub_category_ids.include?(sub_category.id), name: "brand[sub_category_ids][]" %>
+                <%= label_tag "brand[sub_category_ids][#{sub_category.id}]", sub_category.name %>
+              </div>
+            <% end %>
+          </details>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="Form-field">
       <%= f.label :website, class: "Form-label" do %>
         <%= t('brand.website') %> <small><i>(optional)</i></small>
       <% end %>

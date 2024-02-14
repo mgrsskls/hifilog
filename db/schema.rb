@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_13_184231) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_14_013258) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -71,6 +71,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_13_184231) do
     t.index "lower((name)::text)", name: "index_brands_on_name", unique: true
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["slug"], name: "index_brands_on_slug", unique: true
+  end
+
+  create_table "brands_sub_categories", id: false, force: :cascade do |t|
+    t.bigint "brand_id", null: false
+    t.bigint "sub_category_id", null: false
+    t.index ["brand_id", "sub_category_id"], name: "index_brands_sub_categories_on_brand_id_and_sub_category_id", unique: true
   end
 
   create_table "categories", force: :cascade do |t|

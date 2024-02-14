@@ -8,6 +8,7 @@ class Brand < ApplicationRecord
   extend FriendlyId
 
   has_many :products, dependent: :destroy
+  has_and_belongs_to_many :sub_categories
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
@@ -35,12 +36,14 @@ class Brand < ApplicationRecord
     ['products']
   end
 
-  def sub_categories
-    @sub_categories ||= SubCategory.joins(:products).where(products:).order(:name).distinct
+  def all_sub_categories
+    @all_sub_categories ||= (sub_categories +
+                              SubCategory.joins(:products).where(products:).order(:name).distinct
+                            ).uniq.sort_by(&:name)
   end
 
   def categories
-    @categories ||= sub_categories.includes([:category]).map(&:category).uniq.sort_by(&:name)
+    @categories ||= all_sub_categories.map(&:category).uniq.sort_by(&:name)
   end
 
   def display_name

@@ -12,7 +12,9 @@ class BrandsController < ApplicationController
   def index
     @page_title = I18n.t('headings.brands')
 
-    if params[:letter].present? || params[:category].present? || params[:status].present?
+    if params[:letter].present? && (
+      ABC.include?(params[:letter]) || params[:category].present? || params[:status].present?
+    )
       add_breadcrumb I18n.t('headings.brands'), proc { :brands }
     else
       add_breadcrumb I18n.t('headings.brands')
@@ -33,7 +35,10 @@ class BrandsController < ApplicationController
       order = 'LOWER(name) ASC'
     end
 
-    if params[:letter].present? && params[:sub_category].present? && params[:status].present?
+    if params[:letter].present? &&
+       ABC.include?(params[:letter]) &&
+       params[:sub_category].present? &&
+       params[:status].present?
       @sub_category = SubCategory.find(params[:sub_category])
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
@@ -44,48 +49,93 @@ class BrandsController < ApplicationController
         sub_category: params[:sub_category],
       )
       add_breadcrumb I18n.t(params[:status])
-      @brands = Brand.joins(:products)
-                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
-                     .where({ sub_categories: { id: params[:sub_category] } })
-                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
-    elsif params[:letter].present? && params[:category].present? && params[:status].present?
+      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          AND brands_sub_categories.sub_category_id = ?
+          ) AS brand WHERE left(lower(brand.name),1) = ? AND brand.discontinued = ? ORDER BY
+      " + order, @sub_category.id, @sub_category.id, params[:letter].downcase, discontinued])).page(params[:page])
+    elsif params[:letter].present? &&
+          ABC.include?(params[:letter]) &&
+          params[:category].present? &&
+          params[:status].present?
       @category = Category.find(params[:category])
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
       add_breadcrumb I18n.t(params[:status])
-      @brands = Brand.joins(:products)
-                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
-                     .where({ sub_categories: { category_id: params[:category] } })
-                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
-    elsif params[:letter].present? && params[:sub_category].present?
+      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
+          AND categories.id = ?
+        ) AS brand WHERE left(lower(brand.name),1) = ? AND brand.discontinued = ? ORDER BY
+      " + order, @category.id, @category.id, params[:letter].downcase, discontinued])).page(params[:page])
+    elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:sub_category].present?
       @sub_category = SubCategory.find(params[:sub_category])
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
       add_breadcrumb @sub_category.name
-      @brands = Brand.joins(:products)
-                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
-                     .where({ sub_categories: { id: params[:sub_category] } })
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
-    elsif params[:letter].present? && params[:category].present?
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          AND brands_sub_categories.sub_category_id = ?
+          ) AS brand WHERE left(lower(brand.name),1) = ? ORDER BY
+      " + order, @sub_category.id, @sub_category.id, params[:letter].downcase])).page(params[:page])
+    elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:category].present?
       @category = Category.find(params[:category])
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name
-      @brands = Brand.joins(:products)
-                     .where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
-                     .where({ sub_categories: { category_id: params[:category] } })
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
-    elsif params[:letter].present? && params[:status].present?
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
+          AND categories.id = ?
+        ) AS brand WHERE left(lower(brand.name),1) = ? ORDER BY
+      " + order, @category.id, @category.id, params[:letter].downcase])).page(params[:page])
+    elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:status].present?
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb I18n.t(params[:status])
       @brands = Brand.where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
@@ -98,23 +148,46 @@ class BrandsController < ApplicationController
       add_breadcrumb @category.name, brands_path(category: params[:category])
       add_breadcrumb @sub_category.name, brands_path(category: params[:category], sub_category: params[:sub_category])
       add_breadcrumb I18n.t(params[:status])
-      @brands = Brand.joins(:products)
-                     .where({ sub_categories: { category_id: params[:category] } })
-                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
+      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          AND brands_sub_categories.sub_category_id = ?
+        ) AS brand WHERE brand.discontinued = ? ORDER BY
+      " + order, @sub_category.id, @sub_category.id, discontinued])).page(params[:page])
     elsif params[:category].present? && params[:status].present?
       @category = Category.find(params[:category])
       add_breadcrumb @category.name, brands_path(category: params[:category])
       add_breadcrumb I18n.t(params[:status])
-      @brands = Brand.joins(:products)
-                     .where({ sub_categories: { category_id: params[:category] } })
-                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
-    elsif params[:letter].present?
+      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
+          AND categories.id = ?
+        ) AS brand WHERE brand.discontinued = ? ORDER BY
+      " + order, @category.id, @category.id, discontinued])).page(params[:page])
+    elsif params[:letter].present? && ABC.include?(params[:letter])
       add_breadcrumb params[:letter].upcase
       @brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
                      .order(order)
@@ -124,19 +197,42 @@ class BrandsController < ApplicationController
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb @category.name, brands_path(category: params[:category])
       add_breadcrumb @category.name
-      @brands = Brand.joins(:products)
-                     .where({ sub_categories: { id: params[:sub_category] } })
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          AND brands_sub_categories.sub_category_id = ?
+        ) AS brand ORDER BY
+      " + order, @sub_category.id, @sub_category.id])).page(params[:page])
     elsif params[:category].present?
       @category = Category.find(params[:category])
       add_breadcrumb @category.name
-      @brands = Brand.joins(:products)
-                     .where({ sub_categories: { category_id: params[:category] } })
-                     .includes(products: :sub_categories)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
+      @brands = Kaminari.paginate_array(Brand.find_by_sql(["
+        SELECT * FROM (
+          SELECT brands.*
+          FROM brands
+          LEFT JOIN products ON products.brand_id = brands.id
+          LEFT JOIN products_sub_categories ON products_sub_categories.product_id = products.id
+          LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
+          UNION
+          SELECT DISTINCT brands.*
+          FROM brands
+          INNER JOIN brands_sub_categories
+          ON brands_sub_categories.brand_id = brands.id
+          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
+          AND categories.id = ?
+        ) AS brand ORDER BY
+      " + order, @category.id, @category.id])).page(params[:page])
     elsif params[:status].present?
       add_breadcrumb I18n.t(params[:status])
       @brands = Brand.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
@@ -183,6 +279,7 @@ class BrandsController < ApplicationController
     add_breadcrumb I18n.t('new_brand.heading')
 
     @brand = Brand.new
+    @categories = Category.all.order(:order)
   end
 
   def create
@@ -191,6 +288,7 @@ class BrandsController < ApplicationController
     if @brand.save
       redirect_to brand_path(@brand)
     else
+      @categories = Category.all.order(:order)
       render :new, status: :unprocessable_entity
     end
   end
@@ -198,6 +296,7 @@ class BrandsController < ApplicationController
   def edit
     @brand = Brand.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @brand.name)
+    @categories = Category.all.order(:order)
 
     add_breadcrumb @brand.name, brand_path(@brand)
     add_breadcrumb I18n.t('edit')
@@ -219,6 +318,7 @@ class BrandsController < ApplicationController
 
       redirect_to brand_path(@brand)
     else
+      @categories = Category.all.order(:order)
       render :edit, status: :unprocessable_entity
     end
   end
@@ -272,7 +372,8 @@ class BrandsController < ApplicationController
       :website,
       :country_code,
       :year_founded,
-      :description
+      :description,
+      sub_category_ids: [],
     )
   end
 end
