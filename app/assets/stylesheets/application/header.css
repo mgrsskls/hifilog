@@ -5,7 +5,6 @@
 
 	display: flex;
 	gap: var(--gap);
-	flex-wrap: wrap;
 	align-items: center;
 	block-size: var(--height);
 }
@@ -35,6 +34,16 @@
 
 .Search-input:focus {
 	outline: none;
+}
+
+.Header-search--sm .Search {
+	--padding: .45em;
+}
+
+.Header-search--sm .Search-input {
+	--input-padding: .325em;
+
+	block-size: calc(2.375rem - (2 * .1875em));
 }
 
 .Search-button {
@@ -137,11 +146,5 @@
 	.Search-input {
 		padding: 0 var(--padding);
 		block-size: 2rem;
-	}
-}
-
-@media (max-width: 56rem) {
-	.Header {
-		--gap: 1rem;
 	}
 }

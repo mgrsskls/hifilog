@@ -12,6 +12,12 @@
 	flex: 0 0 9.75rem;
 }
 
+@media (max-width: 30rem) {
+	.Menu-home {
+		flex-basis: 7.5rem;
+	}
+}
+
 .MenuList {
 	display: flex;
 }

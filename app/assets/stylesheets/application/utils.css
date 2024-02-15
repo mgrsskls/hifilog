@@ -34,6 +34,10 @@
 	text-align: end;
 }
 
+.u-justifyEnd {
+	justify-content: end;
+}
+
 .u-gap-sm {
 	gap: 0.25rem;
 }
@@ -44,6 +48,10 @@
 
 .u-gap-lg {
 	gap: 3rem;
+}
+
+.u-gap-pageSpacing {
+	gap: var(--page-spacing);
 }
 
 .u-underline {
