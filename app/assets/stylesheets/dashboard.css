@@ -115,6 +115,7 @@ h2 + .DashboardNumbers {
 	border-radius: var(--border-radius);
 	text-decoration: none;
 	padding: 7.5%;
+	background: var(--color-bg2);
 }
 
 a.DashboardNumber:is(:hover, :focus) .DashboardNumber-heading {
