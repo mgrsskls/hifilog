@@ -213,9 +213,12 @@
       <% end %>
       <div class="Footer">
         <div class="u-container">
-          <div class="u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
+          <div class="Footer-wrapper">
             <nav>
               <ul class="Footer-nav">
+                <li>
+                  <%= link_to "hifilog.com", root_path, "aria-current": params[:controller] == "application" && params[:action] == "index" ? "page" : "false" %>
+                </li>
                 <li>
                   <%= link_to "About", about_path, "aria-current": params[:controller] == "static" && params[:action] == "about" ? "page" : "false" %>
                 </li>
