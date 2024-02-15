@@ -1,3 +1,7 @@
+.Dashboard-products {
+	container: wrapper / inline-size;
+}
+
 @media (max-width: 48rem) {
 	.Dashboard-menu {
 		display: none;
@@ -70,12 +74,29 @@
 	margin-block-end: 3rem;
 }
 
+.DashboardStats {
+	display: grid;
+	grid-template-columns: repeat(var(--cols), 1fr);
+	gap: 0 2rem;
+}
+
+.DashboardStats h2 {
+	grid-column: 1 / -1;
+}
+
+.DashboardStats h3 {
+	margin-block-start: 0;
+	line-height: 1;
+}
+
 .DashboardNumbers {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
 	margin: 0;
 	padding: 0;
 	list-style: "";
+	gap: 2rem;
 }
 
 .DashboardNumber {
@@ -84,75 +105,63 @@
 	border: var(--border-medium);
 	border-radius: var(--border-radius);
 	text-decoration: none;
-	padding: 1rem;
+	padding: 7.5%;
+}
+
+a.DashboardNumber:is(:hover, :focus) .DashboardNumber-heading {
+	text-decoration: underline;
 }
 
 .DashboardNumber-heading {
 	margin: 0;
-	font-size: 1.2rem;
+	font-size: 1em;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
 }
 
 .DashboardNumber-value {
-	font-size: 3rem;
+	font-size: 2.4rem;
 	font-weight: bold;
 	line-height: 1;
+	color: var(--color-accent);
 }
 
-@media (max-width: 30rem) {
-	.DashboardNumbers {
-		gap: 1rem;
+.DashboardWrapper {
+	display: grid;
+	grid-template-columns: subgrid;
+}
+
+
+@container wrapper (max-width: 26rem) {
+	.DashboardStats {
+		--cols: 1;
 	}
 }
 
-@media (min-width: 30.0625rem) {
-	.DashboardNumbers {
-		gap: 2rem;
+
+@container wrapper (min-width: 26.0625rem) and (max-width: 40rem) {
+	.DashboardStats {
+		--cols: 2;
+	}
+}
+
+@container wrapper (min-width: 40.0625rem) {
+	.DashboardStats {
+		--cols: 4;
 	}
 
 	.DashboardNumber {
 		flex-direction: column;
-		aspect-ratio: 1.6;
+		aspect-ratio: 2;
 	}
-}
 
-.DashboardStats {
-	margin-block-start: 1rem;
-	container: stats / inline-size;
-}
+	.DashboardWrapper {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / calc(var(--cols) - 1);
+	}
 
-.DashboardStats tr {
-	background: transparent;
-}
-
-.DashboardStats tr:first-child th {
-	font-size: 1.2em;
-	letter-spacing: 0;
-	color: inherit;
-	text-transform: none;
-}
-
-.DashboardStats th,
-.DashboardStats td {
-	padding-inline-start: 0;
-}
-
-.DashboardStats td {
-	color: var(--color-accent);
-	font-weight: bold;
-}
-
-.DashboardStats span {
-	color: var(--color-secondary);
-	font-size: 0.875em;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	line-height: calc(var(--line-height) * 1rem);
-	padding-inline-end: 0.5em;
-}
-
-@container stats (width < 36rem) {
-	.DashboardStats span {
-		display: block;
+	.DashboardWrapper + .DashboardWrapper {
+		grid-column: calc(var(--cols) - 1) / -1;
 	}
 }

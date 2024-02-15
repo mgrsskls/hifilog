@@ -1,47 +1,66 @@
 <%= render layout: "shared/dashboard" do %>
-  <div class="Heading">
-    <h1><%= current_user.user_name ? t('headings.dashboard_name', name: current_user.user_name) : t('headings.dashboard') %></h1>
-  </div>
-
-  <ul class="DashboardNumbers">
-    <li>
-      <%= link_to dashboard_products_path, class: "DashboardNumber" do %>
-        <h2 class="DashboardNumber-heading"><%= t('heading.products') %></h2>
-        <span class="DashboardNumber-value"><%= user_products_count(current_user) %></span>
-      <% end %>
-    </li>
-    <li>
-      <%= link_to dashboard_bookmarks_path, class: "DashboardNumber" do %>
-        <h2 class="DashboardNumber-heading"><%= t('heading.bookmarks') %></h2>
-        <span class="DashboardNumber-value"><%= user_bookmarks_count(current_user) %></span>
-      <% end %>
-    </li>
-    <li>
-      <%= link_to dashboard_setups_path, class: "DashboardNumber" do %>
-        <h2 class="DashboardNumber-heading"><%= t('heading.setups') %></h2>
-        <span class="DashboardNumber-value"><%= user_setups_count(current_user) %></span>
-      <% end %>
-    </li>
-  </ul>
+  <h1><%= current_user.user_name ? t('headings.dashboard_name', name: current_user.user_name) : t('headings.dashboard') %></h1>
 
   <div class="DashboardStats">
-    <h2>Your Hifi&hairsp;log Stats</h2>
+    <h2>Your HiFi Gear</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th colspan="2"><%= t('headings.products') %></th>
-          <th colspan="2"><%= t('headings.brands') %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span><%= t('headings.created') %></span> <%= @products_created %></td>
-          <td><span><%= t('headings.edited') %></span> <%= @products_edited %></td>
-          <td><span><%= t('headings.created') %></span> <%= @brands_created %></td>
-          <td><span><%= t('headings.edited') %></span> <%= @brands_edited %></td>
-        </tr>
-      </tbody>
-    </table>
+    <ul class="DashboardNumbers">
+      <li>
+        <%= link_to dashboard_products_path, class: "DashboardNumber" do %>
+          <h2 class="DashboardNumber-heading"><%= t('heading.products') %></h2>
+          <span class="DashboardNumber-value"><%= user_products_count(current_user) %></span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to dashboard_bookmarks_path, class: "DashboardNumber" do %>
+          <h2 class="DashboardNumber-heading"><%= t('heading.bookmarks') %></h2>
+          <span class="DashboardNumber-value"><%= user_bookmarks_count(current_user) %></span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to dashboard_setups_path, class: "DashboardNumber" do %>
+          <h2 class="DashboardNumber-heading"><%= t('heading.setups') %></h2>
+          <span class="DashboardNumber-value"><%= user_setups_count(current_user) %></span>
+        <% end %>
+      </li>
+    </ul>
+
+    <h2>Your HiFi&hairsp;Log Stats</h2>
+
+    <div class="DashboardWrapper">
+      <h3><%= t('headings.products') %></h3>
+      <ul class="DashboardNumbers">
+        <li>
+          <div class="DashboardNumber">
+            <h2 class="DashboardNumber-heading"><%= t('heading.created') %></h2>
+            <span class="DashboardNumber-value"><%= @products_created %></span>
+          </div>
+        </li>
+        <li>
+          <div class="DashboardNumber">
+            <h2 class="DashboardNumber-heading"><%= t('heading.edited') %></h2>
+            <span class="DashboardNumber-value"><%= @products_edited %></span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="DashboardWrapper">
+      <h3><%= t('headings.brands') %></h3>
+      <ul class="DashboardNumbers">
+        <li>
+          <div class="DashboardNumber">
+            <h2 class="DashboardNumber-heading"><%= t('heading.created') %></h2>
+            <span class="DashboardNumber-value"><%= @brands_created %></span>
+          </div>
+        </li>
+        <li>
+          <div class="DashboardNumber">
+            <h2 class="DashboardNumber-heading"><%= t('heading.edited') %></h2>
+            <span class="DashboardNumber-value"><%= @brands_edited %></span>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 <% end %>
