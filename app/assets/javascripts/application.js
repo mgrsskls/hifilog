@@ -36,7 +36,7 @@ import "./theme_toggle.js";
 		sort.addEventListener("change", onSortChange);
 	}
 
-	buttonsWithLoadingState.forEach(span => {
+	buttonsWithLoadingState.forEach((span) => {
 		const button = span.closest("button");
 		const form = span.closest("form");
 
@@ -72,7 +72,9 @@ import "./theme_toggle.js";
 					menuButton.setAttribute("aria-expanded", "true");
 
 					if (window.matchMedia("(max-width: 50rem)")) {
-						if (menuButton.getBoundingClientRect().bottom > window.innerHeight) {
+						if (
+							menuButton.getBoundingClientRect().bottom > window.innerHeight
+						) {
 							menuButton.scrollIntoView(false);
 						}
 

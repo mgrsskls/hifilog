@@ -142,13 +142,11 @@ a.DashboardNumber:is(:hover, :focus) .DashboardNumber-heading {
 	margin-block-start: 1.5rem;
 }
 
-
 @container wrapper (max-width: 26rem) {
 	.DashboardStats {
 		--cols: 1;
 	}
 }
-
 
 @container wrapper (min-width: 26.0625rem) and (max-width: 40rem) {
 	.DashboardStats {
