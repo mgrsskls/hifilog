@@ -9,6 +9,7 @@
 @import url("./application/heading.css") layer(components);
 @import url("./application/filter.css") layer(components);
 @import url("./application/footer.css") layer(components);
+@import url("./application/instructions.css") layer(components);
 @import url("./application/menu.css") layer(components);
 @import url("./application/page_actions.css") layer(components);
 @import url("./application/pagination.css") layer(components);
