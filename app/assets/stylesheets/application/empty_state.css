@@ -1,7 +1,7 @@
 .EmptyState {
 	background: var(--color-bg2);
 	margin-block-start: 1.5rem;
-	padding: var(--page-spacing);
+	padding: 1.5rem clamp(var(--page-spacing), 8vi, 8rem);
 	margin-trim: block;
 	text-align: center;
 }

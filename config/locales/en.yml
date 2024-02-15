@@ -156,6 +156,8 @@ en:
     sub_category: Sub&shy;category
     sub_categories: Sub&shy;categories
   empty_state:
+    gear: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p><p>You can also <a href="%{setups_path}">create a setup</a> first &mdash; like your living room or your office &mdash; or simply bookmark some products you are interested in.</p>'
+    contributions: '<p><b>You have not contributed any brands or products yet.</b></p><p>You can <a href="%{brands_path}">create a brand</a>, <a href="%{products_path}">create a product</a> or contribute by adding more information to a brand or a product directly on their sites.</p>'
     categories: <p><b>There are no categories yet.</b></p>
     brands: <p><b>There are no brands yet.</b></p>
     brands_filter: <p><b>There are no brands yet based on your filter criteria.</b> You can <a href="%{path}">add a brand here</a>.</p>
@@ -165,7 +167,7 @@ en:
     sub_categories: <p><b>There are no subcategories yet.</b></p>
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
     setup_products: "<p><b>You have not added any products to this setup yet.</b></p><p>After adding a product to your collection, you can assign it to a setup on its product page.</p>"
-    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>.<br>On each product page you can then add it to your collection.</p>'
+    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
   product:
     release_date: Release date
