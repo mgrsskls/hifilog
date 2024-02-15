@@ -31,10 +31,6 @@
 	color: var(--color-accent-on-dark);
 }
 
-.Menu-subList-separator {
-	border-block-start: var(--border) var(--divider-color);
-}
-
 .MegaMenu {
 	flex: 1;
 }
@@ -90,11 +86,6 @@
 	.MenuList {
 		flex-direction: column;
 		flex: 1;
-		gap: 0.5rem;
-	}
-
-	.Menu-link--lvl1 + ul {
-		padding-inline-start: 1rem;
 	}
 
 	.Menu-subList {

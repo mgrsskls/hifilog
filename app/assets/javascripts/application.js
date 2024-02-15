@@ -57,7 +57,13 @@ import "./theme_toggle.js";
 					menuButton.setAttribute("aria-expanded", "true");
 
 					if (window.matchMedia("(max-width: 50rem)")) {
-						menuButton.scrollIntoView();
+						if (menuButton.getBoundingClientRect().bottom > window.innerHeight) {
+							menuButton.scrollIntoView(false);
+						}
+
+						if (menuButton.getBoundingClientRect().top < 0) {
+							menuButton.scrollIntoView();
+						}
 					}
 				} else {
 					menuButton.setAttribute("aria-expanded", "false");

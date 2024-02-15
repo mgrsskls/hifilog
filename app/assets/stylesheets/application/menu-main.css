@@ -1,9 +1,23 @@
+.MenuMain-link  svg {
+	aspect-ratio: 1;
+	transition: transform .25s ease;
+	block-size: 1.5rem;
+}
+
+.MenuMain-link[aria-expanded="true"] svg {
+	transform: rotate(.5turn);
+}
+
 @media (max-width: 50rem) {
 	.MenuMain .MenuMain-item + .MenuMain-item,
 	.MenuAccount {
-		margin-block-start: 2rem;
-		padding-block-start: 2rem;
 		border-block-start: var(--border) var(--divider-color);
+	}
+
+	.MenuMain-link span {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: #fff;
 	}
 }
 
@@ -12,6 +26,7 @@
 		display: flex;
 		align-items: center;
 		block-size: var(--header-height);
+		gap: .25rem;
 	}
 
 	.MenuMain-link[aria-expanded="true"] {

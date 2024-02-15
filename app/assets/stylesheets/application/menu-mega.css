@@ -1,3 +1,11 @@
+[aria-expanded="false"] ~ .MenuMega {
+	display: none;
+}
+
+[aria-expanded="true"] ~ .MenuMega {
+	display: flex;
+}
+
 .MegaMenu-link--lvl2 {
 	padding-block: 0.25em;
 }
@@ -9,7 +17,6 @@
 .MenuMega-header {
 	display: flex;
 	justify-content: space-between;
-	align-items: start;
 	gap: 2rem;
 }
 
@@ -19,15 +26,35 @@
 
 @media (max-width: 50rem) {
 	.MenuMega {
-		--page-spacing: 0;
+    --page-spacing: 0;
+
+		border-block-start: var(--border) var(--divider-color);
 	}
 
 	.MenuMain-link--mega {
-		display: none;
+		display: flex;
+		inline-size: 100%;
+		justify-content: space-between;
+		align-items: center;
+		padding-block: 1rem;
+	}
+
+	.MegaMenu-link--lvl1 {
+		font-size: 1rem;
+		color: var(--color-secondary);
 	}
 
 	.MenuMega-header {
-		padding-block-end: 2rem;
+		padding-block: 1rem;
+		align-items: center;
+	}
+
+	.MenuMega-headerTitle .h2 {
+		display: none;
+	}
+
+	.MenuMega-container {
+		padding-block-end: 1rem;
 	}
 
 	.MenuMega-container > div + div {
@@ -36,14 +63,6 @@
 }
 
 @media (min-width: 50.0625rem) {
-	[aria-expanded="false"] ~ .MenuMega {
-		display: none;
-	}
-
-	[aria-expanded="true"] ~ .MenuMega {
-		display: flex;
-	}
-
 	.MenuMega {
 		inset-inline: 0;
 		background: var(--color-menu-bg);
@@ -58,6 +77,7 @@
 		padding-block-end: 1rem;
 		margin-block-end: 1rem;
 		border-block-end: var(--border) rgba(255, 255, 255, 0.1);
+		align-items: start;
 	}
 
 	.MenuMega-headerTitle a {
