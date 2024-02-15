@@ -10,6 +10,7 @@ import "./theme_toggle.js";
 	const filterCategories = document.querySelectorAll('[name="category"]');
 	const filterSubCategories = document.querySelectorAll("[data-category]");
 	const sort = document.querySelector("#sort");
+	const buttonsWithLoadingState = document.querySelectorAll("button span");
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);
@@ -26,6 +27,7 @@ import "./theme_toggle.js";
 	menuButtons.forEach((category) =>
 		category.addEventListener("click", onSubMenuToggle),
 	);
+
 	filterCategories.forEach((category) =>
 		category.addEventListener("change", onCategoryChange),
 	);
@@ -33,6 +35,19 @@ import "./theme_toggle.js";
 	if (sort) {
 		sort.addEventListener("change", onSortChange);
 	}
+
+	buttonsWithLoadingState.forEach(span => {
+		const button = span.closest("button");
+		const form = span.closest("form");
+
+		button.addEventListener("click", () => {
+			if (form.checkValidity()) {
+				button.disabled = true;
+				button.classList.add("is-loading");
+				form.submit();
+			}
+		});
+	});
 
 	function onSubMenuToggle({ currentTarget: button }) {
 		const shouldOpen = button.getAttribute("aria-expanded") === "false";

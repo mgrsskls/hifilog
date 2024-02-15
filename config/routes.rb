@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   # /brands
   # /brands/:brand
   # /brands/:brand/:category
+  get '/all_brands', controller: :brands, action: :all, constraints: lambda { |req| req.format == :json }
   resources :brands do
     get '/changelog', action: :changelog
   end

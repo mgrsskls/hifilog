@@ -53,7 +53,9 @@
       </div>
     <% else %>
       <% if @bookmark %>
-        <%= button_to t('add_to_collection'), owned_products_path(id: @product.id, bookmark_id: @bookmark.id), class: "Button" %>
+        <%= button_to owned_products_path(id: @product.id, bookmark_id: @bookmark.id), class: "Button Button--loadingIcon" do %>
+          <span><%= t('add_to_collection') %></span>
+        <% end %>
 
         <div class="Product-bookmark">
           <span class="Symbol Symbol--positive Symbol--large">✓ <%= t('symbols.in_your_bookmarks') %></span>
@@ -65,9 +67,13 @@
           </div>
         </div>
       <% else %>
-        <%= button_to t('add_to_collection'), owned_products_path(id: @product.id), class: "Button" %>
+        <%= button_to owned_products_path(id: @product.id), class: "Button Button--loadingIcon" do %>
+          <span><%= t('add_to_collection') %></span>
+        <% end %>
         <div class="Product-bookmark">
-          <%= button_to t('add_to_bookmarks'), bookmarks_path(id: @product.id), class: "Button" %>
+          <%= button_to bookmarks_path(id: @product.id), class: "Button Button--loadingIcon" do %>
+            <span><%= t('add_to_bookmarks') %></span>
+          <% end %>
         </div>
       <% end %>
     <% end %>

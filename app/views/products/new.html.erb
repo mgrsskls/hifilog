@@ -2,6 +2,9 @@
   <%= stylesheet_link_tag "form" %>
   <%= stylesheet_link_tag "new_product" %>
 <% end %>
+<% content_for :js do %>
+  <%= javascript_include_tag "new_product", type: "module" %>
+<% end %>
 
 <div class="Form Form--centered">
   <div class="Heading">
@@ -18,7 +21,7 @@
     <%= render "shared/flash_messages", messages: @product.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
 
-  <%= form_for @product, html: { class: "NewProduct", method: :post } do |f| %>
+  <%= form_for @product, html: { class: "NewProduct", method: :post, "data-url": all_brands_path } do |f| %>
     <%= f.hidden_field :brand_id, value: @brand.id if @brand && @brand.id %>
 
     <div class="Form-field">
@@ -30,16 +33,15 @@
       <% unless @brand && @brand.errors.any? %>
         <div class="Form-field">
           <%= f.label :brand, class: "Form-label" %>
-          <input type="text" id="brand-filter" autocomplete="off" value="">
+          <input type="text" id="brand-filter" autocomplete="off" value="" placeholder="Search for brand name…">
         </div>
-        <div class="Form-field Options Options--brands">
-          <% @brands.each do |brand| %>
-            <div class="Options-item" data-brand="<%= brand.name.downcase %>" hidden>
-              <%= f.radio_button :brand_id, brand.id %>
-              <%= f.label :brand_id, brand.name, { value: brand.id } %>
-            </div>
-          <% end %>
-        </div>
+        <div class="Form-field Options Options--brands"></div>
+        <template id="brand-template">
+          <div class="Options-item" data-brand="" hidden>
+            <input type="radio" name="product[brand_id]" value="">
+            <label></label>
+          </div>
+        </template>
       <% end %>
       <div class="Form-field ProductFormAddBrand" <%= "hidden" unless @brand && @brand.errors.any? %>>
         <% unless @brand && @brand.errors.any? %>
@@ -175,49 +177,9 @@
     <% end %>
 
     <div class="Form-submit">
-      <%= f.button t('new_product.submit'), type: "submit", class: "Button" %>
+      <%= f.button type: "submit", class: "Button Button--loadingIcon" do %>
+        <span><%= t('new_product.submit') %></span>
+      <% end %>
     </div>
   <% end %>
 </div>
-<% unless @brand %>
-  <%= javascript_tag nonce: true do %>
-    {
-      const input = document.querySelector("#brand-filter");
-      const brands = Array.from(document.querySelectorAll("[data-brand]"));
-      const addBrand = document.querySelector(".ProductFormAddBrand");
-
-      function render(input, brands, addBrandForm) {
-        const value = input.value.trim().toLowerCase();
-
-        if (value.length > 0) {
-          brands.forEach(brand => {
-            if (brand.dataset.brand.startsWith(value)) {
-              brand.hidden = false;
-            } else {
-              brand.hidden = true;
-            }
-          });
-
-          if (addBrandForm) {
-            addBrandForm.hidden = !brands.map(brand => brand.hidden).every((v) => v === true);
-          }
-        } else {
-          brands.forEach(brand => {
-            brand.hidden = true;
-            brand.querySelector("input").checked = false;
-          });
-
-          addBrandForm.hidden = true;
-        }
-      }
-
-      if (input) {
-        input.addEventListener("input", ({ target }) => {
-          render(target, brands, addBrand);
-        });
-
-        render(input, brands, addBrand);
-      }
-    }
-  <% end %>
-<% end %>

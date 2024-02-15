@@ -244,6 +244,12 @@ class BrandsController < ApplicationController
     end
   end
 
+  def all
+    respond_to do |format|
+      format.json { render json: { brands: Brand.all.select([:name, :id]).order('LOWER(name)') } }
+    end
+  end
+
   def show
     @brand = Brand.friendly.find(params[:id])
 

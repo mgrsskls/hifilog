@@ -86,7 +86,9 @@
     </div>
 
     <div class="Form-submit">
-      <%= f.button t('new_brand.submit'), type: "submit", class: "Button" %>
+      <%= f.button type: "submit", class: "Button Button--loadingIcon" do %>
+        <span><%= t('new_brand.submit') %></span>
+      <% end %>
     </div>
   <% end %>
 </div>

@@ -1,22 +1,29 @@
 class SearchController < ApplicationController
   add_breadcrumb I18n.t('search')
 
-  def results
-    min_chars = 2
+  MIN_CHARS = 2
 
+  def results
     @page_title = I18n.t('search')
     @no_index = true
     @query = params[:query].strip
     query_split_up = @query.split
 
-    if @query.length < min_chars
-      flash.now[:alert] = I18n.t('search_results.alert.minimum_chars', min: min_chars)
+    if @query.length < MIN_CHARS
+      flash.now[:alert] = I18n.t('search_results.alert.minimum_chars', min: MIN_CHARS)
     else
-      @products = Product.search_by_display_name(query_split_up).limit(20).with_pg_search_rank
-      @brands = Brand.search_by_name(query_split_up).limit(20).with_pg_search_rank
-
-      @highest_products_rank = @products.map(&:pg_search_rank).max
-      @highest_brands_rank = @brands.map(&:pg_search_rank).max
+      @products = get_products(query_split_up, 20)
+      @brands = get_brands(query_split_up, 20)
     end
+  end
+
+  private
+
+  def get_products(query, limit)
+    Product.search_by_display_name(query).limit(limit)
+  end
+
+  def get_brands(query, limit)
+    Brand.search_by_name(query).limit(limit)
   end
 end

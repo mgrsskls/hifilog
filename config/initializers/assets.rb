@@ -27,6 +27,7 @@ Rails.application.config.assets.precompile += %w(
 
   application.js
   accordion_tabs.js
+  new_product.js
   table_saw.js
   theme_toggle.js
 )

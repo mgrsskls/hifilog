@@ -11,6 +11,11 @@
 	white-space: nowrap;
 }
 
+.Button:disabled {
+	pointer-events: none;
+	opacity: .5;
+}
+
 .Button:active {
 	transform: translate(0.0625rem, 0.0625rem);
 }
@@ -46,4 +51,41 @@
 
 .TextButton--negative {
 	color: var(--color-invalid-copy);
+}
+
+.Button:has(span) {
+	position: relative;
+}
+
+.Button.is-loading span {
+	visibility: hidden;
+}
+
+.Button.is-loading::after {
+	--size: 1.5em;
+
+	content: "";
+	display: block;
+	width: var(--size);
+	height: var(--size);
+	border: .125em solid #FFF;
+	border-bottom-color: transparent;
+	border-radius: 50%;
+	display: inline-block;
+	box-sizing: border-box;
+	animation: rotation 1s linear infinite;
+	position: absolute;
+	inset-inline-start: 50%;
+	inset-block-start: 50%;
+	margin-inline-start: calc(var(--size) / -2);
+	margin-block-start: calc(var(--size) / -2);
+}
+
+@keyframes rotation {
+	0% {
+			transform: rotate(0deg);
+	}
+	100% {
+			transform: rotate(360deg);
+	}
 }
