@@ -6,28 +6,28 @@
     <h1><%= t('search_results.heading', query: @query).html_safe %></h1>
   </div>
 
-    <div class="SearchResults">
-      <div class="SearchResults-section">
-        <h2><%= t('headings.products') %></h2>
-        <% if @products.any? %>
-          <%= render "shared/products_table", products: @products, mark: @query %>
-        <% else %>
-          <div class="u-pullOut">
-            <%= render "shared/empty_state", message: t('search_results.none.products', query: @query, path: new_product_path).html_safe %>
-          </div>
-        <% end %>
-      </div>
-      <div class="SearchResults-section">
-        <h2><%= t('headings.brands') %></h2>
-        <% if @brands.any? %>
-          <%= render "shared/brands_table", brands: @brands, mark: @query %>
-        <% else %>
-          <div class="u-pullOut">
-            <%= render "shared/empty_state", message: t('search_results.none.brands', query: @query, path: new_brand_path).html_safe %>
-          </div>
-        <% end %>
-      </div>
+  <div class="SearchResults">
+    <div class="SearchResults-section">
+      <h2><%= t('headings.products') %></h2>
+      <% if @products.any? %>
+        <%= render "shared/products_table", products: @products, mark: @query %>
+      <% else %>
+        <div class="u-pullOut">
+          <%= render "shared/empty_state", message: t('search_results.none.products', query: @query, path: new_product_path).html_safe %>
+        </div>
+      <% end %>
     </div>
+    <div class="SearchResults-section">
+      <h2><%= t('headings.brands') %></h2>
+      <% if @brands.any? %>
+        <%= render "shared/brands_table", brands: @brands, mark: @query %>
+      <% else %>
+        <div class="u-pullOut">
+          <%= render "shared/empty_state", message: t('search_results.none.brands', query: @query, path: new_brand_path).html_safe %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 
   <%= render "shared/page_actions" %>
 <% end %>

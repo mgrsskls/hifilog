@@ -1,6 +1,12 @@
 class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
   include BrandHelper
+  include PgSearch::Model
+  pg_search_scope :search_by_name,
+                  against: [:name],
+                  ignoring: :accents,
+                  using: :trigram,
+                  ranked_by: ':trigram'
 
   nilify_blanks
 
@@ -30,6 +36,7 @@ class Brand < ApplicationRecord
       versions_id
       year_founded
       description
+      sub_categories_id
     ]
   end
 

@@ -1,5 +1,18 @@
 class Product < ApplicationRecord
   include Rails.application.routes.url_helpers
+  include PgSearch::Model
+  pg_search_scope :search_by_display_name,
+                  against: :name,
+                  ignoring: :accents,
+                  using: {
+                    tsearch: {
+                      any_word: true,
+                    },
+                    trigram: {
+                      threshold: 0.2
+                    },
+                  },
+                  ranked_by: ':trigram'
 
   nilify_blanks
 
