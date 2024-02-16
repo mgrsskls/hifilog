@@ -12,11 +12,15 @@
       <div class="u-flex u-flexWrap u-gap-lg">
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.created') %></h3>
-          <ol>
-            <% @products['create'].each do |product| %>
-              <li><%= link_to product.display_name, product %></li>
-            <% end %>
-          </ol>
+          <% if @products['create'] %>
+            <ol>
+              <% @products['create'].each do |product| %>
+                <li><%= link_to product.display_name, product %></li>
+              <% end %>
+            </ol>
+          <% else %>
+            -
+          <% end %>
         </div>
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.edited') %></h3>
@@ -37,21 +41,29 @@
       <div class="u-flex u-flexWrap u-gap-lg">
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.created') %></h3>
-          <ol>
-            <% @brands['create'].each do |brand| %>
-              <li><%= link_to brand.name, brand %></li>
-            <% end %>
-          </ol>
+          <% if @brands['create'] %>
+            <ol>
+              <% @brands['create'].each do |brand| %>
+                <li><%= link_to brand.name, brand %></li>
+              <% end %>
+            </ol>
+          <% else %>
+            -
+          <% end %>
         </div>
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.edited') %></h3>
-          <ol>
-            <% @brands['update'].each do |brand| %>
-              <li><%= link_to brand.name, brand %></li>
-            <% end %>
-          </ol>
-        <% end %>
+          <% if @brands['update'] %>
+            <ol>
+              <% @brands['update'].each do |brand| %>
+                <li><%= link_to brand.name, brand %></li>
+              <% end %>
+            </ol>
+          <% else %>
+            -
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
-</div>
+<% end %>
