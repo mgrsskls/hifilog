@@ -9,7 +9,16 @@
       <%= render "shared/flash_messages", messages: flash %>
     <% else %>
       <h1 class="Home-intro">
-        <%= t('home.intro', products_count: rounddown(products_count), products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count).html_safe %>
+        <%
+          products_rounded = round_up_or_down(products_count)
+          if products_rounded[:dir] == :down
+        %>
+          <%= t('home.intro_down', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count).html_safe %>
+        <% elsif products_rounded[:dir] == :eq %>
+          <%= t('home.intro_eq', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count).html_safe %>
+        <% else %>
+          <%= t('home.intro_up', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count).html_safe %>
+        <% end %>
       </h1>
       <p><%= t('home.sign_up', sign_up_path: new_user_registration_path).html_safe %></p>
     <% end %>

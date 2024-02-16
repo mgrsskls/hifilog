@@ -41,9 +41,18 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal user_setups_count(users(:two)), 0
   end
 
-  test 'rounddown' do
-    assert_equal rounddown(12), 10
-    assert_equal rounddown(934), 900
-    assert_equal rounddown(100_523_934), 100_000_000
+  test 'round_up_or_down' do
+    assert_equal round_up_or_down(12), { value: 12, dir: :eq }
+    assert_equal round_up_or_down(16), { value: 16, dir: :eq }
+    assert_equal round_up_or_down(930), { value: 930, dir: :eq }
+    assert_equal round_up_or_down(2000), { value: 2000, dir: :eq }
+    assert_equal round_up_or_down(15_000), { value: 15_000, dir: :eq }
+    assert_equal round_up_or_down(934), { value: 930, dir: :down }
+    assert_equal round_up_or_down(73_123), { value: 73_000, dir: :down }
+    assert_equal round_up_or_down(100_523_934), { value: 100_000_000, dir: :down }
+    assert_equal round_up_or_down(193_523_934), { value: 190_000_000, dir: :down }
+    assert_equal round_up_or_down(978), { value: 980, dir: :up }
+    assert_equal round_up_or_down(99_600), { value: 100_000, dir: :up }
+    assert_equal round_up_or_down(198_523_934), { value: 200_000_000, dir: :up }
   end
 end

@@ -49,9 +49,27 @@ module ApplicationHelper
     user.prev_owneds.count
   end
 
-  def rounddown(num)
-    x = Math.log10(num).floor
-    (num / (10.0**x)).floor * 10**x
+  def round_up_or_down(num)
+    significant_digits = 2
+    exp = Math.log10(num).floor - (significant_digits - 1)
+    value = (num / 10.0**exp).round * 10**exp
+
+    ceil = (num / 10.0**exp).ceil * 10**exp
+
+    # rubocop:disable Style/ConditionalAssignment
+    if num == value
+      dir = :eq
+    elsif value == ceil
+      dir = :up
+    else
+      dir = :down
+    end
+    # rubocop:enable Style/ConditionalAssignment
+
+    {
+      value:,
+      dir:,
+    }
   end
 
   def user_has_product?(user, product)
