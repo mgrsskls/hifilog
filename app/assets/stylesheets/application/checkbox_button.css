@@ -1,0 +1,53 @@
+.CheckboxButton {
+	--size: 1.25em;
+
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	position: relative;
+}
+
+.CheckboxButton::before {
+	content: "";
+	display: block;
+	inline-size: calc(1em * 1.75);
+	block-size: 1em;
+	background: #fff;
+	border-radius: 1em;
+	border: var(--border-medium);
+	box-shadow: 0.05rem 0.1rem 0.25rem var(--color-input-box-shadow) inset;
+	font-size: var(--size);
+}
+
+.CheckboxButton::after {
+	--gap: 0.25em;
+
+	content: "";
+	color: var(--color-blue-35);
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	block-size: calc(1.5em - var(--gap));
+	inline-size: calc(1.5em - var(--gap));
+	background: var(--color-blue-20);
+	position: absolute;
+	inset-inline-start: var(--gap);
+	border-radius: 50%;
+	border: 0.0625rem solid var(--color-blue-35);
+	box-sizing: border-box;
+	line-height: 1;
+	font-size: 0.75em;
+}
+
+.CheckboxButton.is-checked::after {
+	content: "✓";
+	color: #fff;
+	background: hsl(180, 50%, 40%);
+	transform: translateX(calc(1.3333em));
+	border-color: transparent;
+}
+
+.CheckboxButton:disabled {
+	pointer-events: none;
+}

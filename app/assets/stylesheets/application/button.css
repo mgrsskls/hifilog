@@ -4,11 +4,51 @@
 	box-sizing: border-box;
 	background: var(--color-button-bg);
 	color: var(--color-button-copy);
-	box-shadow: 0.15rem 0.15rem 0.5rem var(--color-button-box-shadow);
+	box-shadow: 0.15rem 0.15rem 0.25rem var(--color-button-box-shadow);
 	text-decoration: none;
 	border: var(--border) transparent;
 	display: inline-block;
 	white-space: nowrap;
+}
+
+.Button[aria-pressed="true"] {
+	--hue: 160;
+	--saturation: 50%;
+	--lightness: 40%;
+	--size: 1.75em;
+	--color: var(--hue), var(--saturation), var(--lightness);
+
+	background: hsla(var(--color), 10%);
+	color: hsl(var(--color));
+	border: var(--border);
+}
+
+.Button[aria-pressed="true"]:hover {
+	--hue: 320;
+}
+
+@media (prefers-color-scheme: dark) {
+	.Button[aria-pressed="true"] {
+		--lightness: 70%;
+	}
+}
+
+:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
+	.Button[aria-pressed="true"] {
+	--lightness: 70%;
+}
+
+.Button[aria-pressed="true"]:not(:hover) {
+	font-weight: 600;
+}
+
+.Button[aria-pressed="true"] span:last-child,
+.Button[aria-pressed="true"]:hover span:first-child {
+	display: none;
+}
+
+.Button[aria-pressed="true"]:hover span:last-child {
+	display: block;
 }
 
 .Button:disabled {
@@ -53,25 +93,24 @@
 	color: var(--color-invalid-copy);
 }
 
-.Button:has(span) {
+.Button--loadingIcon {
 	position: relative;
 }
 
-.Button.is-loading span {
+.Button--loadingIcon.is-loading span {
 	visibility: hidden;
 }
 
-.Button.is-loading::after {
+.Button--loadingIcon::after {
 	--size: 1.5em;
 
 	content: "";
-	display: block;
+	display: none;
 	width: var(--size);
 	height: var(--size);
-	border: 0.125em solid #fff;
+	border: 0.125em solid currentColor;
 	border-bottom-color: transparent;
 	border-radius: 50%;
-	display: inline-block;
 	box-sizing: border-box;
 	animation: rotation 1s linear infinite;
 	position: absolute;
@@ -79,6 +118,10 @@
 	inset-block-start: 50%;
 	margin-inline-start: calc(var(--size) / -2);
 	margin-block-start: calc(var(--size) / -2);
+}
+
+.Button--loadingIcon.is-loading::after {
+	display: block;
 }
 
 @keyframes rotation {

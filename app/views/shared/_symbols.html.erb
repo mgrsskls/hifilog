@@ -1,7 +1,7 @@
 <% show_labels ||= false %>
 <% product ||= nil %>
 <% brand ||= nil %>
-<% only ||= [:discontinued, :has_brand, :has_product, :has_bookmark] %>
+<% only ||= [:discontinued, :has_brand, :has_product, :has_bookmark, :has_prev_owned] %>
 
 <div class="Symbols">
 
@@ -45,4 +45,13 @@
     </div>
   <% end %>
 
+  <% if only.include?(:has_prev_owned) && user_has_previously_owned?(current_user, product) %>
+    <div class="Symbols-item">
+      <% if show_labels %>
+        <span class="Symbol">P <%= t('symbols.prev_owned') %></span>
+      <% else %>
+        <span class="Symbol Symbol--iconOnly" title="<%= t('symbols.prev_owned') %>" aria-label="<%= t('symbols.prev_owned') %>">P</span>
+      <% end %>
+    </div>
+  <% end %>
 </div>

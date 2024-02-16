@@ -35,7 +35,7 @@
 
 	.MenuAccount-list {
 		inset-inline-end: 0;
-		inline-size: 11rem;
+		min-inline-size: 12rem;
 		padding: 1rem;
 	}
 

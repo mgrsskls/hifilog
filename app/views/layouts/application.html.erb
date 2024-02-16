@@ -108,6 +108,12 @@
                           <small><%= user_setups_count(current_user) %></small>
                         </a>
                       </li>
+                      <li>
+                        <a href="<%= dashboard_prev_owneds_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :prev_owneds) %>>
+                          <span><%= t('headings.prev_owneds') %></span>
+                          <small><%= user_prev_owneds_count(current_user) %></small>
+                        </a>
+                      </li>
                       <li class="Menu-subList-separator">
                         <a href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>>
                           <span><%= t('headings.contributions') %></span>

@@ -43,6 +43,12 @@ module ApplicationHelper
     user.setups.count
   end
 
+  def user_prev_owneds_count(user)
+    return unless user
+
+    user.prev_owneds.count
+  end
+
   def rounddown(num)
     x = Math.log10(num).floor
     (num / (10.0**x)).floor * 10**x
@@ -54,6 +60,10 @@ module ApplicationHelper
 
   def user_has_bookmark?(user, product)
     product && user && user.bookmarks.where(product_id: product.id).exists?
+  end
+
+  def user_has_previously_owned?(user, product)
+    product && user && user.prev_owneds.where(product_id: product.id).exists?
   end
 
   def user_has_brand?(user, brand)

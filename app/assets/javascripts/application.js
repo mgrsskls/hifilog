@@ -10,7 +10,9 @@ import "./theme_toggle.js";
 	const filterCategories = document.querySelectorAll('[name="category"]');
 	const filterSubCategories = document.querySelectorAll("[data-category]");
 	const sort = document.querySelector("#sort");
-	const buttonsWithLoadingState = document.querySelectorAll("button span");
+	const buttonsWithLoadingState = document.querySelectorAll(
+		".Button--loadingIcon, .CheckboxButton",
+	);
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);
@@ -36,9 +38,9 @@ import "./theme_toggle.js";
 		sort.addEventListener("change", onSortChange);
 	}
 
-	buttonsWithLoadingState.forEach((span) => {
-		const button = span.closest("button");
-		const form = span.closest("form");
+	buttonsWithLoadingState.forEach((el) => {
+		const button = el.closest("button");
+		const form = el.closest("form");
 
 		button.addEventListener("click", () => {
 			if (form.checkValidity()) {

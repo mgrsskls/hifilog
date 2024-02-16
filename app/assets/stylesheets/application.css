@@ -3,6 +3,7 @@
 @import url("./application/back_link.css") layer(components);
 @import url("./application/breadcrumbs.css") layer(components);
 @import url("./application/button.css") layer(components);
+@import url("./application/checkbox_button.css") layer(components);
 @import url("./application/empty_state.css") layer(components);
 @import url("./application/flash_messages.css") layer(components);
 @import url("./application/header.css") layer(components);
@@ -78,6 +79,8 @@
 		--color-white: #fff;
 		--color-blue-10: hsl(204, 18.5%, 97.5%);
 		--color-blue-20: hsl(204, 18.5%, 92.5%);
+		--color-blue-25: hsl(204, 18.5%, 85%);
+		--color-blue-35: hsl(204, 18.5%, 75%);
 		--color-blue-50: hsl(204, 18.5%, 50%);
 		--color-blue-80: hsl(208, 40%, 20%);
 		--color-blue-90: hsl(208, 40%, 12.5%);

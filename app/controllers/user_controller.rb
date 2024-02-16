@@ -47,6 +47,15 @@ class UserController < ApplicationController
     @products = bookmarks.map(&:product)
   end
 
+  def prev_owneds
+    add_breadcrumb I18n.t('headings.prev_owneds'), dashboard_prev_owneds_path
+    @page_title = I18n.t('headings.prev_owneds')
+    @active_dashboard_menu = :prev_owneds
+
+    prev_owneds = current_user.prev_owneds.includes(:product)
+    @products = prev_owneds.map(&:product)
+  end
+
   def contributions
     add_breadcrumb I18n.t('headings.contributions'), dashboard_contributions_path
     @page_title = I18n.t('headings.contributions')

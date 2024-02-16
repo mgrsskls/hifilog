@@ -4,8 +4,6 @@ class UserProductsController < ApplicationController
   def create
     @product = Product.find(params[:id])
 
-    current_user.bookmarks.find(params[:bookmark_id].to_i).destroy if params[:bookmark_id]
-
     unless current_user.products.include?(@product)
       current_user.products << @product
       flash[:alert] = I18n.t(:generic_error_message) unless current_user.save

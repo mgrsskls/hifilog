@@ -33,13 +33,15 @@ en:
   symbols:
     discontinued: Discontinued
     in_your_collection: In my collection
-    in_your_bookmarks: In my bookmarks
+    in_your_bookmarks: Bookmarked
+    prev_owned: Previously owned
   account: Account
   add: Add
   add_product: Add Product
   add_to: Add to &ldquo;%{name}&rdquo;
-  add_to_bookmarks: Add to bookmarks
-  add_to_collection: Add to collection
+  add_to_bookmarks: Add to <b>Bookmarks</b>
+  add_to_collection: Add to <b>Collection</b>
+  add_to_prev_owned: Previously owned
   amount_categories:
     zero: 0 Categories
     one: 1 Category
@@ -110,9 +112,9 @@ en:
     submit: Submit
   not_found: We could not find what you were looking for.
   overview: Overview
-  remove_from: Remove from &ldquo;%{name}&rdquo;
-  remove_from_collection: Remove from collection
-  remove_from_bookmarks: Remove from bookmarks
+  in_setup: In &ldquo;%{name}&rdquo;
+  remove_from_collection: Remove from <b>Collection</b>
+  remove_from_bookmarks: Remove from <b>Bookmarks</b>
   search: Search
   search_results:
     heading: <span>Search results for</span> &ldquo;%{query}&rdquo;
@@ -150,13 +152,14 @@ en:
     dashboard: Welcome back!
     dashboard_name: Welcome back, %{name}!
     edited: Edited
+    prev_owneds: Previously owned
     product: Product
     products: Products
     setups: Setups
     sub_category: Sub&shy;category
     sub_categories: Sub&shy;categories
   empty_state:
-    gear: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p><p>You can also <a href="%{setups_path}">create a setup</a> first &mdash; like your living room or your office &mdash; or simply bookmark some products you are interested in.</p>'
+    gear: '<p><b>You have not added any products to your collections yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p><p>You can also <a href="%{setups_path}">create a setup</a> first &mdash; like your living room or your office &mdash; and assign products to those. Or your simply bookmark some products you are interested in. And if you used to own a product, you can mark it as previously owned on the product page.</p>'
     contributions: '<p><b>You have not contributed any brands or products yet.</b></p><p>You can <a href="%{brands_path}">create a brand</a>, <a href="%{products_path}">create a product</a> or contribute by adding more information to a brand or a product directly on their sites.</p>'
     categories: <p><b>There are no categories yet.</b></p>
     brands: <p><b>There are no brands yet.</b></p>
@@ -168,6 +171,7 @@ en:
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
     setup_products: "<p><b>You have not added any products to this setup yet.</b></p><p>After adding a product to your collection, you can assign it to a setup on its product page.</p>"
     user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>'
+    prev_owneds: '<p><b>You have not marked any products as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
   product:
     release_date: Release date

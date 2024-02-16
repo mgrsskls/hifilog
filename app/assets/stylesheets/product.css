@@ -1,13 +1,22 @@
-.Product-bookmark {
+.Product-action:where(:not(:first-child)) {
 	margin-block-start: 1rem;
 }
 
-.Product-actions {
-	margin-block-start: 1rem;
+.Product-action button {
+	inline-size: 100%;
 }
 
-.Product-action--add + .Product-action--remove {
+.Product-action--setup {
+	margin-inline-start: 0.75rem;
+}
+
+.Product-action--setup + .Product-action--setup {
 	margin-block-start: 0.5rem;
+}
+
+.Product-setups {
+	margin-block-start: 1rem;
+	margin-inline-start: 1rem;
 }
 
 .Product-sub .Button {

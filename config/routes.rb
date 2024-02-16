@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     root 'user#dashboard'
     get 'products', to: 'user#products', as: :products
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
+    get 'prev_owneds', to: 'user#prev_owneds', as: :prev_owneds
     get 'contributions', to: 'user#contributions', as: :contributions
     get 'products/:category', to: 'user#products', as: :products_category
     resources :setups, only: [:index, :show, :create, :destroy]
@@ -21,6 +22,7 @@ Rails.application.routes.draw do
   resources :user_products, only: [:create, :destroy], as: :owned_products
   resources :setup_products, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
+  resources :prev_owneds, only: [:create, :destroy]
   resources :users, only: [:index, :show]
 
   # /brands

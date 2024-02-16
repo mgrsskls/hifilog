@@ -168,6 +168,7 @@ class ProductsController < ApplicationController
 
     if user_signed_in?
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id)
+      @prev_owned = current_user.prev_owneds.find_by(product_id: @product.id)
       @setups = current_user.setups.includes(:products)
     end
 

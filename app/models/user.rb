@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :products
   has_many :setups, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
+  has_many :prev_owneds, dependent: :destroy
 
   validates :user_name, presence: true, uniqueness: true
 

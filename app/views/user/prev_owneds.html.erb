@@ -1,0 +1,9 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.prev_owneds') %></h1>
+  </div>
+
+  <div class="u-pullOut">
+    <%= render "shared/products", products: @products.sort_by{|c| c[:name].downcase}, empty_state: t('empty_state.prev_owneds', brands_path: brands_path, products_path: products_path) %>
+  </div>
+<% end %>
