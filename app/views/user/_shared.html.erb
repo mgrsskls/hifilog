@@ -23,6 +23,12 @@
           <%= render "shared/products", products: @products_without_setup %>
         </details>
       <% end %>
+      <% if @prev_owned_products && @prev_owned_products.any? %>
+        <details>
+          <summary>Previously owned</summary>
+          <%= render "shared/products", products: @prev_owned_products %>
+        </details>
+      <% end %>
     </accordion-tabs>
   <% else %>
     <%= render "shared/products", categories: @all_categories, products: @all_products, empty_state: t('empty_state.user_products', brands_path: brands_path, products_path: products_path) %>

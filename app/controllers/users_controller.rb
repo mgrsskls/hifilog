@@ -47,6 +47,7 @@ class UsersController < ApplicationController
 
     products_with_setup = @user.setups.includes([:products]).flat_map(&:products)
     @products_without_setup = (all_products - products_with_setup)
+    @prev_owned_products = @user.prev_owneds.includes(:product).map(&:product)
 
     data = PaperTrail::Version.where(whodunnit: @user.id).group('item_type', 'event').count
 
