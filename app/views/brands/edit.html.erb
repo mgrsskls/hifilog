@@ -8,6 +8,33 @@
     <h1>Edit <span><%= @brand.name %></span></h1>
   </div>
 
+  <details class="Instructions">
+    <summary>
+      Please read before editing a brand
+      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
+    </summary>
+    <div class="Instructions-content Rte">
+      <p>Thank you for contributing to HiFi&thinsp;Log!</p>
+      <p>Please read the following instructions to make sure all brands are added properly:</p>
+      <ul>
+        <li>Not all information has to be filled out right away. Fields marked with "optional" can be filled out later.</li>
+        <li>Categories will be automatically assigned to a brand based on the products added to a brand. You can however assign categories to a brand on this page, so categories are already listed for a brand when they do not have products assigned to it yet.</li>
+        <li>The description can contain any relevant information that is not discovered by the other fields.</li>
+        <li>
+          The description field supports the following HTML tags:
+          <code><%=h "<b>" %></code>,
+          <code><%=h "<strong>" %></code>,
+          <code><%=h "<i>" %></code>,
+          <code><%=h "<em>" %></code>,
+          <code><%=h "<br>" %></code>,
+          <code><%=h "<ul>" %></code>,
+          <code><%=h "<ol>" %></code>,
+          <code><%=h "<li>" %></code>
+        </li>
+      </ul>
+    </div>
+  </details>
+
   <% if @brand.errors.any? %>
     <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
