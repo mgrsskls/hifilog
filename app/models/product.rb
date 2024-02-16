@@ -47,6 +47,7 @@ class Product < ApplicationRecord
       release_day
       release_month
       release_year
+      description
     ]
   end
 

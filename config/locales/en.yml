@@ -178,6 +178,7 @@ en:
     prev_owneds: '<p><b>You have not marked any products as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
   product:
+    description: Description
     release_date: Release date
     meta:
       owned_by: Owned by

@@ -31,6 +31,12 @@
           <% end %>
         </dd>
       </dl>
+
+      <% if @product.description.present? %>
+        <div class="Entity-description Rte">
+          <%= sanitize(simple_format(@product.description.strip), tags: %w(b i strong em p br ul ol li table thead tbody tr th td)) %>
+        </div>
+      <% end %>
     </div>
   </div>
   <div class="Entity-sub Product-sub u-pullOut">

@@ -214,6 +214,7 @@ class ProductsController < ApplicationController
         release_day: product_params[:release_day],
         release_month: product_params[:release_month],
         release_year: product_params[:release_year],
+        description: product_params[:description],
         sub_category_ids: product_params[:sub_category_ids],
       )
       if @product.save
@@ -234,6 +235,7 @@ class ProductsController < ApplicationController
           release_day: product_params[:release_day],
           release_month: product_params[:release_month],
           release_year: product_params[:release_year],
+          description: product_params[:description],
           sub_category_ids: product_params[:sub_category_ids],
         )
 
@@ -335,6 +337,7 @@ class ProductsController < ApplicationController
             :release_day,
             :release_month,
             :release_year,
+            :description,
             sub_category_ids: [],
             brand_attributes: [:name, :discontinued, :full_name, :website, :country_code, :year_founded, :description]
           )
@@ -348,6 +351,7 @@ class ProductsController < ApplicationController
             :release_day,
             :release_month,
             :release_year,
+            :description,
             sub_category_ids: []
           )
   end

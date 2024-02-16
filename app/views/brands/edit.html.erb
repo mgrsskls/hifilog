@@ -102,7 +102,7 @@
       <%= f.text_area :description %>
     </div>
 
-    <div class="Form-field">
+    <div class="Form-field Form-field--inline">
       <span class="Form-label"><%= t('symbols.discontinued') %></span>
       <div class="Form-options">
         <%= f.radio_button :discontinued, 0, checked: @brand.discontinued.nil? || @brand.discontinued == false %>

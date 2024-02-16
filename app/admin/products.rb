@@ -20,6 +20,7 @@ ActiveAdmin.register Product do
       f.input :brand
       f.input :discontinued
       f.input :slug
+      f.input :description
       f.input :sub_category_ids, label: "Subcategories", as: :check_boxes, collection: SubCategory.all
     end
     f.submit
@@ -32,6 +33,7 @@ ActiveAdmin.register Product do
       row :updated_at
       row :brand
       row :discontinued
+      row :description
       row :slug
       row :sub_categories do |product|
         product.sub_categories

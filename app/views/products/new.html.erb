@@ -31,6 +31,19 @@
         <li>You can assign multiple categories to a product, for example "Over-Ear Headphones" + "Noise Cancelling Headphones".</li>
         <li>If you for example only know the year (or year and month) when a product has been released, you can omit the other fields.</li>
         <li>When adding a product to a brand that has been discontinued, the product will automatically be set to discontinued as well, no matter what you select.</li>
+        <li>The description can contain any relevant information that is not discovered by the other fields.</li>
+        <li>
+          The description field supports the following HTML tags:
+          <code><%=h "<b>" %></code>,
+          <code><%=h "<strong>" %></code>,
+          <code><%=h "<i>" %></code>,
+          <code><%=h "<em>" %></code>,
+          <code><%=h "<br>" %></code>,
+          <code><%=h "<ul>" %></code>,
+          <code><%=h "<ol>" %></code>,
+          <code><%=h "<li>" %></code>
+        </li>
+      </ul>
       </ul>
     </div>
   </details>
@@ -164,6 +177,13 @@
           <option value="<%= year %>"></option>
         <% end %>
       </datalist>
+    </div>
+
+    <div class="Form-field">
+      <%= f.label :description, class: "Form-label" do %>
+        <%= t('product.description') %> <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_area :description %>
     </div>
 
     <% if @brand && @brand.discontinued %>
