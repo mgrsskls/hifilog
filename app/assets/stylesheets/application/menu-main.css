@@ -27,6 +27,7 @@
 		align-items: center;
 		block-size: var(--header-height);
 		gap: 0.5rem;
+		border-radius: 0;
 	}
 
 	.MenuMain-link[aria-expanded="true"] {
