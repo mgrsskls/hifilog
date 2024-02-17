@@ -37,6 +37,7 @@ class User < ApplicationRecord
       confirmation_token
       unconfirmed_email
       bookmarks_id
+      prev_owneds_id
     ]
   end
 

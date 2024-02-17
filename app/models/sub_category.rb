@@ -15,6 +15,7 @@ class SubCategory < ApplicationRecord
       name
       slug
       updated_at
+      brands_id
     ]
   end
 
