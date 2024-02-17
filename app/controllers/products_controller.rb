@@ -192,7 +192,7 @@ class ProductsController < ApplicationController
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
     @product.build_brand
     @brands = Brand.all.order('LOWER(name)')
-    @categories = Category.ordered.includes([:sub_categories])
+    @categories = Category.includes([:sub_categories]).all.order(:order)
 
     if params[:brand_id].present?
       @product.brand_id = params[:brand_id]
