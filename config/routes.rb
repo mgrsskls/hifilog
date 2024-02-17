@@ -48,6 +48,7 @@ Rails.application.routes.draw do
   get '/changelog', to: 'static#changelog'
   get '/about', to: 'static#about'
   get '/privacy-policy', to: 'static#privacy_policy'
+  get '/imprint', to: 'static#imprint'
 
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
   get '*url', to: 'application#not_found', via: :all, format: 'html'

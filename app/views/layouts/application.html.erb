@@ -226,13 +226,16 @@
                   <%= link_to "hifilog.com", root_path, "aria-current": params[:controller] == "application" && params[:action] == "index" ? "page" : "false" %>
                 </li>
                 <li>
-                  <%= link_to "About", about_path, "aria-current": params[:controller] == "static" && params[:action] == "about" ? "page" : "false" %>
-                </li>
-                <li>
                   <%= link_to "Users", users_path, "aria-current": params[:controller] == "users" && params[:action] == "index" ? "page" : "false" %>
                 </li>
                 <li>
+                  <%= link_to "About", about_path, "aria-current": params[:controller] == "static" && params[:action] == "about" ? "page" : "false" %>
+                </li>
+                <li>
                   <%= link_to "Changelog", changelog_path, "aria-current": params[:controller] == "static" && params[:action] == "changelog" ? "page" : "false" %>
+                </li>
+                <li>
+                  <%= link_to "Imprint", imprint_path, "aria-current": params[:controller] == "static" && params[:action] == "imprint" ? "page" : "false" %>
                 </li>
                 <li>
                   <%= link_to "Privacy Policy", privacy_policy_path, "aria-current": params[:controller] == "static" && params[:action] == "privacy_policy" ? "page" : "false" %>
