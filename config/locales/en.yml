@@ -163,6 +163,7 @@ en:
     setups: Setups
     sub_category: Sub&shy;category
     sub_categories: Sub&shy;categories
+    users: Users
   empty_state:
     public_profile: <p><i>%{name}</i> has not added any products to their collection yet.</p>
     gear: '<p><b>You have not added any products to your collections yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p><p>You can also <a href="%{setups_path}">create a setup</a> first &mdash; like your living room or your office &mdash; and assign products to those. Or your simply bookmark some products you are interested in. And if you used to own a product, you can mark it as previously owned on the product page.</p>'

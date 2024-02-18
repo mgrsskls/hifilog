@@ -3,6 +3,7 @@
 <% end %>
 <div class="Dashboard">
   <nav class="Dashboard-menu" aria-label="<%= t('headings.dashboard') %>">
+    <div class="Dashboard-userName h3"><%= current_user.user_name %></div>
     <ul class="Dashboard-links">
       <li>
         <a class="Dashboard-link" href="<%= dashboard_root_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :dashboard) %>>
