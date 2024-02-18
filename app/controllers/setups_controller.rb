@@ -8,10 +8,43 @@ class SetupsController < ApplicationController
   end
 
   def show
-    @setup = current_user.setups.includes(products: [:sub_categories, :brand]).find(params[:id])
+    @setup = current_user.setups.find(params[:id])
 
     add_breadcrumb @setup.name, dashboard_setup_path(@setup)
     @page_title = @setup.name
+
+    all_products = @setup.products
+                         .order('LOWER(name)')
+                         .includes([:sub_categories, :brand])
+
+    if params[:category]
+      @sub_category = SubCategory.friendly.find(params[:category])
+      @products = all_products.select { |product| @sub_category.products.include?(product) }
+    else
+      @products = all_products
+    end
+
+    @categories = all_products.includes([sub_categories: [:category]])
+                              .flat_map(&:sub_categories)
+                              .sort_by(&:name)
+                              .uniq
+                              .group_by(&:category)
+                              .sort_by { |category| category[0].order }
+                              # rubocop:disable Style/BlockDelimiters
+                              .map { |c|
+                                [
+                                  c[0],
+                                  c[1].map { |sub_category|
+                                    # rubocop:enable Style/BlockDelimiters
+                                    {
+                                      name: sub_category.name,
+                                      friendly_id: sub_category.friendly_id,
+                                      path: dashboard_setup_path(id: @setup.id, category: sub_category.friendly_id)
+                                    }
+                                  }
+                                ]
+                              }
+    @reset_path = dashboard_setup_path(@setup)
   end
 
   def create

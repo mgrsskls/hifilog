@@ -3,7 +3,5 @@
     <h1><%= t('headings.bookmarks') %></h1>
   </div>
 
-  <div class="u-pullOut">
-    <%= render "shared/products", products: @products.sort_by{|c| c[:name].downcase}, empty_state: t('empty_state.bookmarks') %>
-  </div>
+  <%= render "shared/products", products: @products, categories: @categories, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.bookmarks') %>
 <% end %>

@@ -153,10 +153,11 @@ en:
     contributors: Contributors
     contributions: Contributions
     created: Created
+    current_products: Current products
     dashboard: Welcome back!
     dashboard_name: Welcome back, %{name}!
     edited: Edited
-    prev_owneds: Previously owned
+    prev_owneds: Previous products
     product: Product
     products: Products
     setups: Setups

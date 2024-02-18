@@ -22,7 +22,9 @@ Rails.application.routes.draw do
   resources :setup_products, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
   resources :prev_owneds, only: [:create, :destroy]
-  resources :users, only: [:index, :show]
+  resources :users, only: [:index, :show] do
+    get '/previous-products', to: 'users#prev_owneds'
+  end
 
   # /brands
   # /brands/:brand

@@ -25,13 +25,33 @@ class UserController < ApplicationController
     all_products = current_user.products.all.includes([:sub_categories, :brand]).order('LOWER(name)')
 
     if params[:category]
-      sub_category = SubCategory.friendly.find(params[:category])
-      @products = all_products.select { |product| sub_category.products.include?(product) }
+      @sub_category = SubCategory.friendly.find(params[:category])
+      @products = all_products.select { |product| @sub_category.products.include?(product) }
     else
       @products = all_products
     end
 
-    @categories = all_products.flat_map(&:sub_categories).uniq.sort_by { |c| c[:name].downcase }
+    @categories = all_products.includes([sub_categories: [:category]])
+                              .flat_map(&:sub_categories)
+                              .sort_by(&:name)
+                              .uniq
+                              .group_by(&:category)
+                              .sort_by { |category| category[0].order }
+                              # rubocop:disable Style/BlockDelimiters
+                              .map { |c|
+                                [
+                                  c[0],
+                                  c[1].map { |sub_category|
+                                    # rubocop:enable Style/BlockDelimiters
+                                    {
+                                      name: sub_category.name,
+                                      friendly_id: sub_category.friendly_id,
+                                      path: dashboard_products_path(category: sub_category.friendly_id)
+                                    }
+                                  }
+                                ]
+                              }
+    @reset_path = dashboard_products_path
     @setups = current_user.setups.joins(:products)
   end
 
@@ -40,8 +60,38 @@ class UserController < ApplicationController
     @page_title = I18n.t('headings.bookmarks')
     @active_dashboard_menu = :bookmarks
 
-    bookmarks = current_user.bookmarks.includes(:product)
-    @products = bookmarks.map(&:product)
+    all_products = Product.where(id: current_user.bookmarks.map(&:product_id))
+                          .order('LOWER(products.name)')
+                          .includes([:sub_categories, :brand])
+
+    if params[:category]
+      @sub_category = SubCategory.friendly.find(params[:category])
+      @products = all_products.select { |product| @sub_category.products.include?(product) }
+    else
+      @products = all_products
+    end
+
+    @categories = all_products.includes([sub_categories: [:category]])
+                              .flat_map(&:sub_categories)
+                              .sort_by(&:name)
+                              .uniq
+                              .group_by(&:category)
+                              .sort_by { |category| category[0].order }
+                              # rubocop:disable Style/BlockDelimiters
+                              .map { |c|
+                                [
+                                  c[0],
+                                  c[1].map { |sub_category|
+                                    # rubocop:enable Style/BlockDelimiters
+                                    {
+                                      name: sub_category.name,
+                                      friendly_id: sub_category.friendly_id,
+                                      path: dashboard_bookmarks_path(category: sub_category.friendly_id)
+                                    }
+                                  }
+                                ]
+                              }
+    @reset_path = dashboard_bookmarks_path
   end
 
   def prev_owneds
@@ -49,8 +99,38 @@ class UserController < ApplicationController
     @page_title = I18n.t('headings.prev_owneds')
     @active_dashboard_menu = :prev_owneds
 
-    prev_owneds = current_user.prev_owneds.includes(:product)
-    @products = prev_owneds.map(&:product)
+    all_products = Product.where(id: current_user.prev_owneds.map(&:product_id))
+                          .order('LOWER(products.name)')
+                          .includes([:sub_categories, :brand])
+
+    if params[:category]
+      @sub_category = SubCategory.friendly.find(params[:category])
+      @products = all_products.select { |product| @sub_category.products.include?(product) }
+    else
+      @products = all_products
+    end
+
+    @categories = all_products.includes([sub_categories: [:category]])
+                              .flat_map(&:sub_categories)
+                              .sort_by(&:name)
+                              .uniq
+                              .group_by(&:category)
+                              .sort_by { |category| category[0].order }
+                              # rubocop:disable Style/BlockDelimiters
+                              .map { |c|
+                                [
+                                  c[0],
+                                  c[1].map { |sub_category|
+                                    # rubocop:enable Style/BlockDelimiters
+                                    {
+                                      name: sub_category.name,
+                                      friendly_id: sub_category.friendly_id,
+                                      path: dashboard_prev_owneds_path(category: sub_category.friendly_id)
+                                    }
+                                  }
+                                ]
+                              }
+    @reset_path = dashboard_prev_owneds_path
   end
 
   def contributions

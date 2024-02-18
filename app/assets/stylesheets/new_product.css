@@ -38,13 +38,8 @@
 	display: none;
 }
 
-.NewProduct,
-html:has([name="theme"][value="light"]:checked) .NewProduct {
-	--category-divider: var(--color-border-light);
-}
-
 .NewProduct details:not(:last-child) {
-	border-block-end: var(--border) var(--category-divider);
+	border-block-end: var(--border) var(--color-border-light);
 }
 
 .NewProduct details[open] {
@@ -60,21 +55,6 @@ html:has([name="theme"][value="light"]:checked) .NewProduct {
 	font-weight: 600;
 }
 
-.NewProduct summary::-webkit-details-marker {
-	display: none;
-}
-
-.NewProduct summary::after {
-	display: block;
-	content: "";
-	inline-size: 1em;
-	block-size: 0.5625em;
-}
-
-.NewProduct [open] summary::after {
-	transform: rotate(0.5turn);
-}
-
 .NewProduct summary::after,
 html:has([name="theme"][value="light"]:checked) .NewProduct summary::after {
 	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
@@ -87,28 +67,10 @@ html:has([name="theme"][value="light"]:checked) .NewProduct summary::after {
 }
 
 @media (prefers-color-scheme: dark) {
-	.NewProduct {
-		--category-divider: var(--color-blue-50);
-	}
-
-	.NewProduct summary::after {
-		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%234E6880' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
-	}
-
 	.Options {
 		accent-color: hsl(var(--hue-accent), 34%, 25%);
 		color-scheme: light;
 	}
-}
-
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark) .NewProduct {
-	--category-divider: var(--color-blue-50);
-}
-
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
-	.NewProduct
-	summary::after {
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%234E6880' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
 }
 
 :is(html:has([name="theme"][value="dark"]:checked), .is-dark) .Options {

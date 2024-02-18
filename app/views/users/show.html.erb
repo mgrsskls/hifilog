@@ -10,6 +10,10 @@
       <dd>
         <time datetime="<%= formatted_date @user.created_at %>"><%= formatted_date @user.created_at %></time>
       </dd>
+      <dt class="Data-divider"><%= t('headings.current_products') %></dt>
+      <dd><%= user_products_count(@user) %></dd>
+      <dt><%= t('headings.prev_owneds') %></dt>
+      <dd><%= user_prev_owneds_count(@user) %></dd>
       <dt class="Data-divider">Products created</dt>
       <dd><%= @products_created %></dd>
       <dt>Products edited</dt>
@@ -21,9 +25,10 @@
     </dl>
   </div>
   <div class="Profile-products">
-    <h2><%= @heading %></h2>
-    <div class="u-pullOut">
-      <%= render "shared/products", user: @user, categories: @categories, products: @products, empty_state: t('empty_state.public_profile', name: @user.user_name) %>
-    </div>
+    <ul class="Tabs">
+      <li><%= link_to t('headings.current_products'), user_path(id: @user.user_name), "aria-current": request.path == user_path(id: @user.user_name) ? "page" : "false" %></li>
+      <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
+    </ul>
+    <%= render "shared/products", user: @user, categories: @categories, products: @products, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.public_profile', name: @user.user_name) %>
   </div>
 </div>

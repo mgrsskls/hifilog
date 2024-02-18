@@ -10,7 +10,6 @@ Rails.application.config.assets.version = "1.0"
 # application.js, application.css, and all non-JS/CSS in the app/assets
 # folder are already added.
 Rails.application.config.assets.precompile += %w(
-  accordion_tabs.css
   application.css
   changelog.css
   contributions.css
@@ -26,7 +25,6 @@ Rails.application.config.assets.precompile += %w(
   form.css
 
   application.js
-  accordion_tabs.js
   new_product.js
   table_saw.js
   theme_toggle.js

@@ -10,6 +10,7 @@
 .Pagination :is(a, label, span) {
 	border-radius: var(--border-radius);
 	color: var(--color-copy);
+	background: var(--color-bg);
 	display: block;
 	padding-block: 0.15em;
 	padding-inline: 0.75em;
@@ -79,20 +80,28 @@
 }
 
 .Pagination:not(.Pagination--subCategory) label:has([aria-current="true"]) {
-	background: var(--color-blue-20);
 	font-weight: 600;
 }
 
 @media (prefers-color-scheme: dark) {
 	.Pagination label:has([aria-current="true"]) {
-		background: rgba(200, 200, 255, 0.1);
+		color: var(--color-accent);
+	}
+
+	.Pagination label:has([aria-current="true"]):not(:has(:checked)) {
+		color: #fff;
 	}
 }
 
 :is(html:has([name="theme"][value="dark"]:checked), .is-dark)
 	.Pagination
 	label:has([aria-current="true"]) {
-	background: rgba(200, 200, 255, 0.1);
+	color: var(--color-accent);
+}
+:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
+	.Pagination
+	label:has([aria-current="true"]):not(:has(:checked)) {
+	color: #fff;
 }
 
 .Pagination--abc :not(.Pagination-all) :is(a, label):not(.Pagination-all) {

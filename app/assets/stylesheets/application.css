@@ -3,6 +3,7 @@
 @import url("./application/back_link.css") layer(components);
 @import url("./application/breadcrumbs.css") layer(components);
 @import url("./application/button.css") layer(components);
+@import url("./application/category_filter.css") layer(components);
 @import url("./application/checkbox_button.css") layer(components);
 @import url("./application/empty_state.css") layer(components);
 @import url("./application/flash_messages.css") layer(components);
@@ -325,85 +326,118 @@
 			font-size: 1.6rem;
 		}
 	}
-}
 
-@media (max-width: 48em) {
-	html {
-		--page-spacing: 0.75rem;
+	@media (max-width: 48em) {
+		html {
+			--page-spacing: 0.75rem;
+		}
+
+		main:not(:has(.Home)),
+		.u-pullIn {
+			padding-inline: var(--page-spacing);
+		}
+
+		.u-pullOut {
+			margin-inline: calc(-1 * var(--page-spacing));
+		}
 	}
 
-	main:not(:has(.Home)),
-	.u-pullIn {
-		padding-inline: var(--page-spacing);
+	@media (min-width: 48.0625em) {
+		html {
+			--page-spacing: 1.5rem;
+		}
 	}
 
-	.u-pullOut {
-		margin-inline: calc(-1 * var(--page-spacing));
+	.Data {
+		margin-block: 0;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.5rem 0;
 	}
-}
 
-@media (min-width: 48.0625em) {
-	html {
-		--page-spacing: 1.5rem;
+	.Data dt {
+		font-weight: 600;
+		color: var(--color-secondary);
+		padding-inline-end: 1.5rem;
 	}
-}
 
-.Data {
-	margin-block: 0;
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: 0.5rem 0;
-}
-
-.Data dt {
-	font-weight: 600;
-	color: var(--color-secondary);
-	padding-inline-end: 1.5rem;
-}
-
-.Data div + div {
-	margin-block-start: 0.5rem;
-}
-
-.Data dd {
-	flex: 1;
-	color: var(--color-accent);
-}
-
-.Data-divider,
-.Data-divider + dd {
-	border-block-start: var(--border-medium);
-	margin-block-start: 0.5rem;
-	padding-block-start: 1rem;
-}
-
-@media (hover: none) {
-	:is(a, button):hover,
-	:is(a, button):hover span {
-		text-decoration: none !important;
+	.Data div + div {
+		margin-block-start: 0.5rem;
 	}
-}
 
-#list {
-	scroll-margin-block-start: calc(var(--header-height) + 1.15em);
-}
-
-.LoadingIcon {
-	width: 1.5rem;
-	aspect-ratio: 1;
-	border: 0.25em solid var(--color-accent);
-	border-bottom-color: transparent;
-	border-radius: 50%;
-	display: inline-block;
-	box-sizing: border-box;
-	animation: rotation 1s linear infinite;
-}
-
-@keyframes rotation {
-	0% {
-		transform: rotate(0deg);
+	.Data dd {
+		flex: 1;
+		color: var(--color-accent);
 	}
-	100% {
-		transform: rotate(360deg);
+
+	.Data-divider,
+	.Data-divider + dd {
+		border-block-start: var(--border-medium);
+		margin-block-start: 0.5rem;
+		padding-block-start: 1rem;
+	}
+
+	.Data a:is([aria-current="true"], [aria-current="page"]) {
+		font-weight: 600;
+	}
+
+	@media (hover: none) {
+		:is(a, button):hover,
+		:is(a, button):hover span {
+			text-decoration: none !important;
+		}
+	}
+
+	#list {
+		scroll-margin-block-start: calc(var(--header-height) + 1.15em);
+	}
+
+	.LoadingIcon {
+		width: 1.5rem;
+		aspect-ratio: 1;
+		border: 0.25em solid var(--color-accent);
+		border-bottom-color: transparent;
+		border-radius: 50%;
+		display: inline-block;
+		box-sizing: border-box;
+		animation: rotation 1s linear infinite;
+	}
+
+	@keyframes rotation {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+
+	summary {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		list-style: none;
+		cursor: pointer;
+	}
+
+	summary::-webkit-details-marker {
+		display: none;
+	}
+
+	summary::after {
+		display: block;
+		content: "";
+		inline-size: 1em;
+		block-size: 0.5625em;
+		transition: transform 0.25s ease;
+	}
+
+	details[open] summary::after {
+		transform: rotate(0.5turn);
+	}
+
+	summary::after,
+	html:has([name="theme"][value="light"]:checked) summary::after {
+		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
 	}
 }

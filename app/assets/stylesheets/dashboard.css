@@ -118,13 +118,13 @@ h2 + .DashboardNumbers {
 	background: var(--color-bg2);
 }
 
-a.DashboardNumber:is(:hover, :focus) .DashboardNumber-heading {
+a .DashboardNumber-heading {
 	text-decoration: underline;
 }
 
 .DashboardNumber-heading {
 	margin: 0;
-	font-size: 1em;
+	font-size: 0.875em;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 }

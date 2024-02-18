@@ -1,6 +1,7 @@
 .Filter {
 	border: var(--border-light);
 	border-radius: var(--border-radius);
+	background: var(--color-bg2);
 	padding: 0.75rem;
 	margin-block-end: 1rem;
 	gap: 1rem 2rem;
