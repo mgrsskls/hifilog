@@ -27,19 +27,19 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		list-style: none;
+		list-style: "";
 		padding: 0;
 		margin: 0;
 		padding: 2rem;
 
-		li {
+		> li {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
 			gap: 1rem;
 		}
 
-		li:first-child {
+		> li:first-child {
 			border-block-end: var(--border-medium);
 			margin-block-end: 1rem;
 			padding-block-end: 1rem;

@@ -17,6 +17,7 @@ class UsersController < ApplicationController
     add_breadcrumb I18n.t('users')
     add_breadcrumb @user.user_name
     @page_title = @user.user_name
+    @heading = I18n.t('headings.products')
 
     # if the visited profile is not visible to anyone and the visiting user is a different user
     if @user.hidden? && current_user != @user
@@ -38,16 +39,12 @@ class UsersController < ApplicationController
 
     if params[:category]
       sub_category = SubCategory.friendly.find(params[:category])
-      @all_products = all_products.select { |product| sub_category.products.include?(product) }
+      @products = all_products.select { |product| sub_category.products.include?(product) }
     else
-      @all_products = all_products
+      @products = all_products
     end
 
-    @all_categories = all_products.flat_map(&:sub_categories).uniq.sort_by { |c| c[:name].downcase }
-
-    products_with_setup = @user.setups.includes([:products]).flat_map(&:products)
-    @products_without_setup = (all_products - products_with_setup)
-    @prev_owned_products = @user.prev_owneds.includes(:product).map(&:product)
+    @categories = all_products.flat_map(&:sub_categories).uniq.sort_by { |c| c[:name].downcase }
 
     data = PaperTrail::Version.where(whodunnit: @user.id).group('item_type', 'event').count
 

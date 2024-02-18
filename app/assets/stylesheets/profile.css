@@ -8,10 +8,6 @@
 }
 
 @media (max-width: 48rem) {
-	.Profile-products {
-		padding-inline: var(--page-spacing);
-	}
-
 	.Profile-meta {
 		padding-block: 1rem;
 		padding-inline: calc(2 * var(--page-spacing));

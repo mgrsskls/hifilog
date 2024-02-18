@@ -22,20 +22,17 @@ class UserController < ApplicationController
     @page_title = I18n.t('headings.products')
     @active_dashboard_menu = :products
 
-    @user = current_user
-    all_products = @user.products.all.includes([:sub_categories, :brand]).order('LOWER(name)')
+    all_products = current_user.products.all.includes([:sub_categories, :brand]).order('LOWER(name)')
 
     if params[:category]
       sub_category = SubCategory.friendly.find(params[:category])
-      @all_products = all_products.select { |product| sub_category.products.include?(product) }
+      @products = all_products.select { |product| sub_category.products.include?(product) }
     else
-      @all_products = all_products
+      @products = all_products
     end
 
-    @all_categories = all_products.flat_map(&:sub_categories).uniq.sort_by { |c| c[:name].downcase }
-
-    products_with_setup = @user.setups.includes([:products]).flat_map(&:products)
-    @products_without_setup = (all_products - products_with_setup)
+    @categories = all_products.flat_map(&:sub_categories).uniq.sort_by { |c| c[:name].downcase }
+    @setups = current_user.setups.joins(:products)
   end
 
   def bookmarks

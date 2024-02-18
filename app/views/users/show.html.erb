@@ -21,7 +21,9 @@
     </dl>
   </div>
   <div class="Profile-products">
-    <h2><%= t('headings.products') %></h2>
-    <%= render 'user/shared', user: @user %>
+    <h2><%= @heading %></h2>
+    <div class="u-pullOut">
+      <%= render "shared/products", user: @user, categories: @categories, products: @products, empty_state: t('empty_state.public_profile', name: @user.user_name) %>
+    </div>
   </div>
 </div>

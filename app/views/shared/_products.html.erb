@@ -1,18 +1,20 @@
 <% categories ||= [] %>
 <% empty_state ||= "" %>
+<% setups ||= [] %>
 
-<% if categories.any? %>
+<% if categories.length > 1 %>
   <ol class="Pagination u-pullIn">
     <li>
-      <a class="Pagination-all" href="<%= @is_public_profile ? user_path(id: @user.user_name) : dashboard_products_path %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
+      <a class="Pagination-all" href="<%= @is_public_profile ? user_path(id: user.user_name) : dashboard_products_path %>"<%= ' aria-current="true"'.html_safe unless params[:category].present? %>><%= t('filter.all') %></a>
     </li>
     <% categories.each do |category| %>
       <li>
-        <a href="<%= @is_public_profile ? user_path(id: @user.user_name, category: category.friendly_id) : dashboard_products_category_path(category: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == category.friendly_id %>><%= category.name %></a>
+        <a href="<%= @is_public_profile ? user_path(id: user.user_name, category: category.friendly_id) : dashboard_products_path(category: category.friendly_id) %>"<%= ' aria-current="true"'.html_safe if params[:category] == category.friendly_id %>><%= category.name %></a>
       </li>
     <% end %>
   </ol>
 <% end %>
+
 
 <% if products.any? %>
   <table-saw>
@@ -22,6 +24,9 @@
           <th><%= t('name') %></th>
           <th><%= t('headings.brand').html_safe %></th>
           <th><%= t('headings.category').html_safe %></th>
+          <% if setups.any? %>
+            <th><%= t('headings.setup') %></th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +41,12 @@
                 <%= product.categories.map{ |category| category.name }.join(", ") %>
               <% end %>
             </td>
+            <% if setups.any? %>
+              <td>
+                <% setup = setups.find_by(products: product.id) %>
+                <%= setup ? setup.name : "-" %>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>
