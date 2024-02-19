@@ -52,5 +52,5 @@ Rails.application.routes.draw do
   get '/imprint', to: 'static#imprint'
 
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
-  get '*url', to: 'application#not_found', via: :all, format: 'html'
+  get '*url', to: 'application#not_found', via: :all, constraints: lambda { |req| req.format == :html }
 end

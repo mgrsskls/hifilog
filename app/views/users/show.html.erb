@@ -4,6 +4,7 @@
 
 <div class="Profile">
   <div class="Profile-meta">
+    <%= image_tag @user.avatar.variant(format: :webp), "aria-hidden": "true", alt: "", class: "Profile-avatar Avatar", width: 256, height: 256 if @user.avatar.attached? %>
     <h1><%= @user.user_name %></h1>
     <dl class="Data">
       <dt>Member since</dt>

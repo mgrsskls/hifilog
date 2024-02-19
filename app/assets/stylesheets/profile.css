@@ -2,9 +2,16 @@
 	background: var(--color-bg2);
 }
 
+.Profile-avatar {
+	block-size: 16rem;
+	aspect-ratio: 1;
+	margin-block-end: 1rem;
+}
+
 .Profile-meta h1 {
 	margin-block-end: 1.5rem;
 	font-size: 2rem;
+	line-height: 1.1;
 }
 
 @media (max-width: 48rem) {

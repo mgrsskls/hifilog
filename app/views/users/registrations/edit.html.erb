@@ -66,6 +66,14 @@
         <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
       </div>
 
+      <div class="Form-field">
+        <%= f.label :avatar, class: "Form-label" %>
+        <div class="u-flex u-gap-md">
+          <%= image_tag current_user.avatar.variant(format: :webp), "aria-hidden": "true", alt: "", class: "Avatar", style: "inline-size: 2.5rem; block-size: 2.5rem;" if current_user.avatar.attached? %>
+          <%= f.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp" %>
+        </div>
+      </div>
+
       <h3><%= t('user.edit.update.save.heading') %></h3>
 
       <div class="Form-field">

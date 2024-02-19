@@ -1,4 +1,5 @@
-.Button {
+.Button,
+::file-selector-button {
 	padding: var(--input-padding);
 	border-radius: var(--border-radius);
 	box-sizing: border-box;
@@ -67,7 +68,8 @@
 	border-color: currentColor;
 }
 
-.Button--secondary {
+.Button--secondary,
+::file-selector-button {
 	background-color: transparent;
 	border-color: currentColor;
 	color: var(--color-secondary);

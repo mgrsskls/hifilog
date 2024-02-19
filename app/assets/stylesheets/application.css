@@ -1,5 +1,6 @@
 @layer reset, global, components, utils;
 
+@import url("./application/avatar.css") layer(components);
 @import url("./application/back_link.css") layer(components);
 @import url("./application/breadcrumbs.css") layer(components);
 @import url("./application/button.css") layer(components);
@@ -278,6 +279,11 @@
 		font-weight: 600;
 	}
 
+	img {
+		display: block;
+		max-inline-size: 100%;
+	}
+
 	:is(input, textarea)::placeholder {
 		color: var(--color-input-placeholder);
 	}
@@ -288,7 +294,7 @@
 	}
 
 	select,
-	input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+	input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]),
 	textarea {
 		display: block;
 		font: inherit;
@@ -300,7 +306,14 @@
 		box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
 		inline-size: 100%;
 		box-sizing: border-box;
+	}
+
+	::file-selector-button {
 		block-size: 2.525rem;
+	}
+
+	[type="file"] {
+		display: block;
 	}
 
 	.field_with_errors

@@ -3,14 +3,18 @@ class UsersController < ApplicationController
 
   def index
     @page_title = I18n.t('headings.users')
-    @users_by_products = ActiveRecord::Base.connection.execute("
-      SELECT users.id, users.user_name, users.profile_visibility, users.created_at, COUNT(*)
-      FROM users
-      LEFT JOIN versions
-      ON users.id = CAST(versions.whodunnit as bigint)
-      GROUP BY users.id
-      ORDER BY count DESC
-    ")
+    # @users_by_products = ActiveRecord::Base.connection.execute("
+    #   SELECT users.id, users.user_name, users.profile_visibility, users.created_at, COUNT(*)
+    #   FROM users
+    #   LEFT JOIN versions
+    #   ON users.id = CAST(versions.whodunnit as bigint)
+    #   GROUP BY users.id
+    #   ORDER BY count DESC
+    # ")
+    @users_by_products = User.joins('LEFT JOIN versions ON users.id = CAST(versions.whodunnit as bigint)')
+                             .select('users.id, users.user_name, users.profile_visibility, users.created_at, COUNT(*)')
+                             .group('users.id')
+                             .order('count DESC')
   end
 
   def show
@@ -122,7 +126,7 @@ class UsersController < ApplicationController
     @brands_edited = get_data(data, 'Brand', 'update')
   end
 
-  def get_redirect_if_unauthorized(user, prev_owneds = false)
+  def get_redirect_if_unauthorized(user, prev_owneds: false)
     return if user.visible?
 
     # if visited profile is not visible to logged out users and the current user is not logged in

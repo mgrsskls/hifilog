@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  require 'mini_magick'
+
   include Rails.application.routes.url_helpers
 
   strip_attributes
@@ -13,8 +15,10 @@ class User < ApplicationRecord
   has_many :setups, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
   has_many :prev_owneds, dependent: :destroy
+  has_one_attached :avatar
 
   validates :user_name, presence: true, uniqueness: true
+  validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -49,5 +53,22 @@ class User < ApplicationRecord
     return if user_name.nil?
 
     user_path(user_name)
+  end
+
+  def validate_avatar_content_type
+    unless [
+      'image/jpeg',
+      'image/webp',
+      'image/png',
+      'image/gif'
+    ].include?(avatar.attachment.blob.content_type)
+      errors.add(:avatar_content_type, 'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.')
+    end
+  end
+
+  def validate_avatar_file_size
+    return if avatar.attachment.blob.byte_size < 5_000_000
+
+    errors.add(:avatar_file_size, 'too big. Please use a file with a maximum of 5 MB.')
   end
 end

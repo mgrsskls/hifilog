@@ -40,3 +40,4 @@
 /coverage
 
 dump.sql
+.env

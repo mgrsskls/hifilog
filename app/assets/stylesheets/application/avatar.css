@@ -1,0 +1,26 @@
+.Avatar {
+	block-size: calc(var(--size) * 1rem / 16);
+	inline-size: calc(var(--size) * 1rem / 16);
+	border-radius: var(--border-radius);
+	background: var(--color-secondary-on-light);
+	color: var(--color-secondary-on-dark);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.Avatar:not(a .Avatar) {
+	cursor: default;
+}
+
+a:has(.Avatar) {
+	text-decoration: none;
+}
+
+a:has(.Avatar) span {
+	text-decoration: underline;
+	text-underline-offset: var(--underline-offset);
+	text-decoration-thickness: var(--underline-width);
+}

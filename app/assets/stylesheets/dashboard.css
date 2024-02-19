@@ -16,7 +16,7 @@
 
 	.Dashboard-menu {
 		background: var(--color-bg2);
-		flex: 1;
+		flex: 0 0 16rem;
 		padding: 2rem;
 	}
 
@@ -26,6 +26,7 @@
 
 	.Dashboard-userName {
 		margin-block-end: 1rem;
+		font-size: 2rem;
 		line-height: 1.1;
 	}
 

@@ -2,7 +2,6 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
-  # before_action :configure_account_update_params, only: [:update]
 
   # GET /resource/sign_up
   def new
@@ -32,6 +31,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
     add_breadcrumb I18n.t('your_profile')
     add_breadcrumb I18n.t('account')
     @active_dashboard_menu = :account
+
+    path = account_update_params[:avatar].tempfile
+    if ImageProcessing::MiniMagick.valid_image?(path)
+      ImageProcessing::MiniMagick.source(path.path)
+                                 .resize('256x256!')
+                                 .convert('webp')
+                                 .call(destination: path.path)
+    end
 
     super
   end

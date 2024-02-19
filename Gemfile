@@ -43,6 +43,7 @@ gem "bootsnap", require: false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "dotenv"
 end
 
 group :development do
@@ -60,23 +61,18 @@ end
 
 gem "cssbundling-rails", "~> 1.4"
 gem "jsbundling-rails"
-
 gem "stackprof"
 gem "sentry-ruby"
 gem "sentry-rails"
-
 gem "xml-sitemap"
-
 gem "rss"
-
 gem "redcarpet"
-
 gem "strip_attributes"
-
 gem "country_select"
-
 gem "paper_trail"
-
 gem "nilify_blanks"
-
 gem "pg_search"
+gem "image_processing"
+gem "mini_magick"
+gem "aws-sdk-rails", "~> 3"
+gem "aws-sdk-s3", "~> 1"
