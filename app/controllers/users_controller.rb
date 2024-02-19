@@ -122,7 +122,7 @@ class UsersController < ApplicationController
     @brands_edited = get_data(data, 'Brand', 'update')
   end
 
-  def get_redirect_if_unauthorized(user, prev_owneds)
+  def get_redirect_if_unauthorized(user, prev_owneds = false)
     return if user.visible?
 
     # if visited profile is not visible to logged out users and the current user is not logged in
