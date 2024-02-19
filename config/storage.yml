@@ -12,6 +12,7 @@ amazon:
   secret_access_key: <%= ENV['BUCKETEER_AWS_SECRET_ACCESS_KEY'] %>
   bucket: <%= ENV['BUCKETEER_BUCKET_NAME'] %>
   region: <%= ENV['BUCKETEER_AWS_REGION'] %>
+  public: true
 # Remember not to checkin your GCS keyfile to a repository
 # google:
 #   service: GCS
