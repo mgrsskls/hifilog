@@ -23,7 +23,7 @@
 
 .Entity-sub hr {
 	margin-block: 1.5rem;
-	border-top: var(--border-medium);
+	border-top: var(--border-light);
 	border-bottom: none;
 }
 
@@ -64,7 +64,7 @@
 .Entity-meta {
 	margin-block-start: 1.5rem;
 	padding-block-start: 1.5rem;
-	border-block-start: var(--border-medium);
+	border-block-start: var(--border-light);
 }
 
 .Entity-metaLinks {

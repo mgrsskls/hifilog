@@ -47,14 +47,14 @@
 		}
 
 		> li:first-child {
-			border-block-end: var(--border-medium);
+			border-block-end: var(--border-light);
 			margin-block-end: 1rem;
 			padding-block-end: 1rem;
 		}
 	}
 
 	.Dashboard-separator {
-		border-block-start: var(--border-medium);
+		border-block-start: var(--border-light);
 		margin-block-start: 1rem;
 		padding-block-start: 1rem;
 	}
@@ -118,7 +118,7 @@ h2 + .DashboardNumbers {
 .DashboardNumber {
 	display: flex;
 	justify-content: space-between;
-	border: var(--border-medium);
+	border: var(--border-light);
 	border-radius: var(--border-radius);
 	text-decoration: none;
 	padding: 7.5%;

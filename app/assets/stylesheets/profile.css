@@ -42,7 +42,7 @@
 }
 
 .Tabs {
-	border-block-end: var(--border-dark);
+	border-block-end: var(--border-medium);
 	list-style: none;
 	display: flex;
 	margin-block: 0 2rem;
@@ -63,8 +63,8 @@
 }
 
 .Tabs a[aria-current="page"] {
-	border-inline-color: var(--color-border-dark);
-	border-block-start-color: var(--color-border-dark);
+	border-inline-color: var(--color-border-medium);
+	border-block-start-color: var(--color-border-medium);
 	background: var(--color-bg);
 	font-weight: 600;
 	color: var(--color-accent);
