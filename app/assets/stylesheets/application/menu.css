@@ -83,7 +83,7 @@
 	}
 }
 
-@media (max-width: 50rem) {
+@media (max-width: 54rem) {
 	.MenuList {
 		flex-direction: column;
 		flex: 1;
@@ -104,7 +104,7 @@
 	}
 }
 
-@media (min-width: 50.0625rem) {
+@media (min-width: 54.0625rem) {
 	.Menu-subList {
 		position: absolute;
 		inset-block-start: var(--height);

@@ -18,7 +18,7 @@
 	}
 }
 
-@media (max-width: 56rem) {
+@media (max-width: 54rem) {
 	.Users {
 		flex-direction: column;
 	}
@@ -32,7 +32,7 @@
 	}
 }
 
-@media (min-width: 56.065rem) {
+@media (min-width: 54.065rem) {
 	.Users-ranking {
 		flex: 1;
 	}

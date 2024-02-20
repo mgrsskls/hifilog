@@ -107,7 +107,7 @@
 	margin: 0;
 	padding: 0;
 	list-style: "";
-	gap: 2rem;
+	gap: 1.5rem;
 }
 
 h2 + .DashboardNumbers {
@@ -122,6 +122,9 @@ h2 + .DashboardNumbers {
 	text-decoration: none;
 	padding: 7.5%;
 	background: var(--color-bg2);
+	gap: 1rem;
+	block-size: 100%;
+	box-sizing: border-box;
 }
 
 a .DashboardNumber-heading {
@@ -148,26 +151,27 @@ a .DashboardNumber-heading {
 	margin-block-start: 1.5rem;
 }
 
-@container wrapper (max-width: 26rem) {
+@container wrapper (max-width: 24rem) {
 	.DashboardStats {
 		--cols: 1;
 	}
 }
 
-@container wrapper (min-width: 26.0625rem) and (max-width: 40rem) {
+@container wrapper (min-width: 24.0625rem) and (max-width: 40rem) {
 	.DashboardStats {
 		--cols: 2;
+	}
+}
+
+@container wrapper (max-width: 40rem) {
+	.DashboardNumber {
+		align-items: center;
 	}
 }
 
 @container wrapper (min-width: 40.0625rem) {
 	.DashboardStats {
 		--cols: 4;
-	}
-
-	.DashboardNumber {
-		flex-direction: column;
-		aspect-ratio: 2;
 	}
 
 	.DashboardNumbersWrapper {
@@ -178,5 +182,9 @@ a .DashboardNumber-heading {
 
 	.DashboardNumbersWrapper + .DashboardNumbersWrapper {
 		grid-column: calc(var(--cols) - 1) / -1;
+	}
+
+	.DashboardNumber {
+		flex-direction: column;
 	}
 }

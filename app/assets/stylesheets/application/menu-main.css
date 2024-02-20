@@ -2,13 +2,14 @@
 	aspect-ratio: 13 / 8;
 	transition: transform 0.25s ease;
 	block-size: 0.5em;
+	flex: 0 0 calc(0.5em * 13 / 8);
 }
 
 .MenuMain-link[aria-expanded="true"] svg {
 	transform: rotate(0.5turn);
 }
 
-@media (max-width: 50rem) {
+@media (max-width: 54rem) {
 	.MenuMain .MenuMain-item + .MenuMain-item,
 	.MenuAccount {
 		border-block-start: var(--border) var(--divider-color);
@@ -21,7 +22,7 @@
 	}
 }
 
-@media (min-width: 50.0625rem) {
+@media (min-width: 54.0625rem) {
 	.MenuMain-link {
 		display: flex;
 		align-items: center;
@@ -34,19 +35,35 @@
 		background: var(--color-menu-bg);
 	}
 
+	.MenuMain-link {
+		position: relative;
+		padding-inline: 0.75rem;
+	}
+
+	.MenuMain-link--mega {
+		padding-inline: 1.5rem;
+	}
+
 	.MenuMain-item--account {
 		position: relative;
 	}
 }
 
-@media (min-width: 50rem) and (max-width: 54rem) {
-	.MenuMain-link {
-		padding-inline: 0.75rem;
+@media (min-width: 54.0625rem) and (max-width: 64rem) {
+	.MenuMain-link--mega {
+		padding-inline: 1rem;
 	}
-}
 
-@media (min-width: 54.0625rem) {
-	.MenuMain-link {
-		padding-inline: 1.5rem;
+	.MenuMain-link--account span {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		border: 0;
+		padding: 0;
+		white-space: nowrap;
+		clip-path: inset(100%);
+		clip: rect(0 0 0 0);
+		overflow: hidden;
 	}
 }

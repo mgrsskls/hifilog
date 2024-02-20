@@ -73,7 +73,7 @@ import "./theme_toggle.js";
 				if (shouldOpen) {
 					menuButton.setAttribute("aria-expanded", "true");
 
-					if (window.matchMedia("(max-width: 50rem)")) {
+					if (window.matchMedia("(max-width: 54rem)")) {
 						if (
 							menuButton.getBoundingClientRect().bottom > window.innerHeight
 						) {
