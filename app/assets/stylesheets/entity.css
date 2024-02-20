@@ -8,6 +8,7 @@
 
 .Entity-sub {
 	background: var(--color-bg2);
+	border-radius: var(--border-radius);
 }
 
 .Entity-sub dl {

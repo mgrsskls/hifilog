@@ -1,5 +1,6 @@
 .EmptyState {
 	background: var(--color-bg2);
+	border-radius: var(--border-radius);
 	margin-block-start: 1.5rem;
 	padding: 1.5rem clamp(var(--page-spacing), 8vi, 8rem);
 	margin-trim: block;

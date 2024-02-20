@@ -1,5 +1,6 @@
 .Profile-meta {
 	background: var(--color-bg2);
+	border-radius: var(--border-radius);
 }
 
 .Profile-avatar {
@@ -35,7 +36,6 @@
 	}
 
 	.Profile-meta {
-		background: var(--color-bg2);
 		flex: 0 0 16rem;
 		padding: 2rem;
 	}

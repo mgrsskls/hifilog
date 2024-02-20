@@ -10,6 +10,7 @@
 
 .Changelog-item:nth-child(odd) {
 	background: var(--color-bg2);
+	border-radius: var(--border-radius);
 }
 
 .Changelog-item p {
