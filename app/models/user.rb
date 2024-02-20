@@ -60,6 +60,8 @@ class User < ApplicationRecord
   end
 
   def validate_avatar_content_type
+    return unless avatar.attachment
+
     unless [
       'image/jpeg',
       'image/webp',
@@ -71,6 +73,7 @@ class User < ApplicationRecord
   end
 
   def validate_avatar_file_size
+    return unless avatar.attachment
     return if avatar.attachment.blob.byte_size < 5_000_000
 
     errors.add(:avatar_file_size, 'too big. Please use a file with a maximum of 5 MB.')
