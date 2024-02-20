@@ -1,5 +1,5 @@
 <% if user.avatar.attached? %>
-  <%= image_tag cdn_image_url(user.avatar.variant(format: :webp)), width: size, height: size, "aria-hidden": "true", alt: "", class: "Avatar", style: "--size: #{size};" %>
+  <%= image_tag cdn_image_url(user.avatar.variant(:thumb)), width: size, height: size, "aria-hidden": "true", alt: "", class: "Avatar", style: "--size: #{size};" %>
 <% else %>
   <div class="Avatar" style="--size: <%= size %>;">
     <%= user.user_name.first %>

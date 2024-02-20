@@ -6,7 +6,7 @@
       <link rel="prefetch" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
     <% end %>
     <% if user_signed_in? %>
-      <link rel="prefetch" href="<%= cdn_image_url(current_user.avatar.variant(format: :webp)) %> " as="image" type="image/webp">
+      <link rel="prefetch" href="<%= cdn_image_url(current_user.avatar.variant(:thumb)) %> " as="image" type="image/webp">
     <% end %>
     <title><%= "#{@page_title} — " if @page_title.present? %><%= APP_NAME %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">

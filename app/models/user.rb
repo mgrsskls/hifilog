@@ -15,7 +15,9 @@ class User < ApplicationRecord
   has_many :setups, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
   has_many :prev_owneds, dependent: :destroy
-  has_one_attached :avatar
+  has_one_attached :avatar do |attachable|
+    attachable.variant :thumb, resize_to_limit: [76, 76], format: :webp
+  end
 
   validates :user_name, presence: true, uniqueness: true
   validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
