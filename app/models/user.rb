@@ -42,6 +42,8 @@ class User < ApplicationRecord
       unconfirmed_email
       bookmarks_id
       prev_owneds_id
+      avatar_attachment_id
+      avatar_blob_id
     ]
   end
 
