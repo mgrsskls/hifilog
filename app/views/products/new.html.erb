@@ -3,7 +3,7 @@
   <%= stylesheet_link_tag "new_product" %>
 <% end %>
 <% content_for :js do %>
-  <%= javascript_include_tag "new_product", type: "module" %>
+  <%= javascript_include_tag "new_product", type: "module", crossorigin: true %>
 <% end %>
 
 <div class="Form Form--centered">

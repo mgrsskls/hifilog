@@ -7,8 +7,8 @@
     <title><%= "#{@page_title} — " if @page_title.present? %><%= APP_NAME %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= yield :js %>
-    <%= javascript_include_tag "application", type: "module" %>
-    <%= javascript_include_tag "table_saw", type: "module" %>
+    <%= javascript_include_tag "application", type: "module", crossorigin: true %>
+    <%= javascript_include_tag "table_saw", type: "module", crossorigin: true %>
     <%= stylesheet_link_tag "application" %>
     <%= yield :css %>
     <%= csrf_meta_tags %>
