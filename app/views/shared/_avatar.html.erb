@@ -2,6 +2,8 @@
   <%= image_tag cdn_image_url(user.avatar.variant(:thumb)), width: size, height: size, "aria-hidden": "true", alt: "", class: "Avatar", style: "--size: #{size};" %>
 <% else %>
   <div class="Avatar" style="--size: <%= size %>;">
-    <%= user.user_name.first %>
+    <span class="Avatar-letter">
+      <%= user.user_name.first %>
+    </span>
   </div>
 <% end %>

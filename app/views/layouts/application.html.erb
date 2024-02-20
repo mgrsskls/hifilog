@@ -5,7 +5,7 @@
     <% if params[:controller] == "application" && params[:action] == "index" %>
       <link rel="prefetch" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
     <% end %>
-    <% if user_signed_in? %>
+    <% if user_signed_in? && current_user.avatar.attached? %>
       <link rel="prefetch" href="<%= cdn_image_url(current_user.avatar.variant(:thumb)) %> " as="image" type="image/webp">
     <% end %>
     <title><%= "#{@page_title} — " if @page_title.present? %><%= APP_NAME %></title>

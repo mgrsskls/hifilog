@@ -1,6 +1,7 @@
 .Avatar {
-	block-size: calc(var(--size) * 1rem / 16);
-	inline-size: calc(var(--size) * 1rem / 16);
+	font-size: calc(var(--size) * 1rem / 16);
+	block-size: 1em;
+	inline-size: 1em;
 	border-radius: var(--border-radius);
 	background: var(--color-secondary-on-light);
 	color: var(--color-secondary-on-dark);
@@ -15,12 +16,10 @@
 	cursor: default;
 }
 
-a:has(.Avatar) {
-	text-decoration: none;
+.Avatar-letter {
+	font-size: 0.75em;
 }
 
-a:has(.Avatar) span {
-	text-decoration: underline;
-	text-underline-offset: var(--underline-offset);
-	text-decoration-thickness: var(--underline-width);
+:where(a, button):hover .Avatar-letter {
+	text-decoration: none;
 }
