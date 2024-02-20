@@ -8,10 +8,10 @@ test:
 
 amazon:
   service: S3
-  access_key_id: <%= ENV['BUCKETEER_AWS_ACCESS_KEY_ID'] %>
-  secret_access_key: <%= ENV['BUCKETEER_AWS_SECRET_ACCESS_KEY'] %>
-  bucket: <%= ENV['BUCKETEER_BUCKET_NAME'] %>
-  region: <%= ENV['BUCKETEER_AWS_REGION'] %>
+  access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+  secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  bucket: <%= ENV['BUCKET_NAME'] %>
+  region: <%= ENV['AWS_REGION'] %>
   public: true
 # Remember not to checkin your GCS keyfile to a repository
 # google:
