@@ -4,6 +4,7 @@ one:
   email: user1@example.com
   profile_visibility: hidden
   user_name: username1
+  confirmed_at: 2024-01-01
   products:
     - one
     - two
@@ -12,10 +13,12 @@ two:
   email: user2@example.com
   profile_visibility: logged_in_only
   user_name: username2
+  confirmed_at: 2024-01-01
   products: []
 
 three:
   email: user3@example.com
   profile_visibility: visible
   user_name: username3
+  confirmed_at: 2024-01-01
   products: []

@@ -9,3 +9,6 @@
 #
 # two: {}
 # column: value
+
+admin_user:
+  email: admin@example.com

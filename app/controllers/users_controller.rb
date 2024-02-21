@@ -3,14 +3,6 @@ class UsersController < ApplicationController
 
   def index
     @page_title = I18n.t('headings.users')
-    # @users_by_products = ActiveRecord::Base.connection.execute("
-    #   SELECT users.id, users.user_name, users.profile_visibility, users.created_at, COUNT(*)
-    #   FROM users
-    #   LEFT JOIN versions
-    #   ON users.id = CAST(versions.whodunnit as bigint)
-    #   GROUP BY users.id
-    #   ORDER BY count DESC
-    # ")
     @users_by_products = User.joins('LEFT JOIN versions ON users.id = CAST(versions.whodunnit as bigint)')
                              .select('users.id, users.user_name, users.profile_visibility, users.created_at, COUNT(*)')
                              .group('users.id')
@@ -129,7 +121,7 @@ class UsersController < ApplicationController
   def get_redirect_if_unauthorized(user, prev_owneds: false)
     return if user.visible?
 
-    # if visited profile is not visible to logged out users and the current user is not logged in
+    # if visited profile is not visible to logged out users and the current user is logged in
     return if user.logged_in_only? && user_signed_in?
 
     # if the visited profile is not visible to anyone and the visiting user is a different user

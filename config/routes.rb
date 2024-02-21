@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  devise_for :user, controllers: {
+    passwords: "users/passwords",
+    registrations: "users/registrations",
+    sessions: "users/sessions",
+  }
+
   devise_for :admin_users, ActiveAdmin::Devise.config
 
   ActiveAdmin.routes(self)
@@ -27,12 +33,6 @@ Rails.application.routes.draw do
       )
     end
   end
-
-  devise_for :user, controllers: {
-    passwords: "users/passwords",
-    registrations: "users/registrations",
-    sessions: "users/sessions",
-  }
 
   scope '/dashboard', as: :dashboard do
     root 'user#dashboard'
