@@ -142,7 +142,7 @@
       <div class="Form-label"><%= t('headings.categories') %></div>
       <div class="Options">
         <% @categories.each do |category| %>
-          <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
+          <details <% if (category.sub_categories & @product.sub_categories).any? %>open<% end %>>
             <summary><%= category.name %></summary>
             <% category.sub_categories.each do |sub_category| %>
               <div class="Options-item">

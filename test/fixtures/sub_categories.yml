@@ -2,10 +2,10 @@
 
 one:
   name: Headphone Amplifiers
-  category: one
+  category_id: 1
   slug: headphone-amplifiers
 
 two:
   name: Over-Ear Headphones
-  category: two
+  category_id: 2
   slug: over-ear-headphones

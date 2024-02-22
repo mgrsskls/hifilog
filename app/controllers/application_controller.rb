@@ -6,10 +6,10 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::RoutingError, with: :not_found
 
-  helper_method :current_user,
+  helper_method :all_sub_categories,
+                :current_user,
                 :products_count,
                 :brands_count,
-                :categories_count,
                 :newest_brands,
                 :newest_products
 
@@ -19,16 +19,16 @@ class ApplicationController < ActionController::Base
 
   attr_writer :current_user
 
+  def all_sub_categories
+    @all_sub_categories ||= SubCategory.all.order(:name)
+  end
+
   def products_count
     @products_count ||= Product.all.count
   end
 
   def brands_count
     @brands_count ||= Brand.all.count
-  end
-
-  def categories_count
-    @categories_count ||= SubCategory.all.count
   end
 
   def newest_products

@@ -31,16 +31,14 @@ class UserController < ApplicationController
       @products = all_products
     end
 
-    @categories = all_products.includes([sub_categories: [:category]])
-                              .flat_map(&:sub_categories)
+    @categories = all_products.flat_map(&:sub_categories)
                               .sort_by(&:name)
                               .uniq
-                              .group_by(&:category)
-                              .sort_by { |category| category[0].order }
+                              .group_by(&:category_id)
                               # rubocop:disable Style/BlockDelimiters
                               .map { |c|
                                 [
-                                  c[0],
+                                  Category.find(c[0]),
                                   c[1].map { |sub_category|
                                     # rubocop:enable Style/BlockDelimiters
                                     {
@@ -71,16 +69,14 @@ class UserController < ApplicationController
       @products = all_products
     end
 
-    @categories = all_products.includes([sub_categories: [:category]])
-                              .flat_map(&:sub_categories)
+    @categories = all_products.flat_map(&:sub_categories)
                               .sort_by(&:name)
                               .uniq
-                              .group_by(&:category)
-                              .sort_by { |category| category[0].order }
+                              .group_by(&:category_id)
                               # rubocop:disable Style/BlockDelimiters
                               .map { |c|
                                 [
-                                  c[0],
+                                  Category.find(c[0]),
                                   c[1].map { |sub_category|
                                     # rubocop:enable Style/BlockDelimiters
                                     {
@@ -110,16 +106,14 @@ class UserController < ApplicationController
       @products = all_products
     end
 
-    @categories = all_products.includes([sub_categories: [:category]])
-                              .flat_map(&:sub_categories)
+    @categories = all_products.flat_map(&:sub_categories)
                               .sort_by(&:name)
                               .uniq
-                              .group_by(&:category)
-                              .sort_by { |category| category[0].order }
+                              .group_by(&:category_id)
                               # rubocop:disable Style/BlockDelimiters
                               .map { |c|
                                 [
-                                  c[0],
+                                  Category.find(c[0]),
                                   c[1].map { |sub_category|
                                     # rubocop:enable Style/BlockDelimiters
                                     {

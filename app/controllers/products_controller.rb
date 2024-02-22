@@ -192,7 +192,7 @@ class ProductsController < ApplicationController
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
     @product.build_brand
     @brands = Brand.all.order('LOWER(name)')
-    @categories = Category.includes([:sub_categories]).all.order(:order)
+    @categories = Category.all
 
     if params[:brand_id].present?
       @product.brand_id = params[:brand_id]
@@ -221,7 +221,7 @@ class ProductsController < ApplicationController
         redirect_to URI.parse(product_url(id: @product.friendly_id)).path
       else
         @brands = Brand.all.order('LOWER(name)')
-        @categories = Category.ordered
+        @categories = Category.all
         render :new, status: :unprocessable_entity
       end
     else
@@ -243,13 +243,13 @@ class ProductsController < ApplicationController
           redirect_to URI.parse(product_url(id: @product.friendly_id)).path
         else
           @brands = Brand.all.order('LOWER(name)')
-          @categories = Category.ordered
+          @categories = Category.all
           @brand = brand
           render :new, status: :unprocessable_entity
         end
       else
         @brands = Brand.all.order('LOWER(name)')
-        @categories = Category.ordered
+        @categories = Category.all
         @product = Product.new(product_params)
         @brand = brand
         render :new, status: :unprocessable_entity
@@ -263,7 +263,7 @@ class ProductsController < ApplicationController
     @product = Product.friendly.find(params[:id])
     @brand = @product.brand
     @brands = Brand.all.order('LOWER(name)')
-    @categories = Category.includes([:sub_categories]).ordered
+    @categories = Category.all
 
     add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
     add_breadcrumb I18n.t('edit')
@@ -279,7 +279,7 @@ class ProductsController < ApplicationController
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
       @brands = Brand.all.order('LOWER(name)')
-      @categories = Category.ordered
+      @categories = Category.all
       @brand = Brand.find(@product.brand_id)
       render :edit, status: :unprocessable_entity
     end

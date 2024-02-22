@@ -50,6 +50,8 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
+    active_hash (1.5.3)
+      activesupport (>= 2.2.2)
     activeadmin (3.2.0)
       arbre (~> 1.2, >= 1.2.1)
       formtastic (>= 3.1)
@@ -424,6 +426,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  active_hash (~> 1.5.3)
   activeadmin
   aws-sdk-rails (~> 3)
   aws-sdk-s3 (~> 1)

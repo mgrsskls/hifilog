@@ -1,7 +1,6 @@
 class SubCategory < ApplicationRecord
   extend FriendlyId
 
-  belongs_to :category
   has_and_belongs_to_many :products, join_table: :products_sub_categories
   has_and_belongs_to_many :brands
 
@@ -20,10 +19,6 @@ class SubCategory < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[category products]
-  end
-
-  def friendly_category_id
-    category.friendly_id
+    %w[products]
   end
 end

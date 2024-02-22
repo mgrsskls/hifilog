@@ -24,11 +24,11 @@
         <dd><%= @brand.year_founded.present? ? @brand.year_founded : "-" %></dd>
       </dl>
 
-      <% if @all_sub_categories.any? %>
+      <% if @all_brand_sub_categories.any? %>
         <h2><%= t('headings.categories') %></h2>
 
         <dl class="Data">
-          <% @all_sub_categories.each do |section| %>
+          <% @all_brand_sub_categories.each do |section| %>
             <dt><%= section[0].name %></dt>
             <dd><%= section[1].map { |c| link_to c.name, products_path(sub_category: c.id, category: c.category_id) }.join(", ").html_safe %></dd>
           <% end %>

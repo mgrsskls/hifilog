@@ -89,8 +89,8 @@ class BrandsController < ApplicationController
           FROM brands
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
-          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          WHERE categories.id = ?
+          LEFT JOIN sub_categories ON sub_categories.id = brands_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
         ) AS brand WHERE left(lower(brand.name),1) = ? AND brand.discontinued = ? ORDER BY
       " + order, @category.id, @category.id, params[:letter].downcase, discontinued])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:sub_category].present?
@@ -132,8 +132,8 @@ class BrandsController < ApplicationController
           FROM brands
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
-          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          WHERE categories.id = ?
+          LEFT JOIN sub_categories ON sub_categories.id = brands_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
         ) AS brand WHERE left(lower(brand.name),1) = ? ORDER BY
       " + order, @category.id, @category.id, params[:letter].downcase])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:status].present?
@@ -184,8 +184,8 @@ class BrandsController < ApplicationController
           FROM brands
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
-          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          WHERE categories.id = ?
+          LEFT JOIN sub_categories ON sub_categories.id = brands_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
         ) AS brand WHERE brand.discontinued = ? ORDER BY
       " + order, @category.id, @category.id, discontinued])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter])
@@ -230,8 +230,8 @@ class BrandsController < ApplicationController
           FROM brands
           INNER JOIN brands_sub_categories
           ON brands_sub_categories.brand_id = brands.id
-          LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
-          WHERE categories.id = ?
+          LEFT JOIN sub_categories ON sub_categories.id = brands_sub_categories.sub_category_id
+          WHERE sub_categories.category_id = ?
         ) AS brand ORDER BY
       " + order, @category.id, @category.id])).page(params[:page])
     elsif params[:status].present?
@@ -277,7 +277,15 @@ class BrandsController < ApplicationController
       WHERE versions.item_id = ? AND versions.item_type = 'Brand'
     ", @brand.id])
 
-    @all_sub_categories ||= all_sub_categories(@brand).group_by(&:category).sort_by { |category| category[0].order }
+    @all_brand_sub_categories ||= all_sub_categories_for(@brand).group_by(&:category_id)
+                                                                # rubocop:disable Style/BlockDelimiters
+                                                                .map { |c|
+                                                                  [
+                                                                    Category.find(c[0]),
+                                                                    c[1]
+                                                                  ]
+                                                                }
+    # rubocop:enable Style/BlockDelimiters
 
     @page_title = @brand.name
   end
@@ -289,7 +297,7 @@ class BrandsController < ApplicationController
 
     @sub_category = SubCategory.find(params[:sub_category]) if params[:sub_category].present?
     @brand = @sub_category ? Brand.new(sub_category_ids: [@sub_category.id]) : Brand.new
-    @categories = Category.includes([:sub_categories]).all.order(:order)
+    @categories = Category.all
   end
 
   def create
@@ -298,7 +306,7 @@ class BrandsController < ApplicationController
     if @brand.save
       redirect_to brand_path(@brand)
     else
-      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @categories = Category.all
       render :new, status: :unprocessable_entity
     end
   end
@@ -306,7 +314,7 @@ class BrandsController < ApplicationController
   def edit
     @brand = Brand.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @brand.name)
-    @categories = Category.includes([:sub_categories]).all.order(:order)
+    @categories = Category.all
 
     add_breadcrumb @brand.name, brand_path(@brand)
     add_breadcrumb I18n.t('edit')
@@ -328,7 +336,7 @@ class BrandsController < ApplicationController
 
       redirect_to brand_path(@brand)
     else
-      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @categories = Category.all
       render :edit, status: :unprocessable_entity
     end
   end

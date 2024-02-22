@@ -1,30 +1,20 @@
-class Category < ApplicationRecord
-  extend FriendlyId
+class Category < ActiveHash::Base
+  include ActiveHash::Associations
+
+  self.data = [
+    { id: 1, name: 'Amplifiers', slug: 'amplifiers' },
+    { id: 8, name: 'Vacuum Tubes', slug: 'tubes' },
+    { id: 3, name: 'Loudspeakers', slug: 'loudspeakers' },
+    { id: 2, name: 'Headphones', slug: 'headphones' },
+    { id: 4, name: 'Analog', slug: 'analog' },
+    { id: 5, name: 'Digital', slug: 'digital' },
+    { id: 7, name: 'Cables', slug: 'cables' },
+    { id: 6, name: 'Accessories', slug: 'accessories' }
+  ]
 
   has_many :sub_categories, dependent: :destroy
 
-  friendly_id :name, use: :slugged
-
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[
-      created_at
-      id
-      name
-      slug
-      updated_at
-      order
-    ]
-  end
-
-  def self.ransackable_associations(_auth_object = nil)
-    ['sub_categories']
-  end
-
-  def self.ordered
-    order('LOWER(name)')
-  end
-
-  def ordered_sub_categories
-    sub_categories.order(&:name)
+  def sub_categories
+    SubCategory.where(category_id: id)
   end
 end
