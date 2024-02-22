@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   def show
     @user = User.find_by!(user_name: params[:id])
 
-    redirect_path = get_redirect_if_unauthorized(@user)
+    redirect_path = get_redirect_if_unauthorized(@user, false)
     return redirect_to redirect_path if redirect_path
 
     setup_user_page(@user)
@@ -118,7 +118,7 @@ class UsersController < ApplicationController
     @brands_edited = get_data(data, 'Brand', 'update')
   end
 
-  def get_redirect_if_unauthorized(user, prev_owneds: false)
+  def get_redirect_if_unauthorized(user, prev_owneds)
     return if user.visible?
 
     # if visited profile is not visible to logged out users and the current user is logged in
