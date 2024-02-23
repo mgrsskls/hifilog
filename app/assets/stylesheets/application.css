@@ -297,6 +297,11 @@
 	}
 
 	select,
+	input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]) {
+		block-size: 2.525rem;
+	}
+
+	select,
 	input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]),
 	textarea {
 		display: block;
