@@ -5,8 +5,8 @@
 <% sub_categories ||= [] %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
-  <%= hidden_field_tag :category, @category.id if @category %>
-  <%= hidden_field_tag :sub_category, @sub_category.id if @sub_category %>
+  <%= hidden_field_tag :category, @category.friendly_id if params[:category] %>
+  <%= hidden_field_tag :sub_category, @sub_category.friendly_id if params[:sub_category] %>
   <% if render_abc || render_status || categories.any? %>
     <div class="Filter">
       <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>

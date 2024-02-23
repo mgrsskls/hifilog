@@ -13,9 +13,10 @@ class BrandsController < ApplicationController
   def index
     @page_title = I18n.t('headings.brands')
 
-    if params[:letter].present? && (
-      ABC.include?(params[:letter]) || params[:category].present? || params[:status].present?
-    )
+    if (params[:letter].present? && ABC.include?(params[:letter])) ||
+       params[:category].present? ||
+       params[:sub_category].present? ||
+       params[:status].present?
       add_breadcrumb I18n.t('headings.brands'), proc { :brands }
     else
       add_breadcrumb I18n.t('headings.brands')
@@ -40,14 +41,13 @@ class BrandsController < ApplicationController
        ABC.include?(params[:letter]) &&
        params[:sub_category].present? &&
        params[:status].present?
-      @sub_category = SubCategory.find(params[:sub_category])
+      @sub_category = SubCategory.friendly.find(params[:sub_category])
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
-      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
+      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: @category.friendly_id)
       add_breadcrumb @sub_category.name, brands_path(
         letter: params[:letter],
-        category: params[:category],
-        sub_category: params[:sub_category],
+        sub_category: @sub_category.friendly_id,
       )
       add_breadcrumb I18n.t(params[:status])
       discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
@@ -71,9 +71,9 @@ class BrandsController < ApplicationController
           ABC.include?(params[:letter]) &&
           params[:category].present? &&
           params[:status].present?
-      @category = Category.find(params[:category])
+      @category = Category.friendly.find(params[:category])
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
-      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
+      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: @category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
       discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
       @brands = Kaminari.paginate_array(Brand.find_by_sql(["
@@ -94,10 +94,10 @@ class BrandsController < ApplicationController
         ) AS brand WHERE left(lower(brand.name),1) = ? AND brand.discontinued = ? ORDER BY
       " + order, @category.id, @category.id, params[:letter].downcase, discontinued])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:sub_category].present?
-      @sub_category = SubCategory.find(params[:sub_category])
+      @sub_category = SubCategory.friendly.find(params[:sub_category])
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
-      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: params[:category])
+      add_breadcrumb @category.name, brands_path(letter: params[:letter], category: @category.friendly_id)
       add_breadcrumb @sub_category.name
       @brands = Kaminari.paginate_array(Brand.find_by_sql(["
         SELECT * FROM (
@@ -116,7 +116,7 @@ class BrandsController < ApplicationController
           ) AS brand WHERE left(lower(brand.name),1) = ? ORDER BY
       " + order, @sub_category.id, @sub_category.id, params[:letter].downcase])).page(params[:page])
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:category].present?
-      @category = Category.find(params[:category])
+      @category = Category.friendly.find(params[:category])
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name
       @brands = Kaminari.paginate_array(Brand.find_by_sql(["
@@ -144,10 +144,10 @@ class BrandsController < ApplicationController
                      .order(order)
                      .page(params[:page])
     elsif params[:sub_category].present? && params[:status].present?
-      @sub_category = SubCategory.find(params[:sub_category])
+      @sub_category = SubCategory.friendly.find(params[:sub_category])
       @category = Category.find(@sub_category.category_id)
-      add_breadcrumb @category.name, brands_path(category: params[:category])
-      add_breadcrumb @sub_category.name, brands_path(category: params[:category], sub_category: params[:sub_category])
+      add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
+      add_breadcrumb @sub_category.name, brands_path(sub_category: @sub_category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
       discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
       @brands = Kaminari.paginate_array(Brand.find_by_sql(["
@@ -167,8 +167,8 @@ class BrandsController < ApplicationController
         ) AS brand WHERE brand.discontinued = ? ORDER BY
       " + order, @sub_category.id, @sub_category.id, discontinued])).page(params[:page])
     elsif params[:category].present? && params[:status].present?
-      @category = Category.find(params[:category])
-      add_breadcrumb @category.name, brands_path(category: params[:category])
+      @category = Category.friendly.find(params[:category])
+      add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
       discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
       @brands = Kaminari.paginate_array(Brand.find_by_sql(["
@@ -194,9 +194,9 @@ class BrandsController < ApplicationController
                      .order(order)
                      .page(params[:page])
     elsif params[:sub_category].present?
-      @sub_category = SubCategory.find(params[:sub_category])
+      @sub_category = SubCategory.friendly.find(params[:sub_category])
       @category = Category.find(@sub_category.category_id)
-      add_breadcrumb @category.name, brands_path(category: params[:category])
+      add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb @category.name
       @brands = Kaminari.paginate_array(Brand.find_by_sql(["
         SELECT * FROM (
@@ -215,7 +215,7 @@ class BrandsController < ApplicationController
         ) AS brand ORDER BY
       " + order, @sub_category.id, @sub_category.id])).page(params[:page])
     elsif params[:category].present?
-      @category = Category.find(params[:category])
+      @category = Category.friendly.find(params[:category])
       add_breadcrumb @category.name
       @brands = Kaminari.paginate_array(Brand.find_by_sql(["
         SELECT * FROM (
@@ -287,7 +287,7 @@ class BrandsController < ApplicationController
 
     add_breadcrumb I18n.t('new_brand.heading')
 
-    @sub_category = SubCategory.find(params[:sub_category]) if params[:sub_category].present?
+    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @brand = @sub_category ? Brand.new(sub_category_ids: [@sub_category.id]) : Brand.new
     @categories = Category.includes([:sub_categories]).all.order(:order)
   end

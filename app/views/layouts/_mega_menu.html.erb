@@ -21,17 +21,17 @@
           <div>
         <% end %>
             <div class="MenuMega-list">
-              <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: category.id }),
+              <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: category.friendly_id }),
                 class: "MegaMenu MegaMenu-link MegaMenu-link--lvl1 Menu-link--lvl1",
-                "aria-current": (request.path == show_all_path && params[:category].present? && params[:category].to_i == category.id && !params[:sub_category].present?) ? "page" : "false" do %>
+                "aria-current": (request.path == show_all_path && params[:category].present? && params[:category] == category.friendly_id && !params[:sub_category].present?) ? "page" : "false" do %>
                 <span><%= category.name %></span>
               <% end %>
               <ul>
                 <% category.sub_categories.each do |sub_category| %>
                   <li>
-                    <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: category.id, sub_category: sub_category.id }),
+                    <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { sub_category: sub_category.friendly_id }),
                       class: "MegaMenu MegaMenu-link MegaMenu-link--lvl2",
-                      "aria-current": (request.path == show_all_path && params[:category].present? && params[:category].to_i == category.id && params[:sub_category].present? && params[:sub_category].to_i == sub_category.id) ? "page" : "false" do %>
+                      "aria-current": (request.path == show_all_path && params[:sub_category].present? && params[:sub_category] == sub_category.friendly_id) ? "page" : "false" do %>
                       <span><%= sub_category.name %></span>
                     <% end %>
                   </li>
