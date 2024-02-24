@@ -1,9 +1,9 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "form" %>
-  <%= stylesheet_link_tag "new_product" %>
+  <%= stylesheet_link_tag "entity_form" %>
 <% end %>
 <% content_for :js do %>
-  <%= javascript_include_tag "new_product", type: "module", crossorigin: true %>
+  <%= javascript_include_tag "entity_form", type: "module", crossorigin: true %>
 <% end %>
 
 <div class="Form Form--centered">
@@ -49,7 +49,7 @@
     <%= render "shared/flash_messages", messages: @product.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
 
-  <%= form_for @product, html: { class: "NewProduct", method: :post, "data-url": all_brands_path } do |f| %>
+  <%= form_for @product, html: { class: "EntityForm", method: :post, "data-url": all_brands_path } do |f| %>
     <%= f.hidden_field :brand_id, value: @brand.id if @brand && @brand.id %>
 
     <div class="Form-field">
@@ -140,7 +140,7 @@
 
     <div class="Form-field">
       <div class="Form-label"><%= t('headings.categories') %></div>
-      <div class="Options">
+      <div class="Options EntityForm-subCategories">
         <% @categories.each do |category| %>
           <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
             <summary><%= category.name %></summary>
@@ -148,6 +148,20 @@
               <div class="Options-item">
                 <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, @product.sub_category_ids.include?(sub_category.id), name: "product[sub_category_ids][]" %>
                 <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
+                <% if sub_category.custom_attributes.any? %>
+                  <div class="Options-subItems">
+                    <% sub_category.custom_attributes.each do |custom_attribute| %>
+                      <div class="Form-field Form-field--inline">
+                        <% custom_attribute.options.each do |option| %>
+                          <div class="Form-options">
+                            <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.id}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if @product.custom_attributes["#{custom_attribute.id}"] == option[0] %><%= " disabled" if !@product.sub_category_ids.include?(sub_category.id) %>>
+                            <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"><%= t("custom_attributes.#{option[1]}") %></label>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           </details>
@@ -159,7 +173,7 @@
       <%= f.label :release_date, class: "Form-label" do %>
         Release date <small><i>(optional)</i></small>
       <% end %>
-      <div class="NewProduct-date">
+      <div class="EntityForm-date">
         <%= f.select :release_day do %>
           <option value="">Day</option>
           <% (1..31).each do |day| %>

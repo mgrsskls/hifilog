@@ -1,6 +1,7 @@
 class Product < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
+
   pg_search_scope :search_by_display_name,
                   against: :name,
                   ignoring: :accents,
@@ -31,6 +32,8 @@ class Product < ApplicationRecord
   validates :name, presence: true
   validates :name, uniqueness: { scope: :brand, case_sensitive: false }
   validates :sub_categories, presence: true
+
+  store_accessor :custom_attributes
 
   friendly_id :url_slug, use: [:slugged, :history]
 

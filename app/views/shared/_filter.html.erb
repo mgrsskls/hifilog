@@ -3,6 +3,7 @@
 <% render_status ||= false %>
 <% categories ||= [] %>
 <% sub_categories ||= [] %>
+<% custom_attributes ||= [] %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
   <%= hidden_field_tag :category, @category.friendly_id if params[:category] %>
@@ -37,7 +38,7 @@
           <% if render_status %>
             <div class="Filter-section">
               <span class="Filter-option"><%= t('status') %></span>
-              <ol class="Pagination Pagination--status">
+              <ol class="Pagination">
                 <li class="Pagination-all">
                   <label>
                     <input type="radio" name="status" value=""<%= ' checked aria-current="true"'.html_safe if params[:status].blank? %>>
@@ -57,6 +58,32 @@
                   </label>
                 </li>
               </ol>
+            </div>
+          <% end %>
+
+          <% if custom_attributes.any? %>
+            <div class="Filter-section">
+              <span class="Filter-option">Other</span>
+              <div class="Filter-values">
+                <% custom_attributes.each do |custom_attribute| %>
+                  <ol class="Pagination">
+                    <li class="Pagination-all">
+                      <label>
+                        <input type="radio" name="attr[<%= custom_attribute.id %>]" value=""<%= ' checked aria-current="true"'.html_safe if params[:attr].blank? || params[:attr][custom_attribute.id].blank? %>>
+                        <%= t('filter.all') %>
+                      </label>
+                    </li>
+                    <% custom_attribute.options.each do |option| %>
+                      <li class="Pagination-item">
+                        <label>
+                          <input type="radio" name="attr[<%= custom_attribute.id %>]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s] == option[0].to_s %>>
+                          <%= t("custom_attributes.#{option[1]}") %>
+                        </label>
+                      </li>
+                    <% end %>
+                  </ol>
+                <% end %>
+              </div>
             </div>
           <% end %>
 

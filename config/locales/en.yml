@@ -216,3 +216,13 @@ en:
     pagination:
       previous: "&larr; Previous"
       next: "Next &rarr;"
+  custom_attributes:
+    active: Active
+    hybrid: Hybrid
+    mono: Mono
+    passive: Passive
+    solid_state: Solid State
+    stereo: Stereo
+    tube: Tube
+    wired: Wired
+    wireless: Wireless

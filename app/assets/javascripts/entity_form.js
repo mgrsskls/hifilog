@@ -1,33 +1,50 @@
-const form = document.querySelector(".NewProduct");
+const form = document.querySelector(".EntityForm");
 const input = document.querySelector("#brand-filter");
 const addBrand = document.querySelector(".ProductFormAddBrand");
 const searchResultsWrapper = document.querySelector(".Options--brands");
 const template = document.querySelector("#brand-template");
 
-if (form && searchResultsWrapper) {
-	const headers = new Headers();
-	headers.append("Accept", "application/json");
+if (form) {
+	const subCategories = form.querySelector(".EntityForm-subCategories");
 
-	fetch(form.dataset.url, {
-		headers,
-	})
-		.then((res) => res.json())
-		.then(({ brands }) => {
-			const elements = appendBrands(brands);
-
-			render(input, elements, addBrand);
-
-			if (input) {
-				input.addEventListener("input", ({ target }) => {
-					render(target, elements, addBrand);
-				});
-			}
-		})
-		.catch((e) => {
-			alert(
-				"An error happened when loading the brands. Please reload the page. If this problem continues to exist, please contact us at info@hifilog.com.",
-			);
+	if (subCategories) {
+		subCategories.querySelectorAll('[type="checkbox"]').forEach((checkbox) => {
+			checkbox.addEventListener("change", ({ target }) => {
+				target
+					.closest(".Options-item")
+					.querySelectorAll('[type="radio"]')
+					.forEach((radio) => {
+						radio.disabled = !target.checked;
+					});
+			});
 		});
+	}
+
+	if (searchResultsWrapper) {
+		const headers = new Headers();
+		headers.append("Accept", "application/json");
+
+		fetch(form.dataset.url, {
+			headers,
+		})
+			.then((res) => res.json())
+			.then(({ brands }) => {
+				const elements = appendBrands(brands);
+
+				render(input, elements, addBrand);
+
+				if (input) {
+					input.addEventListener("input", ({ target }) => {
+						render(target, elements, addBrand);
+					});
+				}
+			})
+			.catch((e) => {
+				alert(
+					"An error happened when loading the brands. Please reload the page. If this problem continues to exist, please contact us at info@hifilog.com.",
+				);
+			});
+	}
 }
 
 function render(input, brands, addBrandForm) {

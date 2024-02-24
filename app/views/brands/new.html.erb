@@ -1,6 +1,6 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "form" %>
-  <%= stylesheet_link_tag "new_product" %>
+  <%= stylesheet_link_tag "entity_form" %>
 <% end %>
 
 <div class="Form Form--centered">
@@ -36,7 +36,7 @@
     <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
 
-  <%= form_for @brand, html: { class: "Form NewProduct", method: :post } do |f| %>
+  <%= form_for @brand, html: { class: "Form EntityForm", method: :post } do |f| %>
     <div class="Form-field">
       <%= f.label :name, class: "Form-label" %>
       <%= f.text_field :name, required: true %>

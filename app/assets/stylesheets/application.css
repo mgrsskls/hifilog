@@ -402,6 +402,11 @@
 		font-weight: 600;
 	}
 
+	.Data-secondary {
+		color: var(--color-copy);
+		font-size: 0.875em;
+	}
+
 	@media (hover: none) {
 		:is(a, button):hover,
 		:is(a, button):hover span {

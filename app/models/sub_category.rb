@@ -4,6 +4,7 @@ class SubCategory < ApplicationRecord
   belongs_to :category
   has_and_belongs_to_many :products, join_table: :products_sub_categories
   has_and_belongs_to_many :brands
+  has_and_belongs_to_many :custom_attributes
 
   friendly_id :name, use: :scoped, scope: :category
 
@@ -16,14 +17,11 @@ class SubCategory < ApplicationRecord
       slug
       updated_at
       brands_id
+      custom_attributes_id
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[category products]
-  end
-
-  def friendly_category_id
-    category.friendly_id
+    %w[category products custom_attributes]
   end
 end

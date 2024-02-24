@@ -9,24 +9,33 @@
 
 .Options-item {
 	position: relative;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0 0.5rem;
+}
+
+.Options-item[hidden] {
+	display: none;
 }
 
 .Options-item + .Options-item {
 	margin-block-start: 0.0625rem;
 }
 
-.Options-item input {
-	position: absolute;
-	inset-inline-start: 0.5em;
-	inset-block-start: 50%;
-	transform: translateY(-50%);
-	margin: 0;
+.Options-subItems {
+	grid-column-start: 2;
+	font-size: 0.875em;
+	color: var(--color-secondary);
+	padding-block: 0.25rem;
 }
 
-.Options-item label {
-	display: block;
-	cursor: pointer;
-	padding: 0.25em 0.5em 0.25em 1.75em;
+[type="checkbox"]:not(:checked) ~ .Options-subItems {
+	display: none;
+}
+
+.Options-subItems .Form-field + .Form-field {
+	margin-block-start: 0.5rem;
 }
 
 .Options--brands {
@@ -38,15 +47,15 @@
 	display: none;
 }
 
-.NewProduct details:not(:last-child) {
+.EntityForm details:not(:last-child) {
 	border-block-end: var(--border) var(--color-border-light);
 }
 
-.NewProduct details[open] {
+.EntityForm details[open] {
 	padding-block-end: 1rem;
 }
 
-.NewProduct summary {
+.EntityForm summary {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -55,12 +64,12 @@
 	font-weight: 600;
 }
 
-.NewProduct summary::after,
-html:has([name="theme"][value="light"]:checked) .NewProduct summary::after {
+.EntityForm summary::after,
+html:has([name="theme"][value="light"]:checked) .EntityForm summary::after {
 	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
 }
 
-.NewProduct-date {
+.EntityForm-date {
 	display: flex;
 	gap: 0.5rem;
 	align-items: center;

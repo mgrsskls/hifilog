@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_19_000506) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_24_053425) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -117,6 +117,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_000506) do
     t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
 
+  create_table "custom_attributes", force: :cascade do |t|
+    t.jsonb "options"
+  end
+
+  create_table "custom_attributes_sub_categories", id: false, force: :cascade do |t|
+    t.bigint "sub_category_id", null: false
+    t.bigint "custom_attribute_id", null: false
+  end
+
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string "slug", null: false
     t.integer "sluggable_id", null: false
@@ -147,7 +156,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_000506) do
     t.integer "release_month"
     t.integer "release_year"
     t.text "description"
+    t.jsonb "custom_attributes"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_products_name_prefix"
+    t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
     t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["slug"], name: "index_products_on_slug"
