@@ -218,9 +218,12 @@ en:
       next: "Next &rarr;"
   custom_attributes:
     active: Active
+    dynamic: Dynamic
+    electrostatic: Electrostatic
     hybrid: Hybrid
     mono: Mono
     passive: Passive
+    planar: Planar
     solid_state: Solid State
     stereo: Stereo
     tube: Tube
