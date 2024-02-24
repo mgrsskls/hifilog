@@ -226,3 +226,7 @@ en:
     tube: Tube
     wired: Wired
     wireless: Wireless
+  activerecord:
+    attributes:
+      sub_category:
+        custom_attribute_ids: Custom Attributes

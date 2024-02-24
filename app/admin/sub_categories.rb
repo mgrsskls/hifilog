@@ -20,7 +20,7 @@ ActiveAdmin.register SubCategory do
       f.input :name
       f.input :slug
       f.input :category_id, label: "Category", as: :radio, collection: Category.all
-      f.input :custom_attribute_ids, label: "Custom Attributes", as: :check_boxes, collection: CustomAttribute.all
+      f.input :custom_attribute_ids, as: :check_boxes, collection: CustomAttribute.all, member_label: :options
     end
     f.submit
   end
