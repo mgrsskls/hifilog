@@ -248,9 +248,8 @@ class ProductsController < ApplicationController
   end
 
   def edit
-    @page_title = I18n.t('new_product.heading')
-
     @product = Product.friendly.find(params[:id])
+    @page_title = I18n.t('edit_record', name: @product.name)
     @brand = @product.brand
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.includes([:sub_categories]).ordered
