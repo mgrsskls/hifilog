@@ -38,6 +38,17 @@ ActiveAdmin.register SubCategory do
     active_admin_comments_for(resource)
   end
 
+  index do
+    column :id
+    column ("Name") do |c|
+      SubCategory.find(c.id)
+    end
+    column :category
+    column :slug
+    column :custom_attributes
+    actions
+  end
+
   controller do
     def find_resource
       scoped_collection.friendly.find(params[:id])
