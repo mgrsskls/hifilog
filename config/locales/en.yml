@@ -232,4 +232,4 @@ en:
   activerecord:
     attributes:
       sub_category:
-        custom_attribute_ids: Custom Attributes
+        custom_attribute_ids: Attributes

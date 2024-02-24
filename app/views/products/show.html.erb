@@ -21,18 +21,8 @@
         <dt><%= t('headings.category').html_safe %></dt>
         <dd>
           <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
-          <%
-            if @product.custom_attributes.present? and @product.custom_attributes.any?
-              attributes = []
-
-              for custom_attribute in @product.custom_attributes
-                custom_attribute_resource = CustomAttribute.find(custom_attribute[0])
-                attributes.push t("custom_attributes.#{custom_attribute_resource.options[custom_attribute[1].to_s]}")
-              end
-            end
-          %>
-          <% if attributes && attributes.any? %>
-          <br><span class="Data-secondary"><%= attributes.join(", ") %></span>
+          <% if @product.custom_attributes.present? %>
+            <br><span class="Data-secondary"><%= custom_attributes_list @product %></span>
           <% end %>
         </dd>
         <dt>Release Date</dt>

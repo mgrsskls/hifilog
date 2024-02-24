@@ -23,21 +23,6 @@
 	margin-block-start: 0.0625rem;
 }
 
-.Options-subItems {
-	grid-column-start: 2;
-	font-size: 0.875em;
-	color: var(--color-secondary);
-	padding-block: 0.25rem;
-}
-
-[type="checkbox"]:not(:checked) ~ .Options-subItems {
-	display: none;
-}
-
-.Options-subItems .Form-field + .Form-field {
-	margin-block-start: 0.5rem;
-}
-
 .Options--brands {
 	max-height: 12.2em;
 	overflow-y: scroll;
@@ -48,7 +33,7 @@
 }
 
 .EntityForm details:not(:last-child) {
-	border-block-end: var(--border) var(--color-border-light);
+	border-block-end: var(--border-light);
 }
 
 .EntityForm details[open] {
@@ -73,6 +58,22 @@ html:has([name="theme"][value="light"]:checked) .EntityForm summary::after {
 	display: flex;
 	gap: 0.5rem;
 	align-items: center;
+}
+
+.EntityForm-attributes {
+	display: none;
+}
+
+.EntityForm-attributes:has([data-sub-category-ids]:not([hidden])) {
+	display: block;
+}
+
+.EntityForm-attribute {
+	padding-block: 0.5rem;
+}
+
+.EntityForm-attribute:not([hidden]) ~ .EntityForm-attribute {
+	border-block-start: var(--border-light);
 }
 
 @media (prefers-color-scheme: dark) {

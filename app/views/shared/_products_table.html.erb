@@ -1,5 +1,6 @@
 <% mark ||= nil %>
 <% hide_brand ||= false %>
+<% hide_category ||= false %>
 
 <table-saw class="u-pullOut">
   <table>
@@ -9,7 +10,10 @@
         <% unless hide_brand %>
           <th><%= t('headings.brand').html_safe %></th>
         <% end %>
-        <th><%= t('headings.category').html_safe %></th>
+        <% unless hide_category %>
+          <th><%= t('headings.category').html_safe %></th>
+        <% end %>
+        <th><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></th>
         <th colspan="2"><%= t('product.release_date').html_safe %></th>
       </tr>
     </thead>
@@ -20,7 +24,12 @@
           <% unless hide_brand %>
             <td><%= product.brand.name %></td>
           <% end %>
-          <td><%= product.sub_categories.any? ? product.sub_categories.map { |sub_category| sub_category.name }.join(", ") : "-" %></td>
+          <% unless hide_category %>
+            <td><%= product.sub_categories.any? ? product.sub_categories.map { |sub_category| sub_category.name }.join(", ") : "-" %></td>
+          <% end %>
+          <td>
+            <%= custom_attributes_list product %>
+          </td>
           <td><%= product.release_date.present? ? product.release_date : "-" %></td>
           <td>
             <%= render "shared/symbols", product: product %>

@@ -8,14 +8,18 @@ if (form) {
 	const subCategories = form.querySelector(".EntityForm-subCategories");
 
 	if (subCategories) {
-		subCategories.querySelectorAll('[type="checkbox"]').forEach((checkbox) => {
-			checkbox.addEventListener("change", ({ target }) => {
-				target
-					.closest(".Options-item")
-					.querySelectorAll('[type="radio"]')
-					.forEach((radio) => {
-						radio.disabled = !target.checked;
-					});
+		const subCategoryInputs = form.querySelectorAll(
+			'[name="product[sub_category_ids][]"]',
+		);
+		const customAttributes = form.querySelectorAll(
+			".EntityForm-attributes [data-sub-category-ids]",
+		);
+
+		renderCustomAttributes(customAttributes, subCategoryInputs);
+
+		subCategoryInputs.forEach((checkbox) => {
+			checkbox.addEventListener("change", () => {
+				renderCustomAttributes(customAttributes, subCategoryInputs);
 			});
 		});
 	}
@@ -31,11 +35,11 @@ if (form) {
 			.then(({ brands }) => {
 				const elements = appendBrands(brands);
 
-				render(input, elements, addBrand);
+				renderBrands(input, elements, addBrand);
 
 				if (input) {
 					input.addEventListener("input", ({ target }) => {
-						render(target, elements, addBrand);
+						renderBrands(target, elements, addBrand);
 					});
 				}
 			})
@@ -47,7 +51,20 @@ if (form) {
 	}
 }
 
-function render(input, brands, addBrandForm) {
+function renderCustomAttributes(attributes, inputs) {
+	attributes.forEach((attribute) => {
+		const filteredInputs = Array.from(inputs).filter((checkbox) =>
+			JSON.parse(attribute.dataset.subCategoryIds).includes(
+				parseInt(checkbox.value, 10),
+			),
+		);
+
+		attribute.hidden =
+			filteredInputs.filter((input) => input.checked).length === 0;
+	});
+}
+
+function renderBrands(input, brands, addBrandForm) {
 	const value = input.value.trim().toLowerCase();
 
 	if (value.length > 0) {

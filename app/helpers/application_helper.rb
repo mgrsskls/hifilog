@@ -98,4 +98,17 @@ module ApplicationHelper
     country = ISO3166::Country[country_code]
     country.translations[I18n.locale.to_s] || country.common_name || country.iso_short_name
   end
+
+  def custom_attributes_list(product)
+    return unless product.custom_attributes.present? && product.custom_attributes.any?
+
+    attributes = []
+
+    product.custom_attributes.each do |custom_attribute|
+      custom_attribute_resource = CustomAttribute.find(custom_attribute[0])
+      attributes.push I18n.t("custom_attributes.#{custom_attribute_resource.options[custom_attribute[1].to_s]}")
+    end
+
+    attributes.join(', ') if attributes.any?
+  end
 end

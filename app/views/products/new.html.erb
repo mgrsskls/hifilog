@@ -148,23 +148,25 @@
               <div class="Options-item">
                 <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, @product.sub_category_ids.include?(sub_category.id), name: "product[sub_category_ids][]" %>
                 <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
-                <% if sub_category.custom_attributes.any? %>
-                  <div class="Options-subItems">
-                    <% sub_category.custom_attributes.each do |custom_attribute| %>
-                      <div class="Form-field Form-field--inline">
-                        <% custom_attribute.options.each do |option| %>
-                          <div class="Form-options">
-                            <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.id}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if @product.custom_attributes["#{custom_attribute.id}"] == option[0] %><%= " disabled" if !@product.sub_category_ids.include?(sub_category.id) %>>
-                            <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"><%= t("custom_attributes.#{option[1]}") %></label>
-                          </div>
-                        <% end %>
-                      </div>
-                    <% end %>
-                  </div>
-                <% end %>
               </div>
             <% end %>
           </details>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="Form-field EntityForm-attributes">
+      <span class="Form-label"><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></span>
+      <div class="Options">
+        <% CustomAttribute.all.each do |custom_attribute| %>
+          <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
+            <% custom_attribute.options.each do |option| %>
+              <div class="Form-options">
+                <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.id}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if @product.custom_attributes.present? && @product.custom_attributes["#{custom_attribute.id}"] == option[0] %><%#= " disabled" if !@product.sub_category_ids.include?(sub_category.id) %>>
+                <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"><%= t("custom_attributes.#{option[1]}") %></label>
+              </div>
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>
