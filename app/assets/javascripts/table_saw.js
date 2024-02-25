@@ -48,10 +48,8 @@ table-saw.${this._identifier} {
 	}
 	table-saw.${this._identifier} :is(tbody, tfoot) tr {
 		display: block;
-		margin-bottom: 1em;
 	}
 	table-saw.${this._identifier} :is(tbody, tfoot) :is(th, td):before {
-		font-weight: bold;
 		content: attr(${this.attrs.label});
 	}
 	table-saw.${this._identifier} :is(tbody, tfoot) :is(th, td) {

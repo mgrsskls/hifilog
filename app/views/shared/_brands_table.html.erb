@@ -1,12 +1,12 @@
 <% mark ||= nil %>
 
-<table-saw class="u-pullOut" text-align>
+<table-saw class="u-pullOut" text-align breakpoint="(max-width: 40rem)" type="container">
   <table>
     <thead>
       <tr>
-        <th class="Table-name"><%= t('name') %></th>
+        <th><%= t('name') %></th>
         <th><%= t('headings.categories').html_safe %></th>
-        <th class="u-alignCenter"><%= t('headings.products') %></th>
+        <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
         <th>Country</th>
         <th class="Table-symbols"></th>
       </tr>
@@ -22,7 +22,7 @@
           <td>
             <%= brand.country_name.present? ? brand.country_name : "-" %>
           </td>
-          <td>
+          <td class="Table-symbols">
             <%= render "shared/symbols", brand: brand %>
           </td>
         </tr>

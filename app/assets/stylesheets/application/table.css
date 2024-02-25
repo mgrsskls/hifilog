@@ -1,104 +1,114 @@
-@layer {
-	table-saw {
-		display: block;
-	}
+table-saw {
+	container: table / inline-size;
+	display: block;
+}
 
-	:is(nav, .Pagination, .FilterInfo) + :is(table, table-saw) {
-		margin-block-start: 2rem;
-	}
+:is(nav, .Pagination, .FilterInfo) + :is(table, table-saw) {
+	margin-block-start: 2rem;
+}
 
-	table {
-		border-collapse: collapse;
-		inline-size: 100%;
-		table-layout: fixed;
-	}
+table {
+	border-collapse: collapse;
+	inline-size: 100%;
+	table-layout: fixed;
+}
 
-	tbody tr:nth-child(odd) {
-		background: var(--color-bg2);
-	}
+tr {
+	border-block-end: var(--border-light);
+	padding-block: 1rem;
+}
 
-	th {
-		text-align: start;
-	}
+tr.is-positive {
+	font-weight: bold;
+}
 
-	thead th {
-		color: var(--color-secondary);
-		font-size: 0.875em;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		vertical-align: top;
-	}
+tbody tr:nth-child(odd) {
+	background: var(--color-bg2);
+}
 
-	th small {
-		font-weight: normal;
-	}
+th {
+	text-align: start;
+}
 
-	th,
-	td {
-		border-block-end: var(--border-light);
-		padding: 0.75rem;
-	}
+thead th,
+table-saw :is(tbody, tfoot) :is(th, td)::before {
+	color: var(--color-secondary);
+	font-size: 0.875rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	vertical-align: top;
+	line-height: calc(var(--line-height) * 1rem);
+}
 
-	:is(th, td):not(:last-child) {
-		padding-inline-end: 1rem;
-	}
+table-saw :is(tbody, tfoot) :is(th, td)::before {
+	font-size: 0.75rem;
+}
 
-	.Table-name {
-		width: 30%;
-	}
+th small {
+	font-weight: normal;
+}
 
-	.Table-products {
-		width: 7.5em;
-	}
+th,
+td {
+	padding-inline: 0.75rem;
+	padding-block: 0.75rem;
+}
 
-	.Table-symbols {
-		width: 5em;
-	}
+:is(th, td):not(:last-child) {
+	padding-inline-end: 1rem;
+}
 
-	table .Symbols {
-		justify-content: flex-end;
-	}
+.Table-products {
+	width: 6.5em;
+}
 
-	tr.is-positive {
-		font-weight: bold;
+.Table-date {
+	width: 6.5em;
+}
+
+table:not(:has(.Symbol)) .Table-symbols {
+	display: none;
+}
+
+table:has(.Symbols-item:last-child:nth-child(1)) .Table-symbols {
+	width: 2em;
+}
+
+table:has(.Symbols-item:last-child:nth-child(2)) .Table-symbols {
+	width: 4.25em;
+}
+
+table:has(.Symbols-item:last-child:nth-child(3)) .Table-symbols {
+	width: 6.5em;
+}
+
+table:has(.Symbols-item:last-child:nth-child(4)) .Table-symbols {
+	width: 8.75em;
+}
+
+.Table-sm {
+	font-size: 0.875em;
+}
+
+table .Symbols {
+	justify-content: flex-end;
+}
+
+@container table (max-inline-size: 48rem) {
+	.ts_c_max_width__48rem_ :is(th, td) {
+		padding-block: 0;
 	}
 }
 
-@media (max-width: 39.9375em) {
-	table-saw table {
-		inline-size: 100%;
-	}
-
-	table-saw tr {
-		border-block-end: var(--border-light);
-		padding-block: 1rem;
-	}
-
-	table-saw :is(tbody, tfoot) tr {
-		margin-block-end: 0 !important;
-	}
-
-	table-saw :is(th, td) {
+@container table (max-inline-size: 40rem) {
+	.ts_c_max_width__40rem_ :is(th, td) {
 		padding-block: 0;
-		border-block-end: 0;
-		background-color: transparent;
 	}
+}
 
-	table-saw :is(tbody, tfoot) :is(th, td)::before {
-		color: var(--color-secondary);
-		font-size: 0.75em;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		line-height: calc(var(--line-height) * 1rem);
-	}
-
-	table-saw :is(.Table-products, .Table-symbols) {
-		width: auto;
-	}
-
-	table-saw .Symbols:has(.Symbols-item) {
-		justify-content: flex-start;
-		margin-block-start: 0.5rem;
+@container table (max-inline-size: 32rem) {
+	.ts_c_max_width__32rem_ :is(th, td) {
+		padding-block: 0;
 	}
 }

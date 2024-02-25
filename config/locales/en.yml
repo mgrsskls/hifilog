@@ -182,7 +182,7 @@ en:
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
   product:
     description: Description
-    release_date: Release date
+    release_date: Release
     meta:
       owned_by: Owned by
   user:

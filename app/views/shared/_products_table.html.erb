@@ -2,7 +2,7 @@
 <% hide_brand ||= false %>
 <% hide_category ||= false %>
 
-<table-saw class="u-pullOut">
+<table-saw class="u-pullOut" breakpoint="(max-width: 48rem)" type="container">
   <table>
     <thead>
       <tr>
@@ -14,7 +14,8 @@
           <th><%= t('headings.category').html_safe %></th>
         <% end %>
         <th><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></th>
-        <th colspan="2"><%= t('product.release_date').html_safe %></th>
+        <th class="Table-date"><%= t('product.release_date').html_safe %></th>
+        <th class="Table-symbols"></th>
       </tr>
     </thead>
     <tbody>
@@ -25,13 +26,18 @@
             <td><%= product.brand.name %></td>
           <% end %>
           <% unless hide_category %>
-            <td><%= product.sub_categories.any? ? product.sub_categories.map { |sub_category| sub_category.name }.join(", ") : "-" %></td>
+            <td class="Table-sm">
+              <% product.sub_categories.each do |sub_category| %>
+                <%= sub_category.name %><br>
+              <% end %>
+            </td>
           <% end %>
-          <td>
-            <%= custom_attributes_list product %>
+          <td class="Table-sm">
+            <% attr_list = custom_attributes_list product %>
+            <%= attr_list ? attr_list : "-" %>
           </td>
-          <td><%= product.release_date.present? ? product.release_date : "-" %></td>
-          <td>
+          <td class="Table-sm"><%= product.release_date.present? ? product.release_date : "-" %></td>
+          <td class="Table-symbols">
             <%= render "shared/symbols", product: product %>
           </td>
         </tr>

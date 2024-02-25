@@ -31,7 +31,7 @@
 
 <div class="u-pullOut">
   <% if products.any? %>
-    <table-saw>
+    <table-saw breakpoint="(max-width: 40rem)" type="container">
       <table>
         <thead>
           <tr>
@@ -48,7 +48,7 @@
             <tr>
               <th scope="row"><%= link_to product.name, product_path(id: product.friendly_id) %></th>
               <td><%= product.brand.name %></td>
-              <td>
+              <td class="Table-sm">
                 <% if product.sub_categories.any? %>
                   <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
                 <% else %>
@@ -56,7 +56,7 @@
                 <% end %>
               </td>
               <% if setups.any? %>
-                <td>
+                <td class="Table-sm">
                   <% setup = setups.find_by(products: product.id) %>
                   <%= setup ? setup.name : "-" %>
                 </td>
