@@ -6,6 +6,8 @@
 	margin-block-end: 1rem;
 	gap: 1rem 2rem;
 	font-size: 0.875em;
+	position: relative;
+	z-index: 1;
 }
 
 .Filter-option {
