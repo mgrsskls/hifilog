@@ -25,7 +25,7 @@
             <br><span class="Data-secondary"><%= custom_attributes_list @product %></span>
           <% end %>
         </dd>
-        <dt><%= t('product.product') %></dt>
+        <dt><%= t('product.release_date') %></dt>
         <dd>
           <% if @product.release_date.present? %>
             <time datetime="<%= @product.release_date %>" data-format="false"><%= @product.release_date %></time>
