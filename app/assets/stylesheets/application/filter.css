@@ -26,6 +26,11 @@
 	flex-wrap: wrap;
 }
 
+.Filter-input {
+	block-size: 1.875rem;
+	max-inline-size: 14rem;
+}
+
 @media (max-width: 42rem) {
 	.Filter {
 		display: grid;

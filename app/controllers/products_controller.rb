@@ -149,6 +149,9 @@ class ProductsController < ApplicationController
       end
     end
 
+    @query = params[:query].strip if params[:query].present?
+    products = products.search_by_display_name(@query) if @query.present?
+
     @products = products.includes([:brand, :sub_categories]).page(params[:page])
   end
 

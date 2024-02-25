@@ -89,6 +89,11 @@
             </div>
           <% end %>
 
+          <div class="Filter-section">
+            <label class="Filter-option" for="entity-search"><%= t('search') %></label>
+            <input id="entity-search" class="Filter-input" type="search" name="query" placeholder="Search by Name…" value="<%= @query %>">
+          </div>
+
           <div class="Filter-actions u-flex u-gap-md u-spaceBetween u-alignEnd">
             <button class="Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
             <div class="u-flex u-gap-md u-alignCenter">
