@@ -39,10 +39,21 @@ class ProductsController < ApplicationController
     end
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
-    @custom_attributes = @sub_category.custom_attributes if @sub_category
+
+    if @sub_category
+      @category = Category.find(@sub_category.category_id)
+      @custom_attributes = @sub_category.custom_attributes
+    elsif params[:category].present?
+      @category = Category.friendly.find(params[:category])
+
+      if @category
+        @custom_attributes = CustomAttribute.joins(:sub_categories)
+                                            .where(sub_categories: { id: @category.sub_categories.map(&:id) })
+                                            .distinct
+      end
+    end
 
     if params[:letter].present? && @sub_category && params[:status].present?
-      @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, products_path(letter: params[:letter])
       add_breadcrumb @category.name, products_path(letter: params[:letter], category: @category.friendly_id)
       add_breadcrumb @sub_category.name, products_path(letter: params[:letter], sub_category: @sub_category.friendly_id)
@@ -54,8 +65,7 @@ class ProductsController < ApplicationController
                           discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
                         )
                         .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && params[:category].present? && params[:status].present?
-      @category = Category.friendly.find(params[:category])
+    elsif params[:letter].present? && @category && params[:status].present?
       add_breadcrumb params[:letter].upcase, products_path(letter: params[:letter])
       add_breadcrumb @category.name, products_path(letter: params[:letter], category: @category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
@@ -67,7 +77,6 @@ class ProductsController < ApplicationController
                         )
                         .order(update_for_joined_tables(order))
     elsif params[:letter].present? && @sub_category
-      @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, products_path(letter: params[:letter])
       add_breadcrumb @category.name, products_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name
@@ -75,8 +84,7 @@ class ProductsController < ApplicationController
                         .where(sub_categories: @sub_category.id)
                         .where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
                         .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && params[:category].present?
-      @category = Category.friendly.find(params[:category])
+    elsif params[:letter].present? && @category
       add_breadcrumb params[:letter].upcase, products_path(letter: params[:letter])
       add_breadcrumb @category.name
       products = Product.joins(:sub_categories)
@@ -92,7 +100,6 @@ class ProductsController < ApplicationController
                         )
                         .order(update_for_joined_tables(order))
     elsif @sub_category && params[:status].present?
-      @category = Category.find(@sub_category.category_id)
       add_breadcrumb @category.name, products_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name, products_path(sub_category: @sub_category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
@@ -102,8 +109,7 @@ class ProductsController < ApplicationController
                           discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
                         )
                         .order(update_for_joined_tables(order))
-    elsif params[:category].present? && params[:status].present?
-      @category = Category.friendly.find(params[:category])
+    elsif @category && params[:status].present?
       add_breadcrumb @category.name, products_path(category: @category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
       products = Product.joins(:sub_categories)
@@ -117,14 +123,12 @@ class ProductsController < ApplicationController
       products = Product.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
                         .order(order)
     elsif @sub_category
-      @category = Category.find(@sub_category.category_id)
       add_breadcrumb @category.name, products_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name
       products = Product.joins(:sub_categories)
                         .where(sub_categories: @sub_category.id)
                         .order(update_for_joined_tables(order))
-    elsif params[:category].present?
-      @category = Category.friendly.find(params[:category])
+    elsif @category
       add_breadcrumb @category.name
       products = Product.joins(:sub_categories)
                         .where(sub_categories: { category_id: @category.id })

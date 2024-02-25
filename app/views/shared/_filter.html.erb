@@ -63,7 +63,9 @@
 
           <% if custom_attributes.any? %>
             <div class="Filter-section">
-              <span class="Filter-option">Other</span>
+              <span class="Filter-option">
+                <%= t('activerecord.attributes.sub_category.custom_attribute_ids') %>
+              </span>
               <div class="Filter-values">
                 <% custom_attributes.each do |custom_attribute| %>
                   <ol class="Pagination">
