@@ -43,6 +43,10 @@
 		transition: 0.25s opacity ease;
 		grid-column: 1 / -1;
 		grid-row: 2;
+		max-block-size: calc(100dvb - 2rem);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		box-sizing: border-box;
 	}
 
 	.Filter:has([aria-expanded="true"])::before {
