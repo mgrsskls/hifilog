@@ -221,7 +221,10 @@ en:
     dynamic: Dynamic
     electrostatic: Electrostatic
     hybrid: Hybrid
+    mc: MC
+    mm: MM
     mono: Mono
+    optical: Optical
     passive: Passive
     planar: Planar Magnetic
     solid_state: Solid State
