@@ -37,12 +37,17 @@ class BrandsController < ApplicationController
       order = 'LOWER(name) ASC'
     end
 
+    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
+    if @sub_category
+      @category = Category.find(@sub_category.category_id)
+    elsif params[:category].present?
+      @category = Category.friendly.find(params[:category])
+    end
+
     if params[:letter].present? &&
        ABC.include?(params[:letter]) &&
-       params[:sub_category].present? &&
+       @sub_category &&
        params[:status].present?
-      @sub_category = SubCategory.friendly.find(params[:sub_category])
-      @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name, brands_path(letter: params[:letter], category: @category.friendly_id)
       add_breadcrumb @sub_category.name, brands_path(
@@ -66,12 +71,11 @@ class BrandsController < ApplicationController
           ON brands_sub_categories.brand_id = brands.id
           AND brands_sub_categories.sub_category_id = ?
           ) AS brand WHERE left(lower(brand.name),1) = ? AND brand.discontinued = ? ORDER BY
-      " + order, @sub_category.id, @sub_category.id, params[:letter].downcase, discontinued])).page(params[:page])
+      " + order, @sub_category.id, @sub_category.id, params[:letter].downcase, discontinued]))
     elsif params[:letter].present? &&
           ABC.include?(params[:letter]) &&
-          params[:category].present? &&
+          @category &&
           params[:status].present?
-      @category = Category.friendly.find(params[:category])
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name, brands_path(letter: params[:letter], category: @category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
@@ -92,9 +96,8 @@ class BrandsController < ApplicationController
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
           WHERE categories.id = ?
         ) AS brand WHERE left(lower(brand.name),1) = ? AND brand.discontinued = ? ORDER BY
-      " + order, @category.id, @category.id, params[:letter].downcase, discontinued])).page(params[:page])
-    elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:sub_category].present?
-      @sub_category = SubCategory.friendly.find(params[:sub_category])
+      " + order, @category.id, @category.id, params[:letter].downcase, discontinued]))
+    elsif params[:letter].present? && ABC.include?(params[:letter]) && @sub_category
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name, brands_path(letter: params[:letter], category: @category.friendly_id)
@@ -114,9 +117,8 @@ class BrandsController < ApplicationController
           ON brands_sub_categories.brand_id = brands.id
           AND brands_sub_categories.sub_category_id = ?
           ) AS brand WHERE left(lower(brand.name),1) = ? ORDER BY
-      " + order, @sub_category.id, @sub_category.id, params[:letter].downcase])).page(params[:page])
-    elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:category].present?
-      @category = Category.friendly.find(params[:category])
+      " + order, @sub_category.id, @sub_category.id, params[:letter].downcase]))
+    elsif params[:letter].present? && ABC.include?(params[:letter]) && @category
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb @category.name
       brands = Kaminari.paginate_array(Brand.find_by_sql(["
@@ -135,16 +137,14 @@ class BrandsController < ApplicationController
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
           WHERE categories.id = ?
         ) AS brand WHERE left(lower(brand.name),1) = ? ORDER BY
-      " + order, @category.id, @category.id, params[:letter].downcase])).page(params[:page])
+      " + order, @category.id, @category.id, params[:letter].downcase]))
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:status].present?
       add_breadcrumb params[:letter].upcase, brands_path(letter: params[:letter])
       add_breadcrumb I18n.t(params[:status])
       brands = Brand.where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
-                     .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                     .order(order)
-                     .page(params[:page])
-    elsif params[:sub_category].present? && params[:status].present?
-      @sub_category = SubCategory.friendly.find(params[:sub_category])
+                    .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+                    .order(order)
+    elsif @sub_category && params[:status].present?
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name, brands_path(sub_category: @sub_category.friendly_id)
@@ -165,9 +165,8 @@ class BrandsController < ApplicationController
           ON brands_sub_categories.brand_id = brands.id
           AND brands_sub_categories.sub_category_id = ?
         ) AS brand WHERE brand.discontinued = ? ORDER BY
-      " + order, @sub_category.id, @sub_category.id, discontinued])).page(params[:page])
-    elsif params[:category].present? && params[:status].present?
-      @category = Category.friendly.find(params[:category])
+      " + order, @sub_category.id, @sub_category.id, discontinued]))
+    elsif @category && params[:status].present?
       add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb I18n.t(params[:status])
       discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
@@ -187,14 +186,12 @@ class BrandsController < ApplicationController
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
           WHERE categories.id = ?
         ) AS brand WHERE brand.discontinued = ? ORDER BY
-      " + order, @category.id, @category.id, discontinued])).page(params[:page])
+      " + order, @category.id, @category.id, discontinued]))
     elsif params[:letter].present? && ABC.include?(params[:letter])
       add_breadcrumb params[:letter].upcase
       brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
-                     .order(order)
-                     .page(params[:page])
-    elsif params[:sub_category].present?
-      @sub_category = SubCategory.friendly.find(params[:sub_category])
+                    .order(order)
+    elsif @sub_category
       @category = Category.find(@sub_category.category_id)
       add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb @category.name
@@ -213,9 +210,8 @@ class BrandsController < ApplicationController
           ON brands_sub_categories.brand_id = brands.id
           AND brands_sub_categories.sub_category_id = ?
         ) AS brand ORDER BY
-      " + order, @sub_category.id, @sub_category.id])).page(params[:page])
-    elsif params[:category].present?
-      @category = Category.friendly.find(params[:category])
+      " + order, @sub_category.id, @sub_category.id]))
+    elsif @category.present?
       add_breadcrumb @category.name
       brands = Kaminari.paginate_array(Brand.find_by_sql(["
         SELECT * FROM (
@@ -233,20 +229,19 @@ class BrandsController < ApplicationController
           LEFT JOIN categories ON categories.id = brands_sub_categories.sub_category_id
           WHERE categories.id = ?
         ) AS brand ORDER BY
-      " + order, @category.id, @category.id])).page(params[:page])
+      " + order, @category.id, @category.id]))
     elsif params[:status].present?
       add_breadcrumb I18n.t(params[:status])
       brands = Brand.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                     .order(update_for_joined_tables(order))
-                     .page(params[:page])
+                    .order(update_for_joined_tables(order))
     else
-      brands = Brand.all.order(order).page(params[:page])
+      brands = Brand.all.order(order)
     end
 
     @query = params[:query].strip if params[:query].present?
     brands = brands.search_by_name(@query) if @query.present?
 
-    @brands = brands
+    @brands = brands.page(params[:page])
   end
 
   def all
