@@ -4,41 +4,41 @@ class ApplicationHelperTest < ActionView::TestCase
   test 'user_has_product?' do
     assert_not user_has_product?(nil, products(:one))
 
-    assert user_has_product?(users(:one), products(:one))
+    assert user_has_product?(users(:with_everything), products(:one))
 
-    assert_not user_has_product?(users(:two), products(:one))
+    assert_not user_has_product?(users(:without_anything), products(:one))
   end
 
   test 'user_has_bookmark?' do
     assert_not user_has_bookmark?(nil, products(:one))
 
-    assert user_has_bookmark?(users(:one), products(:one))
-    assert_not user_has_bookmark?(users(:two), products(:one))
+    assert user_has_bookmark?(users(:with_everything), products(:one))
+    assert_not user_has_bookmark?(users(:without_anything), products(:one))
   end
 
   test 'user_has_brand?' do
     assert_not user_has_brand?(nil, brands(:one))
 
-    assert user_has_brand?(users(:one), brands(:one))
-    assert_not user_has_brand?(users(:two), brands(:one))
+    assert user_has_brand?(users(:with_everything), brands(:one))
+    assert_not user_has_brand?(users(:without_anything), brands(:one))
   end
 
   test 'user_products_count' do
     assert_nil user_products_count(nil)
-    assert_equal user_products_count(users(:one)), 2
-    assert_equal user_products_count(users(:two)), 0
+    assert_equal user_products_count(users(:with_everything)), 2
+    assert_equal user_products_count(users(:without_anything)), 0
   end
 
   test 'user_bookmarks_count' do
     assert_nil user_bookmarks_count(nil)
-    assert_equal user_bookmarks_count(users(:one)), 2
-    assert_equal user_bookmarks_count(users(:two)), 0
+    assert_equal user_bookmarks_count(users(:with_everything)), 2
+    assert_equal user_bookmarks_count(users(:without_anything)), 0
   end
 
   test 'user_setups_count' do
     assert_nil user_setups_count(nil)
-    assert_equal user_setups_count(users(:one)), 2
-    assert_equal user_setups_count(users(:two)), 0
+    assert_equal user_setups_count(users(:with_everything)), 2
+    assert_equal user_setups_count(users(:without_anything)), 0
   end
 
   test 'round_up_or_down' do

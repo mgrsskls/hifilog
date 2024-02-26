@@ -1,9 +1,12 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+with_products:
+  name: With products
   user: with_everything
-  product: one
+  products:
+    - one
+    - two
 
-two:
+without_products:
+  name: Without products
   user: with_everything
-  product: two

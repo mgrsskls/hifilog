@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
@@ -8,32 +9,47 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test 'show' do
     # profile hidden
-    get user_path(id: users(:one).user_name)
+    get user_path(id: users(:hidden).user_name)
     assert_response :redirect
     assert_redirected_to root_path
 
     # profile visible only for logged in users
-    get user_path(id: users(:two).user_name)
+    get user_path(id: users(:logged_in_only).user_name)
     assert_response :redirect
-    assert_redirected_to new_user_session_path(redirect: user_path(id: users(:two).user_name))
+    assert_redirected_to new_user_session_path(redirect: user_path(id: users(:logged_in_only).user_name))
+    get user_previous_products_path(user_id: users(:logged_in_only).user_name)
+    assert_response :redirect
+    assert_redirected_to new_user_session_path(
+      redirect: user_previous_products_path(user_id: users(:logged_in_only).user_name)
+    )
 
     # profile visible for logged in and logged out users
-    get user_path(id: users(:three).user_name)
+    get user_path(id: users(:visible).user_name)
+    assert_response :success
+    get user_previous_products_path(user_id: users(:visible).user_name)
     assert_response :success
 
-    sign_in users(:three)
+    sign_in users(:visible)
 
     # profile hidden
-    get user_path(id: users(:one).user_name)
+    get user_path(id: users(:hidden).user_name)
+    assert_response :redirect
+    assert_redirected_to root_path
+    get user_previous_products_path(user_id: users(:hidden).user_name)
     assert_response :redirect
     assert_redirected_to root_path
 
     # profile visible only for logged in users
-    get user_path(id: users(:two).user_name)
+    get user_path(id: users(:logged_in_only).user_name)
+    assert_response :success
+    get user_previous_products_path(user_id: users(:logged_in_only).user_name)
     assert_response :success
 
     # profile visible for logged in and logged out users
-    get user_path(id: users(:three).user_name)
+    get user_path(id: users(:visible).user_name)
+    assert_response :success
+    get user_previous_products_path(user_id: users(:visible).user_name)
     assert_response :success
   end
 end
+# rubocop:enable Metrics/BlockLength

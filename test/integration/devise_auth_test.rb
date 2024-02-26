@@ -8,7 +8,7 @@ class DeviseAuthTest < ActionDispatch::IntegrationTest
   end
 
   test 'user cant access admin area' do
-    sign_in users(:one)
+    sign_in users(:visible)
     get admin_dashboard_path
     assert_response :redirect
     assert_redirected_to new_admin_user_session_path
@@ -27,7 +27,7 @@ class DeviseAuthTest < ActionDispatch::IntegrationTest
   end
 
   test 'logged in user can access dashboard' do
-    sign_in users(:one)
+    sign_in users(:visible)
     get dashboard_root_path
     assert_response :success
   end
