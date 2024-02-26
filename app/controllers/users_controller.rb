@@ -122,7 +122,11 @@ class UsersController < ApplicationController
     add_breadcrumb user.user_name
     @page_title = user.user_name
 
-    data = PaperTrail::Version.where(whodunnit: user.id).group('item_type', 'event').count
+    data = PaperTrail::Version.where(whodunnit: user.id)
+                              .select(:item_id)
+                              .distinct
+                              .group('item_type', 'event')
+                              .count
 
     @products_created = get_data(data, 'Product', 'create')
     @products_edited = get_data(data, 'Product', 'update')
