@@ -39,6 +39,7 @@
           <code><%=h "<ol>" %></code>,
           <code><%=h "<li>" %></code>
         </li>
+        <li>The price should ideally be the retail price recommended by the manufacturer provided in USD (or alternatively in EUR) to allow better comparisons. If you cannot provide that, you can also add the price in a different currency.</li>
       </ul>
       </ul>
     </div>
@@ -114,6 +115,32 @@
         <%= t('brand.description') %> <small><i>(optional)</i></small>
       <% end %>
       <%= f.text_area :description %>
+    </div>
+
+    <div class="Form-field">
+      <div class="u-flex u-gap-md">
+        <div>
+          <%= f.label :price, class: "Form-label" do %>
+            <%= t('activerecord.attributes.product.price') %> <small><i>(optional)</i></small>
+          <% end %>
+          <%= f.text_field :price, inputmode: "number" %>
+        </div>
+        <div>
+          <%= f.label :price_currency, class: "Form-label" do %>
+            <%= t('activerecord.attributes.product.price_currency') %> <small><i>(optional)</i></small>
+          <% end %>
+          <%= f.select :price_currency do %>
+            <option value=""></option>
+            <% ['USD', 'EUR'].each do |id| %>
+              <option value="<%= id %>"<%= " selected" if @product.price_currency == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
+            <% end %>
+            <hr>
+            <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
+              <option value="<%= currency[:id] %>"<%= " selected" if @product.price_currency == currency[:id] %>><%= currency[:name] %></option>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
     </div>
 
     <div class="Form-field Form-field--inline">

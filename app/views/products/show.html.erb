@@ -33,6 +33,14 @@
             -
           <% end %>
         </dd>
+        <dt><%= t('activerecord.attributes.product.price') %></dt>
+        <dd>
+          <% if @product.price.present? %>
+            <%= @product.display_price %>
+          <% else %>
+            -
+          <% end %>
+        </dd>
       </dl>
 
       <% if @product.description.present? %>

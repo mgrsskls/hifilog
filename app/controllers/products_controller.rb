@@ -30,6 +30,8 @@ class ProductsController < ApplicationController
       if params[:sort] == 'release_date_desc'
         order = 'release_year DESC NULLS LAST, release_month DESC NULLS LAST, release_day DESC NULLS LAST, LOWER(name)'
       end
+      # order = 'price ASC, LOWER(name)' if params[:sort] == 'price_asc'
+      # order = 'price DESC, LOWER(name)' if params[:sort] == 'price_desc'
       order = 'created_at ASC, LOWER(name)' if params[:sort] == 'added_asc'
       order = 'created_at DESC, LOWER(name)' if params[:sort] == 'added_desc'
       order = 'updated_at ASC, LOWER(name)' if params[:sort] == 'updated_asc'
@@ -209,6 +211,8 @@ class ProductsController < ApplicationController
         release_month: product_params[:release_month],
         release_year: product_params[:release_year],
         description: product_params[:description],
+        price: product_params[:price],
+        price_currency: product_params[:price_currency],
         custom_attributes: product_params[:custom_attributes],
         sub_category_ids: product_params[:sub_category_ids],
       )
@@ -232,6 +236,8 @@ class ProductsController < ApplicationController
           release_month: product_params[:release_month],
           release_year: product_params[:release_year],
           description: product_params[:description],
+          price: product_params[:price],
+          price_currency: product_params[:price_currency],
           custom_attributes: product_params[:custom_attributes],
           sub_category_ids: product_params[:sub_category_ids],
         )
@@ -342,6 +348,8 @@ class ProductsController < ApplicationController
             :release_month,
             :release_year,
             :description,
+            :price,
+            :price_currency,
             custom_attributes: {},
             sub_category_ids: [],
             brand_attributes: [:name, :discontinued, :full_name, :website, :country_code, :year_founded, :description]
@@ -357,6 +365,8 @@ class ProductsController < ApplicationController
             :release_month,
             :release_year,
             :description,
+            :price,
+            :price_currency,
             custom_attributes: {},
             sub_category_ids: [],
           )

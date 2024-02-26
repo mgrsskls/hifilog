@@ -1,6 +1,8 @@
 class Product < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
+  include ActionView::Helpers::NumberHelper
+  include ActiveSupport::NumberHelper
 
   pg_search_scope :search_by_display_name,
                   against: :name,
@@ -32,6 +34,8 @@ class Product < ApplicationRecord
   validates :name, presence: true
   validates :name, uniqueness: { scope: :brand, case_sensitive: false }
   validates :sub_categories, presence: true
+  validates :price, comparison: { greater_than: 0 }, unless: -> { price.blank? }
+  validates :price_currency, presence: true, unless: -> { price.blank? }
 
   store_accessor :custom_attributes
 
@@ -81,5 +85,13 @@ class Product < ApplicationRecord
     formatted_day = release_day.to_s.rjust(2, '0')
 
     "#{formatted_day}/#{formatted_month}/#{release_year}"
+  end
+
+  def price_set
+    price.present?
+  end
+
+  def display_price
+    "#{number_with_delimiter number_to_rounded(price, precision: 2)} #{price_currency}"
   end
 end

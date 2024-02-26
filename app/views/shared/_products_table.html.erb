@@ -15,6 +15,7 @@
         <% end %>
         <th><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></th>
         <th class="Table-date"><%= t('product.release_date').html_safe %></th>
+        <th><%= t('activerecord.attributes.product.price') %></th>
         <th class="Table-symbols"></th>
       </tr>
     </thead>
@@ -37,6 +38,7 @@
             <%= attr_list ? attr_list : "-" %>
           </td>
           <td class="Table-sm"><%= product.release_date.present? ? product.release_date : "-" %></td>
+          <td><%= product.price.present? ? product.display_price : "-" %></td>
           <td class="Table-symbols">
             <%= render "shared/symbols", product: product %>
           </td>

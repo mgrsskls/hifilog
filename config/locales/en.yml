@@ -236,3 +236,6 @@ en:
     attributes:
       sub_category:
         custom_attribute_ids: Attributes
+      product:
+        price: Price
+        price_currency: Currency

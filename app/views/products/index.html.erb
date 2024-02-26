@@ -18,6 +18,12 @@
       <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
       <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
       <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
+      <%
+=begin%>
+ <option value="price_asc"<%= " selected" if params[:sort] == "price_asc" %>><%= t('activerecord.attributes.product.price') %>: Lowest first</option>
+      <option value="price_desc"<%= " selected" if params[:sort] == "price_desc" %>><%= t('activerecord.attributes.product.price') %>: Highest first</option>
+<%
+=end%>
       <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
       <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
       <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
