@@ -73,10 +73,13 @@
           <%= f.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp" %>
         </div>
       </div>
-      <div class="Form-field">
-        <input type="checkbox" name="delete_avatar" id="delete-avatar">
-        <label for="delete-avatar">Delete avatar</label>
-      </div>
+
+      <% if @user.avatar.attached? %>
+        <div class="Form-field">
+          <input type="checkbox" name="delete_avatar" id="delete-avatar">
+          <label for="delete-avatar">Delete avatar</label>
+        </div>
+      <% end %>
 
       <h3><%= t('user.edit.update.save.heading') %></h3>
 
