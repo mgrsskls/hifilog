@@ -4,9 +4,9 @@ class UsersController < ApplicationController
   def index
     @page_title = I18n.t('headings.users')
     @users_by_products = User.find_by_sql('
-      SELECT t2.user_id, t2.user_name, t2.profile_visibility, t2.created_at, COUNT(t2.user_id) as count FROM (
+      SELECT t2.id, t2.user_name, t2.profile_visibility, t2.created_at, COUNT(t2.id) as count FROM (
         SELECT
-          users.id as user_id,
+          users.id,
           users.user_name,
           users.profile_visibility,
           users.created_at,
@@ -16,7 +16,7 @@ class UsersController < ApplicationController
         ON users.id = CAST(versions.whodunnit as bigint)
         GROUP BY users.id, versions.item_id
       ) AS t2
-      GROUP BY user_id, user_name, profile_visibility, created_at
+      GROUP BY id, user_name, profile_visibility, created_at
       ORDER BY count DESC
     ')
   end
