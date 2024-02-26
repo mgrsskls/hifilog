@@ -34,8 +34,25 @@ class Product < ApplicationRecord
   validates :name, presence: true
   validates :name, uniqueness: { scope: :brand, case_sensitive: false }
   validates :sub_categories, presence: true
-  validates :price, comparison: { greater_than: 0 }, unless: -> { price.blank? }
-  validates :price_currency, presence: true, unless: -> { price.blank? }
+  validates :price,
+            numericality: true,
+            comparison: { greater_than: 0 },
+            if: -> { price.present? }
+  validates :price_currency,
+            presence: true,
+            if: -> { price.present? }
+  validates :release_day,
+            numericality: { only_integer: true },
+            comparison: { greater_than: 0, less_than: 32 },
+            if: -> { release_day.present? }
+  validates :release_month,
+            numericality: { only_integer: true },
+            comparison: { greater_than: 0, less_than: 13 },
+            if: -> { release_month.present? }
+  validates :release_year,
+            numericality: { only_integer: true },
+            comparison: { greater_than: 1899 },
+            if: -> { release_year.present? }
 
   store_accessor :custom_attributes
 

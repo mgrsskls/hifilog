@@ -17,7 +17,12 @@ class Brand < ApplicationRecord
   has_many :products, dependent: :destroy
   has_and_belongs_to_many :sub_categories
 
-  validates :name, presence: true, uniqueness: { case_sensitive: false }
+  validates :name,
+            presence: true,
+            uniqueness: { case_sensitive: false }
+  validates :year_founded,
+            numericality: { only_integer: true },
+            if: -> { year_founded.present? }
 
   friendly_id :name, use: [:slugged, :history]
 
