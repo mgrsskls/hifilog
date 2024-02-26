@@ -6,14 +6,13 @@ class UsersController < ApplicationController
     @users_by_products = User.find_by_sql('
       SELECT t2.user_id, t2.user_name, t2.profile_visibility, t2.created_at, COUNT(t2.user_id) as count FROM (
         SELECT
-          users.id AS user_id,
+          users.id as user_id,
           users.user_name,
           users.profile_visibility,
           users.created_at,
-          versions.item_id,
-          COUNT(DISTINCT users.id) AS count
-        FROM "users"
-        LEFT JOIN versions
+          versions.item_id
+        FROM "versions"
+        INNER JOIN users
         ON users.id = CAST(versions.whodunnit as bigint)
         GROUP BY users.id, versions.item_id
       ) AS t2
