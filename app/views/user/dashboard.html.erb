@@ -1,5 +1,5 @@
 <%= render layout: "shared/dashboard" do %>
-  <h1><%= current_user.user_name ? t('headings.dashboard_name', name: current_user.user_name) : t('headings.dashboard') %></h1>
+  <h1><span><%= t('headings.dashboard') %></span><%= ", #{current_user.user_name}" %>!</h1>
 
   <div class="DashboardStats">
     <h2>Your HiFi Gear</h2>

@@ -154,8 +154,7 @@ en:
     contributions: Contributions
     created: Created
     current_products: Current products
-    dashboard: Welcome back!
-    dashboard_name: Welcome back, %{name}!
+    dashboard: Welcome back
     edited: Edited
     prev_owneds: Previous products
     product: Product
