@@ -252,21 +252,30 @@ class BrandsController < ApplicationController
 
   def show
     @brand = Brand.friendly.find(params[:id])
+    @category = SubCategory.friendly.find(params[:category]) if params[:category].present?
 
-    if params[:category].present?
-      @category = SubCategory.friendly.find(params[:category])
-      @products = @category.products.includes([:sub_categories])
-                           .where(brand_id: @brand.id)
-                           .order('LOWER(name)')
-                           .page(params[:page])
-      @total_products_count = @brand.products.count
+    if @category
+      products = @category.products.where(brand_id: @brand.id)
       add_breadcrumb @brand.name, proc { :brand }
       add_breadcrumb @category.name
     else
-      @products = @brand.products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
-      @total_products_count = @products.size
+      products = @brand.products
       add_breadcrumb @brand.name
     end
+
+    products = products.where(
+      discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
+    )
+
+    @query = params[:query].strip if params[:query].present?
+    products = products.search_by_display_name(@query) if @query.present?
+
+    if params[:letter].present? && ABC.include?(params[:letter])
+      products = products.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
+    end
+
+    @products = products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
+    @total_products_count = @brand.products.count
 
     @contributors = User.find_by_sql(["
       SELECT DISTINCT

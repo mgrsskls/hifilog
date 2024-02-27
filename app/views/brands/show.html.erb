@@ -77,7 +77,7 @@
 <h2 id="list"><%= t('headings.products') %></h2>
 
 <% if @total_products_count > 0 %>
-  <%= render "shared/filter", reset_path: brands_path, collection: @products do %>
+  <%= render "shared/filter", reset_path: brands_path, collection: @products, query: @query do %>
     <div class="FilterSort">
       <div class="u-flex u-alignCenter u-gap-md">
         <label for="sort">Sort</label>
