@@ -81,6 +81,10 @@
 		color: #fff;
 		gap: 0.5rem;
 	}
+
+	.Menu-link--lvl1--account {
+		display: flex;
+	}
 }
 
 @media (max-width: 54rem) {
