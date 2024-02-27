@@ -1,5 +1,5 @@
 <%= render layout: "shared/dashboard" do %>
-  <h1><span><%= t('headings.dashboard') %></span><%= ", #{current_user.user_name}" %>!</h1>
+  <h1 class="Dashboard-headline"><span><%= t('headings.dashboard') %></span><%= ", #{current_user.user_name}" %>!</h1>
 
   <div class="DashboardStats">
     <h2>Your HiFi Gear</h2>
@@ -8,25 +8,25 @@
       <ul class="DashboardNumbers">
         <li>
           <%= link_to dashboard_products_path, class: "DashboardNumber" do %>
-            <h2 class="DashboardNumber-heading"><%= t('headings.products') %></h2>
+            <span class="DashboardNumber-heading"><%= t('headings.products') %></span>
             <span class="DashboardNumber-value"><%= user_products_count(current_user) %></span>
           <% end %>
         </li>
         <li>
           <%= link_to dashboard_bookmarks_path, class: "DashboardNumber" do %>
-            <h2 class="DashboardNumber-heading"><%= t('headings.bookmarks') %></h2>
+            <span class="DashboardNumber-heading"><%= t('headings.bookmarks') %></span>
             <span class="DashboardNumber-value"><%= user_bookmarks_count(current_user) %></span>
           <% end %>
         </li>
         <li>
           <%= link_to dashboard_setups_path, class: "DashboardNumber" do %>
-            <h2 class="DashboardNumber-heading"><%= t('headings.setups') %></h2>
+            <span class="DashboardNumber-heading"><%= t('headings.setups') %></span>
             <span class="DashboardNumber-value"><%= user_setups_count(current_user) %></span>
           <% end %>
         </li>
         <li>
           <%= link_to dashboard_prev_owneds_path, class: "DashboardNumber" do %>
-            <h2 class="DashboardNumber-heading"><%= t('headings.prev_owneds') %></h2>
+            <span class="DashboardNumber-heading"><%= t('headings.prev_owneds') %></span>
             <span class="DashboardNumber-value"><%= user_prev_owneds_count(current_user) %></span>
           <% end %>
         </li>
@@ -45,13 +45,13 @@
         <ul class="DashboardNumbers">
           <li>
             <div class="DashboardNumber">
-              <h2 class="DashboardNumber-heading"><%= t('headings.created') %></h2>
+              <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
               <span class="DashboardNumber-value"><%= @products_created %></span>
             </div>
           </li>
           <li>
             <div class="DashboardNumber">
-              <h2 class="DashboardNumber-heading"><%= t('headings.edited') %></h2>
+              <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
               <span class="DashboardNumber-value"><%= @products_edited %></span>
             </div>
           </li>
@@ -63,13 +63,13 @@
         <ul class="DashboardNumbers">
           <li>
             <div class="DashboardNumber">
-              <h2 class="DashboardNumber-heading"><%= t('headings.created') %></h2>
+              <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
               <span class="DashboardNumber-value"><%= @brands_created %></span>
             </div>
           </li>
           <li>
             <div class="DashboardNumber">
-              <h2 class="DashboardNumber-heading"><%= t('headings.edited') %></h2>
+              <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
               <span class="DashboardNumber-value"><%= @brands_edited %></span>
             </div>
           </li>
