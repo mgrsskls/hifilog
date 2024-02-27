@@ -263,9 +263,11 @@ class BrandsController < ApplicationController
       add_breadcrumb @brand.name
     end
 
-    products = products.where(
-      discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
-    )
+    if params[:status].present? && STATUSES.include?(params[:status])
+      products = products.where(
+        discontinued: params[:status] == 'discontinued' ? true : nil
+      )
+    end
 
     @query = params[:query].strip if params[:query].present?
     products = products.search_by_display_name(@query) if @query.present?
