@@ -13,7 +13,14 @@ module HiFiLog
 
     config.middleware.use Rack::Deflater
 
-    config.active_record.yaml_column_permitted_classes = [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone]
+    config.active_record.yaml_column_permitted_classes = [
+      BigDecimal,
+      Symbol,
+      Date,
+      Time,
+      ActiveSupport::TimeWithZone,
+      ActiveSupport::TimeZone
+    ]
 
     # Configuration for the application, engines, and railties goes here.
     #
