@@ -38,7 +38,7 @@
       <% if @brand.description.present? %>
         <h2>About</h2>
         <div class="Entity-description Rte">
-          <%= sanitize(simple_format(@brand.description.strip), tags: %w(b i strong em br ul ol li)) %>
+          <%= sanitize(simple_format(@brand.description.strip), tags: %w(p b i strong em br ul ol li)) %>
         </div>
       <% end %>
     </div>
