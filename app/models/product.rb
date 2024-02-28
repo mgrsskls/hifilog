@@ -112,4 +112,10 @@ class Product < ApplicationRecord
   def display_price
     "#{number_with_delimiter number_to_rounded(price, precision: 2)} #{price_currency}"
   end
+
+  def formatted_description
+    return if description.blank?
+
+    Redcarpet::Markdown.new(Redcarpet::Render::HTML.new).render(description)
+  end
 end

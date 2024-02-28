@@ -18,15 +18,11 @@
         <li>Categories will be automatically assigned to a brand based on the products added to a brand. You can however assign categories to a brand on this page, so categories are already listed for a brand when they do not have products assigned to it yet.</li>
         <li>The description can contain any relevant information that is not discovered by the other fields.</li>
         <li>
-          The description field supports the following HTML tags:
-          <code><%=h "<b>" %></code>,
-          <code><%=h "<strong>" %></code>,
-          <code><%=h "<i>" %></code>,
-          <code><%=h "<em>" %></code>,
-          <code><%=h "<br>" %></code>,
-          <code><%=h "<ul>" %></code>,
-          <code><%=h "<ol>" %></code>,
-          <code><%=h "<li>" %></code>
+          The description field supports Markdown for basic styling:<br>
+          <code><b><%= "**bold text**" %></b></code><br>
+          <code><em><%= "*italic text*" %></em></code><br>
+          <code><%= "- unordered lists" %></code><br>
+          <code><%= "1. ordered lists" %></code>
         </li>
       </ul>
     </div>

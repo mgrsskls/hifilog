@@ -30,15 +30,11 @@
         <li>When adding a product to a brand that has been discontinued, the product will automatically be set to discontinued as well, no matter what you select.</li>
         <li>The description can contain any relevant information that is not discovered by the other fields.</li>
         <li>
-          The description field supports the following HTML tags:
-          <code><%=h "<b>" %></code>,
-          <code><%=h "<strong>" %></code>,
-          <code><%=h "<i>" %></code>,
-          <code><%=h "<em>" %></code>,
-          <code><%=h "<br>" %></code>,
-          <code><%=h "<ul>" %></code>,
-          <code><%=h "<ol>" %></code>,
-          <code><%=h "<li>" %></code>
+          The description field supports Markdown for basic styling:<br>
+          <code><b><%= "**bold text**" %></b></code><br>
+          <code><em><%= "*italic text*" %></em></code><br>
+          <code><%= "- unordered lists" %></code><br>
+          <code><%= "1. ordered lists" %></code>
         </li>
         <li>The price should ideally be the retail price recommended by the manufacturer provided in USD (or alternatively in EUR) to allow better comparisons. If you cannot provide that, you can also add the price in a different currency.</li>
       </ul>

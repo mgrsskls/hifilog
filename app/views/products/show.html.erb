@@ -45,7 +45,7 @@
 
       <% if @product.description.present? %>
         <div class="Entity-description Rte">
-          <%= sanitize(simple_format(@product.description.strip), tags: %w(p b i strong em br ul ol li)) %>
+          <%= sanitize @product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
         </div>
       <% end %>
     </div>
