@@ -2,10 +2,17 @@ class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
   include BrandHelper
   include PgSearch::Model
-  pg_search_scope :search_by_name,
-                  against: [:name],
+  pg_search_scope :search_by_name_and_description,
+                  against: [:name, :description],
                   ignoring: :accents,
-                  using: :trigram,
+                  using: {
+                    tsearch: {
+                      any_word: true,
+                    },
+                    trigram: {
+                      threshold: 0.3
+                    },
+                  },
                   ranked_by: ':trigram'
 
   nilify_blanks

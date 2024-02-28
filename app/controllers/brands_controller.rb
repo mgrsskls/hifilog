@@ -238,8 +238,8 @@ class BrandsController < ApplicationController
       brands = Brand.all.order(order)
     end
 
-    @query = params[:query].strip if params[:query].present?
-    brands = brands.search_by_name(@query) if @query.present?
+    @brands_query = params[:query].strip if params[:query].present?
+    brands = brands.search_by_name_and_description(@brands_query) if @brands_query.present?
 
     @brands = brands.page(params[:page])
   end
@@ -269,8 +269,8 @@ class BrandsController < ApplicationController
       )
     end
 
-    @query = params[:query].strip if params[:query].present?
-    products = products.search_by_display_name(@query) if @query.present?
+    @brands_query = params[:query].strip if params[:query].present?
+    products = products.search_by_name_and_description(@brands_query) if @brands_query.present?
 
     if params[:letter].present? && ABC.include?(params[:letter])
       products = products.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)

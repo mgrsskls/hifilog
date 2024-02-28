@@ -10,7 +10,7 @@
   <%= link_to t('new_brand.link'), user_signed_in? ? new_brand_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_brand_path(sub_category: params[:sub_category])), class: "Button" %>
 </div>
 
-<%= render "shared/filter", reset_path: brands_path, collection: @brands, query: @query do %>
+<%= render "shared/filter", reset_path: brands_path, collection: @brands, query: @brands_query do %>
   <div class="u-flex u-alignCenter u-gap-md">
     <label for="sort">Sort</label>
     <select name="sort" id="sort">

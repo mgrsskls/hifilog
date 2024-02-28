@@ -10,7 +10,7 @@
   <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button" %>
 </div>
 
-<%= render "shared/filter", reset_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @query do %>
+<%= render "shared/filter", reset_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @products_query do %>
   <div class="u-flex u-alignCenter u-gap-md">
     <label for="sort">Sort</label>
     <select name="sort" id="sort">

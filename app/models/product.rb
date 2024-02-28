@@ -4,8 +4,8 @@ class Product < ApplicationRecord
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
 
-  pg_search_scope :search_by_display_name,
-                  against: :name,
+  pg_search_scope :search_by_name_and_description,
+                  against: [:name, :description],
                   ignoring: :accents,
                   using: {
                     tsearch: {

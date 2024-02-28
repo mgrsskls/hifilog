@@ -20,10 +20,10 @@ class SearchController < ApplicationController
   private
 
   def get_products(query, limit)
-    Product.search_by_display_name(query).limit(limit).includes([:brand, :sub_categories])
+    Product.search_by_name_and_description(query).limit(limit).includes([:brand, :sub_categories])
   end
 
   def get_brands(query, limit)
-    Brand.search_by_name(query).limit(limit)
+    Brand.search_by_name_and_description(query).limit(limit)
   end
 end

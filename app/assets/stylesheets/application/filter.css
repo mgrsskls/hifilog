@@ -28,7 +28,7 @@
 
 .Filter-input {
 	block-size: 1.875rem;
-	max-inline-size: 14rem;
+	max-inline-size: 24em;
 }
 
 @media (max-width: 42rem) {
