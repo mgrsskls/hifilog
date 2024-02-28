@@ -28,6 +28,7 @@
           <code><%=h "<ol>" %></code>,
           <code><%=h "<li>" %></code>
         </li>
+        <li>You can leave a comment to describe why your change was necessary, in case you found incorrect information or something similar.</li>
       </ul>
     </div>
   </details>
@@ -111,6 +112,13 @@
     <p>
       <small><b>Note:</b> If a a brand is set to <i>Discontinued</i>, all its products are also set to <i>Discontinued</i>.</small>
     </p>
+
+    <div class="Form-field Form-field--divider">
+      <%= f.label :comment, class: "Form-label" do %>
+        <%= t('activerecord.attributes.version.comment') %> <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_area :comment %>
+    </div>
 
     <div class="Form-submit">
       <%= f.button t('new_brand.submit'), type: "submit", class: "Button" %>

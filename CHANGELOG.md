@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-02-27">2024-02-27</time>
+
+- When updating a product or a brand, contributors can add a comment to describe why the change was necessary in case they found incorrect information or something similar
+
 ## <time datetime="2024-02-26">2024-02-26</time>
 
 - Products can now have category-specific attributes (for example passive or active loudspeakers or mono or stereo amplifiers)

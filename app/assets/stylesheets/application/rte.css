@@ -10,6 +10,6 @@
 	}
 
 	> * + * {
-		margin-block-start: calc(var(--line-height) * 1em);
+		margin-block-start: calc(var(--line-height) * 0.75em);
 	}
 }

@@ -394,6 +394,7 @@ class BrandsController < ApplicationController
       :country_code,
       :year_founded,
       :description,
+      :comment,
       sub_category_ids: [],
     )
   end

@@ -80,6 +80,7 @@ en:
     attribute: Attribute
     before: From
     after: To
+    comment: Comment
   confirm_removing_product: Do you really want to remove this product from your collection?
   dashboard: Dashboard
   delete_setup:
@@ -238,3 +239,5 @@ en:
       product:
         price: Price
         price_currency: Currency
+      version:
+        comment: Comment

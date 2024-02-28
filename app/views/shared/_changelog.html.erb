@@ -18,7 +18,7 @@
         end
       %>
       <li class="Changelog-item">
-        <p>
+        <p class="Changelog-itemHeading">
           <b>
           <% if version.event == "create" %>
             <b><%= t('headings.created') %></b>
@@ -93,6 +93,12 @@
             </tbody>
           </table>
         </table-saw>
+        <% if version.comment.present? %>
+          <div class="Changelog-itemComment Rte">
+            <p><b><%= t('changelog.comment') %>:</b></p>
+            <%= sanitize(simple_format(version.comment.strip), tags: %w(p b i strong em br ul ol li)) %>
+          </div>
+        <% end %>
       </li>
     <% end %>
   </ol>

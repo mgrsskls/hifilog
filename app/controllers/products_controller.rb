@@ -367,6 +367,7 @@ class ProductsController < ApplicationController
             :description,
             :price,
             :price_currency,
+            :comment,
             custom_attributes: {},
             sub_category_ids: [],
           )

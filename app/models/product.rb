@@ -19,7 +19,8 @@ class Product < ApplicationRecord
 
   nilify_blanks
 
-  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug]
+  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
+  attr_accessor :comment
 
   extend FriendlyId
 

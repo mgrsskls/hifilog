@@ -40,6 +40,7 @@
           <code><%=h "<li>" %></code>
         </li>
         <li>The price should ideally be the retail price recommended by the manufacturer provided in USD (or alternatively in EUR) to allow better comparisons. If you cannot provide that, you can also add the price in a different currency.</li>
+        <li>You can leave a comment to describe why your change was necessary, in case you found incorrect information or something similar.</li>
       </ul>
       </ul>
     </div>
@@ -151,6 +152,13 @@
         <%= f.radio_button :discontinued, 1, checked: (@product.discontinued == true) %>
         <%= f.label :discontinued, "Yes", value: 1  %>
       </div>
+    </div>
+
+    <div class="Form-field Form-field--divider">
+      <%= f.label :comment, class: "Form-label" do %>
+        <%= t('activerecord.attributes.version.comment') %> <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_area :comment %>
     </div>
 
     <div class="Form-submit">

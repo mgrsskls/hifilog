@@ -22,7 +22,7 @@
 }
 
 .Form-field + .Form-field {
-	margin-block-start: 1rem;
+	margin-block-start: var(--spacing-top, 1rem);
 }
 
 .Form-field--inline {
@@ -33,6 +33,13 @@
 
 .Form-field--inline .Form-label {
 	padding-block-end: 0;
+}
+
+.Form-field--divider {
+	--spacing-top: 2rem;
+
+	padding-block-start: 2rem;
+	border-block-start: var(--border-light);
 }
 
 .Form-field + h3 {
