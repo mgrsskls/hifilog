@@ -99,16 +99,28 @@ table .Symbols {
 	.ts_c_max_width__48rem_ :is(th, td) {
 		padding-block: 0;
 	}
+
+	.ts_c_max_width__48rem_ :is(.Table-products, .Table-date, .Table-symbols) {
+		width: auto !important;
+	}
 }
 
 @container table (max-inline-size: 40rem) {
 	.ts_c_max_width__40rem_ :is(th, td) {
 		padding-block: 0;
 	}
+
+	.ts_c_max_width__40rem_ :is(.Table-products, .Table-date, .Table-symbols) {
+		width: auto !important;
+	}
 }
 
 @container table (max-inline-size: 32rem) {
 	.ts_c_max_width__32rem_ :is(th, td) {
 		padding-block: 0;
+	}
+
+	.ts_c_max_width__32rem_ :is(.Table-products, .Table-date, .Table-symbols) {
+		width: auto !important;
 	}
 }
