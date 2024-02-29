@@ -76,6 +76,18 @@ html:has([name="theme"][value="light"]:checked) .EntityForm summary::after {
 	border-block-start: var(--border-light);
 }
 
+.EntityForm-note {
+	border-radius: var(--border-radius);
+	background: var(--color-blue-35);
+	border: var(--border-medium);
+	padding: 0.75rem 1rem;
+	color: var(--color-copy-on-light);
+}
+
+.EntityForm-note a {
+	color: var(--color-accent-on-light);
+}
+
 @media (prefers-color-scheme: dark) {
 	.Options {
 		accent-color: hsl(var(--hue-accent), 34%, 25%);

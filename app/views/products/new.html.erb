@@ -173,6 +173,7 @@
         <%= t('product.release_date') %> <small><i>(optional)</i></small>
       <% end %>
       <div class="EntityForm-date">
+        <%= f.select :release_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
         <%= f.select :release_day do %>
           <option value="">Day</option>
           <% (1..31).each do |day| %>
@@ -223,9 +224,9 @@
     </div>
 
     <% if @brand && @brand.discontinued %>
-      <p>
+      <p class="EntityForm-note">
         <small>
-          Since <i><%= @brand.name %></i> has been set to discontinued, this product will automatically be set to discontinued as well.
+          Since <i><%= @brand.name %></i> has been discontinued, this product will automatically be set to discontinued as well.
         </small>
       </p>
     <% else %>

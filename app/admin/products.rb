@@ -22,6 +22,8 @@ ActiveAdmin.register Product do
       f.input :release_month
       f.input :release_year
       f.input :discontinued
+      f.input :discontinued_day
+      f.input :discontinued_month
       f.input :discontinued_year
       f.input :price
       f.input :price_currency

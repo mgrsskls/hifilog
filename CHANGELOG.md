@@ -2,6 +2,10 @@
 
 ## <time datetime="2024-02-27">2024-02-27</time>
 
+- Adds discontinued date to products
+
+## <time datetime="2024-02-27">2024-02-27</time>
+
 - When updating a product or a brand, contributors can add a comment to describe why the change was necessary in case they found incorrect information or something similar
 - Basic Markdown can now be used for product and brand descriptions
 

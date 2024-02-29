@@ -25,7 +25,7 @@
             <br><span class="Data-secondary"><%= custom_attributes_list @product %></span>
           <% end %>
         </dd>
-        <dt><%= t('product.release_date') %></dt>
+        <dt><%= t('product.released') %></dt>
         <dd>
           <% if @product.release_date.present? %>
             <time datetime="<%= @product.release_date %>" data-format="false"><%= @product.release_date %></time>
@@ -33,6 +33,16 @@
             -
           <% end %>
         </dd>
+        <% if @product.discontinued? %>
+          <dt><%= t('discontinued') %></dt>
+          <dd>
+            <% if @product.discontinued_date.present? %>
+              <time datetime="<%= @product.discontinued_date %>" data-format="false"><%= @product.discontinued_date %></time>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        <% end %>
         <dt><%= t('activerecord.attributes.product.price') %></dt>
         <dd>
           <% if @product.price.present? %>

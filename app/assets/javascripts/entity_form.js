@@ -6,6 +6,16 @@ const template = document.querySelector("#brand-template");
 
 if (form) {
 	const subCategories = form.querySelector(".EntityForm-subCategories");
+	const discontinuedInput = form.querySelector(".Entity-discontinued");
+	if (discontinuedInput) {
+		const discontinuedInputs = discontinuedInput.querySelectorAll("input");
+
+		discontinuedInputs.forEach((el) => {
+			el.addEventListener("change", () => {
+				renderDiscontinuedDate(form, discontinuedInputs);
+			});
+		});
+	}
 
 	if (subCategories) {
 		const subCategoryInputs = form.querySelectorAll(
@@ -48,6 +58,23 @@ if (form) {
 					"An error happened when loading the brands. Please reload the page. If this problem continues to exist, please contact us at info@hifilog.com.",
 				);
 			});
+	}
+}
+
+function renderDiscontinuedDate(form, inputs) {
+	const checkedInput = Array.from(inputs).find(
+		(input) => input.checked === true,
+	);
+	const date = form.querySelector(".Entity-discontinuedDate");
+
+	if (date && checkedInput) {
+		const hide = checkedInput.value === "0";
+
+		date.hidden = hide;
+
+		date.querySelectorAll("input, select").forEach((el) => {
+			el.disabled = hide;
+		});
 	}
 }
 
