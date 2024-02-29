@@ -71,12 +71,9 @@ table:not(:has(.Symbol)) .Table-symbols {
 	display: none;
 }
 
-table:has(.Symbols-item:last-child:nth-child(1)) .Table-symbols {
-	width: 2em;
-}
-
+table:has(.Symbols-item:last-child:nth-child(1)) .Table-symbols,
 table:has(.Symbols-item:last-child:nth-child(2)) .Table-symbols {
-	width: 4.25em;
+	width: 4.5em;
 }
 
 table:has(.Symbols-item:last-child:nth-child(3)) .Table-symbols {
@@ -95,12 +92,12 @@ table .Symbols {
 	justify-content: flex-end;
 }
 
-@container table (max-inline-size: 48rem) {
-	.ts_c_max_width__48rem_ :is(th, td) {
+@container table (max-inline-size: 52rem) {
+	.ts_c_max_width__52rem_ :is(th, td) {
 		padding-block: 0;
 	}
 
-	.ts_c_max_width__48rem_ :is(.Table-products, .Table-date, .Table-symbols) {
+	.ts_c_max_width__52rem_ :is(.Table-products, .Table-date, .Table-symbols) {
 		width: auto !important;
 	}
 }

@@ -26,6 +26,10 @@ jobs:
           bundler-cache: true
       - name: Lint Ruby files
         run: bundle exec rubocop --parallel
+      - name: Install node modules
+        run: npm install
+      - name: Lint Formatting
+        run: npm run lint:format
   test:
     runs-on: ubuntu-latest
     services:
@@ -56,3 +60,5 @@ jobs:
         run: bin/rails db:schema:load
       - name: Run tests
         run: bin/rake
+      - name: Run a11y tests
+        run: bin/rails s & sleep 3 && A11Y_HOST=http://0.0.0.0:3000 npm run lint:a11y

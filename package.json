@@ -1,5 +1,6 @@
 {
 	"devDependencies": {
+		"@axe-core/cli": "^4.8.5",
 		"cssnano": "^6.0.3",
 		"esbuild": "^0.19.11",
 		"postcss": "^8.4.33",
@@ -12,7 +13,10 @@
 		"build:css": "postcss ./app/assets/stylesheets/*.css --dir ./app/assets/builds/",
 		"build": "esbuild ./app/assets/javascripts/*.js --target=es2020 --bundle --minify --outdir=./app/assets/builds/",
 		"watch:js": "esbuild ./app/assets/javascripts/*.js --target=es2020 --bundle --minify --outdir=./app/assets/builds/ --watch",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"lint": "npm run lint:format && npm run lint:a11y",
+		"lint:format": "prettier --check .",
+		"lint:a11y": "node run-axe.js"
 	},
 	"repository": {
 		"type": "git",
@@ -20,7 +24,7 @@
 	},
 	"engines": {
 		"node": "20.11.1",
-		"yarn": "1.22.21"
+		"npm": "10.2.4"
 	},
 	"prettier": {
 		"useTabs": true

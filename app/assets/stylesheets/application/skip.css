@@ -10,12 +10,10 @@
 	padding-inline: 1rem;
 	block-size: calc(var(--header-height) - 1em);
 	z-index: 1;
-	opacity: 0.01;
 }
 
 .Skip:focus {
 	inset-block-start: 50%;
 	transform: translate(-50%, -50%);
 	outline-offset: 0;
-	opacity: 1;
 }

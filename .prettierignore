@@ -1,1 +1,9 @@
+.github/
+bin/
+coverage/
+log/
+node_modules/
 public/*.html
+storage/
+tmp/
+vendor/

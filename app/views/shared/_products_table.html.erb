@@ -2,7 +2,7 @@
 <% hide_brand ||= false %>
 <% hide_category ||= false %>
 
-<table-saw class="u-pullOut" breakpoint="(max-width: 48rem)" type="container">
+<table-saw class="u-pullOut" breakpoint="(max-width: 52rem)" type="container">
   <table>
     <thead>
       <tr>
@@ -16,7 +16,7 @@
         <th><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></th>
         <th class="Table-date"><%= t('product.released').html_safe %></th>
         <th><%= t('activerecord.attributes.product.price') %></th>
-        <th class="Table-symbols"></th>
+        <th class="Table-symbols">Status</th>
       </tr>
     </thead>
     <tbody>
