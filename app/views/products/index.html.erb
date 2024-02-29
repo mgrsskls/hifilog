@@ -34,7 +34,7 @@
 
 <% if @products.any? %>
   <%= render "shared/products_table", products: @products, hide_category: @sub_category.present? %>
-  <%= paginate @products, params: { anchor: "list" } %>
+  <%= paginate @products %>
 <% else %>
   <%= render "shared/empty_state", message: t('empty_state.products_filter', path: new_product_path) %>
 <% end %>
