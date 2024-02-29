@@ -28,9 +28,7 @@
           <% end %>
           <% unless hide_category %>
             <td class="Table-sm">
-              <% product.sub_categories.each do |sub_category| %>
-                <%= sub_category.name %><br>
-              <% end %>
+              <%= product.sub_categories.map(&:name).join(", <br>").html_safe %>
             </td>
           <% end %>
           <td class="Table-sm">
