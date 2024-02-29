@@ -62,17 +62,20 @@ class Product < ApplicationRecord
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at
+      description
       discontinued
+      discontinued_year
       id
       name
+      price
+      price_currency
+      release_day
+      release_month
+      release_year
       slug
       slugs_id
       updated_at
       versions_id
-      release_day
-      release_month
-      release_year
-      description
     ]
   end
 

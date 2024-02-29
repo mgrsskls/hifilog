@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_28_042946) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_29_051242) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -159,6 +159,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_28_042946) do
     t.jsonb "custom_attributes"
     t.decimal "price", precision: 12, scale: 4
     t.string "price_currency"
+    t.integer "discontinued_year"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_products_name_prefix"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
     t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
