@@ -18,7 +18,13 @@ ActiveAdmin.register Product do
     f.inputs do
       f.input :name
       f.input :brand
+      f.input :release_day
+      f.input :release_month
+      f.input :release_year
       f.input :discontinued
+      f.input :discontinued_year
+      f.input :price
+      f.input :price_currency
       f.input :slug
       f.input :description
       f.input :sub_category_ids, label: "Subcategories", as: :check_boxes, collection: SubCategory.all
