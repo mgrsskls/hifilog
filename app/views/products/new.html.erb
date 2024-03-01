@@ -174,12 +174,6 @@
       <% end %>
       <div class="EntityForm-date">
         <%= f.select :release_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
-        <%= f.select :release_day do %>
-          <option value="">Day</option>
-          <% (1..31).each do |day| %>
-            <option value="<%= day %>"<%= " selected" if @product.release_day == day %>><%= day %></option>
-          <% end %>
-        <% end %>
         <%= select_month(@product.release_month, field_name: "release_month", prefix: "product", prompt: "Month") %>
         <%= f.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year" %>
       </div>
