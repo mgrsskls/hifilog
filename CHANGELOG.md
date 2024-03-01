@@ -1,6 +1,6 @@
 # Changelog
 
-## <time datetime="2024-02-27">2024-02-27</time>
+## <time datetime="2024-02-29">2024-02-29</time>
 
 - Adds discontinued date to products
 

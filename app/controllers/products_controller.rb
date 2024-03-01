@@ -361,7 +361,20 @@ class ProductsController < ApplicationController
             :price_currency,
             custom_attributes: {},
             sub_category_ids: [],
-            brand_attributes: [:name, :discontinued, :full_name, :website, :country_code, :year_founded, :description]
+            brand_attributes: [
+              :name,
+              :discontinued,
+              :full_name,
+              :website,
+              :country_code,
+              :founded_day,
+              :founded_month,
+              :founded_year,
+              :discontinued_day,
+              :discontinued_month,
+              :discontinued_year,
+              :description
+            ]
           )
   end
 

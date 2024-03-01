@@ -96,10 +96,10 @@
             </div>
 
             <div class="Form-field">
-              <%= brand_form.label :year_founded, class: "Form-label" do %>
-                <%= t('brand.year_founded') %> <small><i>(optional)</i></small>
+              <%= brand_form.label :founded_year, class: "Form-label" do %>
+                <%= t('brand.founded_year') %> <small><i>(optional)</i></small>
               <% end %>
-              <%= brand_form.text_field :year_founded, inputmode: "number", list: "brand-years" %>
+              <%= brand_form.text_field :founded_year, inputmode: "number", list: "brand-years" %>
               <datalist id="brand-years">
                 <% (1900..Date.today.year).to_a.reverse.each do |year| %>
                   <option value="<%= year %>"></option>
@@ -169,22 +169,6 @@
     </div>
 
     <div class="Form-field">
-      <%= f.label :release_date, class: "Form-label" do %>
-        <%= t('product.release_date') %> <small><i>(optional)</i></small>
-      <% end %>
-      <div class="EntityForm-date">
-        <%= f.select :release_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
-        <%= select_month(@product.release_month, field_name: "release_month", prefix: "product", prompt: "Month") %>
-        <%= f.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year" %>
-      </div>
-      <datalist id="years">
-        <% (1900..Date.today.year+1).to_a.reverse.each do |year| %>
-          <option value="<%= year %>"></option>
-        <% end %>
-      </datalist>
-    </div>
-
-    <div class="Form-field">
       <%= f.label :description, class: "Form-label" do %>
         <%= t('product.description') %> <small><i>(optional)</i></small>
       <% end %>
@@ -217,6 +201,22 @@
       </div>
     </div>
 
+    <div class="Form-field">
+      <%= f.label :release_date, class: "Form-label" do %>
+        <%= t('product.release_date') %> <small><i>(optional)</i></small>
+      <% end %>
+      <div class="EntityForm-date">
+        <%= f.select :release_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
+        <%= select_month(@product.release_month, field_name: "release_month", prefix: "product", prompt: "Month") %>
+        <%= f.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year" %>
+      </div>
+      <datalist id="years">
+        <% (1900..Date.today.year+1).to_a.reverse.each do |year| %>
+          <option value="<%= year %>"></option>
+        <% end %>
+      </datalist>
+    </div>
+
     <% if @brand && @brand.discontinued %>
       <p class="EntityForm-note">
         <small>
@@ -224,7 +224,7 @@
         </small>
       </p>
     <% else %>
-      <div class="Form-field Form-field--inline">
+      <div class="Form-field Form-field--inline Entity-discontinued">
         <span class="Form-label"><%= t('symbols.discontinued') %></span>
         <div class="Form-options">
           <%= f.radio_button :discontinued, 0, checked: (@product.discontinued.nil? || @product.discontinued == false) %>
@@ -234,6 +234,23 @@
         </div>
       </div>
     <% end %>
+
+    <div class="Form-field Entity-discontinuedDate"<%= "hidden" unless @product.discontinued? %>>
+      <%= f.label :discontinued_date, class: "Form-label" do %>
+        <%= t('product.discontinued_date') %> <small><i>(optional)</i></small>
+      <% end %>
+      <div class="EntityForm-date">
+        <%= f.select :discontinued_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day", disabled: @product.discontinued.nil? || @product.discontinued == false } %>
+        <%= select_month(@product.discontinued_month, { field_name: "discontinued_month", prefix: "product", prompt: "Month" }, { "aria-label": "Month", disabled: (@product.discontinued.nil? || @product.discontinued == false) }) %>
+        <%= f.text_field :discontinued_year, inputmode: "number", list: "years", placeholder: "Year", disabled: (@product.discontinued.nil? || @product.discontinued == false), "aria-label": "Year" %>
+      </div>
+      <small>If you for example only know the year, you can also omit day and month.</small>
+      <datalist id="years">
+        <% (1900..Date.today.year+1).to_a.reverse.each do |year| %>
+          <option value="<%= year %>"></option>
+        <% end %>
+      </datalist>
+    </div>
 
     <div class="Form-submit">
       <%= f.button type: "submit", class: "Button Button--loadingIcon" do %>

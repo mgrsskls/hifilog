@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_29_062256) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_01_014132) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -94,8 +94,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_29_062256) do
     t.string "website"
     t.string "country_code"
     t.string "full_name"
-    t.integer "year_founded"
+    t.integer "founded_year"
     t.text "description"
+    t.integer "discontinued_day"
+    t.integer "discontinued_month"
+    t.integer "discontinued_year"
+    t.integer "founded_month"
+    t.integer "founded_day"
     t.index "\"left\"(lower((name)::text), 1)", name: "index_brands_name_prefix"
     t.index "lower((name)::text)", name: "index_brands_on_name", unique: true
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin

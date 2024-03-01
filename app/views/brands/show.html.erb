@@ -20,8 +20,24 @@
         <dd><%= @brand.country_name.present? ? @brand.country_name : "-" %></dd>
         <dt><%= t('brand.website') %></dt>
         <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website, rel: "noreferrer noopener") : "-" %></dd>
-        <dt><%= t('brand.year_founded') %></dt>
-        <dd><%= @brand.year_founded.present? ? @brand.year_founded : "-" %></dd>
+        <dt><%= t('brand.founded') %></dt>
+        <dd>
+          <% if @brand.founded_date.present? %>
+            <time datetime="<%= @brand.founded_date %>" data-format="false"><%= @brand.founded_date %></time>
+          <% else %>
+            -
+          <% end %>
+        </dd>
+        <% if @brand.discontinued? %>
+          <dt><%= t('discontinued') %></dt>
+          <dd>
+            <% if @brand.discontinued_date.present? %>
+              <time datetime="<%= @brand.discontinued_date %>" data-format="false"><%= @brand.discontinued_date %></time>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        <% end %>
       </dl>
 
       <% if @all_sub_categories.any? %>

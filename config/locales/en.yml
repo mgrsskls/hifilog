@@ -72,7 +72,8 @@ en:
     full_name: Full / Company name
     country_code: Country
     discontinued: Discontinued
-    year_founded: Year founded
+    founded: Founded
+    founded_date: Founding date
     description: Description
   changelog:
     change: Edited

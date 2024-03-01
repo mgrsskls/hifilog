@@ -7,6 +7,7 @@ const template = document.querySelector("#brand-template");
 if (form) {
 	const subCategories = form.querySelector(".EntityForm-subCategories");
 	const discontinuedInput = form.querySelector(".Entity-discontinued");
+
 	if (discontinuedInput) {
 		const discontinuedInputs = discontinuedInput.querySelectorAll("input");
 
