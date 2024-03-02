@@ -226,6 +226,7 @@ en:
     hybrid: Hybrid
     mc: MC
     mm: MM
+    mm-mc: MM / MC
     mono: Mono
     optical: Optical
     passive: Passive
