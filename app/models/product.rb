@@ -28,7 +28,15 @@ class Product < ApplicationRecord
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
   has_and_belongs_to_many :users
   has_and_belongs_to_many :setups
+  has_many :product_variants, dependent: :destroy
 
+  accepts_nested_attributes_for :product_variants, reject_if: lambda { |variant|
+    variant['name'].blank? &&
+      variant['description'].blank? &&
+      variant['release_day'].blank? &&
+      variant['release_month'].blank? &&
+      variant['release_year'].blank?
+  }
   accepts_nested_attributes_for :brand
   validates_associated :brand
 
@@ -105,10 +113,6 @@ class Product < ApplicationRecord
     return unless discontinued?
 
     formatted_date(discontinued_day, discontinued_month, discontinued_year)
-  end
-
-  def price_set
-    price.present?
   end
 
   def display_price

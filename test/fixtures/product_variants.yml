@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  description: MyText
+  release_day: 1
+  release_month: 12
+  release_year: 2000
+
+two:
+  name: MyString
+  description: MyText
+  release_day: 1
+  release_month: 12
+  release_year: 2000

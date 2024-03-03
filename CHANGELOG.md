@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-03-02">2024-03-02</time>
+
+- Adds variants/updates to products
+
 ## <time datetime="2024-02-29">2024-02-29</time>
 
 - Adds discontinued date to products

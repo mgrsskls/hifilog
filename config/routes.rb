@@ -63,6 +63,7 @@ Rails.application.routes.draw do
   # /products
   resources :products, only: [:show, :index, :new, :create, :edit, :update] do
     get '/changelog', action: :changelog
+    resources :product_variants, only: [:create, :update]
   end
 
   get '/search', to: "search#results"

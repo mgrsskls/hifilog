@@ -56,12 +56,19 @@ h3:has(+ .Form-field) {
 
 .Form-label {
 	display: inline-block;
-	padding-block-end: 0.25em;
+	margin-block-end: 0.25em;
+}
+
+.Form-label.h3 {
+	margin-block-start: 1em;
+	margin-block-end: 0.5em;
+	display: block;
 }
 
 .Form-label small {
 	color: var(--color-secondary);
-	font-size: 0.875em;
+	font-size: 0.875rem;
+	font-weight: normal;
 }
 
 .Form-options {

@@ -66,6 +66,7 @@ en:
     zero: 0 Users
     one: 1 User
     other: "%{count} Users"
+  back: Back
   brand:
     name: Name
     website: Website

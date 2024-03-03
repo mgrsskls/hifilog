@@ -58,6 +58,28 @@
           <%= sanitize @product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
         </div>
       <% end %>
+
+      <% if @product.product_variants.any? %>
+        <h2>Updates</h2>
+        <table>
+          <thead>
+            <th><%= t('product.released') %></th>
+            <th><%= t('product.name') %></th>
+            <th><%= t('product.description') %></th>
+            <th><%= t('activerecord.attributes.product.price') %></th>
+          </thead>
+          <tbody>
+            <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
+              <tr>
+                <td><%= variant.release_date.present? ? variant.release_date : "-" %></td>
+                <td><%= variant.name.present? ? variant.name : "-" %></td>
+                <td><%= variant.description.present? ? variant.description : "-" %></td>
+                <td><%= variant.price.present? ? variant.display_price : "-" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
     </div>
   </div>
   <div class="Entity-sub Product-sub u-pullOut">

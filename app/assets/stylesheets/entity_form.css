@@ -88,6 +88,20 @@ html:has([name="theme"][value="light"]:checked) .EntityForm summary::after {
 	color: var(--color-accent-on-light);
 }
 
+.EntityForm-variant {
+	padding: 1rem;
+	background: var(--color-bg2);
+	border-radius: var(--border-radius);
+}
+
+.EntityForm-variant ~ .EntityForm-variant {
+	margin-block-start: 1rem;
+}
+
+.EntityForm-variant .h4 {
+	margin-block-start: 0;
+}
+
 @media (prefers-color-scheme: dark) {
 	.Options {
 		accent-color: hsl(var(--hue-accent), 34%, 25%);
