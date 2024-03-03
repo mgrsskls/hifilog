@@ -36,7 +36,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       path = account_update_params[:avatar].tempfile
       if ImageProcessing::MiniMagick.valid_image?(path)
         ImageProcessing::MiniMagick.source(path.path)
-                                   .resize('512x512!')
+                                   .resize_to_fill(512, 512)
                                    .convert('webp')
                                    .call(destination: path.path)
       end
