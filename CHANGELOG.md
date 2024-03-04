@@ -2,7 +2,7 @@
 
 ## <time datetime="2024-03-04">2024-03-04</time>
 
-- Adds header images to user profiles
+- Adds header images and setups to user profiles
 
 ## <time datetime="2024-03-02">2024-03-02</time>
 

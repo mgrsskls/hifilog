@@ -28,7 +28,7 @@
                     <%= user["user_name"] %>
                   </div>
                 <% else %>
-                  <%= link_to user_path(user["user_name"]), class: "u-flex u-gap-md u-alignCenter" do %>
+                  <%= link_to user.profile_path, class: "u-flex u-gap-md u-alignCenter" do %>
                     <%= render "shared/avatar", user: user, size: 32 %>
                     <span><%= user["user_name"] %></span>
                   <% end %>

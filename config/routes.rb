@@ -50,6 +50,7 @@ Rails.application.routes.draw do
   resources :prev_owneds, only: [:create, :destroy]
   resources :users, only: [:index, :show] do
     get '/previous-products', to: 'users#prev_owneds'
+    get '/setups/:setup', to: 'users#show', as: :setup
   end
 
   # /brands

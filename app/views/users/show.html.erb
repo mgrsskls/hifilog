@@ -59,8 +59,13 @@
     </div>
     <div class="Profile-products">
       <ul class="Tabs">
-        <li><%= link_to t('headings.current_products'), user_path(id: @user.user_name), "aria-current": request.path == user_path(id: @user.user_name) ? "page" : "false" %></li>
-        <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
+        <li><%= link_to t('headings.current_products'), @user.profile_path, "aria-current": request.path == @user.profile_path ? "page" : "false" %></li>
+        <% @user.setups.each do |setup| %>
+          <li><%= link_to setup.name, user_setup_path(user_id: @user.user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: @user.user_name, setup: setup.id) ? "page" : "false" %></li>
+        <% end %>
+        <% if @user.prev_owneds.any? %>
+          <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
+        <% end %>
       </ul>
       <%= render "shared/products", user: @user, categories: @categories, products: @products, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.public_profile', name: @user.user_name) %>
     </div>

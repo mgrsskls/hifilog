@@ -62,7 +62,7 @@ class User < ApplicationRecord
   def profile_path
     return if user_name.nil?
 
-    user_path(user_name)
+    user_path(user_name.downcase)
   end
 
   def validate_image_content_type

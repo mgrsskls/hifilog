@@ -70,7 +70,7 @@
       <dl>
         <dt><%= t('headings.contributors') %></dt>
         <dd>
-          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"])) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
+          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
           </ul>
         </dd>
       </dl>
