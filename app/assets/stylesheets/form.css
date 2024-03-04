@@ -4,6 +4,12 @@
 	margin-inline: auto;
 }
 
+.Form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+	gap: 1rem 2rem;
+}
+
 .Form small {
 	display: inline-block;
 	line-height: 1.4;
@@ -17,11 +23,11 @@
 	margin-block-start: 3rem;
 }
 
-.Form-field {
+.Form:not(.Form--wide) .Form-field {
 	max-inline-size: 28rem;
 }
 
-.Form-field + .Form-field {
+:not(.Form-grid) > .Form-field + .Form-field {
 	margin-block-start: var(--spacing-top, 1rem);
 }
 
@@ -47,6 +53,11 @@
 }
 
 h3:has(+ .Form-field) {
+	margin-block-end: 1rem;
+}
+
+.Form-field .FlashMessage {
+	font-size: 0.875em;
 	margin-block-end: 1rem;
 }
 
@@ -129,4 +140,18 @@ h3:has(+ .Form-field) {
 
 .Form-field + .ProductFormAddBrand {
 	margin-block-start: 1.5rem;
+}
+
+.ImageUpload {
+	color: var(--color-input);
+	padding: var(--input-padding);
+	padding-block: 1rem;
+	border: var(--border-medium);
+	border-radius: var(--border-radius);
+	background: var(--color-input-bg);
+	box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
+}
+
+.ImageUpload + .ImageUpload {
+	margin-block-start: 1rem;
 }

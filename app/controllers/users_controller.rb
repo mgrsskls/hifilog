@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :set_breadcrumb
+  before_action :set_breadcrumb, except: [:show, :prev_owneds]
 
   def index
     @page_title = I18n.t('headings.users')
@@ -119,7 +119,6 @@ class UsersController < ApplicationController
   end
 
   def setup_user_page(user)
-    add_breadcrumb user.user_name
     @page_title = user.user_name
 
     data = PaperTrail::Version.where(whodunnit: user.id)

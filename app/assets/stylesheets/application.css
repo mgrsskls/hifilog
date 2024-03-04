@@ -62,7 +62,8 @@
 	}
 
 	html,
-	html:has([name="theme"][value="light"]:checked) {
+	html:has([name="theme"][value="light"]:checked),
+	.is-dark {
 		--underline-offset: 0.275em;
 		--underline-width: 0.0625rem;
 		--border: 0.0625rem solid;
@@ -243,7 +244,7 @@
 		z-index: 9999;
 	}
 
-	main:not(:has(.Home)) {
+	main:not(:has(.Home)):not(:has(.Profile)) {
 		padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
 	}
 
@@ -360,7 +361,7 @@
 			--page-spacing: 0.75rem;
 		}
 
-		main:not(:has(.Home)),
+		main:not(:has(.Home)):not(:has(.Profile)),
 		.u-pullIn {
 			padding-inline: var(--page-spacing);
 		}
@@ -378,31 +379,30 @@
 
 	.Data {
 		margin-block: 0;
+	}
+
+	.Data:not(.Data--inline):not(.Data--grid) {
 		display: grid;
 		grid-template-columns: auto 1fr;
-		gap: 0.5rem 0;
+		gap: 0.5em 0;
+	}
+
+	.Data--inline {
+		display: flex;
+		gap: 1em;
 	}
 
 	.Data dt {
 		font-weight: 600;
 		color: var(--color-secondary);
+	}
+
+	.Data:not(.Data--inline):not(.Data--grid) dt {
 		padding-inline-end: 1.5rem;
 	}
 
-	.Data div + div {
-		margin-block-start: 0.5rem;
-	}
-
 	.Data dd {
-		flex: 1;
 		color: var(--color-accent);
-	}
-
-	.Data-divider,
-	.Data-divider + dd {
-		border-block-start: var(--border-light);
-		margin-block-start: 0.5rem;
-		padding-block-start: 1rem;
 	}
 
 	.Data a:is([aria-current="true"], [aria-current="page"]) {

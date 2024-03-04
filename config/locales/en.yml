@@ -246,3 +246,5 @@ en:
         price_currency: Currency
       version:
         comment: Comment
+      user:
+        decorative_image: Header Image

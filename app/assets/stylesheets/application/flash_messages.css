@@ -28,6 +28,10 @@
 	color: var(--color-invalid-copy);
 }
 
+.FlashMessage--info {
+	background: var(--color-blue-20);
+}
+
 .FlashMessage a {
 	color: inherit;
 }

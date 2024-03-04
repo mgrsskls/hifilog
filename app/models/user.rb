@@ -16,11 +16,15 @@ class User < ApplicationRecord
   has_many :bookmarks, dependent: :destroy
   has_many :prev_owneds, dependent: :destroy
   has_one_attached :avatar do |attachable|
-    attachable.variant :thumb, resize_to_limit: [76, 76], format: :webp
+    attachable.variant :thumb, resize_to_limit: [320, 320], format: :webp
+  end
+  has_one_attached :decorative_image do |attachable|
+    attachable.variant :thumb, resize_to_limit: [1512, 314], format: :webp
   end
 
   validates :user_name, presence: true, uniqueness: true
-  validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
+  validate :validate_image_content_type, :validate_image_file_size, on: :update
+  validate :validate_image_content_type, :validate_image_file_size, on: :update
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -46,6 +50,8 @@ class User < ApplicationRecord
       prev_owneds_id
       avatar_attachment_id
       avatar_blob_id
+      decorative_image_attachment_id
+      decorative_image_blob_id
     ]
   end
 
@@ -59,7 +65,7 @@ class User < ApplicationRecord
     user_path(user_name)
   end
 
-  def validate_avatar_content_type
+  def validate_image_content_type
     return unless avatar.attachment
 
     unless [
@@ -72,7 +78,7 @@ class User < ApplicationRecord
     end
   end
 
-  def validate_avatar_file_size
+  def validate_image_file_size
     return unless avatar.attachment
     return if avatar.attachment.blob.byte_size < 5_000_000
 

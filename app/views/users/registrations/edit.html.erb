@@ -8,10 +8,45 @@
 
   <h2><%= t("user.edit.update.heading") %></h2>
 
-  <div class="Form">
+  <div class="Form Form--wide">
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
+
+      <div class="Form-grid">
+        <div class="Form-field">
+          <%= f.label :user_name, class: "Form-label" do %>
+            <%= t('user.edit.update.fields.user_name') %>
+          <% end %>
+          <%= f.text_field :user_name, required: true %>
+        </div>
+
+        <div class="Form-field">
+          <%= f.label :email, class: "Form-label" do %>
+            <%= t('user.edit.update.fields.email') %>
+          <% end %>
+          <%= f.email_field :email, required: true, autocomplete: "email" %>
+        </div>
+
+        <div class="Form-field">
+          <%= f.label :password, class: "Form-label" do %>
+            <%= t('user.edit.update.password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
+          <% end %>
+          <%= f.password_field :password, autocomplete: "new-password" %>
+          <% if @minimum_password_length %>
+            <small class="Form-hint"><%= t('user.edit.update.minimum_password_length', minimum: @minimum_password_length) %></small>
+          <% end %>
+        </div>
+
+        <div class="Form-field">
+          <%= f.label :password_confirmation, class: "Form-label" do %>
+            <%= t('user.edit.update.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
+          <% end %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+        </div>
+      </div>
+
+      <h3>Visibility</h3>
 
       <div class="Form-field">
         <div>
@@ -36,57 +71,55 @@
       </div>
 
       <div class="Form-field">
-        <%= f.label :user_name, class: "Form-label" do %>
-          <%= t('user.edit.update.fields.user_name') %>
-        <% end %>
-        <%= f.text_field :user_name, required: true %>
+        <h3>Images</h3>
+        <p class="FlashMessage FlashMessage--info">
+          <b>Note:</b> You may be held personally liable for uploading images that infringe the rights of intellectual property owners. Only upload images to which you have the rights or which are available for public use.
+        </p>
       </div>
 
-      <div class="Form-field">
-        <%= f.label :email, class: "Form-label" do %>
-          <%= t('user.edit.update.fields.email') %>
-        <% end %>
-        <%= f.email_field :email, required: true, autocomplete: "email" %>
-      </div>
-
-      <div class="Form-field">
-        <%= f.label :password, class: "Form-label" do %>
-          <%= t('user.edit.update.password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
-        <% end %>
-        <%= f.password_field :password, autocomplete: "new-password" %>
-        <% if @minimum_password_length %>
-          <small class="Form-hint"><%= t('user.edit.update.minimum_password_length', minimum: @minimum_password_length) %></small>
-        <% end %>
-      </div>
-
-      <div class="Form-field">
-        <%= f.label :password_confirmation, class: "Form-label" do %>
-          <%= t('user.edit.update.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
-        <% end %>
-        <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-      </div>
-
-      <div class="Form-field">
-        <%= f.label :avatar, class: "Form-label" %>
-        <div class="u-flex u-gap-md">
-          <%= image_tag cdn_image_url(current_user.avatar.variant(:thumb)), "aria-hidden": "true", alt: "", class: "Avatar", style: "inline-size: 2.5rem; block-size: 2.5rem;" if current_user.avatar.attached? %>
-          <%= f.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp" %>
-        </div>
-      </div>
-
-      <% if @user.avatar.attached? %>
+      <div class="ImageUpload">
         <div class="Form-field">
-          <input type="checkbox" name="delete_avatar" id="delete-avatar">
-          <label for="delete-avatar">Delete avatar</label>
+          <%= f.label :avatar, class: "h4 Form-label" %>
+          <div class="u-flex u-gap-md">
+            <%= image_tag cdn_image_url(current_user.avatar.variant(:thumb)), "aria-hidden": "true", alt: "", class: "Avatar", style: "inline-size: 2.5rem; block-size: 2.5rem;" if current_user.avatar.attached? %>
+            <%= f.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp" %>
+          </div>
         </div>
-      <% end %>
+
+        <% if @user.avatar.attached? %>
+          <div class="Form-field">
+            <input type="checkbox" name="delete_avatar" id="delete-avatar">
+            <label for="delete-avatar">Delete avatar</label>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="ImageUpload">
+        <div class="Form-field">
+          <%= f.label :decorative_image, class: "h4 Form-label" %>
+          <div class="u-flex u-gap-md">
+            <%= image_tag cdn_image_url(current_user.decorative_image.variant(:thumb)), "aria-hidden": "true", alt: "", style: "aspect-ratio: 3; block-size: 2.5rem;" if current_user.decorative_image.attached? %>
+            <%= f.file_field :decorative_image, accept: "image/jpeg,image/png,image/gif,image/webp" %>
+          </div>
+        </div>
+
+        <% if @user.decorative_image.attached? %>
+          <div class="Form-field">
+            <input type="checkbox" name="delete_decorative_image" id="delete-decorative-image">
+            <label for="delete-decorative-image">Delete Header Image</label>
+          </div>
+        <% end %>
+      </div>
 
       <h3><%= t('user.edit.update.save.heading') %></h3>
 
-      <div class="Form-field">
-        <%= f.label :current_password, class: "Form-label" %>
-        <%= f.password_field :current_password, required: true, autocomplete: "current-password" %>
-        <small class="Form-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
+
+      <div class="Form-grid">
+        <div class="Form-field">
+          <%= f.label :current_password, class: "Form-label" %>
+          <%= f.password_field :current_password, required: true, autocomplete: "current-password" %>
+          <small class="Form-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
+        </div>
       </div>
 
       <div class="Form-submit">

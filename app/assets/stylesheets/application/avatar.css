@@ -1,11 +1,12 @@
 .Avatar {
 	border-radius: var(--border-radius);
 	background: var(--color-secondary-on-light);
+	aspect-ratio: 1;
+	block-size: calc(var(--size) * 1rem / 16);
 }
 
 div.Avatar {
 	font-size: calc(var(--size) * 1rem / 16);
-	block-size: 1em;
 	inline-size: 1em;
 	display: flex;
 	align-items: center;

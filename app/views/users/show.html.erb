@@ -3,33 +3,66 @@
 <% end %>
 
 <div class="Profile">
-  <div class="Profile-meta">
-    <%= image_tag cdn_image_url(@user.avatar.variant(format: :webp)), "aria-hidden": "true", alt: "", class: "Profile-avatar Avatar", width: 256, height: 256 if @user.avatar.attached? %>
-    <h1><%= @user.user_name %></h1>
-    <dl class="Data">
-      <dt>Member since</dt>
-      <dd>
-        <time datetime="<%= formatted_date @user.created_at %>"><%= formatted_date @user.created_at %></time>
-      </dd>
-      <dt class="Data-divider"><%= t('headings.current_products') %></dt>
-      <dd><%= user_products_count(@user) %></dd>
-      <dt><%= t('headings.prev_owneds') %></dt>
-      <dd><%= user_prev_owneds_count(@user) %></dd>
-      <dt class="Data-divider">Products created</dt>
-      <dd><%= @products_created %></dd>
-      <dt>Products edited</dt>
-      <dd><%= @products_edited %></dd>
-      <dt>Brands created</dt>
-      <dd><%= @brands_created %></dd>
-      <dt>Brands edited</dt>
-      <dd><%= @brands_edited %></dd>
-    </dl>
+  <div class="Profile-header">
+    <%= image_tag cdn_image_url(@user.decorative_image.variant(format: :webp)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314 if @user.decorative_image.attached? %>
   </div>
-  <div class="Profile-products">
-    <ul class="Tabs">
-      <li><%= link_to t('headings.current_products'), user_path(id: @user.user_name), "aria-current": request.path == user_path(id: @user.user_name) ? "page" : "false" %></li>
-      <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
-    </ul>
-    <%= render "shared/products", user: @user, categories: @categories, products: @products, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.public_profile', name: @user.user_name) %>
+  <div class="Profile-heading is-dark">
+    <div class="u-container">
+      <div class="Profile-headingContainer">
+        <div class="Profile-avatar">
+          <%= render "shared/avatar", user: @user %>
+        </div>
+        <div class="Profile-headingContent">
+          <h1 class="h3"><%= @user.user_name %></h1>
+          <dl class="Data Data--inline">
+            <dt>Member since</dt>
+            <dd>
+              <time datetime="<%= formatted_date @user.created_at %>"><%= formatted_date @user.created_at %></time>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="Profile-content u-container">
+    <div class="Profile-meta u-pullOut">
+      <div class="Profile-dataContainer">
+        <dl class="Profile-data Data Data--grid">
+          <div>
+            <dt><%= t('headings.current_products') %></dt>
+            <dd><%= user_products_count(@user) %></dd>
+          </div>
+          <div>
+            <dt><%= t('headings.prev_owneds') %></dt>
+            <dd><%= user_prev_owneds_count(@user) %></dd>
+          </div>
+        </dl>
+        <dl class="Profile-data Data Data--grid">
+        <div>
+          <dt>Products created</dt>
+          <dd><%= @products_created %></dd>
+          </div>
+          <div>
+          <dt>Products edited</dt>
+          <dd><%= @products_edited %></dd>
+          </div>
+          <div>
+          <dt>Brands created</dt>
+          <dd><%= @brands_created %></dd>
+          </div>
+          <div>
+          <dt>Brands edited</dt>
+          <dd><%= @brands_edited %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+    <div class="Profile-products">
+      <ul class="Tabs">
+        <li><%= link_to t('headings.current_products'), user_path(id: @user.user_name), "aria-current": request.path == user_path(id: @user.user_name) ? "page" : "false" %></li>
+        <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
+      </ul>
+      <%= render "shared/products", user: @user, categories: @categories, products: @products, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.public_profile', name: @user.user_name) %>
+    </div>
   </div>
 </div>

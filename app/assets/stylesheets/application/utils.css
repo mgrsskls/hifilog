@@ -50,6 +50,10 @@
 	gap: 3rem;
 }
 
+.u-gapX-lg {
+	gap: 0 3rem;
+}
+
 .u-gap-pageSpacing {
 	gap: var(--page-spacing);
 }

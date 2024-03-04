@@ -169,7 +169,10 @@
       </nav>
     <% end %>
     <main id="content">
-      <% if params[:controller] == "application" && params[:action] == "index" %>
+      <% if (params[:controller] == "application" && params[:action] == "index") ||
+            (params[:controller] == "users" && params[:action] == "show") ||
+            (params[:controller] == "users" && params[:action] == "prev_owneds")
+      %>
         <%= yield %>
       <% else %>
         <div class="u-container">
