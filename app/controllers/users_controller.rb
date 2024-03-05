@@ -30,7 +30,7 @@ class UsersController < ApplicationController
     setup_user_page(@user)
 
     if params[:setup]
-      setup = current_user.setups.find(params[:setup])
+      setup = @user.setups.find(params[:setup])
       all_products = setup.products.includes([:sub_categories, :brand]).order('LOWER(name)')
     else
       all_products = @user.products.includes([:sub_categories, :brand]).order('LOWER(name)')
