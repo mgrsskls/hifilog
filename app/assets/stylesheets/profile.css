@@ -198,14 +198,51 @@
 }
 
 .Tabs {
-	list-style: none;
-	display: flex;
-	gap: 2rem;
-	margin-block: 0 2rem;
-	padding-inline: 0;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	margin-block-end: 1rem;
+	overscroll-behavior: contain;
 }
 
-.Tabs a {
+.Tabs.is-scrollable:not(.at-start):not(.at-end) {
+	mask-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 0) 0,
+		rgba(0, 0, 0, 1) 3rem,
+		rgba(0, 0, 0, 1) calc(100% - 3rem),
+		rgba(0, 0, 0, 0) 100%
+	);
+}
+
+.Tabs.is-scrollable.at-end:not(.at-start) {
+	mask-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 0) 0,
+		rgba(0, 0, 0, 1) 3rem
+	);
+}
+
+.Tabs.is-scrollable.at-start:not(.at-end) {
+	mask-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 1) calc(100% - 3rem),
+		rgba(0, 0, 0, 0) 100%
+	);
+}
+
+.Tabs-list {
+	list-style: none;
+	display: flex;
+	margin-block: 0 1rem;
+	padding-inline-start: 0;
+	padding-inline-end: var(--page-spacing);
+}
+
+.Tabs-list li {
+	scroll-snap-align: start;
+}
+
+.Tabs-list a {
 	appearance: none;
 	background: none;
 	border-block-end: 0.0625rem solid transparent;
@@ -215,13 +252,30 @@
 	border-radius: var(--border-radius) var(--border-radius) 0 0;
 	text-decoration: none;
 	display: block;
+	white-space: nowrap;
 }
 
-.Tabs a[aria-current="page"] {
+.Tabs-list a[aria-current="page"] {
 	font-weight: 600;
 	color: var(--color-accent);
 }
 
-.Tabs a:is([aria-current="page"], :hover) {
+.Tabs-list a:is([aria-current="page"], :hover) {
 	border-block-end-color: currentColor;
+}
+
+@media (max-width: 48rem) {
+	.Tabs-list li {
+		padding-inline: var(--page-spacing);
+	}
+}
+
+@media (min-width: 48.0625rem) {
+	.Profile-products {
+		overflow: hidden;
+	}
+
+	.Tabs-list {
+		gap: 2rem;
+	}
 }

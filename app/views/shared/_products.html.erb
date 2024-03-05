@@ -1,6 +1,7 @@
 <% categories ||= [] %>
 <% empty_state ||= "" %>
 <% setups ||= [] %>
+<% pull_out ||= defined?(pull_out) ? pull_out : true %>
 
 <% if categories.length > 1 %>
   <details class="CategoryFilter">
@@ -29,7 +30,7 @@
   </details>
 <% end %>
 
-<div class="u-pullOut">
+<div <% if pull_out %> class="u-pullOut"<% end %>>
   <% if products.any? %>
     <table-saw breakpoint="(max-width: 40rem)" type="container">
       <table>
