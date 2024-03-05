@@ -1,15 +1,23 @@
 # About HiFi&hairsp;Log
 
-_HiFi&hairsp;Log_ is a platform for the hi-fi community.
-
-Its aim is to create an all-encompassing database of audio brands and their products, both existing and discontinued.
+_HiFi&hairsp;Log_ is a platform for the hi-fi community. Its aim is to create an all-encompassing database of audio brands and their products, both existing and discontinued.
 It is designed to help users discover new products while also allowing them to keep track of what they currently own or used to own.
-
-_HiFi&hairsp;Log_ is not a business.
 
 ## About the Author
 
-_HiFi&hairsp;Log_ has been designed and developed by [Michael Großklaus](https://www.mgrossklaus.de), a hi-fi lover and professional web developer from Hamburg, Germany.
+_HiFi&hairsp;Log_ has been designed and developed by [Michael Großklaus](https://www.mgrossklaus.de), a hi-fi hobbyist and professional web developer from Hamburg, Germany.
+
+## Support
+
+_HiFi&thinsp;Log_ is completely free for all users, there is no company behind it and it does not make any money.
+
+If you find it valuable, you can send a small donation to cover the monthly costs:
+
+<a href="https://www.buymeacoffee.com/hifilog" rel="noopener">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/arial-yellow.png" alt="Buy Me A Coffee" height="40" width="145" loading="lazy">
+</a>
+
+Thank you very much in advance!
 
 ## Credit
 

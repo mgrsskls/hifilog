@@ -268,7 +268,7 @@
 		font-weight: lighter;
 	}
 
-	h2:not(.h3),
+	h2:not(.h3, .h4),
 	.h2 {
 		font-size: 1.8rem;
 		line-height: 1.2;
