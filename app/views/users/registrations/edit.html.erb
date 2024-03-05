@@ -86,7 +86,7 @@
           </div>
         </div>
 
-        <% if @user.avatar.attached? %>
+        <% if current_user.avatar.attached? %>
           <div class="Form-field">
             <input type="checkbox" name="delete_avatar" id="delete-avatar">
             <label for="delete-avatar">Delete avatar</label>
@@ -103,7 +103,7 @@
           </div>
         </div>
 
-        <% if @user.decorative_image.attached? %>
+        <% if current_user.decorative_image.attached? %>
           <div class="Form-field">
             <input type="checkbox" name="delete_decorative_image" id="delete-decorative-image">
             <label for="delete-decorative-image">Delete Header Image</label>

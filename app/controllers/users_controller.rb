@@ -24,6 +24,8 @@ class UsersController < ApplicationController
   def show
     @user = User.where('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase).first
 
+    return render 'not_found', status: :not_found if @user.nil?
+
     redirect_path = get_redirect_if_unauthorized(@user, false)
     return redirect_to redirect_path if redirect_path
 

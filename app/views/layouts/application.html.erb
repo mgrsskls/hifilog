@@ -5,8 +5,10 @@
     <% if params[:controller] == "application" && params[:action] == "index" %>
       <link rel="prefetch" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
     <% end %>
-    <% if (params[:controller] == "users" && params[:action] == "show") ||
-          (params[:controller] == "users" && params[:action] == "prev_owneds") %>
+    <% if ((params[:controller] == "users" && params[:action] == "show") ||
+          (params[:controller] == "users" && params[:action] == "prev_owneds")) &&
+          @user.present?
+    %>
       <% if @user.avatar.attached? %>
         <link rel="prefetch" href="<%= cdn_image_url(@user.avatar.variant(:thumb)) %> " as="image" type="image/avif">
       <% end %>
@@ -179,7 +181,7 @@
     <% end %>
     <main id="content">
       <% if (params[:controller] == "application" && params[:action] == "index") ||
-            (params[:controller] == "users" && params[:action] == "show") ||
+            (params[:controller] == "users" && params[:action] == "show" && @user.present?) ||
             (params[:controller] == "users" && params[:action] == "prev_owneds")
       %>
         <%= yield %>
