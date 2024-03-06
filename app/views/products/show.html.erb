@@ -43,7 +43,7 @@
             <% end %>
           </dd>
         <% end %>
-        <dt><%= t('activerecord.attributes.product.price') %></dt>
+        <dt><%= t('activerecord.attributes.product.price') %><sup>1</sup></dt>
         <dd>
           <% if @product.price.present? %>
             <%= @product.display_price %>
@@ -160,6 +160,7 @@
     </div>
   </div>
 </div>
-<% if request.referer != request.url %>
-  <%= render "shared/back_link" %>
-<% end %>
+
+<ol class="Footnotes">
+  <li>The provided price is the retail price given by the manufacturer. If the product has multiple variants, this is the lowest price, i.e. the price for the basic version. Please note that this information might be outdated and that it most likely is different from country to country.</li>
+</ol>

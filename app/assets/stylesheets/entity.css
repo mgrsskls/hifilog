@@ -94,3 +94,8 @@
 	aspect-ratio: 1;
 	border-radius: 50%;
 }
+
+.Footnotes {
+	font-size: 0.875em;
+	padding-inline: 1.2rem;
+}
