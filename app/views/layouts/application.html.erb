@@ -1,3 +1,4 @@
+<%- page_title = "#{"#{@page_title} — " if @page_title.present?}#{APP_NAME}" %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -19,7 +20,7 @@
     <% if user_signed_in? && current_user.avatar.attached? %>
       <link rel="prefetch" href="<%= cdn_image_url(current_user.avatar.variant(:thumb)) %> " as="image" type="image/webp">
     <% end %>
-    <title><%= "#{@page_title} — " if @page_title.present? %><%= APP_NAME %></title>
+    <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= yield :js %>
     <%= javascript_include_tag "application", type: "module", crossorigin: true %>
@@ -36,6 +37,14 @@
     <% if @no_index %>
       <meta name="robots" content="noindex,nofollow">
     <% end %>
+    <meta name="og:title" content="<%= page_title %>">
+    <meta name="og:type" content="website">
+    <meta name="og:image" content="https://www.hifilog.com/og.png?v=1">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="og:url" content="https://www.hifilog.com<%= request.fullpath %>">
+    <meta name="og:og:site_name" content="<%= APP_NAME %>">
+    <meta name="og:description" content="<%= t('meta_description', products_count: products_count, products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count) %>">
   </head>
 
   <body>
