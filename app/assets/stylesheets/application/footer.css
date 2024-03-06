@@ -36,7 +36,7 @@
 	margin-block: 0;
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 32rem) {
 	.Footer-wrapper {
 		align-items: start;
 	}
@@ -44,9 +44,13 @@
 	.Footer-nav {
 		flex-direction: column;
 	}
+
+	.Footer-supporting h2 {
+		flex: 0 0 100%;
+	}
 }
 
-@media (min-width: 30.0625rem) {
+@media (min-width: 32.0625rem) {
 	.Footer-wrapper,
 	.Footer-nav {
 		align-items: center;
