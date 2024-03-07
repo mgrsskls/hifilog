@@ -219,7 +219,7 @@ class ProductsController < ApplicationController
         price_currency: product_params[:price_currency],
         custom_attributes: product_params[:custom_attributes],
         sub_category_ids: product_params[:sub_category_ids],
-        product_variants_attributes: product_params[:product_variants_attributes],
+        product_variants_attributes: product_params[:product_variants_attributes] || {},
       )
 
       if @product.save
@@ -248,7 +248,7 @@ class ProductsController < ApplicationController
           price_currency: product_params[:price_currency],
           custom_attributes: product_params[:custom_attributes],
           sub_category_ids: product_params[:sub_category_ids],
-          product_variants_attributes: product_params[:product_variants_attributes],
+          product_variants_attributes: product_params[:product_variants_attributes] || {},
         )
 
         if @product.save
