@@ -32,7 +32,10 @@ class ApplicationController < ActionController::Base
   end
 
   def newest_products
-    @newest_products ||= Product.includes([:brand]).limit(10).order(created_at: :desc)
+    products = Product.includes([:brand]).order(created_at: :desc).limit(10)
+    product_variants = ProductVariant.includes([product: [:brand]]).order(created_at: :desc).limit(10)
+
+    @newest_products ||= (products + product_variants).sort_by(&:created_at).reverse.take(10)
   end
 
   def newest_brands

@@ -23,7 +23,7 @@
             <%= brand.country_name.present? ? brand.country_name : "-" %>
           </td>
           <td class="Table-symbols">
-            <%= render "shared/symbols", brand: brand %>
+            <%= render "shared/symbols", brand: brand, only: [:discontinued, :has_brand] %>
           </td>
         </tr>
       <% end %>

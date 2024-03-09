@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_03_011010) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_09_012049) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -79,7 +79,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_011010) do
     t.bigint "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["product_id", "user_id"], name: "index_bookmarks_on_product_id_and_user_id", unique: true
+    t.bigint "product_variant_id"
+    t.index ["product_id", "user_id", "product_variant_id"], name: "idx_on_product_id_user_id_product_variant_id_24cc95bae4", unique: true
     t.index ["product_id"], name: "index_bookmarks_on_product_id"
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
@@ -142,16 +143,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_011010) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "possessions", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "product_variant_id"
+    t.index ["product_id", "user_id", "product_variant_id"], name: "idx_on_product_id_user_id_product_variant_id_9e45f66b35", unique: true
+  end
+
   create_table "prev_owneds", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "product_id", null: false
-    t.index ["product_id", "user_id"], name: "index_prev_owneds_on_product_id_and_user_id", unique: true
+    t.bigint "product_variant_id"
+    t.index ["product_id", "user_id", "product_variant_id"], name: "idx_on_product_id_user_id_product_variant_id_aaafa30513", unique: true
     t.index ["product_id"], name: "index_prev_owneds_on_product_id"
     t.index ["user_id"], name: "index_prev_owneds_on_user_id"
   end
 
   create_table "product_variants", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.text "description"
     t.integer "release_year"
     t.datetime "created_at", null: false
@@ -161,6 +170,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_011010) do
     t.integer "release_month"
     t.decimal "price", precision: 12, scale: 4
     t.string "price_currency"
+    t.string "slug"
+    t.index ["name", "product_id"], name: "index_product_variants_on_name_and_product_id", unique: true
   end
 
   create_table "products", force: :cascade do |t|
@@ -187,19 +198,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_011010) do
     t.index ["slug"], name: "index_products_on_slug"
   end
 
-  create_table "products_setups", id: false, force: :cascade do |t|
-    t.bigint "setup_id", null: false
-    t.bigint "product_id", null: false
-  end
-
   create_table "products_sub_categories", id: false, force: :cascade do |t|
     t.bigint "product_id", null: false
     t.bigint "sub_category_id", null: false
   end
 
-  create_table "products_users", id: false, force: :cascade do |t|
-    t.bigint "product_id", null: false
-    t.bigint "user_id", null: false
+  create_table "setup_possessions", force: :cascade do |t|
+    t.bigint "setup_id", null: false
+    t.bigint "product_id"
+    t.bigint "product_variant_id"
+    t.bigint "possession_id"
+    t.index ["possession_id", "setup_id"], name: "index_setup_possessions_on_possession_id_and_setup_id", unique: true
   end
 
   create_table "setups", force: :cascade do |t|

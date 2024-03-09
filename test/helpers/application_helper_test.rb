@@ -23,10 +23,10 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_not user_has_brand?(users(:without_anything), brands(:one))
   end
 
-  test 'user_products_count' do
-    assert_nil user_products_count(nil)
-    assert_equal user_products_count(users(:with_everything)), 2
-    assert_equal user_products_count(users(:without_anything)), 0
+  test 'user_possessions_count' do
+    assert_nil user_possessions_count(nil)
+    assert_equal user_possessions_count(users(:with_everything)), 2
+    assert_equal user_possessions_count(users(:without_anything)), 0
   end
 
   test 'user_bookmarks_count' do

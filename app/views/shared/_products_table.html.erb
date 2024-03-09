@@ -21,7 +21,7 @@
     </thead>
     <tbody>
       <% products.each do |product| %>
-        <tr<% if user_has_product?(current_user, product) %> class="is-positive"<% end %>>
+        <tr<% if user_has_product?(current_user, product.id) %> class="is-positive"<% end %>>
           <th scope="row"><%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %></th>
           <% unless hide_brand %>
             <td><%= product.brand.present? ? product.brand.name : "-" %></td>

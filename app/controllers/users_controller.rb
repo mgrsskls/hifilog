@@ -33,48 +33,56 @@ class UsersController < ApplicationController
 
     if params[:setup]
       setup = @user.setups.find(params[:setup])
-      all_products = setup.products.includes([:sub_categories, :brand]).order('LOWER(name)')
+      all_possessions = setup.possessions
+                             .joins(:product)
+                             .includes([product: [{ sub_categories: :category }, :brand]])
+                             .order('LOWER(products.name)')
+                             .map { |bookmark| ItemPresenter.new(bookmark) }
     else
-      all_products = @user.products.includes([:sub_categories, :brand]).order('LOWER(name)')
+      all_possessions = @user.possessions
+                             .joins(:product)
+                             .includes([product: [{ sub_categories: :category }, :brand]])
+                             .order('LOWER(products.name)')
+                             .map { |bookmark| ItemPresenter.new(bookmark) }
     end
 
     if params[:category]
       @sub_category = SubCategory.friendly.find(params[:category])
-      @products = all_products.select { |product| @sub_category.products.include?(product) }
+      @possessions = all_possessions.select { |possession| @sub_category.products.include?(possession.product) }
     else
-      @products = all_products
+      @possessions = all_possessions
     end
 
-    @categories = all_products.includes([sub_categories: [:category]])
-                              .flat_map(&:sub_categories)
-                              .sort_by(&:name)
-                              .uniq
-                              .group_by(&:category)
-                              .sort_by { |category| category[0].order }
-                              # rubocop:disable Style/BlockDelimiters
-                              .map { |c|
-                                [
-                                  c[0],
-                                  c[1].map { |sub_category|
-                                    # rubocop:enable Style/BlockDelimiters
-                                    {
-                                      name: sub_category.name,
-                                      friendly_id: sub_category.friendly_id,
-                                      path: (
-                                        if setup
-                                          user_setup_path(
-                                            user_id: @user.user_name.downcase,
-                                            category: sub_category.friendly_id,
-                                            setup: setup.id
-                                          )
-                                        else
-                                          user_path(id: @user.user_name.downcase, category: sub_category.friendly_id)
-                                        end
-                                      )
-                                    }
-                                  }
-                                ]
-                              }
+    @categories = all_possessions.map(&:product)
+                                 .flat_map(&:sub_categories)
+                                 .sort_by(&:name)
+                                 .uniq
+                                 .group_by(&:category)
+                                 .sort_by { |category| category[0].order }
+                                 # rubocop:disable Style/BlockDelimiters
+                                 .map { |c|
+                                   [
+                                     c[0],
+                                     c[1].map { |sub_category|
+                                       # rubocop:enable Style/BlockDelimiters
+                                       {
+                                         name: sub_category.name,
+                                         friendly_id: sub_category.friendly_id,
+                                         path: (
+                                           if setup
+                                             user_setup_path(
+                                               user_id: @user.user_name.downcase,
+                                               category: sub_category.friendly_id,
+                                               setup: setup.id
+                                             )
+                                           else
+                                             user_path(id: @user.user_name.downcase, category: sub_category.friendly_id)
+                                           end
+                                         )
+                                       }
+                                     }
+                                   ]
+                                 }
     @reset_path = @user.profile_path
   end
 
@@ -86,40 +94,42 @@ class UsersController < ApplicationController
 
     setup_user_page(@user)
 
-    all_products = Product.where(id: @user.prev_owneds.map(&:product_id))
-                          .order('LOWER(products.name)')
-                          .includes([:sub_categories, :brand])
+    all_prev_owneds = @user.prev_owneds
+                           .joins(:product)
+                           .includes([product: [{ sub_categories: :category }, :brand]])
+                           .order('LOWER(products.name)')
+                           .map { |prev_owned| ItemPresenter.new(prev_owned) }
 
     if params[:category]
       @sub_category = SubCategory.friendly.find(params[:category])
-      @products = all_products.select { |product| @sub_category.products.include?(product) }
+      @possessions = all_prev_owneds.select { |possession| @sub_category.products.include?(possession.product) }
     else
-      @products = all_products
+      @possessions = all_prev_owneds
     end
 
-    @categories = all_products.includes([sub_categories: [:category]])
-                              .flat_map(&:sub_categories)
-                              .sort_by(&:name)
-                              .uniq
-                              .group_by(&:category)
-                              .sort_by { |category| category[0].order }
-                              # rubocop:disable Style/BlockDelimiters
-                              .map { |c|
-                                [
-                                  c[0],
-                                  c[1].map { |sub_category|
-                                    # rubocop:enable Style/BlockDelimiters
-                                    {
-                                      name: sub_category.name,
-                                      friendly_id: sub_category.friendly_id,
-                                      path: user_previous_products_path(
-                                        id: @user.user_name,
-                                        category: sub_category.friendly_id
-                                      )
-                                    }
-                                  }
-                                ]
-                              }
+    @categories = all_prev_owneds.map(&:product)
+                                 .flat_map(&:sub_categories)
+                                 .sort_by(&:name)
+                                 .uniq
+                                 .group_by(&:category)
+                                 .sort_by { |category| category[0].order }
+                                 # rubocop:disable Style/BlockDelimiters
+                                 .map { |c|
+                                   [
+                                     c[0],
+                                     c[1].map { |sub_category|
+                                       # rubocop:enable Style/BlockDelimiters
+                                       {
+                                         name: sub_category.name,
+                                         friendly_id: sub_category.friendly_id,
+                                         path: user_previous_products_path(
+                                           id: @user.user_name,
+                                           category: sub_category.friendly_id
+                                         )
+                                       }
+                                     }
+                                   ]
+                                 }
     @reset_path = user_previous_products_path(id: @user.user_name)
 
     render 'show'

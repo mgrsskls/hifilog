@@ -30,7 +30,7 @@
         <dl class="Profile-data Data Data--grid">
           <div>
             <dt><%= t('headings.current_products') %></dt>
-            <dd><%= user_products_count(@user) %></dd>
+            <dd><%= user_possessions_count(@user) %></dd>
           </div>
           <div>
             <dt><%= t('headings.prev_owneds') %></dt>
@@ -92,7 +92,7 @@
           }
         }
       <% end %>
-      <%= render "shared/products", user: @user, categories: @categories, products: @products, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.public_profile', name: @user.user_name, pull_out: false) %>
+      <%= render "shared/products", user: @user, categories: @categories, items: @possessions, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.public_profile', name: @user.user_name, pull_out: false) %>
     </div>
   </div>
 </div>

@@ -7,3 +7,4 @@ one:
 two:
   user: with_everything
   product: two
+  product_variant: one

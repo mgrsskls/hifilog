@@ -158,13 +158,13 @@ class ProductsController < ApplicationController
   end
 
   def show
-    @product = Product.friendly.find(params[:id])
     @brand = @product.brand
 
     if user_signed_in?
-      @bookmark = current_user.bookmarks.find_by(product_id: @product.id)
-      @prev_owned = current_user.prev_owneds.find_by(product_id: @product.id)
-      @setups = current_user.setups.includes(:products)
+      @possession = current_user.possessions.find_by(product_id: @product.id, product_variant_id: nil)
+      @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: nil)
+      @prev_owned = current_user.prev_owneds.find_by(product_id: @product.id, product_variant_id: nil)
+      @setups = current_user.setups.includes(:possessions)
     end
 
     @contributors = ActiveRecord::Base.connection.execute("
@@ -313,7 +313,7 @@ class ProductsController < ApplicationController
       log.length > 1 || (log.length == 1 && log['slug'].nil?)
     end
 
-    add_breadcrumb @product.display_name, product_path(id: @product.id)
+    add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
     add_breadcrumb I18n.t('headings.changelog')
   end
 

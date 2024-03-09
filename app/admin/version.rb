@@ -1,7 +1,6 @@
 ActiveAdmin.register PaperTrail::Version do
   actions :index, :show
 
-
   def controller
     def index
       column :id

@@ -1,0 +1,8 @@
+without_variant:
+  product: one
+  user: with_everything
+
+with_variant:
+  product: with_variants
+  product_variant: one
+  user: with_everything

@@ -3,7 +3,7 @@
     <h1><%= @setup.name %></h1>
   </div>
 
-  <%= render "shared/products", products: @products, categories: @categories, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.setup_products') %>
+  <%= render "shared/products", items: @possessions, categories: @categories, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.setup_products') %>
 
   <div class="PageActions">
     <div class="PageAction">

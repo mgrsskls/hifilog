@@ -3,5 +3,5 @@
     <h1><%= t('headings.bookmarks') %></h1>
   </div>
 
-  <%= render "shared/products", products: @products, categories: @categories, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.bookmarks') %>
+  <%= render "shared/products", items: @bookmarks, categories: @categories, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.bookmarks') %>
 <% end %>

@@ -25,7 +25,7 @@
     </div>
   <% end %>
 
-  <% if only.include?(:has_product) && user_has_product?(current_user, product) %>
+  <% if only.include?(:has_product) && user_has_product?(current_user, product.id) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>

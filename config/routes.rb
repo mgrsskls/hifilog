@@ -44,8 +44,8 @@ Rails.application.routes.draw do
     resources :setups, only: [:index, :show, :create, :destroy]
   end
 
-  resources :user_products, only: [:create, :destroy], as: :owned_products
-  resources :setup_products, only: [:create, :destroy]
+  resources :possessions, only: [:create, :destroy]
+  resources :setup_possessions, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
   resources :prev_owneds, only: [:create, :destroy]
   resources :users, only: [:index, :show] do
@@ -65,6 +65,8 @@ Rails.application.routes.draw do
   resources :products, only: [:show, :index, :new, :create, :edit, :update] do
     get '/changelog', action: :changelog
     resources :product_variants, only: [:create, :update]
+    get '/v/:variant', to: 'product_variants#show', as: :variant
+    get '/v/:variant/changelog', to: 'product_variants#changelog', as: :variant_changelog
   end
 
   get '/search', to: "search#results"

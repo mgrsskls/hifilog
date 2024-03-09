@@ -14,7 +14,7 @@
         <a class="Dashboard-link" href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
           <%= t('headings.products') %>
         </a>
-        <small><%= user_products_count(current_user) %></small>
+        <small><%= user_possessions_count(current_user) %></small>
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>

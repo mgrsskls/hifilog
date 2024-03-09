@@ -11,8 +11,11 @@ class User < ApplicationRecord
     visible: 2,
   }
 
-  has_and_belongs_to_many :products
+  has_many :possessions, dependent: :destroy
+  has_many :products, through: :possessions
+  has_many :product_variants, through: :possessions
   has_many :setups, dependent: :destroy
+  has_many :setup_possessions, through: :setups
   has_many :bookmarks, dependent: :destroy
   has_many :prev_owneds, dependent: :destroy
   has_one_attached :avatar do |attachable|
@@ -34,24 +37,28 @@ class User < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
+      avatar_attachment_id
+      avatar_blob_id
+      bookmarks_id
+      confirmation_token
       created_at
+      decorative_image_attachment_id
+      decorative_image_blob_id
       email
       encrypted_password
       id
+      possessions_id
+      possessions_product_id
+      prev_owneds_id
+      product_variants_id
       profile_visibility
       remember_created_at
       reset_password_sent_at
       reset_password_token
+      setup_possessions_id
+      unconfirmed_email
       updated_at
       user_name
-      confirmation_token
-      unconfirmed_email
-      bookmarks_id
-      prev_owneds_id
-      avatar_attachment_id
-      avatar_blob_id
-      decorative_image_attachment_id
-      decorative_image_blob_id
     ]
   end
 

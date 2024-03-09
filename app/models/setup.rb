@@ -1,6 +1,7 @@
 class Setup < ApplicationRecord
   belongs_to :user, optional: true
-  has_and_belongs_to_many :products
+  has_many :setup_possessions, dependent: :destroy
+  has_many :possessions, through: :setup_possessions
 
   validates :name, presence: true, uniqueness: { scope: :user, case_sensitive: false }
 
@@ -9,12 +10,14 @@ class Setup < ApplicationRecord
       created_at
       id
       name
+      setup_possessions_id
+      setup_possessions_possession_id
       updated_at
       user_id
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[products user]
+    %w[possessions user]
   end
 end
