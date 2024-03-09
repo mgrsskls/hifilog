@@ -3,7 +3,7 @@ class Category < ApplicationRecord
 
   has_many :sub_categories, dependent: :destroy
 
-  friendly_id :name, use: :slugged
+  friendly_id :name, use: [:slugged]
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[

@@ -19,7 +19,7 @@
           <% @setups.each do |setup| %>
             <tr>
               <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
-              <td class="Table-products u-alignCenter"><%= setup.products.count %></td>
+              <td class="Table-products u-alignCenter"><%= setup.possessions.count %></td>
             </tr>
           <% end %>
         </tbody>

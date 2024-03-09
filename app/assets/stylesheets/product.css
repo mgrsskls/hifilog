@@ -23,3 +23,11 @@
 	inline-size: 100%;
 	text-align: center;
 }
+
+.Product-variantDescription {
+	margin-block-end: 2rem;
+}
+
+.Heading:has(+ .Product-variantDescription) {
+	margin-block-end: 1rem;
+}

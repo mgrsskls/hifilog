@@ -14,6 +14,13 @@ two:
   sub_categories:
     - two
 
+with_variants:
+  name: Atrium Closed
+  brand: two
+  slug: zmf-atrium-closed
+  sub_categories:
+    - two
+
 release_date_ymd:
   name: release_date_ymd
   brand: one

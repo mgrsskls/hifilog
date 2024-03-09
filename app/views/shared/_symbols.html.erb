@@ -2,10 +2,11 @@
 <% product ||= nil %>
 <% brand ||= nil %>
 <% only ||= [:discontinued, :has_brand, :has_product, :has_bookmark, :has_prev_owned] %>
+<% variant_id ||= defined?(variant) ? variant.id : nil %>
 
 <div class="Symbols">
 
-  <% if only.include?(:discontinued) && (product && product.discontinued || brand && brand.discontinued) %>
+  <% if only.include?(:discontinued) && (product && !defined?(variant) && product.discontinued || defined?(variant) && variant.discontinued || brand && brand.discontinued) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol"><%= t('symbols.discontinued') %></span>
@@ -25,7 +26,7 @@
     </div>
   <% end %>
 
-  <% if only.include?(:has_product) && user_has_product?(current_user, product) %>
+  <% if only.include?(:has_product) && user_has_product?(current_user, product.id, variant_id) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
@@ -35,7 +36,7 @@
     </div>
   <% end %>
 
-  <% if only.include?(:has_bookmark) && user_has_bookmark?(current_user, product) %>
+  <% if only.include?(:has_bookmark) && user_has_bookmark?(current_user, product, variant_id) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_bookmarks') %></span>
@@ -45,7 +46,7 @@
     </div>
   <% end %>
 
-  <% if only.include?(:has_prev_owned) && user_has_previously_owned?(current_user, product) %>
+  <% if only.include?(:has_prev_owned) && user_has_previously_owned?(current_user, product, variant_id) %>
     <div class="Symbols-item">
       <% if show_labels %>
         <span class="Symbol">P <%= t('symbols.prev_owned') %></span>

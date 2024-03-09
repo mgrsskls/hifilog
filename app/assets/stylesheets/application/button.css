@@ -24,10 +24,6 @@
 	border: var(--border);
 }
 
-.Button[aria-pressed="true"]:hover {
-	--hue: 320;
-}
-
 @media (prefers-color-scheme: dark) {
 	.Button[aria-pressed="true"] {
 		--lightness: 70%;
@@ -39,17 +35,8 @@
 	--lightness: 70%;
 }
 
-.Button[aria-pressed="true"]:not(:hover) {
+.Button[aria-pressed="true"] {
 	font-weight: 600;
-}
-
-.Button[aria-pressed="true"] span:last-child,
-.Button[aria-pressed="true"]:hover span:first-child {
-	display: none;
-}
-
-.Button[aria-pressed="true"]:hover span:last-child {
-	display: block;
 }
 
 .Button:disabled {

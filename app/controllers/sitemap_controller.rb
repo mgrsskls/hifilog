@@ -12,6 +12,9 @@ class SitemapController < ApplicationController
           id: product.friendly_id,
         ), updated: product.updated_at
       end
+      ProductVariant.includes([product: [:brand]]).find_each do |product_variant|
+        m.add product_variant.path, updated: product_variant.updated_at
+      end
     end
 
     render xml: map.render

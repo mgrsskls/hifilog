@@ -31,7 +31,7 @@
 <% end %>
 
 <div <% if pull_out %> class="u-pullOut"<% end %>>
-  <% if products.any? %>
+  <% if items.any? %>
     <table-saw breakpoint="(max-width: 40rem)" type="container">
       <table>
         <thead>
@@ -45,20 +45,20 @@
           </tr>
         </thead>
         <tbody>
-          <% products.each do |product| %>
+          <% items.each do |item| %>
             <tr>
-              <th scope="row"><%= link_to product.name, product_path(id: product.friendly_id) %></th>
-              <td><%= product.brand.present? ? product.brand.name : "-" %></td>
+              <th scope="row"><%= link_to item.short_name, item.product_or_variant_path %></th>
+              <td><%= item.product.brand.present? ? item.product.brand.name : "-" %></td>
               <td class="Table-sm">
-                <% if product.sub_categories.any? %>
-                  <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+                <% if item.product.sub_categories.any? %>
+                  <%= item.product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
                 <% else %>
-                  <%= product.categories.map{ |category| category.name }.join(", ") %>
+                  <%= item.product.categories.map{ |category| category.name }.join(", ") %>
                 <% end %>
               </td>
               <% if setups.any? %>
                 <td class="Table-sm">
-                  <% setup = setups.find_by(products: product.id) %>
+                  <% setup = setups.find_by(possessions: item.id) %>
                   <%= setup ? setup.name : "-" %>
                 </td>
               <% end %>

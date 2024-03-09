@@ -12,10 +12,10 @@
       <div class="u-flex u-flexWrap u-gap-lg">
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.created') %></h3>
-          <% if @products['create'] %>
+          <% if @items['create'] %>
             <ol>
-              <% @products['create'].each do |product| %>
-                <li><%= link_to product.display_name, product %></li>
+              <% @items['create'].each do |product| %>
+                <li><%= link_to product.display_name, product.path %></li>
               <% end %>
             </ol>
           <% else %>
@@ -24,10 +24,10 @@
         </div>
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.edited') %></h3>
-          <% if @products['update'] %>
+          <% if @items['update'] %>
             <ol>
-              <% @products['update'].each do |product| %>
-                <li><%= link_to product.display_name, product %></li>
+              <% @items['update'].each do |product| %>
+                <li><%= link_to product.display_name, product.path %></li>
               <% end %>
             </ol>
           <% else %>

@@ -6,7 +6,7 @@ class SubCategory < ApplicationRecord
   has_and_belongs_to_many :brands
   has_and_belongs_to_many :custom_attributes
 
-  friendly_id :name, use: :scoped, scope: :category
+  friendly_id :name, use: [:slugged]
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[

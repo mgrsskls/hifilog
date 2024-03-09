@@ -7,6 +7,7 @@ module PaperTrail
 
     def self.ransackable_attributes(_auth_object = nil)
       %w[
+        comment
         created_at
         event
         id

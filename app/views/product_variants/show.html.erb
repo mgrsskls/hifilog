@@ -1,0 +1,142 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "entity" %>
+  <%= stylesheet_link_tag "product" %>
+<% end %>
+<div class="Entity">
+  <div class="Entity-main">
+    <div class="Product-details">
+      <div class="Heading">
+        <h1>
+          <span><%= @product.brand.name %></span> <%= @product.name %>
+          <span class="Product-variantName">&mdash; <%= @variant.name_with_fallback %></span>
+        </h1>
+      </div>
+
+      <div class="Product-variantDescription Rte">
+        <% if @variant.description.present? %>
+          <%= sanitize @variant.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+        <% end %>
+      </div>
+
+      <dl class="Data">
+        <% if @variant.discontinued? %>
+          <dt><%= t('status') %></dt>
+          <dd><%= render "shared/symbols", product: @variant, show_labels: true, only: [:discontinued] %></dd>
+        <% end %>
+        <dt><%= t('headings.brand').html_safe %></dt>
+        <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
+        <dt><%= t('headings.category').html_safe %></dt>
+        <dd>
+          <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
+          <% if @product.custom_attributes.present? %>
+            <br><span class="Data-secondary"><%= custom_attributes_list @product %></span>
+          <% end %>
+        </dd>
+        <dt><%= t('product.released') %></dt>
+        <dd>
+          <% if @variant.release_date.present? %>
+            <time datetime="<%= @variant.release_date %>" data-format="false"><%= @variant.release_date %></time>
+          <% else %>
+            -
+          <% end %>
+        </dd>
+        <% if @variant.discontinued? %>
+          <dt><%= t('discontinued') %></dt>
+          <dd>
+            <% if @variant.discontinued_date.present? %>
+              <time datetime="<%= @variant.discontinued_date %>" data-format="false"><%= @variant.discontinued_date %></time>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        <% end %>
+        <dt><%= t('activerecord.attributes.product.price') %><sup>1</sup></dt>
+        <dd>
+          <% if @variant.price.present? %>
+            <%= @variant.display_price %>
+          <% else %>
+            -
+          <% end %>
+        </dd>
+      </dl>
+
+      <% if @product.description.present? %>
+        <div class="Entity-description Rte">
+          <%= sanitize @product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="Entity-sub Product-sub u-pullOut">
+    <%= render "products/actions", product: @product, variant: @variant %>
+
+    <hr>
+
+    <dl>
+      <dt><%= t('product.meta.owned_by') %></dt>
+      <dd><%= t('amount_users', count: @variant.users.size) %></dd>
+    </dl>
+
+    <div class="Entity-meta">
+      <dl>
+        <dt><%= t('headings.contributors') %></dt>
+        <dd>
+          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
+          </ul>
+        </dd>
+      </dl>
+
+      <hr>
+
+      <ul class="Entity-metaLinks">
+        <li>
+          <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
+        </li>
+        <li>
+          <%= link_to t('headings.changelog'), user_signed_in? ? product_variant_changelog_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_variant_changelog_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<% if @product.product_variants.any? %>
+  <div class="Heading">
+    <h2>All versions / updates</h2>
+    <%= link_to t('new_variant.link'), user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id)) %>
+  </div>
+  <table-saw breakpoint="(max-width: 40rem)" type="container">
+    <table>
+      <thead>
+        <th><%= t('product.name') %></th>
+        <th><%= t('product.description') %></th>
+        <th><%= t('product.released') %></th>
+        <th><%= t('activerecord.attributes.product.price') %><sup>1</sup></th>
+        <th class="Table-symbols"><%= t('status') %></th>
+      </thead>
+      <tbody>
+        <tr>
+          <th><%= link_to @product.name, product_path(id: @product.friendly_id) %></th>
+          <td class="Table-sm">Initial / Stock version</td>
+          <td class="Table-sm"><%= @product.release_date.present? ? @product.release_date : "-" %></td>
+          <td class="Table-sm"><%= @product.price.present? ? @product.display_price : "-" %></td>
+          <td class="Table-symbols"><%= render "shared/symbols", product: @product %></td>
+        </tr>
+        <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
+          <tr<% if @variant == variant %> aria-current="true"<% end %>>
+            <th><%= link_to variant.name_with_fallback, variant.path %></th>
+            <td class="Table-sm"><%= variant.description.present? ? variant.description : "-" %></td>
+            <td class="Table-sm"><%= variant.release_date.present? ? variant.release_date : "-" %></td>
+            <td class="Table-sm"><%= variant.price.present? ? variant.display_price : "-" %></td>
+            <td class="Table-symbols"><%= render "shared/symbols", product: @product, variant: variant %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table-saw>
+  </table>
+<% end %>
+
+<ol class="Footnotes">
+  <li>The provided price is the retail price given by the manufacturer. If the product has multiple versions, this is the lowest price, i.e. the price for the basic / stock version. Please note that this information might be outdated and that it most likely is different from country to country.</li>
+</ol>

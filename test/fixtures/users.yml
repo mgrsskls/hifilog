@@ -26,9 +26,6 @@ with_everything:
   profile_visibility: visible
   user_name: username4
   confirmed_at: 2024-01-01
-  products:
-    - one
-    - two
 
 without_anything:
   email: user5@example.com

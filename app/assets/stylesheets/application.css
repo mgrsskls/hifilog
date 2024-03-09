@@ -67,6 +67,7 @@
 		--underline-offset: 0.275em;
 		--underline-width: 0.0625rem;
 		--border: 0.0625rem solid;
+		--border-extra-light: var(--border) var(--color-border-extra-light);
 		--border-light: var(--border) var(--color-border-light);
 		--border-medium: var(--border) var(--color-border-medium);
 		--border-radius: 0.1875rem;
@@ -105,6 +106,10 @@
 		--color-button-box-shadow: hsla(0, 0%, 0%, var(--button-box-shadow-a));
 		--color-input: hsl(208, 30%, 20%);
 		--color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
+		--color-border-extra-light: hsl(
+			var(--color-border-h-s),
+			var(--border-l-extra-light)
+		);
 		--color-border-light: hsl(var(--color-border-h-s), var(--border-l-light));
 		--color-border-medium: hsl(var(--color-border-h-s), var(--border-l-medium));
 		--color-focus-outline: hsl(var(--hue-accent), 75%, 50%);
@@ -120,6 +125,7 @@
 		--button-box-shadow-a: 20%;
 		--input-box-shadow-a: 10%;
 		--color-border-h-s: var(--hue), 10%;
+		--border-l-extra-light: 90%;
 		--border-l-light: 80%;
 		--border-l-medium: 65%;
 
@@ -147,6 +153,7 @@
 			--button-box-shadow-a: 50%;
 			--input-box-shadow-a: 30%;
 			--color-border-h-s: var(--hue), 20%;
+			--border-l-extra-light: 20%;
 			--border-l-light: 30%;
 			--border-l-medium: 45%;
 
@@ -175,6 +182,7 @@
 		--button-box-shadow-a: 50%;
 		--input-box-shadow-a: 30%;
 		--color-border-h-s: var(--hue), 20%;
+		--border-l-extra-light: 20%;
 		--border-l-light: 30%;
 		--border-l-medium: 45%;
 

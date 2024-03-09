@@ -12,7 +12,7 @@
       </div>
 
       <dl class="Data">
-        <% if @product.discontinued %>
+        <% if @product.discontinued? %>
           <dt><%= t('status') %></dt>
           <dd><%= render "shared/symbols", product: @product, show_labels: true, only: [:discontinued] %></dd>
         <% end %>
@@ -60,80 +60,10 @@
           <%= sanitize @product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
         </div>
       <% end %>
-
-      <% if @product.product_variants.any? %>
-        <h2>Updates</h2>
-        <table>
-          <thead>
-            <th><%= t('product.released') %></th>
-            <th><%= t('product.name') %></th>
-            <th><%= t('product.description') %></th>
-            <th><%= t('activerecord.attributes.product.price') %></th>
-          </thead>
-          <tbody>
-            <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
-              <tr>
-                <td><%= variant.release_date.present? ? variant.release_date : "-" %></td>
-                <td><%= variant.name.present? ? variant.name : "-" %></td>
-                <td><%= variant.description.present? ? variant.description : "-" %></td>
-                <td><%= variant.price.present? ? variant.display_price : "-" %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      <% end %>
     </div>
   </div>
   <div class="Entity-sub Product-sub u-pullOut">
-    <% if user_has_product?(current_user, @product) %>
-      <div class="Product-action">
-        <%= button_to owned_product_path(id: @product.id), method: :delete, class: "Button Button--loadingIcon", "aria-pressed": "true" do %>
-          <span>✓ <%= t('symbols.in_your_collection') %></span>
-          <span><%= t('remove_from_collection').html_safe %></span>
-        <% end %>
-      </div>
-
-      <% @setups.each do |setup| %>
-        <div class="Product-action Product-action--setup">
-          <% if setup.products.include?(@product) %>
-            <%= button_to t('in_setup', name: setup.name).html_safe, setup_product_path(product_id: @product.id, setup_id: setup.id), method: :delete, class: "CheckboxButton is-checked" %>
-          <% else %>
-            <%= button_to t('in_setup', name: setup.name).html_safe, setup_products_path(product_id: @product.id, setup_id: setup.id), method: :post, class: "CheckboxButton" %>
-          <% end %>
-        </div>
-      <% end %>
-    <% else %>
-      <div class="Product-action">
-        <%= button_to owned_products_path(id: @product.id), class: "Button Button--loadingIcon", "aria-pressed": "false" do %>
-          <span><%= t('add_to_collection').html_safe %></span>
-        <% end %>
-      </div>
-    <% end %>
-
-    <div class="Product-action">
-      <% if @bookmark %>
-        <%= button_to bookmark_path(id: @bookmark.id), method: :delete, class: "Button Button--loadingIcon", "aria-pressed": "true" do %>
-          <span>✓ <%= t('symbols.in_your_bookmarks') %></span>
-          <span><%= t('remove_from_bookmarks').html_safe %></span>
-        <% end %>
-      <% else %>
-        <%= button_to bookmarks_path(id: @product.id), class: "Button Button--loadingIcon Button--secondary", "aria-pressed": "false" do %>
-          <span><%= t('add_to_bookmarks').html_safe %></span>
-        <% end %>
-      <% end %>
-    </div>
-
-    <div class="Product-action">
-      <% if @prev_owned %>
-        <%= button_to prev_owned_path(id: @prev_owned.id), method: :delete, class: "CheckboxButton is-checked", "aria-pressed": "true" do %>
-          <span><%= t('add_to_prev_owned') %></span>
-        <% end %>
-      <% else %>
-        <%= button_to prev_owneds_path(id: @product.id), class: "CheckboxButton", "aria-pressed": "false" do %>
-          <span><%= t('add_to_prev_owned') %></span>
-        <% end %>
-      <% end %>
-    </div>
+    <%= render "products/actions", product: @product %>
 
     <hr>
 
@@ -151,6 +81,8 @@
         </dd>
       </dl>
 
+      <hr>
+
       <ul class="Entity-metaLinks">
         <li>
           <%= link_to t('edit'), user_signed_in? ? edit_product_path(id: @product.friendly_id) : new_user_session_path(redirect: edit_product_path(id: @product.friendly_id)) %>
@@ -163,6 +95,45 @@
   </div>
 </div>
 
+
+<div class="Heading">
+  <h2>All versions / updates</h2>
+  <%= link_to t('new_variant.link'), user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id)) %>
+</div>
+<% if @product.product_variants.any? %>
+  <table-saw breakpoint="(max-width: 40rem)" type="container">
+    <table>
+      <thead>
+        <th><%= t('product.name') %></th>
+        <th><%= t('product.description') %></th>
+        <th><%= t('product.released') %></th>
+        <th><%= t('activerecord.attributes.product.price') %><sup>1</sup></th>
+        <th class="Table-symbols"><%= t('status') %></th>
+      </thead>
+      <tbody>
+        <tr aria-current="true">
+          <th><%= link_to @product.name, product_path(id: @product.friendly_id) %></th>
+          <td class="Table-sm">Initial / Stock version</td>
+          <td class="Table-sm"><%= @product.release_date.present? ? @product.release_date : "-" %></td>
+          <td class="Table-sm"><%= @product.price.present? ? @product.display_price : "-" %></td>
+          <td class="Table-symbols"><%= render "shared/symbols", product: @product %></td>
+        </tr>
+        <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
+          <tr>
+            <th><%= link_to variant.name_with_fallback, variant.path %></th>
+            <td class="Table-sm"><%= variant.description.present? ? variant.description : "-" %></td>
+            <td class="Table-sm"><%= variant.release_date.present? ? variant.release_date : "-" %></td>
+            <td class="Table-sm"><%= variant.price.present? ? variant.display_price : "-" %></td>
+            <td class="Table-symbols"><%= render "shared/symbols", product: @product, variant: variant %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </table-saw>
+<% else %>
+  <%= render "shared/empty_state", message: t('empty_state.product_variants', name: @product.display_name, path: user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id))) %>
+<% end %>
+
 <ol class="Footnotes">
-  <li>The provided price is the retail price given by the manufacturer. If the product has multiple variants, this is the lowest price, i.e. the price for the basic version. Please note that this information might be outdated and that it most likely is different from country to country.</li>
+  <li>The provided price is the retail price given by the manufacturer. If the product has multiple versions, this is the lowest price, i.e. the price for the basic / stock version. Please note that this information might be outdated and that it most likely is different from country to country.</li>
 </ol>

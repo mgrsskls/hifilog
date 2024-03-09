@@ -26,17 +26,12 @@ class Product < ApplicationRecord
 
   belongs_to :brand, counter_cache: :products_count
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
-  has_and_belongs_to_many :users
-  has_and_belongs_to_many :setups
+  has_many :possessions, dependent: :destroy
+  has_many :users, through: :possessions
+  has_many :setup_possessions, dependent: :destroy
+  has_many :setups, through: :setup_possessions
   has_many :product_variants, dependent: :destroy
 
-  accepts_nested_attributes_for :product_variants, reject_if: lambda { |variant|
-    variant['name'].blank? &&
-      variant['description'].blank? &&
-      variant['release_day'].blank? &&
-      variant['release_month'].blank? &&
-      variant['release_year'].blank?
-  }
   accepts_nested_attributes_for :brand
   validates_associated :brand
 
@@ -77,11 +72,16 @@ class Product < ApplicationRecord
       discontinued_year
       id
       name
+      possessions_id
+      possessions_user_id
       price
       price_currency
+      product_variants_id
       release_day
       release_month
       release_year
+      setup_possessions_id
+      setup_possessions_setup_id
       slug
       slugs_id
       updated_at
@@ -101,6 +101,10 @@ class Product < ApplicationRecord
 
   def url_slug
     display_name.parameterize
+  end
+
+  def path
+    product_path(id: friendly_id)
   end
 
   def url

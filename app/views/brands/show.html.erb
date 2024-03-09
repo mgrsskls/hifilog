@@ -75,10 +75,9 @@
         </dd>
       </dl>
 
+      <hr>
+
       <ul class="Entity-metaLinks">
-        <li>
-          <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
-        </li>
         <li>
           <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
         </li>
@@ -90,7 +89,10 @@
   </div>
 </div>
 
-<h2 id="list"><%= t('headings.products') %></h2>
+<div class="Heading">
+  <h2 id="list"><%= t('headings.products') %></h2>
+  <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
+</div>
 
 <% if @total_products_count > 0 %>
   <%= render "shared/filter", reset_path: brands_path, collection: @products, query: @brands_query do %>

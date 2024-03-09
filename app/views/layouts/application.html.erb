@@ -119,7 +119,7 @@
                       <li class="Menu-subList-separator">
                         <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
                           <span><%= t('headings.products') %></span>
-                          <small><%= user_products_count(current_user) %></small>
+                          <small><%= user_possessions_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
@@ -223,7 +223,7 @@
                     <% newest_products.each do |product| %>
                       <li>
                         <time datetime="<%= formatted_date product.created_at %>"><%= formatted_date product.created_at %></time>:
-                        <%= link_to product.display_name, product_path(id: product.friendly_id) %>
+                        <%= link_to product.display_name, product.path %>
                       </li>
                     <% end %>
                   </ol>

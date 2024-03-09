@@ -19,9 +19,9 @@
         <th class="Table-symbols">Status</th>
       </tr>
     </thead>
-    <tbody>
-      <% products.each do |product| %>
-        <tr<% if user_has_product?(current_user, product) %> class="is-positive"<% end %>>
+    <% products.each do |product| %>
+      <tbody>
+        <tr<% if user_has_product?(current_user, product.id) %> class="has-item"<% end %>>
           <th scope="row"><%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %></th>
           <% unless hide_brand %>
             <td><%= product.brand.present? ? product.brand.name : "-" %></td>
@@ -41,7 +41,35 @@
             <%= render "shared/symbols", product: product %>
           </td>
         </tr>
-      <% end %>
-    </tbody>
+        <% product.product_variants.order([:release_year, :release_month, :release_day]).each do |variant| %>
+          <tr<% if user_has_product?(current_user, product.id, variant.id) %> class="has-item"<% end %>>
+            <th scope="row" class="Table-variant"><%= link_to (mark ? highlight(variant.name_with_fallback, mark) : variant.name_with_fallback), variant.path %></th>
+            <% unless hide_brand %>
+              <td>
+                <span class="u-hiddenVisually"><%= variant.product.brand.name %></span>
+              </td>
+            <% end %>
+            <% unless hide_category %>
+              <td class="Table-sm">
+                <span class="u-hiddenVisually">
+                  <%= product.sub_categories.map(&:name).join(", <br>").html_safe %>
+                </span>
+              </td>
+            <% end %>
+            <td class="Table-sm">
+              <span class="u-hiddenVisually">
+                <% attr_list = custom_attributes_list product %>
+                <%= attr_list ? attr_list : "-" %>
+              </span>
+            </td>
+            <td class="Table-sm"><%= variant.release_date.present? ? variant.release_date : "-" %></td>
+            <td class="Table-sm"><%= variant.price.present? ? variant.display_price : "-" %></td>
+            <td class="Table-symbols">
+              <%= render "shared/symbols", product: product, variant: variant %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    <% end %>
   </table>
 </table-saw>

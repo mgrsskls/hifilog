@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-03-10">2024-03-10</time>
+
+- Users can now add product versions/updates to their collection, bookmark them etc
+
 ## <time datetime="2024-03-04">2024-03-04</time>
 
 - Adds header images and setups to user profiles

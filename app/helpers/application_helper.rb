@@ -25,10 +25,10 @@ module ApplicationHelper
     datetime.strftime('%Y-%m-%dT%H:%M')
   end
 
-  def user_products_count(user)
+  def user_possessions_count(user)
     return unless user
 
-    user.products.count
+    user.possessions.count
   end
 
   def user_bookmarks_count(user)
@@ -72,16 +72,16 @@ module ApplicationHelper
     }
   end
 
-  def user_has_product?(user, product)
-    product && user && user.products.where(id: product.id).exists?
+  def user_has_product?(user, product_id, product_variant_id = nil)
+    user && user.possessions.where(product_id:, product_variant_id:).exists?
   end
 
-  def user_has_bookmark?(user, product)
-    product && user && user.bookmarks.where(product_id: product.id).exists?
+  def user_has_bookmark?(user, product, variant_id = nil)
+    product && user && user.bookmarks.where(product_id: product.id, product_variant_id: variant_id).exists?
   end
 
-  def user_has_previously_owned?(user, product)
-    product && user && user.prev_owneds.where(product_id: product.id).exists?
+  def user_has_previously_owned?(user, product, variant_id = nil)
+    product && user && user.prev_owneds.where(product_id: product.id, product_variant_id: variant_id).exists?
   end
 
   def user_has_brand?(user, brand)

@@ -1,0 +1,58 @@
+<% variant_id = @variant ? @variant.id : nil %>
+<% if @possession %>
+  <div class="Product-action">
+    <%= button_to possession_path(@possession), method: :delete, class: "Button Button--loadingIcon", "aria-pressed": "true" do %>
+      <span class="u-flex u-alignCenter u-gap-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        <%= t('symbols.in_your_collection') %>
+      </span>
+    <% end %>
+  </div>
+
+  <% @setups.each do |setup| %>
+    <div class="Product-action Product-action--setup">
+      <% possession_is_in_setup = setup.possessions.include?(@possession) %>
+      <% if possession_is_in_setup %>
+        <%= button_to t('in_setup', name: setup.name).html_safe, setup_possession_path(SetupPossession.find_by(possession_id: @possession.id, setup_id: setup.id)), method: :delete, class: "CheckboxButton is-checked" %>
+      <% else %>
+        <%= button_to t('in_setup', name: setup.name).html_safe, setup_possessions_path(possession_id: @possession.id, setup_id: setup.id), method: :post, class: "CheckboxButton" %>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="Product-action">
+    <%= button_to possessions_path(id: product.id, product_variant_id: variant_id), class: "Button Button--loadingIcon", "aria-pressed": "false" do %>
+      <span class="u-flex u-alignCenter u-gap-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        <%= t('add_to_collection').html_safe %>
+      </span>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="Product-action">
+  <% if @bookmark %>
+    <%= button_to bookmark_path(@bookmark), method: :delete, class: "Button Button--loadingIcon", "aria-pressed": "true" do %>
+      <span class="u-flex u-alignCenter u-gap-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.6 3.32c1.1.13 1.9 1.08 1.9 2.19V21L12 17.25 4.5 21V5.5c0-1.1.8-2.05 1.9-2.18a48.5 48.5 0 0 1 11.2 0Z"/></svg>
+        <%= t('symbols.in_your_bookmarks') %>
+      </span>
+    <% end %>
+  <% else %>
+    <%= button_to bookmarks_path(product_id: product.id, product_variant_id: variant_id), class: "Button Button--loadingIcon Button--secondary", "aria-pressed": "false" do %>
+      <span><%= t('add_to_bookmarks').html_safe %></span>
+    <% end %>
+  <% end %>
+</div>
+
+<div class="Product-action">
+  <% if @prev_owned %>
+    <%= button_to prev_owned_path(@prev_owned), method: :delete, class: "CheckboxButton is-checked", "aria-pressed": "true" do %>
+      <span><%= t('add_to_prev_owned') %></span>
+    <% end %>
+  <% else %>
+    <%= button_to prev_owneds_path(product_id: product.id, product_variant_id: variant_id), class: "CheckboxButton", "aria-pressed": "false" do %>
+      <span><%= t('add_to_prev_owned') %></span>
+    <% end %>
+  <% end %>
+</div>

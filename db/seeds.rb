@@ -6,8 +6,11 @@
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
 if Rails.env.development?
-  AdminUser.create!(email: 'admin@example.com', password: 'passwordpassword',
-                    password_confirmation: 'passwordpassword')
+  AdminUser.create!(
+    email: 'admin@example.com',
+    password: 'passwordpassword',
+    password_confirmation: 'passwordpassword'
+  )
 end
 # file deepcode ignore HardcodedPassword: <please specify a reason of ignoring this>
 if Rails.env.development?
@@ -19,8 +22,12 @@ if Rails.env.development?
   )
 end
 if Rails.env.development?
-  user_without_setup = User.create!(email: 'user2@example.com', password: 'passwordpassword',
-                                    password_confirmation: 'passwordpassword', user_name: 'testuser')
+  User.create!(
+    email: 'user2@example.com',
+    password: 'passwordpassword',
+    password_confirmation: 'passwordpassword',
+    user_name: 'testuser'
+  )
 end
 
 Category.create!(name: 'Amplifiers', id: 1)
@@ -1021,51 +1028,107 @@ Brand.create!(name: 'Zingali')
 Brand.create!(name: 'ZPUE')
 Brand.create!(name: 'Zu Audio')
 
-products = [
+possessions = [
   # Audeze
-  Product.create!(name: 'LCD-2C', brand_id: 1, sub_category_ids: [8]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'LCD-2C', brand_id: 1, sub_category_ids: [8]),
+  ),
   # Bluesound
-  Product.create!(name: 'Node', brand_id: 2, sub_category_ids: [19]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Node', brand_id: 2, sub_category_ids: [19]),
+  ),
   # Canton
-  Product.create!(name: 'Karat 720.2', brand_id: 3, sub_category_ids: [10], discontinued: true),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Karat 720.2', brand_id: 3, sub_category_ids: [10], discontinued: true),
+  ),
   # Clearaudio
-  Product.create!(name: 'Concept', brand_id: 4, sub_category_ids: [17]),
-  Product.create!(name: 'Concept MC', brand_id: 4, sub_category_ids: [14]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Concept', brand_id: 4, sub_category_ids: [17]),
+  ),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Concept MC', brand_id: 4, sub_category_ids: [14]),
+  ),
   # Denon
-  Product.create!(name: 'AH-D9200', brand_id: 5, sub_category_ids: [8]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'AH-D9200', brand_id: 5, sub_category_ids: [8]),
+  ),
   # Feliks Audio
-  Product.create!(name: 'Elise', brand_id: 6, sub_category_ids: [5]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Elise', brand_id: 6, sub_category_ids: [5]),
+  ),
   # Fiio
-  Product.create!(name: 'E10K', brand_id: 7, sub_category_ids: [5, 16]),
-  Product.create!(name: 'K3', brand_id: 7, sub_category_ids: [5, 16]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'E10K', brand_id: 7, sub_category_ids: [5, 16]),
+  ),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'K3', brand_id: 7, sub_category_ids: [5, 16]),
+  ),
   # Focal
-  Product.create!(name: 'Elear', brand_id: 8, sub_category_ids: [8]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Elear', brand_id: 8, sub_category_ids: [8]),
+  ),
   # Graham Slee
-  Product.create!(name: 'Ultra Linear II', brand_id: 9, sub_category_ids: [5]),
-  Product.create!(name: 'Reflex C', brand_id: 9, sub_category_ids: [2]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Ultra Linear II', brand_id: 9, sub_category_ids: [5]),
+  ),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Reflex C', brand_id: 9, sub_category_ids: [2]),
+  ),
   # Musical Fidelity
-  Product.create!(name: 'M5Si', brand_id: 10, sub_category_ids: [3]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'M5Si', brand_id: 10, sub_category_ids: [3]),
+  ),
   # Oppo
-  Product.create!(name: 'PM-3', brand_id: 11, sub_category_ids: [8]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'PM-3', brand_id: 11, sub_category_ids: [8]),
+  ),
   # Sennheiser
-  Product.create!(name: 'HD 650', brand_id: 17, sub_category_ids: [8]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'HD 650', brand_id: 17, sub_category_ids: [8]),
+  ),
   # Shure
-  Product.create!(name: 'SE215-CL', brand_id: 12, sub_category_ids: [6]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'SE215-CL', brand_id: 12, sub_category_ids: [6]),
+  ),
   # SMSL
-  Product.create!(name: 'SA-50', brand_id: 13, sub_category_ids: [3]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'SA-50', brand_id: 13, sub_category_ids: [3]),
+  ),
   # Sony
-  Product.create!(name: 'MDR-EX450', brand_id: 14, sub_category_ids: [6]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'MDR-EX450', brand_id: 14, sub_category_ids: [6]),
+  ),
   # Wharfedale
-  Product.create!(name: 'Linton 85th', brand_id: 15, sub_category_ids: [11]),
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'Linton 85th', brand_id: 15, sub_category_ids: [11]),
+  ),
   # Willsenton
-  Product.create!(name: 'R300', brand_id: 16, sub_category_ids: [3])
+  Possession.create!(
+    user:,
+    product: Product.create!(name: 'R300', brand_id: 16, sub_category_ids: [3])
+  )
 ]
 
 if Rails.env.development?
-  products.each do |product|
-    user.products << product
-  end
-
   living_room = Setup.create!(name: 'Living Room')
   office = Setup.create!(name: 'Office')
 
@@ -1073,24 +1136,19 @@ if Rails.env.development?
   user.setups << office
   user.save!
 
-  products.each do |product|
-    user_without_setup.products << product
-  end
-  user_without_setup.save
-
-  living_room.products << products[1]
-  living_room.products << products[3]
-  living_room.products << products[4]
-  living_room.products << products[6]
-  living_room.products << products[11]
-  living_room.products << products[12]
-  living_room.products << products[17]
-  living_room.products << products[18]
+  living_room.possessions << possessions[1]
+  living_room.possessions << possessions[3]
+  living_room.possessions << possessions[4]
+  living_room.possessions << possessions[6]
+  living_room.possessions << possessions[11]
+  living_room.possessions << possessions[12]
+  living_room.possessions << possessions[17]
+  living_room.possessions << possessions[18]
   living_room.save
 
-  office.products << products[2]
-  office.products << products[7]
-  office.products << products[15]
+  office.possessions << possessions[2]
+  office.possessions << possessions[7]
+  office.possessions << possessions[15]
   office.save
 end
 

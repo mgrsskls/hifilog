@@ -13,3 +13,7 @@
 	flex: 0 0 100%;
 	margin-block-start: 0.5rem;
 }
+
+.Heading h2 {
+	margin-block: 0;
+}
