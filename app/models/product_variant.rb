@@ -14,6 +14,9 @@ class ProductVariant < ApplicationRecord
   friendly_id :slug_candidates, use: [:slugged, :scoped], scope: :product
 
   validates :name, uniqueness: { scope: :product }
+  validates :name,
+            presence: true,
+            if: -> { release_year.blank? }
   validates :price,
             numericality: true,
             comparison: { greater_than: 0 },
@@ -33,6 +36,9 @@ class ProductVariant < ApplicationRecord
             numericality: { only_integer: true },
             comparison: { greater_than: 1899 },
             if: -> { release_year.present? }
+  validates :release_year,
+            presence: true,
+            if: -> { name.blank? }
 
   def release_date
     return nil if release_year.nil?
@@ -73,10 +79,13 @@ class ProductVariant < ApplicationRecord
 
   def slug_candidates
     [
-      :name,
+      [:name],
       [:release_year, :name],
       [:release_year, :release_month, :name],
-      [:release_year, :release_month, :release_day, :name]
+      [:release_year, :release_month, :release_day, :name],
+      [:release_year],
+      [:release_year, :release_month],
+      [:release_year, :release_month, :release_day]
     ]
   end
 

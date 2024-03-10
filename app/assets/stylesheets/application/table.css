@@ -14,7 +14,6 @@ table {
 }
 
 tr {
-	border-block-end: var(--border-light);
 	padding-block: 1rem;
 }
 
@@ -22,8 +21,28 @@ tr.is-positive {
 	font-weight: bold;
 }
 
-tbody tr:nth-child(odd) {
+.has-item th:first-of-type {
+	border-inline-start: 3px solid hsl(160, 50%, 40%);
+}
+
+table:has(tbody + tbody) :is(thead, tbody) {
+	border-block-end: var(--border-light);
+}
+
+table:has(tbody + tbody) tbody:nth-child(even) {
 	background: var(--color-bg2);
+}
+
+table:not(:has(tbody + tbody)) tr {
+	border-block-end: var(--border-light);
+}
+
+table:not(:has(tbody + tbody)) tbody tr:nth-child(odd) {
+	background: var(--color-bg2);
+}
+
+tr:has(.Table-variant) {
+	border-block-start: var(--border-extra-light);
 }
 
 th {
@@ -67,6 +86,10 @@ td {
 	width: 6.5em;
 }
 
+.Table-variant {
+	padding-inline-start: 1.5rem;
+}
+
 table:not(:has(.Symbol)) .Table-symbols {
 	display: none;
 }
@@ -100,6 +123,32 @@ table .Symbols {
 	.ts_c_max_width__52rem_ :is(.Table-products, .Table-date, .Table-symbols) {
 		width: auto !important;
 	}
+
+	.ts_c_max_width__52rem_ .Symbols {
+		justify-content: flex-start;
+	}
+
+	.ts_c_max_width__52rem_ .Table-variant {
+		padding-inline-start: 0.75rem;
+	}
+
+	.ts_c_max_width__52rem_ .Table-variant::before,
+	.ts_c_max_width__52rem_ .Table-variant ~ td::before {
+		padding-inline-start: 1rem;
+	}
+
+	.ts_c_max_width__52rem_ .has-item th:first-of-type {
+		border-inline-start: none;
+	}
+
+	.ts_c_max_width__52rem_ td:has(.u-hiddenVisually) {
+		display: none !important;
+	}
+
+	.ts_c_max_width__52rem_ td:has(.u-hiddenVisually),
+	.ts_c_max_width__52rem_ .Table-symbols:not(:has(.Symbol)) {
+		display: none !important;
+	}
 }
 
 @container table (max-inline-size: 40rem) {
@@ -110,6 +159,28 @@ table .Symbols {
 	.ts_c_max_width__40rem_ :is(.Table-products, .Table-date, .Table-symbols) {
 		width: auto !important;
 	}
+
+	.ts_c_max_width__40rem_ .Symbols {
+		justify-content: flex-start;
+	}
+
+	.ts_c_max_width__40rem_ .Table-variant {
+		padding-inline-start: 0.75rem;
+	}
+
+	.ts_c_max_width__40rem_ .Table-variant::before,
+	.ts_c_max_width__40rem_ .Table-variant ~ td::before {
+		padding-inline-start: 1rem;
+	}
+
+	.ts_c_max_width__40rem_ .has-item th:first-of-type {
+		border-inline-start: none;
+	}
+
+	.ts_c_max_width__40rem_ td:has(.u-hiddenVisually),
+	.ts_c_max_width__40rem_ .Table-symbols:not(:has(.Symbol)) {
+		display: none !important;
+	}
 }
 
 @container table (max-inline-size: 32rem) {
@@ -119,5 +190,27 @@ table .Symbols {
 
 	.ts_c_max_width__32rem_ :is(.Table-products, .Table-date, .Table-symbols) {
 		width: auto !important;
+	}
+
+	.ts_c_max_width__32rem_ .Symbols {
+		justify-content: flex-start;
+	}
+
+	.ts_c_max_width__32rem_ .Table-variant {
+		padding-inline-start: 0.75rem;
+	}
+
+	.ts_c_max_width__32rem_ .Table-variant::before,
+	.ts_c_max_width__32rem_ .Table-variant ~ td::before {
+		padding-inline-start: 1rem;
+	}
+
+	.ts_c_max_width__32rem_ .has-item th:first-of-type {
+		border-inline-start: none;
+	}
+
+	.ts_c_max_width__32rem_ td:has(.u-hiddenVisually),
+	.ts_c_max_width__32rem_ .Table-symbols:not(:has(.Symbol)) {
+		display: none !important;
 	}
 }

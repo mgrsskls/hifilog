@@ -11,11 +11,8 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2024_03_09_012049) do
-  create_schema "heroku_ext"
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
-  enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -171,7 +168,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_09_012049) do
     t.decimal "price", precision: 12, scale: 4
     t.string "price_currency"
     t.string "slug"
-    t.index ["name", "product_id"], name: "index_product_variants_on_name_and_product_id", unique: true
+    t.index ["product_id", "name", "release_year"], name: "index_product_variants_on_product_id_and_name_and_release_year", unique: true
   end
 
   create_table "products", force: :cascade do |t|
