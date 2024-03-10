@@ -1,0 +1,10 @@
+<%= form_for @product_variant, url: product_product_variant_path(id: @product_variant.id), html: { class: "EntityForm", method: :put } do |f| %>
+  <%= f.hidden_field :brand_id, value: @product.id %>
+
+  <% content_for :heading do %>
+    <%= t('edit') %>
+    <span><%= @product_variant.name %></span>
+  <% end %>
+
+  <%= render "form", additional_instructions: ["You can leave a comment to describe why your change was necessary, in case you found incorrect information or something similar."], include_comment: true, f: f %>
+<% end %>

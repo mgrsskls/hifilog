@@ -117,6 +117,10 @@ en:
     filter_brands: Search for brand
     link: Add Product
     submit: Submit
+  new_variant:
+    heading: Add new Variant
+    link: Add Variant
+    submit: Submit
   not_found: We could not find what you were looking for.
   overview: Overview
   in_setup: In &ldquo;%{name}&rdquo;
@@ -187,6 +191,7 @@ en:
     released: Released
     release_date: Release date
     discontinued_date: Discontinued date
+    name: Name
     meta:
       owned_by: Owned by
   user:

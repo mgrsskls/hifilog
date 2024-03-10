@@ -9,11 +9,16 @@ class ProductVariant < ApplicationRecord
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
 
-  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
+  has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
+  attr_accessor :comment
 
-  friendly_id :slug_candidates, use: [:slugged, :scoped], scope: :product
+  friendly_id :slug_candidates, use: [:slugged, :scoped, :history], scope: :product
 
-  validates :name, uniqueness: { scope: :product }
+  nilify_blanks
+
+  validates :name,
+            uniqueness: { scope: :product },
+            if: -> { name.present? }
   validates :name,
             presence: true,
             if: -> { release_year.blank? }
@@ -39,6 +44,9 @@ class ProductVariant < ApplicationRecord
   validates :release_year,
             presence: true,
             if: -> { name.blank? }
+  validates :product_id,
+            presence: true,
+            numericality: { only_integer: true }
 
   def release_date
     return nil if release_year.nil?

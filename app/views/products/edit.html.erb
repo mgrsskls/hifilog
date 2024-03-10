@@ -1,9 +1,7 @@
 <%= form_for @product, url: product_path(id: @product.id), html: { class: "EntityForm", method: :put } do |f| %>
   <% content_for :heading do %>
     <%= t('edit') %>
-    <% if @brand %>
-      <span><%= @product.name %></span>
-    <% end %>
+    <span><%= @product.name %></span>
   <% end %>
 
   <% content_for :brand_discontinued_note do %>

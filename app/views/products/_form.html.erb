@@ -34,7 +34,6 @@
         </li>
         <li>The price should ideally be the retail price recommended by the manufacturer provided in USD (or alternatively in EUR) to allow better comparisons. If you cannot provide that, you can also add the price in a different currency.</li>
         <li>If the product comes with different prices due to product variants, please use the lowest price (i.e. the price of the basic version).</li>
-        <li>Variants should cover smaller updates or special editions of a product, introduced under the same product name. Major updates, usually introduced with a name update like "MK II", should be added as a new product.</li>
         <% additional_instructions.each do |instruction| %>
           <li><%= instruction %></li>
         <% end %>
@@ -257,78 +256,13 @@
     </datalist>
   </div>
 
-  <% if @product.product_variants.any? %>
-    <h2 class="h3 Form-label">Updates</h2>
-    <div class="EntityForm-variants">
-      <%= f.fields_for :product_variants do |variant| %>
-          <div class="EntityForm-variant">
-            <h3 class="h4">
-              <% if variant.options[:child_index] == @product.product_variants.size - 1 %>
-                New variant
-              <% else %>
-                <%= variant.options[:child_index] + 1 %>. variant
-              <% end %>
-            </h3>
-            <div class="Form-field">
-              <%= variant.label :name, class: "Form-label" %>
-              <%= variant.text_field :name %>
-            </div>
-            <div class="Form-field">
-              <%= variant.label :release_date, class: "Form-label" do %>
-                <%= t('product.release_date') %> <small><i>(optional)</i></small>
-              <% end %>
-              <div class="EntityForm-date">
-                <%= variant.select :release_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
-                <%= select_month(@product.release_month, { field_name: "release_month", prefix: "product[product_variants_attributes][#{variant.options[:child_index]}]", prompt: "Month" }, { "aria-label": "Month" }) %>
-                <%= variant.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year", "aria-label": "Year" %>
-              </div>
-              <small>If you for example only know the year, you can also omit day and month.</small>
-            </div>
-            <div class="Form-field">
-              <%= variant.label :description, class: "Form-label" do %>
-                <%= t('product.description') %> <small><i>(optional)</i></small>
-              <% end %>
-              <%= variant.text_area :description %>
-            </div>
-            <div class="Form-field">
-              <div class="u-flex u-gap-md">
-                <div>
-                  <%= variant.label :price, class: "Form-label" do %>
-                    <%= t('activerecord.attributes.product.price') %> <small><i>(optional)</i></small>
-                  <% end %>
-                  <%= variant.text_field :price, inputmode: "number" %>
-                </div>
-                <div>
-                  <%= variant.label :price_currency, class: "Form-label" do %>
-                    <%= t('activerecord.attributes.product.price_currency') %> <small><i>(optional)</i></small>
-                  <% end %>
-                  <%= variant.select :price_currency do %>
-                    <option value=""></option>
-                    <% ['USD', 'EUR'].each do |id| %>
-                      <option value="<%= id %>"<%= " selected" if variant.object[:price_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
-                    <% end %>
-                    <hr>
-                    <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
-                      <option value="<%= currency[:id] %>"<%= " selected" if variant.object[:price_currency] == currency[:id] %>><%= currency[:name] %></option>
-                    <% end %>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          </div>
-      <% end %>
-    </div>
-  <% end %>
-
   <% if include_comment %>
-    <% content_for :comment do %>
-      <div class="Form-field Form-field--divider">
-        <h2 class="h3 Form-label">
-          <%= t('activerecord.attributes.version.comment') %> <small><i>(optional)</i></small>
-        </h2>
-        <%= f.text_area :comment %>
-      </div>
-    <% end %>
+    <div class="Form-field Form-field--divider">
+      <h2 class="h3 Form-label">
+        <%= t('activerecord.attributes.version.comment') %> <small><i>(optional)</i></small>
+      </h2>
+      <%= f.text_area :comment %>
+    </div>
   <% end %>
 
   <div class="Form-submit">

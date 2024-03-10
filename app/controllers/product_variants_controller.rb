@@ -1,16 +1,13 @@
 class ProductVariantsController < ApplicationController
   include ApplicationHelper
 
-  # before_action :set_paper_trail_whodunnit, only: [:create, :update]
-  # before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
-  before_action :authenticate_user!, only: [:changelog]
-  # before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
-  before_action :set_breadcrumb, only: [:show, :changelog]
+  before_action :set_paper_trail_whodunnit, only: [:create, :update]
+  before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
+  before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
   before_action :set_active_menu
-  before_action :find_product, only: [:show]
+  before_action :find_product_and_variant, only: [:show]
 
   def show
-    @variant = @product.product_variants.friendly.find(params[:variant])
     @brand = @product.brand
 
     if user_signed_in?
@@ -32,6 +29,58 @@ class ProductVariantsController < ApplicationController
     add_breadcrumb @product.display_name, @product
     add_breadcrumb @variant.short_name
     @page_title = "#{@product.display_name} #{@variant.name}"
+  end
+
+  def new
+    @product = Product.friendly.find(params[:product_id])
+    @product_variant = ProductVariant.new(product: @product)
+
+    add_breadcrumb @product.display_name, @product
+    add_breadcrumb I18n.t('new_variant.link')
+    @page_title = "#{I18n.t('new_variant.link')} — #{@product.display_name}"
+  end
+
+  def create
+    @product_variant = ProductVariant.new(product_variant_params)
+    @product = @product_variant.product
+
+    if @product_variant.save
+      redirect_to product_variant_url(product_id: @product.friendly_id, variant: @product_variant.friendly_id)
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    @product = Product.friendly.find(params[:product_id])
+    @product_variant = @product.product_variants.friendly.find(params[:variant])
+    @page_title = I18n.t('edit_record', name: @product_variant.display_name)
+
+    add_breadcrumb @product.display_name, @product
+    add_breadcrumb @product_variant.short_name, product_variant_path(
+      product_id: @product.friendly_id,
+      variant: @product_variant.friendly_id
+    )
+    add_breadcrumb I18n.t('edit')
+  end
+
+  def update
+    @product_variant = ProductVariant.find(params[:id])
+
+    old_name = @product_variant.name
+    @product_variant.slug = nil if old_name != product_variant_update_params[:name]
+
+    if @product_variant.update(product_variant_update_params)
+      redirect_to URI.parse(
+        product_variant_url(
+          product_id: @product_variant.product.friendly_id,
+          variant: @product_variant.friendly_id
+        )
+      ).path
+    else
+      @product = Product.find(@product_variant.product_id)
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def changelog
@@ -58,8 +107,9 @@ class ProductVariantsController < ApplicationController
     add_breadcrumb I18n.t('headings.products'), products_path
   end
 
-  def find_product
+  def find_product_and_variant
     @product = Product.friendly.find(params[:product_id])
+    @variant = @product.product_variants.friendly.find(params[:variant])
 
     return unless request.path != product_variant_path(product_id: @product.friendly_id, variant: params[:variant])
 
@@ -69,5 +119,32 @@ class ProductVariantsController < ApplicationController
     redirect_to URI.parse(
       product_variant_path(product_id: @product.friendly_id, variant: params[:variant])
     ).path, status: :moved_permanently
+  end
+
+  def product_variant_params
+    params.require(:product_variant).permit(
+      :name,
+      :release_day,
+      :release_month,
+      :release_year,
+      :description,
+      :price,
+      :price_currency,
+      :product_id
+    )
+  end
+
+  def product_variant_update_params
+    params.require(:product_variant).permit(
+      :name,
+      :release_day,
+      :release_month,
+      :release_year,
+      :description,
+      :price,
+      :price_currency,
+      :product_id,
+      :comment
+    )
   end
 end

@@ -32,13 +32,6 @@ class Product < ApplicationRecord
   has_many :setups, through: :setup_possessions
   has_many :product_variants, dependent: :destroy
 
-  accepts_nested_attributes_for :product_variants, reject_if: lambda { |variant|
-    variant['name'].blank? &&
-      variant['description'].blank? &&
-      variant['release_day'].blank? &&
-      variant['release_month'].blank? &&
-      variant['release_year'].blank?
-  }
   accepts_nested_attributes_for :brand
   validates_associated :brand
 

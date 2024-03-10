@@ -187,7 +187,6 @@ class ProductsController < ApplicationController
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
     @product.custom_attributes = {}
     @product.build_brand
-    @product.product_variants.build
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.includes([:sub_categories]).all.order(:order)
 
@@ -219,7 +218,6 @@ class ProductsController < ApplicationController
         price_currency: product_params[:price_currency],
         custom_attributes: product_params[:custom_attributes],
         sub_category_ids: product_params[:sub_category_ids],
-        product_variants_attributes: product_params[:product_variants_attributes] || {},
       )
 
       if @product.save
@@ -248,7 +246,6 @@ class ProductsController < ApplicationController
           price_currency: product_params[:price_currency],
           custom_attributes: product_params[:custom_attributes],
           sub_category_ids: product_params[:sub_category_ids],
-          product_variants_attributes: product_params[:product_variants_attributes] || {},
         )
 
         if @product.save
@@ -271,7 +268,6 @@ class ProductsController < ApplicationController
 
   def edit
     @product = Product.friendly.find(params[:id])
-    @product.product_variants.build
     @page_title = I18n.t('edit_record', name: @product.name)
     @brand = @product.brand
     @brands = Brand.all.order('LOWER(name)')
@@ -364,7 +360,6 @@ class ProductsController < ApplicationController
             :price,
             :price_currency,
             custom_attributes: {},
-            product_variants_attributes: {},
             sub_category_ids: [],
             brand_attributes: [
               :name,
@@ -399,7 +394,6 @@ class ProductsController < ApplicationController
             :price_currency,
             :comment,
             custom_attributes: {},
-            product_variants_attributes: {},
             sub_category_ids: [],
           )
   end

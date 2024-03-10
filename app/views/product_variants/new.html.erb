@@ -1,0 +1,17 @@
+<%= form_for @product_variant, url: product_product_variants_path, html: { class: "EntityForm", method: :post } do |f| %>
+  <%= f.hidden_field :product_id, value: @product.id %>
+
+  <% content_for :heading do %>
+    <%= t('new_variant.heading') %>
+    <% if @product && @product.name %>
+      <br>
+      <span>to <%= @product.display_name %></span>
+    <% end %>
+  <% end %>
+
+  <% content_for :brand_discontinued_note do %>
+    <% if @brand && @brand.name %>Since <i><%= @brand.name %></i> has been discontinued, this variant will automatically be set to discontinued as well.<% end %>
+  <% end %>
+
+  <%= render "form", f: f, include_comment: false %>
+<% end %>

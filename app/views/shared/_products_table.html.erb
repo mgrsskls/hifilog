@@ -42,7 +42,7 @@
           </td>
         </tr>
         <% product.product_variants.each do |variant| %>
-          <tr<% if user_has_product?(current_user, variant.id) %> class="has-item"<% end %>>
+          <tr<% if user_has_product?(current_user, product.id, variant.id) %> class="has-item"<% end %>>
             <th scope="row" class="Table-variant"><%= link_to (mark ? highlight(variant.short_name, mark) : variant.short_name), variant.path %></th>
             <% unless hide_brand %>
               <td>
@@ -51,7 +51,9 @@
             <% end %>
             <% unless hide_category %>
               <td class="Table-sm">
-                <%= variant.sub_categories.map(&:name).join(", <br>").html_safe %>
+                <span class="u-hiddenVisually">
+                  <%= product.sub_categories.map(&:name).join(", <br>").html_safe %>
+                </span>
               </td>
             <% end %>
             <td class="Table-sm">

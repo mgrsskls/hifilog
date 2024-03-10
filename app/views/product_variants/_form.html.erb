@@ -1,0 +1,113 @@
+<% additional_instructions ||= [] %>
+
+<% content_for :css do %>
+  <%= stylesheet_link_tag "form" %>
+  <%= stylesheet_link_tag "entity_form" %>
+<% end %>
+<% content_for :js do %>
+  <%= javascript_include_tag "entity_form", type: "module", crossorigin: true %>
+<% end %>
+
+<div class="Form Form--centered">
+  <div class="Heading">
+    <h1><%= yield :heading %></h1>
+  </div>
+
+  <details class="Instructions">
+    <summary>Product Guidelines</summary>
+    <div class="Instructions-content Rte">
+      <p>Thank you for contributing to HiFi&thinsp;Log!</p>
+      <p>Please read the following instructions to make sure all products are added properly:</p>
+      <ul>
+        <li>Please only add the product name, not the brand name, in the field "Name". The brand name will be added automatically.</li>
+        <li>Not all information has to be filled out right away. Fields marked with "optional" can be filled out later.</li>
+        <li>You can assign multiple categories to a product, for example "Over-Ear Headphones" + "Noise Cancelling Headphones".</li>
+        <li>If you for example only know the year (or year and month) when a product has been released or discontinued, you can omit the other fields.</li>
+        <li>When adding a product to a brand that has been discontinued, the product will automatically be set to discontinued as well, no matter what you select.</li>
+        <li>The description can contain any relevant information that is not covered by the other fields.</li>
+        <li>
+          The description field supports Markdown for basic styling:<br>
+          <code><b><%= "**bold text**" %></b></code><br>
+          <code><em><%= "*italic text*" %></em></code><br>
+          <code><%= "- unordered lists" %></code><br>
+          <code><%= "1. ordered lists" %></code>
+        </li>
+        <li>The price should ideally be the retail price recommended by the manufacturer provided in USD (or alternatively in EUR) to allow better comparisons. If you cannot provide that, you can also add the price in a different currency.</li>
+        <li>If the product comes with different prices due to product variants, please use the lowest price (i.e. the price of the basic version).</li>
+        <li>Variants should cover smaller updates or special editions of a product, introduced under the same product name. Major updates, usually introduced with a name update like "MK II", should be added as a new product.</li>
+        <% additional_instructions.each do |instruction| %>
+          <li><%= instruction %></li>
+        <% end %>
+      </ul>
+      </ul>
+    </div>
+  </details>
+
+  <% if @product.errors.any? %>
+    <%= render "shared/flash_messages", messages: @product.errors.map { |error| ["alert", error.full_message] } %>
+  <% end %>
+
+  <div class="Form-field">
+    <%= f.label :name, class: "Form-label" do %>
+      <%= t('product.name') %> <small><i>(optional)</i></small>
+    <% end %>
+    <%= f.text_field :name %>
+  </div>
+  <div class="Form-field">
+    <%= f.label :release_date, class: "Form-label" do %>
+      <%= t('product.release_date') %> <small><i>(optional)</i></small>
+    <% end %>
+    <div class="EntityForm-date">
+      <%= f.select :release_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
+      <%= select_month(@product.release_month, { field_name: "release_month", prefix: "product_variant", prompt: "Month" }, { "aria-label": "Month" }) %>
+      <%= f.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year", "aria-label": "Year" %>
+    </div>
+    <small>If you for example only know the year, you can also omit day and month.</small>
+  </div>
+  <div class="Form-field">
+    <%= f.label :description, class: "Form-label" do %>
+      <%= t('product.description') %> <small><i>(optional)</i></small>
+    <% end %>
+    <%= f.text_area :description %>
+  </div>
+  <div class="Form-field">
+    <div class="u-flex u-gap-md">
+      <div>
+        <%= f.label :price, class: "Form-label" do %>
+          <%= t('activerecord.attributes.product.price') %> <small><i>(optional)</i></small>
+        <% end %>
+        <%= f.text_field :price, inputmode: "number" %>
+      </div>
+      <div>
+        <%= f.label :price_currency, class: "Form-label" do %>
+          <%= t('activerecord.attributes.product.price_currency') %> <small><i>(optional)</i></small>
+        <% end %>
+        <%= f.select :price_currency do %>
+          <option value=""></option>
+          <% ['USD', 'EUR'].each do |id| %>
+            <option value="<%= id %>"<%= " selected" if f.object[:price_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
+          <% end %>
+          <hr>
+          <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
+            <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_currency] == currency[:id] %>><%= currency[:name] %></option>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if include_comment %>
+    <div class="Form-field Form-field--divider">
+      <h2 class="h3 Form-label">
+        <%= t('activerecord.attributes.version.comment') %> <small><i>(optional)</i></small>
+      </h2>
+      <%= f.text_area :comment %>
+    </div>
+  <% end %>
+
+  <div class="Form-submit">
+    <%= f.button type: "submit", class: "Button Button--loadingIcon" do %>
+      <span><%= t('new_product.submit') %></span>
+    <% end %>
+  </div>
+</div>

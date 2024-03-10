@@ -112,6 +112,9 @@
 
       <ul class="Entity-metaLinks">
         <li>
+          <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
+        </li>
+        <li>
           <%= link_to t('headings.changelog'), user_signed_in? ? product_variant_changelog_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_variant_changelog_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
         </li>
       </ul>
