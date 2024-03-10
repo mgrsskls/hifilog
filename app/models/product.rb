@@ -94,6 +94,8 @@ class Product < ApplicationRecord
   end
 
   def display_name
+    return unless brand
+
     "#{brand.name} #{name}"
   end
 

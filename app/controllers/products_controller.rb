@@ -177,7 +177,7 @@ class ProductsController < ApplicationController
     ")
 
     add_breadcrumb @product.display_name
-    @page_title = "#{@product.brand.name} #{@product.name}"
+    @page_title = "#{@product.brand.name if @product.brand.present?} #{@product.name}".strip
   end
 
   def new

@@ -48,7 +48,7 @@
           <% products.each do |product| %>
             <tr>
               <th scope="row"><%= link_to product.name, product_path(id: product.friendly_id) %></th>
-              <td><%= product.brand.name %></td>
+              <td><%= product.brand.present? ? product.brand.name : "-" %></td>
               <td class="Table-sm">
                 <% if product.sub_categories.any? %>
                   <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>

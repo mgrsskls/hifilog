@@ -7,7 +7,7 @@
     <div class="Product-details">
       <div class="Heading">
         <h1>
-          <span><%= @product.brand.name %></span> <%= @product.name %>
+          <% if @product.brand.present? %><span><%= @product.brand.name %></span><% end %> <%= @product.name %>
         </h1>
       </div>
 
@@ -16,8 +16,10 @@
           <dt><%= t('status') %></dt>
           <dd><%= render "shared/symbols", product: @product, show_labels: true, only: [:discontinued] %></dd>
         <% end %>
-        <dt><%= t('headings.brand').html_safe %></dt>
-        <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
+        <% if @product.brand.present? %>
+          <dt><%= t('headings.brand').html_safe %></dt>
+          <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
+        <% end %>
         <dt><%= t('headings.category').html_safe %></dt>
         <dd>
           <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
