@@ -26,8 +26,10 @@ class UsersController < ApplicationController
 
     return render 'not_found', status: :not_found if @user.nil?
 
-    redirect_path = get_redirect_if_unauthorized(@user, false)
-    return redirect_to redirect_path if redirect_path
+    unless current_user == @user
+      redirect_path = get_redirect_if_unauthorized(@user, false)
+      return redirect_to redirect_path if redirect_path
+    end
 
     setup_user_page(@user)
 

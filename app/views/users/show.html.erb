@@ -2,6 +2,14 @@
   <%= stylesheet_link_tag "profile" %>
 <% end %>
 
+<% if @user.hidden? %>
+  <div class="Profile-hiddenNotice">
+    <p class="u-container">
+      Your profile is not visible to other users. You can change this in your <%= link_to "account settings", edit_user_registration_path %>.
+    </p>
+  </div>
+<% end %>
+
 <div class="Profile">
   <div class="Profile-header">
     <%= image_tag cdn_image_url(@user.decorative_image.variant(format: :webp)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314 if @user.decorative_image.attached? %>

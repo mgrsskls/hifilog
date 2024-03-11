@@ -116,6 +116,11 @@
                           <span><%= t('dashboard') %></span>
                         </a>
                       </li>
+                      <li>
+                        <a href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
+                          <span><%= t('profile') %></span>
+                        </a>
+                      </li>
                       <li class="Menu-subList-separator">
                         <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
                           <span><%= t('headings.products') %></span>
