@@ -5,6 +5,7 @@
 	align-items: center;
 	gap: 0.5em;
 	position: relative;
+	color: var(--color-copy);
 }
 
 .CheckboxButton::before {
