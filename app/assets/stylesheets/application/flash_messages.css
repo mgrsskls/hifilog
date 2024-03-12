@@ -29,7 +29,7 @@
 }
 
 .FlashMessage--info {
-	background: var(--color-blue-20);
+	background: var(--color-bg2);
 }
 
 .FlashMessage a {
