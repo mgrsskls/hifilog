@@ -1,22 +1,9 @@
-.Product-action:where(:not(:first-child)) {
+.Product-action:not(:first-child) {
 	margin-block-start: 1rem;
 }
 
 .Product-action button {
 	inline-size: 100%;
-}
-
-.Product-action--setup {
-	margin-inline-start: 0.75rem;
-}
-
-.Product-action--setup + .Product-action--setup {
-	margin-block-start: 0.5rem;
-}
-
-.Product-setups {
-	margin-block-start: 1rem;
-	margin-inline-start: 1rem;
 }
 
 .Product-sub .Button {
@@ -30,4 +17,41 @@
 
 .Heading:has(+ .Product-variantDescription) {
 	margin-block-end: 1rem;
+}
+
+.ProductPossession {
+	background: var(--color-success-bg);
+	border: var(--border) currentColor;
+	border-radius: var(--border-radius);
+	color: var(--color-success-copy);
+	padding: 0.75rem 1rem;
+}
+
+.ProductPossession-heading {
+	margin-block: 0;
+}
+
+.ProductPossession-heading :is(b, small) {
+	display: block;
+}
+
+.ProductPossession + .ProductPossession {
+	margin-block-start: 1rem;
+}
+
+.ProductPossession-heading + .ProductPossession-setup {
+	margin-block-start: 0.75rem;
+	border-block-start: var(--border) rgba(0, 0, 0, 0.15);
+	padding-block-start: 0.75rem;
+}
+
+.ProductPossession-setup + .ProductPossession-setup {
+	margin-block-start: 0.25rem;
+}
+
+.ProductPossession-metaLinks {
+	margin-block-start: 0.75rem;
+	border-block-start: var(--border) rgba(0, 0, 0, 0.15);
+	padding-block-start: 0.5rem;
+	font-size: 0.875rem;
 }

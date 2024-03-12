@@ -47,7 +47,7 @@
         <tbody>
           <% items.each do |item| %>
             <tr>
-              <th scope="row"><%= link_to item.short_name, item.product_or_variant_path %></th>
+              <th scope="row"><%= link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.product_or_variant_path %></th>
               <td><%= item.product.brand.present? ? item.product.brand.name : "-" %></td>
               <td class="Table-sm">
                 <% if item.product.sub_categories.any? %>

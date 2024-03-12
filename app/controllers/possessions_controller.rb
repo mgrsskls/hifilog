@@ -7,12 +7,8 @@ class PossessionsController < ApplicationController
     @product = Product.find(params[:id])
     @variant = ProductVariant.find(params[:product_variant_id]) if params[:product_variant_id].present?
 
-    user_has_product = user_has_product?(current_user, @product.id, @variant ? @variant.id : nil)
-
-    unless user_has_product
-      possession = Possession.new(user: current_user, product: @product, product_variant: @variant || nil)
-      flash[:alert] = I18n.t(:generic_error_message) unless possession.save
-    end
+    possession = Possession.new(user: current_user, product: @product, product_variant: @variant || nil)
+    flash[:alert] = I18n.t(:generic_error_message) unless possession.save
 
     redirect_back fallback_location: root_url
   end

@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-03-11">2024-03-11</time>
+
+- A product can now be added multiple times to a users collection
+
 ## <time datetime="2024-03-10">2024-03-10</time>
 
 - Users can now add product versions/updates to their collection, bookmark them etc

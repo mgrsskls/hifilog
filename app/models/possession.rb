@@ -7,8 +7,6 @@ class Possession < ApplicationRecord
 
   has_many :setup_possessions, dependent: :destroy
 
-  validates :product_id, uniqueness: { scope: [:user_id, :product_variant_id] }
-
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       product_id

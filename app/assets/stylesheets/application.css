@@ -137,8 +137,8 @@
 		--color-invalid-dark: hsl(330, 100%, 20%);
 		--color-invalid-bg: var(--color-invalid-light);
 		--color-invalid-copy: var(--color-invalid-dark);
-		--color-success-light: hsl(165, 50%, 85%);
-		--color-success-dark: hsl(165, 100%, 20%);
+		--color-success-light: hsl(165, 40%, 85%);
+		--color-success-dark: hsl(165, 40%, 30%);
 		--color-success-bg: var(--color-success-light);
 		--color-success-copy: var(--color-success-dark);
 		--color-positive: hsl(160, 50%, 95%);

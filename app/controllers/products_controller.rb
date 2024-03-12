@@ -161,7 +161,7 @@ class ProductsController < ApplicationController
     @brand = @product.brand
 
     if user_signed_in?
-      @possession = current_user.possessions.find_by(product_id: @product.id, product_variant_id: nil)
+      @possessions = current_user.possessions.where(product_id: @product.id, product_variant_id: nil)
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: nil)
       @prev_owned = current_user.prev_owneds.find_by(product_id: @product.id, product_variant_id: nil)
       @setups = current_user.setups.includes(:possessions)
