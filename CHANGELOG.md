@@ -3,6 +3,7 @@
 ## <time datetime="2024-03-11">2024-03-11</time>
 
 - A product can now be added multiple times to a users collection
+- A user can now add photos to their products
 
 ## <time datetime="2024-03-10">2024-03-10</time>
 

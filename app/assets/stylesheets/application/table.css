@@ -65,7 +65,7 @@ table-saw :is(tbody, tfoot) :is(th, td)::before {
 	font-size: 0.75rem;
 }
 
-th small {
+tbody th {
 	font-weight: normal;
 }
 
@@ -89,6 +89,10 @@ td {
 
 .Table-variant {
 	padding-inline-start: 1.5rem;
+}
+
+.Table-image {
+	width: 5rem;
 }
 
 table:not(:has(.Symbol)) .Table-symbols {
@@ -121,7 +125,8 @@ table .Symbols {
 		padding-block: 0;
 	}
 
-	.ts_c_max_width__52rem_ :is(.Table-products, .Table-date, .Table-symbols) {
+	.ts_c_max_width__52rem_
+		:is(.Table-products, .Table-date, .Table-symbols, .Table-image) {
 		width: auto !important;
 	}
 
@@ -157,7 +162,8 @@ table .Symbols {
 		padding-block: 0;
 	}
 
-	.ts_c_max_width__40rem_ :is(.Table-products, .Table-date, .Table-symbols) {
+	.ts_c_max_width__40rem_
+		:is(.Table-products, .Table-date, .Table-symbols, .Table-image) {
 		width: auto !important;
 	}
 
@@ -189,7 +195,8 @@ table .Symbols {
 		padding-block: 0;
 	}
 
-	.ts_c_max_width__32rem_ :is(.Table-products, .Table-date, .Table-symbols) {
+	.ts_c_max_width__32rem_
+		:is(.Table-products, .Table-date, .Table-symbols, .Table-image) {
 		width: auto !important;
 	}
 

@@ -44,7 +44,7 @@ Rails.application.routes.draw do
     resources :setups, only: [:index, :show, :create, :destroy]
   end
 
-  resources :possessions, only: [:create, :destroy]
+  resources :possessions, only: [:create, :destroy, :update]
   resources :setup_possessions, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
   resources :prev_owneds, only: [:create, :destroy]

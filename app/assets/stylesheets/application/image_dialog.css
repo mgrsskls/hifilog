@@ -1,0 +1,54 @@
+.OpenImageDialog {
+	display: block;
+}
+
+.OpenImageDialog-placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	inline-size: var(--size, 5rem);
+	aspect-ratio: 1;
+	background: var(--color-blue-20);
+	border-radius: var(--border-radius);
+	color: var(--color-blue-50);
+	font-size: 0.875rem;
+	position: relative;
+	isolation: isolate;
+	box-sizing: border-box;
+}
+
+.OpenImageDialog-placeholder:not(:has(img)) {
+	border: var(--border) currentColor;
+}
+
+.OpenImageDialog-placeholder img {
+	inline-size: 100%;
+	block-size: 100%;
+	border-radius: var(--border-radius);
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+}
+
+.OpenImageDialog-placeholder span {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+	background: rgba(0, 0, 0, 0.75);
+	border-radius: inherit;
+	color: #fff;
+}
+
+.OpenImageDialog:is(:hover, :focus) .OpenImageDialog-placeholder span {
+	opacity: 1;
+}
+
+.ImageDialog-delete {
+	margin-block-start: 0.5rem;
+}

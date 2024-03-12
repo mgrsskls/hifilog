@@ -6,11 +6,6 @@
 	inline-size: 100%;
 }
 
-.Product-sub .Button {
-	inline-size: 100%;
-	text-align: center;
-}
-
 .Product-variantDescription {
 	margin-block-end: 2rem;
 }
@@ -24,14 +19,14 @@
 	border: var(--border) currentColor;
 	border-radius: var(--border-radius);
 	color: var(--color-success-copy);
-	padding: 0.75rem 1rem;
+	padding: 1rem 1rem 0.5rem;
 }
 
 .ProductPossession-heading {
 	margin-block: 0;
 }
 
-.ProductPossession-heading :is(b, small) {
+.ProductPossession-headingName {
 	display: block;
 }
 

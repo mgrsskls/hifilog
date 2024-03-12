@@ -2,6 +2,14 @@
 <% empty_state ||= "" %>
 <% setups ||= [] %>
 <% pull_out ||= defined?(pull_out) ? pull_out : true %>
+<% include_images ||= defined?(include_images) ? include_images : true %>
+<% include_image_upload ||= defined?(include_image_upload) ? include_image_upload : true %>
+
+<% if include_image_upload %>
+  <% content_for :css do %>
+    <%= stylesheet_link_tag "form" %>
+  <% end %>
+<% end %>
 
 <% if categories.length > 1 %>
   <details class="CategoryFilter">
@@ -32,12 +40,14 @@
 
 <div <% if pull_out %> class="u-pullOut"<% end %>>
   <% if items.any? %>
-    <table-saw breakpoint="(max-width: 40rem)" type="container">
+    <table-saw breakpoint="(max-width: 32rem)" type="container">
       <table>
         <thead>
           <tr>
+            <% if include_images %>
+              <th class="Table-image">Photo</th>
+            <% end %>
             <th><%= t('name') %></th>
-            <th><%= t('headings.brand').html_safe %></th>
             <th><%= t('headings.category').html_safe %></th>
             <% if setups.any? %>
               <th><%= t('headings.setup') %></th>
@@ -47,8 +57,34 @@
         <tbody>
           <% items.each do |item| %>
             <tr>
-              <th scope="row"><%= link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.product_or_variant_path %></th>
-              <td><%= item.product.brand.present? ? item.product.brand.name : "-" %></td>
+              <% if include_images %>
+                <td class="Table-image">
+                  <% if include_image_upload %>
+                    <%= render "shared/image_upload", item: item %>
+                  <% else %>
+                    <% if item.image.attached? %>
+                      <button class="OpenImageDialog" aria-controls="image-dialog-<%= item.id %>">
+                        <span class="OpenImageDialog-placeholder">
+                          <%= image_tag cdn_image_url(item.image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                        </span>
+                      </button>
+                      <dialog class="ImageDialog" id="image-dialog-<%= item.id %>">
+                        <%= image_tag cdn_image_url(item.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                      </dialog>
+                    <% else %>
+                      <span class="OpenImageDialog-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.3 15.8 5.1-5.2a2.3 2.3 0 0 1 3.2 0l5.1 5.2m-1.4-1.6 1.4-1.4a2.3 2.3 0 0 1 3.1 0l3 3m-18 3.7h16.4a1.5 1.5 0 0 0 1.6-1.5V6a1.5 1.5 0 0 0-1.6-1.5H3.9A1.5 1.5 0 0 0 2.3 6v12a1.5 1.5 0 0 0 1.5 1.5ZM14.2 8.2h0v0h0v0Zm.4 0a.4.4 0 1 1-.7 0 .4.4 0 0 1 .7 0Z"/></svg>
+                      </span>
+                    <% end %>
+                  <% end %>
+                </td>
+              <% end %>
+              <th scope="row">
+                <% if item.product.brand.present? %>
+                  <%= item.product.brand.name %><br>
+                <% end %>
+                <b><%= link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.product_or_variant_path %></b>
+              </th>
               <td class="Table-sm">
                 <% if item.product.sub_categories.any? %>
                   <%= item.product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>

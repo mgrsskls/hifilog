@@ -7,11 +7,12 @@
 @import url("./application/category_filter.css") layer(components);
 @import url("./application/checkbox_button.css") layer(components);
 @import url("./application/empty_state.css") layer(components);
+@import url("./application/filter.css") layer(components);
 @import url("./application/flash_messages.css") layer(components);
+@import url("./application/footer.css") layer(components);
 @import url("./application/header.css") layer(components);
 @import url("./application/heading.css") layer(components);
-@import url("./application/filter.css") layer(components);
-@import url("./application/footer.css") layer(components);
+@import url("./application/image_dialog.css") layer(components);
 @import url("./application/instructions.css") layer(components);
 @import url("./application/menu.css") layer(components);
 @import url("./application/page_actions.css") layer(components);
@@ -355,6 +356,32 @@
 
 	.field_with_errors label {
 		color: var(--color-invalid-copy);
+	}
+
+	dialog {
+		border: none;
+		background: #fff;
+		padding: 1rem;
+		border-radius: var(--border-radius);
+	}
+
+	dialog::backdrop {
+		background: rgba(0, 0, 0, 0.75);
+	}
+
+	dialog img {
+		border-radius: var(--border-radius);
+	}
+
+	.ImageDialog {
+		padding: 0;
+		background: none;
+		overscroll-behavior: contain;
+	}
+
+	.ImageDialog img {
+		max-block-size: calc(100dvb - 3rem);
+		max-inline-size: calc(100dvi - 3rem);
 	}
 
 	@media (max-width: 36em) {

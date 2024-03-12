@@ -86,6 +86,8 @@ class UsersController < ApplicationController
                                    ]
                                  }
     @reset_path = @user.profile_path
+
+    render 'show', locals: { include_images: true }
   end
 
   def prev_owneds
@@ -94,7 +96,7 @@ class UsersController < ApplicationController
     return render 'not_found', status: :not_found if @user.nil?
 
     unless current_user == @user
-      redirect_path = get_redirect_if_unauthorized(@user, false)
+      redirect_path = get_redirect_if_unauthorized(@user, true)
       return redirect_to redirect_path if redirect_path
     end
 
@@ -138,7 +140,7 @@ class UsersController < ApplicationController
                                  }
     @reset_path = user_previous_products_path(id: @user.user_name)
 
-    render 'show'
+    render 'show', locals: { include_images: false }
   end
 
   private

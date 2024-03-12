@@ -51,6 +51,22 @@ import "./theme_toggle.js";
 		});
 	});
 
+	document.querySelectorAll(".OpenImageDialog").forEach((button) => {
+		button.addEventListener("click", () => {
+			const dialog = document.querySelector(
+				`#${button.getAttribute("aria-controls")}`,
+			);
+
+			dialog.showModal();
+		});
+	});
+
+	document.querySelectorAll(".ImageDialog").forEach((dialog) => {
+		dialog.addEventListener("click", () => {
+			dialog.close();
+		});
+	});
+
 	function onSubMenuToggle({ currentTarget: button }) {
 		const shouldOpen = button.getAttribute("aria-expanded") === "false";
 		const onEscape = (e) => {
