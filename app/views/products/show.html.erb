@@ -111,7 +111,7 @@
         <th class="Table-symbols"><%= t('status') %></th>
       </thead>
       <tbody>
-        <tr aria-current="true">
+        <tr aria-current="true"<% if user_has_product?(current_user, @product.id) %> class="has-item"<% end %>>
           <th><%= link_to @product.name, product_path(id: @product.friendly_id) %></th>
           <td class="Table-sm">Initial / Stock version</td>
           <td class="Table-sm"><%= @product.release_date.present? ? @product.release_date : "-" %></td>
@@ -119,7 +119,7 @@
           <td class="Table-symbols"><%= render "shared/symbols", product: @product %></td>
         </tr>
         <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
-          <tr>
+          <tr<% if user_has_product?(current_user, @product.id, variant.id) %> class="has-item"<% end %>>
             <th><%= link_to variant.name_with_fallback, variant.path %></th>
             <td class="Table-sm"><%= variant.description.present? ? variant.description : "-" %></td>
             <td class="Table-sm"><%= variant.release_date.present? ? variant.release_date : "-" %></td>
