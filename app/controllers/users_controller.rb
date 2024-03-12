@@ -89,10 +89,14 @@ class UsersController < ApplicationController
   end
 
   def prev_owneds
-    @user = User.find_by!(user_name: params[:user_id])
+    @user = User.where('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase).first
 
-    redirect_path = get_redirect_if_unauthorized(@user, true)
-    return redirect_to redirect_path if redirect_path
+    return render 'not_found', status: :not_found if @user.nil?
+
+    unless current_user == @user
+      redirect_path = get_redirect_if_unauthorized(@user, false)
+      return redirect_to redirect_path if redirect_path
+    end
 
     setup_user_page(@user)
 
@@ -160,6 +164,11 @@ class UsersController < ApplicationController
     @products_edited = get_data(data, 'Product', 'update')
     @brands_created = get_data(data, 'Brand', 'create')
     @brands_edited = get_data(data, 'Brand', 'update')
+
+    return unless current_user == user
+
+    @active_menu = :dashboard
+    @active_dashboard_menu = :profile
   end
 
   def get_redirect_if_unauthorized(user, prev_owneds)

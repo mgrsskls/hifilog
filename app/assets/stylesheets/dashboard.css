@@ -46,12 +46,6 @@
 			justify-content: space-between;
 			gap: 1rem;
 		}
-
-		> li:first-child {
-			border-block-end: var(--border-light);
-			margin-block-end: 1rem;
-			padding-block-end: 1rem;
-		}
 	}
 
 	.Dashboard-separator {

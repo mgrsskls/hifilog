@@ -11,6 +11,11 @@
         </a>
       </li>
       <li>
+        <a class="Dashboard-link" href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
+          <%= t('profile') %>
+        </a>
+      </li>
+      <li class="Dashboard-separator">
         <a class="Dashboard-link" href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
           <%= t('headings.products') %>
         </a>
