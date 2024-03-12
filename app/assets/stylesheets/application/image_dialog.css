@@ -10,18 +10,17 @@
 	inline-size: var(--size, 5rem);
 	aspect-ratio: 1;
 	border-radius: var(--border-radius);
-	color: var(--color-blue-50);
+	color: var(--color-blue-500);
 	font-size: 0.875rem;
 	position: relative;
 	isolation: isolate;
 	box-sizing: border-box;
-	border: var(--border) transparent;
+	border: var(--border) var(--color-transparency-15);
 }
 
 .OpenImageDialog-placeholder,
 html:has([name="theme"][value="light"]:checked) .OpenImageDialog-placeholder {
-	background: var(--color-blue-20);
-	border-color: rgba(0, 0, 0, 0.15);
+	background: var(--color-blue-925);
 }
 
 .OpenImageDialog:is(:hover, :focus) .OpenImageDialog-placeholder,
@@ -33,15 +32,13 @@ html:has([name="theme"][value="light"]:checked)
 
 @media (prefers-color-scheme: dark) {
 	.OpenImageDialog-placeholder {
-		background: var(--color-blue-80);
-		border-color: rgba(255, 255, 255, 0.15);
+		background: var(--color-blue-175);
 	}
 }
 
 :is(html:has([name="theme"][value="dark"]:checked), .is-dark)
 	.OpenImageDialog-placeholder {
-	background: var(--color-blue-80);
-	border-color: rgba(255, 255, 255, 0.15);
+	background: var(--color-blue-175);
 }
 
 .OpenImageDialog-placeholder img {
@@ -61,7 +58,8 @@ html:has([name="theme"][value="light"]:checked)
 	justify-content: center;
 	flex-direction: column;
 	opacity: 0;
-	background: hsla(208, 40%, 10%, 75%);
+	background: hsla(208, 40%, 10%, 75%); /* TODO remove fallback */
+	background: color-mix(in oklab, var(--color-blue-100), transparent 25%);
 	border-radius: inherit;
 	color: var(--color-accent-on-dark);
 }

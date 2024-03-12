@@ -16,7 +16,7 @@
 
 .ProductPossession {
 	background: var(--color-success-bg);
-	border: var(--border) currentColor;
+	border: 0.25rem solid var(--color-transparency-10);
 	border-radius: var(--border-radius);
 	color: var(--color-success-copy);
 	padding: 1rem 1rem 0.5rem;
@@ -28,6 +28,7 @@
 
 .ProductPossession-headingName {
 	display: block;
+	line-height: 1.2;
 }
 
 .ProductPossession + .ProductPossession {
@@ -36,7 +37,7 @@
 
 .ProductPossession-heading + .ProductPossession-setup {
 	margin-block-start: 0.75rem;
-	border-block-start: var(--border) rgba(0, 0, 0, 0.15);
+	border-block-start: var(--border) var(--color-transparency-15);
 	padding-block-start: 0.75rem;
 }
 
@@ -46,7 +47,7 @@
 
 .ProductPossession-metaLinks {
 	margin-block-start: 0.75rem;
-	border-block-start: var(--border) rgba(0, 0, 0, 0.15);
+	border-block-start: var(--border) var(--color-transparency-15);
 	padding-block-start: 0.5rem;
 	font-size: 0.875rem;
 }

@@ -20,15 +20,3 @@
 .Instructions-content {
 	padding: 0 var(--spacing) var(--spacing);
 }
-
-@media (prefers-color-scheme: dark) {
-	.Instructions summary::after {
-		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
-	}
-}
-
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
-	.Instructions
-	summary::after {
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
-}

@@ -76,7 +76,7 @@
 	.MenuMega-header {
 		padding-block-end: 1rem;
 		margin-block-end: 1rem;
-		border-block-end: var(--border) rgba(255, 255, 255, 0.1);
+		border-block-end: var(--border) var(--color-transparency-10);
 		align-items: start;
 	}
 

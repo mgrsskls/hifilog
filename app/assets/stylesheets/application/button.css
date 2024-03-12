@@ -13,11 +13,8 @@
 }
 
 .Button[aria-pressed="true"] {
-	--hue: 160;
-	--saturation: 50%;
-	--lightness: 40%;
 	--size: 1.75em;
-	--color: var(--hue), var(--saturation), var(--lightness);
+	--color: 160, 50%, var(--lightness, 40%);
 
 	background: hsla(var(--color), 10%);
 	color: hsl(var(--color));

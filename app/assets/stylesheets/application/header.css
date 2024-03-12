@@ -1,7 +1,7 @@
 .Header {
 	--gap: 2rem;
 	--height: 3.75rem;
-	--divider-color: rgba(255, 255, 255, 0.25);
+	--divider-color: var(--color-transparency-25);
 
 	display: flex;
 	gap: var(--gap);
@@ -30,6 +30,7 @@
 .Search-input {
 	border: none;
 	box-shadow: none;
+	color-scheme: light;
 }
 
 .Search-input:focus {
@@ -93,7 +94,7 @@
 	.Header-menuContainer {
 		position: fixed;
 		inset: var(--height) 0 0 0;
-		background: hsl(208, 40%, 15%);
+		background: var(--color-blue-150);
 		padding: calc(2 * var(--page-spacing));
 		overscroll-behavior: contain;
 		overflow-y: auto;
@@ -121,7 +122,8 @@
 		position: fixed;
 		inset: var(--header-height) 0 0;
 		z-index: -1;
-		background: hsla(208, 40%, 10%, 75%);
+		background: hsla(208, 40%, 10%, 75%); /* TODO remove fallback */
+		background: color-mix(in oklab, var(--color-blue-100), transparent 25%);
 	}
 
 	.Header-toggle,

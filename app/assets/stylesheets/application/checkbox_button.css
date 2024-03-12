@@ -24,18 +24,18 @@
 	--gap: 0.25em;
 
 	content: "";
-	color: var(--color-blue-35);
+	color: var(--color-blue-750);
 	font-weight: bold;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	block-size: calc(1.5em - var(--gap));
 	inline-size: calc(1.5em - var(--gap));
-	background: var(--color-blue-20);
+	background: var(--color-blue-925);
 	position: absolute;
 	inset-inline-start: var(--gap);
 	border-radius: 50%;
-	border: 0.0625rem solid var(--color-blue-35);
+	border: 0.0625rem solid var(--color-blue-750);
 	box-sizing: border-box;
 	line-height: 1;
 	font-size: 0.75em;
@@ -44,7 +44,7 @@
 .CheckboxButton.is-checked::after {
 	content: "✓";
 	color: #fff;
-	background: hsl(180, 50%, 40%);
+	background: var(--color-success-medium);
 	transform: translateX(calc(1.3333em));
 	border-color: transparent;
 }

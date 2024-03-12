@@ -33,7 +33,7 @@
 }
 
 .EntityForm details:not(:last-child) {
-	border-block-end: var(--border-light);
+	border-block-end: var(--border) var(--color-transparency-25);
 }
 
 .EntityForm details[open] {
@@ -47,11 +47,6 @@
 	padding-block: 0.75em;
 	list-style: none;
 	font-weight: 600;
-}
-
-.EntityForm summary::after,
-html:has([name="theme"][value="light"]:checked) .EntityForm summary::after {
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
 }
 
 .EntityForm-date {
@@ -78,7 +73,7 @@ html:has([name="theme"][value="light"]:checked) .EntityForm summary::after {
 
 .EntityForm-note {
 	border-radius: var(--border-radius);
-	background: var(--color-blue-35);
+	background: var(--color-blue-750);
 	border: var(--border-medium);
 	padding: 0.75rem 1rem;
 	color: var(--color-copy-on-light);
@@ -100,16 +95,4 @@ html:has([name="theme"][value="light"]:checked) .EntityForm summary::after {
 
 .EntityForm-variant .h4 {
 	margin-block-start: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-	.Options {
-		accent-color: hsl(var(--hue-accent), 34%, 25%);
-		color-scheme: light;
-	}
-}
-
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark) .Options {
-	accent-color: hsl(var(--hue-accent), 34%, 25%);
-	color-scheme: light;
 }

@@ -138,7 +138,7 @@
 
   <div class="Form-field">
     <h2 class="Form-label h3"><%= t('headings.categories') %></h2>
-    <div class="Options EntityForm-subCategories">
+    <div class="Options is-light EntityForm-subCategories">
       <% @categories.each do |category| %>
         <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
           <summary><%= category.name %></summary>
@@ -155,7 +155,7 @@
 
   <div class="Form-field EntityForm-attributes">
     <div class="h3 Form-label"><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></div>
-    <div class="Options">
+    <div class="Options is-light">
       <% CustomAttribute.all.each do |custom_attribute| %>
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
           <% custom_attribute.options.each do |option| %>

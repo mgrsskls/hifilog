@@ -17,13 +17,12 @@ tr {
 	padding-block: 1rem;
 }
 
-tr.is-positive,
 tr[aria-current="true"] {
 	font-weight: bold;
 }
 
 .has-item th:first-of-type {
-	border-inline-start: 3px solid hsl(160, 50%, 40%);
+	border-inline-start: 3px solid var(--color-success-medium);
 }
 
 table:has(tbody + tbody) :is(thead, tbody) {

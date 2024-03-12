@@ -31,6 +31,21 @@
 	max-inline-size: 24em;
 }
 
+.Filter-input,
+html:has([name="theme"][value="light"]:checked) .Filter-input {
+	background: var(--color-white);
+}
+
+@media (prefers-color-scheme: dark) {
+	.Filter-input {
+		background: var(--color-input-bg);
+	}
+}
+
+html:has([name="theme"][value="dark"]:checked) .Filter-input {
+	background: var(--color-input-bg);
+}
+
 @media (max-width: 42rem) {
 	.Filter {
 		display: grid;
