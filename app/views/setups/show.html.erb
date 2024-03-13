@@ -1,3 +1,7 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "form" %>
+  <%= stylesheet_link_tag "setups" %>
+<% end %>
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= @setup.name %></h1>
@@ -12,6 +16,8 @@
     empty_state: t('empty_state.setup_products'),
     include_images: true
   %>
+
+  <%= render "setups/form", method: :put %>
 
   <div class="PageActions">
     <div class="PageAction">

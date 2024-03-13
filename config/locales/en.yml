@@ -136,6 +136,7 @@ en:
       minimum_chars: Please enter at least %{min} characters.
   setups:
     created: The setup %{link} has been created.
+    updated: The setup %{name} has been updated.
     deleted: The setup <b>%{name}</b> has been deleted.
   skip_to_main_content: Skip to main content
   status: Status
@@ -254,3 +255,5 @@ en:
         comment: Comment
       user:
         decorative_image: Header Image
+      setups:
+        private: Private

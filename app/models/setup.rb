@@ -4,6 +4,7 @@ class Setup < ApplicationRecord
   has_many :possessions, through: :setup_possessions
 
   validates :name, presence: true, uniqueness: { scope: :user, case_sensitive: false }
+  validates :private, inclusion: { in: [true, false], message: 'must be selected' }
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[

@@ -3,6 +3,7 @@
 with_products:
   name: With products
   user: with_everything
+  private: true
   possessions:
     - one
     - two
@@ -10,3 +11,4 @@ with_products:
 without_products:
   name: Without products
   user: with_everything
+  private: false

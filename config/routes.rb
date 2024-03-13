@@ -41,7 +41,7 @@ Rails.application.routes.draw do
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
     get 'previous', to: 'user#prev_owneds', as: :prev_owneds
     get 'contributions', to: 'user#contributions', as: :contributions
-    resources :setups, only: [:index, :show, :create, :destroy]
+    resources :setups, only: [:index, :show, :create, :update, :destroy]
   end
 
   resources :possessions, only: [:create, :destroy, :update]

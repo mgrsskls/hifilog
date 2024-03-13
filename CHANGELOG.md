@@ -1,6 +1,10 @@
 # Changelog
 
-## <time datetime="2024-03-11">2024-03-11</time>
+## <time datetime="2024-03-13">2024-03-13</time>
+
+- Setups can now be marked as private
+
+## <time datetime="2024-03-12">2024-03-12</time>
 
 - Product photos by users are now shown on the product pages (if the users privacy settings allow)
 

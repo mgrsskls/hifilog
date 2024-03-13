@@ -3,6 +3,10 @@
 	container: listing / inline-size;
 }
 
+.ProductListing .EmptyState {
+	margin-block-start: 0;
+}
+
 @container listing (width < 30rem) {
 	.ProductListing table {
 		display: none;

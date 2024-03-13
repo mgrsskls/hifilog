@@ -62,8 +62,22 @@ class SetupsController < ApplicationController
     else
       @active_dashboard_menu = :setups
       @setups = current_user.setups.order('LOWER(name)')
-      flash[:alert] = I18n.t(:generic_error_message)
       render :index, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    @setup = current_user.setups.find(params[:id])
+    @active_dashboard_menu = :setups
+
+    if @setup.update(setup_params)
+      flash[:notice] = I18n.t(
+        'setups.updated',
+        name: @setup.name
+      )
+      redirect_to dashboard_setup_path(@setup)
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -84,6 +98,6 @@ class SetupsController < ApplicationController
   end
 
   def setup_params
-    params.require(:setup).permit(:name)
+    params.require(:setup).permit(:name, :private)
   end
 end

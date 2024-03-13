@@ -1,0 +1,39 @@
+<div class="Setups-form">
+  <% if defined?(heading) %>
+    <h2><%= heading %></h2>
+  <% end %>
+
+
+  <% if @setup.present? && @setup.errors.any? %>
+    <%= render "shared/flash_messages", messages: @setup.errors.map { |error| ["alert", error.full_message] } %>
+  <% end %>
+
+  <%= form_for :setup, method: method do |f| %>
+    <div class="u-flex u-gap-md u-alignCenter">
+      <%= f.label :name, class: 'h4 Form-label' %>
+      <%= f.text_field :name, placeholder: "e.g. Living setup or Office", required: true %>
+    </div>
+    <div class="u-flex u-gap-md u-alignCenter">
+      <span class="h4 Form-label">Private</span>
+      <div class="u-flex u-alignCenter u-gap-md">
+        <div class="u-flex u-alignCenter u-gap-sm">
+          <%= f.radio_button :private, 0, required: true, checked: @setup.present? ? !@setup.private? : false %>
+          <%= f.label :private, "No", value: 0 %>
+        </div>
+        <div class="u-flex u-alignCenter u-gap-sm">
+          <%= f.radio_button :private, 1, required: true, checked: @setup.present? ? @setup.private? : false %>
+          <%= f.label :private, "Yes", value: 1 %>
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="Button">Save</button>
+    <div class="Setup-formHint">
+      <p>
+        <small>
+          Please note that marking a setup as private only hides the setup from your public profile.
+          Products that have been added to a private setup will still be shown on your profile.
+        </small>
+      </p>
+    </div>
+  <% end %>
+</div>
