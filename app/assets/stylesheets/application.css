@@ -58,7 +58,7 @@
 }
 
 @layer global {
-	html {
+	:where(html) {
 		--underline-offset: 0.275em;
 		--underline-width: 0.0625rem;
 		--border: 0.0625rem solid;
@@ -89,7 +89,7 @@
 		--color-copy-on-light: hsl(var(--hue), 30%, 20%);
 		--color-copy-on-dark: hsl(var(--hue), 30%, 80%);
 		--color-secondary-on-light: hsl(var(--hue), 30%, 40%);
-		--color-secondary-on-dark: hsl(var(--hue), 30%, 60%);
+		--color-secondary-on-dark: hsl(var(--hue), 30%, 65%);
 		--color-bg-on-light: hsl(204, 18.5%, 100%);
 		--color-bg-on-dark: hsl(204, 40%, 15%);
 
