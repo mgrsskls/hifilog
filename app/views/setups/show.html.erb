@@ -1,6 +1,7 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= @setup.name %></h1>
+    <%= render "shared/category_filter", categories: @categories %>
   </div>
 
   <%= render "shared/products",
@@ -9,8 +10,7 @@
     sub_category: @sub_category,
     reset_path: @reset_path,
     empty_state: t('empty_state.setup_products'),
-    include_images: true,
-    include_image_upload: true
+    include_images: true
   %>
 
   <div class="PageActions">

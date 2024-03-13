@@ -1,11 +1,11 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= t('headings.products') %></h1>
+    <%= render "shared/category_filter", categories: @categories %>
   </div>
 
   <%= render "shared/products",
     user: current_user,
-    categories: @categories,
     items: @possessions,
     setups: @setups,
     sub_category: @sub_category,

@@ -1,4 +1,5 @@
 .ProductListing {
+	margin-block-start: 1rem;
 	container: listing / inline-size;
 }
 

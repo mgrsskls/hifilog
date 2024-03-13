@@ -1,4 +1,3 @@
-<% categories ||= [] %>
 <% empty_state ||= "" %>
 <% setups ||= [] %>
 <% pull_out ||= defined?(pull_out) ? pull_out : true %>
@@ -9,33 +8,6 @@
   <% content_for :css do %>
     <%= stylesheet_link_tag "form" %>
   <% end %>
-<% end %>
-
-<% if categories.length > 1 %>
-  <details class="CategoryFilter">
-    <summary>
-      <span><b><%= t('headings.category') %>:</b> <%= sub_category ? sub_category.name : "All" %></span>
-    </summary>
-    <div class="CategoryFilter-categories">
-      <dl class="Data">
-        <% categories.each do |section| %>
-          <dt><%= section[0].name %></dt>
-          <dd>
-            <%= section[1].map { |sub_category| link_to sub_category[:name], sub_category[:path], "aria-current": (
-              if @sub_category && @sub_category.friendly_id == sub_category[:friendly_id]
-                'true'
-              else
-                'false'
-              end
-            ) }.join(", ").html_safe %>
-          </dd>
-        <% end %>
-      </dl>
-      <% if sub_category %>
-        <a class="Button Button--secondary" href="<%= reset_path %>">Show all</a>
-      <% end %>
-    </div>
-  </details>
 <% end %>
 
 <div class="<%= "u-pullOut" if pull_out %> ProductListing">

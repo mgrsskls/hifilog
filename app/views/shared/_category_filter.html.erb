@@ -1,0 +1,23 @@
+<% if categories.length > 1 %>
+  <form method="GET" class="u-flex u-alignEnd">
+    <select name="category" class="SelectCategory">
+      <option value="">All Categories</option>
+      <% categories.each do |section| %>
+        <optgroup label="<%= section[0].name %>">
+          <% section[1].each do |sub_category| %>
+            <option value="<%= sub_category[:friendly_id] %>"<%= " selected" if @sub_category && @sub_category.friendly_id == sub_category[:friendly_id] %>><%= sub_category[:name] %></option>
+          <% end %>
+        </optgroup>
+      <% end %>
+    </select>
+  </form>
+  <%= javascript_tag nonce: true do %>
+    {
+      const selectCategory = document.querySelector(".SelectCategory");
+
+      if (selectCategory) {
+        selectCategory.addEventListener("change", () => selectCategory.closest("form").submit());
+      }
+    }
+  <% end %>
+<% end %>

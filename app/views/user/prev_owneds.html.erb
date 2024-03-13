@@ -1,7 +1,15 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= t('headings.prev_owneds') %></h1>
+    <%= render "shared/category_filter", categories: @categories %>
   </div>
 
-  <%= render "shared/products", items: @prev_owneds, categories: @categories, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.prev_owneds', brands_path: brands_path, products_path: products_path) %>
+  <%= render "shared/products",
+    items: @prev_owneds,
+    sub_category: @sub_category,
+    reset_path: @reset_path,
+    empty_state: t('empty_state.prev_owneds',
+    brands_path: brands_path,
+    products_path: products_path)
+  %>
 <% end %>

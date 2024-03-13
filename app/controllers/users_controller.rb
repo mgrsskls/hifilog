@@ -48,7 +48,7 @@ class UsersController < ApplicationController
                              .map { |bookmark| ItemPresenter.new(bookmark) }
     end
 
-    if params[:category]
+    if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
       @possessions = all_possessions.select { |possession| @sub_category.products.include?(possession.product) }
     else
@@ -108,7 +108,7 @@ class UsersController < ApplicationController
                            .order('LOWER(products.name)')
                            .map { |prev_owned| ItemPresenter.new(prev_owned) }
 
-    if params[:category]
+    if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
       @possessions = all_prev_owneds.select { |possession| @sub_category.products.include?(possession.product) }
     else

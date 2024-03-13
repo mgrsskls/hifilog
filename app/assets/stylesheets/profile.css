@@ -211,7 +211,6 @@
 .Tabs {
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
-	margin-block-end: 1rem;
 	overscroll-behavior: contain;
 }
 
@@ -244,7 +243,7 @@
 .Tabs-list {
 	list-style: none;
 	display: flex;
-	margin-block: 0 1rem;
+	margin-block: 0 0.1rem;
 	padding-inline-start: 0;
 	padding-inline-end: var(--page-spacing);
 }

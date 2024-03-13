@@ -1,7 +1,13 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= t('headings.bookmarks') %></h1>
+    <%= render "shared/category_filter", categories: @categories %>
   </div>
 
-  <%= render "shared/products", items: @bookmarks, categories: @categories, sub_category: @sub_category, reset_path: @reset_path, empty_state: t('empty_state.bookmarks') %>
+  <%= render "shared/products",
+    items: @bookmarks,
+    sub_category: @sub_category,
+    reset_path: @reset_path,
+    empty_state: t('empty_state.bookmarks')
+  %>
 <% end %>
