@@ -37,6 +37,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if ImageProcessing::MiniMagick.valid_image?(path)
         ImageProcessing::MiniMagick.source(path.path)
                                    .resize_to_fill(320, 320)
+                                   .quality(80)
                                    .convert('webp')
                                    .call(destination: path.path)
       end
@@ -49,6 +50,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if ImageProcessing::MiniMagick.valid_image?(path)
         ImageProcessing::MiniMagick.source(path.path)
                                    .resize_to_fill(1512, 314)
+                                   .quality(80)
                                    .convert('webp')
                                    .call(destination: path.path)
       end

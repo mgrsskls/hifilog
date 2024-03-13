@@ -33,6 +33,7 @@ class PossessionsController < ApplicationController
     if ImageProcessing::MiniMagick.valid_image?(path)
       ImageProcessing::MiniMagick.source(path.path)
                                  .resize_to_limit(1200, 1200)
+                                 .quality(80)
                                  .convert('webp')
                                  .call(destination: path.path)
     end
