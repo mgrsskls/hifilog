@@ -2,6 +2,10 @@
 
 ## <time datetime="2024-03-11">2024-03-11</time>
 
+- Product photos by users are now shown on the product pages (if the users privacy settings allow)
+
+## <time datetime="2024-03-11">2024-03-11</time>
+
 - A product can now be added multiple times to a users collection
 - A user can now add photos to their products
 

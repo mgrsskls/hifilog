@@ -59,6 +59,11 @@ import "./theme_toggle.js";
 
 			dialog.showModal();
 		});
+
+		button.addEventListener("mouseover", ({ currentTarget }) => {
+			const image = new Image();
+			image.src = currentTarget.parentNode.querySelector("dialog img").src;
+		});
 	});
 
 	document.querySelectorAll(".ImageDialog").forEach((dialog) => {

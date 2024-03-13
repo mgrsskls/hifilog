@@ -17,6 +17,11 @@ class ProductVariantsController < ApplicationController
       @setups = current_user.setups.includes(:possessions)
     end
 
+    @public_possessions_with_image = @variant.possessions
+                                             .joins(:user)
+                                             .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
+                                             .select { |possession| possession.image.attached? }
+
     @contributors = ActiveRecord::Base.connection.execute("
       SELECT DISTINCT
         users.id, users.user_name, users.profile_visibility,

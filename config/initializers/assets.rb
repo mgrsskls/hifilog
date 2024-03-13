@@ -26,6 +26,7 @@ Rails.application.config.assets.precompile += %w(
 
   application.js
   entity_form.js
+  gallery.js
   table_saw.js
   theme_toggle.js
 )

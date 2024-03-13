@@ -200,9 +200,9 @@ en:
       update:
         heading: Update your account
         profile_visibility:
-          hidden: No one but me can see my profile.
-          logged_in_only: Only logged in users can see my profile.
-          visible: Logged in and logged out users can see my profile.
+          hidden: No one but me can see my profile and my product photos.
+          logged_in_only: Only logged in users can see my profile and my product photos.
+          visible: Logged in and logged out users can see my profile and my product photos.
         profile_url: "Your profile is visible at the following URL:"
         optional: optional
         required: required
