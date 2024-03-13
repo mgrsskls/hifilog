@@ -22,7 +22,8 @@ class User < ApplicationRecord
     attachable.variant :thumb, resize_to_limit: [320, 320], format: :webp
   end
   has_one_attached :decorative_image do |attachable|
-    attachable.variant :thumb, resize_to_limit: [1512, 314], format: :webp
+    attachable.variant :thumb, resize_to_limit: [193, 314], format: :webp
+    attachable.variant :large, resize_to_limit: [1512, 314], format: :webp
   end
 
   validates :user_name, presence: true, uniqueness: true
