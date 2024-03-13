@@ -79,7 +79,7 @@
               <button class="ImageGallery-thumb" aria-controls="image-dialog-<%= possession.image.id %>">
                 <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
               </button>
-              <dialog class="ImageGallery-dialog" id="image-dialog-<%= possession.image.id %>">
+              <dialog class="ImageGallery-dialog is-light" id="image-dialog-<%= possession.image.id %>">
                 <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                 <div class="ImageGallery-info is-dark">
                   <% if @public_possessions_with_image.size > 1 %>

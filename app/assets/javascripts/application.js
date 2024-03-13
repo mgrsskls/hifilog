@@ -56,14 +56,19 @@ import "./theme_toggle.js";
 			const dialog = document.querySelector(
 				`#${button.getAttribute("aria-controls")}`,
 			);
-
 			dialog.showModal();
 		});
 
-		button.addEventListener("mouseover", ({ currentTarget }) => {
-			const image = new Image();
-			image.src = currentTarget.parentNode.querySelector("dialog img").src;
-		});
+		if (!button.classList.contains("OpenImageDialog--upload")) {
+			button.addEventListener("mouseover", ({ currentTarget }) => {
+				const el = currentTarget.parentNode.querySelector("dialog img");
+
+				if (el) {
+					const image = new Image();
+					image.src = el.src;
+				}
+			});
+		}
 	});
 
 	document.querySelectorAll(".ImageDialog").forEach((dialog) => {

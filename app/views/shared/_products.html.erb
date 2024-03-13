@@ -31,7 +31,7 @@
             <% if include_images %>
               <td class="Table-image">
                 <% if include_image_upload %>
-                  <%= render "shared/image_upload", item: item %>
+                  <%= render "shared/image_upload", item: item, prefix: "table" %>
                 <% else %>
                   <%= render "shared/product_image_dialog", item: item, prefix: "table" %>
                 <% end %>
@@ -67,7 +67,7 @@
             <div class="u-flex u-gap-md">
               <div>
                 <% if include_image_upload %>
-                  <%= render "shared/image_upload", item: item %>
+                  <%= render "shared/image_upload", item: item, prefix: "list" %>
                 <% else %>
                   <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
                 <% end %>

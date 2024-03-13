@@ -68,6 +68,12 @@ html:has([name="theme"][value="light"]:checked)
 	opacity: 1;
 }
 
+@media (hover: none) {
+	.OpenImageDialog-placeholder span {
+		opacity: 1;
+	}
+}
+
 .ImageDialog-delete {
 	margin-block-start: 0.5rem;
 }

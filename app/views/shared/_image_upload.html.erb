@@ -1,4 +1,4 @@
-<button type="button" class="OpenImageDialog" aria-controls="image-dialog-<%= item.id %>">
+<button type="button" class="OpenImageDialog OpenImageDialog--upload" aria-controls="<%= prefix %>-image-dialog-<%= item.id %>">
   <% if item.image.attached? %>
     <span class="OpenImageDialog-placeholder" style="<%= "--size: #{size}" if defined?(size) %>">
       <%= image_tag cdn_image_url(item.image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy" %>
@@ -14,7 +14,7 @@
     </span>
   <% end %>
 </button>
-<dialog id="image-dialog-<%= item.id %>">
+ <dialog class="is-light" id="<%= prefix %>-image-dialog-<%= item.id %>">
   <%= form_for(item, url: possession_path(id: item.id), html: { method: :put, class: "Form" }) do |f| %>
     <%= render "shared/flash_messages", messages: item.errors.full_messages.map { |message| [ :alert, message ] } if item.errors.full_messages.any? %>
     <div class="Form-field">
