@@ -98,7 +98,6 @@
 		--color-header-copy: hsl(var(--hue), var(--sat), 80%);
 		--color-button-bg: hsl(var(--hue), var(--sat), 40%);
 		--color-button-box-shadow: hsla(0, 0%, 0%, var(--button-box-shadow-a));
-		--color-input: var(--color-copy-on-light);
 		--color-input-box-shadow: hsla(0, 0%, 0%, var(--input-box-shadow-a));
 		--color-border-extra-light: hsl(
 			var(--color-border-h-s),
@@ -108,9 +107,9 @@
 		--color-border-medium: hsl(var(--color-border-h-s), var(--border-l-medium));
 		--color-focus-outline: hsl(var(--hue-accent), 75%, 50%);
 		--color-highlight: var(--color-accent);
-		--color-copy: var(--color-copy-on-light);
-		--color-secondary: var(--color-secondary-on-light);
+		--color-input-bg: var(--color-blue-975);
 		--color-input-placeholder: var(--color-copy-on-light);
+		--color-input: var(--color-copy-on-light);
 
 		block-size: 100%;
 	}
@@ -130,7 +129,6 @@
 		--color-accent: var(--color-accent-on-light);
 		--color-button-copy: var(--color-white);
 		--color-highlight-copy: var(--color-white);
-		--color-input-bg: var(--color-blue-975);
 		--color-invalid-light: hsl(330, 50%, 85%);
 		--color-invalid-dark: hsl(330, 100%, 20%);
 		--color-invalid-bg: var(--color-invalid-light);
@@ -144,6 +142,10 @@
 		--color-transparency-15: rgba(0, 0, 0, 0.15);
 		--color-transparency-25: rgba(0, 0, 0, 0.25);
 		--summary-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+		--color-copy: var(--color-copy-on-light);
+		--color-secondary: var(--color-secondary-on-light);
+		--color-input-placeholder: var(--color-copy-on-light);
+		--color-input: var(--color-copy-on-light);
 
 		color-scheme: light;
 		accent-color: var(--color-accent-on-light);
@@ -162,7 +164,6 @@
 			--border-l-medium: 45%;
 
 			--color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
-			--color-input-bg: var(--color-blue-925);
 			--color-invalid-bg: var(--color-invalid-dark);
 			--color-invalid-copy: var(--color-invalid-light);
 			--color-success-bg: var(--color-success-dark);
@@ -172,6 +173,7 @@
 			--color-accent: var(--color-accent-on-dark);
 			--color-copy: var(--color-copy-on-dark);
 			--color-secondary: var(--color-secondary-on-dark);
+
 			--color-transparency-10: rgba(255, 255, 255, 0.1);
 			--color-transparency-15: rgba(255, 255, 255, 0.15);
 			--color-transparency-25: rgba(255, 255, 255, 0.25);
@@ -195,7 +197,6 @@
 		--border-l-medium: 45%;
 
 		--color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
-		--color-input-bg: var(--color-blue-925);
 		--color-invalid-bg: var(--color-invalid-dark);
 		--color-invalid-copy: var(--color-invalid-light);
 		--color-success-bg: var(--color-success-dark);
@@ -213,6 +214,10 @@
 		color-scheme: dark;
 		accent-color: var(--color-accent-on-dark);
 		color: var(--color-copy-on-dark);
+	}
+
+	.is-secondary {
+		--color-input-bg: var(--color-white);
 	}
 
 	html:where(:has([name="theme"][value="dark"]:checked)) {
