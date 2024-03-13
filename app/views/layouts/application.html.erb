@@ -4,21 +4,21 @@
   <head>
     <link rel="preconnect" href="<%= ENV['CDN_HOST'] %>">
     <% if params[:controller] == "application" && params[:action] == "index" %>
-      <link rel="prefetch" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
+      <link rel="preload" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
     <% end %>
     <% if ((params[:controller] == "users" && params[:action] == "show") ||
           (params[:controller] == "users" && params[:action] == "prev_owneds")) &&
           @user.present?
     %>
       <% if @user.avatar.attached? %>
-        <link rel="prefetch" href="<%= cdn_image_url(@user.avatar.variant(:thumb)) %> " as="image" type="image/avif">
+        <link rel="preload" href="<%= cdn_image_url(@user.avatar.variant(:thumb)) %> " as="image" type="image/avif">
       <% end %>
       <% if @user.decorative_image.attached? %>
-        <link rel="prefetch" href="<%= cdn_image_url(@user.decorative_image.variant(:thumb)) %> " as="image" type="image/avif">
+        <link rel="preload" href="<%= cdn_image_url(@user.decorative_image.variant(:thumb)) %> " as="image" type="image/avif">
       <% end %>
     <% end %>
     <% if user_signed_in? && current_user.avatar.attached? %>
-      <link rel="prefetch" href="<%= cdn_image_url(current_user.avatar.variant(:thumb)) %> " as="image" type="image/webp">
+      <link rel="preload" href="<%= cdn_image_url(current_user.avatar.variant(:thumb)) %> " as="image" type="image/webp">
     <% end %>
     <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
