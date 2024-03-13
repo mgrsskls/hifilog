@@ -66,6 +66,7 @@
 }
 
 .ImageGallery-thumb img {
+	border: var(--border) var(--color-transparency-15);
 	border-radius: var(--border-radius);
 }
 
