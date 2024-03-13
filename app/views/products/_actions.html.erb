@@ -11,7 +11,7 @@
 
       <div class="ProductPossession-heading u-flex u-gap-md u-alignCenter">
         <div>
-          <%= render "shared/image_upload", item: ItemPresenter.new(possession), size: "4rem" %>
+          <%= render "shared/image_upload", item: ItemPresenter.new(possession), size: "4rem", prefix: "possessions" %>
         </div>
         <span>
           <b class="ProductPossession-headingName"><%= t('symbols.in_your_collection') %></b>

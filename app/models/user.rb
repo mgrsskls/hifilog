@@ -20,10 +20,13 @@ class User < ApplicationRecord
   has_many :prev_owneds, dependent: :destroy
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [320, 320], format: :webp
+    attachable.variant :thumb_avif, resize_to_limit: [320, 320], format: :avif
   end
   has_one_attached :decorative_image do |attachable|
     attachable.variant :thumb, resize_to_limit: [193, 314], format: :webp
+    attachable.variant :thumb_avif, resize_to_limit: [193, 314], format: :avif
     attachable.variant :large, resize_to_limit: [1512, 314], format: :webp
+    attachable.variant :large_avif, resize_to_limit: [1512, 314], format: :avif
   end
 
   validates :user_name, presence: true, uniqueness: true

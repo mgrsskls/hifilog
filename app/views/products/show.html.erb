@@ -70,10 +70,16 @@
           <% @public_possessions_with_image.each_with_index do |possession, i| %>
             <li>
               <button class="ImageGallery-thumb" aria-controls="image-dialog-<%= possession.image.id %>">
-                <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                <picture>
+                  <source srcset="<%= cdn_image_url(possession.image.variant(:thumb_avif)) %>" type="image/avif">
+                  <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                </picture>
               </button>
               <dialog class="ImageGallery-dialog is-light" id="image-dialog-<%= possession.image.id %>">
-                <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                <picture>
+                  <source srcset="<%= cdn_image_url(possession.image.variant(:large_avif)) %>" type="image/avif">
+                  <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+                </picture>
                 <div class="ImageGallery-info is-dark">
                   <% if @public_possessions_with_image.size > 1 %>
                     <% if i < @public_possessions_with_image.size - 1 %>

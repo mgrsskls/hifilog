@@ -1,6 +1,17 @@
 import "./theme_toggle.js";
 
 {
+	let avifSupported = false;
+
+	const avif = new Image();
+
+	avif.onload = function () {
+		avifSupported = true;
+	};
+
+	avif.src =
+		"data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=";
+
 	let scrollY = 0;
 
 	const headerToggle = document.querySelector(".Header-toggle");
@@ -61,11 +72,16 @@ import "./theme_toggle.js";
 
 		if (!button.classList.contains("OpenImageDialog--upload")) {
 			button.addEventListener("mouseover", ({ currentTarget }) => {
-				const el = currentTarget.parentNode.querySelector("dialog img");
+				const dialog = currentTarget.parentNode.querySelector("dialog");
 
-				if (el) {
+				if (dialog) {
 					const image = new Image();
-					image.src = el.src;
+
+					if (avifSupported) {
+						image.src = dialog.querySelector("source").srcset;
+					} else {
+						image.src = dialog.querySelector("img").src;
+					}
 				}
 			});
 		}

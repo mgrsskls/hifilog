@@ -81,7 +81,12 @@
         <div class="Form-field">
           <%= f.label :avatar, class: "h4 Form-label" %>
           <div class="u-flex u-gap-md">
-            <%= image_tag cdn_image_url(current_user.avatar.variant(:thumb)), "aria-hidden": "true", alt: "", class: "Avatar", style: "inline-size: 2.5rem; block-size: 2.5rem;" if current_user.avatar.attached? %>
+            <% if current_user.avatar.attached? %>
+              <picture>
+                <source srcset="<%= cdn_image_url(current_user.avatar.variant(:thumb_avif)) %>" type="image/avif">
+                <%= image_tag cdn_image_url(current_user.avatar.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp", class: "Avatar", style: "inline-size: 2.5rem; block-size: 2.5rem;" %>
+              </picture>
+            <% end %>
             <%= f.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp" %>
           </div>
         </div>
@@ -98,7 +103,12 @@
         <div class="Form-field">
           <%= f.label :decorative_image, class: "h4 Form-label" %>
           <div class="u-flex u-gap-md">
-            <%= image_tag cdn_image_url(current_user.decorative_image.variant(:thumb)), "aria-hidden": "true", alt: "", style: "aspect-ratio: 3; block-size: 2.5rem;" if current_user.decorative_image.attached? %>
+            <% if current_user.decorative_image.attached? %>
+              <picture>
+                <source srcset="<%= cdn_image_url(current_user.decorative_image.variant(:thumb_avif)) %>" type="image/avif">
+                <%= image_tag cdn_image_url(current_user.decorative_image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp", style: "aspect-ratio: 3; block-size: 2.5rem;" %>
+              </picture>
+            <% end %>
             <%= f.file_field :decorative_image, accept: "image/jpeg,image/png,image/gif,image/webp" %>
           </div>
         </div>

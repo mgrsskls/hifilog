@@ -1,6 +1,9 @@
 <% size ||= nil %>
 <% if user.avatar.attached? %>
-  <%= image_tag cdn_image_url(user.avatar.variant(:thumb)), "aria-hidden": "true", alt: "", class: "Avatar", style: ("--size: #{size};" unless size.nil?) %>
+  <picture>
+    <source srcset="<%= cdn_image_url(user.avatar.variant(:thumb_avif)) %>" type="image/avif">
+    <%= image_tag cdn_image_url(user.avatar.variant(:thumb)), "aria-hidden": "true", alt: "", class: "Avatar", type: "image/webp", style: ("--size: #{size};" unless size.nil?) %>
+  </picture>
 <% else %>
   <div class="Avatar" <% if size %>style="--size: <%= size %>;"<% end %>>
     <span class="Avatar-letter">

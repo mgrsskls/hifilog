@@ -12,7 +12,12 @@
 
 <div class="Profile">
   <div class="Profile-header">
-    <%= image_tag cdn_image_url(@user.decorative_image.variant(:large)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314 if @user.decorative_image.attached? %>
+    <% if @user.decorative_image.attached? %>
+      <picture>
+        <source srcset="<%= cdn_image_url(@user.decorative_image.variant(:large_avif)) %>" type="image/avif">
+        <%= image_tag cdn_image_url(@user.decorative_image.variant(:large)), "aria-hidden": "true", alt: "", type: "image/webp", class: "Profile-headerImage", width: 1512, height: 314 %>
+      </picture>
+    <% end %>
   </div>
   <div class="Profile-heading is-dark">
     <div class="u-container">

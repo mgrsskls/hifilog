@@ -1,3 +1,14 @@
+let avifSupported = false;
+
+const avif = new Image();
+
+avif.onload = function () {
+	avifSupported = true;
+};
+
+avif.src =
+	"data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=";
+
 document.querySelectorAll(".ImageGallery").forEach((gallery) => {
 	const items = Array.from(gallery.querySelectorAll("li"));
 	const preloadedImages = [];
@@ -89,9 +100,17 @@ document.querySelectorAll(".ImageGallery").forEach((gallery) => {
 	function preloadImage(index) {
 		if (items[index] && !preloadedImages.includes(index)) {
 			const image = new Image();
+			const dialog = items[index].querySelector("dialog");
 
-			image.src = items[index].querySelector("dialog img").src;
-			preloadedImages.push(index);
+			if (dialog) {
+				if (avifSupported) {
+					image.src = dialog.querySelector("source").srcset;
+				} else {
+					image.src = dialog.querySelector("img").src;
+				}
+
+				preloadedImages.push(index);
+			}
 		}
 	}
 });

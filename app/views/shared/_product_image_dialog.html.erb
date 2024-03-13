@@ -1,11 +1,17 @@
 <% if item.image.attached? %>
   <button class="OpenImageDialog" aria-controls="<%= prefix %>-image-dialog-<%= item.id %>" aria-label="Enlarge image">
     <span class="OpenImageDialog-placeholder">
-      <%= image_tag cdn_image_url(item.image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+      <picture>
+        <source srcset="<%= cdn_image_url(item.image.variant(:thumb_avif)) %>" type="image/avif">
+        <%= image_tag cdn_image_url(item.image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+      </picture>
     </span>
   </button>
   <dialog class="ImageDialog is-light" id="<%= prefix %>-image-dialog-<%= item.id %>">
-    <%= image_tag cdn_image_url(item.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+    <picture>
+      <source srcset="<%= cdn_image_url(item.image.variant(:large_avif)) %>" type="image/avif">
+      <%= image_tag cdn_image_url(item.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+    </picture>
   </dialog>
 <% else %>
   <span class="OpenImageDialog-placeholder">

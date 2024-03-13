@@ -38,7 +38,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
         ImageProcessing::MiniMagick.source(path.path)
                                    .resize_to_fill(320, 320)
                                    .quality(80)
-                                   .convert('webp')
                                    .call(destination: path.path)
       end
     elsif params[:delete_avatar]
@@ -51,7 +50,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
         ImageProcessing::MiniMagick.source(path.path)
                                    .resize_to_fill(1512, 314)
                                    .quality(80)
-                                   .convert('webp')
                                    .call(destination: path.path)
       end
     elsif params[:delete_decorative_image]
