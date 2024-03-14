@@ -143,15 +143,10 @@ h3:has(+ .Form-field) {
 }
 
 .ImageUpload {
-	color: var(--color-input);
 	padding: var(--input-padding);
 	padding-block: 1rem;
 	border: var(--border-medium);
 	border-radius: var(--border-radius);
-	background: var(--color-input-bg);
+	background: var(--color-bg2);
 	box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
-}
-
-.ImageUpload + .ImageUpload {
-	margin-block-start: 1rem;
 }

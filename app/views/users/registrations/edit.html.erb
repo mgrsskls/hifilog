@@ -70,14 +70,18 @@
         <% end %>
       </div>
 
+      <h3>Images</h3>
       <div class="Form-field">
-        <h3>Images</h3>
-        <p class="FlashMessage FlashMessage--info">
-          <b>Note:</b> You may be held personally liable for uploading images that infringe the rights of intellectual property owners. Only upload images to which you have the rights or which are available for public use.
-        </p>
+        <div class="Rte">
+          <p>
+            <small>
+              <b>Note:</b> You may be held personally liable for uploading images that infringe the rights of intellectual property owners. Only upload images to which you have the rights or which are available for public use.
+            </small>
+          </p>
+        </div>
       </div>
 
-      <div class="ImageUpload">
+      <div class="ImageUpload Form-field">
         <div class="Form-field">
           <%= f.label :avatar, class: "h4 Form-label" %>
           <div class="u-flex u-gap-md">
@@ -99,7 +103,7 @@
         <% end %>
       </div>
 
-      <div class="ImageUpload">
+      <div class="ImageUpload Form-field">
         <div class="Form-field">
           <%= f.label :decorative_image, class: "h4 Form-label" %>
           <div class="u-flex u-gap-md">
