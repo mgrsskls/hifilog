@@ -90,9 +90,34 @@
 	mix-blend-mode: screen;
 }
 
+.Home-features {
+	background: var(--color-blue-150);
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+}
+
+.Home-feature h3 {
+	color: var(--color-white);
+}
+
+.Home-feature p {
+	color: var(--color-secondary);
+	max-inline-size: 30em;
+}
+
 @media (max-width: 48em) {
 	.Home-content {
 		padding-inline: 2rem;
+	}
+
+	.Home-feature {
+		padding-block: clamp(1rem, 6vi, 4rem);
+		padding-inline: 2rem;
+	}
+
+	.Home-feature:is(:nth-child(odd)) {
+		background: var(--color-blue-125);
 	}
 }
 
@@ -122,6 +147,28 @@
 	.Home-picture {
 		grid-column: 1 / -1;
 		grid-row: 2;
+	}
+
+	.Home-feature {
+		padding: 4rem;
+		display: grid;
+		grid-template-columns: subgrid;
+	}
+
+	.Home-feature:is(:nth-child(4n + 1), :nth-child(4n + 4)) {
+		background: var(--color-blue-125);
+	}
+
+	.Home-feature:nth-child(odd) {
+		grid-column: 1 / 13;
+	}
+
+	.Home-feature:nth-child(even) {
+		grid-column: 13 / -1;
+	}
+
+	.Home-feature .Rte {
+		grid-column: 2 / 12;
 	}
 }
 
@@ -156,5 +203,13 @@
 	.Home-picture {
 		grid-column: 13 / -1;
 		grid-row: 1 / -1;
+	}
+
+	.Home-feature {
+		padding: 4rem;
+	}
+
+	.Home-feature .Rte {
+		grid-column: 3 / 11;
 	}
 }
