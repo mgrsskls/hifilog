@@ -73,16 +73,16 @@
 
       <% if @public_possessions_with_image.any? %>
         <h2>User photos</h2>
-        <ul class="ImageGallery" style="--size: 7.5rem;">
+        <ul class="ImageLightbox ImageGallery" style="--size: 7.5rem;">
           <% @public_possessions_with_image.each_with_index do |possession, i| %>
-            <li>
-              <button class="ImageGallery-thumb" aria-controls="image-dialog-<%= possession.image.id %>">
+            <li class="ImageLightbox-item">
+              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= possession.image.id %>">
                 <picture>
                   <source srcset="<%= cdn_image_url(possession.image.variant(:thumb_avif)) %>" type="image/avif">
                   <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
                 </picture>
               </button>
-              <dialog class="ImageGallery-dialog is-light" id="image-dialog-<%= possession.image.id %>">
+              <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= possession.image.id %>">
                 <picture>
                   <source srcset="<%= cdn_image_url(possession.image.variant(:large_avif)) %>" type="image/avif">
                   <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
@@ -130,7 +130,7 @@
 
       <hr>
 
-      <ul class="Entity-metaLinks">
+      <ul class="Entity-metaLinks MetaLinks">
         <li>
           <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
         </li>

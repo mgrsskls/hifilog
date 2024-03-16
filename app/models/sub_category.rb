@@ -5,6 +5,7 @@ class SubCategory < ApplicationRecord
   has_and_belongs_to_many :products, join_table: :products_sub_categories
   has_and_belongs_to_many :brands
   has_and_belongs_to_many :custom_attributes
+  has_and_belongs_to_many :custom_products
 
   friendly_id :name, use: [:slugged]
 

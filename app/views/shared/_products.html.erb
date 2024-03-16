@@ -1,8 +1,11 @@
 <% empty_state ||= "" %>
-<% setups ||= [] %>
 <% pull_out ||= defined?(pull_out) ? pull_out : true %>
 <% include_images ||= defined?(include_images) ? include_images : true %>
 <% include_image_upload ||= defined?(include_image_upload) ? include_image_upload : true %>
+<% include_edit_link ||= false %>
+<% include_delete_button ||= false %>
+<% include_setup ||= false %>
+<% hide_brand ||= false %>
 
 <% if include_image_upload %>
   <% content_for :css do %>
@@ -20,8 +23,11 @@
           <% end %>
           <th><%= t('name') %></th>
           <th><%= t('headings.category').html_safe %></th>
-          <% if setups.any? %>
+          <% if include_setup %>
             <th><%= t('headings.setup') %></th>
+          <% end %>
+          <% if include_edit_link || include_delete_button %>
+            <th class="u-textEnd">Actions</th>
           <% end %>
         </tr>
       </thead>
@@ -38,22 +44,40 @@
               </td>
             <% end %>
             <th scope="row">
-              <% if item.product.brand.present? %>
-                <%= item.product.brand.name %><br>
+              <% unless hide_brand %>
+                <%= item.product.present? ? item.brand_name : "<i>#{item.brand_name}</i>".html_safe %><br>
               <% end %>
-              <b><%= link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.product_or_variant_path %></b>
+              <b><%= item.show_path.present? ? (link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.show_path) : item.name %></b>
             </th>
             <td class="Table-sm">
-              <% if item.product.sub_categories.any? %>
-                <%= item.product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+              <% if item.sub_categories.any? %>
+                <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
               <% else %>
-                <%= item.product.categories.map{ |category| category.name }.join(", ") %>
+                <%= item.categories.map{ |category| category.name }.join(", ") %>
               <% end %>
             </td>
-            <% if setups.any? %>
+            <% if include_setup %>
               <td class="Table-sm">
-                <% setup = setups.find_by(possessions: item.id) %>
-                <%= setup ? setup.name : "-" %>
+                <%= item.setup.present? ? item.setup.name : "-" %>
+              </td>
+            <% end %>
+            <% if include_edit_link || include_delete_button %>
+              <td class="Table-sm">
+                <ul class="MetaLinks">
+                  <% if include_edit_link %>
+                    <li><%= link_to "Edit", item.edit_path %></li>
+                  <% end %>
+                  <% if include_delete_button %>
+                    <li>
+                      <%= button_to t('delete_custom_product.label'),
+                        custom_product_path(id: item.custom_product.id),
+                        method: :delete,
+                        class: "DeleteButton",
+                        "data-msg": t('delete_custom_product.confirm', name: item.name)
+                      %>
+                    </li>
+                  <% end %>
+                </ul>
               </td>
             <% end %>
           </tr>
@@ -71,33 +95,51 @@
                 <% else %>
                   <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
                 <% end %>
+                 <% if include_setup && item.setup.present? %>
+                  <small>
+                    <i>
+                      <%= item.setup.name if item.setup.present? %>
+                    </i>
+                  </small>
+                <% end %>
               </div>
             <% end %>
-              <div>
+              <div class="ProductList-content">
                 <div class="ProductList-name">
-                  <% if item.product.brand.present? %>
-                    <%= item.product.brand.name %><br>
+                  <% unless hide_brand %>
+                    <%= item.product.present? ? item.brand_name : "<i>#{item.brand_name}</i>".html_safe %><br>
                   <% end %>
-                  <b><%= link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.product_or_variant_path %></b>
+                  <b><%= item.show_path.present? ? (link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.show_path) : item.name %></b>
                 </div>
                 <p class="ProductList-categories">
-                  <% if item.product.sub_categories.any? %>
-                    <%= item.product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+                  <% if item.sub_categories.any? %>
+                    <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
                   <% else %>
-                    <%= item.product.categories.map{ |category| category.name }.join(", ") %>
+                    <%= item.categories.map{ |category| category.name }.join(", ") %>
                   <% end %>
                 </p>
+                <% if include_edit_link || include_delete_button %>
+                  <div class="ProductList-metaLinks">
+                    <ul class="MetaLinks">
+                      <% if include_edit_link %>
+                        <li><%= link_to "Edit", item.edit_path %></li>
+                      <% end %>
+                      <% if include_delete_button %>
+                        <li>
+                          <%= button_to t('delete_custom_product.label'),
+                            custom_product_path(id: item.custom_product.id),
+                            method: :delete,
+                            class: "DeleteButton",
+                            "data-msg": t('delete_custom_product.confirm', name: item.name)
+                          %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </div>
+                <% end %>
               </div>
           <% if include_images %>
             </div>
-          <% end %>
-          <% if setups.any? %>
-            <small>
-              <i>
-                <% setup = setups.find_by(possessions: item.id) %>
-                <%= setup.name if setup.present? %>
-              </i>
-            </small>
           <% end %>
         </li>
       <% end %>

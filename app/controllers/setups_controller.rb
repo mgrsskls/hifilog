@@ -49,6 +49,12 @@ class SetupsController < ApplicationController
     @reset_path = dashboard_setup_path(@setup)
   end
 
+  def new
+    @setup = Setup.new
+
+    add_breadcrumb I18n.t('new_setup.heading')
+  end
+
   def create
     @setup = Setup.new(setup_params)
 
@@ -64,6 +70,13 @@ class SetupsController < ApplicationController
       @setups = current_user.setups.order('LOWER(name)')
       render :index, status: :unprocessable_entity
     end
+  end
+
+  def edit
+    @setup = current_user.setups.find(params[:id])
+
+    add_breadcrumb @setup.name, dashboard_setup_path(id: @setup.id)
+    add_breadcrumb I18n.t('edit')
   end
 
   def update

@@ -9,14 +9,14 @@ avif.onload = function () {
 avif.src =
 	"data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=";
 
-document.querySelectorAll(".ImageGallery").forEach((gallery) => {
-	const items = Array.from(gallery.querySelectorAll("li"));
+document.querySelectorAll(".ImageLightbox").forEach((gallery) => {
+	const items = Array.from(gallery.querySelectorAll(".ImageLightbox-item"));
 	const preloadedImages = [];
 
 	let currentIndex;
 	let keyDownListenerAdded = false;
 
-	gallery.querySelectorAll(".ImageGallery-thumb").forEach((button, i) => {
+	gallery.querySelectorAll(".ImageLightbox-thumb").forEach((button, i) => {
 		button.addEventListener("click", () => {
 			if (typeof currentIndex === "number") {
 				hideImage(currentIndex);
@@ -30,7 +30,7 @@ document.querySelectorAll(".ImageGallery").forEach((gallery) => {
 		});
 	});
 
-	gallery.querySelectorAll(".ImageGallery-dialog").forEach((dialog) => {
+	gallery.querySelectorAll(".ImageLightbox-dialog").forEach((dialog) => {
 		dialog.addEventListener("click", ({ target }) => {
 			if (target.tagName === "A") return;
 

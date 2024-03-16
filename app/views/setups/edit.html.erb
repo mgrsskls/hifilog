@@ -1,0 +1,10 @@
+<%= render layout: "shared/dashboard" do %>
+  <%= form_for @setup, url: setup_path(id: @setup.id), html: { class: "EntityForm", method: :put } do |f| %>
+    <% content_for :heading do %>
+      <%= t('edit') %>
+      <span><%= @setup.name %></span>
+    <% end %>
+
+    <%= render "form", f: f %>
+  <% end %>
+<% end %>

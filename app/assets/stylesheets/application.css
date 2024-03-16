@@ -12,8 +12,10 @@
 @import url("./application/header.css") layer(components);
 @import url("./application/heading.css") layer(components);
 @import url("./application/image_dialog.css") layer(components);
+@import url("./application/image_gallery.css") layer(components);
 @import url("./application/instructions.css") layer(components);
 @import url("./application/menu.css") layer(components);
+@import url("./application/meta_links.css") layer(components);
 @import url("./application/page_actions.css") layer(components);
 @import url("./application/pagination.css") layer(components);
 @import url("./application/product_list.css") layer(components);

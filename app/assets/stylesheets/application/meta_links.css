@@ -1,0 +1,33 @@
+.MetaLinks {
+	--gap: 0.75em;
+
+	list-style: "";
+	padding: 0;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: var(--gap);
+}
+
+.MetaLinks li {
+	display: flex;
+	gap: var(--gap);
+	align-items: center;
+}
+
+.MetaLinks li:not(:first-child)::before {
+	content: "";
+	display: block;
+	background: currentColor;
+	block-size: 0.1rem;
+	aspect-ratio: 1;
+	border-radius: 50%;
+}
+
+.MetaLinks :is(a, button) {
+	text-decoration: underline;
+}
+
+td .MetaLinks {
+	justify-content: end;
+}

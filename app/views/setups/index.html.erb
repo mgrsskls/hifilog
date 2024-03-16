@@ -1,10 +1,10 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "form" %>
-  <%= stylesheet_link_tag "setups" %>
 <% end %>
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= t('headings.setups') %></h1>
+    <%= link_to t('new_setup.link'), new_dashboard_setup_path, class: "Button" %>
   </div>
 
   <% if @setups.any? %>
@@ -15,6 +15,7 @@
             <th><%= t("headings.name") %></th>
             <th class="u-textCenter"><%= t("activerecord.attributes.setup.private") %></th>
             <th class="Table-products"><%= t("headings.products") %></th>
+            <th class="u-hide-sm u-textEnd">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -23,14 +24,34 @@
               <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
               <td class="u-textCenter"><%= setup.private? ? "&check;".html_safe : "-" %></td>
               <td class="Table-products"><%= setup.possessions.count %></td>
+              <td class="Table-sm u-hide-sm">
+                <ul class="MetaLinks">
+                  <li><%= link_to "Edit", edit_dashboard_setup_path(id: setup.id) %></li>
+                  <li>
+                    <%= button_to t('delete_setup.label'),
+                      setup_path(id: setup.id),
+                      method: :delete,
+                      class: "DeleteButton",
+                      "data-msg": t('delete_setup.confirm', name: setup.name)
+                    %>
+                  </li>
+                </ul>
+              </td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
+    <%= javascript_tag nonce: true do %>
+      Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {
+        button.closest("form").addEventListener("submit", (event) => {
+          if (!window.confirm(button.dataset.msg)) {
+            event.preventDefault();
+          }
+        });
+      });
+    <% end %>
   <% else %>
     <%= render "shared/empty_state", message: t('empty_state.setups') %>
   <% end %>
-
-  <%= render "setups/form", method: :post, heading: "Create setup" %>
 <% end %>

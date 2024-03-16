@@ -1,0 +1,32 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "form" %>
+<% end %>
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.custom_products') %></h1>
+    <%= link_to t('new_custom_product.link'), dashboard_new_custom_product_path, class: "Button" %>
+  </div>
+
+  <% if @custom_products.any? %>
+    <%= render "shared/products",
+      items: @custom_products,
+      include_images: true,
+      include_image_upload: true,
+      hide_brand: true,
+      include_edit_link: true,
+      include_delete_button: true,
+      include_setup: true
+    %>
+    <%= javascript_tag nonce: true do %>
+      Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {
+        button.closest("form").addEventListener("submit", (event) => {
+          if (!window.confirm(button.dataset.msg)) {
+            event.preventDefault();
+          }
+        });
+      });
+    <% end %>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.custom_products') %>
+  <% end %>
+<% end %>

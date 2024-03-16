@@ -1,0 +1,10 @@
+<%= render layout: "shared/dashboard" do %>
+  <%= form_for @custom_product, url: custom_product_path(id: @custom_product.id), html: { class: "EntityForm", method: :put } do |f| %>
+    <% content_for :heading do %>
+      <%= t('edit') %>
+      <span><%= @custom_product.name %></span>
+    <% end %>
+
+    <%= render "form", f: f %>
+  <% end %>
+<% end %>

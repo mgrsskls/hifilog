@@ -43,6 +43,12 @@ module ApplicationHelper
     user.setups.count
   end
 
+  def user_custom_products_count(user)
+    return unless user
+
+    user.possessions.where.not(custom_product_id: nil).count
+  end
+
   def user_prev_owneds_count(user)
     return unless user
 

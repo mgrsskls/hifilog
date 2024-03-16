@@ -1,0 +1,61 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "entity" %>
+  <%= stylesheet_link_tag "custom_product" %>
+<% end %>
+<% content_for :js do %>
+  <%= javascript_include_tag "gallery", type: "module", crossorigin: true %>
+<% end %>
+<div class="Entity">
+  <div class="Entity-main">
+    <div class="Product-details">
+      <div class="Heading">
+        <h1>
+          <%= @possession.custom_product.name %>
+        </h1>
+      </div>
+
+      <div class="CustomProduct">
+        <% if @possession.image.attached? %>
+          <div class="CustomProduct-image ImageLightbox">
+            <div class="ImageLightbox-item">
+              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @possession.image.id %>">
+                <picture>
+                  <source srcset="<%= cdn_image_url(@possession.image.variant(:thumb_avif)) %>" type="image/avif">
+                  <%= image_tag cdn_image_url(@possession.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                </picture>
+              </button>
+              <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= @possession.image.id %>">
+                <picture>
+                  <source srcset="<%= cdn_image_url(@possession.image.variant(:large_avif)) %>" type="image/avif">
+                  <%= image_tag cdn_image_url(@possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+                </picture>
+              </dialog>
+            </div>
+          </div>
+        <% end %>
+
+        <div>
+          <dl class="Data">
+            <dt>Built by</dt>
+            <dd><%= link_to @possession.custom_product.user.user_name, user_path(id: @possession.custom_product.user.user_name.downcase) %></dd>
+            <dt>Built in</dt>
+            <dd><%= @possession.custom_product.built_in %></dd>
+            <dt><%= t('headings.category').html_safe %></dt>
+            <dd>
+              <%= @possession.custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
+              <% if @possession.custom_product.custom_attributes.present? %>
+                <br><span class="Data-secondary"><%= custom_attributes_list @possession.custom_product %></span>
+              <% end %>
+            </dd>
+          </dl>
+
+          <% if @possession.custom_product.description.present? %>
+            <div class="Entity-description Rte">
+              <%= sanitize @possession.custom_product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

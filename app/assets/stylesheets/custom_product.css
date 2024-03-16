@@ -1,0 +1,9 @@
+.CustomProduct {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem 3rem;
+}
+
+.CustomProduct-image {
+	inline-size: 20rem;
+}

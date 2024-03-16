@@ -77,7 +77,7 @@
 
       <hr>
 
-      <ul class="Entity-metaLinks">
+      <ul class="Entity-metaLinks MetaLinks">
         <li>
           <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
         </li>

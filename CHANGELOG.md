@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-03-15">2024-03-15</time>
+
+- Users can now create custom products (for example loudspeakers or amplifiers they built)
+
 ## <time datetime="2024-03-13">2024-03-13</time>
 
 - Setups can now be marked as private

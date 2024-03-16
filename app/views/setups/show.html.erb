@@ -1,10 +1,12 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "form" %>
-  <%= stylesheet_link_tag "setups" %>
 <% end %>
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
-    <h1><%= @setup.name %></h1>
+    <div>
+      <h1><%= @setup.name %></h1>
+      <% if @setup.private? %><small>Private</small><% end %>
+    </div>
     <%= render "shared/category_filter", categories: @categories %>
   </div>
 
@@ -14,22 +16,26 @@
     sub_category: @sub_category,
     reset_path: @reset_path,
     empty_state: t('empty_state.setup_products'),
-    include_images: true
+    include_images: true,
+    include_image_upload: true
   %>
-
-  <%= render "setups/form", method: :put %>
 
   <div class="PageActions">
     <div class="PageAction">
       <%= render "shared/back_link" %>
     </div>
     <div class="PageAction">
-      <%= button_to t('delete_setup.label'), dashboard_setup_path(id: @setup.id), method: :delete, class: "DeleteButton Button Button--negative" %>
+      <%= button_to t('delete_setup.label'),
+        dashboard_setup_path(id: @setup.id),
+        method: :delete,
+        class: "DeleteButton Button Button--negative",
+        "data-msg": t('delete_setup.confirm', name: @setup.name)
+      %>
 
       <%= javascript_tag nonce: true do %>
         Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {
           button.closest("form").addEventListener("submit", (event) => {
-            if (!window.confirm("<%= t('delete_setup.confirm') %>")) {
+            if (!window.confirm(button.dataset.msg)) {
               event.preventDefault();
             }
           });

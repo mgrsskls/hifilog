@@ -24,38 +24,44 @@ class UserController < ApplicationController
 
     all_possessions = current_user.possessions.joins(:product)
                                   .includes([product: [{ sub_categories: :category }, :brand]])
-                                  .order('LOWER(products.name)')
                                   .map { |possession| ItemPresenter.new(possession) }
 
-    if params[:category]
+    all_custom_products = current_user.possessions.joins(:custom_product)
+                                      .includes([custom_product: [{ sub_categories: :category }]])
+                                      .map { |possession| CustomProductPresenter.new(possession) }
+
+    all = (all_possessions + all_custom_products).sort_by(&:short_name)
+
+    if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all_possessions.select { |possession| @sub_category.products.include?(possession.product) }
+      @possessions = all.select do |possession|
+        @sub_category.products.include?(possession.product) ||
+          @sub_category.custom_products.include?(possession.custom_product)
+      end
     else
-      @possessions = all_possessions
+      @possessions = all
     end
 
-    @categories = all_possessions.map(&:product)
-                                 .flat_map(&:sub_categories)
-                                 .sort_by(&:name)
-                                 .uniq
-                                 .group_by(&:category)
-                                 .sort_by { |category| category[0].order }
-                                 # rubocop:disable Style/BlockDelimiters
-                                 .map { |c|
-                                   [
-                                     c[0],
-                                     c[1].map { |sub_category|
-                                       # rubocop:enable Style/BlockDelimiters
-                                       {
-                                         name: sub_category.name,
-                                         friendly_id: sub_category.friendly_id,
-                                         path: dashboard_products_path(category: sub_category.friendly_id)
-                                       }
-                                     }
-                                   ]
-                                 }
+    @categories = all.flat_map(&:sub_categories)
+                     .sort_by(&:name)
+                     .uniq
+                     .group_by(&:category)
+                     .sort_by { |category| category[0].order }
+                     # rubocop:disable Style/BlockDelimiters
+                     .map { |c|
+                       [
+                         c[0],
+                         c[1].map { |sub_category|
+                           # rubocop:enable Style/BlockDelimiters
+                           {
+                             name: sub_category.name,
+                             friendly_id: sub_category.friendly_id,
+                             path: dashboard_products_path(category: sub_category.friendly_id)
+                           }
+                         }
+                       ]
+                     }
     @reset_path = dashboard_products_path
-    @setups = current_user.setups.joins(:possessions)
   end
 
   def bookmarks

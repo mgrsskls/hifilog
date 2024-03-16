@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_13_214005) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_14_160029) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -132,6 +132,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_13_214005) do
     t.bigint "custom_attribute_id", null: false
   end
 
+  create_table "custom_products", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "custom_products_sub_categories", id: false, force: :cascade do |t|
+    t.bigint "custom_product_id", null: false
+    t.bigint "sub_category_id", null: false
+  end
+
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string "slug", null: false
     t.integer "sluggable_id", null: false
@@ -144,10 +156,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_13_214005) do
   end
 
   create_table "possessions", force: :cascade do |t|
-    t.bigint "product_id", null: false
+    t.bigint "product_id"
     t.bigint "user_id", null: false
     t.bigint "product_variant_id"
     t.datetime "created_at"
+    t.bigint "custom_product_id"
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"
   end
 

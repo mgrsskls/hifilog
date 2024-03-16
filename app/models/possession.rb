@@ -2,10 +2,12 @@ class Possession < ApplicationRecord
   include Rails.application.routes.url_helpers
 
   belongs_to :user
-  belongs_to :product
+  belongs_to :product, optional: true
   belongs_to :product_variant, optional: true
+  belongs_to :custom_product, optional: true
 
-  has_many :setup_possessions, dependent: :destroy
+  has_one :setup_possession, dependent: :destroy
+  has_one :setup, through: :setup_possession
   has_one_attached :image do |attachable|
     attachable.variant :thumb, resize_to_fill: [320, 320], format: :webp
     attachable.variant :thumb_avif, resize_to_fill: [320, 320], format: :avif

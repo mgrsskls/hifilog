@@ -7,13 +7,13 @@
   <%= render "shared/products",
     user: current_user,
     items: @possessions,
-    setups: @setups,
     sub_category: @sub_category,
     reset_path: @reset_path,
     empty_state: t('empty_state.user_products',
     brands_path: brands_path,
     products_path: products_path),
     include_images: true,
-    include_image_upload: true
+    include_image_upload: true,
+    include_setup: true
   %>
 <% end %>

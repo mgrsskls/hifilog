@@ -39,16 +39,22 @@ Rails.application.routes.draw do
     root 'user#dashboard'
     get 'products', to: 'user#products', as: :products
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
-    get 'previous', to: 'user#prev_owneds', as: :prev_owneds
+    get 'previous-products', to: 'user#prev_owneds', as: :prev_owneds
     get 'contributions', to: 'user#contributions', as: :contributions
-    resources :setups, only: [:index, :show, :create, :update, :destroy]
+    get 'custom-products', to: 'custom_products#index', as: :custom_products
+    get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
+    get 'custom-products/:id/edit', to: 'custom_products#edit', as: :edit_custom_product
+    resources :setups, only: [:index, :show, :new, :edit]
   end
 
+  resources :custom_products, only: [:create, :destroy, :update]
   resources :possessions, only: [:create, :destroy, :update]
   resources :setup_possessions, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy]
   resources :prev_owneds, only: [:create, :destroy]
+  resources :setups, only: [:create, :update, :destroy]
   resources :users, only: [:index, :show] do
+    get '/custom-products/:id', to: 'custom_products#show', as: :custom_product
     get '/previous-products', to: 'users#prev_owneds'
     get '/setups/:setup', to: 'users#show', as: :setup
   end
