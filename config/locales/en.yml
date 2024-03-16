@@ -198,7 +198,7 @@ en:
     brands_filter: <p><b>There are no brands yet based on your filter criteria.</b> You can <a href="%{path}">add a brand here</a>.</p>
     products: <p><b>There are no products yet.</b></p>
     products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}">add a product here</a>.</p>
-    product_variants: <p><b>There are no updates or other versions yet for <i>%{name}</i>.</b> You can <a href="%{path}">add an update / another version here</a>.</p>
+    product_variants: <p><b>There are no product updates or other versions yet for <i>%{name}</i>.<br></b> You can <a href="%{path}">add an update / another version here</a>.</p>
     cta: <p><b>No products have been added to <i>%{name}</i> yet.</b> You can <a href="%{path}">add a product here</a>.</p>
     sub_categories: <p><b>There are no subcategories yet.</b></p>
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
