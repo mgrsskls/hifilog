@@ -11,14 +11,15 @@ class SubCategory < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
+      brands_id
       category_id
       created_at
+      custom_attributes_id
+      custom_products_id
       id
       name
       slug
       updated_at
-      brands_id
-      custom_attributes_id
     ]
   end
 

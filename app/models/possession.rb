@@ -20,8 +20,13 @@ class Possession < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
+      custom_product_id
+      image_attachment_id
+      image_blob_id
       product_id
       product_variant_id
+      setup_id
+      setup_possession_id
       user_id
     ]
   end

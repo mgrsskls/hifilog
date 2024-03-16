@@ -47,6 +47,7 @@ class User < ApplicationRecord
       bookmarks_id
       confirmation_token
       created_at
+      custom_products_id
       decorative_image_attachment_id
       decorative_image_blob_id
       email

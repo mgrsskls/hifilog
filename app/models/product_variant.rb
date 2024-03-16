@@ -125,6 +125,7 @@ class ProductVariant < ApplicationRecord
       release_month
       release_year
       slug
+      slugs_id
       updated_at
     ]
   end

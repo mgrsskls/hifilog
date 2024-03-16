@@ -11,6 +11,7 @@ class Setup < ApplicationRecord
       created_at
       id
       name
+      private
       setup_possessions_id
       setup_possessions_possession_id
       updated_at
