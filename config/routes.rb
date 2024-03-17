@@ -49,7 +49,7 @@ Rails.application.routes.draw do
 
   resources :custom_products, only: [:create, :destroy, :update]
   resources :possessions, only: [:create, :destroy, :update]
-  resources :setup_possessions, only: [:create, :destroy]
+  resources :setup_possessions, only: [:create, :update, :destroy]
   resources :bookmarks, only: [:create, :destroy]
   resources :prev_owneds, only: [:create, :destroy]
   resources :setups, only: [:create, :update, :destroy]
