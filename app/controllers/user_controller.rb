@@ -18,8 +18,8 @@ class UserController < ApplicationController
   end
 
   def products
-    add_breadcrumb I18n.t('headings.products'), dashboard_products_path
-    @page_title = I18n.t('headings.products')
+    add_breadcrumb I18n.t('headings.collection'), dashboard_products_path
+    @page_title = I18n.t('headings.collection')
     @active_dashboard_menu = :products
 
     all_possessions = current_user.possessions.joins(:product)
@@ -30,7 +30,7 @@ class UserController < ApplicationController
                                       .includes([custom_product: [{ sub_categories: :category }]])
                                       .map { |possession| CustomProductPresenter.new(possession) }
 
-    all = (all_possessions + all_custom_products).sort_by(&:short_name)
+    all = (all_possessions + all_custom_products).sort_by { |p| p.short_name.downcase }
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
@@ -72,11 +72,16 @@ class UserController < ApplicationController
     all_bookmarks = current_user.bookmarks.joins(:product)
                                 .includes([product: [{ sub_categories: :category }, :brand]])
                                 .order('LOWER(products.name)')
-                                .map { |bookmark| ItemPresenter.new(bookmark) }
+                                .map { |bookmark| BookmarkPresenter.new(bookmark) }
 
-    if params[:category]
+    if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
       @bookmarks = all_bookmarks.select { |bookmark| @sub_category.products.include?(bookmark.product) }
+
+      if @bookmarks.empty?
+        @bookmarks = all_bookmarks
+        @sub_category = nil
+      end
     else
       @bookmarks = all_bookmarks
     end
@@ -113,11 +118,16 @@ class UserController < ApplicationController
                                   .joins(:product)
                                   .includes([product: [{ sub_categories: :category }, :brand]])
                                   .order('LOWER(products.name)')
-                                  .map { |prev_owned| ItemPresenter.new(prev_owned) }
+                                  .map { |prev_owned| PrevOwnedPresenter.new(prev_owned) }
 
-    if params[:category]
+    if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
       @prev_owneds = all_prev_owneds.select { |prev_owned| @sub_category.products.include?(prev_owned.product) }
+
+      if @prev_owneds.empty?
+        @prev_owneds = all_prev_owneds
+        @sub_category = nil
+      end
     else
       @prev_owneds = all_prev_owneds
     end

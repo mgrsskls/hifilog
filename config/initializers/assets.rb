@@ -22,9 +22,9 @@ Rails.application.config.assets.precompile += %w(
   profile.css
   search_results.css
   users.css
-  form.css
 
   application.js
+  delete_form.js
   entity_form.js
   gallery.js
   table_saw.js

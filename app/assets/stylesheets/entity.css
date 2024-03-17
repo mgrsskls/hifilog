@@ -1,6 +1,9 @@
 .Entity {
 	display: flex;
 	gap: 2rem;
+}
+
+.Entity:not(:has(.CustomProduct)) {
 	padding-block-end: 3rem;
 	margin-block-end: 3rem;
 	border-block-end: var(--border-light);

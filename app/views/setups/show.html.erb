@@ -1,6 +1,3 @@
-<% content_for :css do %>
-  <%= stylesheet_link_tag "form" %>
-<% end %>
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <div>
@@ -17,7 +14,11 @@
     reset_path: @reset_path,
     empty_state: t('empty_state.setup_products'),
     include_images: true,
-    include_image_upload: true
+    include_image_upload: true,
+    include_delete_button: true,
+    delete_button_label: t('remove_product_from_setup.label'),
+    delete_confirm_msg: 'remove_product_from_setup.confirm',
+    delete_path: :remove_from_setup
   %>
 
   <div class="PageActions">
@@ -26,22 +27,11 @@
     </div>
     <div class="PageAction">
       <%= button_to t('delete_setup.label'),
-        dashboard_setup_path(id: @setup.id),
+        setup_path(id: @setup.id),
         method: :delete,
         class: "DeleteButton Button Button--negative",
         "data-msg": t('delete_setup.confirm', name: @setup.name)
       %>
-
-      <%= javascript_tag nonce: true do %>
-        Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {
-          button.closest("form").addEventListener("submit", (event) => {
-            if (!window.confirm(button.dataset.msg)) {
-              event.preventDefault();
-            }
-          });
-        });
-      <% end %>
     </div>
   </div>
-
 <% end %>

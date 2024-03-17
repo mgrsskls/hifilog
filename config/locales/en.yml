@@ -85,12 +85,24 @@ en:
     comment: Comment
   confirm_removing_product: Do you really want to remove this product from your collection?
   dashboard: Dashboard
+  remove_bookmark:
+    label: Remove
+    confirm: Are you sure you want to remove %{name} from your bookmarks?
+  remove_product:
+    label: Remove
+    confirm: Are you sure you want to remove %{name} from your collection?
+  remove_product_from_setup:
+    label: Remove
+    confirm: Are you sure you want to remove %{name} from this setup?
+  remove_product_from_prev_owneds:
+    label: Remove
+    confirm: Are you sure you want to remove %{name} from your previously owned products?
   delete_custom_product:
     label: Delete
     confirm: Are you sure you want to delete your custom product %{name}?
   delete_setup:
     label: Delete
-    confirm: Are you sure you want to delete your setup %{name}?
+    confirm: Are you sure you want to delete your setup %{name}? Please note that the products in this setup will remain in your collection.
   edit: Edit
   edit_record: Edit %{name}
   filter:
@@ -147,7 +159,7 @@ en:
     alert:
       minimum_chars: Please enter at least %{min} characters.
   custom_products:
-    created: The custom product %{link} has been created.
+    created: The custom product <b>%{name}</b> has been created.
     updated: The custom product %{link} has been updated.
     deleted: The custom product <b>%{name}</b> has been deleted.
   setups:
@@ -174,6 +186,7 @@ en:
     category: Category
     categories: Categories
     changelog: Changelog
+    collection: Collection
     contributors: Contributors
     contributions: Contributions
     created: Created
@@ -205,6 +218,7 @@ en:
     setup_products: "<p><b>You have not added any products to this setup yet.</b></p><p>After adding a product to your collection, you can assign it to a setup on its product page.</p>"
     user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>'
     prev_owneds: '<p><b>You have not marked any products as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
+    prev_owneds_category: '<p><b>You have not marked any products in this category as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
   product:
     description: Description

@@ -30,6 +30,18 @@ class CustomProductPresenter
     dashboard_edit_custom_product_path(id: @custom_product.id)
   end
 
+  def delete_path
+    custom_product_path(id: @custom_product.id)
+  end
+
+  def delete_button_label
+    I18n.t('delete_custom_product.label')
+  end
+
+  def delete_confirm_msg
+    I18n.t('delete_custom_product.confirm', name:)
+  end
+
   def brand_name
     'Custom'
   end

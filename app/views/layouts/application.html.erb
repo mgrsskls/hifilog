@@ -11,6 +11,7 @@
     <%= yield :js %>
     <%= javascript_include_tag "application", type: "module", crossorigin: true %>
     <%= javascript_include_tag "table_saw", type: "module", crossorigin: true %>
+    <%= javascript_include_tag "delete_form", type: "module", crossorigin: true if user_signed_in? %>
     <%= stylesheet_link_tag "application" %>
     <%= yield :css %>
     <%= csrf_meta_tags %>
@@ -109,7 +110,7 @@
                       </li>
                       <li class="Menu-subList-separator">
                         <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
-                          <span><%= t('headings.products') %></span>
+                          <span><%= t('headings.collection') %></span>
                           <small><%= user_possessions_count(current_user) %></small>
                         </a>
                       </li>

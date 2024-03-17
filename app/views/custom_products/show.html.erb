@@ -1,5 +1,6 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "entity" %>
+  <%= stylesheet_link_tag "product" %>
   <%= stylesheet_link_tag "custom_product" %>
 <% end %>
 <% content_for :js do %>
@@ -58,4 +59,45 @@
       </div>
     </div>
   </div>
+
+  <% if user_signed_in? && @possession.user == current_user %>
+    <div class="Entity-sub Product-sub u-pullOut">
+      <div class="ProductPossession">
+        <% if @possession.object.errors.any? %>
+          <%= render "shared/flash_messages", messages: @possession.object.errors.map { |error| ["alert", error.full_message] } %>
+        <% end %>
+
+        <div class="ProductPossession-heading u-flex u-gap-md u-alignCenter">
+          <div>
+            <%= render "shared/image_upload", item: @possession, size: "4rem", prefix: "possessions" %>
+          </div>
+          <span>
+            <b class="ProductPossession-headingName"><%= t('symbols.in_your_collection') %></b>
+            <% if @possession.created_at %>
+              <small>since <time datetime="<%= formatted_datetime @possession.created_at %>"><%= formatted_datetime @possession.created_at %></time></small>
+            <% end %>
+          </span>
+        </div>
+
+        <% @setups.each do |setup| %>
+          <div class="ProductPossession-setup">
+            <% possession_is_in_setup = setup.possessions.include?(@possession.object) %>
+            <% if possession_is_in_setup %>
+              <%= button_to t('in_setup', name: setup.name).html_safe, setup_possession_path(current_user.setup_possessions.find_by(possession_id: @possession.id, setup_id: setup.id)), method: :delete, class: "CheckboxButton is-checked" %>
+            <% else %>
+              <%= button_to t('in_setup', name: setup.name).html_safe, setup_possessions_path(possession_id: @possession.id, setup_id: setup.id), method: :post, class: "CheckboxButton" %>
+            <% end %>
+          </div>
+        <% end %>
+
+        <ul class="ProductPossession-metaLinks Entity-metaLinks MetaLinks">
+          <li>
+            <%= button_to @possession.delete_path, method: :delete, class: "DeleteButton", "data-msg": @possession.delete_confirm_msg do %>
+                <%= @possession.delete_button_label %>
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  <% end %>
 </div>

@@ -1,6 +1,3 @@
-<% content_for :css do %>
-  <%= stylesheet_link_tag "form" %>
-<% end %>
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
     <h1><%= t('headings.custom_products') %></h1>
@@ -15,17 +12,11 @@
       hide_brand: true,
       include_edit_link: true,
       include_delete_button: true,
-      include_setup: true
+      include_setup: true,
+      delete_button_label: t('delete_custom_product.label'),
+      delete_confirm_msg: 'delete_custom_product.confirm',
+      delete_path: :delete_path
     %>
-    <%= javascript_tag nonce: true do %>
-      Array.from(document.querySelectorAll(".DeleteButton")).forEach(button => {
-        button.closest("form").addEventListener("submit", (event) => {
-          if (!window.confirm(button.dataset.msg)) {
-            event.preventDefault();
-          }
-        });
-      });
-    <% end %>
   <% else %>
     <%= render "shared/empty_state", message: t('empty_state.custom_products') %>
   <% end %>

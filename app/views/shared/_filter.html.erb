@@ -4,7 +4,7 @@
 <% custom_attributes ||= [] %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
-  <%= hidden_field_tag :category, @category.friendly_id if params[:category] %>
+  <%= hidden_field_tag :category, @category.friendly_id if params[:category].present? %>
   <%= hidden_field_tag :sub_category, @sub_category.friendly_id if params[:sub_category] %>
   <div class="Filter">
     <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>

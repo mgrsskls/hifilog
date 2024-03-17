@@ -39,6 +39,18 @@ class ItemPresenter
     edit_product_path(id: @product.friendly_id)
   end
 
+  def delete_path
+    possession_path(id: @object.id)
+  end
+
+  def delete_button_label
+    I18n.t('remove_product.label')
+  end
+
+  def delete_confirm_msg
+    I18n.t('remove_product.confirm', name: display_name)
+  end
+
   def brand
     @product.brand
   end

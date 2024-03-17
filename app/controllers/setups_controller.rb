@@ -17,9 +17,9 @@ class SetupsController < ApplicationController
                             .joins(:product)
                             .includes([product: [{ sub_categories: :category }, :brand]])
                             .order('LOWER(products.name)')
-                            .map { |possession| ItemPresenter.new(possession) }
+                            .map { |possession| SetupItemPresenter.new(possession, @setup) }
 
-    if params[:category]
+    if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
       @possessions = all_possessions.select { |possession| @sub_category.products.include?(possession.product) }
     else
@@ -58,8 +58,7 @@ class SetupsController < ApplicationController
   def create
     @setup = Setup.new(setup_params)
 
-    if @setup.save
-      current_user.setups << @setup
+    if @setup.save && current_user.setups << @setup
       flash[:notice] = I18n.t(
         'setups.created',
         link: ActionController::Base.helpers.link_to(@setup.name, dashboard_setup_path(@setup))
@@ -68,7 +67,7 @@ class SetupsController < ApplicationController
     else
       @active_dashboard_menu = :setups
       @setups = current_user.setups.order('LOWER(name)')
-      render :index, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 

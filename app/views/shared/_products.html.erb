@@ -7,12 +7,6 @@
 <% include_setup ||= false %>
 <% hide_brand ||= false %>
 
-<% if include_image_upload %>
-  <% content_for :css do %>
-    <%= stylesheet_link_tag "form" %>
-  <% end %>
-<% end %>
-
 <div class="<%= "u-pullOut" if pull_out %> ProductListing">
   <% if items.any? %>
     <table>
@@ -27,7 +21,7 @@
             <th><%= t('headings.setup') %></th>
           <% end %>
           <% if include_edit_link || include_delete_button %>
-            <th class="u-textEnd">Actions</th>
+            <th class="u-textEnd Table-actions">Actions</th>
           <% end %>
         </tr>
       </thead>
@@ -69,11 +63,11 @@
                   <% end %>
                   <% if include_delete_button %>
                     <li>
-                      <%= button_to t('delete_custom_product.label'),
-                        custom_product_path(id: item.custom_product.id),
+                      <%= button_to item.delete_button_label,
+                        item.delete_path,
                         method: :delete,
                         class: "DeleteButton",
-                        "data-msg": t('delete_custom_product.confirm', name: item.name)
+                        "data-msg": item.delete_confirm_msg
                       %>
                     </li>
                   <% end %>
@@ -126,11 +120,11 @@
                       <% end %>
                       <% if include_delete_button %>
                         <li>
-                          <%= button_to t('delete_custom_product.label'),
-                            custom_product_path(id: item.custom_product.id),
+                          <%= button_to item.delete_button_label,
+                            item.delete_path,
                             method: :delete,
                             class: "DeleteButton",
-                            "data-msg": t('delete_custom_product.confirm', name: item.name)
+                            "data-msg": item.delete_confirm_msg
                           %>
                         </li>
                       <% end %>

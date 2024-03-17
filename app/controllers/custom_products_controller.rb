@@ -1,5 +1,5 @@
 class CustomProductsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:show]
   before_action :set_breadcrumb, except: [:show]
 
   def index
@@ -12,7 +12,18 @@ class CustomProductsController < ApplicationController
 
   def show
     @user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)
-    @possession = CustomProductPresenter.new(@user.possessions.find_by(custom_product_id: params[:id]))
+    possession = @user.possessions.find_by(custom_product_id: params[:id])
+
+    return render 'not_found', status: :not_found if possession.nil?
+
+    @possession = CustomProductPresenter.new(possession)
+
+    unless current_user == @user
+      redirect_path = get_redirect_if_unauthorized(@user, @possession)
+      return redirect_to redirect_path if redirect_path
+    end
+
+    @setups = current_user.setups if @user == current_user
 
     add_breadcrumb I18n.t('users'), users_path
     add_breadcrumb @user.user_name, user_path(id: @user.user_name.downcase)
@@ -34,12 +45,9 @@ class CustomProductsController < ApplicationController
     if @custom_product.save && possession.save
       flash[:notice] = I18n.t(
         'custom_products.created',
-        link: ActionController::Base.helpers.link_to(
-          @custom_product.name,
-          user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
-        )
+        name: @custom_product.name
       )
-      redirect_to dashboard_custom_products_path
+      redirect_to user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
     else
       @active_dashboard_menu = :custom_products
       @categories = Category.ordered
@@ -94,5 +102,18 @@ class CustomProductsController < ApplicationController
 
   def custom_product_params
     params.require(:custom_product).permit(:name, :description, sub_category_ids: [])
+  end
+
+  def get_redirect_if_unauthorized(user, possession)
+    return if user.visible?
+
+    # if visited profile is not visible to logged out users and the current user is logged in
+    return if user.logged_in_only? && user_signed_in?
+
+    # if the visited profile is not visible to anyone and the visiting user is a different user
+    return root_url if user.hidden? && current_user != user
+
+    redir = user_custom_product_path(user_id: user.user_name.downcase, id: possession.id)
+    new_user_session_url(redirect: URI.parse(redir).path)
   end
 end

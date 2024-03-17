@@ -9,6 +9,7 @@
 @import url("./application/filter.css") layer(components);
 @import url("./application/flash_messages.css") layer(components);
 @import url("./application/footer.css") layer(components);
+@import url("./application/form.css") layer(components);
 @import url("./application/header.css") layer(components);
 @import url("./application/heading.css") layer(components);
 @import url("./application/image_dialog.css") layer(components);

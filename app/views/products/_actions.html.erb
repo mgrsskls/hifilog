@@ -1,6 +1,3 @@
-<% content_for :css do %>
-  <%= stylesheet_link_tag "form" %>
-<% end %>
 <% variant_id = @variant ? @variant.id : nil %>
 <% if user_signed_in? %>
   <% @possessions.each do |possession| %>
@@ -25,7 +22,7 @@
         <div class="ProductPossession-setup">
           <% possession_is_in_setup = setup.possessions.include?(possession) %>
           <% if possession_is_in_setup %>
-            <%= button_to t('in_setup', name: setup.name).html_safe, setup_possession_path(SetupPossession.find_by(possession_id: possession.id, setup_id: setup.id)), method: :delete, class: "CheckboxButton is-checked" %>
+            <%= button_to t('in_setup', name: setup.name).html_safe, setup_possession_path(current_user.setup_possessions.find_by(possession_id: possession.id, setup_id: setup.id)), method: :delete, class: "CheckboxButton is-checked" %>
           <% else %>
             <%= button_to t('in_setup', name: setup.name).html_safe, setup_possessions_path(possession_id: possession.id, setup_id: setup.id), method: :post, class: "CheckboxButton" %>
           <% end %>

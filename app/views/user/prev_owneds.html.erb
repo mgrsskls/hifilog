@@ -8,8 +8,12 @@
     items: @prev_owneds,
     sub_category: @sub_category,
     reset_path: @reset_path,
-    empty_state: t('empty_state.prev_owneds',
+    empty_state: t('empty_state.prev_owneds'),
     brands_path: brands_path,
-    products_path: products_path)
+    products_path: products_path,
+    include_delete_button: true,
+    delete_button_label: t('remove_product_from_prev_owneds.label'),
+    delete_confirm_msg: 'remove_product_from_prev_owneds.confirm',
+    delete_path: :remove_from_prev_owneds
   %>
 <% end %>
