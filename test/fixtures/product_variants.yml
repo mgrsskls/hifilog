@@ -2,14 +2,18 @@
 
 one:
   name: MyString
+  slug: mystring1
   description: MyText
   release_day: 1
   release_month: 12
   release_year: 2000
+  product: with_variants
 
 two:
-  name: MyString
+  name: MyString2
+  slug: mystring2
   description: MyText
   release_day: 1
   release_month: 12
-  release_year: 2000
+  release_year: 2002
+  product: with_variants

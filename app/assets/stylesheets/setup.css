@@ -1,0 +1,96 @@
+.SetupAddProducts {
+	padding: var(--page-spacing);
+	max-block-size: calc(100dvb - 4rem);
+	box-sizing: border-box;
+}
+
+.SetupAddProducts h2 {
+	margin-block-start: 0;
+}
+
+.SetupAddProducts h2 small {
+	display: block;
+	font-size: 1rem;
+	color: var(--color-secondary);
+	margin-block-start: 0.5rem;
+}
+
+.SetupAddProducts-list {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(var(--cols), 1fr);
+}
+
+.SetupAddProducts-option {
+	max-inline-size: 16rem;
+	position: relative;
+	font-size: 0.875rem;
+}
+
+.SetupAddProducts-checkmark {
+	display: none;
+	color: var(--color-secondary);
+	block-size: 1.25rem;
+	inline-size: 1.25rem;
+}
+
+.SetupAddProducts-option label {
+	display: grid;
+	grid-template-columns: 3.125rem 1fr auto;
+	align-items: center;
+	gap: 0.5rem;
+	line-height: 1.4;
+	padding: 0.25rem;
+	padding-inline-end: 0.75rem;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+}
+
+.SetupAddProducts-option label:is(:hover, :focus) {
+	background: var(--color-blue-925);
+}
+
+.SetupAddProducts-option label:is(:hover, :focus) .SetupAddProducts-checkmark {
+	display: block;
+}
+
+.SetupAddProducts-option input {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-start: 0;
+	opacity: 0.01;
+}
+
+.SetupAddProducts-option input:checked + label {
+	color: var(--color-accent-on-dark);
+	background: var(--color-blue-175);
+}
+
+.SetupAddProducts-option input:checked + label .SetupAddProducts-checkmark {
+	display: block;
+	color: var(--color-white);
+}
+
+@media (min-width: 32.0625rem) {
+	.SetupAddProducts-list {
+		--cols: 1;
+	}
+}
+
+@media (min-width: 32.0625rem) and (max-width: 48rem) {
+	.SetupAddProducts-list {
+		--cols: 2;
+	}
+}
+
+@media (min-width: 48.0625rem) and (max-width: 62rem) {
+	.SetupAddProducts-list {
+		--cols: 3;
+	}
+}
+
+@media (min-width: 62.0625rem) {
+	.SetupAddProducts-list {
+		--cols: 4;
+	}
+}

@@ -16,14 +16,22 @@ class SetupsController < ApplicationController
     all_possessions = @setup.possessions
                             .joins(:product)
                             .includes([product: [{ sub_categories: :category }, :brand]])
-                            .order('LOWER(products.name)')
                             .map { |possession| SetupItemPresenter.new(possession, @setup) }
+
+    all_custom_products = @setup.possessions.joins(:custom_product)
+                                .includes([custom_product: [{ sub_categories: :category }]])
+                                .map { |possession| CustomProductPresenter.new(possession) }
+
+    all = (all_possessions + all_custom_products).sort_by { |p| p.short_name.downcase }
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all_possessions.select { |possession| @sub_category.products.include?(possession.product) }
+      @possessions = all.select do |possession|
+        @sub_category.products.include?(possession.product) ||
+          @sub_category.custom_products.include?(possession.custom_product)
+      end
     else
-      @possessions = all_possessions
+      @possessions = all
     end
 
     @categories = all_possessions.map(&:product)
@@ -82,7 +90,11 @@ class SetupsController < ApplicationController
     @setup = current_user.setups.find(params[:id])
     @active_dashboard_menu = :setups
 
-    if @setup.update(setup_params)
+    possessions_in_other_setups = current_user.setup_possessions
+                                              .where.not(setup_id: @setup.id)
+                                              .where(possession_id: setup_params[:possession_ids])
+
+    if possessions_in_other_setups.update(setup_id: @setup.id) && @setup.update(setup_params)
       flash[:notice] = I18n.t(
         'setups.updated',
         name: @setup.name
@@ -110,6 +122,6 @@ class SetupsController < ApplicationController
   end
 
   def setup_params
-    params.require(:setup).permit(:name, :private)
+    params.require(:setup).permit(:name, :private, possession_ids: [])
   end
 end

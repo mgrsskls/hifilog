@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-03-17">2024-03-17</time>
+
+- Products can now be added to a setup directly on the setup page
+
 ## <time datetime="2024-03-15">2024-03-15</time>
 
 - Users can now create custom products (for example loudspeakers or amplifiers they built)
