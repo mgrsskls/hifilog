@@ -18,22 +18,16 @@
         </span>
       </div>
 
-      <% @setups.each do |setup| %>
-        <div class="ProductPossession-setup">
-          <% possession_is_in_setup = setup.possessions.include?(possession) %>
-          <% if possession_is_in_setup %>
-            <%= button_to t('in_setup', name: setup.name).html_safe, setup_possession_path(current_user.setup_possessions.find_by(possession_id: possession.id, setup_id: setup.id)), method: :delete, class: "CheckboxButton is-checked" %>
-          <% else %>
-            <% if possession.setup_possession %>
-              <%= form_for possession.setup_possession, method: :put do |f| %>
-                <%= f.hidden_field :setup_id, value: setup.id %>
-                <%= f.button t('in_setup', name: setup.name).html_safe, type: "submit", class: "CheckboxButton" %>
-              <% end %>
-            <% else %>
-              <%= button_to t('in_setup', name: setup.name).html_safe, setup_possessions_path(possession_id: possession.id, setup_id: setup.id), method: :post, class: "CheckboxButton" %>
+      <% if @setups.any? %>
+        <%= form_for possession, method: :put, html: { class: "ProductPossession-setup u-flex u-gap-md u-alignCenter" } do |f| %>
+          <label for="setup-select-<%= possession.id %>">Setup</label>
+          <select name="setup_id" class="SetupSelect" id="setup-select-<%= possession.id %>">
+            <option value="">None</option>
+            <% @setups.each do |setup| %>
+              <option value="<%= setup.id %>"<%= " selected" if possession.setup == setup %>><%= setup.name %></option>
             <% end %>
-          <% end %>
-        </div>
+          </select>
+        <% end %>
       <% end %>
 
       <ul class="ProductPossession-metaLinks Entity-metaLinks MetaLinks">
@@ -44,6 +38,14 @@
         </li>
       </ul>
     </div>
+  <% end %>
+
+  <%= javascript_tag nonce: true do %>
+    document.querySelectorAll(".SetupSelect").forEach(select => {
+      select.addEventListener("change", () => {
+        select.closest("form").submit();
+      });
+    });
   <% end %>
 <% end %>
 

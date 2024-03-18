@@ -22,26 +22,32 @@ class PossessionsController < ApplicationController
   def update
     @possession = Possession.find(params[:id])
 
-    return redirect_back fallback_location: root_url unless params[:possession] || params[:delete_image]
-
-    if params[:delete_image]
-      @possession.image.purge
+    unless params[:possession] || params[:delete_image] || params[:setup_id]
       return redirect_back fallback_location: root_url
     end
 
-    if possession_params[:image]
-      path = possession_params[:image].tempfile
-      if ImageProcessing::MiniMagick.valid_image?(path)
-        ImageProcessing::MiniMagick.source(path.path)
-                                   .resize_to_fill(1200, 1200)
-                                   .quality(80)
-                                   .call(destination: path.path)
-      end
+    @possession.image.purge if params[:delete_image]
+
+    unless params[:setup_id].nil?
+      @possession.setup = params[:setup_id].blank? ? nil : current_user.setups.find(params[:setup_id])
+      @possession.save
     end
 
-    unless @possession.update(possession_params)
-      @possession.errors.full_messages.each do |error|
-        flash[:alert] = error
+    if params[:possession].present?
+      if possession_params[:image]
+        path = possession_params[:image].tempfile
+        if ImageProcessing::MiniMagick.valid_image?(path)
+          ImageProcessing::MiniMagick.source(path.path)
+                                     .resize_to_fill(1200, 1200)
+                                     .quality(80)
+                                     .call(destination: path.path)
+        end
+      end
+
+      unless @possession.update(possession_params)
+        @possession.errors.full_messages.each do |error|
+          flash[:alert] = error
+        end
       end
     end
 

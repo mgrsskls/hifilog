@@ -79,15 +79,23 @@
           </span>
         </div>
 
-        <% @setups.each do |setup| %>
-          <div class="ProductPossession-setup">
-            <% possession_is_in_setup = setup.possessions.include?(@possession.object) %>
-            <% if possession_is_in_setup %>
-              <%= button_to t('in_setup', name: setup.name).html_safe, setup_possession_path(current_user.setup_possessions.find_by(possession_id: @possession.id, setup_id: setup.id)), method: :delete, class: "CheckboxButton is-checked" %>
-            <% else %>
-              <%= button_to t('in_setup', name: setup.name).html_safe, setup_possessions_path(possession_id: @possession.id, setup_id: setup.id), method: :post, class: "CheckboxButton" %>
-            <% end %>
-          </div>
+        <% if @setups.any? %>
+          <%= form_for @possession, method: :put, html: { class: "ProductPossession-setup u-flex u-gap-md u-alignCenter" } do |f| %>
+            <label for="setup-select-<%= @possession.id %>">Setup</label>
+            <select name="setup_id" class="SetupSelect" id="setup-select-<%= @possession.id %>">
+              <option value="">None</option>
+              <% @setups.each do |setup| %>
+                <option value="<%= setup.id %>"<%= " selected" if @possession.setup == setup %>><%= setup.name %></option>
+              <% end %>
+            </select>
+          <% end %>
+          <%= javascript_tag nonce: true do %>
+            document.querySelectorAll(".SetupSelect").forEach(select => {
+              select.addEventListener("change", () => {
+                select.closest("form").submit();
+              });
+            });
+          <% end %>
         <% end %>
 
         <ul class="ProductPossession-metaLinks Entity-metaLinks MetaLinks">
