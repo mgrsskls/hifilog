@@ -29,8 +29,8 @@ a:has(.Avatar),
 	text-decoration: none !important;
 }
 
-a:has(.Avatar) {
-	text-decoration: none;
+a:has(.Avatar) span {
+	text-decoration: underline;
 }
 
 a .Avatar + span {
