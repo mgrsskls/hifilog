@@ -73,6 +73,7 @@ class Product < ApplicationRecord
       discontinued_year
       id
       name
+      notes_id
       possessions_id
       possessions_user_id
       price

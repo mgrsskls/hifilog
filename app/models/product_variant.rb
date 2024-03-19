@@ -118,6 +118,7 @@ class ProductVariant < ApplicationRecord
       id
       id_value
       name
+      notes_id
       possessions_id
       price
       price_currency

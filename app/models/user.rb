@@ -54,6 +54,7 @@ class User < ApplicationRecord
       email
       encrypted_password
       id
+      notes_id
       possessions_id
       possessions_product_id
       prev_owneds_id
