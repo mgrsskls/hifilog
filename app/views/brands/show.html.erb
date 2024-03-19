@@ -120,7 +120,7 @@
     <%= render "shared/empty_state", message: t('empty_state.products') %>
   <% end %>
 <% else %>
-  <%= render "shared/empty_state", message: t('empty_state.cta', name: @brand.name, path: new_product_path(brand_id: @brand.id)) %>
+  <%= render "shared/empty_state", message: t('empty_state.cta', name: @brand.name, path: user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id))) %>
 <% end %>
 
 <%= render "shared/page_actions" %>
