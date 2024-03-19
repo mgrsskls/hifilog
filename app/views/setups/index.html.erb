@@ -18,7 +18,7 @@
         <tbody>
           <% @setups.each do |setup| %>
             <tr>
-              <th><%= link_to setup.name, dashboard_setup_path(setup) %></th>
+              <th><b><%= link_to setup.name, dashboard_setup_path(setup) %></b></th>
               <td class="u-textCenter"><%= setup.private? ? "&check;".html_safe : "-" %></td>
               <td class="Table-products"><%= setup.possessions.count %></td>
               <td class="Table-sm u-hide-sm">

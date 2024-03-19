@@ -40,12 +40,14 @@
     </div>
   <% end %>
 
-  <%= javascript_tag nonce: true do %>
-    document.querySelectorAll(".SetupSelect").forEach(select => {
-      select.addEventListener("change", () => {
-        select.closest("form").submit();
+  <% if @possessions.any? %>
+    <%= javascript_tag nonce: true do %>
+      document.querySelectorAll(".SetupSelect").forEach(select => {
+        select.addEventListener("change", () => {
+          select.closest("form").submit();
+        });
       });
-    });
+    <% end %>
   <% end %>
 <% end %>
 

@@ -45,8 +45,10 @@ Rails.application.routes.draw do
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
     get 'custom-products/:id/edit', to: 'custom_products#edit', as: :edit_custom_product
     resources :setups, only: [:index, :show, :new, :edit]
+    resources :notes, only: [:index, :show, :edit]
   end
 
+  resources :notes, only: [:create, :destroy, :update]
   resources :custom_products, only: [:create, :destroy, :update]
   resources :possessions, only: [:create, :destroy, :update]
   resources :setup_possessions, only: [:create, :update, :destroy]
@@ -70,11 +72,13 @@ Rails.application.routes.draw do
   # /products
   resources :products, only: [:show, :index, :new, :create, :edit, :update] do
     get '/changelog', action: :changelog
+    get '/notes', to: 'notes#new', as: :new_notes
     resources :product_variants, only: [:create, :update]
     get '/variants/new', to: 'product_variants#new'
     get '/v/:variant', to: 'product_variants#show', as: :variant
     get '/v/:variant/edit', to: 'product_variants#edit', as: :edit_variant
     get '/v/:variant/changelog', to: 'product_variants#changelog', as: :variant_changelog
+    get '/v/:variant/notes', to: 'notes#new', as: :new_variant_notes
   end
 
   get '/search', to: "search#results"

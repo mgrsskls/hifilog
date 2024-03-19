@@ -1,0 +1,70 @@
+.NoteEditor {
+	max-inline-size: 40rem;
+	margin-inline: auto;
+}
+
+.NoteEditor-container {
+	--bg: var(--color-bg2);
+
+	background: var(--bg);
+	border: var(--border) var(--color-transparency-25);
+	border-radius: var(--border-radius);
+}
+
+.NoteEditor-options {
+	display: flex;
+	gap: 0.5rem;
+	background: var(--bg);
+	position: sticky;
+	inset-block-start: var(--header-height);
+	padding-inline: 1.5em;
+	padding-block: 0.25em;
+	margin: 0;
+	list-style: "";
+}
+
+.NoteEditor-option {
+	display: flex;
+	align-items: center;
+}
+
+.NoteEditor-option button {
+	padding: 0.25em;
+}
+
+#NoteEditor-text {
+	padding: 2em;
+}
+
+#NoteEditor-text .ProseMirror:focus-within {
+	outline: none;
+}
+
+.milkdown-menu ul {
+	list-style: "";
+	padding: 0;
+	display: flex;
+}
+
+.milkdown-menu li {
+	position: relative;
+}
+
+.milkdown-menu [aria-expanded="false"] + ul {
+	display: none;
+}
+
+.milkdown-menu button + ul {
+	position: absolute;
+	inset-block-start: 100%;
+	inset-inline-start: 0;
+}
+
+.ProseMirror:has(
+		> p:only-child > br.ProseMirror-trailingBreak:only-child
+	)::before {
+	content: "Type...";
+	display: inline;
+	position: absolute;
+	opacity: 0.5;
+}

@@ -392,6 +392,10 @@
 		border-radius: var(--border-radius);
 	}
 
+	hr {
+		color: var(--color-transparency-25);
+	}
+
 	.ImageDialog {
 		padding: 0;
 		background: none;

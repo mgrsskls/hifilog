@@ -1,0 +1,44 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.notes') %></h1>
+  </div>
+
+  <% if @notes.any? %>
+    <table>
+      <thead>
+        <th><%= t('headings.product') %></th>
+        <th>Date</th>
+        <th class="Table-actions u-textEnd">Actions</th>
+      </thead>
+      <tbody>
+        <% @notes.each do |note| %>
+          <tr>
+            <th>
+              <%
+                if note.product_variant_id.present?
+                  item = ProductVariant.find(note.product_variant_id)
+                else
+                  item = Product.find(note.product_id)
+                end
+
+                name = item.display_name
+                path = dashboard_note_path(note.id)
+              %>
+              <b><%= link_to name, path %></b>
+            </th>
+            <td><time datetime="<%= formatted_datetime note.updated_at %>" data-time="true"><%= formatted_datetime note.updated_at %></time></td>
+            <td class="Table-actions u-textEnd">
+              <% if note.product_variant.present? %>
+                <%= link_to "Edit", product_new_variant_notes_path(product_id: note.product.friendly_id, variant: note.product_variant.friendly_id) %>
+              <% else %>
+                <%= link_to "Edit", product_new_notes_path(product_id: note.product.friendly_id) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.notes') %>
+  <% end %>
+<% end %>

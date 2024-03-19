@@ -19,6 +19,7 @@ class User < ApplicationRecord
   has_many :bookmarks, dependent: :destroy
   has_many :prev_owneds, dependent: :destroy
   has_many :custom_products, dependent: :destroy, through: :possessions
+  has_many :notes, dependent: :destroy
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [320, 320], format: :webp
     attachable.variant :thumb_avif, resize_to_limit: [320, 320], format: :avif

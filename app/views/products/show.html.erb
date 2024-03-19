@@ -121,7 +121,7 @@
             </thead>
             <tbody>
               <tr aria-current="true"<% if user_has_product?(current_user, @product.id) %> class="has-item"<% end %>>
-                <th><%= link_to @product.name, product_path(id: @product.friendly_id) %></th>
+                <th><b><%= link_to @product.name, product_path(id: @product.friendly_id) %></b></th>
                 <td class="Table-sm">Initial / Stock version</td>
                 <td class="Table-sm"><%= @product.release_date.present? ? @product.release_date : "-" %></td>
                 <td class="Table-sm"><%= @product.price.present? ? @product.display_price : "-" %></td>
@@ -129,7 +129,7 @@
               </tr>
               <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
                 <tr<% if user_has_product?(current_user, @product.id, variant.id) %> class="has-item"<% end %>>
-                  <th><%= link_to variant.name_with_fallback, variant.path %></th>
+                  <th><b><%= link_to variant.name_with_fallback, variant.path %></b></th>
                   <td class="Table-sm"><%= variant.description.present? ? variant.description : "-" %></td>
                   <td class="Table-sm"><%= variant.release_date.present? ? variant.release_date : "-" %></td>
                   <td class="Table-sm"><%= variant.price.present? ? variant.display_price : "-" %></td>
@@ -150,21 +150,21 @@
     <hr>
 
     <dl>
+      <dt>Notes</dt>
+      <dd>
+        <% if @note.present? %>
+          Last updated: <%= link_to dashboard_note_path(@note) do %>
+            <time datetime="<%= formatted_datetime @note.updated_at %>" data-time="true"><%= formatted_datetime @note.updated_at %></time>
+          <% end %>
+        <% else %>
+          <%= link_to "Add notes", user_signed_in? ? product_new_notes_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_new_notes_path(product_id: @product.friendly_id)) %>
+        <% end %>
+      </dd>
       <dt><%= t('product.meta.owned_by') %></dt>
       <dd><%= t('amount_users', count: @product.users.size) %></dd>
     </dl>
 
     <div class="Entity-meta">
-      <dl>
-        <dt><%= t('headings.contributors') %></dt>
-        <dd>
-          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
-          </ul>
-        </dd>
-      </dl>
-
-      <hr>
-
       <ul class="Entity-metaLinks MetaLinks">
         <li>
           <%= link_to t('edit'), user_signed_in? ? edit_product_path(id: @product.friendly_id) : new_user_session_path(redirect: edit_product_path(id: @product.friendly_id)) %>
@@ -173,6 +173,14 @@
           <%= link_to t('headings.changelog'), user_signed_in? ? product_changelog_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_changelog_path(product_id: @product.friendly_id)) %>
         </li>
       </ul>
+
+      <dl>
+        <dt><%= t('headings.contributors') %></dt>
+        <dd>
+          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
+          </ul>
+        </dd>
+      </dl>
     </div>
   </div>
 </div>

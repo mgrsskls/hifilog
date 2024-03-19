@@ -31,6 +31,7 @@ class Product < ApplicationRecord
   has_many :setup_possessions, dependent: :destroy
   has_many :setups, through: :setup_possessions
   has_many :product_variants, dependent: :destroy
+  has_many :notes, dependent: :nullify
 
   accepts_nested_attributes_for :brand
   validates_associated :brand

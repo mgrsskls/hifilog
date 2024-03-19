@@ -18,11 +18,11 @@ module ApplicationHelper
   end
 
   def formatted_date(date)
-    date.strftime('%Y-%m-%d')
+    date.strftime('%Y-%m-%dT00:00+0000')
   end
 
   def formatted_datetime(datetime)
-    datetime.strftime('%Y-%m-%dT%H:%M')
+    datetime.strftime('%Y-%m-%dT%H:%M+0000')
   end
 
   def user_possessions_count(user)
@@ -53,6 +53,12 @@ module ApplicationHelper
     return unless user
 
     user.prev_owneds.count
+  end
+
+  def user_notes_count(user)
+    return unless user
+
+    user.notes.count
   end
 
   def round_up_or_down(num)

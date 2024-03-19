@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_17_173353) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_19_025443) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -153,6 +153,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_17_173353) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.text "text"
+    t.bigint "product_id"
+    t.bigint "product_variant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "product_id", "product_variant_id"], name: "index_notes_on_user_id_and_product_id_and_product_variant_id", unique: true
   end
 
   create_table "possessions", force: :cascade do |t|

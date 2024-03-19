@@ -55,3 +55,9 @@
 .Product-section {
 	margin-block-start: 4rem;
 }
+
+.Product-notes {
+	margin-block-start: 1.25rem;
+	border-block-start: var(--border) var(--color-transparency-15);
+	padding-block-start: 1rem;
+}

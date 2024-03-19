@@ -18,6 +18,7 @@ Rails.application.config.assets.precompile += %w(
   entity.css
   home.css
   entity_form.css
+  notes.css
   product.css
   profile.css
   search_results.css
@@ -28,6 +29,7 @@ Rails.application.config.assets.precompile += %w(
   delete_form.js
   entity_form.js
   gallery.js
+  notes.js
   table_saw.js
   theme_toggle.js
 )

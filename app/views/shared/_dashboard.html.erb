@@ -45,6 +45,12 @@
         </a>
         <small><%= user_prev_owneds_count(current_user) %></small>
       </li>
+      <li>
+        <a class="Dashboard-link" href="<%= dashboard_notes_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :notes) %>>
+          <%= t('headings.notes') %>
+        </a>
+        <small><%= user_notes_count(current_user) %></small>
+      </li>
       <li class="Dashboard-separator">
         <a class="Dashboard-link" href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>><%= t('headings.contributions') %></a>
       </li>

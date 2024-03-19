@@ -1,0 +1,37 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1>
+      Notes
+      <small>
+        <% if @product_variant.present? %>
+          <%= link_to @product_variant.display_name, product_variant_path(product_id: @product.friendly_id, variant: @product_variant.friendly_id) %>
+        <% else %>
+          <%= link_to @product.display_name, product_path(id: @product.friendly_id) %>
+        <% end %>
+      </small>
+    </h1>
+    <% if @note.updated_at %>
+      <p>
+        <small>
+          <b>Last updated:</b> <time datetime="<%= formatted_datetime @note.updated_at %>" data-time="true"><%= formatted_datetime @note.updated_at %></time>
+        </small>
+      </p>
+    <% end %>
+  </div>
+  <div class="Rte">
+    <%= @html.html_safe %>
+  </div>
+  <div class="PageActions PageActions--divider">
+    <div class="PageAction">
+      <%= link_to "Edit", @product_variant.present? ? product_new_variant_notes_path(product_id: @product.friendly_id, variant: @product_variant.friendly_id) : product_new_notes_path(product_id: @product.friendly_id), class: "Button" %>
+    </div>
+    <div class="PageAction">
+      <%= button_to t('delete_note.label'),
+        note_path(id: @note.id),
+        method: :delete,
+        class: "DeleteButton Button Button--negative",
+        "data-msg": t('delete_note.confirm')
+      %>
+    </div>
+  </div>
+<% end %>

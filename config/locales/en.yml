@@ -103,6 +103,9 @@ en:
   delete_setup:
     label: Delete
     confirm: Are you sure you want to delete your setup %{name}? Please note that the products in this setup will remain in your collection.
+  delete_note:
+    label: Delete
+    confirm: Are you sure you want these notes?
   edit: Edit
   edit_record: Edit %{name}
   filter:
@@ -194,6 +197,7 @@ en:
     custom_products: Custom products
     dashboard: Welcome back
     edited: Edited
+    notes: Notes
     prev_owneds: Previous products
     product: Product
     products: Products
@@ -209,6 +213,7 @@ en:
     custom_products: "<p><b>You haven't created any custom products yet.</b></p><p>If you build for example your own loudspeakers or amplifiers, you can add these here.</p>"
     brands: <p><b>There are no brands yet.</b></p>
     brands_filter: <p><b>There are no brands yet based on your filter criteria.</b> You can <a href="%{path}">add a brand here</a>.</p>
+    notes: "<p><b>You haven't created any private notes yet.</b></p><p>You can create these directly on a product page.</p>"
     products: <p><b>There are no products yet.</b></p>
     products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}">add a product here</a>.</p>
     product_variants: <p><b>There are no product updates or other versions yet for <i>%{name}</i>.<br></b> You can <a href="%{path}">add an update / another version here</a>.</p>

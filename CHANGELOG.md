@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-03-18">2024-03-18</time>
+
+- Users can now create private notes about products
+
 ## <time datetime="2024-03-17">2024-03-17</time>
 
 - Products can now be added to a setup directly on the setup page

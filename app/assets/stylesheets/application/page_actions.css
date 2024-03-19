@@ -10,6 +10,12 @@
 	justify-content: space-between;
 }
 
+.PageActions--divider {
+	margin-block-start: 3rem;
+	border-block-start: var(--border-light);
+	padding-block-start: 3rem;
+}
+
 @media (max-width: 32em) {
 	.PageActions {
 		margin-block-start: 2rem;

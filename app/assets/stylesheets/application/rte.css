@@ -1,8 +1,25 @@
 .Rte {
+	> :is(p, ul, ol, blockquote, hr) {
+		max-inline-size: 40rem;
+	}
+
+	hr {
+		margin-inline: initial;
+	}
+
+	blockquote {
+		margin-block: calc(var(--line-height) * 1.5em);
+		padding-inline-start: 1rem;
+		border-inline-start: 0.1875em solid var(--color-transparency-25);
+		font-style: italic;
+		color: var(--color-secondary);
+	}
+}
+
+.Rte,
+.ProseMirror {
 	> * {
 		margin-block-end: 0;
-		max-inline-size: 40rem;
-		text-wrap: pretty;
 	}
 
 	> *:first-child {
