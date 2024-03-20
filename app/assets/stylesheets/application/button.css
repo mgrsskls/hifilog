@@ -14,25 +14,10 @@
 
 .Button[aria-pressed="true"] {
 	--size: 1.75em;
-	--color: 160, 50%, var(--lightness, 40%);
 
-	background: hsla(var(--color), 10%);
-	color: hsl(var(--color));
+	color: var(--color-bookmark-dark);
+	background: var(--color-bookmark-light);
 	border: var(--border);
-}
-
-@media (prefers-color-scheme: dark) {
-	.Button[aria-pressed="true"] {
-		--lightness: 70%;
-	}
-}
-
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
-	.Button[aria-pressed="true"] {
-	--lightness: 70%;
-}
-
-.Button[aria-pressed="true"] {
 	font-weight: 600;
 }
 

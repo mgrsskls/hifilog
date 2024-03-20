@@ -1,4 +1,3 @@
-<% show_labels ||= false %>
 <% product ||= nil %>
 <% brand ||= nil %>
 <% only ||= [:discontinued, :has_brand, :has_product, :has_bookmark, :has_prev_owned] %>
@@ -8,51 +7,31 @@
 
   <% if only.include?(:discontinued) && (product && !defined?(variant) && product.discontinued || defined?(variant) && variant.discontinued || brand && brand.discontinued) %>
     <div class="Symbols-item">
-      <% if show_labels %>
-        <span class="Symbol"><%= t('symbols.discontinued') %></span>
-      <% else %>
-        <span class="Symbol Symbol--iconOnly" title="<%= t('symbols.discontinued') %>" aria-label="<%= t('symbols.discontinued') %>">D</span>
-      <% end %>
+      <svg title="<%= t('symbols.discontinued') %>" aria-label="<%= t('symbols.discontinued') %>" class="IconSymbol IconSymbol--negative" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.4 18.4A9 9 0 0 0 12 3a9 9 0 0 0-6.4 2.6m12.8 12.8A9 9 0 0 1 3 12a9 9 0 0 1 2.6-6.4m12.8 12.8L5.6 5.6"/></svg>
     </div>
   <% end %>
 
   <% if only.include?(:has_brand) && user_has_brand?(current_user, brand) %>
     <div class="Symbols-item">
-      <% if show_labels %>
-        <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
-      <% else %>
-        <span class="Symbol Symbol--positive Symbol--iconOnly" title="<%= t('symbols.in_your_collection') %>" aria-label="<%= t('symbols.in_your_collection') %>">✓</span>
-      <% end %>
+      <svg title="<%= t('symbols.in_your_collection') %>" aria-label="<%= t('symbols.in_your_collection') %>" class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
     </div>
   <% end %>
 
   <% if only.include?(:has_product) && user_has_product?(current_user, product.id, variant_id) %>
     <div class="Symbols-item">
-      <% if show_labels %>
-        <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_collection') %></span>
-      <% else %>
-        <span class="Symbol Symbol--positive Symbol--iconOnly" title="<%= t('symbols.in_your_collection') %>" aria-label="<%= t('symbols.in_your_collection') %>">✓</span>
-      <% end %>
+      <svg title="<%= t('symbols.in_your_collection') %>" aria-label="<%= t('symbols.in_your_collection') %>" class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
     </div>
   <% end %>
 
   <% if only.include?(:has_bookmark) && user_has_bookmark?(current_user, product, variant_id) %>
     <div class="Symbols-item">
-      <% if show_labels %>
-        <span class="Symbol Symbol--positive">✓ <%= t('symbols.in_your_bookmarks') %></span>
-      <% else %>
-        <span class="Symbol Symbol--positive Symbol--iconOnly" title="<%= t('symbols.in_your_bookmarks') %>" aria-label="<%= t('symbols.in_your_bookmarks') %>">B</span>
-      <% end %>
+      <svg title="<%= t('symbols.in_your_bookmarks') %>" aria-label="<%= t('symbols.in_your_bookmarks') %>" class="IconSymbol IconSymbol--bookmark" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.6 3.32c1.1.13 1.9 1.08 1.9 2.19V21L12 17.25 4.5 21V5.5c0-1.1.8-2.05 1.9-2.18a48.5 48.5 0 0 1 11.2 0Z"/></svg>
     </div>
   <% end %>
 
   <% if only.include?(:has_prev_owned) && user_has_previously_owned?(current_user, product, variant_id) %>
     <div class="Symbols-item">
-      <% if show_labels %>
-        <span class="Symbol">P <%= t('symbols.prev_owned') %></span>
-      <% else %>
-        <span class="Symbol Symbol--iconOnly" title="<%= t('symbols.prev_owned') %>" aria-label="<%= t('symbols.prev_owned') %>">P</span>
-      <% end %>
+      <span title="<%= t('symbols.prev_owned') %>" aria-label="<%= t('symbols.prev_owned') %>" class="IconSymbol IconSymbol--prevOwned">P</span>
     </div>
   <% end %>
 </div>

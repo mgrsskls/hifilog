@@ -11,61 +11,66 @@
 }
 
 .Symbol {
-	--hue: 208;
-	--saturation: 20%;
-	--lightness: 40%;
-	--size: 1.75em;
-	--color: var(--hue), var(--saturation), var(--lightness);
-
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
-	background: hsla(var(--color), 10%);
-	color: hsl(var(--color));
-	border: var(--border);
+	background: var(--color-invalid-bg);
+	color: var(--color-invalid-copy);
+	border: 2px solid;
 	border-radius: var(--border-radius);
 	font-weight: 600;
+	padding-inline: 0.5em;
+	font-size: 0.875em;
 }
 
-html:has([name="theme"][value="light"]:checked) .Symbol {
-	--lightness: 40%;
+.IconSymbol {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	block-size: 1.5rem;
+	inline-size: 1.5rem;
+	font-size: 0.8125rem;
+	box-sizing: border-box;
+	line-height: 1;
+}
+
+.IconSymbol--positive {
+	stroke: var(--color-success-copy);
+	fill: var(--color-success-bg);
+}
+
+.IconSymbol--negative {
+	stroke: var(--color-invalid-copy);
+	fill: var(--color-invalid-bg);
+}
+
+.IconSymbol--bookmark {
+	stroke: var(--color-bookmark-copy);
+	fill: var(--color-bookmark-bg);
+}
+
+.IconSymbol--prevOwned {
+	border: 2px solid;
+	background: hsla(204, 20%, 40%, 10%);
+	color: hsl(204, 20%, 40%);
+	border-radius: 50%;
+	font-weight: 700;
 }
 
 @media (prefers-color-scheme: dark) {
-	.Symbol {
-		--lightness: 70%;
+	.IconSymbol--prevOwned {
+		color: hsl(204, 20%, 80%);
 	}
 }
 
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
-	.Symbol:not(.Symbol--positive) {
-	--lightness: 70%;
+:is(html:where(:has([name="theme"][value="dark"]:checked)), .is-dark)
+	.IconSymbol--prevOwned {
+	color: hsl(204, 20%, 80%);
 }
 
-.Symbol:not(.Symbol--large) {
-	font-size: 0.8125rem;
-	line-height: 1.5;
-	padding-block: 0.25em;
-}
-
-.Symbol:not(.Symbol--iconOnly) {
-	padding-inline: 0.5em;
-}
-
-.Symbol--iconOnly {
-	line-height: 1;
-	inline-size: var(--size);
-	block-size: var(--size);
-}
-
-.Symbol--positive {
-	--hue: 160;
-	--saturation: 50%;
-}
-
-.Symbol--large {
-	padding: var(--input-padding);
+.IconSymbol path {
+	stroke-width: 1.5px;
 }
 
 .SymbolsLegend {

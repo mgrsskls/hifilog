@@ -132,13 +132,17 @@
 		--color-accent: var(--color-accent-on-light);
 		--color-button-copy: var(--color-white);
 		--color-highlight-copy: var(--color-white);
-		--color-invalid-light: hsl(330, 50%, 85%);
-		--color-invalid-dark: hsl(330, 100%, 20%);
+		--color-invalid-light: hsl(330, 40%, 90%);
+		--color-invalid-dark: hsl(330, 85%, 25%);
 		--color-invalid-bg: var(--color-invalid-light);
 		--color-invalid-copy: var(--color-invalid-dark);
+		--color-bookmark-light: hsl(204, 40%, 90%);
+		--color-bookmark-dark: hsl(204, 100%, 35%);
+		--color-bookmark-bg: var(--color-bookmark-light);
+		--color-bookmark-copy: var(--color-bookmark-dark);
 		--color-success-light: hsl(165, 40%, 90%);
 		--color-success-medium: hsl(165, 40%, 45%);
-		--color-success-dark: hsl(165, 40%, 30%);
+		--color-success-dark: hsl(165, 85%, 25%);
 		--color-success-bg: var(--color-success-light);
 		--color-success-copy: var(--color-success-dark);
 		--color-transparency-10: rgba(0, 0, 0, 0.1);
@@ -171,6 +175,8 @@
 			--color-invalid-copy: var(--color-invalid-light);
 			--color-success-bg: var(--color-success-dark);
 			--color-success-copy: var(--color-success-light);
+			--color-bookmark-bg: var(--color-bookmark-dark);
+			--color-bookmark-copy: var(--color-bookmark-light);
 
 			--color-bg2: var(--color-blue-125);
 			--color-accent: var(--color-accent-on-dark);
@@ -204,6 +210,8 @@
 		--color-invalid-copy: var(--color-invalid-light);
 		--color-success-bg: var(--color-success-dark);
 		--color-success-copy: var(--color-success-light);
+		--color-bookmark-bg: var(--color-bookmark-dark);
+		--color-bookmark-copy: var(--color-bookmark-light);
 
 		--color-bg2: var(--color-blue-125);
 		--color-accent: var(--color-accent-on-dark);

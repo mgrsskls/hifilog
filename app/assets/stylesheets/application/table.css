@@ -95,7 +95,7 @@ td {
 	width: 5rem;
 }
 
-table:not(:has(.Symbol)) .Table-symbols {
+table:not(:has(.IconSymbol)) .Table-symbols {
 	display: none;
 }
 
@@ -160,7 +160,7 @@ table .Symbols {
 	}
 
 	.ts_c_max_width__52rem_ td:has(.u-hiddenVisually),
-	.ts_c_max_width__52rem_ .Table-symbols:not(:has(.Symbol)) {
+	.ts_c_max_width__52rem_ .Table-symbols:not(:has(.IconSymbol)) {
 		display: none !important;
 	}
 }
@@ -193,7 +193,7 @@ table .Symbols {
 	}
 
 	.ts_c_max_width__40rem_ td:has(.u-hiddenVisually),
-	.ts_c_max_width__40rem_ .Table-symbols:not(:has(.Symbol)) {
+	.ts_c_max_width__40rem_ .Table-symbols:not(:has(.IconSymbol)) {
 		display: none !important;
 	}
 }
@@ -226,7 +226,7 @@ table .Symbols {
 	}
 
 	.ts_c_max_width__32rem_ td:has(.u-hiddenVisually),
-	.ts_c_max_width__32rem_ .Table-symbols:not(:has(.Symbol)) {
+	.ts_c_max_width__32rem_ .Table-symbols:not(:has(.IconSymbol)) {
 		display: none !important;
 	}
 }
