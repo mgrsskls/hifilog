@@ -266,6 +266,8 @@ en:
       next: "Next &rarr;"
   custom_attributes:
     active: Active
+    belt-drive: Belt Drive
+    direct-drive: Direct Drive
     dynamic: Dynamic
     electrostatic: Electrostatic
     hybrid: Hybrid
