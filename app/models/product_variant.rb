@@ -66,7 +66,7 @@ class ProductVariant < ApplicationRecord
   end
 
   def short_name
-    "#{release_date} #{name_with_fallback}".strip
+    name_with_fallback
   end
 
   def display_name

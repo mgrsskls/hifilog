@@ -25,6 +25,12 @@ class ItemPresenter
     @product.display_name
   end
 
+  def release_date
+    return @product_variant.release_date if @product_variant.present?
+
+    @product.release_date
+  end
+
   def show_path
     return @product_variant.path if @product_variant.present?
 
