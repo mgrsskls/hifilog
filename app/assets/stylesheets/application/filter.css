@@ -54,7 +54,7 @@ html:has([name="theme"][value="dark"]:checked) .Filter-input {
 	}
 
 	.Filter-form {
-		background: var(--color-bg);
+		background: var(--color-bg2);
 		padding: 1rem;
 		border-radius: var(--border-radius);
 		position: fixed;
