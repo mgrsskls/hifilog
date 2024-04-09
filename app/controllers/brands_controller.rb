@@ -265,7 +265,7 @@ class BrandsController < ApplicationController
 
     if params[:status].present? && STATUSES.include?(params[:status])
       products = products.where(
-        discontinued: params[:status] == 'discontinued' ? true : nil
+        discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
       )
     end
 
