@@ -252,12 +252,13 @@ class BrandsController < ApplicationController
 
   def show
     @brand = Brand.friendly.find(params[:id])
-    @category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
+    @category = @sub_category.category if @sub_category.present?
 
-    if @category
-      products = @category.products.where(brand_id: @brand.id)
+    if @sub_category
+      products = @sub_category.products.where(brand_id: @brand.id)
       add_breadcrumb @brand.name, proc { :brand }
-      add_breadcrumb @category.name
+      add_breadcrumb @sub_category.name
     else
       products = @brand.products
       add_breadcrumb @brand.name
@@ -288,7 +289,8 @@ class BrandsController < ApplicationController
       WHERE versions.item_id = ? AND versions.item_type = 'Brand'
     ", @brand.id])
 
-    @all_sub_categories ||= all_sub_categories(@brand).group_by(&:category).sort_by { |category| category[0].order }
+    @all_sub_categories = all_sub_categories(@brand)
+    @all_sub_categories_grouped ||= @all_sub_categories.group_by(&:category).sort_by { |category| category[0].order }
 
     @page_title = @brand.name
   end

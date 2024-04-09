@@ -4,8 +4,8 @@
 <% custom_attributes ||= [] %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
-  <%= hidden_field_tag :category, @category.friendly_id if params[:category].present? %>
-  <%= hidden_field_tag :sub_category, @sub_category.friendly_id if params[:sub_category] %>
+  <%= hidden_field_tag :category, @category.friendly_id if @category.present? %>
+  <%= hidden_field_tag :sub_category, @sub_category.friendly_id if @sub_category.present? %>
   <div class="Filter">
     <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>
     <div class="Filter-form">
@@ -54,6 +54,28 @@
           </ol>
         </div>
 
+        <% if sub_categories.any? %>
+          <div class="Filter-section">
+            <span class="Filter-option"><%= t('headings.category') %></span>
+            <ol class="Pagination">
+              <li class="Pagination-all">
+                <label>
+                  <input type="radio" name="sub_category" value=""<%= ' checked aria-current="true"'.html_safe unless @sub_category.present? %>>
+                  <%= t('filter.all') %>
+                </label>
+              </li>
+              <% sub_categories.each do |sub_category| %>
+                <li class="Pagination-item">
+                  <label>
+                    <input type="radio" name="sub_category" value="<%= sub_category.slug %>"<%= ' checked aria-current="true"'.html_safe if @sub_category.present? && @sub_category.slug == sub_category.slug %>>
+                    <%= sub_category.name %>
+                  </label>
+                </li>
+              <% end %>
+            </ol>
+          </div>
+        <% end %>
+
         <% if custom_attributes.any? %>
           <div class="Filter-section">
             <span class="Filter-option">
@@ -97,7 +119,7 @@
       </div>
     </div>
 
-    <% if params[:letter].present? or params[:category].present? or params[:sub_category].present? or params[:status].present? %>
+    <% if params[:letter].present? or @category.present? or @sub_category.present? or params[:status].present? %>
       <ul class="Filter-status">
         <% if params[:letter].present? %>
           <li>
@@ -105,9 +127,9 @@
           </li>
         <% end %>
 
-        <% if @category.present? %>
+        <% if @category.present? or @sub_category.present? %>
           <li>
-            <b>Category:</b> <%= @category.name %><% if @sub_category.present? %> / <%= @sub_category.name %><% end %>
+            <b>Category:</b> <%= @sub_category.present? ? @sub_category.name : @category.name %>
           </li>
         <% end %>
 

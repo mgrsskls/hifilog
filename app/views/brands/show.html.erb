@@ -40,11 +40,11 @@
         <% end %>
       </dl>
 
-      <% if @all_sub_categories.any? %>
+      <% if @all_sub_categories_grouped.any? %>
         <h2><%= t('headings.categories') %></h2>
 
         <dl class="Data">
-          <% @all_sub_categories.each do |section| %>
+          <% @all_sub_categories_grouped.each do |section| %>
             <dt><%= section[0].name %></dt>
             <dd><%= section[1].map { |c| link_to c.name, products_path(sub_category: c.friendly_id) }.join(", ").html_safe %></dd>
           <% end %>
@@ -95,21 +95,19 @@
 </div>
 
 <% if @total_products_count > 0 %>
-  <%= render "shared/filter", reset_path: brands_path, collection: @products, query: @brands_query do %>
-    <div class="FilterSort">
-      <div class="u-flex u-alignCenter u-gap-md">
-        <label for="sort">Sort</label>
-        <select name="sort" id="sort">
-          <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
-          <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
-          <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
-          <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
-          <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
-          <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
-          <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
-          <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>>Updated: Oldest first</option>
-        </select>
-      </div>
+  <%= render "shared/filter", reset_path: brands_path, collection: @products, query: @brands_query, sub_categories: @all_sub_categories do %>
+    <div class="u-flex u-alignCenter u-gap-md">
+      <label for="sort">Sort</label>
+      <select name="sort" id="sort">
+        <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
+        <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
+        <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
+        <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
+        <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
+        <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
+        <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
+        <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>>Updated: Oldest first</option>
+      </select>
     </div>
   <% end %>
 
