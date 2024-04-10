@@ -108,6 +108,9 @@ module ApplicationHelper
     return nil if country_code.nil?
 
     country = ISO3166::Country[country_code]
+
+    return if country.nil?
+
     country.translations[I18n.locale.to_s] || country.common_name || country.iso_short_name
   end
 
