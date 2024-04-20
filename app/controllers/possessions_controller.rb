@@ -38,7 +38,7 @@ class PossessionsController < ApplicationController
         path = possession_params[:image].tempfile
         if ImageProcessing::MiniMagick.valid_image?(path)
           ImageProcessing::MiniMagick.source(path.path)
-                                     .resize_to_fill(1200, 1200)
+                                     .resize_to_fit(1200, 1200)
                                      .quality(80)
                                      .call(destination: path.path)
         end
