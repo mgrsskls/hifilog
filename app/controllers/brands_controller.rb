@@ -239,7 +239,10 @@ class BrandsController < ApplicationController
     end
 
     @brands_query = params[:query].strip if params[:query].present?
-    brands = brands.search_by_name_and_description(@brands_query) if @brands_query.present?
+
+    if @brands_query.present?
+      brands = brands.includes(sub_categories: [:category]).search_by_name_and_description(@brands_query)
+    end
 
     @brands = brands.page(params[:page])
   end
@@ -251,7 +254,7 @@ class BrandsController < ApplicationController
   end
 
   def show
-    @brand = Brand.friendly.find(params[:id])
+    @brand = Brand.includes(sub_categories: [:category]).friendly.find(params[:id])
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @category = @sub_category.category if @sub_category.present?
 
