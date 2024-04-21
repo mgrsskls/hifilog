@@ -107,7 +107,7 @@
             <% if current_user.decorative_image.attached? %>
               <picture>
                 <source srcset="<%= cdn_image_url(current_user.decorative_image.variant(:thumb_avif)) %>" type="image/avif">
-                <%= image_tag cdn_image_url(current_user.decorative_image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp", style: "aspect-ratio: 3; block-size: 2.5rem;" %>
+                <%= image_tag cdn_image_url(current_user.decorative_image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp", style: "inline-size: 12.04rem; block-size: 2.5rem;" %>
               </picture>
             <% end %>
             <%= f.file_field :decorative_image, accept: "image/jpeg,image/png,image/gif,image/webp" %>

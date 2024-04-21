@@ -34,16 +34,6 @@ class PossessionsController < ApplicationController
     end
 
     if params[:possession].present?
-      if possession_params[:image]
-        path = possession_params[:image].tempfile
-        if ImageProcessing::MiniMagick.valid_image?(path)
-          ImageProcessing::MiniMagick.source(path.path)
-                                     .resize_to_fit(1200, 1200)
-                                     .quality(80)
-                                     .call(destination: path.path)
-        end
-      end
-
       unless @possession.update(possession_params)
         @possession.errors.full_messages.each do |error|
           flash[:alert] = error

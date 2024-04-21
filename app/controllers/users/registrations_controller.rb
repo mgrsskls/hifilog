@@ -32,27 +32,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     add_breadcrumb I18n.t('account')
     @active_dashboard_menu = :account
 
-    if account_update_params[:avatar]
-      path = account_update_params[:avatar].tempfile
-      if ImageProcessing::MiniMagick.valid_image?(path)
-        ImageProcessing::MiniMagick.source(path.path)
-                                   .resize_to_fill(320, 320)
-                                   .quality(80)
-                                   .call(destination: path.path)
-      end
-    elsif params[:delete_avatar]
+    if params[:delete_avatar]
       current_user.avatar.purge
     end
 
-    if account_update_params[:decorative_image]
-      path = account_update_params[:decorative_image].tempfile
-      if ImageProcessing::MiniMagick.valid_image?(path)
-        ImageProcessing::MiniMagick.source(path.path)
-                                   .resize_to_fill(1512, 314)
-                                   .quality(80)
-                                   .call(destination: path.path)
-      end
-    elsif params[:delete_decorative_image]
+    if params[:delete_decorative_image]
       current_user.decorative_image.purge
     end
 
