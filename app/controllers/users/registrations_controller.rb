@@ -32,13 +32,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     add_breadcrumb I18n.t('account')
     @active_dashboard_menu = :account
 
-    if params[:delete_avatar]
-      current_user.avatar.purge
-    end
-
-    if params[:delete_decorative_image]
-      current_user.decorative_image.purge
-    end
+    current_user.avatar.purge if params[:delete_avatar]
+    current_user.decorative_image.purge if params[:delete_decorative_image]
 
     super
   end

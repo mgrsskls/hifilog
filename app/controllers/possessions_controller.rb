@@ -33,11 +33,9 @@ class PossessionsController < ApplicationController
       @possession.save
     end
 
-    if params[:possession].present?
-      unless @possession.update(possession_params)
-        @possession.errors.full_messages.each do |error|
-          flash[:alert] = error
-        end
+    if params[:possession].present? && !@possession.update(possession_params)
+      @possession.errors.full_messages.each do |error|
+        flash[:alert] = error
       end
     end
 
