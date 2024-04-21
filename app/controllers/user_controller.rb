@@ -24,10 +24,13 @@ class UserController < ApplicationController
 
     all_possessions = current_user.possessions.joins(:product)
                                   .includes([product: [{ sub_categories: :category }, :brand]])
+                                  .includes([image_attachment: [:blob]])
+                                  .includes([:setup_possession, :setup, :product_variant])
                                   .map { |possession| ItemPresenter.new(possession) }
 
     all_custom_products = current_user.possessions.joins(:custom_product)
                                       .includes([custom_product: [{ sub_categories: :category }]])
+                                      .includes([:setup_possession, :setup])
                                       .map { |possession| CustomProductPresenter.new(possession) }
 
     all = (all_possessions + all_custom_products).sort_by { |p| p.short_name.downcase }
