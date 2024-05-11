@@ -42,8 +42,10 @@ class UsersController < ApplicationController
       all_custom_products = @user.possessions
     end
 
-    all_possessions = all_possessions.joins(:product)
+    all_possessions = all_possessions.joins([:product])
                                      .includes([product: [{ sub_categories: :category }, :brand]])
+                                     .includes([:product_variant])
+                                     .includes([image_attachment: [:blob]])
                                      .order('LOWER(products.name)')
                                      .map { |possession| ItemPresenter.new(possession) }
     all_custom_products = all_custom_products.joins(:custom_product)
