@@ -209,6 +209,14 @@ class ProductsController < ApplicationController
   def create
     if product_params[:brand_id].present?
       @brand = Brand.find(product_params[:brand_id]) if product_params[:brand_id]
+
+      if (product_params[:sub_category_ids] - @brand.sub_category_ids).any?
+        (product_params[:sub_category_ids] - @brand.sub_category_ids).each do |id|
+          sub_category = SubCategory.find(id.to_i)
+          @brand.sub_categories << sub_category if sub_category && !@brand.sub_categories.include?(sub_category)
+        end
+      end
+
       @product = Product.new(
         name: product_params[:name],
         brand_id: product_params[:brand_id],
@@ -226,7 +234,7 @@ class ProductsController < ApplicationController
         sub_category_ids: product_params[:sub_category_ids],
       )
 
-      if @product.save
+      if @product.save && @brand.save
         redirect_to URI.parse(product_url(id: @product.friendly_id)).path
       else
         @brands = Brand.all.order('LOWER(name)')

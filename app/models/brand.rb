@@ -1,6 +1,5 @@
 class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
-  include BrandHelper
   include PgSearch::Model
   pg_search_scope :search_by_name_and_description,
                   against: [:name, :description],
@@ -63,7 +62,7 @@ class Brand < ApplicationRecord
   end
 
   def categories
-    @categories ||= all_sub_categories(self).map(&:category).uniq.sort_by(&:name)
+    @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
   end
 
   def display_name
