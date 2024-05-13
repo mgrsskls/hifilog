@@ -154,7 +154,7 @@ class ProductsController < ApplicationController
     @products_query = params[:query].strip if params[:query].present?
     products = products.search_by_name_and_description(@products_query) if @products_query.present?
 
-    @products = products.includes([:brand, :sub_categories]).page(params[:page])
+    @products = products.includes([:brand, :sub_categories, :product_variants]).page(params[:page])
   end
 
   def show

@@ -41,7 +41,7 @@
             <%= render "shared/symbols", product: product %>
           </td>
         </tr>
-        <% product.product_variants.order([:release_year, :release_month, :release_day]).each do |variant| %>
+        <% product.product_variants.sort_by { |v| [v.release_year, v.release_month, v.release_day] }.each do |variant| %>
           <tr<% if user_has_product?(current_user, product.id, variant.id) %> class="has-item"<% end %>>
             <th scope="row" class="Table-variant"><%= link_to (mark ? highlight(variant.name_with_fallback, mark) : variant.name_with_fallback), variant.path %></th>
             <% unless hide_brand %>
