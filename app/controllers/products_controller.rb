@@ -21,6 +21,7 @@ class ProductsController < ApplicationController
       add_breadcrumb I18n.t('headings.products')
     end
 
+    order = 'LOWER(name) ASC'
     if params[:sort].present?
       order = 'LOWER(name) ASC' if params[:sort] == 'name_asc'
       order = 'LOWER(name) DESC' if params[:sort] == 'name_desc'
@@ -36,8 +37,6 @@ class ProductsController < ApplicationController
       order = 'created_at DESC, LOWER(name)' if params[:sort] == 'added_desc'
       order = 'updated_at ASC, LOWER(name)' if params[:sort] == 'updated_asc'
       order = 'updated_at DESC, LOWER(name)' if params[:sort] == 'updated_desc'
-    else
-      order = 'LOWER(name) ASC'
     end
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
