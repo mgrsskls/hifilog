@@ -189,7 +189,7 @@ GEM
       railties (>= 6.0)
       responders (>= 2)
     io-console (0.7.2)
-    irb (1.13.2)
+    irb (1.14.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
@@ -263,7 +263,7 @@ GEM
     puma (6.4.2)
       nio4r (~> 2.0)
     racc (1.8.0)
-    rack (3.1.4)
+    rack (3.1.6)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -353,9 +353,9 @@ GEM
       tilt
     scout_apm (5.3.8)
       parser
-    sentry-rails (5.18.0)
+    sentry-rails (5.18.1)
       railties (>= 5.0)
-      sentry-ruby (~> 5.18.0)
+      sentry-ruby (~> 5.18.1)
     sentry-ruby (5.18.1)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
