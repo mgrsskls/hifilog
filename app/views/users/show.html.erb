@@ -113,7 +113,7 @@
         items: @possessions,
         sub_category: @sub_category,
         reset_path: @reset_path,
-        empty_state: t('empty_state.public_profile', name: @user.user_name, pull_out: false),
+        empty_state: t('empty_state.public_profile', name: h(@user.user_name), pull_out: false),
         include_images: include_images
       %>
     </div>

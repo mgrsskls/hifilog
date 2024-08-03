@@ -140,7 +140,7 @@
           </table>
         </table-saw>
       <% else %>
-        <%= render "shared/empty_state", message: t('empty_state.product_variants', name: @product.display_name, path: user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id))) %>
+        <%= render "shared/empty_state", message: t('empty_state.product_variants', name: h(@product.display_name), path: user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id))) %>
       <% end %>
     </div>
   </div>
