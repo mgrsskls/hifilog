@@ -1,4 +1,4 @@
-# HiFi Log
+# <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="32" height="32"><path fill="#7a9bb8" d="M300 0C193.69 0 100.3 55.29 47.02 138.69l110.88 64.02a15.41 15.41 0 0 1 5.64 21.05l-2.27 3.93a15.41 15.41 0 0 1-21.05 5.64L29.77 169.56A298.84 298.84 0 0 0 0 300c0 165.69 134.31 300 300 300s300-134.31 300-300S465.69 0 300 0Z"/></svg> HiFi Log
 
 _HiFi Log_ is a user-driven platform for hifi products and brands.
 
