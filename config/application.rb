@@ -22,6 +22,8 @@ module HiFiLog
       ActiveSupport::TimeZone
     ]
 
+    config.force_ssl = Rails.env.production?
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
