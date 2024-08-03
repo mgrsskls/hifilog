@@ -21,5 +21,9 @@ If the list of hi-fi gear you used to own becomes longer and longer, you can sim
 
 1. `cp .pre-commit .git/hooks/pre-commit`
 2. `touch .env`
-3. Add `CDN_HOST=http://127.0.0.1:3000` to `.env`
+3. Add the following to `.env`:
+```
+CDN_HOST=http://127.0.0.1
+CDN_PORT=3000
+```
 4. `rails db:setup`
