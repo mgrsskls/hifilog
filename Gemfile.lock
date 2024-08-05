@@ -326,11 +326,11 @@ GEM
     responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
-    rexml (3.3.3)
+    rexml (3.3.4)
       strscan
     rss (0.3.0)
       rexml
-    rubocop (1.65.0)
+    rubocop (1.65.1)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
