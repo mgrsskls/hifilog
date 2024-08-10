@@ -14,11 +14,11 @@ _HiFi&thinsp;Log_ is completely free for all users, there is no company behind i
 If you find it valuable, you can send a small donation to cover the monthly costs.
 
 **buymeacoffee.com**: <a href="https://www.buymeacoffee.com/hifilog" rel="noopener">
-<img src="https://cdn.buymeacoffee.com/buttons/v2/arial-yellow.png" alt="Buy Me A Coffee" height="40" width="145" loading="lazy">
+<img src="/buymeacoffee.png" alt="Buy Me A Coffee" height="40" width="145" loading="lazy">
 </a>
 
 **paypal.com**: <a href="https://www.paypal.com/donate/?hosted_button_id=XKNPGEWPVWSHN" rel="noopener">
-<img src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal button" title="Support via paypal.com" height="40" width="78" loading="lazy">
+<img src="/paypal.gif" alt="Donate with PayPal button" height="40" width="78" loading="lazy">
 </a>
 
 Thank you very much in advance!

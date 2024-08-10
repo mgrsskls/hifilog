@@ -9,9 +9,9 @@
     <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= yield :js %>
-    <%= javascript_include_tag "application", type: "module", crossorigin: true, integrity: true %>
-    <%= javascript_include_tag "table_saw", type: "module", crossorigin: true, integrity: true %>
-    <%= javascript_include_tag "delete_form", type: "module", crossorigin: true, integrity: true if user_signed_in? %>
+    <%= javascript_include_tag "application", type: "module", nonce: true, crossorigin: true, integrity: true %>
+    <%= javascript_include_tag "table_saw", type: "module", nonce: true, crossorigin: true, integrity: true %>
+    <%= javascript_include_tag "delete_form", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
     <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
     <%= yield :css %>
     <%= csrf_meta_tags %>
@@ -317,10 +317,10 @@
           <div class="Footer-supporting">
             <h2 class="h4">Support HiFi&thinsp;Log</h2>
             <a href="https://www.buymeacoffee.com/hifilog" rel="noopener">
-              <img src="/buymeacoffee.png" alt="Buy Me A Coffee" title="Support via buymeacoffee.com" height="40" width="145" loading="lazy">
+              <img src="/buymeacoffee.png" alt="Buy Me A Coffee" height="40" width="145" loading="lazy">
             </a>
             <a href="https://www.paypal.com/donate/?hosted_button_id=XKNPGEWPVWSHN" rel="noopener">
-              <img src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal button" title="Support via paypal.com" height="40" width="78" loading="lazy">
+              <img src="/paypal.gif" alt="Donate with PayPal button" height="40" width="78" loading="lazy">
             </a>
           </div>
         </div>

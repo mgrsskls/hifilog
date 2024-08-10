@@ -3,7 +3,7 @@
   <%= stylesheet_link_tag "form", crossorigin: true, integrity: true %>
 <% end %>
 <% content_for :js do %>
-  <%= javascript_include_tag "notes", type: "module", crossorigin: true, integrity: true %>
+  <%= javascript_include_tag "notes", type: "module", nonce: true, crossorigin: true, integrity: true %>
 <% end %>
 
 <div class="NoteEditor">

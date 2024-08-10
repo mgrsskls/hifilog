@@ -2,7 +2,7 @@
   <%= stylesheet_link_tag "entity_form", crossorigin: true, integrity: true %>
 <% end %>
 <% content_for :js do %>
-  <%= javascript_include_tag "entity_form", type: "module", crossorigin: true, integrity: true %>
+  <%= javascript_include_tag "entity_form", type: "module", nonce: true, crossorigin: true, integrity: true %>
 <% end %>
 
 <div class="Form Form--centered">

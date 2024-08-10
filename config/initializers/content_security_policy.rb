@@ -8,12 +8,13 @@
 unless ENV['DISABLE_CSP']
   Rails.application.configure do
     config.content_security_policy do |policy|
-      policy.default_src :self, :https
-      policy.font_src    :self, :https, :data
-      policy.img_src     :self, :https, :data, ENV['CDN_HOST']
+      policy.base_uri    :self
+      policy.default_src :self
+      policy.font_src    :none
+      policy.img_src     :self, :data, ENV['CDN_HOST']
       policy.object_src  :none
-      policy.script_src  :self, :https, ENV['CDN_HOST']
-      policy.style_src   :self, :https, :unsafe_inline, ENV['CDN_HOST']
+      policy.script_src  :self, ENV['CDN_HOST'], :strict_dynamic
+      policy.style_src   :self, :unsafe_inline, ENV['CDN_HOST']
       # Specify URI for violation reports
       # policy.report_uri "/csp-violation-report-endpoint"
     end
