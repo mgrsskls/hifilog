@@ -46,11 +46,18 @@
 	cursor: pointer;
 }
 
-.SetupAddProducts-option label:is(:hover, :focus) {
+.SetupAddProducts-option input:focus ~ label {
+	outline: 0.125rem solid var(--color-focus-outline);
+	outline-offset: 0.1875rem;
+}
+
+.SetupAddProducts-option :is(label:hover, input:focus ~ label) {
 	background: var(--color-blue-925);
 }
 
-.SetupAddProducts-option label:is(:hover, :focus) .SetupAddProducts-checkmark {
+.SetupAddProducts-option
+	:is(label:hover, input:focus ~ label)
+	.SetupAddProducts-checkmark {
 	display: block;
 }
 
