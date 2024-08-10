@@ -1,9 +1,9 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "notes" %>
-  <%= stylesheet_link_tag "form" %>
+  <%= stylesheet_link_tag "notes", crossorigin: true, integrity: true %>
+  <%= stylesheet_link_tag "form", crossorigin: true, integrity: true %>
 <% end %>
 <% content_for :js do %>
-  <%= javascript_include_tag "notes", type: "module", crossorigin: true %>
+  <%= javascript_include_tag "notes", type: "module", crossorigin: true, integrity: true %>
 <% end %>
 
 <div class="NoteEditor">

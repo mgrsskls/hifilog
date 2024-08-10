@@ -1,5 +1,5 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "changelog" %>
+  <%= stylesheet_link_tag "changelog", crossorigin: true, integrity: true %>
 <% end %>
 
 <h1><%= t('headings.changelog') %> <span><%= model.name %></span></h1>

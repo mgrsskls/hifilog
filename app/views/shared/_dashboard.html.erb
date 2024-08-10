@@ -1,5 +1,5 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "dashboard" %>
+  <%= stylesheet_link_tag "dashboard", crossorigin: true, integrity: true %>
 <% end %>
 <div class="Dashboard">
   <nav class="Dashboard-menu" aria-label="<%= t('headings.dashboard') %>">
