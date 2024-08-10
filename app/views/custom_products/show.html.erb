@@ -39,8 +39,6 @@
           <dl class="Data">
             <dt>Built by</dt>
             <dd><%= link_to @possession.custom_product.user.user_name, user_path(id: @possession.custom_product.user.user_name.downcase) %></dd>
-            <dt>Built in</dt>
-            <dd><%= @possession.custom_product.built_in %></dd>
             <dt><%= t('headings.category').html_safe %></dt>
             <dd>
               <%= @possession.custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>

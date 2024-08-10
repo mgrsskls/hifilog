@@ -6,6 +6,7 @@
 <% include_delete_button ||= false %>
 <% include_setup ||= false %>
 <% hide_brand ||= false %>
+<% hide_release_date ||= false %>
 
 <div class="<%= "u-pullOut" if pull_out %> ProductListing">
   <% if items.any? %>
@@ -16,7 +17,9 @@
             <th class="Table-image">Photo</th>
           <% end %>
           <th><%= t('name') %></th>
-          <th><%= t('product.released') %></th>
+          <% unless hide_release_date %>
+            <th><%= t('product.released') %></th>
+          <% end %>
           <th><%= t('headings.category').html_safe %></th>
           <% if include_setup %>
             <th><%= t('headings.setup') %></th>
@@ -44,13 +47,15 @@
               <% end %>
               <b><%= item.show_path.present? ? (link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.show_path) : item.name %></b>
             </th>
-            <td class="Table-date">
-              <% if item.release_date.present? %>
-                <time datetime="<%= item.release_date %>" data-format="false"><%= item.release_date %></time>
-              <% else %>
-                -
-              <% end %>
-            </td>
+            <% unless hide_release_date %>
+              <td class="Table-date">
+                <% if item.release_date.present? %>
+                  <time datetime="<%= item.release_date %>" data-format="false"><%= item.release_date %></time>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+            <% end %>
             <td class="Table-sm">
               <% if item.sub_categories.any? %>
                 <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>

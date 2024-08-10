@@ -22,12 +22,20 @@ class CustomProductPresenter
     name
   end
 
+  def release_date
+    nil
+  end
+
   def show_path
     user_custom_product_path(id: @custom_product.id, user_id: user.user_name.downcase)
   end
 
   def edit_path
     dashboard_edit_custom_product_path(id: @custom_product.id)
+  end
+
+  def update_path
+    possession_path(id: @object.id)
   end
 
   def delete_path

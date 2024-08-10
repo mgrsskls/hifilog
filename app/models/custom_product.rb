@@ -10,10 +10,6 @@ class CustomProduct < ApplicationRecord
     {}
   end
 
-  def built_in
-    2020
-  end
-
   def formatted_description
     return if description.blank?
 
