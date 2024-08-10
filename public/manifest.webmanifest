@@ -1,4 +1,9 @@
 {
+	"start_url": "https://www.hifilog.com",
+	"name": "HiFi Log",
+	"display": "standalone",
+	"background_color": "#0F1C24",
+	"theme_color": "#0F1C24",
 	"icons": [
 		{ "src": "/icon-192.png?v=3", "type": "image/png", "sizes": "192x192" },
 		{ "src": "/icon-512.png?v=3", "type": "image/png", "sizes": "512x512" }
