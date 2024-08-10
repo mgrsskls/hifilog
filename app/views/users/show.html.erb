@@ -2,6 +2,32 @@
   <%= stylesheet_link_tag "profile" %>
 <% end %>
 
+<% content_for :js_bottom do %>
+  <%= javascript_tag nonce: true do %>
+    {
+      const tabs = document.querySelector("#tabs");
+      const tabsList = tabs.querySelector(".Tabs-list");
+      const activeTab = tabsList.querySelector('[aria-current="page"]');
+
+      if (tabs.clientWidth < tabs.scrollWidth) {
+        activeTab.scrollIntoView();
+
+        setScrollHint();
+
+        tabs.addEventListener("scroll", () => {
+          requestAnimationFrame(setScrollHint);
+        }, { passive: true });
+      }
+
+      function setScrollHint() {
+        tabs.classList.add("is-scrollable");
+        tabs.classList.toggle("at-start", tabs.scrollLeft <= 0);
+        tabs.classList.toggle("at-end", tabs.scrollWidth - tabs.clientWidth - tabs.scrollLeft <= 0);
+      }
+    }
+  <% end %>
+<% end %>
+
 <% if @user.hidden? %>
   <div class="Profile-hiddenNotice">
     <p class="u-container">
@@ -83,29 +109,6 @@
             <% end %>
           </ul>
         </div>
-        <%= javascript_tag nonce: true do %>
-          {
-            const tabs = document.querySelector("#tabs");
-            const tabsList = tabs.querySelector(".Tabs-list");
-            const activeTab = tabsList.querySelector('[aria-current="page"]');
-
-            if (tabs.clientWidth < tabs.scrollWidth) {
-              activeTab.scrollIntoView();
-
-              setScrollHint();
-
-              tabs.addEventListener("scroll", () => {
-                requestAnimationFrame(setScrollHint);
-              }, { passive: true });
-            }
-
-            function setScrollHint() {
-              tabs.classList.add("is-scrollable");
-              tabs.classList.toggle("at-start", tabs.scrollLeft <= 0);
-              tabs.classList.toggle("at-end", tabs.scrollWidth - tabs.clientWidth - tabs.scrollLeft <= 0);
-            }
-          }
-        <% end %>
         <%= render "shared/category_filter", categories: @categories %>
       </div>
       <%= render "shared/products",
