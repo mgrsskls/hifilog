@@ -1,4 +1,4 @@
-<button type="button" class="OpenImageDialog OpenImageDialog--upload" aria-controls="<%= prefix %>-image-dialog-<%= item.id %>">
+<button type="button" class="OpenImageDialog OpenImageDialog--upload" data-dialog="<%= prefix %>-image-dialog-<%= item.id %>">
   <% if item.image.attached? %>
     <span class="OpenImageDialog-placeholder" style="<%= "--size: #{size}" if defined?(size) %>">
       <picture>

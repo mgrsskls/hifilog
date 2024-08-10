@@ -62,14 +62,17 @@ import "./theme_toggle.js";
 		});
 	});
 
-	document.querySelectorAll(".OpenImageDialog").forEach((button) => {
+	document.querySelectorAll("button[data-dialog]").forEach((button) => {
 		button.addEventListener("click", () => {
-			const dialog = document.querySelector(
-				`#${button.getAttribute("aria-controls")}`,
-			);
-			dialog.showModal();
-		});
+			const dialog = document.querySelector(`#${button.dataset.dialog}`);
 
+			if (dialog) {
+				dialog.showModal();
+			}
+		});
+	});
+
+	document.querySelectorAll(".OpenImageDialog").forEach((button) => {
 		if (!button.classList.contains("OpenImageDialog--upload")) {
 			button.addEventListener("mouseover", ({ currentTarget }) => {
 				const dialog = currentTarget.parentNode.querySelector("dialog");

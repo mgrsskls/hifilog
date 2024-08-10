@@ -27,7 +27,7 @@
 
   <div class="PageActions">
     <div class="PageAction">
-      <button type="button" aria-controls="add-products" class="Button AddProductsButton">
+      <button type="button" data-dialog="add-products" class="Button">
         Add / Remove products
       </button>
       <dialog class="SetupAddProducts" id="add-products">
@@ -63,17 +63,6 @@
           </div>
         <% end %>
       </dialog>
-      <%= javascript_tag nonce: true do %>
-        {
-          const button = document.querySelector(".AddProductsButton");
-
-          if (button) {
-            button.addEventListener("click", () => {
-              document.querySelector("#add-products").showModal();
-            });
-          }
-        }
-      <% end %>
     </div>
     <div class="PageAction">
       <%= button_to t('delete_setup.label'),
