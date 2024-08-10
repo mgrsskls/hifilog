@@ -272,6 +272,11 @@
 		outline-offset: 0.1875rem;
 	}
 
+	form[method="dialog"] button:not([class]),
+	button[formmethod="dialog"]:not([class]) {
+		text-decoration: underline;
+	}
+
 	header {
 		background: var(--color-header-bg);
 		position: sticky;
