@@ -20,7 +20,7 @@ class PossessionsController < ApplicationController
   end
 
   def update
-    @possession = Possession.find(params[:id])
+    @possession = current_user.possessions.find(params[:id])
 
     unless params[:possession] || params[:delete_image] || params[:setup_id]
       return redirect_back fallback_location: root_url
