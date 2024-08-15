@@ -13,16 +13,17 @@ class SetupsController < ApplicationController
     add_breadcrumb @setup.name, dashboard_setup_path(@setup)
     @page_title = @setup.name
 
-    all_possessions = @setup.possessions
-                            .joins(:product)
-                            .includes([product: [{ sub_categories: :category }, :brand]])
-                            .map { |possession| SetupItemPresenter.new(possession, @setup) }
-
-    all_custom_products = @setup.possessions.joins(:custom_product)
-                                .includes([custom_product: [{ sub_categories: :category }]])
-                                .map { |possession| CustomProductPresenter.new(possession) }
-
-    all = (all_possessions + all_custom_products).sort_by { |p| p.short_name.downcase }
+    all = @setup.possessions
+                .includes([product: [{ sub_categories: :category }, :brand]])
+                .includes([custom_product: [{ sub_categories: :category }]])
+                .map do |possession|
+                  if possession.custom_product
+                    CustomProductSetupPossessionPresenter.new(possession, @setup)
+                  else
+                    SetupPossessionPresenter.new(possession, @setup)
+                  end
+                end
+                .sort_by(&:display_name)
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
@@ -34,26 +35,23 @@ class SetupsController < ApplicationController
       @possessions = all
     end
 
-    @categories = all_possessions.map(&:product)
-                                 .flat_map(&:sub_categories)
-                                 .sort_by(&:name)
-                                 .uniq
-                                 .group_by(&:category)
-                                 .sort_by { |category| category[0].order }
-                                 # rubocop:disable Style/BlockDelimiters
-                                 .map { |c|
-                                   [
-                                     c[0],
-                                     c[1].map { |sub_category|
-                                       # rubocop:enable Style/BlockDelimiters
-                                       {
-                                         name: sub_category.name,
-                                         friendly_id: sub_category.friendly_id,
-                                         path: dashboard_setup_path(id: @setup.id, category: sub_category.friendly_id)
-                                       }
-                                     }
-                                   ]
-                                 }
+    @categories = all.flat_map(&:sub_categories)
+                     .sort_by(&:name)
+                     .uniq
+                     .group_by(&:category)
+                     .sort_by { |category| category[0].order }
+                     .map do |c|
+                       [
+                         c[0],
+                         c[1].map do |sub_category|
+                           {
+                             name: sub_category.name,
+                             friendly_id: sub_category.friendly_id,
+                             path: dashboard_setup_path(id: @setup.id, category: sub_category.friendly_id)
+                           }
+                         end
+                       ]
+                     end
     @reset_path = dashboard_setup_path(@setup)
   end
 

@@ -22,18 +22,20 @@ class UserController < ApplicationController
     @page_title = I18n.t('headings.collection')
     @active_dashboard_menu = :products
 
-    all_possessions = current_user.possessions.joins(:product)
-                                  .includes([product: [{ sub_categories: :category }, :brand]])
-                                  .includes([image_attachment: [:blob]])
-                                  .includes([:setup_possession, :setup, :product_variant])
-                                  .map { |possession| ItemPresenter.new(possession) }
-
-    all_custom_products = current_user.possessions.joins(:custom_product)
-                                      .includes([custom_product: [{ sub_categories: :category }]])
-                                      .includes([:setup_possession, :setup])
-                                      .map { |possession| CustomProductPresenter.new(possession) }
-
-    all = (all_possessions + all_custom_products).sort_by { |p| p.short_name.downcase }
+    all = current_user.possessions
+                      .where(prev_owned: false)
+                      .includes([product: [{ sub_categories: :category }, :brand]])
+                      .includes([:product_variant])
+                      .includes([custom_product: [{ sub_categories: :category }]])
+                      .includes([image_attachment: [:blob]])
+                      .map do |possession|
+                        if possession.custom_product_id
+                          CustomProductPossessionPresenter.new(possession)
+                        else
+                          CurrentPossessionPresenter.new(possession)
+                        end
+                      end
+                      .sort_by(&:display_name)
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
@@ -110,52 +112,6 @@ class UserController < ApplicationController
                                  ]
                                }
     @reset_path = dashboard_bookmarks_path
-  end
-
-  def prev_owneds
-    add_breadcrumb I18n.t('headings.prev_owneds'), dashboard_prev_owneds_path
-    @page_title = I18n.t('headings.prev_owneds')
-    @active_dashboard_menu = :prev_owneds
-
-    all_prev_owneds = current_user.prev_owneds
-                                  .joins(:product)
-                                  .includes([product: [{ sub_categories: :category }, :brand]])
-                                  .order('LOWER(products.name)')
-                                  .map { |prev_owned| PrevOwnedPresenter.new(prev_owned) }
-
-    if params[:category].present?
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @prev_owneds = all_prev_owneds.select { |prev_owned| @sub_category.products.include?(prev_owned.product) }
-
-      if @prev_owneds.empty?
-        @prev_owneds = all_prev_owneds
-        @sub_category = nil
-      end
-    else
-      @prev_owneds = all_prev_owneds
-    end
-
-    @categories = all_prev_owneds.map(&:product)
-                                 .flat_map(&:sub_categories)
-                                 .sort_by(&:name)
-                                 .uniq
-                                 .group_by(&:category)
-                                 .sort_by { |category| category[0].order }
-                                 # rubocop:disable Style/BlockDelimiters
-                                 .map { |c|
-                                   [
-                                     c[0],
-                                     c[1].map { |sub_category|
-                                       # rubocop:enable Style/BlockDelimiters
-                                       {
-                                         name: sub_category.name,
-                                         friendly_id: sub_category.friendly_id,
-                                         path: dashboard_prev_owneds_path(category: sub_category.friendly_id)
-                                       }
-                                     }
-                                   ]
-                                 }
-    @reset_path = dashboard_prev_owneds_path
   end
 
   def contributions

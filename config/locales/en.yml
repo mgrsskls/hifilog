@@ -34,14 +34,14 @@ en:
     discontinued: Discontinued
     in_your_collection: In my collection
     in_your_bookmarks: Bookmarked
-    prev_owned: Previously owned
+    prev_owned: In my previous products
   account: Account
   add: Add
   add_product: Add Product
   add_to: Add to &ldquo;%{name}&rdquo;
   add_to_bookmarks: Add to <b>Bookmarks</b>
   add_to_collection: Add to <b>Collection</b>
-  add_to_prev_owned: Previously owned
+  add_to_prev_owned: Add to <b>Previous Products</b>
   amount_categories:
     zero: 0 Categories
     one: 1 Category

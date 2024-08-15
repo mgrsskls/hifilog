@@ -1,20 +1,15 @@
-class PossessionPresenter
+class PossessionPresenter < ItemPresenter
   include Rails.application.routes.url_helpers
 
-  delegate_missing_to :@object
-
-  def initialize(object)
-    @object = object
-
-    if object.custom_product_id
-      @presenter = CustomProductPresenter.new(object) if object.custom_product_id
-      return
-    end
-
-    @presenter = ItemPresenter.new(object)
+  def image_update_item
+    @object
   end
 
-  def display_name
-    @presenter.display_name
+  def delete_path
+    possession_path(@object.id)
+  end
+
+  def update_path
+    possession_path(@object.id)
   end
 end

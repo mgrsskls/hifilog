@@ -13,10 +13,8 @@
       hide_release_date: true,
       include_edit_link: true,
       include_delete_button: true,
-      include_setup: true,
       delete_button_label: t('delete_custom_product.label'),
-      delete_confirm_msg: 'delete_custom_product.confirm',
-      delete_path: :delete_path
+      delete_confirm_msg: 'delete_custom_product.confirm'
     %>
   <% else %>
     <%= render "shared/empty_state", message: t('empty_state.custom_products') %>

@@ -24,7 +24,7 @@
 	border-radius: 50%;
 }
 
-.MetaLinks :is(a, button) {
+.MetaLinks :is(a, button):not(:is(dialog *)) {
 	text-decoration: underline;
 }
 

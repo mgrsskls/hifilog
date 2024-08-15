@@ -1,39 +1,50 @@
 <% variant_id = @variant ? @variant.id : nil %>
 <% if user_signed_in? %>
   <% @possessions.each do |possession| %>
-    <div class="ProductPossession">
+    <div class="ProductPossession" data-current="<%= !possession.prev_owned %>">
       <% if possession.errors.any? %>
         <%= render "shared/flash_messages", messages: possession.errors.map { |error| ["alert", error.full_message] } %>
       <% end %>
 
       <div class="ProductPossession-heading u-flex u-gap-md u-alignCenter">
         <div>
-          <%= render "shared/image_upload", item: ItemPresenter.new(possession), size: "4rem", prefix: "possessions" %>
+          <%= render "shared/image_upload", item: ItemPresenter.new(possession), image_update_item: possession, size: "4rem", prefix: "possessions" %>
         </div>
         <span>
-          <b class="ProductPossession-headingName"><%= t('symbols.in_your_collection') %></b>
-          <% if possession.created_at %>
+          <b class="ProductPossession-headingName"><%= possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
+          <% if possession.created_at && !possession.prev_owned %>
             <small>since <time datetime="<%= formatted_datetime possession.created_at %>"><%= formatted_datetime possession.created_at %></time></small>
           <% end %>
         </span>
       </div>
 
-      <% if @setups.any? %>
-        <%= form_for possession, method: :put, html: { class: "ProductPossession-setup u-flex u-gap-md u-alignCenter" } do |f| %>
-          <label for="setup-select-<%= possession.id %>">Setup</label>
-          <select name="setup_id" class="SetupSelect" id="setup-select-<%= possession.id %>">
-            <option value="">None</option>
-            <% @setups.each do |setup| %>
-              <option value="<%= setup.id %>"<%= " selected" if possession.setup == setup %>><%= setup.name %></option>
-            <% end %>
-          </select>
+      <% unless possession.prev_owned %>
+        <%= form_for possession, method: :put, html: { class: "ProductPossession-setup" } do |f| %>
+          <% if @setups.any? %>
+            <div class="u-flex u-gap-md u-alignCenter">
+              <label for="setup-select-<%= possession.id %>">Setup</label>
+              <select name="possession[setup_id]" class="SetupSelect" id="setup-select-<%= possession.id %>">
+                <option value="">None</option>
+                <% @setups.each do |setup| %>
+                  <option value="<%= setup.id %>"<%= " selected" if possession.setup == setup %>><%= setup.name %></option>
+                <% end %>
+              </select>
+            </div>
+          <% end %>
         <% end %>
       <% end %>
 
       <ul class="ProductPossession-metaLinks Entity-metaLinks MetaLinks">
         <li>
-          <%= button_to possession_path(possession), method: :delete do %>
-              <%= t('remove') %>
+          <% if possession.prev_owned %>
+            <%= button_to possession.delete_button_label,
+              possession.delete_path,
+              method: :delete,
+              class: "DeleteButton",
+              "data-msg": possession.delete_confirm_msg
+            %>
+          <% else %>
+            <%= render "shared/remove_product_from_possessions", possession: possession, id: possession.id %>
           <% end %>
         </li>
       </ul>
@@ -61,6 +72,15 @@
 </div>
 
 <div class="Product-action">
+  <%= button_to possessions_path(id: product.id, product_variant_id: variant_id, prev_owned: true), class: "Button Button--secondary Button--loadingIcon" do %>
+    <span class="u-flex u-alignCenter u-gap-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+      <%= t('add_to_prev_owned').html_safe %>
+    </span>
+  <% end %>
+</div>
+
+<div class="Product-action">
   <% if @bookmark %>
     <%= button_to bookmark_path(@bookmark), method: :delete, class: "Button Button--loadingIcon", "aria-pressed": "true" do %>
       <span class="u-flex u-alignCenter u-gap-sm">
@@ -74,18 +94,6 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.6 3.32c1.1.13 1.9 1.08 1.9 2.19V21L12 17.25 4.5 21V5.5c0-1.1.8-2.05 1.9-2.18a48.5 48.5 0 0 1 11.2 0Z"/></svg>
         <%= t('add_to_bookmarks').html_safe %>
       </span>
-    <% end %>
-  <% end %>
-</div>
-
-<div class="Product-action">
-  <% if @prev_owned %>
-    <%= button_to prev_owned_path(@prev_owned), method: :delete, class: "CheckboxButton is-checked", "aria-pressed": "true" do %>
-      <span><%= t('add_to_prev_owned') %></span>
-    <% end %>
-  <% else %>
-    <%= button_to prev_owneds_path(product_id: product.id, product_variant_id: variant_id), class: "CheckboxButton", "aria-pressed": "false" do %>
-      <span><%= t('add_to_prev_owned') %></span>
     <% end %>
   <% end %>
 </div>

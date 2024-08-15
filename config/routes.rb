@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     root 'user#dashboard'
     get 'products', to: 'user#products', as: :products
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
-    get 'previous-products', to: 'user#prev_owneds', as: :prev_owneds
+    get 'previous-products', to: 'possessions#previous', as: :prev_owneds
     get 'contributions', to: 'user#contributions', as: :contributions
     get 'custom-products', to: 'custom_products#index', as: :custom_products
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
@@ -50,10 +50,11 @@ Rails.application.routes.draw do
 
   resources :notes, only: [:create, :destroy, :update]
   resources :custom_products, only: [:create, :destroy, :update]
-  resources :possessions, only: [:create, :destroy, :update]
+  resources :possessions, only: [:create, :destroy, :update] do
+    post 'move_to_prev_owneds', to: 'possessions#move_to_prev_owneds'
+  end
   resources :setup_possessions, only: [:create, :update, :destroy]
   resources :bookmarks, only: [:create, :destroy]
-  resources :prev_owneds, only: [:create, :destroy]
   resources :setups, only: [:create, :update, :destroy]
   resources :users, only: [:index, :show] do
     get '/custom-products/:id', to: 'custom_products#show', as: :custom_product

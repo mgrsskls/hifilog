@@ -15,11 +15,15 @@
 }
 
 .ProductPossession {
-	background: var(--color-success-bg);
 	border: 0.25rem solid var(--color-transparency-10);
 	border-radius: var(--border-radius);
-	color: var(--color-success-copy);
 	padding: 1rem 1rem 0.5rem;
+	color: var(--color-secondary);
+}
+
+.ProductPossession[data-current="true"] {
+	background: var(--color-success-bg);
+	color: var(--color-success-copy);
 }
 
 .ProductPossession-heading {

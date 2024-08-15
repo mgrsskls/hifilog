@@ -34,22 +34,22 @@
         <%= form_for @setup, method: :put do |f| %>
           <h2>Add Products <small>to <%= @setup.name %></small></h2>
           <div class="SetupAddProducts-list">
-            <% presenters = current_user.possessions.map { | possession | PossessionPresenter.new(possession) }.sort_by(&:display_name) %>
-            <%= f.collection_check_boxes :possession_ids, presenters, :id, :display_name do |check_box| %>
+            <% current_user.possessions.each do |possession| %>
+              <% presenter = possession.custom_product_id ? CustomProductPossessionPresenter.new(possession) : PossessionPresenter.new(possession) %>
               <div class="SetupAddProducts-option">
-                <%= check_box.check_box %>
-                <%= check_box.label do %>
-                  <% if check_box.object.image.attached? %>
+                <%= check_box_tag "setup[possession_ids][]", possession.id, { id: "setup_possession_ids_#{possession.id}", checked: @setup.possession_ids.include?(possession.id) } %>
+                <%= f.label :possession_ids, value: possession.id do %>
+                  <% if presenter.image.attached? %>
                     <picture>
-                      <source srcset="<%= cdn_image_url(check_box.object.image.variant(:thumb_avif)) %>" type="image/avif">
-                      <%= image_tag cdn_image_url(check_box.object.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp", width: 50, height: 50 %>
+                      <source srcset="<%= cdn_image_url(presenter.image.variant(:thumb_avif)) %>" type="image/avif">
+                      <%= image_tag cdn_image_url(presenter.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp", width: 50, height: 50 %>
                     </picture>
                   <% else %>
                     <span class="OpenImageDialog-placeholder" style="inline-size: 3.125rem;">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.3 15.8 5.1-5.2a2.3 2.3 0 0 1 3.2 0l5.1 5.2m-1.4-1.6 1.4-1.4a2.3 2.3 0 0 1 3.1 0l3 3m-18 3.7h16.4a1.5 1.5 0 0 0 1.6-1.5V6a1.5 1.5 0 0 0-1.6-1.5H3.9A1.5 1.5 0 0 0 2.3 6v12a1.5 1.5 0 0 0 1.5 1.5ZM14.2 8.2h0v0h0v0Zm.4 0a.4.4 0 1 1-.7 0 .4.4 0 0 1 .7 0Z"/></svg>
                     </span>
                   <% end %>
-                  <%= check_box.object.display_name %>
+                  <%= presenter.display_name %>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="SetupAddProducts-checkmark"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.8 6 6 9-13.6"/></svg>
                 <% end %>
               </div>

@@ -7,6 +7,7 @@
 <% include_setup ||= false %>
 <% hide_brand ||= false %>
 <% hide_release_date ||= false %>
+<% delete_dialog ||= false %>
 
 <div class="<%= "u-pullOut" if pull_out %> ProductListing">
   <% if items.any? %>
@@ -35,9 +36,9 @@
             <% if include_images %>
               <td class="Table-image">
                 <% if include_image_upload %>
-                  <%= render "shared/image_upload", item: item, prefix: "table" %>
+                  <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "table" %>
                 <% else %>
-                  <%= render "shared/product_image_dialog", item: item, prefix: "table" %>
+                  <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "table" %>
                 <% end %>
               </td>
             <% end %>
@@ -76,12 +77,16 @@
                   <% end %>
                   <% if include_delete_button %>
                     <li>
-                      <%= button_to item.delete_button_label,
-                        item.delete_path,
-                        method: :delete,
-                        class: "DeleteButton",
-                        "data-msg": item.delete_confirm_msg
-                      %>
+                      <% if delete_dialog %>
+                        <%= render "shared/remove_product_from_possessions", possession: item, id: item.id %>
+                      <% else %>
+                        <%= button_to item.delete_button_label,
+                          item.delete_path,
+                          method: :delete,
+                          class: "DeleteButton",
+                          "data-msg": item.delete_confirm_msg
+                        %>
+                      <% end %>
                     </li>
                   <% end %>
                 </ul>
@@ -98,9 +103,9 @@
             <div class="u-flex u-gap-md">
               <div>
                 <% if include_image_upload %>
-                  <%= render "shared/image_upload", item: item, prefix: "list" %>
+                  <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
                 <% else %>
-                  <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
+                  <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "list" %>
                 <% end %>
                  <% if include_setup && item.setup.present? %>
                   <small>
@@ -133,12 +138,16 @@
                       <% end %>
                       <% if include_delete_button %>
                         <li>
-                          <%= button_to item.delete_button_label,
-                            item.delete_path,
-                            method: :delete,
-                            class: "DeleteButton",
-                            "data-msg": item.delete_confirm_msg
-                          %>
+                          <% if delete_dialog %>
+                            <%= render "shared/remove_product_from_possessions", possession: item, id: "#{item.id}-2" %>
+                          <% else %>
+                            <%= button_to item.delete_button_label,
+                              item.delete_path,
+                              method: :delete,
+                              class: "DeleteButton",
+                              "data-msg": item.delete_confirm_msg
+                            %>
+                          <% end %>
                         </li>
                       <% end %>
                     </ul>

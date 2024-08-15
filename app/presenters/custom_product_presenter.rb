@@ -1,25 +1,18 @@
 class CustomProductPresenter
   include Rails.application.routes.url_helpers
 
-  delegate_missing_to :@object
-
-  attr_reader :object, :custom_product
+  delegate_missing_to :@custom_product
 
   def initialize(object)
-    @object = object
-    @custom_product = object.custom_product
-  end
-
-  def name
-    @custom_product.name
+    @custom_product = object
   end
 
   def short_name
-    name
+    @custom_product.name
   end
 
   def display_name
-    name
+    @custom_product.name
   end
 
   def release_date
@@ -35,7 +28,7 @@ class CustomProductPresenter
   end
 
   def update_path
-    possession_path(id: @object.id)
+    custom_product_path(id: @custom_product.id)
   end
 
   def delete_path
@@ -50,6 +43,10 @@ class CustomProductPresenter
     I18n.t('delete_custom_product.confirm', name:)
   end
 
+  def image_update_item
+    @custom_product
+  end
+
   def brand_name
     'Custom'
   end
@@ -60,5 +57,17 @@ class CustomProductPresenter
 
   def sub_categories
     @custom_product.sub_categories
+  end
+
+  def product_variant
+    nil
+  end
+
+  def prev_owned
+    false
+  end
+
+  def setup
+    false
   end
 end

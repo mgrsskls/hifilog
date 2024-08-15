@@ -1,9 +1,9 @@
 <button type="button" class="OpenImageDialog OpenImageDialog--upload" data-dialog="<%= prefix %>-image-dialog-<%= item.id %>">
-  <% if item.image.attached? %>
+  <% if image_update_item.image.attached? %>
     <span class="OpenImageDialog-placeholder" style="<%= "--size: #{size}" if defined?(size) %>">
       <picture>
-        <source srcset="<%= cdn_image_url(item.image.variant(:thumb_avif)) %>" type="image/avif">
-        <%= image_tag cdn_image_url(item.image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+        <source srcset="<%= cdn_image_url(image_update_item.image.variant(:thumb_avif)) %>" type="image/avif">
+        <%= image_tag cdn_image_url(image_update_item.image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
       </picture>
       <span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.3 15.8 5.1-5.2a2.3 2.3 0 0 1 3.2 0l5.1 5.2m-1.4-1.6 1.4-1.4a2.3 2.3 0 0 1 3.1 0l3 3m-18 3.7h16.4a1.5 1.5 0 0 0 1.6-1.5V6a1.5 1.5 0 0 0-1.6-1.5H3.9A1.5 1.5 0 0 0 2.3 6v12a1.5 1.5 0 0 0 1.5 1.5ZM14.2 8.2h0v0h0v0Zm.4 0a.4.4 0 1 1-.7 0 .4.4 0 0 1 .7 0Z"/></svg>
@@ -17,9 +17,9 @@
     </span>
   <% end %>
 </button>
- <dialog class="is-light" id="<%= prefix %>-image-dialog-<%= item.id %>">
-  <%= form_for(item, url: possession_path(id: item.id), html: { method: :put, class: "Form" }) do |f| %>
-    <%= render "shared/flash_messages", messages: item.errors.full_messages.map { |message| [ :alert, message ] } if item.errors.full_messages.any? %>
+<dialog class="is-light" id="<%= prefix %>-image-dialog-<%= item.id %>">
+  <%= form_for(image_update_item, url: item.update_path, html: { method: :put, class: "Form" }) do |f| %>
+    <%= render "shared/flash_messages", messages: image_update_item.errors.full_messages.map { |message| [ :alert, message ] } if image_update_item.errors.full_messages.any? %>
     <div class="Form-field">
       <%= f.label :image, class: "h4" do %>Photo<% end %>
       <p>Upload a photo of your <b><%= item.display_name %></b> and showcase it on your profile.</p>
@@ -27,18 +27,18 @@
         <b>Note:</b> You may be held personally liable for uploading images that infringe the rights of intellectual property owners. Only upload images to which you have the rights or which are available for public use.
       </p>
       <div class="u-flex u-gap-md u-alignCenter">
-        <% if item.image.attached? %>
+        <% if image_update_item.image.attached? %>
           <picture>
-            <source srcset="<%= cdn_image_url(item.image.variant(:thumb_avif)) %>" type="image/avif">
-            <%= image_tag cdn_image_url(item.image.variant(:thumb)), "aria-hidden": "true", alt: "", style: "inline-size: 5rem; block-size: 5rem;" %>
+            <source srcset="<%= cdn_image_url(image_update_item.image.variant(:thumb_avif)) %>" type="image/avif">
+            <%= image_tag cdn_image_url(image_update_item.image.variant(:thumb)), "aria-hidden": "true", alt: "", style: "inline-size: 5rem; block-size: 5rem;" %>
           </picture>
         <% end %>
         <div>
           <%= f.file_field :image, accept: "image/jpeg,image/png,image/gif,image/webp" %>
-          <% if item.image.attached? %>
+          <% if image_update_item.image.attached? %>
             <div class="ImageDialog-delete">
-              <input type="checkbox" name="delete_image" id="delete-image-<%= item.id %>">
-              <label for="delete-image-<%= item.id %>">Delete image</label>
+              <%= f.check_box :delete_image %>
+              <%= f.label :delete_image, "Delete image" %>
             </div>
           <% end %>
         </div>
