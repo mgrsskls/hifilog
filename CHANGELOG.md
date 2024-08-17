@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-08-17">2024-08-17</time>
+
+- Users can now move products from their collection to their previously owned products
+
 ## <time datetime="2024-03-18">2024-03-18</time>
 
 - Users can now create private notes about products

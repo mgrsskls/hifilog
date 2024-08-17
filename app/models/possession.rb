@@ -1,6 +1,4 @@
 class Possession < ApplicationRecord
-  include Rails.application.routes.url_helpers
-
   belongs_to :user
   belongs_to :product, optional: true
   belongs_to :product_variant, optional: true
@@ -17,6 +15,8 @@ class Possession < ApplicationRecord
 
   validate :validate_image_content_type, :validate_image_file_size, on: :update
   validate :validate_image_content_type, :validate_image_file_size, on: :update
+
+  attr_accessor :delete_image
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[

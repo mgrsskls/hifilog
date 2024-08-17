@@ -36,22 +36,17 @@ class UsersController < ApplicationController
     if params[:setup]
       setup = @user.setups.find(params[:setup])
       all_possessions = setup.possessions
-      all_custom_products = setup.possessions
     else
       all_possessions = @user.possessions
-      all_custom_products = @user.possessions
     end
 
-    all_possessions = all_possessions.joins([:product])
-                                     .includes([product: [{ sub_categories: :category }, :brand]])
-                                     .includes([:product_variant])
-                                     .includes([image_attachment: [:blob]])
-                                     .order('LOWER(products.name)')
-                                     .map { |possession| ItemPresenter.new(possession) }
-    all_custom_products = all_custom_products.joins(:custom_product)
-                                             .includes([custom_product: [{ sub_categories: :category }]])
-                                             .map { |possession| CustomProductPresenter.new(possession) }
-    all = (all_possessions + all_custom_products).sort_by(&:short_name)
+    all = all_possessions.where(prev_owned: false)
+                         .includes([product: [{ sub_categories: :category }, :brand]])
+                         .includes([:product_variant])
+                         .includes([custom_product: [{ sub_categories: :category }]])
+                         .includes([image_attachment: [:blob]])
+                         .map { |possession| PossessionPresenter.new(possession) }
+                         .sort_by(&:display_name)
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
@@ -68,12 +63,10 @@ class UsersController < ApplicationController
                      .uniq
                      .group_by(&:category)
                      .sort_by { |category| category[0].order }
-                     # rubocop:disable Style/BlockDelimiters
-                     .map { |c|
+                     .map do |c|
                        [
                          c[0],
-                         c[1].map { |sub_category|
-                           # rubocop:enable Style/BlockDelimiters
+                         c[1].map do |sub_category|
                            {
                              name: sub_category.name,
                              friendly_id: sub_category.friendly_id,
@@ -89,9 +82,9 @@ class UsersController < ApplicationController
                                end
                              )
                            }
-                         }
+                         end
                        ]
-                     }
+                     end
     @reset_path = @user.profile_path
 
     render 'show', locals: { include_images: true }
@@ -109,31 +102,32 @@ class UsersController < ApplicationController
 
     setup_user_page(@user)
 
-    all_prev_owneds = @user.prev_owneds
-                           .joins(:product)
+    all_possessions = @user.possessions
+                           .where(prev_owned: true)
                            .includes([product: [{ sub_categories: :category }, :brand]])
-                           .order('LOWER(products.name)')
-                           .map { |prev_owned| ItemPresenter.new(prev_owned) }
+                           .includes([:product_variant])
+                           .includes([custom_product: [{ sub_categories: :category }]])
+                           .includes([image_attachment: [:blob]])
+                           .map { |possession| PreviousPossessionPresenter.new(possession) }
+                           .sort_by(&:display_name)
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all_prev_owneds.select { |possession| @sub_category.products.include?(possession.product) }
+      @possessions = all_possessions.select { |possession| @sub_category.products.include?(possession.product) }
     else
-      @possessions = all_prev_owneds
+      @possessions = all_possessions
     end
 
-    @categories = all_prev_owneds.map(&:product)
+    @categories = all_possessions.map(&:product)
                                  .flat_map(&:sub_categories)
                                  .sort_by(&:name)
                                  .uniq
                                  .group_by(&:category)
                                  .sort_by { |category| category[0].order }
-                                 # rubocop:disable Style/BlockDelimiters
-                                 .map { |c|
+                                 .map do |c|
                                    [
                                      c[0],
-                                     c[1].map { |sub_category|
-                                       # rubocop:enable Style/BlockDelimiters
+                                     c[1].map do |sub_category|
                                        {
                                          name: sub_category.name,
                                          friendly_id: sub_category.friendly_id,
@@ -142,9 +136,9 @@ class UsersController < ApplicationController
                                            category: sub_category.friendly_id
                                          )
                                        }
-                                     }
+                                     end
                                    ]
-                                 }
+                                 end
     @reset_path = user_previous_products_path(id: @user.user_name)
 
     render 'show', locals: { include_images: false }

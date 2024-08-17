@@ -104,7 +104,7 @@
             <% @user.setups.where(private: false).each do |setup| %>
               <li><%= link_to setup.name, user_setup_path(user_id: @user.user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: @user.user_name, setup: setup.id) ? "page" : "false" %></li>
             <% end %>
-            <% if @user.prev_owneds.any? %>
+            <% if @user.possessions.where(prev_owned: true).any? %>
               <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
             <% end %>
           </ul>

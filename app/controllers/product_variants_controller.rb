@@ -11,9 +11,20 @@ class ProductVariantsController < ApplicationController
     @brand = @product.brand
 
     if user_signed_in?
-      @possessions = current_user.possessions.where(product_id: @product.id, product_variant_id: @variant.id)
+      @possessions = current_user.possessions
+                                 .where(
+                                   product_id: @product.id,
+                                   product_variant_id: @variant.id,
+                                 )
+                                 .map do |possession|
+                                   if possession.prev_owned
+                                     PreviousPossessionPresenter.new(possession)
+                                   else
+                                     CurrentPossessionPresenter.new(possession)
+                                   end
+                                 end
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: @variant.id)
-      @prev_owned = current_user.prev_owneds.find_by(product_id: @product.id, product_variant_id: @variant.id)
+      @note = current_user.notes.find_by(product_id: @product.id, product_variant_id: @variant.id)
       @setups = current_user.setups.includes(:possessions)
     end
 

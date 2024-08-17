@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_19_025443) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_12_074020) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -137,6 +137,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_19_025443) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
   end
 
   create_table "custom_products_sub_categories", id: false, force: :cascade do |t|
@@ -171,16 +172,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_19_025443) do
     t.bigint "product_variant_id"
     t.datetime "created_at"
     t.bigint "custom_product_id"
+    t.boolean "prev_owned", default: false
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"
-  end
-
-  create_table "prev_owneds", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "product_id", null: false
-    t.bigint "product_variant_id"
-    t.index ["product_id", "user_id", "product_variant_id"], name: "idx_on_product_id_user_id_product_variant_id_aaafa30513", unique: true
-    t.index ["product_id"], name: "index_prev_owneds_on_product_id"
-    t.index ["user_id"], name: "index_prev_owneds_on_user_id"
   end
 
   create_table "product_variants", force: :cascade do |t|

@@ -55,9 +55,7 @@
 	background: var(--color-blue-925);
 }
 
-.SetupAddProducts-option
-	:is(label:hover, input:focus ~ label)
-	.SetupAddProducts-checkmark {
+.SetupAddProducts-option :checked + label .SetupAddProducts-checkmark {
 	display: block;
 }
 

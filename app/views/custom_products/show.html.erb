@@ -11,46 +11,44 @@
     <div class="Product-details">
       <div class="Heading">
         <h1>
-          <%= @possession.custom_product.name %>
+          <%= @custom_product.display_name %>
         </h1>
       </div>
 
       <div class="CustomProduct">
-        <% if @possession.image.attached? %>
+        <% if @custom_product.image.attached? %>
           <div class="CustomProduct-image ImageLightbox">
             <div class="ImageLightbox-item">
-              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @possession.image.id %>">
+              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @custom_product.image.id %>">
                 <picture>
-                  <source srcset="<%= cdn_image_url(@possession.image.variant(:thumb_avif)) %>" type="image/avif">
-                  <%= image_tag cdn_image_url(@possession.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                  <source srcset="<%= cdn_image_url(@custom_product.image.variant(:thumb_avif)) %>" type="image/avif">
+                  <%= image_tag cdn_image_url(@custom_product.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
                 </picture>
               </button>
-              <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= @possession.image.id %>">
+              <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= @custom_product.image.id %>">
                 <picture>
-                  <source srcset="<%= cdn_image_url(@possession.image.variant(:large_avif)) %>" type="image/avif">
-                  <%= image_tag cdn_image_url(@possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+                  <source srcset="<%= cdn_image_url(@custom_product.image.variant(:large_avif)) %>" type="image/avif">
+                  <%= image_tag cdn_image_url(@custom_product.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
                 </picture>
               </dialog>
             </div>
           </div>
         <% end %>
 
-        <div>
+        <div class="CustomProduct-content">
           <dl class="Data">
-            <dt>Built by</dt>
-            <dd><%= link_to @possession.custom_product.user.user_name, user_path(id: @possession.custom_product.user.user_name.downcase) %></dd>
             <dt><%= t('headings.category').html_safe %></dt>
             <dd>
-              <%= @possession.custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
-              <% if @possession.custom_product.custom_attributes.present? %>
-                <br><span class="Data-secondary"><%= custom_attributes_list @possession.custom_product %></span>
+              <%= @custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
+              <% if @custom_product.custom_attributes.present? %>
+                <br><span class="Data-secondary"><%= custom_attributes_list @custom_product %></span>
               <% end %>
             </dd>
           </dl>
 
-          <% if @possession.custom_product.description.present? %>
+          <% if @custom_product.description.present? %>
             <div class="Entity-description Rte">
-              <%= sanitize @possession.custom_product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+              <%= sanitize @custom_product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
             </div>
           <% end %>
         </div>
@@ -58,52 +56,86 @@
     </div>
   </div>
 
-  <% if user_signed_in? && @possession.user == current_user %>
+  <% if user_signed_in? && @custom_product.user == current_user %>
     <div class="Entity-sub Product-sub u-pullOut">
-      <div class="ProductPossession">
-        <% if @possession.object.errors.any? %>
-          <%= render "shared/flash_messages", messages: @possession.object.errors.map { |error| ["alert", error.full_message] } %>
-        <% end %>
+      <% if @possession %>
+        <div class="ProductPossession" data-current="<%= !@possession.prev_owned %>">
+          <% if @custom_product.errors.any? %>
+            <%= render "shared/flash_messages", messages: @custom_product.errors.map { |error| ["alert", error.full_message] } %>
+          <% end %>
 
-        <div class="ProductPossession-heading u-flex u-gap-md u-alignCenter">
-          <div>
-            <%= render "shared/image_upload", item: @possession, size: "4rem", prefix: "possessions" %>
+          <div class="ProductPossession-heading u-flex u-gap-md u-alignCenter">
+            <div>
+              <%= render "shared/image_upload", item: @custom_product, image_update_item: @custom_product, size: "4rem", prefix: "possessions" %>
+            </div>
+            <span>
+              <b class="ProductPossession-headingName"><%= @possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
+              <% if @possession.created_at && !@possession.prev_owned %>
+                <small>since <time datetime="<%= formatted_datetime @possession.created_at %>"><%= formatted_datetime @possession.created_at %></time></small>
+              <% end %>
+            </span>
           </div>
-          <span>
-            <b class="ProductPossession-headingName"><%= t('symbols.in_your_collection') %></b>
-            <% if @possession.created_at %>
-              <small>since <time datetime="<%= formatted_datetime @possession.created_at %>"><%= formatted_datetime @possession.created_at %></time></small>
+
+          <% unless @possession.prev_owned %>
+            <%= form_for @possession, method: :put, html: { class: "ProductPossession-setup" } do |f| %>
+              <% if @setups.any? %>
+                <div class="u-flex u-gap-md u-alignCenter">
+                  <label for="setup-select-<%= @possession.id %>">Setup</label>
+                  <select name="possession[setup_id]" class="SetupSelect" id="setup-select-<%= @possession.id %>">
+                    <option value="">None</option>
+                    <% @setups.each do |setup| %>
+                      <option value="<%= setup.id %>"<%= " selected" if @possession.setup == setup %>><%= setup.name %></option>
+                    <% end %>
+                  </select>
+                </div>
+              <% end %>
             <% end %>
-          </span>
+          <% end %>
+
+          <ul class="ProductPossession-metaLinks Entity-metaLinks MetaLinks">
+            <li>
+              <% if @possession.prev_owned %>
+                <%= button_to @possession.delete_button_label,
+                  @possession.delete_path,
+                  method: :delete,
+                  class: "DeleteButton",
+                  "data-msg": @possession.delete_confirm_msg
+                %>
+              <% else %>
+                <%= render "shared/remove_product_from_possessions", possession: @possession, id: @possession.id %>
+              <% end %>
+            </li>
+          </ul>
+        </div>
+      <% else %>
+        <div class="Product-action">
+          <%= button_to possessions_path(custom_product_id: @custom_product.id), class: "Button Button--loadingIcon" do %>
+            <span class="u-flex u-alignCenter u-gap-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              <%= t('add_to_collection').html_safe %>
+            </span>
+          <% end %>
         </div>
 
-        <% if @setups.any? %>
-          <%= form_for @possession, method: :put, html: { class: "ProductPossession-setup u-flex u-gap-md u-alignCenter" } do |f| %>
-            <label for="setup-select-<%= @possession.id %>">Setup</label>
-            <select name="setup_id" class="SetupSelect" id="setup-select-<%= @possession.id %>">
-              <option value="">None</option>
-              <% @setups.each do |setup| %>
-                <option value="<%= setup.id %>"<%= " selected" if @possession.setup == setup %>><%= setup.name %></option>
-              <% end %>
-            </select>
+        <div class="Product-action">
+          <%= button_to possessions_path(custom_product_id: @custom_product.id, prev_owned: true), class: "Button Button--secondary Button--loadingIcon" do %>
+            <span class="u-flex u-alignCenter u-gap-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              <%= t('add_to_prev_owned').html_safe %>
+            </span>
           <% end %>
-          <%= javascript_tag nonce: true do %>
-            document.querySelectorAll(".SetupSelect").forEach(select => {
-              select.addEventListener("change", () => {
-                select.closest("form").submit();
-              });
-            });
-          <% end %>
-        <% end %>
+        </div>
+      <% end %>
+    <% end %>
 
-        <ul class="ProductPossession-metaLinks Entity-metaLinks MetaLinks">
-          <li>
-            <%= button_to @possession.delete_path, method: :delete, class: "DeleteButton", "data-msg": @possession.delete_confirm_msg do %>
-                <%= @possession.delete_button_label %>
-            <% end %>
-          </li>
-        </ul>
-      </div>
+    <% if @possession %>
+      <%= javascript_tag nonce: true do %>
+        document.querySelectorAll(".SetupSelect").forEach(select => {
+          select.addEventListener("change", () => {
+            select.closest("form").submit();
+          });
+        });
+      <% end %>
     </div>
   <% end %>
 </div>

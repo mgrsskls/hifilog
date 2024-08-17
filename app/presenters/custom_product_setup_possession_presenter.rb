@@ -1,4 +1,4 @@
-class SetupItemPresenter < ItemPresenter
+class CustomProductSetupPossessionPresenter < CustomProductPossessionPresenter
   def initialize(object, setup)
     super(object)
 

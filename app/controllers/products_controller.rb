@@ -160,9 +160,16 @@ class ProductsController < ApplicationController
     @brand = @product.brand
 
     if user_signed_in?
-      @possessions = current_user.possessions.where(product_id: @product.id, product_variant_id: nil)
+      @possessions = current_user.possessions
+                                 .where(product_id: @product.id, product_variant_id: nil)
+                                 .map do |possession|
+                                   if possession.prev_owned
+                                     PreviousPossessionPresenter.new(possession)
+                                   else
+                                     CurrentPossessionPresenter.new(possession)
+                                   end
+                                 end
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: nil)
-      @prev_owned = current_user.prev_owneds.find_by(product_id: @product.id, product_variant_id: nil)
       @note = current_user.notes.find_by(product_id: @product.id, product_variant_id: nil)
       @setups = current_user.setups.includes(:possessions)
     end

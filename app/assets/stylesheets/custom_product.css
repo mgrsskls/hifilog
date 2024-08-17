@@ -5,6 +5,10 @@
 }
 
 .CustomProduct-image {
-	inline-size: 30%;
-	max-inline-size: 20rem;
+	inline-size: 20rem;
+}
+
+.CustomProduct-content {
+	flex: 1 1 calc(100% - 20rem - 3rem);
+	min-inline-size: 16rem;
 }

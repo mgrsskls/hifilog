@@ -45,6 +45,10 @@ class ItemPresenter
     edit_product_path(id: @product.friendly_id)
   end
 
+  def update_path
+    possession_path(id: @object.id)
+  end
+
   def delete_path
     possession_path(id: @object.id)
   end

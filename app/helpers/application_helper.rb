@@ -28,7 +28,7 @@ module ApplicationHelper
   def user_possessions_count(user)
     return unless user
 
-    user.possessions.count
+    user.possessions.where(prev_owned: false).count
   end
 
   def user_bookmarks_count(user)
@@ -46,13 +46,13 @@ module ApplicationHelper
   def user_custom_products_count(user)
     return unless user
 
-    user.possessions.where.not(custom_product_id: nil).count
+    user.custom_products.count
   end
 
   def user_prev_owneds_count(user)
     return unless user
 
-    user.prev_owneds.count
+    user.possessions.where(prev_owned: true).count
   end
 
   def user_notes_count(user)
@@ -68,15 +68,13 @@ module ApplicationHelper
 
     ceil = (num / 10.0**exp).ceil * 10**exp
 
-    # rubocop:disable Style/ConditionalAssignment
-    if num == value
-      dir = :eq
-    elsif value == ceil
-      dir = :up
-    else
-      dir = :down
-    end
-    # rubocop:enable Style/ConditionalAssignment
+    dir = if num == value
+            :eq
+          elsif value == ceil
+            :up
+          else
+            :down
+          end
 
     {
       value:,
@@ -93,7 +91,11 @@ module ApplicationHelper
   end
 
   def user_has_previously_owned?(user, product, variant_id = nil)
-    product && user && user.prev_owneds.where(product_id: product.id, product_variant_id: variant_id).exists?
+    product && user && user.possessions.where(
+      product_id: product.id,
+      product_variant_id: variant_id,
+      prev_owned: true
+    ).exists?
   end
 
   def user_has_brand?(user, brand)
