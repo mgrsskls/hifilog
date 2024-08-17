@@ -77,8 +77,8 @@
           </div>
 
           <% unless @possession.prev_owned %>
-            <%= form_for @possession, method: :put, html: { class: "ProductPossession-setup" } do |f| %>
-              <% if @setups.any? %>
+            <% if @setups.any? %>
+              <%= form_for @possession, method: :put, html: { class: "ProductPossession-setup" } do |f| %>
                 <div class="u-flex u-gap-md u-alignCenter">
                   <label for="setup-select-<%= @possession.id %>">Setup</label>
                   <select name="possession[setup_id]" class="SetupSelect" id="setup-select-<%= @possession.id %>">
