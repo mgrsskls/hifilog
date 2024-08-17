@@ -134,6 +134,9 @@
         items: @possessions,
         sub_category: @sub_category,
         reset_path: @reset_path,
+        hide_since: @render_period,
+        hide_period: @render_since,
+        hide_release_date: true,
         empty_state: t('empty_state.public_profile', name: h(@user.user_name), pull_out: false),
         include_images: true
       %>

@@ -92,6 +92,8 @@ class UsersController < ApplicationController
                        ]
                      end
     @reset_path = @user.profile_path
+    @render_since = true
+    @render_period = false
 
     render 'show'
   end
@@ -151,6 +153,8 @@ class UsersController < ApplicationController
                                    ]
                                  end
     @reset_path = user_previous_products_path(id: @user.user_name)
+    @render_since = false
+    @render_period = true
 
     render 'show'
   end

@@ -7,6 +7,8 @@
 <% include_setup ||= false %>
 <% hide_brand ||= false %>
 <% hide_release_date ||= false %>
+<% hide_period ||= false %>
+<% hide_since ||= false %>
 <% delete_dialog ||= false %>
 
 <div class="<%= "u-pullOut" if pull_out %> ProductListing">
@@ -20,6 +22,13 @@
           <th><%= t('name') %></th>
           <% unless hide_release_date %>
             <th><%= t('product.released') %></th>
+          <% end %>
+          <% unless hide_since %>
+            <th style="width: 6em">Since</th>
+          <% end %>
+          <% unless hide_period %>
+            <th style="width: 6em">From</th>
+            <th style="width: 6em">Until</th>
           <% end %>
           <th><%= t('headings.category').html_safe %></th>
           <% if include_setup %>
@@ -52,6 +61,31 @@
               <td class="Table-date">
                 <% if item.release_date.present? %>
                   <time datetime="<%= item.release_date %>" data-format="false"><%= item.release_date %></time>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+            <% end %>
+            <% unless hide_since %>
+              <td class="Table-sm">
+                <% if item.period_from.present? %>
+                  <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+            <% end %>
+            <% unless hide_period %>
+              <td class="Table-sm">
+                <% if item.period_from.present? %>
+                  <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+              <td class="Table-sm">
+                <% if item.period_to.present? %>
+                  <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
                 <% else %>
                   -
                 <% end %>
@@ -118,10 +152,10 @@
             <% end %>
               <div class="ProductList-content">
                 <div class="ProductList-name">
-                  <% unless hide_brand %>
-                    <%= item.product.present? ? item.brand_name : "<i>#{item.brand_name}</i>".html_safe %><br>
-                  <% end %>
-                  <b><%= item.show_path.present? ? (link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.show_path) : item.name %></b>
+                  <a href="<%= item.show_path %>">
+                    <%= item.brand_name unless hide_brand %>
+                    <b><%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %></b>
+                  </a>
                 </div>
                 <p class="ProductList-categories">
                   <% if item.sub_categories.any? %>
@@ -130,6 +164,37 @@
                     <%= item.categories.map{ |category| category.name }.join(", ") %>
                   <% end %>
                 </p>
+                <% unless hide_since %>
+                  <% if item.period_from %>
+                    <p class="ProductList-categories">
+                      <span>Since:</span>
+                      <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                    </p>
+                  <% end %>
+                <% end %>
+                <% unless hide_period %>
+                  <% if item.period_from || item.period_to %>
+                    <p class="ProductList-categories">
+                      <% if item.prev_owned %>
+                        <% if item.period_from && item.period_to %>
+                          <span>Owned from:</span>
+                          <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
+                        <% elsif item.period_from %>
+                          <span>Owned since:</span>
+                          <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                        <% elsif item.period_to %>
+                          <span>Owned until:</span>
+                          <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
+                        <% end %>
+                      <% else %>
+                        <% if item.period_from %>
+                          <span>Since:</span>
+                          <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                        <% end %>
+                      <% end %>
+                    </p>
+                  <% end %>
+                <% end %>
                 <% if include_edit_link || include_delete_button %>
                   <div class="ProductList-metaLinks">
                     <ul class="MetaLinks">

@@ -17,7 +17,7 @@
 .ProductPossession {
 	border: 0.25rem solid var(--color-transparency-10);
 	border-radius: var(--border-radius);
-	padding: 1rem 1rem 0.5rem;
+	padding: 0.75rem;
 	color: var(--color-secondary);
 }
 
@@ -28,11 +28,12 @@
 
 .ProductPossession-heading {
 	margin-block: 0;
+	gap: 0.625rem;
 }
 
 .ProductPossession-headingName {
 	display: block;
-	line-height: 1.2;
+	line-height: 1.25;
 }
 
 .ProductPossession + .ProductPossession {
@@ -49,11 +50,38 @@
 	margin-block-start: 0.25rem;
 }
 
+.ProductPossession-period {
+	line-height: 1.5;
+	margin-block-start: 0.5rem;
+}
+
+.ProductPossession-period small {
+	display: block;
+}
+
+.ProductPossession-period span {
+	font-weight: 600;
+}
+
+.ProductPossession-form {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0.5rem;
+	padding-block: 1rem;
+}
+
 .ProductPossession-metaLinks {
 	margin-block-start: 0.75rem;
 	border-block-start: var(--border) var(--color-transparency-15);
 	padding-block-start: 0.5rem;
 	font-size: 0.875rem;
+}
+
+.ProductPossession-metaLinks summary {
+	flex-direction: row-reverse;
+	justify-content: flex-end;
+	gap: 0.5rem;
 }
 
 .Product-section {

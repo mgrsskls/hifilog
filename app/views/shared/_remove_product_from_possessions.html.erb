@@ -1,11 +1,11 @@
 <% redirect_to ||= nil %>
-<button data-dialog="dialog-<%= id %>"><%= t('remove_product.label') %></button>
+<button class="u-textUnderline" data-dialog="dialog-<%= id %>"><%= t('remove_product.label') %></button>
 
 <dialog id="dialog-<%= id %>">
   Do you want to move your <b><%= possession.display_name %></b> to your list of previous products?
 
   <div class="Form-submit">
-    <div class="u-flex u-spaceBetween u-alignCenter">
+    <div class="u-flex u-spaceBetween u-alignCenter u-gap-md u-flexWrap">
       <div class="u-flex u-spaceBetween u-gap-md">
         <%= form_tag possession_move_to_prev_owneds_path(possession_id: possession.id) do %>
           <% if redirect_to %>

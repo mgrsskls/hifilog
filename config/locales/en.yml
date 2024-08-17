@@ -34,7 +34,7 @@ en:
     discontinued: Discontinued
     in_your_collection: In my collection
     in_your_bookmarks: Bookmarked
-    prev_owned: In my previous products
+    prev_owned: Previous product
   account: Account
   add: Add
   add_product: Add Product
@@ -230,6 +230,7 @@ en:
     released: Released
     release_date: Release date
     discontinued_date: Discontinued date
+    period: From / to
     name: Name
     meta:
       owned_by: Owned by

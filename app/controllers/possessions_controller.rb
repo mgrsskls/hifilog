@@ -98,7 +98,10 @@ class PossessionsController < ApplicationController
     if params[:possession][:delete_image].present? && params[:possession][:delete_image].to_i == 1
       @possession.image.purge
       @possession.save
-    elsif params[:possession][:setup_id]
+      redirect_back fallback_location: root_url
+    end
+
+    if params[:possession][:setup_id]
       setup = current_user.setups.find(params[:possession][:setup_id]) if params[:possession][:setup_id].present?
 
       @possession.setup = setup
@@ -108,7 +111,9 @@ class PossessionsController < ApplicationController
           flash[:alert] = error
         end
       end
-    elsif !@possession.update(possession_params)
+    end
+
+    unless @possession.update(possession_params)
       @possession.errors.full_messages.each do |error|
         flash[:alert] = error
       end
@@ -143,6 +148,6 @@ class PossessionsController < ApplicationController
   private
 
   def possession_params
-    params.require(:possession).permit(:image)
+    params.require(:possession).permit(:image, :period_from, :period_to)
   end
 end

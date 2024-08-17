@@ -542,8 +542,8 @@
 		background-image: var(--summary-arrow);
 	}
 
-	details[open] summary::after {
-		transform: rotate(0.5turn);
+	details:not([open]) summary::after {
+		transform: rotate(-0.25turn);
 	}
 
 	[hidden] {

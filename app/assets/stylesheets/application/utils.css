@@ -4,6 +4,10 @@
 	padding-inline: var(--page-spacing);
 }
 
+.u-block {
+	display: block;
+}
+
 .u-flex {
 	display: flex;
 }
@@ -90,6 +94,10 @@
 
 .u-textEnd {
 	text-align: end;
+}
+
+.u-textUnderline {
+	text-decoration: underline;
 }
 
 @media (max-width: 54rem) {

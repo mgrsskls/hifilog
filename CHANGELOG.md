@@ -3,6 +3,7 @@
 ## <time datetime="2024-08-17">2024-08-17</time>
 
 - Users can now move products from their collection to their previously owned products
+- Users can now add a date of ownership to current or previous products in their collection
 
 ## <time datetime="2024-03-18">2024-03-18</time>
 

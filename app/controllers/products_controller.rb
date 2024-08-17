@@ -162,6 +162,7 @@ class ProductsController < ApplicationController
     if user_signed_in?
       @possessions = current_user.possessions
                                  .where(product_id: @product.id, product_variant_id: nil)
+                                 .order([:prev_owned, :created_at])
                                  .map do |possession|
                                    if possession.prev_owned
                                      PreviousPossessionPresenter.new(possession)

@@ -6,59 +6,89 @@
         <%= render "shared/flash_messages", messages: possession.errors.map { |error| ["alert", error.full_message] } %>
       <% end %>
 
-      <div class="ProductPossession-heading u-flex u-gap-md u-alignCenter">
+      <div class="ProductPossession-heading u-flex u-alignCenter">
         <div>
           <%= render "shared/image_upload", item: ItemPresenter.new(possession), image_update_item: possession, size: "4rem", prefix: "possessions" %>
         </div>
-        <span>
+        <div>
           <b class="ProductPossession-headingName"><%= possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
-          <% if possession.created_at && !possession.prev_owned %>
-            <small>since <time datetime="<%= formatted_datetime possession.created_at %>"><%= formatted_datetime possession.created_at %></time></small>
-          <% end %>
-        </span>
-      </div>
-
-      <% unless possession.prev_owned %>
-        <% if @setups.any? %>
-          <%= form_for possession, method: :put, html: { class: "ProductPossession-setup" } do |f| %>
-            <div class="u-flex u-gap-md u-alignCenter">
-              <label for="setup-select-<%= possession.id %>">Setup</label>
-              <select name="possession[setup_id]" class="SetupSelect" id="setup-select-<%= possession.id %>">
-                <option value="">None</option>
-                <% @setups.each do |setup| %>
-                  <option value="<%= setup.id %>"<%= " selected" if possession.setup == setup %>><%= setup.name %></option>
+          <% if possession.period_from || possession.period_to || possession.setup %>
+            <div class="ProductPossession-period">
+              <% if possession.prev_owned %>
+                <% if possession.period_from && possession.period_to %>
+                  <small>
+                    <span class="u-block">Owned from:</span>
+                    <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time> &ndash; <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+                  </small>
+                <% elsif possession.period_from %>
+                  <small>
+                    <span>Owned since:</span>
+                    <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+                  </small>
+                <% elsif possession.period_to %>
+                  <small>
+                    <span>Owned until:</span>
+                    <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+                  </small>
                 <% end %>
-              </select>
+              <% else %>
+                <% if possession.period_from %>
+                  <small>
+                    <span>Since:</span>
+                    <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+                  </small>
+                <% end %>
+              <% end %>
+              <% if possession.setup %>
+                <small>
+                  <span>Setup:</span>
+                  <%= link_to possession.setup.name, dashboard_setup_path(possession.setup) %>
+                </small>
+              <% end %>
             </div>
           <% end %>
-        <% end %>
-      <% end %>
+        </div>
+      </div>
 
-      <ul class="ProductPossession-metaLinks Entity-metaLinks MetaLinks">
-        <li>
+      <details class="ProductPossession-metaLinks Entity-metaLinks">
+        <summary>Edit / Remove</summary>
+        <%= form_for possession, method: :put, html: { class: "ProductPossession-setup", id: "possession-form-#{possession.id}" } do |f| %>
+          <div class="ProductPossession-form">
+            <% unless possession.prev_owned %>
+              <%= f.label :period_from, "Since" %>
+              <%= f.date_field :period_from %>
+              <% if @setups.any? %>
+                <label for="setup-select-<%= possession.id %>">Setup</label>
+                <select name="possession[setup_id]" class="SetupSelect" id="setup-select-<%= possession.id %>">
+                  <option value="">None</option>
+                  <% @setups.each do |setup| %>
+                    <option value="<%= setup.id %>"<%= " selected" if possession.setup == setup %>><%= setup.name %></option>
+                  <% end %>
+                </select>
+              <% end %>
+            <% else %>
+              <%= f.label :period_from, "From" %>
+              <%= f.date_field :period_from %>
+              <%= f.label :period_to, "Until" %>
+              <%= f.date_field :period_to %>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="u-flex u-spaceBetween">
+          <button class="Button Button--loadingIcon" form="possession-form-<%= possession.id %>">Save</button>
           <% if possession.prev_owned %>
             <%= button_to possession.delete_button_label,
               possession.delete_path,
               method: :delete,
-              class: "DeleteButton",
+              class: "DeleteButton u-textUnderline",
               "data-msg": possession.delete_confirm_msg
             %>
           <% else %>
             <%= render "shared/remove_product_from_possessions", possession: possession, id: possession.id %>
           <% end %>
-        </li>
-      </ul>
+        </div>
+      </details>
     </div>
-  <% end %>
-
-  <% if @possessions.any? %>
-    <%= javascript_tag nonce: true do %>
-      document.querySelectorAll(".SetupSelect").forEach(select => {
-        select.addEventListener("change", () => {
-          select.closest("form").submit();
-        });
-      });
-    <% end %>
   <% end %>
 <% end %>
 

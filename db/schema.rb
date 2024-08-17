@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_17_125433) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_17_130100) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -173,6 +173,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_17_125433) do
     t.datetime "created_at"
     t.bigint "custom_product_id"
     t.boolean "prev_owned", default: false
+    t.datetime "period_from"
+    t.datetime "period_to"
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"
   end
 
