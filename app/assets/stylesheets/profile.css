@@ -193,7 +193,8 @@
 		flex-wrap: wrap;
 		align-items: start;
 		gap: 0 var(--gap);
-		margin-block-start: var(--gap);
+		padding-block-start: var(--gap);
+		scroll-margin-block-start: var(--header-height);
 	}
 
 	.Profile-meta {
