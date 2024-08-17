@@ -45,7 +45,13 @@ class UsersController < ApplicationController
                          .includes([:product_variant])
                          .includes([custom_product: [{ sub_categories: :category }]])
                          .includes([image_attachment: [:blob]])
-                         .map { |possession| PossessionPresenter.new(possession) }
+                         .map do |possession|
+                           if possession.custom_product_id
+                             CustomProductPossessionPresenter.new(possession)
+                           else
+                             CurrentPossessionPresenter.new(possession)
+                           end
+                         end
                          .sort_by(&:display_name)
 
     if params[:category].present?
@@ -87,7 +93,7 @@ class UsersController < ApplicationController
                      end
     @reset_path = @user.profile_path
 
-    render 'show', locals: { include_images: true }
+    render 'show'
   end
 
   def prev_owneds
@@ -108,7 +114,13 @@ class UsersController < ApplicationController
                            .includes([:product_variant])
                            .includes([custom_product: [{ sub_categories: :category }]])
                            .includes([image_attachment: [:blob]])
-                           .map { |possession| PreviousPossessionPresenter.new(possession) }
+                           .map do |possession|
+                             if possession.custom_product_id
+                               CustomProductPossessionPresenter.new(possession)
+                             else
+                               PreviousPossessionPresenter.new(possession)
+                             end
+                           end
                            .sort_by(&:display_name)
 
     if params[:category].present?
@@ -118,8 +130,7 @@ class UsersController < ApplicationController
       @possessions = all_possessions
     end
 
-    @categories = all_possessions.map(&:product)
-                                 .flat_map(&:sub_categories)
+    @categories = all_possessions.flat_map(&:sub_categories)
                                  .sort_by(&:name)
                                  .uniq
                                  .group_by(&:category)
@@ -141,7 +152,7 @@ class UsersController < ApplicationController
                                  end
     @reset_path = user_previous_products_path(id: @user.user_name)
 
-    render 'show', locals: { include_images: false }
+    render 'show'
   end
 
   private
