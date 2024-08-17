@@ -83,7 +83,7 @@ module ApplicationHelper
   end
 
   def user_has_product?(user, product_id, product_variant_id = nil)
-    user && user.possessions.where(product_id:, product_variant_id:).exists?
+    user && user.possessions.where(product_id:, product_variant_id:, prev_owned: false).exists?
   end
 
   def user_has_bookmark?(user, product, variant_id = nil)
