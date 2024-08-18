@@ -35,7 +35,8 @@ class UserController < ApplicationController
                           CurrentPossessionPresenter.new(possession)
                         end
                       end
-                      .sort_by(&:display_name)
+
+    all = all.sort_by { |possession| possession.display_name.downcase }
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
@@ -126,7 +127,9 @@ class UserController < ApplicationController
                                      .includes([product: [:brand]])
                                      .select('product_variants.*, versions.event')
                                      .where(versions: { item_type: 'ProductVariant', whodunnit: current_user.id })
-    @items = (products + product_variants).sort_by(&:display_name).group_by(&:event)
+    @items = (products + product_variants)
+             .sort_by { |possession| possession.display_name.downcase }
+             .group_by(&:event)
     @brands = Brand.joins(:versions)
                    .distinct
                    .select('brands.*, versions.event')

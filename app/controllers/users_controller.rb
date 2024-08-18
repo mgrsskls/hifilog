@@ -52,7 +52,8 @@ class UsersController < ApplicationController
                              CurrentPossessionPresenter.new(possession)
                            end
                          end
-                         .sort_by(&:display_name)
+
+    all = all.sort_by { |possession| possession.display_name.downcase }
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
@@ -123,7 +124,8 @@ class UsersController < ApplicationController
                                PreviousPossessionPresenter.new(possession)
                              end
                            end
-                           .sort_by(&:display_name)
+
+    all_possessions = all_possessions.sort_by { |possession| possession.display_name.downcase }
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
