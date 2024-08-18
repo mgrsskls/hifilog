@@ -108,6 +108,11 @@
                           <span><%= t('profile') %></span>
                         </a>
                       </li>
+                      <li>
+                        <a href="<%= dashboard_history_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :history) %>>
+                          <span><%= t('headings.history') %></span>
+                        </a>
+                      </li>
                       <li class="Menu-subList-separator">
                         <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
                           <span><%= t('headings.collection') %></span>
@@ -195,8 +200,13 @@
     <% end %>
     <main id="content">
       <% if (params[:controller] == "application" && params[:action] == "index") ||
-            (params[:controller] == "users" && params[:action] == "show" && @user.present?) ||
-            (params[:controller] == "users" && params[:action] == "prev_owneds")
+            (
+              @user.present? &&
+              params[:controller] == "users" &&
+              (
+                params[:action] == "show" || params[:action] == "prev_owneds" || params[:action] == "history"
+              )
+            )
       %>
         <%= yield %>
       <% else %>

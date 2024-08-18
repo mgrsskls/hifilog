@@ -135,6 +135,44 @@ class UserController < ApplicationController
                    .group_by(&:event)
   end
 
+  def history
+    add_breadcrumb I18n.t('headings.history'), dashboard_history_path
+    @page_title = I18n.t('headings.history')
+    @active_dashboard_menu = :history
+
+    from = current_user.possessions.where.not(period_from: nil).order(:period_from).map do |possession|
+      presenter = if possession.custom_product_id
+                    CustomProductPossessionPresenter.new(possession)
+                  else
+                    PossessionPresenter.new(possession)
+                  end
+
+      {
+        date: presenter.period_from,
+        type: :from,
+        presenter:
+      }
+    end
+
+    to = current_user.possessions.where.not(period_to: nil).order(:period_to).map do |possession|
+      presenter = if possession.custom_product_id
+                    CustomProductPossessionPresenter.new(possession)
+                  else
+                    PossessionPresenter.new(possession)
+                  end
+
+      {
+        date: presenter.period_to,
+        type: :to,
+        presenter:
+      }
+    end
+
+    @possessions = (from + to)
+                   .sort_by { |possession| possession[:date] }
+                   .group_by { |possession| possession[:date].year }
+  end
+
   private
 
   def get_data(data, model, event)

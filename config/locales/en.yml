@@ -197,6 +197,7 @@ en:
     custom_products: Custom products
     dashboard: Welcome back
     edited: Edited
+    history: Product history
     notes: Notes
     prev_owneds: Previous products
     product: Product
@@ -222,6 +223,7 @@ en:
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
     setup_products: '<p><b>You have not added any products to this setup yet.</b></p><p>You can either do it by clicking on "Add / Remove Product" or directly on a product product page.</p>'
     user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>'
+    user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
     prev_owneds: '<p><b>You have not marked any products as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
     prev_owneds_category: '<p><b>You have not marked any products in this category as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"

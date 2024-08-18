@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :set_breadcrumb, except: [:show, :prev_owneds]
+  before_action :set_breadcrumb, except: [:show, :prev_owneds, :history]
 
   def index
     @page_title = I18n.t('headings.users')
@@ -157,6 +157,51 @@ class UsersController < ApplicationController
     @render_period = true
 
     render 'show'
+  end
+
+  def history
+    @user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)
+
+    return render 'not_found', status: :not_found if @user.nil?
+
+    unless current_user == @user
+      redirect_path = get_redirect_if_unauthorized(@user, false)
+      return redirect_to redirect_path if redirect_path
+    end
+
+    setup_user_page(@user)
+
+    from = @user.possessions.where.not(period_from: nil).order(:period_from).map do |possession|
+      presenter = if possession.custom_product_id
+                    CustomProductPossessionPresenter.new(possession)
+                  else
+                    PossessionPresenter.new(possession)
+                  end
+
+      {
+        date: presenter.period_from,
+        type: :from,
+        presenter:
+      }
+    end
+
+    to = @user.possessions.where.not(period_to: nil).order(:period_to).map do |possession|
+      presenter = if possession.custom_product_id
+                    CustomProductPossessionPresenter.new(possession)
+                  else
+                    PossessionPresenter.new(possession)
+                  end
+
+      {
+        date: presenter.period_to,
+        type: :to,
+        presenter:
+      }
+    end
+
+    @possessions = (from + to)
+                   .sort_by { |possession| possession[:date] }
+                   .group_by { |possession| possession[:date].year }
   end
 
   private

@@ -15,6 +15,11 @@
           <%= t('profile') %>
         </a>
       </li>
+      <li>
+        <a class="Dashboard-link" href="<%= dashboard_history_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :history) %>>
+          <%= t('headings.history') %>
+        </a>
+      </li>
       <li class="Dashboard-separator">
         <a class="Dashboard-link" href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
           <%= t('headings.collection') %>

@@ -1,0 +1,13 @@
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.history') %></h1>
+  </div>
+
+  <% if @possessions.any? %>
+    <%= render "shared/history",
+      possessions: @possessions
+    %>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.user_product_history') %>
+  <% end %>
+<% end %>

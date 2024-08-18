@@ -1,0 +1,43 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "history", crossorigin: true, integrity: true %>
+<% end %>
+
+<div class="History">
+
+  <div class="HistoryHeader h3">
+    <span>Added</span>
+    <span>Removed</span>
+  </div>
+
+  <ol class="HistoryList">
+    <% possessions.each do |year, possession_entries| %>
+      <li>
+        <span class="HistoryList-year"><%= year %></span>
+        <ol>
+          <% possession_entries.each_with_index do |possession, i| %>
+            <li class="HistoryList-entry <%= possession[:type] %>">
+              <span class="u-hiddenVisually">
+                <%= possession[:type] == 'from' ? 'Bought' : 'Sold' %>:
+              </span>
+              <div class="HistoryList-content">
+                <div>
+                  <small>
+                    <time datetime="<%= formatted_date possession[:date] %>"><%= formatted_date possession[:date] %></time>
+                  </small>
+                  <a href="<%= possession[:presenter].show_path %>"><%= possession[:presenter].display_name %></a>
+                </div>
+
+                <% if possession[:presenter].image.attached? %>
+                  <picture>
+                    <source srcset="<%= cdn_image_url(possession[:presenter].image.variant(:thumb_avif)) %>" type="image/avif">
+                    <%= image_tag cdn_image_url(possession[:presenter].image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                  </picture>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </li>
+    <% end %>
+  </ol>
+</div>

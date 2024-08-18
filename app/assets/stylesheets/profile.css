@@ -23,6 +23,10 @@
 	object-fit: cover;
 }
 
+.Profile-main {
+	padding-block-start: 2rem;
+}
+
 @media (max-width: 84.5rem) {
 	.Profile-header {
 		aspect-ratio: 4;
@@ -200,7 +204,6 @@
 	.Profile-meta {
 		flex: 0 0 12rem;
 		border-radius: var(--border-radius);
-		border-radius: var(--border-radius);
 		padding: 2rem;
 	}
 
@@ -283,7 +286,7 @@
 
 @media (min-width: 48.0625rem) {
 	.Profile-products {
-		overflow: hidden;
+		overflow: clip;
 	}
 
 	.Tabs-list {

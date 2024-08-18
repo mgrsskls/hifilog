@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-08-18">2024-08-18</time>
+
+- When assigning dates of ownership to products, they will now appear in a product history, listing the user's products in a timeline.
+
 ## <time datetime="2024-08-17">2024-08-17</time>
 
 - Users can now move products from their collection to their previously owned products

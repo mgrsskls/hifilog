@@ -16,8 +16,9 @@ Rails.application.config.assets.precompile += %w(
   custom_product.css
   dashboard.css
   entity.css
-  home.css
   entity_form.css
+  history.css
+  home.css
   notes.css
   product.css
   profile.css

@@ -115,6 +115,7 @@
 		--color-input: var(--color-copy-on-light);
 
 		block-size: 100%;
+		background: var(--color-bg-main);
 	}
 
 	:where(html),
@@ -128,6 +129,7 @@
 		--border-l-light: 80%;
 		--border-l-medium: 65%;
 
+		--color-bg-main: var(--color-bg-on-light);
 		--color-bg2: var(--color-blue-975);
 		--color-accent: var(--color-accent-on-light);
 		--color-button-copy: var(--color-white);
@@ -157,7 +159,6 @@
 		color-scheme: light;
 		accent-color: var(--color-accent-on-light);
 		color: var(--color-copy-on-light);
-		background: var(--color-bg-on-light);
 	}
 
 	@media (prefers-color-scheme: dark) {
@@ -170,6 +171,7 @@
 			--border-l-light: 30%;
 			--border-l-medium: 45%;
 
+			--color-bg-main: var(--color-bg-on-dark);
 			--color-highlight-copy: hsl(var(--hue-accent), 34%, 15%);
 			--color-invalid-bg: var(--color-invalid-dark);
 			--color-invalid-copy: var(--color-invalid-light);
@@ -191,7 +193,6 @@
 			color-scheme: dark;
 			accent-color: var(--color-accent-on-dark);
 			color: var(--color-copy-on-dark);
-			background: var(--color-bg-on-dark);
 		}
 	}
 
@@ -232,7 +233,7 @@
 	}
 
 	html:where(:has([name="theme"][value="dark"]:checked)) {
-		background: var(--color-bg-on-dark);
+		--color-bg-main: var(--color-bg-on-dark);
 	}
 
 	body {
