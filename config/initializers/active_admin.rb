@@ -349,4 +349,6 @@ ActiveAdmin.setup do |config|
   # You can switch to using Webpacker here.
   #
   # config.use_webpacker = true
+
+  config.register_javascript "active_admin.js", nonce: true
 end

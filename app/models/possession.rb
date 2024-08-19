@@ -28,6 +28,7 @@ class Possession < ApplicationRecord
       setup_id
       setup_possession_id
       user_id
+      prev_owned_eq
     ]
   end
 
