@@ -128,7 +128,9 @@
             <% if @user.possessions.where(prev_owned: true).any? %>
               <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name, anchor: 'products'), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
             <% end %>
-            <li><%= link_to t('headings.history'), user_history_path(user_id: @user.user_name, anchor: 'products'), "aria-current": request.path == user_history_path(user_id: @user.user_name) ? "page" : "false" %></li>
+            <% if @user.possessions.where.not(period_from: nil).or(@user.possessions.where.not(period_to: nil)).any? %>
+              <li><%= link_to t('headings.history'), user_history_path(user_id: @user.user_name, anchor: 'products'), "aria-current": request.path == user_history_path(user_id: @user.user_name) ? "page" : "false" %></li>
+            <% end %>
           </ul>
         </div>
         <%= render "shared/category_filter", categories: @categories if @categories %>
