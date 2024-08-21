@@ -15,11 +15,11 @@
         </h1>
       </div>
 
-      <div class="Product-variantDescription Rte">
-        <% if @variant.description.present? %>
+      <% if @variant.description.present? %>
+        <div class="Entity-description Rte">
           <%= sanitize @variant.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
 
       <dl class="Data">
         <% if @variant.discontinued? %>
@@ -63,15 +63,16 @@
             -
           <% end %>
         </dd>
-        <% if @variant.product_options.any? %>
-          <dt><%= t('activerecord.attributes.product.product_options') %></dt>
-          <dd><%= @variant.product_options.map(&:option).join(", ") %></dd>
-        <% end %>
       </dl>
 
-      <% if @product.description.present? %>
-        <div class="Entity-description Rte">
-          <%= sanitize @product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+      <% if @variant.product_options.any? %>
+        <div class="Product-section">
+          <h2><%= t('activerecord.attributes.product.product_options') %></h2>
+          <ul>
+            <% @variant.product_options.each do |option| %>
+              <li><%= option[:option] %></li>
+            <% end %>
+          </ul>
         </div>
       <% end %>
 

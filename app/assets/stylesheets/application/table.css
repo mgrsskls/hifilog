@@ -83,6 +83,12 @@ td {
 	text-align: center;
 }
 
+.Table-productOption {
+	display: block;
+	line-height: 1.5;
+	margin-block-start: 0.25rem;
+}
+
 .Table-date {
 	width: 6.5em;
 }

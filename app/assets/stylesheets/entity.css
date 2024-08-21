@@ -34,7 +34,11 @@
 }
 
 .Entity-description {
-	margin-block-start: calc(var(--line-height) * 1em);
+	margin-block-end: calc(var(--line-height) * 1em);
+}
+
+.Heading:has(+ .Entity-description) {
+	margin-block-end: 1rem;
 }
 
 @media (max-width: 48rem) {
