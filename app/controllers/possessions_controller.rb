@@ -59,14 +59,14 @@ class PossessionsController < ApplicationController
     @variant = ProductVariant.find(params[:product_variant_id]) if params[:product_variant_id].present?
     @custom_product = CustomProduct.find(params[:custom_product_id]) if params[:custom_product_id].present?
 
-    possession = Possession.new(
+    @active_possession = Possession.new(
       user: current_user,
       product: @product || nil,
       product_variant: @variant || nil,
       custom_product: @custom_product || nil,
       prev_owned: params[:prev_owned] == 'true'
     )
-    flash[:alert] = I18n.t(:generic_error_message) unless possession.save
+    flash[:alert] = I18n.t(:generic_error_message) unless @active_possession.save
 
     redirect_back fallback_location: root_url
   end
@@ -102,8 +102,8 @@ class PossessionsController < ApplicationController
       redirect_back fallback_location: root_url
     end
 
-    if params[:possession][:setup_id]
-      setup = current_user.setups.find(params[:possession][:setup_id]) if params[:possession][:setup_id].present?
+    if params[:setup_id]
+      setup = current_user.setups.find(params[:setup_id]) if params[:setup_id].present?
 
       @possession.setup = setup
 
@@ -149,6 +149,6 @@ class PossessionsController < ApplicationController
   private
 
   def possession_params
-    params.require(:possession).permit(:image, :period_from, :period_to)
+    params.require(:possession).permit(:image, :period_from, :period_to, :product_option_id)
   end
 end

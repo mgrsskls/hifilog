@@ -9,6 +9,7 @@ class ProductVariant < ApplicationRecord
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
   has_many :notes, dependent: :nullify
+  has_many :product_options, dependent: :destroy
 
   has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
@@ -16,6 +17,9 @@ class ProductVariant < ApplicationRecord
   friendly_id :slug_candidates, use: [:slugged, :scoped, :history], scope: :product
 
   nilify_blanks
+
+  accepts_nested_attributes_for :product_options
+  validates_associated :product_options
 
   validates :name,
             uniqueness: { scope: :product },
@@ -123,6 +127,7 @@ class ProductVariant < ApplicationRecord
       price
       price_currency
       product_id
+      product_options_id_eq
       release_day
       release_month
       release_year

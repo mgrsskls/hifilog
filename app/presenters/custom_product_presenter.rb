@@ -70,4 +70,8 @@ class CustomProductPresenter
   def setup
     false
   end
+
+  def product_option
+    nil
+  end
 end

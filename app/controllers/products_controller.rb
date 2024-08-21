@@ -162,7 +162,7 @@ class ProductsController < ApplicationController
     if user_signed_in?
       @possessions = current_user.possessions
                                  .where(product_id: @product.id, product_variant_id: nil)
-                                 .order([:prev_owned, :created_at])
+                                 .order([:prev_owned, :period_from, :period_to, :created_at])
                                  .map do |possession|
                                    if possession.prev_owned
                                      PreviousPossessionPresenter.new(possession)
@@ -176,6 +176,7 @@ class ProductsController < ApplicationController
     end
 
     @public_possessions_with_image = @product.possessions
+                                             .includes([:image_attachment])
                                              .joins(:user)
                                              .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
                                              .select { |possession| possession.image.attached? }
@@ -198,7 +199,6 @@ class ProductsController < ApplicationController
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
-    @product.custom_attributes = {}
     @product.build_brand
     @brands = Brand.all.order('LOWER(name)')
     @categories = Category.includes([:sub_categories]).all.order(:order)
@@ -214,76 +214,70 @@ class ProductsController < ApplicationController
   end
 
   def create
+    product = Product.new(product_params)
+
     if product_params[:brand_id].present?
-      @brand = Brand.find(product_params[:brand_id]) if product_params[:brand_id]
+      brand = Brand.find(product_params[:brand_id]) if product_params[:brand_id]
 
-      if (product_params[:sub_category_ids] - @brand.sub_category_ids).any?
-        (product_params[:sub_category_ids] - @brand.sub_category_ids).each do |id|
+      sub_category_ids = product_params[:sub_category_ids]
+      if sub_category_ids.present? && (sub_category_ids - brand.sub_category_ids).any?
+        (sub_category_ids - brand.sub_category_ids).each do |id|
           sub_category = SubCategory.find(id.to_i)
-          @brand.sub_categories << sub_category if sub_category && !@brand.sub_categories.include?(sub_category)
+          brand.sub_categories << sub_category if sub_category && !brand.sub_categories.include?(sub_category)
         end
-      end
-
-      @product = Product.new(
-        name: product_params[:name],
-        brand_id: product_params[:brand_id],
-        discontinued: @brand.discontinued ? true : product_params[:discontinued],
-        release_day: product_params[:release_day],
-        release_month: product_params[:release_month],
-        release_year: product_params[:release_year],
-        discontinued_day: product_params[:discontinued_day],
-        discontinued_month: product_params[:discontinued_month],
-        discontinued_year: product_params[:discontinued_year],
-        description: product_params[:description],
-        price: product_params[:price],
-        price_currency: product_params[:price_currency],
-        custom_attributes: product_params[:custom_attributes],
-        sub_category_ids: product_params[:sub_category_ids],
-      )
-
-      if @product.save && @brand.save
-        redirect_to URI.parse(product_url(id: @product.friendly_id)).path
-      else
-        @brands = Brand.all.order('LOWER(name)')
-        @categories = Category.ordered
-        render :new, status: :unprocessable_entity
       end
     else
       brand = Brand.new(product_params[:brand_attributes])
-
-      if brand.save
-        @product = Product.new(
-          name: product_params[:name],
-          brand_id: brand.id,
-          discontinued: brand.discontinued ? true : product_params[:discontinued],
-          release_day: product_params[:release_day],
-          release_month: product_params[:release_month],
-          release_year: product_params[:release_year],
-          discontinued_day: product_params[:discontinued_day],
-          discontinued_month: product_params[:discontinued_month],
-          discontinued_year: product_params[:discontinued_year],
-          description: product_params[:description],
-          price: product_params[:price],
-          price_currency: product_params[:price_currency],
-          custom_attributes: product_params[:custom_attributes],
-          sub_category_ids: product_params[:sub_category_ids],
-        )
-
-        if @product.save
-          redirect_to URI.parse(product_url(id: @product.friendly_id)).path
-        else
-          @brands = Brand.all.order('LOWER(name)')
-          @categories = Category.ordered
-          @brand = brand
-          render :new, status: :unprocessable_entity
+      sub_category_ids = product_params[:sub_category_ids]
+      if sub_category_ids.present?
+        sub_category_ids.each do |id|
+          sub_category = SubCategory.find(id.to_i)
+          brand.sub_categories << sub_category if sub_category
         end
-      else
-        @brands = Brand.all.order('LOWER(name)')
-        @categories = Category.ordered
-        @product = Product.new(product_params)
-        @brand = brand
-        render :new, status: :unprocessable_entity
       end
+    end
+
+    unless brand.save
+      if params[:product_options_attributes].present?
+        params[:product_options_attributes].each do |option|
+          if option[1][:id].present? && option[1][:option].present?
+            product.product_options.find(option[1][:id]).update(option: option[1][:option])
+          elsif option[1][:id].present?
+            product.product_options.find(option[1][:id]).delete
+          elsif option[1][:option].present?
+            product.product_options << ProductOption.new(option: option[1][:option])
+          end
+        end
+      end
+      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @product = product
+      @brand = brand
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    product.brand_id = brand.id
+    product.discontinued = brand.discontinued ? true : product_params[:discontinued]
+
+    if params[:product_options_attributes].present?
+      params[:product_options_attributes].each do |option|
+        if option[1][:id].present? && option[1][:option].present?
+          product.product_options.find(option[1][:id]).update(option: option[1][:option])
+        elsif option[1][:id].present?
+          product.product_options.find(option[1][:id]).delete
+        elsif option[1][:option].present?
+          product.product_options << ProductOption.new(option: option[1][:option])
+        end
+      end
+    end
+
+    if product.save
+      redirect_to URI.parse(product_url(id: product.friendly_id)).path
+    else
+      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @product = product
+      @brand = brand
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -291,7 +285,6 @@ class ProductsController < ApplicationController
     @product = Product.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @product.name)
     @brand = @product.brand
-    @brands = Brand.all.order('LOWER(name)')
     @categories = Category.includes([:sub_categories]).ordered
 
     add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
@@ -308,14 +301,23 @@ class ProductsController < ApplicationController
       product_update_params[:custom_attributes].each do |custom_attribute|
         custom_attribute[1] = custom_attribute[1].to_i
       end
-    else
-      @product.custom_attributes = {}
+    end
+
+    if params[:product_options_attributes].present?
+      params[:product_options_attributes].each do |option|
+        if option[1][:id].present? && option[1][:option].present?
+          @product.product_options.find(option[1][:id]).update(option: option[1][:option])
+        elsif option[1][:id].present?
+          @product.product_options.find(option[1][:id]).delete
+        elsif option[1][:option].present?
+          @product.product_options << ProductOption.new(option: option[1][:option])
+        end
+      end
     end
 
     if @product.update(product_update_params)
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
-      @brands = Brand.all.order('LOWER(name)')
       @categories = Category.ordered
       @brand = Brand.find(@product.brand_id)
       render :edit, status: :unprocessable_entity
@@ -366,6 +368,16 @@ class ProductsController < ApplicationController
   end
 
   def product_params
+    if params[:product][:product_options_attributes].present?
+      options = {}
+
+      params[:product][:product_options_attributes].each do |i, product_option|
+        options[i] = product_option if product_option[:option].present?
+      end
+
+      params[:product][:product_options_attributes] = options
+    end
+
     params.require(:product)
           .permit(
             :name,
@@ -382,6 +394,7 @@ class ProductsController < ApplicationController
             :price_currency,
             custom_attributes: {},
             sub_category_ids: [],
+            product_options_attributes: {},
             brand_attributes: [
               :name,
               :discontinued,

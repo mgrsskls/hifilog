@@ -16,6 +16,7 @@ class ProductVariantsController < ApplicationController
                                    product_id: @product.id,
                                    product_variant_id: @variant.id,
                                  )
+                                 .order([:prev_owned, :period_from, :period_to, :created_at])
                                  .map do |possession|
                                    if possession.prev_owned
                                      PreviousPossessionPresenter.new(possession)
@@ -29,6 +30,7 @@ class ProductVariantsController < ApplicationController
     end
 
     @public_possessions_with_image = @variant.possessions
+                                             .includes([:image_attachment])
                                              .joins(:user)
                                              .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
                                              .select { |possession| possession.image.attached? }
@@ -59,7 +61,21 @@ class ProductVariantsController < ApplicationController
   def create
     @product_variant = ProductVariant.new(product_variant_params)
     @product = @product_variant.product
-    @product_variant.discontinued = @product.brand.discontinued ? true : product_params[:discontinued]
+    @product_variant.discontinued = @product.brand.discontinued ? true : product_variant_params[:discontinued]
+
+    if params[:product_options_attributes].present?
+      params[:product_options_attributes].each do |option|
+        if option[1][:id].present?
+          if option[1][:option].present?
+            @product_variant.product_options.find(option[1][:id]).update(option: option[1][:option])
+          else
+            @product_variant.product_options.find(option[1][:id]).delete
+          end
+        elsif option[1][:option].present?
+          @product_variant.product_options << ProductOption.new(option: option[1][:option])
+        end
+      end
+    end
 
     if @product_variant.save
       redirect_to product_variant_url(product_id: @product.friendly_id, variant: @product_variant.friendly_id)
@@ -86,6 +102,20 @@ class ProductVariantsController < ApplicationController
 
     old_name = @product_variant.name
     @product_variant.slug = nil if old_name != product_variant_update_params[:name]
+
+    if params[:product_options_attributes].present?
+      params[:product_options_attributes].each do |option|
+        if option[1][:id].present?
+          if option[1][:option].present?
+            @product_variant.product_options.find(option[1][:id]).update(option: option[1][:option])
+          else
+            @product_variant.product_options.find(option[1][:id]).delete
+          end
+        elsif option[1][:option].present?
+          @product_variant.product_options << ProductOption.new(option: option[1][:option])
+        end
+      end
+    end
 
     if @product_variant.update(product_variant_update_params)
       redirect_to URI.parse(
@@ -139,6 +169,16 @@ class ProductVariantsController < ApplicationController
   end
 
   def product_variant_params
+    if params[:product_variant][:product_options_attributes].present?
+      options = {}
+
+      params[:product_variant][:product_options_attributes].each do |i, product_option|
+        options[i] = product_option if product_option[:option].present?
+      end
+
+      params[:product_variant][:product_options_attributes] = options
+    end
+
     params.require(:product_variant).permit(
       :name,
       :release_day,
@@ -151,7 +191,8 @@ class ProductVariantsController < ApplicationController
       :description,
       :price,
       :price_currency,
-      :product_id
+      :product_id,
+      product_options_attributes: {},
     )
   end
 
@@ -169,7 +210,7 @@ class ProductVariantsController < ApplicationController
       :price,
       :price_currency,
       :product_id,
-      :comment
+      :comment,
     )
   end
 end

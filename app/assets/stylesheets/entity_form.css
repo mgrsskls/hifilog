@@ -96,3 +96,34 @@
 .EntityForm-variant .h4 {
 	margin-block-start: 0;
 }
+
+.ProductOptionsForm-list {
+	list-style: "";
+	counter-reset: options;
+	padding-inline-start: 0;
+}
+
+.ProductOptionsForm-list li {
+	counter-increment: options;
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.ProductOptionsForm-list li:not(:first-child) {
+	margin-block-start: 1rem;
+}
+
+.ProductOptionsForm-list li::before {
+	content: counter(options) ".";
+}
+
+.ProductOptionsForm button {
+	text-decoration: underline;
+	font-weight: 600;
+}
+
+.ProductOptionsForm-button {
+	display: block;
+	margin-inline-start: auto;
+}

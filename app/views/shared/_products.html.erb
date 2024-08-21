@@ -56,6 +56,9 @@
                 <%= item.product.present? ? item.brand_name : "<i>#{item.brand_name}</i>".html_safe %><br>
               <% end %>
               <b><%= item.show_path.present? ? (link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.show_path) : item.name %></b>
+              <% if item.product_option %>
+                <br><small><%= item.product_option.option %></small>
+              <% end %>
             </th>
             <% unless hide_release_date %>
               <td class="Table-date">
@@ -141,13 +144,6 @@
                 <% else %>
                   <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "list" %>
                 <% end %>
-                 <% if include_setup && item.setup.present? %>
-                  <small>
-                    <i>
-                      <%= item.setup.name if item.setup.present? %>
-                    </i>
-                  </small>
-                <% end %>
               </div>
             <% end %>
               <div class="ProductList-content">
@@ -156,45 +152,56 @@
                     <%= item.brand_name unless hide_brand %>
                     <b><%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %></b>
                   </a>
+                  <% if item.product_option %>
+                    <br><small><%= item.product_option.option %></small>
+                  <% end %>
                 </div>
-                <p class="ProductList-categories">
-                  <% if item.sub_categories.any? %>
-                    <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
-                  <% else %>
-                    <%= item.categories.map{ |category| category.name }.join(", ") %>
+                <div class="ProductList-categories">
+                  <p>
+                    <% if item.sub_categories.any? %>
+                      <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+                    <% else %>
+                      <%= item.categories.map{ |category| category.name }.join(", ") %>
+                    <% end %>
+                  </p>
+                  <% unless hide_since %>
+                    <% if item.period_from %>
+                      <p>
+                        <b>Since:</b>
+                        <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                      </p>
+                    <% end %>
                   <% end %>
-                </p>
-                <% unless hide_since %>
-                  <% if item.period_from %>
-                    <p class="ProductList-categories">
-                      <span>Since:</span>
-                      <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                  <% unless hide_period %>
+                    <% if item.period_from || item.period_to %>
+                      <p>
+                        <% if item.prev_owned %>
+                          <% if item.period_from && item.period_to %>
+                            <b>Owned from:</b>
+                            <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
+                          <% elsif item.period_from %>
+                            <b>Owned since:</b>
+                            <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                          <% elsif item.period_to %>
+                            <b>Owned until:</b>
+                            <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
+                          <% end %>
+                        <% else %>
+                          <% if item.period_from %>
+                            <b>Since:</b>
+                            <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                          <% end %>
+                        <% end %>
+                      </p>
+                    <% end %>
+                  <% end %>
+                  <% if include_setup && item.setup.present? %>
+                    <p>
+                      <b>Setup:</b>
+                      <%= item.setup.name %>
                     </p>
                   <% end %>
-                <% end %>
-                <% unless hide_period %>
-                  <% if item.period_from || item.period_to %>
-                    <p class="ProductList-categories">
-                      <% if item.prev_owned %>
-                        <% if item.period_from && item.period_to %>
-                          <span>Owned from:</span>
-                          <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
-                        <% elsif item.period_from %>
-                          <span>Owned since:</span>
-                          <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
-                        <% elsif item.period_to %>
-                          <span>Owned until:</span>
-                          <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
-                        <% end %>
-                      <% else %>
-                        <% if item.period_from %>
-                          <span>Since:</span>
-                          <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
-                        <% end %>
-                      <% end %>
-                    </p>
-                  <% end %>
-                <% end %>
+                </div>
                 <% if include_edit_link || include_delete_button %>
                   <div class="ProductList-metaLinks">
                     <ul class="MetaLinks">

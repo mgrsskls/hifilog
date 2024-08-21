@@ -28,13 +28,14 @@ class Product < ApplicationRecord
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
-  has_many :setup_possessions, dependent: :destroy
-  has_many :setups, through: :setup_possessions
   has_many :product_variants, dependent: :destroy
   has_many :notes, dependent: :nullify
+  has_many :product_options, dependent: :destroy
 
   accepts_nested_attributes_for :brand
+  accepts_nested_attributes_for :product_options
   validates_associated :brand
+  validates_associated :product_options
 
   validates :name, presence: true
   validates :name, uniqueness: { scope: :brand, case_sensitive: false }
@@ -78,6 +79,7 @@ class Product < ApplicationRecord
       possessions_user_id
       price
       price_currency
+      product_options_id_eq
       product_variants_id
       release_day
       release_month
@@ -96,9 +98,9 @@ class Product < ApplicationRecord
   end
 
   def display_name
-    return unless brand
+    return "#{brand.name} #{name}" if brand
 
-    "#{brand.name} #{name}"
+    name
   end
 
   def url_slug

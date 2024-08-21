@@ -233,6 +233,7 @@ en:
     release_date: Release date
     discontinued_date: Discontinued date
     period: From / to
+    options: Options
     name: Name
     meta:
       owned_by: Owned by
@@ -294,6 +295,7 @@ en:
       product:
         price: Price
         price_currency: Currency
+        product_options: Options
       version:
         comment: Comment
       user:

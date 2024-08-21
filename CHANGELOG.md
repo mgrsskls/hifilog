@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-08-21">2024-08-21</time>
+
+- Products can now have options, which could for example be colors, sizes, type of wood etc.
+
 ## <time datetime="2024-08-18">2024-08-18</time>
 
 - When assigning dates of ownership to products, they will now appear in a product history, listing the user's products in a timeline.

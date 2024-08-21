@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_17_130100) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -175,7 +175,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_17_130100) do
     t.boolean "prev_owned", default: false
     t.datetime "period_from"
     t.datetime "period_to"
+    t.bigint "product_option_id"
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"
+  end
+
+  create_table "product_options", force: :cascade do |t|
+    t.string "option", null: false
+    t.bigint "product_id"
+    t.bigint "product_variant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["option", "product_id"], name: "index_product_options_on_option_and_product_id", unique: true
+    t.index ["option", "product_variant_id"], name: "index_product_options_on_option_and_product_variant_id", unique: true
   end
 
   create_table "product_variants", force: :cascade do |t|

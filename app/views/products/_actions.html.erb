@@ -8,11 +8,11 @@
 
       <div class="ProductPossession-heading u-flex u-alignCenter">
         <div>
-          <%= render "shared/image_upload", item: ItemPresenter.new(possession), image_update_item: possession, size: "4rem", prefix: "possessions" %>
+          <%= render "shared/image_upload", item: ItemPresenter.new(possession), image_update_item: possession, size: "5.2rem", prefix: "possessions" %>
         </div>
         <div>
           <b class="ProductPossession-headingName"><%= possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
-          <% if possession.period_from || possession.period_to || possession.setup %>
+          <% if possession.period_from || possession.period_to || possession.setup || possession.product_option %>
             <div class="ProductPossession-period">
               <% if possession.prev_owned %>
                 <% if possession.period_from && possession.period_to %>
@@ -45,11 +45,16 @@
                   <%= link_to possession.setup.name, dashboard_setup_path(possession.setup) %>
                 </small>
               <% end %>
+              <% if possession.product_option %>
+                <small>
+                  <span>Option:</span>
+                  <%= possession.product_option.option %>
+                </small>
+              <% end %>
             </div>
           <% end %>
         </div>
       </div>
-
       <details class="ProductPossession-metaLinks Entity-metaLinks">
         <summary>Edit / Remove</summary>
         <%= form_for possession, method: :put, html: { class: "ProductPossession-setup", id: "possession-form-#{possession.id}" } do |f| %>
@@ -59,7 +64,7 @@
               <%= f.date_field :period_from %>
               <% if @setups.any? %>
                 <label for="setup-select-<%= possession.id %>">Setup</label>
-                <select name="possession[setup_id]" class="SetupSelect" id="setup-select-<%= possession.id %>">
+                <select name="setup_id" id="setup-select-<%= possession.id %>">
                   <option value="">None</option>
                   <% @setups.each do |setup| %>
                     <option value="<%= setup.id %>"<%= " selected" if possession.setup == setup %>><%= setup.name %></option>
@@ -71,6 +76,16 @@
               <%= f.date_field :period_from %>
               <%= f.label :period_to, "Until" %>
               <%= f.date_field :period_to %>
+            <% end %>
+            <% item = @variant.present? ? @variant : @product %>
+            <% if item.product_options.any? %>
+              <label for="product-options-<%= possession.id %>">Option</label>
+              <select name="possession[product_option_id]" id="product-options-<%= possession.id %>">
+                <option value="">None</option>
+                <% item.product_options.each do |option| %>
+                  <option value="<%= option.id %>"<%= " selected" if possession.product_option == option %>><%= option.option %></option>
+                <% end %>
+              </select>
             <% end %>
           </div>
         <% end %>

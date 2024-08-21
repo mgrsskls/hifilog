@@ -63,6 +63,10 @@
             -
           <% end %>
         </dd>
+        <% if @variant.product_options.any? %>
+          <dt><%= t('activerecord.attributes.product.product_options') %></dt>
+          <dd><%= @variant.product_options.map(&:option).join(", ") %></dd>
+        <% end %>
       </dl>
 
       <% if @product.description.present? %>

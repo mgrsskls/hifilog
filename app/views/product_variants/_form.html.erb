@@ -44,18 +44,73 @@
   <% end %>
 
   <div class="Form-field">
-    <%= f.label :name, class: "Form-label" do %>
-      <%= t('product.name') %> <small><i>(optional)</i></small>
-    <% end %>
+    <h2 class="h3 Form-label">
+      <%= f.label :name, class: "Form-label" do %>
+        <%= t('product.name') %> <small><i>(optional)</i></small>
+      <% end %>
+    </h2>
     <%= f.text_field :name %>
   </div>
-  <div class="Form-field">
-    <%= f.label :description, class: "Form-label" do %>
-      <%= t('product.description') %> <small><i>(optional)</i></small>
+
+  <div class="Form-field ProductOptionsForm js-ProductOptionsForm">
+    <div class="Form-fieldHeader">
+      <h2 class="h3 Form-label">
+        <%= t('product.options') %> <small><i>(optional)</i></small>
+      </h2>
+      <small><button data-dialog="options-dialog" type="button">What are options?</button></small>
+    </div>
+    <ol class="ProductOptionsForm-list">
+      <% if @product_variant.product_options.any? %>
+        <% @product_variant.product_options.each_with_index do |option, i| %>
+          <li>
+            <input type="text" name="product_options_attributes[<%= i %>][option]" value="<%= option[:option] %>">
+            <input autocomplete="off" type="hidden" value="<%= option[:id] %>" name="product_options_attributes[<%= i %>][id]">
+          </li>
+        <% end %>
+      <% else %>
+        <li>
+          <input type="text" name="product_options_attributes[0][option]">
+        </li>
+      <% end %>
+    </ol>
+    <button type="button" class="ProductOptionsForm-button js-ProductOptionsForm-button">Add option</button>
+    <%= javascript_tag nonce: true do %>
+      {
+        const wrapper = document.querySelector(".js-ProductOptionsForm");
+
+        if (wrapper) {
+          const button = wrapper.querySelector(".js-ProductOptionsForm-button");
+          const list = wrapper.querySelector("ol");
+          const template = wrapper.querySelector("template");
+
+          if (button && list) {
+            button.addEventListener("click", () => {
+              const clone = list.firstElementChild.cloneNode(true);
+              const input = clone.querySelector("input");
+
+              input.id = `${input.id}-${Date.now()}`
+              input.name = input.name.replace(new RegExp(/[0-9]+/), list.querySelectorAll("li").length)
+              input.value = "";
+
+              list.appendChild(document.importNode(clone, true));
+            });
+          }
+        }
+      }
     <% end %>
+  </div>
+
+  <div class="Form-field">
+    <h2 class="h3 Form-label">
+      <%= f.label :description, class: "Form-label" do %>
+        <%= t('product.description') %> <small><i>(optional)</i></small>
+      <% end %>
+    </h2>
     <%= f.text_area :description %>
   </div>
+
   <div class="Form-field">
+    <h2 class="h3 Form-label">Price</h2>
     <div class="u-flex u-gap-md">
       <div>
         <%= f.label :price, class: "Form-label" do %>
@@ -82,6 +137,7 @@
   </div>
 
   <div class="Form-field">
+    <h2 class="h3 Form-label">Production</h2>
     <%= f.label :release_date, class: "Form-label" do %>
       <%= t('product.release_date') %> <small><i>(optional)</i></small>
     <% end %>

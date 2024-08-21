@@ -25,6 +25,9 @@
                     <time datetime="<%= formatted_date possession[:date] %>"><%= formatted_date possession[:date] %></time>
                   </small>
                   <a href="<%= possession[:presenter].show_path %>"><%= possession[:presenter].display_name %></a>
+                  <% if possession[:presenter].product_option %>
+                    <small><%= possession[:presenter].product_option[:option] %></small>
+                  <% end %>
                 </div>
 
                 <% if possession[:presenter].image.attached? %>

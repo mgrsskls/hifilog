@@ -3,6 +3,7 @@ class Possession < ApplicationRecord
   belongs_to :product, optional: true
   belongs_to :product_variant, optional: true
   belongs_to :custom_product, optional: true
+  belongs_to :product_option, optional: true
 
   has_one :setup_possession, dependent: :destroy
   has_one :setup, through: :setup_possession
@@ -29,6 +30,7 @@ class Possession < ApplicationRecord
       setup_possession_id
       user_id
       prev_owned_eq
+      product_option_id_eq
     ]
   end
 
