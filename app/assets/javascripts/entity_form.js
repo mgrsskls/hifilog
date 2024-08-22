@@ -120,7 +120,7 @@ function renderBrands(input, brands, addBrandForm) {
 }
 
 function appendBrands(brands) {
-	const wrapper = searchResultsWrapper.cloneNode();
+	const fragment = document.createDocumentFragment();
 
 	brands.forEach((brand) => {
 		const clone = template.content.cloneNode(true);
@@ -133,10 +133,10 @@ function appendBrands(brands) {
 		label.setAttribute("for", `brands-${brand.id}`);
 		label.textContent = brand.name;
 
-		wrapper.appendChild(clone);
+		fragment.appendChild(clone);
 	});
 
-	searchResultsWrapper.replaceWith(wrapper);
+	searchResultsWrapper.appendChild(fragment);
 
-	return Array.from(wrapper.children);
+	return Array.from(searchResultsWrapper.children);
 }
