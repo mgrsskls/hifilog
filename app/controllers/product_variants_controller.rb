@@ -52,6 +52,7 @@ class ProductVariantsController < ApplicationController
   def new
     @product = Product.friendly.find(params[:product_id])
     @product_variant = ProductVariant.new(product: @product)
+    @brand = @product.brand
 
     add_breadcrumb @product.display_name, @product
     add_breadcrumb I18n.t('new_variant.link')
@@ -87,6 +88,7 @@ class ProductVariantsController < ApplicationController
   def edit
     @product = Product.friendly.find(params[:product_id])
     @product_variant = @product.product_variants.friendly.find(params[:variant])
+    @brand = @product.brand
     @page_title = I18n.t('edit_record', name: @product_variant.display_name)
 
     add_breadcrumb @product.display_name, @product

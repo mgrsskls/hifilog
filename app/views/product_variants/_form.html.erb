@@ -1,17 +1,6 @@
 <% additional_instructions ||= [] %>
 
-<% content_for :css do %>
-  <%= stylesheet_link_tag "entity_form", crossorigin: true, integrity: true %>
-<% end %>
-<% content_for :js do %>
-  <%= javascript_include_tag "entity_form", type: "module", nonce: true, crossorigin: true, integrity: true %>
-<% end %>
-
-<div class="Form Form--centered">
-  <div class="Heading">
-    <h1><%= yield :heading %></h1>
-  </div>
-
+<% content_for :guidelines do %>
   <details class="Instructions">
     <summary>Product Version / Update Guidelines</summary>
     <div class="Instructions-content Rte">
@@ -38,11 +27,9 @@
       </ul>
     </div>
   </details>
+<% end %>
 
-  <% if @product_variant.errors.any? %>
-    <%= render "shared/flash_messages", messages: @product_variant.errors.map { |error| ["alert", error.full_message] } %>
-  <% end %>
-
+<%= render "shared/product_form", f: f, entity: @product_variant, include_comment: include_comment, prefix: "product_variant" do %>
   <div class="Form-field">
     <h2 class="h3 Form-label">
       <%= f.label :name, class: "Form-label" do %>
@@ -51,151 +38,4 @@
     </h2>
     <%= f.text_field :name %>
   </div>
-
-  <div class="Form-field ProductOptionsForm js-ProductOptionsForm">
-    <div class="Form-fieldHeader">
-      <h2 class="h3 Form-label">
-        <%= t('product.options') %> <small><i>(optional)</i></small>
-      </h2>
-      <small><button data-dialog="options-dialog" type="button">What are options?</button></small>
-    </div>
-    <ol class="ProductOptionsForm-list">
-      <% if @product_variant.product_options.any? %>
-        <% @product_variant.product_options.each_with_index do |option, i| %>
-          <li>
-            <input type="text" name="product_options_attributes[<%= i %>][option]" value="<%= option[:option] %>">
-            <input autocomplete="off" type="hidden" value="<%= option[:id] %>" name="product_options_attributes[<%= i %>][id]">
-          </li>
-        <% end %>
-      <% else %>
-        <li>
-          <input type="text" name="product_options_attributes[0][option]">
-        </li>
-      <% end %>
-    </ol>
-    <button type="button" class="ProductOptionsForm-button js-ProductOptionsForm-button">Add option</button>
-    <%= javascript_tag nonce: true do %>
-      {
-        const wrapper = document.querySelector(".js-ProductOptionsForm");
-
-        if (wrapper) {
-          const button = wrapper.querySelector(".js-ProductOptionsForm-button");
-          const list = wrapper.querySelector("ol");
-          const template = wrapper.querySelector("template");
-
-          if (button && list) {
-            button.addEventListener("click", () => {
-              const clone = list.firstElementChild.cloneNode(true);
-              const input = clone.querySelector("input");
-
-              input.id = `${input.id}-${Date.now()}`
-              input.name = input.name.replace(new RegExp(/[0-9]+/), list.querySelectorAll("li").length)
-              input.value = "";
-
-              list.appendChild(document.importNode(clone, true));
-            });
-          }
-        }
-      }
-    <% end %>
-  </div>
-
-  <div class="Form-field">
-    <h2 class="h3 Form-label">
-      <%= f.label :description, class: "Form-label" do %>
-        <%= t('product.description') %> <small><i>(optional)</i></small>
-      <% end %>
-    </h2>
-    <%= f.text_area :description %>
-  </div>
-
-  <div class="Form-field">
-    <h2 class="h3 Form-label">Price</h2>
-    <div class="u-flex u-gap-md">
-      <div>
-        <%= f.label :price, class: "Form-label" do %>
-          <%= t('activerecord.attributes.product.price') %> <small><i>(optional)</i></small>
-        <% end %>
-        <%= f.text_field :price, inputmode: "number" %>
-      </div>
-      <div>
-        <%= f.label :price_currency, class: "Form-label" do %>
-          <%= t('activerecord.attributes.product.price_currency') %> <small><i>(optional)</i></small>
-        <% end %>
-        <%= f.select :price_currency do %>
-          <option value=""></option>
-          <% ['USD', 'EUR'].each do |id| %>
-            <option value="<%= id %>"<%= " selected" if f.object[:price_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
-          <% end %>
-          <hr>
-          <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
-            <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_currency] == currency[:id] %>><%= currency[:name] %></option>
-          <% end %>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
-  <div class="Form-field">
-    <h2 class="h3 Form-label">Production</h2>
-    <%= f.label :release_date, class: "Form-label" do %>
-      <%= t('product.release_date') %> <small><i>(optional)</i></small>
-    <% end %>
-    <div class="EntityForm-date">
-      <%= f.select :release_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
-      <%= select_month(@product_variant.release_month, { field_name: "release_month", prefix: "product_variant", prompt: "Month" }, { "aria-label": "Month" }) %>
-      <%= f.text_field :release_year, inputmode: "number", list: "years", placeholder: "Year", "aria-label": "Year" %>
-    </div>
-    <small>If you for example only know the year, you can also omit day and month.</small>
-  </div>
-
-  <% if @product.brand && @product.brand.discontinued %>
-    <p class="EntityForm-note">
-      <small>
-        Since <i><%= @product.brand.name %></i> has been discontinued, this product will automatically be set to discontinued as well.
-      </small>
-    </p>
-  <% else %>
-    <div class="Form-field Form-field--inline Entity-discontinued">
-      <span class="Form-label"><%= t('symbols.discontinued') %></span>
-      <div class="Form-options">
-        <%= f.radio_button :discontinued, 0, checked: (@product_variant.discontinued.nil? || @product_variant.discontinued == false) %>
-        <%= f.label :discontinued, "No", value: 0 %>
-        <%= f.radio_button :discontinued, 1, checked: (@product_variant.discontinued == true) %>
-        <%= f.label :discontinued, "Yes", value: 1  %>
-      </div>
-    </div>
-
-    <div class="Form-field Entity-discontinuedDate"<%= "hidden" unless @product_variant.discontinued? %>>
-      <%= f.label :discontinued_date, class: "Form-label" do %>
-        <%= t('product.discontinued_date') %> <small><i>(optional)</i></small>
-      <% end %>
-      <div class="EntityForm-date">
-        <%= f.select :discontinued_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day", disabled: @product_variant.discontinued.nil? || @product_variant.discontinued == false } %>
-        <%= select_month(@product_variant.discontinued_month, { field_name: "discontinued_month", prefix: "product_variant", prompt: "Month" }, { "aria-label": "Month", disabled: (@product_variant.discontinued.nil? || @product_variant.discontinued == false) }) %>
-        <%= f.text_field :discontinued_year, inputmode: "number", list: "years", placeholder: "Year", disabled: (@product_variant.discontinued.nil? || @product_variant.discontinued == false), "aria-label": "Year" %>
-      </div>
-      <small>If you for example only know the year, you can also omit day and month.</small>
-      <datalist id="years">
-        <% (1900..Date.today.year+1).to_a.reverse.each do |year| %>
-          <option value="<%= year %>"></option>
-        <% end %>
-      </datalist>
-    </div>
-  <% end %>
-
-  <% if include_comment %>
-    <div class="Form-field Form-field--divider">
-      <h2 class="h3 Form-label">
-        <%= t('activerecord.attributes.version.comment') %> <small><i>(optional)</i></small>
-      </h2>
-      <%= f.text_area :comment %>
-    </div>
-  <% end %>
-
-  <div class="Form-submit">
-    <%= f.button type: "submit", class: "Button Button--loadingIcon" do %>
-      <span><%= t('new_product.submit') %></span>
-    <% end %>
-  </div>
-</div>
+<% end %>
