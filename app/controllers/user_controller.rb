@@ -143,7 +143,11 @@ class UserController < ApplicationController
     @page_title = I18n.t('headings.history')
     @active_dashboard_menu = :history
 
-    from = current_user.possessions.where.not(period_from: nil).order(:period_from).map do |possession|
+    from = current_user.possessions
+                       .includes([:product_option])
+                       .includes([image_attachment: [:blob]])
+                       .where.not(period_from: nil)
+                       .order(:period_from).map do |possession|
       presenter = if possession.custom_product_id
                     CustomProductPossessionPresenter.new(possession)
                   else
@@ -157,7 +161,11 @@ class UserController < ApplicationController
       }
     end
 
-    to = current_user.possessions.where.not(period_to: nil).order(:period_to).map do |possession|
+    to = current_user.possessions
+                     .includes([:product_option])
+                     .includes([image_attachment: [:blob]])
+                     .where.not(period_to: nil)
+                     .order(:period_to).map do |possession|
       presenter = if possession.custom_product_id
                     CustomProductPossessionPresenter.new(possession)
                   else
