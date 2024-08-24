@@ -17,25 +17,38 @@
           <% possession_entries.each_with_index do |possession, i| %>
             <li class="HistoryList-entry <%= possession[:type] %>">
               <span class="u-hiddenVisually">
-                <%= possession[:type] == 'from' ? 'Bought' : 'Sold' %>:
+                <%= possession[:type] == :from ? 'Bought' : 'Sold' %>:
               </span>
               <div class="HistoryList-content">
-                <div>
-                  <small>
-                    <time datetime="<%= formatted_date possession[:date] %>"><%= formatted_date possession[:date] %></time>
-                  </small>
-                  <a href="<%= possession[:presenter].show_path %>"><%= possession[:presenter].display_name %></a>
-                  <% if possession[:presenter].product_option %>
-                    <small><%= possession[:presenter].product_option[:option] %></small>
+                <small class="HistoryList-date">
+                  <time datetime="<%= formatted_date possession[:date] %>"><%= formatted_date possession[:date] %></time>
+                  <% if possession[:presenter].owned_for.present? && (
+                    (
+                      possession[:type] == :from &&
+                      !possession[:presenter].prev_owned
+                    ) || (
+                      possession[:type] == :to &&
+                      possession[:presenter].prev_owned
+                    )
+                  ) %>
+                    <br>Owned for <%= possession[:presenter].owned_for %>
+                  <% end %>
+                </small>
+                <div class="HistoryList-product">
+                  <div class="HistoryList-productText">
+                    <a href="<%= possession[:presenter].show_path %>"><%= possession[:presenter].display_name %></a>
+                    <% if possession[:presenter].product_option %>
+                      <small><%= possession[:presenter].product_option[:option] %></small>
+                    <% end %>
+                  </div>
+                  <% if possession[:presenter].image.attached? %>
+                    <picture>
+                      <source srcset="<%= cdn_image_url(possession[:presenter].image.variant(:thumb_avif)) %>" type="image/avif">
+                      <%= image_tag cdn_image_url(possession[:presenter].image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                    </picture>
                   <% end %>
                 </div>
 
-                <% if possession[:presenter].image.attached? %>
-                  <picture>
-                    <source srcset="<%= cdn_image_url(possession[:presenter].image.variant(:thumb_avif)) %>" type="image/avif">
-                    <%= image_tag cdn_image_url(possession[:presenter].image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
-                  </picture>
-                <% end %>
               </div>
             </li>
           <% end %>

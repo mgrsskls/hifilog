@@ -81,6 +81,7 @@
 	box-sizing: border-box;
 	position: relative;
 	display: flex;
+	flex-direction: column;
 	container: entry / inline-size;
 }
 
@@ -122,7 +123,7 @@
 }
 
 .HistoryList-entry.from {
-	justify-content: flex-end;
+	align-items: flex-end;
 	text-align: end;
 	padding-inline-end: var(--connector-size);
 }
@@ -138,6 +139,7 @@
 
 .HistoryList-entry.to {
 	align-self: flex-end;
+	align-items: flex-start;
 	padding-inline-start: var(--connector-size);
 }
 
@@ -151,9 +153,6 @@
 }
 
 .HistoryList-content {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
 	background: var(--color-bg2);
 	padding: 0.75rem;
 	border-radius: var(--border-radius);
@@ -162,15 +161,8 @@
 	position: relative;
 }
 
-@container entry (width <= 16rem) {
-	.HistoryList-content {
-		flex-direction: column;
-		align-items: flex-end;
-	}
-
-	.to .HistoryList-content {
-		align-items: flex-start;
-	}
+.to .HistoryList-content {
+	flex-direction: row-reverse;
 }
 
 .HistoryList-content small {
@@ -178,35 +170,69 @@
 	display: block;
 }
 
-.HistoryList-content a {
+.HistoryList-content time {
+	font-weight: 600;
+}
+
+.HistoryList-product {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block-start: 0.5rem;
+}
+
+.from .HistoryList-product {
+	justify-content: flex-end;
+}
+
+.to .HistoryList-product {
+	justify-content: flex-start;
+}
+
+@container entry (width <= 16rem) {
+	.HistoryList-product {
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
+	.to .HistoryList-product {
+		align-items: flex-start;
+	}
+}
+
+.HistoryList-product a {
 	display: inline-block;
 	font-weight: 600;
 	margin-block: 0.2em;
 }
 
-.HistoryList-content a:focus-visible {
+.HistoryList-product a:focus-visible {
 	outline: none;
 }
 
-.HistoryList-content a::before {
+.HistoryList-product a::before {
 	content: "";
 	position: absolute;
 	inset: 0;
 	border-radius: var(--border-radius);
 }
 
-.HistoryList-content a:focus-visible::before {
+.HistoryList-product a:focus-visible::before {
 	outline: 0.125rem solid var(--color-focus-outline);
 	outline-offset: 0.1875rem;
 }
 
-.HistoryList-content img {
+.HistoryList-product img {
 	inline-size: 4rem;
 	border-radius: var(--border-radius);
 }
 
-.HistoryList-content.to picture {
+.HistoryList-product.to picture {
 	order: -1;
+}
+
+.History-period {
+	display: block;
 }
 
 @media (width < 42rem) {
