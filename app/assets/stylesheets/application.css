@@ -414,11 +414,38 @@
 		padding: 0;
 		background: none;
 		overscroll-behavior: contain;
+		min-inline-size: 4rem;
+		min-block-size: 4rem;
+	}
+
+	.ImageDialog::before {
+		content: "";
+		display: block;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' width='600' height='600'%3E%3Cpath fill='%237a9bb8' d='M300 0C193.69 0 100.3 55.29 47.02 138.69l110.88 64.02a15.41 15.41 0 0 1 5.64 21.05l-2.27 3.93a15.41 15.41 0 0 1-21.05 5.64L29.77 169.56A298.84 298.84 0 0 0 0 300c0 165.69 134.31 300 300 300s300-134.31 300-300S465.69 0 300 0Z'/%3E%3C/svg%3E%0A");
+		background-size: 100% 100%;
+		background-repeat: no-repeat;
+		inline-size: 4rem;
+		aspect-ratio: 1;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		translate: -50% -50%;
+		animation: spinner 1s ease infinite;
+	}
+
+	@keyframes spinner {
+		0% {
+			rotate: 0;
+		}
+		100% {
+			rotate: 1turn;
+		}
 	}
 
 	.ImageDialog img {
 		max-block-size: calc(100dvb - 3rem);
 		max-inline-size: calc(100dvi - 3rem);
+		position: relative;
 	}
 
 	@media (max-width: 36em) {
