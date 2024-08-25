@@ -60,39 +60,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # Images can already be attached to active records entries when
-  # not all variants have been created and stored in AWS.
-  # To avoid that we create and upload first, then attach
-  # it to the active record object.
-  # https://github.com/rails/rails/issues/47047#issue-1537738526
-  def try_create_and_upload_blob!(uploaded_file)
-    return nil if uploaded_file.blank?
-
-    error = 'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.' unless [
-      'image/jpeg',
-      'image/webp',
-      'image/png',
-      'image/gif'
-    ].include?(uploaded_file.content_type)
-
-    if error.present?
-      return {
-        success: false,
-        error:
-      }
-    end
-
-    attachment = ActiveStorage::Blob.create_and_upload!(
-      io: uploaded_file.to_io,
-      filename: uploaded_file.original_filename,
-    )
-
-    {
-      success: true,
-      attachment:
-    }
-  end
-
   protected
 
   def configure_permitted_parameters

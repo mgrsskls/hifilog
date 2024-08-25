@@ -80,20 +80,21 @@ class User < ApplicationRecord
 
   def validate_image_content_type
     return unless avatar.attachment
-    return if [
+
+    unless [
       'image/jpeg',
       'image/webp',
       'image/png',
       'image/gif'
     ].include?(avatar.attachment.blob.content_type)
-
-    errors.add(:avatar_content_type, 'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.')
+      errors.add(:avatar_content_type, 'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.')
+    end
   end
 
   def validate_image_file_size
     return unless avatar.attachment
     return if avatar.attachment.blob.byte_size < 5_000_000
 
-    errors.add(:avatar_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
+    errors.add(:avatar_file_size, 'too big. Please use a file with a maximum of 5 MB.')
   end
 end
