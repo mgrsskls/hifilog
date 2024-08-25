@@ -104,7 +104,10 @@ class User < ApplicationRecord
       'image/png',
       'image/gif'
     ].include?(decorative_image.attachment.blob.content_type)
-      errors.add(:decorative_image_content_type, 'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.')
+      errors.add(
+        :decorative_image_content_type,
+        'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.'
+      )
     end
   end
 
