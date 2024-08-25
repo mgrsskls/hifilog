@@ -100,6 +100,29 @@ class PossessionsController < ApplicationController
       @possession.image.purge
       @possession.save
       redirect_back fallback_location: root_url
+      return
+    end
+
+    if possession_params[:image].present?
+      # validation should not happen in controller, but see  explanation at try_create_and_upload_blob!
+      upload = try_create_and_upload_blob!(possession_params[:image])
+
+      if upload[:success]
+        # byte_size is only available after upload
+        if upload[:attachment].byte_size < 5_000_000
+          @possession.image = upload[:attachment]
+          redirect_back fallback_location: root_url if @possession.save
+        else
+          flash[:alert] = 'The uploaded image is too big. Please use a file with a maximum of 5 MB.'
+          upload[:attachment].purge
+          redirect_back fallback_location: root_url
+        end
+      elsif upload[:error].present?
+        flash[:alert] = "The uploaded image #{upload[:error]}"
+        redirect_back fallback_location: root_url
+      end
+
+      return
     end
 
     if params[:setup_id]
@@ -114,7 +137,7 @@ class PossessionsController < ApplicationController
       end
     end
 
-    unless @possession.update(possession_params)
+    unless @possession.update(possession_params.except(:image))
       @possession.errors.full_messages.each do |error|
         flash[:alert] = error
       end

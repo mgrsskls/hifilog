@@ -79,19 +79,39 @@ class CustomProductsController < ApplicationController
   def update
     @custom_product = current_user.custom_products.find(params[:id])
 
-    @custom_product.image.purge if params[:custom_product][:delete_image]
+    if custom_product_params[:image].present?
+      # validation should not happen in controller, but see  explanation at try_create_and_upload_blob!
+      upload = try_create_and_upload_blob!(custom_product_params[:image])
 
-    if @custom_product.update(custom_product_params)
-      flash[:notice] = I18n.t(
-        'custom_products.updated',
-        link: ActionController::Base.helpers.link_to(
-          @custom_product.name,
-          user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
-        )
-      )
-      redirect_to dashboard_custom_products_path
+      if upload[:success]
+        # byte_size is only available after upload
+        if upload[:attachment].byte_size < 5_000_000
+          @custom_product.image = upload[:attachment]
+          redirect_to dashboard_custom_products_path if @custom_product.save
+        else
+          flash[:alert] = 'The uploaded image is too big. Please use a file with a maximum of 5 MB.'
+          upload[:attachment].purge
+          redirect_to dashboard_custom_products_path
+        end
+      elsif upload[:error].present?
+        flash[:alert] = "The uploaded image #{upload[:error]}"
+        redirect_to dashboard_custom_products_path
+      end
     else
-      render :edit, status: :unprocessable_entity
+      @custom_product.image.purge if params[:custom_product][:delete_image]
+
+      if @custom_product.update(custom_product_params.except(:image))
+        flash[:notice] = I18n.t(
+          'custom_products.updated',
+          link: ActionController::Base.helpers.link_to(
+            @custom_product.name,
+            user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
+          )
+        )
+        redirect_to dashboard_custom_products_path
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
   end
 

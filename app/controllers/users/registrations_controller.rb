@@ -35,6 +35,54 @@ class Users::RegistrationsController < Devise::RegistrationsController
     current_user.avatar.purge if params[:delete_avatar]
     current_user.decorative_image.purge if params[:delete_decorative_image]
 
+    # validation should not happen in controller, but see  explanation at try_create_and_upload_blob!
+    uploaded_avatar = params.require(:user).fetch(:avatar, nil)
+    if uploaded_avatar
+      upload = try_create_and_upload_blob!(uploaded_avatar)
+
+      if upload[:success]
+        # byte_size is only available after upload
+        if upload[:attachment].byte_size < 5_000_000
+          current_user.avatar = upload[:attachment]
+          params[:user].delete :avatar
+        else
+          current_user.errors.add(:avatar, 'is too big. Please use a file with a maximum of 5 MB.')
+          upload[:attachment].purge
+        end
+      elsif upload[:error].present?
+        current_user.errors.add(:avatar, upload[:error])
+      end
+    end
+
+    # validation should not happen in controller, but see  explanation at try_create_and_upload_blob!
+    uploaded_decorative_image = params.require(:user).fetch(:decorative_image, nil)
+    if uploaded_decorative_image
+      upload = try_create_and_upload_blob!(uploaded_decorative_image)
+
+      if upload[:success]
+        # byte_size is only available after upload
+        if upload[:attachment].byte_size < 5_000_000
+          current_user.decorative_image = upload[:attachment]
+          params[:user].delete :decorative_image
+        else
+          current_user.errors.add(:decorative_image, 'is too big. Please use a file with a maximum of 5 MB.')
+          upload[:attachment].purge
+        end
+      elsif upload[:error].present?
+        current_user.errors.add(:decorative_image, upload[:error])
+      end
+    end
+
+    if current_user.errors.any? || !current_user.save
+      current_user.user_name = account_update_params[:user_name] if account_update_params[:user_name].present?
+      current_user.email = account_update_params[:email] if account_update_params[:email].present?
+      if account_update_params[:profile_visibility].present?
+        current_user.profile_visibility = account_update_params[:profile_visibility]
+      end
+      render :edit, status: :unprocessable_entity
+      return
+    end
+
     super
   end
 
