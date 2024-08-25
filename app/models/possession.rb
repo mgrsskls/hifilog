@@ -13,7 +13,6 @@ class Possession < ApplicationRecord
   end
 
   validate :validate_image_content_type, :validate_image_file_size, on: :update
-  validate :validate_image_content_type, :validate_image_file_size, on: :update
 
   attr_accessor :delete_image
 
@@ -58,6 +57,6 @@ class Possession < ApplicationRecord
     return unless image.attachment
     return if image.attachment.blob.byte_size < 5_000_000
 
-    errors.add(:image_file_size, 'too big. Please use a file with a maximum of 5 MB.')
+    errors.add(:image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
   end
 end

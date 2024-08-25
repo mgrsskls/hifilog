@@ -37,7 +37,7 @@ class CustomProductsController < ApplicationController
 
   def new
     @custom_product = CustomProduct.new
-    @categories = Category.ordered
+    @categories = Category.includes([:sub_categories]).all.order(:order)
 
     add_breadcrumb I18n.t('new_custom_product.breadcrumb')
   end
@@ -59,14 +59,14 @@ class CustomProductsController < ApplicationController
       redirect_to user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
     else
       @active_dashboard_menu = :custom_products
-      @categories = Category.ordered
+      @categories = Category.includes([:sub_categories]).all.order(:order)
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
     @custom_product = current_user.custom_products.find(params[:id])
-    @categories = Category.ordered
+    @categories = Category.includes([:sub_categories]).all.order(:order)
 
     add_breadcrumb @custom_product.name, user_custom_product_path(
       id: @custom_product.id,
@@ -78,6 +78,7 @@ class CustomProductsController < ApplicationController
 
   def update
     @custom_product = current_user.custom_products.find(params[:id])
+    @categories = Category.includes([:sub_categories]).all.order(:order)
 
     @custom_product.image.purge if params[:custom_product][:delete_image]
 
@@ -89,7 +90,12 @@ class CustomProductsController < ApplicationController
           user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
         )
       )
-      redirect_to dashboard_custom_products_path
+      redirect_back fallback_location: root_url
+    elsif custom_product_params[:image].present?
+      @custom_product.errors.each do |error|
+        flash[:alert] = "The image #{error.message}"
+      end
+      redirect_back fallback_location: root_url
     else
       render :edit, status: :unprocessable_entity
     end

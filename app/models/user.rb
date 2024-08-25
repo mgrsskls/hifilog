@@ -28,8 +28,8 @@ class User < ApplicationRecord
   end
 
   validates :user_name, presence: true, uniqueness: true
-  validate :validate_image_content_type, :validate_image_file_size, on: :update
-  validate :validate_image_content_type, :validate_image_file_size, on: :update
+  validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
+  validate :validate_decorative_image_content_type, :validate_decorative_image_file_size, on: :update
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -75,7 +75,7 @@ class User < ApplicationRecord
     user_path(user_name.downcase)
   end
 
-  def validate_image_content_type
+  def validate_avatar_content_type
     return unless avatar.attachment
 
     unless [
@@ -88,10 +88,30 @@ class User < ApplicationRecord
     end
   end
 
-  def validate_image_file_size
+  def validate_avatar_file_size
     return unless avatar.attachment
     return if avatar.attachment.blob.byte_size < 5_000_000
 
-    errors.add(:avatar_file_size, 'too big. Please use a file with a maximum of 5 MB.')
+    errors.add(:avatar_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
+  end
+
+  def validate_decorative_image_content_type
+    return unless decorative_image.attachment
+
+    unless [
+      'image/jpeg',
+      'image/webp',
+      'image/png',
+      'image/gif'
+    ].include?(decorative_image.attachment.blob.content_type)
+      errors.add(:decorative_image_content_type, 'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.')
+    end
+  end
+
+  def validate_decorative_image_file_size
+    return unless decorative_image.attachment
+    return if decorative_image.attachment.blob.byte_size < 5_000_000
+
+    errors.add(:decorative_image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
   end
 end
