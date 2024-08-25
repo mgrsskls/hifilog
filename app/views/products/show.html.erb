@@ -83,14 +83,12 @@
               <li class="ImageLightbox-item">
                 <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= possession.image.id %>">
                   <picture>
-                    <source srcset="<%= cdn_image_url(possession.image.variant(:thumb_avif)) %>" type="image/avif">
-                    <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                    <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                   </picture>
                 </button>
                 <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= possession.image.id %>">
                   <picture>
-                    <source srcset="<%= cdn_image_url(possession.image.variant(:large_avif)) %>" type="image/avif">
-                    <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+                    <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                   </picture>
                   <div class="ImageGallery-info is-dark">
                     <% if @public_possessions_with_image.size > 1 %>

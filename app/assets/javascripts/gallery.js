@@ -1,14 +1,3 @@
-let avifSupported = false;
-
-const avif = new Image();
-
-avif.onload = function () {
-	avifSupported = true;
-};
-
-avif.src =
-	"data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=";
-
 document.querySelectorAll(".ImageLightbox").forEach((gallery) => {
 	const items = Array.from(gallery.querySelectorAll(".ImageLightbox-item"));
 	const preloadedImages = [];
@@ -103,11 +92,7 @@ document.querySelectorAll(".ImageLightbox").forEach((gallery) => {
 			const dialog = items[index].querySelector("dialog");
 
 			if (dialog) {
-				if (avifSupported) {
-					image.src = dialog.querySelector("source").srcset;
-				} else {
-					image.src = dialog.querySelector("img").src;
-				}
+				image.src = dialog.querySelector("img").src;
 
 				preloadedImages.push(index);
 			}

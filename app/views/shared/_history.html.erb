@@ -43,8 +43,7 @@
                   </div>
                   <% if possession[:presenter].image.attached? %>
                     <picture>
-                      <source srcset="<%= cdn_image_url(possession[:presenter].image.variant(:thumb_avif)) %>" type="image/avif">
-                      <%= image_tag cdn_image_url(possession[:presenter].image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                      <%= image_tag cdn_image_url(possession[:presenter].image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                     </picture>
                   <% end %>
                 </div>

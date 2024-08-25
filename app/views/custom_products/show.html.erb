@@ -21,14 +21,12 @@
             <div class="ImageLightbox-item">
               <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @custom_product.image.id %>">
                 <picture>
-                  <source srcset="<%= cdn_image_url(@custom_product.image.variant(:thumb_avif)) %>" type="image/avif">
-                  <%= image_tag cdn_image_url(@custom_product.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp" %>
+                  <%= image_tag cdn_image_url(@custom_product.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                 </picture>
               </button>
               <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= @custom_product.image.id %>">
                 <picture>
-                  <source srcset="<%= cdn_image_url(@custom_product.image.variant(:large_avif)) %>" type="image/avif">
-                  <%= image_tag cdn_image_url(@custom_product.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy", type: "image/webp" %>
+                  <%= image_tag cdn_image_url(@custom_product.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                 </picture>
               </dialog>
             </div>

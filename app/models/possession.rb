@@ -9,9 +9,7 @@ class Possession < ApplicationRecord
   has_one :setup, through: :setup_possession
   has_one_attached :image do |attachable|
     attachable.variant :thumb, resize_to_fill: [320, 320], format: :webp
-    attachable.variant :thumb_avif, resize_to_fill: [320, 320], format: :avif
     attachable.variant :large, resize_to_limit: [1200, 1200], format: :webp
-    attachable.variant :large_avif, resize_to_limit: [1200, 1200], format: :avif
   end
 
   validate :validate_image_content_type, :validate_image_file_size, on: :update

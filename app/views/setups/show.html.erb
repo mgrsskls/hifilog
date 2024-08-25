@@ -43,8 +43,7 @@
                 <%= f.label :possession_ids, value: possession.id do %>
                   <% if presenter.image.attached? %>
                     <picture>
-                      <source srcset="<%= cdn_image_url(presenter.image.variant(:thumb_avif)) %>" type="image/avif">
-                      <%= image_tag cdn_image_url(presenter.image.variant(:thumb)), "aria-hidden": "true", alt: "", type: "image/webp", width: 50, height: 50 %>
+                      <%= image_tag cdn_image_url(presenter.image.variant(:thumb)), "aria-hidden": "true", alt: "", width: 50, height: 50 %>
                     </picture>
                   <% else %>
                     <span class="OpenImageDialog-placeholder" style="inline-size: 3.125rem;">
