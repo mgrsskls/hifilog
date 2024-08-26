@@ -5,8 +5,8 @@ with_products:
   user: with_everything
   private: true
   possessions:
-    - one
-    - two
+    - without_variant
+    - with_variant
 
 without_products:
   name: Without products

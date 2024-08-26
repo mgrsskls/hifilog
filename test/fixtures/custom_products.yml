@@ -3,9 +3,9 @@
 one:
   name: MyString
   description: MyText
-  user: one
+  user: with_everything
 
 two:
-  name: MyString
+  name: MyString2
   description: MyText
-  user: one
+  user: with_everything

@@ -5,6 +5,11 @@ class Category < ApplicationRecord
 
   friendly_id :name, use: [:slugged]
 
+  validates :name, presence: true, uniqueness: true
+  validates :slug, presence: true, uniqueness: true
+
+  auto_strip_attributes :name, squish: true
+
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at

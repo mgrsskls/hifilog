@@ -9,6 +9,11 @@ class SubCategory < ApplicationRecord
 
   friendly_id :name, use: [:slugged]
 
+  auto_strip_attributes :name, squish: true
+
+  validates :name, uniqueness: { scope: :category }, presence: true
+  validates :slug, uniqueness: { scope: :category }, presence: true
+
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       brands_id

@@ -27,7 +27,9 @@ class User < ApplicationRecord
     attachable.variant :large, resize_to_fill: [1512, 314], format: :webp
   end
 
-  validates :user_name, presence: true, uniqueness: true
+  auto_strip_attributes :user_name, squish: true
+
+  validates :user_name, presence: true, uniqueness: { case_sensitive: false }
   validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
   validate :validate_decorative_image_content_type, :validate_decorative_image_file_size, on: :update
 

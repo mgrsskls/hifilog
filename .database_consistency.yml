@@ -1,0 +1,4 @@
+AdminUser:
+  enabled: false
+PaperTrail::Version:
+  enabled: false

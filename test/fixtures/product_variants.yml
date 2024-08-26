@@ -8,6 +8,7 @@ one:
   release_month: 12
   release_year: 2000
   product: with_variants
+  discontinued: false
 
 two:
   name: MyString2
@@ -17,3 +18,4 @@ two:
   release_month: 12
   release_year: 2002
   product: with_variants
+  discontinued: true

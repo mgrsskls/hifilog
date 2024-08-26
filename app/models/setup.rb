@@ -3,8 +3,11 @@ class Setup < ApplicationRecord
   has_many :setup_possessions, dependent: :destroy
   has_many :possessions, through: :setup_possessions
 
-  validates :name, presence: true, uniqueness: { scope: :user, case_sensitive: false }
+  auto_strip_attributes :name, squish: true
+
+  validates :name, presence: true, uniqueness: { scope: :user }
   validates :private, inclusion: { in: [true, false], message: 'must be selected' }
+  validates :user, presence: true
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[

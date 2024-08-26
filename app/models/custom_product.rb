@@ -7,7 +7,9 @@ class CustomProduct < ApplicationRecord
     attachable.variant :large, resize_to_limit: [1200, 1200], format: :webp
   end
 
-  validates :name, presence: true
+  auto_strip_attributes :name, squish: true
+
+  validates :name, presence: true, uniqueness: { scope: :user }
   validates :sub_categories, presence: true
   validate :validate_image_content_type, :validate_image_file_size, on: :update
 

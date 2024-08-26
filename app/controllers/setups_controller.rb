@@ -64,8 +64,9 @@ class SetupsController < ApplicationController
 
   def create
     @setup = Setup.new(setup_params)
+    @setup.user = current_user
 
-    if @setup.save && current_user.setups << @setup
+    if @setup.save
       flash[:notice] = I18n.t(
         'setups.created',
         link: ActionController::Base.helpers.link_to(@setup.name, dashboard_setup_path(@setup))

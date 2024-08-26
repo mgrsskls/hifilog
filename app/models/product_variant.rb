@@ -8,7 +8,7 @@ class ProductVariant < ApplicationRecord
   belongs_to :product
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
-  has_many :notes, dependent: :nullify
+  has_many :notes, dependent: :destroy
   has_many :product_options, dependent: :destroy
 
   has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
@@ -18,15 +18,18 @@ class ProductVariant < ApplicationRecord
 
   nilify_blanks
 
+  auto_strip_attributes :name, squish: true
+
   accepts_nested_attributes_for :product_options
   validates_associated :product_options
 
   validates :name,
-            uniqueness: { scope: :product },
-            if: -> { name.present? }
+            uniqueness: { scope: [:product, :release_year] }
   validates :name,
             presence: true,
-            if: -> { release_year.blank? }
+            allow_blank: true
+  validates :slug,
+            presence: true
   validates :price,
             numericality: true,
             comparison: { greater_than: 0 },
@@ -52,6 +55,7 @@ class ProductVariant < ApplicationRecord
   validates :product_id,
             presence: true,
             numericality: { only_integer: true }
+  validates :discontinued, inclusion: { in: [true, false] }
 
   def release_date
     formatted_date(release_day, release_month, release_year)

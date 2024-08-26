@@ -50,6 +50,7 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
   gem 'bullet'
+  gem 'database_consistency', require: false
 end
 
 group :test do
@@ -77,3 +78,4 @@ gem "mini_magick"
 gem "aws-sdk-rails", "~> 4"
 gem "aws-sdk-s3", "~> 1"
 gem "scout_apm"
+gem "auto_strip_attributes", "~> 2.6"

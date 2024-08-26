@@ -16,6 +16,11 @@ class Brand < ApplicationRecord
 
   nilify_blanks
 
+  auto_strip_attributes :name, squish: true
+  auto_strip_attributes :website, squish: true
+  auto_strip_attributes :full_name, squish: true
+  auto_strip_attributes :description
+
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
 
@@ -26,7 +31,10 @@ class Brand < ApplicationRecord
 
   validates :name,
             presence: true,
-            uniqueness: { case_sensitive: false }
+            uniqueness: true
+  validates :slug,
+            presence: true,
+            uniqueness: true
   validates :founded_year,
             numericality: { only_integer: true },
             if: -> { founded_year.present? }

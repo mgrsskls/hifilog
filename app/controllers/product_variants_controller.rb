@@ -25,7 +25,7 @@ class ProductVariantsController < ApplicationController
                                    end
                                  end
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: @variant.id)
-      @note = current_user.notes.find_by(product_id: @product.id, product_variant_id: @variant.id)
+      @note = current_user.notes.find_by(product_variant_id: @variant.id)
       @setups = current_user.setups.includes(:possessions)
     end
 
@@ -62,6 +62,7 @@ class ProductVariantsController < ApplicationController
   def create
     @product_variant = ProductVariant.new(product_variant_params)
     @product = @product_variant.product
+    @brand = @product.brand
     @product_variant.discontinued = @product.brand.discontinued ? true : product_variant_params[:discontinued]
 
     if params[:product_options_attributes].present?

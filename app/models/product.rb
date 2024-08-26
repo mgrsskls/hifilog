@@ -19,6 +19,9 @@ class Product < ApplicationRecord
 
   nilify_blanks
 
+  auto_strip_attributes :name, squish: true
+  auto_strip_attributes :description
+
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
 
@@ -29,7 +32,7 @@ class Product < ApplicationRecord
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
   has_many :product_variants, dependent: :destroy
-  has_many :notes, dependent: :nullify
+  has_many :notes, dependent: :destroy
   has_many :product_options, dependent: :destroy
 
   accepts_nested_attributes_for :brand
@@ -38,7 +41,8 @@ class Product < ApplicationRecord
   validates_associated :product_options
 
   validates :name, presence: true
-  validates :name, uniqueness: { scope: :brand, case_sensitive: false }
+  validates :name, uniqueness: { scope: :brand }
+  validates :slug, presence: true
   validates :sub_categories, presence: true
   validates :price,
             numericality: true,

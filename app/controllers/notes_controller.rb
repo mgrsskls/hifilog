@@ -53,10 +53,15 @@ class NotesController < ApplicationController
     note = Note.new(note_params)
     note.user = current_user
 
+    @product = note.product
+
     if note.save
       flash[:notice] = 'Success'
       redirect_back fallback_location: root_url
     else
+      note.errors.each do |error|
+        flash[:alert] = error.full_message
+      end
       render :new, status: :unprocessable_entity
     end
   end
@@ -69,6 +74,8 @@ class NotesController < ApplicationController
       flash[:notice] = 'Success'
       redirect_back fallback_location: root_url
     else
+      @product = @note.product
+      @product_variant = @note.product_variant
       render :new, status: :unprocessable_entity
     end
   end

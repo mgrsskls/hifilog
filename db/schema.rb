@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_26_202623) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -71,6 +71,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index "lower((email)::text)", name: "index_admin_users_on_email", unique: true
+    t.index ["email"], name: "index_admin_users_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
@@ -81,16 +82,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
     t.datetime "updated_at", null: false
     t.bigint "product_variant_id"
     t.index ["product_id", "user_id", "product_variant_id"], name: "idx_on_product_id_user_id_product_variant_id_24cc95bae4", unique: true
-    t.index ["product_id"], name: "index_bookmarks_on_product_id"
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
 
   create_table "brands", force: :cascade do |t|
-    t.string "name"
+    t.citext "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "discontinued", default: false
-    t.string "slug"
+    t.boolean "discontinued", default: false, null: false
+    t.citext "slug", null: false
     t.integer "products_count"
     t.string "website"
     t.string "country_code"
@@ -102,9 +102,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
     t.integer "discontinued_year"
     t.integer "founded_month"
     t.integer "founded_day"
-    t.index "\"left\"(lower((name)::text), 1)", name: "index_brands_name_prefix"
-    t.index "lower((name)::text)", name: "index_brands_on_name", unique: true
+    t.index "\"left\"((name)::text, 1)", name: "index_brands_name_prefix"
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
+    t.index ["name"], name: "index_brands_on_name", unique: true
     t.index ["slug"], name: "index_brands_on_slug", unique: true
   end
 
@@ -115,11 +115,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
   end
 
   create_table "categories", force: :cascade do |t|
-    t.string "name"
+    t.citext "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "slug"
+    t.citext "slug", null: false
     t.integer "order"
+    t.index ["name"], name: "index_categories_name", unique: true
     t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
 
@@ -133,11 +134,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
   end
 
   create_table "custom_products", force: :cascade do |t|
-    t.string "name", null: false
+    t.citext "name", null: false
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["user_id", "name"], name: "index_custom_products_on_user_id_and_name", unique: true
   end
 
   create_table "custom_products_sub_categories", id: false, force: :cascade do |t|
@@ -147,7 +149,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string "slug", null: false
-    t.integer "sluggable_id", null: false
+    t.bigint "sluggable_id", null: false
     t.string "sluggable_type", limit: 50
     t.string "scope"
     t.datetime "created_at"
@@ -157,12 +159,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
   end
 
   create_table "notes", force: :cascade do |t|
-    t.text "text"
-    t.bigint "product_id"
+    t.text "text", null: false
+    t.bigint "product_id", null: false
     t.bigint "product_variant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["product_id"], name: "index_notes_product_id"
+    t.index ["product_variant_id"], name: "index_notes_product_variant_id"
     t.index ["user_id", "product_id", "product_variant_id"], name: "index_notes_on_user_id_and_product_id_and_product_variant_id", unique: true
   end
 
@@ -172,36 +176,40 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
     t.bigint "product_variant_id"
     t.datetime "created_at"
     t.bigint "custom_product_id"
-    t.boolean "prev_owned", default: false
+    t.boolean "prev_owned", default: false, null: false
     t.datetime "period_from"
     t.datetime "period_to"
     t.bigint "product_option_id"
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"
+    t.index ["product_variant_id"], name: "index_possessions_product_variant_id"
+    t.index ["user_id"], name: "index_possessions_user_id"
   end
 
   create_table "product_options", force: :cascade do |t|
-    t.string "option", null: false
+    t.citext "option", null: false
     t.bigint "product_id"
     t.bigint "product_variant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["option", "product_id"], name: "index_product_options_on_option_and_product_id", unique: true
     t.index ["option", "product_variant_id"], name: "index_product_options_on_option_and_product_variant_id", unique: true
+    t.index ["product_id"], name: "index_product_options_product_id"
+    t.index ["product_variant_id"], name: "index_product_options_product_variant_id"
   end
 
   create_table "product_variants", force: :cascade do |t|
-    t.string "name", null: false
+    t.citext "name", default: "", null: false
     t.text "description"
     t.integer "release_year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "product_id"
+    t.bigint "product_id", null: false
     t.integer "release_day"
     t.integer "release_month"
     t.decimal "price", precision: 12, scale: 4
     t.string "price_currency"
-    t.string "slug"
-    t.boolean "discontinued"
+    t.string "slug", null: false
+    t.boolean "discontinued", null: false
     t.integer "discontinued_day"
     t.integer "discontinued_month"
     t.integer "discontinued_year"
@@ -209,12 +217,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
   end
 
   create_table "products", force: :cascade do |t|
-    t.citext "name"
+    t.citext "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "brand_id", null: false
-    t.boolean "discontinued", default: false
-    t.string "slug"
+    t.boolean "discontinued", default: false, null: false
+    t.string "slug", null: false
     t.integer "release_day"
     t.integer "release_month"
     t.integer "release_year"
@@ -225,7 +233,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
     t.integer "discontinued_year"
     t.integer "discontinued_month"
     t.integer "discontinued_day"
-    t.index "\"left\"(lower((name)::text), 1)", name: "index_products_name_prefix"
+    t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
+    t.index ["brand_id"], name: "index_products_on_brand_id"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
     t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
@@ -239,28 +248,29 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
 
   create_table "setup_possessions", force: :cascade do |t|
     t.bigint "setup_id", null: false
-    t.bigint "possession_id"
-    t.index ["possession_id", "setup_id"], name: "index_setup_possessions_on_possession_id_and_setup_id", unique: true
+    t.bigint "possession_id", null: false
     t.index ["possession_id"], name: "index_setup_possessions_on_possession_id", unique: true
+    t.index ["setup_id"], name: "index_setup_possessions_on_setup_id"
   end
 
   create_table "setups", force: :cascade do |t|
-    t.string "name"
+    t.citext "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
+    t.bigint "user_id", null: false
     t.boolean "private", null: false
     t.index ["name", "user_id"], name: "index_setups_on_name_and_user_id", unique: true
+    t.index ["user_id"], name: "index_setups_on_user_id"
   end
 
   create_table "sub_categories", force: :cascade do |t|
-    t.string "name"
+    t.citext "name", null: false
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "slug"
-    t.index ["category_id"], name: "index_sub_categories_on_category_id"
-    t.index ["slug"], name: "index_sub_categories_on_slug", unique: true
+    t.citext "slug", null: false
+    t.index ["category_id", "name"], name: "index_sub_categories_category_id_name", unique: true
+    t.index ["category_id", "slug"], name: "index_sub_categories_category_id_slug", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -280,7 +290,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
     t.index "lower((email)::text)", name: "index_users_on_email", unique: true
     t.index "lower((user_name)::text)", name: "index_users_on_user_name", unique: true
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["email"], name: "index_users_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["user_name"], name: "index_users_user_name", unique: true
   end
 
   create_table "versions", force: :cascade do |t|
@@ -297,8 +309,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_194334) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bookmarks", "product_variants"
   add_foreign_key "bookmarks", "products"
   add_foreign_key "bookmarks", "users"
+  add_foreign_key "custom_products", "users"
+  add_foreign_key "notes", "product_variants"
+  add_foreign_key "notes", "products"
+  add_foreign_key "notes", "users"
+  add_foreign_key "possessions", "custom_products"
+  add_foreign_key "possessions", "product_options"
+  add_foreign_key "possessions", "product_variants"
+  add_foreign_key "possessions", "products"
+  add_foreign_key "possessions", "users"
+  add_foreign_key "product_options", "product_variants"
+  add_foreign_key "product_options", "products"
+  add_foreign_key "product_variants", "products"
   add_foreign_key "products", "brands"
+  add_foreign_key "setup_possessions", "possessions"
+  add_foreign_key "setup_possessions", "setups"
+  add_foreign_key "setups", "users"
   add_foreign_key "sub_categories", "categories"
 end

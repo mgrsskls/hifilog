@@ -2,12 +2,12 @@
 
 one:
   text: MyText
-  product_id:
-  product_variant_id:
+  product: one
+  product_variant:
   user: with_everything
 
 two:
   text: MyText
-  product_id:
-  product_variant_id:
+  product: two
+  product_variant: one
   user: with_everything
