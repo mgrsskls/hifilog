@@ -79,7 +79,7 @@ class ProductsController < ApplicationController
                         .order(update_for_joined_tables(order))
     elsif params[:letter].present? && @sub_category
       add_breadcrumb params[:letter].upcase, products_path(letter: params[:letter])
-      add_breadcrumb @category.name, products_path(category: @category.friendly_id)
+      add_breadcrumb @category.name, products_path(category: @category.friendly_id, letter: params[:letter])
       add_breadcrumb @sub_category.name
       products = Product.joins(:sub_categories)
                         .where(sub_categories: @sub_category.id)
