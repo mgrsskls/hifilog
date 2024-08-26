@@ -7,10 +7,20 @@ class ItemPresenter
 
   delegate :name, to: :brand, prefix: true
 
-  def initialize(object)
+  def initialize(object, type = nil)
     @object = object
-    @product = object.product
-    @product_variant = object.product_variant
+
+    if type.present?
+      if type == :product
+        @product = object.product
+      elsif type == :product_variant
+        @product = object.product
+        @product_variant = object.product_variant
+      end
+    else
+      @product = object.product
+      @product_variant = object.product_variant
+    end
   end
 
   def short_name

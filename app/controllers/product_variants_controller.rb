@@ -19,9 +19,9 @@ class ProductVariantsController < ApplicationController
                                  .order([:prev_owned, :period_from, :period_to, :created_at])
                                  .map do |possession|
                                    if possession.prev_owned
-                                     PreviousPossessionPresenter.new(possession)
+                                     PreviousPossessionPresenter.new(possession, :product_variant)
                                    else
-                                     CurrentPossessionPresenter.new(possession)
+                                     CurrentPossessionPresenter.new(possession, :product_variant)
                                    end
                                  end
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: @variant.id)

@@ -161,13 +161,14 @@ class ProductsController < ApplicationController
 
     if user_signed_in?
       @possessions = current_user.possessions
+                                 .includes([:product, :product_option, :setup_possession, :setup])
                                  .where(product_id: @product.id, product_variant_id: nil)
                                  .order([:prev_owned, :period_from, :period_to, :created_at])
                                  .map do |possession|
                                    if possession.prev_owned
-                                     PreviousPossessionPresenter.new(possession)
+                                     PreviousPossessionPresenter.new(possession, :product)
                                    else
-                                     CurrentPossessionPresenter.new(possession)
+                                     CurrentPossessionPresenter.new(possession, :product)
                                    end
                                  end
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: nil)

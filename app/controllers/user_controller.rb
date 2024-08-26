@@ -25,7 +25,7 @@ class UserController < ApplicationController
     all = current_user.possessions
                       .where(prev_owned: false)
                       .includes([product: [{ sub_categories: :category }, :brand]])
-                      .includes([:product_variant])
+                      .includes([:product_variant, :product_option, :setup_possession, :setup])
                       .includes([custom_product: [{ sub_categories: :category }]])
                       .includes([image_attachment: [:blob]])
                       .map do |possession|
