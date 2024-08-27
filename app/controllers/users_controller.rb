@@ -42,7 +42,8 @@ class UsersController < ApplicationController
 
     all = all_possessions.where(prev_owned: false)
                          .includes([product: [{ sub_categories: :category }, :brand]])
-                         .includes([:product_variant])
+                         .includes([product_variant: [:product]])
+                         .includes([:product_option])
                          .includes([custom_product: [{ sub_categories: :category }]])
                          .includes([image_attachment: [:blob]])
                          .map do |possession|
@@ -173,7 +174,13 @@ class UsersController < ApplicationController
 
     setup_user_page(@user)
 
-    from = @user.possessions.where.not(period_from: nil).order(:period_from).map do |possession|
+    from = @user.possessions
+                .includes([product: [:brand]])
+                .includes([product_variant: [:product]])
+                .includes([:custom_product])
+                .includes([:product_option])
+                .includes([image_attachment: [:blob]])
+                .where.not(period_from: nil).order(:period_from).map do |possession|
       presenter = if possession.custom_product_id
                     CustomProductPossessionPresenter.new(possession)
                   else
@@ -187,7 +194,13 @@ class UsersController < ApplicationController
       }
     end
 
-    to = @user.possessions.where.not(period_to: nil).order(:period_to).map do |possession|
+    to = @user.possessions
+              .includes([product: [:brand]])
+              .includes([product_variant: [:product]])
+              .includes([:custom_product])
+              .includes([:product_option])
+              .includes([image_attachment: [:blob]])
+              .where.not(period_to: nil).order(:period_to).map do |possession|
       presenter = if possession.custom_product_id
                     CustomProductPossessionPresenter.new(possession)
                   else
