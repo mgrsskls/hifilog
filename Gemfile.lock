@@ -139,6 +139,9 @@ GEM
       rack-session (>= 1, < 3)
     aws-sigv4 (1.9.1)
       aws-eventstream (~> 1, >= 1.0.2)
+    barnes (0.0.9)
+      multi_json (~> 1)
+      statsd-ruby (~> 1.1)
     base64 (0.2.0)
     bcrypt (3.1.20)
     bigdecimal (3.1.8)
@@ -239,6 +242,7 @@ GEM
     mini_mime (1.1.5)
     minitest (5.25.1)
     msgpack (1.7.2)
+    multi_json (1.15.0)
     mutex_m (0.2.0)
     net-imap (0.4.14)
       date
@@ -387,6 +391,7 @@ GEM
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
     stackprof (0.2.26)
+    statsd-ruby (1.5.0)
     stringio (3.1.1)
     strip_attributes (1.13.0)
       activemodel (>= 3.0, < 8.0)
@@ -424,6 +429,7 @@ DEPENDENCIES
   auto_strip_attributes (~> 2.6)
   aws-sdk-rails (~> 4)
   aws-sdk-s3 (~> 1)
+  barnes
   bootsnap
   breadcrumbs_on_rails
   bullet
