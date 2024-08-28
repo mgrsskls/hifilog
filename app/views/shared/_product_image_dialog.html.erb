@@ -6,7 +6,7 @@
       </picture>
     </span>
   </button>
-  <dialog class="ImageDialog is-light" id="<%= prefix %>-image-dialog-<%= item.id %>">
+  <dialog class="ImageDialog" id="<%= prefix %>-image-dialog-<%= item.id %>">
     <picture>
       <%= image_tag cdn_image_url(item.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
     </picture>

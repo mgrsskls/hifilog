@@ -86,7 +86,7 @@
                     <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                   </picture>
                 </button>
-                <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= possession.image.id %>">
+                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= possession.image.id %>">
                   <picture>
                     <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                   </picture>

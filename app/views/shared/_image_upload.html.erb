@@ -16,7 +16,7 @@
     </span>
   <% end %>
 </button>
-<dialog class="is-light" id="<%= prefix %>-image-dialog-<%= item.id %>">
+<dialog id="<%= prefix %>-image-dialog-<%= item.id %>">
   <%= form_for(image_update_item, url: item.update_path, html: { method: :put, class: "Form" }) do |f| %>
     <%= render "shared/flash_messages", messages: image_update_item.errors.full_messages.map { |message| [ :alert, message ] } if image_update_item.errors.full_messages.any? %>
     <div class="Form-field">

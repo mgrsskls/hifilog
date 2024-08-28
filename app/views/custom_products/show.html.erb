@@ -24,7 +24,7 @@
                   <%= image_tag cdn_image_url(@custom_product.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                 </picture>
               </button>
-              <dialog class="ImageLightbox-dialog ImageGallery-dialog is-light" id="image-dialog-<%= @custom_product.image.id %>">
+              <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= @custom_product.image.id %>">
                 <picture>
                   <%= image_tag cdn_image_url(@custom_product.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                 </picture>
