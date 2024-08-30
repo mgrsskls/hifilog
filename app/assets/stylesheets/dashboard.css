@@ -28,8 +28,29 @@
 
 	.Dashboard-userName {
 		margin-block-end: 1rem;
-		font-size: 2rem;
+	}
+
+	.Dashboard-userName span {
+		font-size: 1.5rem;
+		font-weight: 600;
 		line-height: 1.1;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	.Dashboard-userName--sm span {
+		font-size: 1.25rem;
+	}
+
+	.Dashboard-userName picture {
+		flex: 0 1 3rem;
+		min-inline-size: 2rem;
+	}
+
+	.Dashboard-userName img {
+		aspect-ratio: 1;
+		block-size: auto;
 	}
 
 	.Dashboard-links {
