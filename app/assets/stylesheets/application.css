@@ -119,7 +119,7 @@
 	}
 
 	:where(html),
-	html:where(:has([name="theme"][value="light"]:checked)),
+	html:where([data-theme="light"]),
 	.is-light {
 		--bg-l: 100%;
 		--button-box-shadow-a: 20%;
@@ -198,7 +198,7 @@
 		}
 	}
 
-	html:where(:has([name="theme"][value="dark"]:checked)),
+	html:where([data-theme="dark"]),
 	.is-dark {
 		--bg-l: 15%;
 		--button-box-shadow-a: 50%;
@@ -235,7 +235,7 @@
 		--color-input-bg: var(--color-white);
 	}
 
-	html:where(:has([name="theme"][value="dark"]:checked)) {
+	html:where([data-theme="dark"]) {
 		--color-bg-main: var(--color-bg-on-dark);
 	}
 

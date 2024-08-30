@@ -64,8 +64,7 @@
 	}
 }
 
-:is(html:where(:has([name="theme"][value="dark"]:checked)), .is-dark)
-	.IconSymbol--prevOwned {
+:is(html:where([data-theme="dark"]), .is-dark) .IconSymbol--prevOwned {
 	color: hsl(204, 20%, 80%);
 }
 

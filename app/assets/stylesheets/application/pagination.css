@@ -93,12 +93,12 @@
 	}
 }
 
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
+:is(html:where([data-theme="dark"]), .is-dark)
 	.Pagination
 	label:has([aria-current="true"]) {
 	color: var(--color-accent);
 }
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
+:is(html:where([data-theme="dark"]), .is-dark)
 	.Pagination
 	label:has([aria-current="true"]):not(:has(:checked)) {
 	color: #fff;

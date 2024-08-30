@@ -32,7 +32,7 @@
 }
 
 .Filter-input,
-html:has([name="theme"][value="light"]:checked) .Filter-input {
+html:where([data-theme="light"]) .Filter-input {
 	background: var(--color-white);
 }
 
@@ -42,7 +42,7 @@ html:has([name="theme"][value="light"]:checked) .Filter-input {
 	}
 }
 
-html:has([name="theme"][value="dark"]:checked) .Filter-input {
+html:where([data-theme="dark"]) .Filter-input {
 	background: var(--color-input-bg);
 }
 

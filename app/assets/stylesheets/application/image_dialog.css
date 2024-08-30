@@ -19,12 +19,12 @@
 }
 
 .OpenImageDialog-placeholder,
-html:has([name="theme"][value="light"]:checked) .OpenImageDialog-placeholder {
+html:where([data-theme="light"]) .OpenImageDialog-placeholder {
 	background: var(--color-blue-925);
 }
 
 .OpenImageDialog:is(:hover, :focus) .OpenImageDialog-placeholder,
-html:has([name="theme"][value="light"]:checked)
+html:where([data-theme="light"])
 	.OpenImageDialog:is(:hover, :focus)
 	.OpenImageDialog-placeholder {
 	color: var(--color-accent);
@@ -36,8 +36,7 @@ html:has([name="theme"][value="light"]:checked)
 	}
 }
 
-:is(html:has([name="theme"][value="dark"]:checked), .is-dark)
-	.OpenImageDialog-placeholder {
+:is(html:where([data-theme="dark"]), .is-dark) .OpenImageDialog-placeholder {
 	background: var(--color-blue-175);
 }
 

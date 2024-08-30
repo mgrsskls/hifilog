@@ -8,6 +8,19 @@
     <% end %>
     <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= javascript_tag nonce: true do %>
+      {
+        const currentTheme = localStorage.theme;
+
+        if (currentTheme) {
+          document.documentElement.dataset.theme = currentTheme;
+
+          document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector(`theme-toggle input[value="${currentTheme}"]`).checked = true;
+          });
+        }
+      }
+    <% end %>
     <%= yield :js %>
     <%= javascript_include_tag "application", type: "module", nonce: true, crossorigin: true, integrity: true %>
     <%= javascript_include_tag "table_saw", type: "module", nonce: true, crossorigin: true, integrity: true %>
@@ -314,19 +327,6 @@
                 </label>
               </div>
             </theme-toggle>
-            <%= javascript_tag nonce: true do %>
-              {
-                const currentTheme = localStorage.theme;
-
-                if (currentTheme) {
-                  const input = document.querySelector(`theme-toggle input[value="${currentTheme}"]`);
-
-                  if (input) {
-                    document.querySelector(`theme-toggle input[value="${currentTheme}"]`).checked = true;
-                  }
-                }
-              }
-            <% end %>
           </div>
           <div class="Footer-supporting">
             <h2 class="h4">Support HiFi&thinsp;Log</h2>
