@@ -23,6 +23,11 @@
 	margin-block-start: 3rem;
 }
 
+.Form-field {
+	padding: 0;
+	border: none;
+}
+
 .Form:not(.Form--wide) .Form-field {
 	max-inline-size: 28rem;
 }

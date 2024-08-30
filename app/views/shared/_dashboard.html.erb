@@ -12,7 +12,7 @@
       </li>
       <li>
         <a class="Dashboard-link" href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
-          <%= t('profile') %>
+          <%= t('headings.profile') %>
         </a>
       </li>
       <li>
@@ -28,19 +28,19 @@
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
-          <%= t('headings.bookmarks') %>
+          <%= Bookmark.model_name.human(count: 2) %>
         </a>
         <small><%= user_bookmarks_count(current_user) %></small>
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
-          <%= t('headings.setups') %>
+          <%= Setup.model_name.human(count: 2) %>
         </a>
         <small><%= user_setups_count(current_user) %></small>
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_custom_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :custom_products) %>>
-          <%= t('headings.custom_products') %>
+          <%= CustomProduct.model_name.human(count: 2) %>
         </a>
         <small><%= user_custom_products_count(current_user) %></small>
       </li>
@@ -52,7 +52,7 @@
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_notes_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :notes) %>>
-          <%= t('headings.notes') %>
+          <%= Note.model_name.human(count: 2) %>
         </a>
         <small><%= user_notes_count(current_user) %></small>
       </li>
@@ -60,7 +60,7 @@
         <a class="Dashboard-link" href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>><%= t('headings.contributions') %></a>
       </li>
       <li>
-        <a class="Dashboard-link" href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>><%= t('account') %></a>
+        <a class="Dashboard-link" href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>><%= t('headings.account') %></a>
       </li>
       <li>
         <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete, class: "Dashboard-link"  %>

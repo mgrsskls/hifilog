@@ -8,19 +8,19 @@
       <ul class="DashboardNumbers">
         <li>
           <%= link_to dashboard_products_path, class: "DashboardNumber" do %>
-            <span class="DashboardNumber-heading"><%= t('headings.products') %></span>
+            <span class="DashboardNumber-heading"><%= Product.model_name.human(count: 2) %></span>
             <span class="DashboardNumber-value"><%= user_possessions_count(current_user) %></span>
           <% end %>
         </li>
         <li>
           <%= link_to dashboard_bookmarks_path, class: "DashboardNumber" do %>
-            <span class="DashboardNumber-heading"><%= t('headings.bookmarks') %></span>
+            <span class="DashboardNumber-heading"><%= Bookmark.model_name.human(count: 2) %></span>
             <span class="DashboardNumber-value"><%= user_bookmarks_count(current_user) %></span>
           <% end %>
         </li>
         <li>
           <%= link_to dashboard_setups_path, class: "DashboardNumber" do %>
-            <span class="DashboardNumber-heading"><%= t('headings.setups') %></span>
+            <span class="DashboardNumber-heading"><%= Setup.model_name.human(count: 2) %></span>
             <span class="DashboardNumber-value"><%= user_setups_count(current_user) %></span>
           <% end %>
         </li>
@@ -41,7 +41,7 @@
 
     <% if user_possessions_count(current_user) > 0 || user_bookmarks_count(current_user) > 0 || user_setups_count(current_user) > 0 %>
       <div class="DashboardNumbersWrapper">
-        <h3><%= t('headings.products') %></h3>
+        <h3><%= Product.model_name.human(count: 2) %></h3>
         <ul class="DashboardNumbers">
           <li>
             <div class="DashboardNumber">
@@ -59,7 +59,7 @@
       </div>
 
       <div class="DashboardNumbersWrapper">
-        <h3><%= t('headings.brands') %></h3>
+        <h3><%= Brand.model_name.human(count: 2) %></h3>
         <ul class="DashboardNumbers">
           <li>
             <div class="DashboardNumber">

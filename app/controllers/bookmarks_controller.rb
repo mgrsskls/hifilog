@@ -16,7 +16,15 @@ class BookmarksController < ApplicationController
   end
 
   def destroy
-    @bookmark = current_user.bookmarks.find(params[:id])&.destroy
+    @bookmark = current_user.bookmarks.find(params[:id])
+    presenter = BookmarkPresenter.new(@bookmark)
+
+    if @bookmark&.destroy
+      flash[:notice] = I18n.t(
+        'bookmark.messages.removed',
+        name: presenter.display_name
+      )
+    end
 
     redirect_back fallback_location: root_url
   end

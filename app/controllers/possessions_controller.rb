@@ -4,6 +4,7 @@ class PossessionsController < ApplicationController
   before_action :authenticate_user!
 
   def previous
+    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.prev_owneds'), dashboard_prev_owneds_path
     @page_title = I18n.t('headings.prev_owneds')
     @active_dashboard_menu = :prev_owneds
@@ -80,9 +81,9 @@ class PossessionsController < ApplicationController
 
     if possession&.destroy
       flash[:notice] = if is_prev_owned
-                         "Your <b>#{presenter.display_name}</b> has been removed from your list of previous products."
+                         I18n.t('possession.messages.removed_from_prev', name: presenter.display_name)
                        else
-                         "Your <b>#{presenter.display_name}</b> has been removed from your collection."
+                         I18n.t('possession.messages.removed', name: presenter.display_name)
                        end
     else
       flash[:alert] = I18n.t(:generic_error_message)
@@ -131,10 +132,10 @@ class PossessionsController < ApplicationController
     presenter = possession_presenter.new(possession)
 
     if possession.save
-      flash[:notice] = "
-        Your <b>#{presenter.display_name}</b> has been moved
-        to your list of <a href=\"#{dashboard_prev_owneds_path}\">previous products</a>.
-      "
+      flash[:notice] = I18n.t(
+        'possession.messages.moved_to_prev',
+        name: presenter.display_name
+      )
     else
       flash[:alert] = I18n.t(:generic_error_message)
     end

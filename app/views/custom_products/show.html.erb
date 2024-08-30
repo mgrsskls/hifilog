@@ -35,7 +35,7 @@
 
         <div class="CustomProduct-content">
           <dl class="Data">
-            <dt><%= t('headings.category').html_safe %></dt>
+            <dt><%= Category.model_name.human %></dt>
             <dd>
               <%= @custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
               <% if @custom_product.custom_attributes.present? %>

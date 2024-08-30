@@ -1,7 +1,7 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
-    <h1><%= t('headings.custom_products') %></h1>
-    <%= link_to t('new_custom_product.link'), dashboard_new_custom_product_path, class: "Button" %>
+    <h1><%= CustomProduct.model_name.human(count: 2) %></h1>
+    <%= link_to t('custom_product.new.link'), dashboard_new_custom_product_path, class: "Button" %>
   </div>
 
   <% if @custom_products.any? %>
@@ -15,8 +15,8 @@
       hide_period: true,
       include_edit_link: true,
       include_delete_button: true,
-      delete_button_label: t('delete_custom_product.label'),
-      delete_confirm_msg: 'delete_custom_product.confirm'
+      delete_button_label: t('custom_product.delete.label'),
+      delete_confirm_msg: 'custom_product.delete.confirm'
     %>
   <% else %>
     <%= render "shared/empty_state", message: t('empty_state.custom_products') %>

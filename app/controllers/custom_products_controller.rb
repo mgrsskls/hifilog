@@ -3,7 +3,7 @@ class CustomProductsController < ApplicationController
   before_action :set_breadcrumb, except: [:show]
 
   def index
-    @page_title = I18n.t('headings.custom_products')
+    @page_title = CustomProduct.model_name.human(count: 2)
 
     @custom_products = current_user.custom_products
                                    .all
@@ -29,7 +29,7 @@ class CustomProductsController < ApplicationController
 
     @setups = current_user.setups if @user == current_user
 
-    add_breadcrumb I18n.t('users'), users_path
+    add_breadcrumb User.model_name.human(count: 2), users_path
     add_breadcrumb @user.user_name, user_path(id: @user.user_name.downcase)
     add_breadcrumb @custom_product.display_name
     @page_title = @custom_product.display_name
@@ -39,7 +39,7 @@ class CustomProductsController < ApplicationController
     @custom_product = CustomProduct.new
     @categories = Category.includes([:sub_categories]).all.order(:order)
 
-    add_breadcrumb I18n.t('new_custom_product.breadcrumb')
+    add_breadcrumb I18n.t('custom_product.new.breadcrumb')
   end
 
   def create
@@ -53,7 +53,7 @@ class CustomProductsController < ApplicationController
       possession.save
 
       flash[:notice] = I18n.t(
-        'custom_products.created',
+        'custom_product.messages.created',
         name: @custom_product.name
       )
       redirect_to user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
@@ -84,7 +84,7 @@ class CustomProductsController < ApplicationController
 
     if @custom_product.update(custom_product_params)
       flash[:notice] = I18n.t(
-        'custom_products.updated',
+        'custom_product.messages.updated',
         link: ActionController::Base.helpers.link_to(
           @custom_product.name,
           user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
@@ -104,7 +104,7 @@ class CustomProductsController < ApplicationController
   def destroy
     @custom_product = current_user.custom_products.find(params[:id])
     @custom_product.destroy
-    flash[:notice] = I18n.t('custom_products.deleted', name: @custom_product.name)
+    flash[:notice] = I18n.t('custom_product.messages.deleted', name: @custom_product.name)
     redirect_to dashboard_custom_products_path
   end
 
@@ -112,7 +112,7 @@ class CustomProductsController < ApplicationController
 
   def set_breadcrumb
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('headings.custom_products'), dashboard_custom_products_path
+    add_breadcrumb CustomProduct.model_name.human(count: 2), dashboard_custom_products_path
     @active_dashboard_menu = :custom_products
     @active_menu = :dashboard
   end

@@ -8,7 +8,7 @@
 
   <div class="SearchResults">
     <div class="SearchResults-section">
-      <h2><%= t('headings.products') %></h2>
+      <h2><%= Product.model_name.human(count: 2) %></h2>
       <% if @products.any? %>
         <%= render "shared/products_table", products: @products, mark: @query %>
       <% else %>
@@ -18,7 +18,7 @@
       <% end %>
     </div>
     <div class="SearchResults-section">
-      <h2><%= t('headings.brands') %></h2>
+      <h2><%= Brand.model_name.human(count: 2) %></h2>
       <% if @brands.any? %>
         <%= render "shared/brands_table", brands: @brands, mark: @query %>
       <% else %>

@@ -36,11 +36,11 @@ class CustomProductPresenter
   end
 
   def delete_button_label
-    I18n.t('delete_custom_product.label')
+    I18n.t('custom_product.delete.label')
   end
 
   def delete_confirm_msg
-    I18n.t('delete_custom_product.confirm', name:)
+    I18n.t('custom_product.delete.confirm', name:)
   end
 
   def image_update_item

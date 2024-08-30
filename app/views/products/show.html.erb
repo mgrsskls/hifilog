@@ -26,17 +26,17 @@
           <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
         <% end %>
         <% if @product.brand.present? %>
-          <dt><%= t('headings.brand').html_safe %></dt>
+          <dt><%= Brand.model_name.human %></dt>
           <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
         <% end %>
-        <dt><%= t('headings.category').html_safe %></dt>
+        <dt><%= Category.model_name.human %></dt>
         <dd>
           <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
           <% if @product.custom_attributes.present? %>
             <br><span class="Data-secondary"><%= custom_attributes_list @product %></span>
           <% end %>
         </dd>
-        <dt><%= t('product.released') %></dt>
+        <dt><%= Product.human_attribute_name(:release_date) %></dt>
         <dd>
           <% if @product.release_date.present? %>
             <time datetime="<%= @product.release_date %>" data-format="false"><%= @product.release_date %></time>
@@ -54,7 +54,7 @@
             <% end %>
           </dd>
         <% end %>
-        <dt><%= t('activerecord.attributes.product.price') %><sup>1</sup></dt>
+        <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
         <dd>
           <% if @product.price.present? %>
             <%= @product.display_price %>
@@ -66,7 +66,7 @@
 
       <% if @product.product_options.any? %>
         <div class="Product-section">
-          <h2><%= t('activerecord.attributes.product.product_options') %></h2>
+          <h2><%= Product.human_attribute_name(:product_options) %></h2>
           <ul>
             <% @product.product_options.each do |option| %>
               <li><%= option[:option] %></li>
@@ -116,16 +116,16 @@
     <div class="Product-section">
       <div class="Heading">
         <h2>All versions / updates</h2>
-        <%= link_to t('new_variant.link'), user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id)) %>
+        <%= link_to t('product_variant.new.link'), user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id)) %>
       </div>
       <% if @product.product_variants.any? %>
         <table-saw breakpoint="(max-width: 40rem)" type="container">
           <table>
             <thead>
-              <th><%= t('product.name') %></th>
-              <th><%= t('product.description') %></th>
-              <th><%= t('product.released') %></th>
-              <th><%= t('activerecord.attributes.product.price') %><sup>1</sup></th>
+              <th><%= Product.human_attribute_name(:name) %></th>
+              <th><%= Product.human_attribute_name(:description) %></th>
+              <th><%= Product.human_attribute_name(:release_date) %></th>
+              <th><%= Product.human_attribute_name(:price) %><sup>1</sup></th>
               <th class="Table-symbols"><%= t('status') %></th>
             </thead>
             <tbody>

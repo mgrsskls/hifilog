@@ -19,9 +19,9 @@
           <% if include_images %>
             <th class="Table-image">Photo</th>
           <% end %>
-          <th><%= t('name') %></th>
+          <th><%= Product.human_attribute_name(:name) %></th>
           <% unless hide_release_date %>
-            <th><%= t('product.released') %></th>
+            <th><%= Product.human_attribute_name(:release_date) %></th>
           <% end %>
           <% unless hide_since %>
             <th style="width: 6em">Since</th>
@@ -30,9 +30,9 @@
             <th style="width: 6em">From</th>
             <th style="width: 6em">Until</th>
           <% end %>
-          <th><%= t('headings.category').html_safe %></th>
+          <th><%= Category.model_name.human %></th>
           <% if include_setup %>
-            <th><%= t('headings.setup') %></th>
+            <th><%= Setup.model_name %></th>
           <% end %>
           <% if include_edit_link || include_delete_button %>
             <th class="u-textEnd Table-actions">Actions</th>

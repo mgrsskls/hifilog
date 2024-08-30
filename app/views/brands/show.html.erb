@@ -16,9 +16,9 @@
           <dt><%= t('status') %></dt>
           <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
         <% end %>
-        <dt><%= t('country').html_safe %></dt>
+        <dt><%= Brand.human_attribute_name(:country_code) %></dt>
         <dd><%= @brand.country_name.present? ? @brand.country_name : "-" %></dd>
-        <dt><%= t('brand.website') %></dt>
+        <dt><%= Brand.human_attribute_name(:website) %></dt>
         <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website, rel: "noreferrer noopener") : "-" %></dd>
         <dt><%= t('brand.founded') %></dt>
         <dd>
@@ -41,7 +41,7 @@
       </dl>
 
       <% if @all_sub_categories_grouped.any? %>
-        <h2><%= t('headings.categories') %></h2>
+        <h2><%= Category.model_name.human(count: 2) %></h2>
 
         <dl class="Data">
           <% @all_sub_categories_grouped.each do |section| %>
@@ -90,8 +90,8 @@
 </div>
 
 <div class="Heading">
-  <h2 id="list"><%= t('headings.products') %></h2>
-  <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
+  <h2 id="list"><%= Product.model_name.human(count: 2) %></h2>
+  <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)) %>
 </div>
 
 <% if @total_products_count > 0 %>
@@ -99,14 +99,10 @@
     <div class="u-flex u-alignCenter u-gap-md">
       <label for="sort">Sort</label>
       <select name="sort" id="sort">
-        <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
-        <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
-        <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
-        <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
-        <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
-        <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
-        <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
-        <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>>Updated: Oldest first</option>
+        <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
+        <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
+        <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
+        <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('sort_by.release_date_asc') %></option>
       </select>
     </div>
   <% end %>

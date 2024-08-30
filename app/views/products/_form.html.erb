@@ -70,21 +70,21 @@
 
           <div class="Form-field">
             <%= brand_form.label :full_name, class: "Form-label" do %>
-              <%= t('brand.full_name') %> <small><i>(optional)</i></small>
+              <%= Brand.human_attribute_name(:full_name) %> <small><i>(optional)</i></small>
             <% end %>
             <%= brand_form.text_field :full_name %>
           </div>
 
           <div class="Form-field">
             <%= brand_form.label :website, class: "Form-label" do %>
-              <%= t('brand.website') %> <small><i>(optional)</i></small>
+              <%= Brand.human_attribute_name(:website) %> <small><i>(optional)</i></small>
             <% end %>
             <%= brand_form.url_field :website %>
           </div>
 
           <div class="Form-field">
             <%= brand_form.label :founded_year, class: "Form-label" do %>
-              <%= t('brand.founded_year') %> <small><i>(optional)</i></small>
+              <%= Brand.human_attribute_name(:founded_year) %> <small><i>(optional)</i></small>
             <% end %>
             <%= brand_form.text_field :founded_year, inputmode: "number", list: "brand-years" %>
             <datalist id="brand-years">
@@ -96,14 +96,14 @@
 
           <div class="Form-field">
             <%= brand_form.label :country_code, class: "Form-label" do %>
-              <%= t('brand.country_code') %> <small><i>(optional)</i></small>
+              <%= Brand.human_attribute_name(:country_code) %> <small><i>(optional)</i></small>
             <% end %>
             <%= brand_form.country_select :country_code, include_blank: true %>
           </div>
 
           <div class="Form-field">
             <%= brand_form.label :description, class: "Form-label" do %>
-              <%= t('brand.description') %> <small><i>(optional)</i></small>
+              <%= Brand.human_attribute_name(:description) %> <small><i>(optional)</i></small>
             <% end %>
             <%= brand_form.text_area :description %>
           </div>
@@ -123,7 +123,7 @@
   <% end %>
 
   <div class="Form-field">
-    <h2 class="Form-label h3"><%= t('headings.categories') %></h2>
+    <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
     <div class="Options is-light EntityForm-subCategories">
       <% @categories.each do |category| %>
         <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
@@ -140,7 +140,7 @@
   </div>
 
   <div class="Form-field EntityForm-attributes">
-    <div class="h3 Form-label"><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></div>
+    <div class="h3 Form-label"><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></div>
     <div class="Options is-light">
       <% CustomAttribute.all.each do |custom_attribute| %>
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>

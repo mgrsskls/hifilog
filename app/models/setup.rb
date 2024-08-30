@@ -9,6 +9,10 @@ class Setup < ApplicationRecord
   validates :private, inclusion: { in: [true, false], message: 'must be selected' }
   validates :user, presence: true
 
+  def visibility
+    private? ? I18n.t('setup.private_values.yes') : I18n.t('setup.private_values.no')
+  end
+
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at

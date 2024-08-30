@@ -10,15 +10,15 @@ class ProductsController < ApplicationController
   before_action :find_product, only: [:show]
 
   def index
-    @page_title = I18n.t('headings.products')
+    @page_title = Product.model_name.human(count: 2)
 
     if (params[:letter].present? && ABC.include?(params[:letter])) ||
        params[:category].present? ||
        params[:sub_category].present? ||
        params[:status].present?
-      add_breadcrumb I18n.t('headings.products'), proc { :products }
+      add_breadcrumb Product.model_name.human(count: 2), proc { :products }
     else
-      add_breadcrumb I18n.t('headings.products')
+      add_breadcrumb Product.model_name.human(count: 2)
     end
 
     order = 'LOWER(name) ASC'
@@ -196,7 +196,7 @@ class ProductsController < ApplicationController
   end
 
   def new
-    @page_title = I18n.t('new_product.heading')
+    @page_title = I18n.t('product.new.heading')
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
@@ -365,7 +365,7 @@ class ProductsController < ApplicationController
   end
 
   def set_breadcrumb
-    add_breadcrumb I18n.t('headings.products'), products_path
+    add_breadcrumb Product.model_name.human(count: 2), products_path
   end
 
   def product_params

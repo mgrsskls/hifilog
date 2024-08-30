@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   before_action :set_breadcrumb, except: [:show, :prev_owneds, :history]
 
   def index
-    @page_title = I18n.t('headings.users')
+    @page_title = User.model_name.human(count: 2)
     @users_by_products = User.find_by_sql('
       SELECT t2.id, t2.user_name, t2.profile_visibility, t2.created_at, COUNT(t2.id) as count FROM (
         SELECT
@@ -226,7 +226,7 @@ class UsersController < ApplicationController
   end
 
   def set_breadcrumb
-    add_breadcrumb I18n.t('users')
+    add_breadcrumb User.model_name.human(count: 2)
   end
 
   def setup_user_page(user)

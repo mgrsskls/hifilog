@@ -69,8 +69,8 @@ class UserController < ApplicationController
   end
 
   def bookmarks
-    add_breadcrumb I18n.t('headings.bookmarks'), dashboard_bookmarks_path
-    @page_title = I18n.t('headings.bookmarks')
+    add_breadcrumb Bookmark.model_name.human(count: 2), dashboard_bookmarks_path
+    @page_title = Bookmark.model_name.human(count: 2)
     @active_dashboard_menu = :bookmarks
 
     all_bookmarks = current_user.bookmarks.joins(:product)

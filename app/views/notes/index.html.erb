@@ -1,12 +1,12 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
-    <h1><%= t('headings.notes') %></h1>
+    <h1><%= Note.model_name.human(count: 2) %></h1>
   </div>
 
   <% if @notes.any? %>
     <table>
       <thead>
-        <th><%= t('headings.product') %></th>
+        <th><%= Product.model_name.human %></th>
         <th>Date</th>
         <th class="Table-actions u-textEnd">Actions</th>
       </thead>

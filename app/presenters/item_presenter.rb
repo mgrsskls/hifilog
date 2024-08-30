@@ -70,11 +70,11 @@ class ItemPresenter
   end
 
   def delete_button_label
-    I18n.t('remove_product.label')
+    I18n.t('product.remove.label')
   end
 
   def delete_confirm_msg
-    I18n.t('remove_product.confirm', name: display_name)
+    I18n.t('product.remove.confirm', name: display_name)
   end
 
   def brand
