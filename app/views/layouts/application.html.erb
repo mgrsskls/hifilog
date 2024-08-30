@@ -70,10 +70,10 @@
               <nav aria-label="Main" class="Menu">
                 <ul class="MenuMain MenuList">
                   <li class="MenuMain-item">
-                    <%= render "layouts/mega_menu", entity: 'products', symbol: :products, cta_label: t('new_product.link'), cta_path: new_product_path %>
+                    <%= render "layouts/mega_menu", entity: 'products', symbol: :products, cta_label: t('product.new.link'), cta_path: new_product_path %>
                   </li>
                   <li class="MenuMain-item">
-                    <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('new_brand.link'), cta_path: new_brand_path %>
+                    <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('brand.new.link'), cta_path: new_brand_path %>
                   </li>
                 </ul>
               </nav>
@@ -109,7 +109,7 @@
                       </li>
                       <li>
                         <a href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
-                          <span><%= t('profile') %></span>
+                          <span><%= t('headings.profile') %></span>
                         </a>
                       </li>
                       <li>
@@ -125,19 +125,19 @@
                       </li>
                       <li>
                         <a href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
-                          <span><%= t('headings.bookmarks') %></span>
+                          <span><%= Bookmark.model_name.human(count: 2) %></span>
                           <small><%= user_bookmarks_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
                         <a href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
-                          <span><%= t('headings.setups') %></span>
+                          <span><%= Setup.model_name.human(count: 2) %></span>
                           <small><%= user_setups_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
                         <a href="<%= dashboard_custom_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :custom_products) %>>
-                          <span><%= t('headings.custom_products') %></span>
+                          <span><%= CustomProduct.model_name.human(count: 2) %></span>
                           <small><%= user_custom_products_count(current_user) %></small>
                         </a>
                       </li>
@@ -149,7 +149,7 @@
                       </li>
                       <li>
                         <a href="<%= dashboard_notes_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :notes) %>>
-                          <span><%= t('headings.notes') %></span>
+                          <span><%= Note.model_name.human(count: 2) %></span>
                           <small><%= user_notes_count(current_user) %></small>
                         </a>
                       </li>
@@ -160,7 +160,7 @@
                       </li>
                       <li>
                         <a href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>>
-                          <span><%= t('account') %></span>
+                          <span><%= t('headings.account') %></span>
                         </a>
                       </li>
                       <li>
@@ -236,7 +236,7 @@
             <div class="Newest-lists u-flex u-flexWrap">
               <% if newest_products.any? %>
                 <div>
-                  <h3><%= t('headings.products') %></h3>
+                  <h3><%= Product.model_name.human(count: 2) %></h3>
                   <ol>
                     <% newest_products.each do |product| %>
                       <li>
@@ -249,7 +249,7 @@
               <% end %>
               <% if newest_brands.any? %>
                 <div>
-                  <h3><%= t('headings.brands') %></h3>
+                  <h3><%= Brand.model_name.human(count: 2) %></h3>
                   <ol>
                     <% newest_brands.each do |brand| %>
                       <li>

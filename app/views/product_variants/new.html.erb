@@ -2,7 +2,7 @@
   <%= f.hidden_field :product_id, value: @product.id %>
 
   <% content_for :heading do %>
-    <%= t('new_variant.heading') %>
+    <%= t('product_variant.new.heading') %>
     <% if @product && @product.name %>
       <br>
       <span>to <%= @product.display_name %></span>

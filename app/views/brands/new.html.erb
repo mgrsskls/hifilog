@@ -7,7 +7,7 @@
 
 <div class="Form Form--centered">
   <div class="Heading">
-    <h1><%= t('new_brand.heading') %></h1>
+    <h1><%= t('brand.new.heading') %></h1>
   </div>
 
   <details class="Instructions">
@@ -41,14 +41,15 @@
     </div>
 
     <div class="Form-field">
-      <%= f.label :full_name, class: "Form-label" do %>
-        <%= t('brand.full_name') %> <small><i>(optional)</i></small>
-      <% end %>
+      <div class="Form-label">
+        <%= f.label :full_name %>
+        <small><i>(<%= t(:optional) %>)</i></small>
+      </div>
       <%= f.text_field :full_name %>
     </div>
 
     <div class="Form-field">
-      <div class="Form-label"><%= t('headings.categories') %></div>
+      <div class="Form-label"><%= Category.model_name.human(count: 2) %></div>
       <div class="Options is-light">
         <% @categories.each do |category| %>
           <details <% if (category.sub_category_ids & @brand.sub_category_ids).any? %>open<% end %>>
@@ -65,30 +66,34 @@
     </div>
 
     <div class="Form-field">
-      <%= f.label :website, class: "Form-label" do %>
-        <%= t('brand.website') %> <small><i>(optional)</i></small>
-      <% end %>
+      <div class="Form-label">
+        <%= f.label :website %>
+        <small><i>(<%= t(:optional) %>)</i></small>
+      </div>
       <%= f.url_field :website %>
     </div>
 
     <div class="Form-field">
-      <%= f.label :country_code, class: "Form-label" do %>
-        <%= t('brand.country_code') %> <small><i>(optional)</i></small>
-      <% end %>
+      <div class="Form-label">
+        <%= f.label :country_code %>
+        <small><i>(<%= t(:optional) %>)</i></small>
+      </div>
       <%= f.country_select :country_code, include_blank: true %>
     </div>
 
     <div class="Form-field">
-      <%= f.label :description, class: "Form-label" do %>
-        <%= t('brand.description') %> <small><i>(optional)</i></small>
-      <% end %>
+      <div class="Form-label">
+        <%= f.label :description %>
+        <small><i>(<%= t(:optional) %>)</i></small>
+      </div>
       <%= f.text_area :description %>
     </div>
 
     <div class="Form-field">
-      <%= f.label :founded_date, class: "Form-label" do %>
-        <%= t('brand.founded_date') %> <small><i>(optional)</i></small>
-      <% end %>
+      <div class="Form-label">
+        <%= f.label :founded_date %>
+        <small><i>(<%= t(:optional) %>)</i></small>
+      </div>
       <div class="EntityForm-date">
         <%= f.select :founded_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day" } %>
         <%= select_month(@brand.founded_month, { field_name: "founded_month", prefix: "brand", prompt: "Month" }, { "aria-label": "Month" }) %>
@@ -103,7 +108,7 @@
     </div>
 
     <div class="Form-field Form-field--inline Entity-discontinued">
-      <span class="Form-label"><%= t('symbols.discontinued') %></span>
+      <span class="Form-label"><%= Brand.human_attribute_name(:discontinued) %></span>
       <div class="Form-options">
         <%= f.radio_button :discontinued, 0, checked: @brand.discontinued.nil? || @brand.discontinued == false %>
         <%= f.label :discontinued, "No", value: 0 %>
@@ -113,9 +118,10 @@
     </div>
 
     <div class="Form-field Entity-discontinuedDate"<%= "hidden" unless @brand.discontinued? %>>
-      <%= f.label :discontinued_date, class: "Form-label" do %>
-        <%= t('brand.discontinued_date') %> <small><i>(optional)</i></small>
-      <% end %>
+      <div class="Form-label">
+        <%= f.label :discontinued_date %>
+        <small><i>(<%= t(:optional) %>)</i></small>
+      </div>
       <div class="EntityForm-date">
         <%= f.select :discontinued_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day", disabled: @brand.discontinued.nil? || @brand.discontinued == false } %>
         <%= select_month(@brand.discontinued_month, { field_name: "discontinued_month", prefix: "brand", prompt: "Month" }, { "aria-label": "Month", disabled: (@brand.discontinued.nil? || @brand.discontinued == false) }) %>
@@ -131,7 +137,7 @@
 
     <div class="Form-submit">
       <%= f.button type: "submit", class: "Button Button--loadingIcon" do %>
-        <span><%= t('new_brand.submit') %></span>
+        <span><%= t('brand.new.submit') %></span>
       <% end %>
     </div>
   <% end %>

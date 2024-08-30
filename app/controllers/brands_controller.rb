@@ -10,15 +10,15 @@ class BrandsController < ApplicationController
   before_action :find_brand, only: [:show]
 
   def index
-    @page_title = I18n.t('headings.brands')
+    @page_title = Brand.model_name.human(count: 2)
 
     if (params[:letter].present? && ABC.include?(params[:letter])) ||
        params[:category].present? ||
        params[:sub_category].present? ||
        params[:status].present?
-      add_breadcrumb I18n.t('headings.brands'), proc { :brands }
+      add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
     else
-      add_breadcrumb I18n.t('headings.brands')
+      add_breadcrumb Brand.model_name.human(count: 2)
     end
 
     order = 'LOWER(name) ASC'
@@ -179,7 +179,14 @@ class BrandsController < ApplicationController
       products = products.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
     end
 
-    @products = products.includes([:sub_categories]).order('LOWER(name)').page(params[:page])
+    order = 'LOWER(name) ASC'
+    if params[:sort].present?
+      order = 'LOWER(name) ASC' if params[:sort] == 'name_asc'
+      order = 'LOWER(name) DESC' if params[:sort] == 'name_desc'
+      order = 'release_year ASC NULLS FIRST, release_month, release_day' if params[:sort] == 'release_date_asc'
+      order = 'release_year DESC NULLS LAST, release_month, release_day' if params[:sort] == 'release_date_desc'
+    end
+    @products = products.includes([:sub_categories]).order(order).page(params[:page])
     @total_products_count = @brand.products.count
 
     @contributors = User.find_by_sql(["
@@ -197,9 +204,9 @@ class BrandsController < ApplicationController
   end
 
   def new
-    @page_title = I18n.t('new_brand.heading')
+    @page_title = I18n.t('brand.new.heading')
 
-    add_breadcrumb I18n.t('new_brand.heading')
+    add_breadcrumb I18n.t('brand.new.heading')
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @brand = @sub_category ? Brand.new(sub_category_ids: [@sub_category.id]) : Brand.new
@@ -285,7 +292,7 @@ class BrandsController < ApplicationController
   end
 
   def set_breadcrumb
-    add_breadcrumb I18n.t('headings.brands'), brands_path
+    add_breadcrumb Brand.model_name.human(count: 2), brands_path
   end
 
   def brand_params

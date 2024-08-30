@@ -1,273 +1,95 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   "true": "foo"
-#
-# To learn more, please read the Rails Internationalization guide
-# available at https://guides.rubyonrails.org/i18n.html.
-
+---
 en:
-  symbols:
-    discontinued: Discontinued
-    in_your_collection: In my collection
-    in_your_bookmarks: Bookmarked
-    prev_owned: Previous product
-  account: Account
-  add: Add
+  activerecord:
+    models:
+      bookmark:
+        one: Bookmark
+        other: Bookmarks
+      brand:
+        one: Brand
+        other: Brands
+      category:
+        one: Category
+        other: Categories
+      custom_product:
+        one: Custom product
+        other: Custom products
+      note:
+        one: Note
+        other: Notes
+      product:
+        one: Product
+        other: Products
+      setup:
+        one: Setup
+        other: Setups
+      user:
+        one: User
+        other: Users
+    attributes:
+      brand:
+        country_code: Country
+        description: Description
+        discontinued: Discontinued
+        discontinued_date: Date of discontinuation
+        founded_date: Founded
+        founded_year: Founded in year
+        full_name: Full / Company name
+        name: Name
+        website: Website
+      custom_product:
+        description: Description
+        name: Name
+      product:
+        description: Description
+        discontinued: Discontinued
+        discontinued_date: Discontinued date
+        name: Name
+        price: Price
+        price_currency: Currency
+        product_options: Options
+        release_date: Released
+      setup:
+        name: Name
+        private: Visibility
+      sub_category:
+        custom_attribute_ids: Attributes
+      user:
+        email: Email
+        user_name: Username
+        password: Password
+        password_confirmation: Password confirmation
+      version:
+        comment: Comment
   add_product: Add Product
-  add_to: Add to &ldquo;%{name}&rdquo;
   add_to_bookmarks: Add to <b>Bookmarks</b>
   add_to_collection: Add to <b>Collection</b>
   add_to_prev_owned: Add to <b>Previous Products</b>
-  amount_categories:
-    zero: 0 Categories
-    one: 1 Category
-    other: "%{count} Categories"
-  amount_brands:
-    zero: 0 Brands
-    one: 1 Brand
-    other: "%{count} Brands"
-  amount_bookmarks:
-    zero: 0 Bookmarks
-    one: 1 Bookmark
-    other: "%{count} Bookmarks"
-  amount_products:
-    zero: 0 Products
-    one: 1 Product
-    other: "%{count} Products"
-  amount_setups:
-    zero: 0 Setups
-    one: 1 Setup
-    other: "%{count} Setups"
   amount_users:
-    zero: 0 Users
     one: 1 User
     other: "%{count} Users"
+    zero: 0 Users
   back: Back
+  bookmark:
+    remove:
+      confirm: Are you sure you want to remove %{name} from your bookmarks?
+      label: Remove
+    messages:
+      removed: <b>%{name}</b> has been removed from your bookmarks.
   brand:
-    name: Name
-    website: Website
-    full_name: Full / Company name
-    country_code: Country
-    discontinued: Discontinued
+    new:
+      heading: Add new Brand
+      link: Add Brand
+      submit: Submit
     founded: Founded
-    founded_date: Founding date
-    description: Description
   changelog:
-    change: Edited
-    by: by
+    after: To
     attribute: Attribute
     before: From
-    after: To
+    by: by
+    change: Edited
     comment: Comment
-  confirm_removing_product: Do you really want to remove this product from your collection?
-  dashboard: Dashboard
-  remove_bookmark:
-    label: Remove
-    confirm: Are you sure you want to remove %{name} from your bookmarks?
-  remove_product:
-    label: Remove
-    confirm: Are you sure you want to remove %{name} from your collection?
-  remove_product_from_setup:
-    label: Remove
-    confirm: Are you sure you want to remove %{name} from this setup?
-  remove_product_from_prev_owneds:
-    label: Remove
-    confirm: Are you sure you want to remove %{name} from your previously owned products?
-  delete_custom_product:
-    label: Delete
-    confirm: Are you sure you want to delete your custom product %{name}?
-  delete_setup:
-    label: Delete
-    confirm: Are you sure you want to delete your setup %{name}? Please note that the products in this setup will remain in your collection.
-  delete_note:
-    label: Delete
-    confirm: Are you sure you want these notes?
-  edit: Edit
-  edit_record: Edit %{name}
-  filter:
-    all: All
-    abc:
-      label: Filter by letter
-    category:
-      label: Filter by category
-  generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
-  meta_description: HiFi Log is a user-driven database with %{products_count} products by %{brands_count} brands in %{categories_count} categories.
-  home:
-    intro_down: >
-      <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a user-driven database with over <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in %{categories_count} categories.
-    intro_eq: >
-      <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in %{categories_count} categories.
-    intro_up: >
-      <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in %{categories_count} categories.
-    recently_added: Recently added to HiFi&hairsp;Log
-    sign_up: <a href="%{sign_up_path}">Sign up</a> to <b>add new products and brands</b> or edit existing ones, add products to <b>your own collection</b> and <b>keep track of all the products</b> you have ever owned.
-  name: Name
-  new_brand:
-    heading: Add new Brand
-    link: Add Brand
-    submit: Submit
-  new_custom_product:
-    breadcrumb: New
-    heading: Add new Custom Product
-    link: Add Custom Product
-    submit: Submit
-  new_product:
-    heading: Add new Product
-    filter_brands: Search for brand
-    link: Add Product
-    submit: Submit
-  new_setup:
-    heading: Add new Setup
-    link: Add Setup
-    submit: Submit
-  new_variant:
-    heading: Add new version / update
-    link: Add version / update
-    submit: Submit
-  not_found: We could not find what you were looking for.
-  overview: Overview
-  in_setup: In &ldquo;%{name}&rdquo;
-  remove_from_collection: Remove from <b>Collection</b>
-  remove_from_bookmarks: Remove from <b>Bookmarks</b>
-  search: Search
-  search_results:
-    heading: <span>Search results for</span> &ldquo;%{query}&rdquo;
-    none:
-      products: <p><b>No products found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a product here</a>.</p>
-      brands: <p><b>No brands found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a brand here</a>.</p>
-    alert:
-      minimum_chars: Please enter at least %{min} characters.
-  custom_products:
-    created: The custom product <b>%{name}</b> has been created.
-    updated: The custom product %{link} has been updated.
-    deleted: The custom product <b>%{name}</b> has been deleted.
-  setups:
-    created: The setup %{link} has been created.
-    updated: The setup <b>%{name}</b> has been updated.
-    deleted: The setup <b>%{name}</b> has been deleted.
-  skip_to_main_content: Skip to main content
-  status: Status
   continued: Existing / In Production
-  discontinued: Discontinued
-  users: Users
-  user_form:
-    login: Log in
-    logout: Log out
-    signup: Sign up
-    forgot_password:
-      heading: Forgot your password?
-      submit: Send me reset instructions
-  your_profile: Your profile
-  headings:
-    bookmarks: Bookmarks
-    brand: Brand
-    brands: Brands
-    category: Category
-    categories: Categories
-    changelog: Changelog
-    collection: Collection
-    contributors: Contributors
-    contributions: Contributions
-    created: Created
-    current_products: Current products
-    custom_products: Custom products
-    dashboard: Welcome back
-    edited: Edited
-    history: Product history
-    notes: Notes
-    prev_owneds: Previous products
-    product: Product
-    products: Products
-    setups: Setups
-    sub_category: Sub&shy;category
-    sub_categories: Sub&shy;categories
-    users: Users
-  empty_state:
-    public_profile: <p><i>%{name}</i> has not added any products to their collection yet.</p>
-    gear: '<p><b>You have not added any products to your collections yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p><p>You can also <a href="%{setups_path}">create a setup</a> first &mdash; like your living room or your office &mdash; and assign products to those. Or your simply bookmark some products you are interested in. And if you used to own a product, you can mark it as previously owned on the product page.</p>'
-    contributions: '<p><b>You have not contributed any brands or products yet.</b></p><p>You can <a href="%{brands_path}">create a brand</a>, <a href="%{products_path}">create a product</a> or contribute by adding more information to a brand or a product directly on their sites.</p>'
-    categories: <p><b>There are no categories yet.</b></p>
-    custom_products: "<p><b>You haven't created any custom products yet.</b></p><p>If you build for example your own loudspeakers or amplifiers, you can add these here.</p>"
-    brands: <p><b>There are no brands yet.</b></p>
-    brands_filter: <p><b>There are no brands yet based on your filter criteria.</b> You can <a href="%{path}">add a brand here</a>.</p>
-    notes: "<p><b>You haven't created any private notes yet.</b></p><p>You can create these directly on a product page.</p>"
-    products: <p><b>There are no products yet.</b></p>
-    products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}">add a product here</a>.</p>
-    product_variants: <p><b>There are no product updates or other versions yet for <i>%{name}</i>.<br></b> You can <a href="%{path}">add an update / another version here</a>.</p>
-    cta: <p><b>No products have been added to <i>%{name}</i> yet.</b> You can <a href="%{path}">add a product here</a>.</p>
-    sub_categories: <p><b>There are no subcategories yet.</b></p>
-    setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
-    setup_products: '<p><b>You have not added any products to this setup yet.</b></p><p>You can either do it by clicking on "Add / Remove Product" or directly on a product product page.</p>'
-    user_products: '<p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>'
-    user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
-    prev_owneds: '<p><b>You have not marked any products as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
-    prev_owneds_category: '<p><b>You have not marked any products in this category as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>'
-    bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
-  product:
-    description: Description
-    released: Released
-    release_date: Release date
-    discontinued_date: Discontinued date
-    period: From / to
-    options: Options
-    name: Name
-    meta:
-      owned_by: Owned by
-  user:
-    edit:
-      update:
-        heading: Update your account
-        profile_visibility:
-          hidden: No one but me can see my profile and my product photos.
-          logged_in_only: Only logged in users can see my profile and my product photos.
-          visible: Logged in and logged out users can see my profile and my product photos.
-        profile_url: "Your profile is visible at the following URL:"
-        optional: optional
-        required: required
-        leave_blank: leave blank if you don't want to change it
-        minimum_password_length: "%{minimum} characters minimum"
-        fields:
-          user_name: Username
-          email: Email
-          password: Password
-          current_password: Current password
-        save:
-          heading: Save your changes
-          confirm_with_password: We need your current password to confirm your changes.
-          submit: Save
-      delete:
-        heading: Delete your account
-        intro: If you delete your account, all data associated with your account will immediately be deleted.
-        confirm: Are you sure you want to delete your account? All data will be deleted immediately.
-        submit: Delete my account
-  views:
-    pagination:
-      previous: "&larr; Previous"
-      next: "Next &rarr;"
   custom_attributes:
     active: Active
     belt-drive: Belt Drive
@@ -288,17 +110,180 @@ en:
     tube: Tube
     wired: Wired
     wireless: Wireless
-  activerecord:
-    attributes:
-      sub_category:
-        custom_attribute_ids: Attributes
-      product:
-        price: Price
-        price_currency: Currency
-        product_options: Options
-      version:
-        comment: Comment
-      user:
-        decorative_image: Header Image
-      setups:
-        private: Private
+  custom_product:
+    new:
+      breadcrumb: New
+      heading: Add new Custom Product
+      link: Add Custom Product
+    delete:
+      confirm: Are you sure you want to delete your custom product %{name}?
+      label: Delete
+    messages:
+      created: Your custom product <b>%{name}</b> has been created.
+      deleted: Your custom product <b>%{name}</b> has been deleted.
+      updated: Your custom product %{link} has been updated.
+  dashboard: Dashboard
+  discontinued: Discontinued
+  edit: Edit
+  edit_record: Edit %{name}
+  empty_state:
+    bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
+    brands_filter: <p><b>There are no brands yet based on your filter criteria.</b> You can <a href="%{path}">add a brand here</a>.</p>
+    contributions: <p><b>You have not contributed any brands or products yet.</b></p><p>You can <a href="%{brands_path}">create a brand</a>, <a href="%{products_path}">create a product</a> or contribute by adding more information to a brand or a product directly on their sites.</p>
+    cta: <p><b>No products have been added to <i>%{name}</i> yet.</b> You can <a href="%{path}">add a product here</a>.</p>
+    custom_products: "<p><b>You haven't created any custom products yet.</b></p><p>If you build for example your own loudspeakers or amplifiers, you can add these here.</p>"
+    gear: <p><b>You have not added any products to your collections yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p><p>You can also <a href="%{setups_path}">create a setup</a> first &mdash; like your living room or your office &mdash; and assign products to those. Or your simply bookmark some products you are interested in. And if you used to own a product, you can mark it as previously owned on the product page.</p>
+    notes: "<p><b>You haven't created any private notes yet.</b></p><p>You can create these directly on a product page.</p>"
+    prev_owneds: <p><b>You have not marked any products as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>
+    product_variants: <p><b>There are no product updates or other versions yet for <i>%{name}</i>.<br></b> You can <a href="%{path}">add an update / another version here</a>.</p>
+    products: "<p><b>There are no products yet.</b></p>"
+    products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}">add a product here</a>.</p>
+    public_profile: "<p><i>%{name}</i> has not added any products to their collection yet.</p>"
+    setup_products: <p><b>You have not added any products to this setup yet.</b></p><p>You can either do it by clicking on "Add / Remove Product" or directly on a product product page.</p>
+    setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
+    user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
+    user_products: <p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>
+  filter:
+    all: All
+  generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
+  headings:
+    account: Account
+    changelog: Changelog
+    collection: Collection
+    contributions: Contributions
+    contributors: Contributors
+    created: Created
+    current_products: Current products
+    dashboard: Welcome back
+    edited: Edited
+    history: Product history
+    prev_owneds: Previous products
+    profile: Profile
+  home:
+    intro_down: <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a user-driven database with over <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in %{categories_count} categories.
+    intro_eq: <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in %{categories_count} categories.
+    intro_up: <span class="AppName">HiFi&hairsp;<span>Log</span></span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a> in %{categories_count} categories.
+    recently_added: Recently added to HiFi&hairsp;Log
+    sign_up: <a href="%{sign_up_path}">Sign up</a> to <b>add new products and brands</b> or edit existing ones, add products to <b>your own collection</b> and <b>keep track of all the products</b> you have ever owned.
+  meta_description: HiFi Log is a user-driven database with %{products_count} products by %{brands_count} brands in %{categories_count} categories.
+  not_found: We could not find what you were looking for.
+  note:
+    delete:
+      confirm: Are you sure you want these notes?
+      label: Delete
+  optional: optional
+  possession:
+    messages:
+      moved_to_prev: Your <b>%{name}</b> has been moved to your list of previous products.
+      removed: Your <b>%{name}</b> has been removed from your collection.
+      removed_from_prev: Your <b>%{name}</b> has been removed from your list of previous products.
+  product:
+    new:
+      heading: Add new Product
+      link: Add Product
+      submit: Submit
+    remove:
+      confirm: Are you sure you want to remove %{name} from your collection?
+      label: Remove
+    remove_from_prev_owneds:
+      confirm: Are you sure you want to remove %{name} from your previously owned products?
+      label: Remove
+    remove_from_setup:
+      confirm: Are you sure you want to remove %{name} from this setup?
+      label: Remove
+    meta:
+      owned_by: Owned by
+    options: Options
+  product_variant:
+    new:
+      heading: Add new version / update
+      link: Add version / update
+  search: Search
+  search_results:
+    alert:
+      minimum_chars: Please enter at least %{min} characters.
+    heading: "<span>Search results for</span> &ldquo;%{query}&rdquo;"
+    none:
+      brands: <p><b>No brands found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a brand here</a>.</p>
+      products: <p><b>No products found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a product here</a>.</p>
+  setup:
+    delete:
+      confirm: Are you sure you want to delete your setup %{name}? Please note that the products in this setup will remain in your collection.
+      label: Delete
+    new:
+      heading: Add new setup
+      link: Add new setup
+      submit: Save
+    messages:
+      created: Your setup %{link} has been created.
+      deleted: Your setup <b>%{name}</b> has been deleted.
+      updated: Your setup <b>%{name}</b> has been updated.
+    name_placeholder: e.g. Living room or Office
+    private_values:
+      "yes": Private
+      "no": Public
+    private_hint: Please note that marking a setup as private only hides the setup from your public profile. Products that have been added to a private setup will still be shown in your main collection on your profile.
+  skip_to_main_content: Skip to main content
+  sort_by:
+    label: Sort
+    added_asc: "Added: Oldest first"
+    added_desc: "Added: Newest first"
+    brands_products_release_date_desc: "Products: Newest first"
+    brands_products_release_date_asc: "Products: Oldest first"
+    country_asc: "Country: A first"
+    country_desc: "Country: Z first"
+    name_asc: "Name: A first"
+    name_desc: "Name: Z first"
+    products_asc: "Products: Least first"
+    products_desc: "Products: Most first"
+    release_date_desc: "Released: Newest first"
+    release_date_asc: "Released: Oldest first"
+    updated_asc: "Updated: Least recent first"
+    updated_desc: "Updated: Most recent first"
+  status: Status
+  symbols:
+    discontinued: Discontinued
+    in_your_bookmarks: Bookmarked
+    in_your_collection: In my collection
+    prev_owned: Previous product
+  user:
+    password_hint: 12 characters minimum
+    edit:
+      delete:
+        confirm: Are you sure you want to delete your account? All data will be deleted immediately.
+        heading: Delete your account
+        intro: If you delete your account, all data associated with your account will immediately be deleted.
+        submit: Delete my account
+      update:
+        fields:
+          confirm_password: Confirm password
+          current_password: Current password
+          email: Email
+          password: Password
+          user_name: Username
+        heading: Update your account
+        leave_blank: leave blank if you don't want to change it
+        minimum_password_length: "%{minimum} characters minimum"
+        optional: optional
+        profile_url: "Your profile is visible at the following URL:"
+        profile_visibility:
+          hidden: No one but me can see my profile and my product photos.
+          logged_in_only: Only logged in users can see my profile and my product photos.
+          visible: Logged in and logged out users can see my profile and my product photos.
+        required: required
+        save:
+          confirm_with_password: We need your current password to confirm your changes.
+          heading: Save your changes
+          submit: Save
+  user_form:
+    forgot_password:
+      heading: Forgot your password?
+      submit: Send me reset instructions
+    login: Log in
+    logout: Log out
+    signup: Sign up
+  views:
+    pagination:
+      next: Next &rarr;
+      previous: "&larr; Previous"
+      truncate: "…"

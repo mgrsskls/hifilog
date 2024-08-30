@@ -4,11 +4,11 @@ class BookmarkPresenter < ItemPresenter
   end
 
   def delete_button_label
-    I18n.t('remove_bookmark.label')
+    I18n.t('bookmark.remove.label')
   end
 
   def delete_confirm_msg
-    I18n.t('remove_bookmark.confirm', name: display_name)
+    I18n.t('bookmark.remove.confirm', name: display_name)
   end
 
   def product_option

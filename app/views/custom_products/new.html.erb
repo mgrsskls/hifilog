@@ -1,7 +1,7 @@
 <%= render layout: "shared/dashboard" do %>
   <%= form_for @custom_product, html: { class: "EntityForm", method: :post } do |f| %>
     <% content_for :heading do %>
-      <%= t('new_custom_product.heading') %>
+      <%= t('custom_product.new.heading') %>
     <% end %>
 
     <%= render "form", f: f %>

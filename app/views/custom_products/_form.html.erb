@@ -24,7 +24,7 @@
   </div>
 
   <div class="Form-field">
-    <h2 class="Form-label h3"><%= t('headings.categories') %></h2>
+    <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
     <div class="Options is-light EntityForm-subCategories">
       <% @categories.each do |category| %>
         <details <% if (category.sub_category_ids & @custom_product.sub_category_ids).any? %>open<% end %>>
@@ -42,14 +42,14 @@
 
   <div class="Form-field">
     <h2 class="h3 Form-label">
-      <%= t('product.description') %> <small><i>(optional)</i></small>
+      <%= CustomProduct.human_attribute_name(:description) %> <small><i>(optional)</i></small>
     </h2>
     <%= f.text_area :description %>
   </div>
 
   <div class="Form-submit">
     <%= f.button type: "submit", class: "Button Button--loadingIcon" do %>
-      <span><%= t('new_product.submit') %></span>
+      <span><%= t('product.new.submit') %></span>
     <% end %>
   </div>
 </div>

@@ -3,7 +3,7 @@ class SetupsController < ApplicationController
   before_action :set_breadcrumb
 
   def index
-    @page_title = I18n.t('headings.setups')
+    @page_title = Setup.model_name.human(count: 2)
     @setups = current_user.setups.order('LOWER(name)')
   end
 
@@ -57,9 +57,9 @@ class SetupsController < ApplicationController
   end
 
   def new
-    @setup = Setup.new
+    @setup = Setup.new(private: true)
 
-    add_breadcrumb I18n.t('new_setup.heading')
+    add_breadcrumb I18n.t('setup.new.heading')
   end
 
   def create
@@ -68,7 +68,7 @@ class SetupsController < ApplicationController
 
     if @setup.save
       flash[:notice] = I18n.t(
-        'setups.created',
+        'setup.messages.created',
         link: ActionController::Base.helpers.link_to(@setup.name, dashboard_setup_path(@setup))
       )
       redirect_to dashboard_setups_path
@@ -96,10 +96,10 @@ class SetupsController < ApplicationController
 
     if possessions_in_other_setups.update(setup_id: @setup.id) && @setup.update(setup_params)
       flash[:notice] = I18n.t(
-        'setups.updated',
+        'setup.messages.updated',
         name: @setup.name
       )
-      redirect_to dashboard_setup_path(@setup)
+      redirect_to dashboard_setups_path
     else
       render :edit, status: :unprocessable_entity
     end
@@ -108,7 +108,7 @@ class SetupsController < ApplicationController
   def destroy
     @setup = current_user.setups.find(params[:id])
     @setup.destroy
-    flash[:notice] = I18n.t('setups.deleted', name: @setup.name)
+    flash[:notice] = I18n.t('setup.messages.deleted', name: @setup.name)
     redirect_to dashboard_setups_path
   end
 
@@ -116,7 +116,7 @@ class SetupsController < ApplicationController
 
   def set_breadcrumb
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('headings.setups'), dashboard_setups_path
+    add_breadcrumb Setup.model_name.human(count: 2), dashboard_setups_path
     @active_dashboard_menu = :setups
     @active_menu = :dashboard
   end

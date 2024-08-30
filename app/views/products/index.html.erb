@@ -1,33 +1,27 @@
 <div class="Heading">
   <h1>
-    <%= t('headings.products') %>
+    <%= Product.model_name.human(count: 2) %>
     <% if @sub_category %>
       <small><%= @sub_category.name %></small>
     <% elsif @category %>
       <small><%= @category.name %></small>
     <% end %>
   </h1>
-  <%= link_to t('new_product.link'), user_signed_in? ? new_product_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button" %>
+  <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button" %>
 </div>
 
 <%= render "shared/filter", reset_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @products_query do %>
   <div class="u-flex u-alignCenter u-gap-md">
     <label for="sort">Sort</label>
     <select name="sort" id="sort">
-      <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>>Name: A first</option>
-      <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>>Name: Z first</option>
-      <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('product.release_date') %>: Newest first</option>
-      <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('product.release_date') %>: Oldest first</option>
-      <%
-=begin%>
- <option value="price_asc"<%= " selected" if params[:sort] == "price_asc" %>><%= t('activerecord.attributes.product.price') %>: Lowest first</option>
-      <option value="price_desc"<%= " selected" if params[:sort] == "price_desc" %>><%= t('activerecord.attributes.product.price') %>: Highest first</option>
-<%
-=end%>
-      <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>>Added: Newest first</option>
-      <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>>Added: Oldest first</option>
-      <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>>Updated: Newest first</option>
-      <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>>Updated: Oldest first</option>
+      <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
+      <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
+      <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
+      <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('sort_by.release_date_asc') %></option>
+      <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>><%= t('sort_by.added_desc') %></option>
+      <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>><%= t('sort_by.added_asc') %></option>
+      <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>><%= t('sort_by.updated_desc') %></option>
+      <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>><%= t('sort_by.updated_asc') %></option>
     </select>
   </div>
 <% end %>

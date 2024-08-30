@@ -56,7 +56,7 @@
 
         <% if sub_categories.any? %>
           <div class="Filter-section">
-            <span class="Filter-option"><%= t('headings.category') %></span>
+            <span class="Filter-option"><%= Category.model_name.human %></span>
             <ol class="Pagination">
               <li class="Pagination-all">
                 <label>
@@ -79,7 +79,7 @@
         <% if custom_attributes.any? %>
           <div class="Filter-section">
             <span class="Filter-option">
-              <%= t('activerecord.attributes.sub_category.custom_attribute_ids') %>
+              <%= SubCategory.human_attribute_name(:custom_attribute_ids) %>
             </span>
             <div class="Filter-values">
               <% custom_attributes.each do |custom_attribute| %>

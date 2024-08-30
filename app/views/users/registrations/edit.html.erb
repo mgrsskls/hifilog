@@ -1,6 +1,6 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
-    <h1><%= t('account') %></h1>
+    <h1><%= t('headings.account') %></h1>
   </div>
 
   <h2><%= t("user.edit.update.heading") %></h2>
@@ -27,7 +27,7 @@
 
         <div class="Form-field">
           <%= f.label :password, class: "Form-label" do %>
-            <%= t('user.edit.update.password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
+            <%= t('user.edit.update.fields.password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
           <% end %>
           <%= f.password_field :password, autocomplete: "new-password" %>
           <% if @minimum_password_length %>
@@ -37,7 +37,7 @@
 
         <div class="Form-field">
           <%= f.label :password_confirmation, class: "Form-label" do %>
-            <%= t('user.edit.update.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
+            <%= t('user.edit.update.fields.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
           <% end %>
           <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
         </div>

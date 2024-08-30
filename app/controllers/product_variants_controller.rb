@@ -55,8 +55,8 @@ class ProductVariantsController < ApplicationController
     @brand = @product.brand
 
     add_breadcrumb @product.display_name, @product
-    add_breadcrumb I18n.t('new_variant.link')
-    @page_title = "#{I18n.t('new_variant.link')} — #{@product.display_name}"
+    add_breadcrumb I18n.t('product_variant.new.link')
+    @page_title = "#{I18n.t('product_variant.new.link')} — #{@product.display_name}"
   end
 
   def create
@@ -154,7 +154,7 @@ class ProductVariantsController < ApplicationController
   end
 
   def set_breadcrumb
-    add_breadcrumb I18n.t('headings.products'), products_path
+    add_breadcrumb Product.model_name.human(count: 2), products_path
   end
 
   def find_product_and_variant

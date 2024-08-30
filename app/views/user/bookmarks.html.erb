@@ -1,6 +1,6 @@
 <%= render layout: "shared/dashboard" do %>
   <div class="Heading">
-    <h1><%= t('headings.bookmarks') %></h1>
+    <h1><%= Bookmark.model_name.human(count: 2) %></h1>
     <%= render "shared/category_filter", categories: @categories %>
   </div>
 

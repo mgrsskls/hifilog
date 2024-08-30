@@ -19,8 +19,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # GET /resource/edit
   def edit
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('account'), :edit_user_registration_path
-    @page_title = I18n.t('account')
+    add_breadcrumb I18n.t('headings.account')
+    @page_title = I18n.t('headings.account')
     @active_dashboard_menu = :account
 
     super
@@ -28,8 +28,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # PUT /resource
   def update
-    add_breadcrumb I18n.t('your_profile')
-    add_breadcrumb I18n.t('account')
+    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
+    add_breadcrumb I18n.t('headings.account')
+    @page_title = I18n.t('headings.account')
     @active_dashboard_menu = :account
 
     current_user.avatar.purge if params[:delete_avatar]

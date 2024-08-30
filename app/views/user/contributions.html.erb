@@ -8,7 +8,7 @@
 
   <div class="Contributions u-flex u-flexWrap u-gap-lg">
     <div class="Contributions-section Contributions-section--lvl1">
-      <h2><%= t('headings.products') %></h2>
+      <h2><%= Product.model_name.human(count: 2) %></h2>
       <div class="u-flex u-flexWrap u-gap-lg">
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.created') %></h3>
@@ -37,7 +37,7 @@
       </div>
     </div>
     <div class="Contributions-section Contributions-section--lvl1">
-      <h2><%= t('headings.brands') %></h2>
+      <h2><%= Brand.model_name.human(count: 2) %></h2>
       <div class="u-flex u-flexWrap u-gap-lg">
         <div class="Contributions-section Contributions-section--lvl2">
           <h3><%= t('headings.created') %></h3>

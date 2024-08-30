@@ -6,16 +6,16 @@
   <table>
     <thead>
       <tr>
-        <th><%= t('name') %></th>
+        <th><%= Product.human_attribute_name(:name) %></th>
         <% unless hide_brand %>
-          <th><%= t('headings.brand').html_safe %></th>
+          <th><%= Brand.model_name.human %></th>
         <% end %>
         <% unless hide_category %>
-          <th><%= t('headings.category').html_safe %></th>
+          <th><%= Category.model_name.human %></th>
         <% end %>
-        <th><%= t('activerecord.attributes.sub_category.custom_attribute_ids') %></th>
-        <th class="Table-date"><%= t('product.released').html_safe %></th>
-        <th><%= t('activerecord.attributes.product.price') %></th>
+        <th><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></th>
+        <th class="Table-date"><%= Product.human_attribute_name(:release_date) %></th>
+        <th><%= Product.human_attribute_name(:price) %></th>
         <th class="Table-symbols">Status</th>
       </tr>
     </thead>

@@ -33,7 +33,7 @@
   <div class="Form-field">
     <h2 class="h3 Form-label">
       <%= f.label :name, class: "Form-label" do %>
-        <%= t('product.name') %> <small><i>(optional)</i></small>
+        <%= Product.human_attribute_name(:description) %> <small><i>(optional)</i></small>
       <% end %>
     </h2>
     <%= f.text_field :name %>

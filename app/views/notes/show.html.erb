@@ -26,11 +26,11 @@
       <%= link_to "Edit", @product_variant.present? ? product_new_variant_notes_path(product_id: @product.friendly_id, variant: @product_variant.friendly_id) : product_new_notes_path(product_id: @product.friendly_id), class: "Button" %>
     </div>
     <div class="PageAction">
-      <%= button_to t('delete_note.label'),
+      <%= button_to t('note.delete.label'),
         note_path(id: @note.id),
         method: :delete,
         class: "DeleteButton Button Button--negative",
-        "data-msg": t('delete_note.confirm')
+        "data-msg": t('note.delete.confirm')
       %>
     </div>
   </div>

@@ -4,9 +4,9 @@
   <table>
     <thead>
       <tr>
-        <th><%= t('name') %></th>
-        <th><%= t('headings.categories').html_safe %></th>
-        <th class="Table-products u-alignCenter"><%= t('headings.products') %></th>
+        <th><%= Brand.human_attribute_name(:name) %></th>
+        <th><%= Category.model_name.human(count: 2) %></th>
+        <th class="Table-products u-alignCenter"><%= Product.model_name.human(count: 2) %></th>
         <th>Country</th>
         <th class="Table-symbols">Status</th>
       </tr>

@@ -22,8 +22,8 @@
     include_delete_button: true,
     hide_since: true,
     hide_period: true,
-    delete_button_label: t('remove_product_from_setup.label'),
-    delete_confirm_msg: 'remove_product_from_setup.confirm',
+    delete_button_label: t('product.remove_from_setup.label'),
+    delete_confirm_msg: 'product.remove_from_setup.confirm',
     delete_path: :remove_from_setup
   %>
 
@@ -66,11 +66,11 @@
       </dialog>
     </div>
     <div class="PageAction">
-      <%= button_to t('delete_setup.label'),
+      <%= button_to t('setup.delete.label'),
         setup_path(id: @setup.id),
         method: :delete,
         class: "DeleteButton Button Button--negative",
-        "data-msg": t('delete_setup.confirm', name: @setup.name)
+        "data-msg": t('setup.delete.confirm', name: @setup.name)
       %>
     </div>
   </div>
