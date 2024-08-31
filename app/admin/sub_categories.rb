@@ -15,6 +15,12 @@ ActiveAdmin.register SubCategory do
   #   permitted
   # end
 
+  remove_filter :brands
+  remove_filter :custom_attributes
+  remove_filter :custom_products
+  remove_filter :products
+  remove_filter :slug
+
   form do |f|
     f.inputs do
       f.input :name

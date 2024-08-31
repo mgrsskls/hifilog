@@ -14,5 +14,8 @@ ActiveAdmin.register Setup do
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end
-
+  remove_filter :setup_possessions
+  remove_filter :possessions
+  remove_filter :name
+  remove_filter :private
 end

@@ -44,29 +44,24 @@ class Brand < ApplicationRecord
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       country_code
-      created_at
+      country_code_cont
+      country_code_end
+      country_code_eq
+      country_code_start
       discontinued
-      full_name
-      id
+      discontinued_eq
       name
-      slug
-      slugs_id
-      updated_at
-      website
-      versions_id
-      founded_day
-      founded_month
-      founded_year
-      discontinued_day
-      discontinued_month
-      discontinued_year
-      description
+      name_cont
+      name_end
+      name_eq
+      name_start
       sub_categories_id
+      sub_categories_id_eq
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    ['products']
+    %w[]
   end
 
   def categories

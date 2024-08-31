@@ -70,35 +70,22 @@ class Product < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      created_at
-      description
+      brand_id
+      brand_id_eq
       discontinued
-      discontinued_day
-      discontinued_month
-      discontinued_year
-      id
+      discontinued_eq
       name
-      notes_id
-      possessions_id
-      possessions_user_id
-      price
-      price_currency
-      product_options_id_eq
-      product_variants_id
-      release_day
-      release_month
-      release_year
-      setup_possessions_id
-      setup_possessions_setup_id
-      slug
-      slugs_id
-      updated_at
-      versions_id
+      name_cont
+      name_end
+      name_eq
+      name_start
+      sub_categories_id
+      sub_categories_id_eq
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[brand setups sub_categories users]
+    %w[]
   end
 
   def display_name

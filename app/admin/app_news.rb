@@ -14,4 +14,7 @@ ActiveAdmin.register AppNews do
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end
+
+  remove_filter :text
+  remove_filter :users
 end

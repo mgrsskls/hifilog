@@ -6,13 +6,6 @@ class SetupPossession < ApplicationRecord
   validates :setup, presence: true
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[
-      id
-      id_value
-      possession_id
-      product_id
-      product_variant_id
-      setup_id
-    ]
+    %w[]
   end
 end

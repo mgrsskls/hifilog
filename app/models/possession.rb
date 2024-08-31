@@ -18,26 +18,13 @@ class Possession < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      custom_product_id
-      image_attachment_id
-      image_blob_id
-      product_id
-      product_variant_id
-      setup_id
-      setup_possession_id
       user_id
-      prev_owned_eq
-      product_option_id_eq
+      user_id_eq
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[
-      product
-      product_variant
-      setup_possessions
-      user
-    ]
+    %w[]
   end
 
   def validate_image_content_type

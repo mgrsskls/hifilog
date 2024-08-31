@@ -15,18 +15,12 @@ class Setup < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      created_at
-      id
-      name
-      private
-      setup_possessions_id
-      setup_possessions_possession_id
-      updated_at
       user_id
+      user_id_eq
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[possessions user]
+    %w[]
   end
 end

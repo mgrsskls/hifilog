@@ -15,6 +15,20 @@ ActiveAdmin.register Brand do
   #   permitted
   # end
 
+  remove_filter :description
+  remove_filter :discontinued_day
+  remove_filter :discontinued_month
+  remove_filter :discontinued_year
+  remove_filter :founded_day
+  remove_filter :founded_month
+  remove_filter :founded_year
+  remove_filter :full_name
+  remove_filter :products
+  remove_filter :slug
+  remove_filter :slugs
+  remove_filter :versions
+  remove_filter :website
+
   controller do
     def find_resource
       scoped_collection.friendly.find(params[:id])

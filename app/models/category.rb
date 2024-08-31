@@ -12,17 +12,16 @@ class Category < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      created_at
-      id
       name
-      slug
-      updated_at
-      order
+      name_cont
+      name_end
+      name_eq
+      name_start
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    ['sub_categories']
+    %w[]
   end
 
   def self.ordered

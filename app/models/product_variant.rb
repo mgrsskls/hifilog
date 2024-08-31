@@ -112,32 +112,20 @@ class ProductVariant < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[possessions product users versions]
+    %w[]
   end
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      created_at
-      description
       discontinued
-      discontinued_day
-      discontinued_month
-      discontinued_year
-      id
-      id_value
+      discontinued_eq
       name
-      notes_id
-      possessions_id
-      price
-      price_currency
+      name_cont
+      name_end
+      name_eq
+      name_start
       product_id
-      product_options_id_eq
-      release_day
-      release_month
-      release_year
-      slug
-      slugs_id
-      updated_at
+      product_id_eq
     ]
   end
 

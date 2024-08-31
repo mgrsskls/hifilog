@@ -14,4 +14,14 @@ ActiveAdmin.register Possession do
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end
+
+  remove_filter :custom_product
+  remove_filter :image_attachment
+  remove_filter :image_blob
+  remove_filter :prev_owned
+  remove_filter :product
+  remove_filter :product_option
+  remove_filter :product_variant
+  remove_filter :setup
+  remove_filter :setup_possession
 end

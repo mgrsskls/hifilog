@@ -14,6 +14,23 @@ ActiveAdmin.register ProductVariant do
   #   permitted
   # end
 
+  remove_filter :description
+  remove_filter :discontinued_day
+  remove_filter :discontinued_month
+  remove_filter :discontinued_year
+  remove_filter :notes
+  remove_filter :possessions
+  remove_filter :price
+  remove_filter :price_currency
+  remove_filter :product_options
+  remove_filter :release_day
+  remove_filter :release_month
+  remove_filter :release_year
+  remove_filter :slug
+  remove_filter :slugs
+  remove_filter :users
+  remove_filter :versions
+
   form do |f|
     f.inputs do
       f.input :name

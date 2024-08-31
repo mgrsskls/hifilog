@@ -42,35 +42,16 @@ class User < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      app_news_id_eq
-      avatar_attachment_id
-      avatar_blob_id
-      bookmarks_id
-      confirmation_token
-      created_at
-      custom_products_id
-      decorative_image_attachment_id
-      decorative_image_blob_id
-      email
-      encrypted_password
-      id
-      notes_id
-      possessions_id
-      possessions_product_id
-      product_variants_id
-      profile_visibility
-      remember_created_at
-      reset_password_sent_at
-      reset_password_token
-      setup_possessions_id
-      unconfirmed_email
-      updated_at
       user_name
+      user_name_cont
+      user_name_end
+      user_name_eq
+      user_name_start
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[products setups]
+    %w[]
   end
 
   def profile_path

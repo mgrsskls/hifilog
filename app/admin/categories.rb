@@ -15,6 +15,10 @@ ActiveAdmin.register Category do
   #   permitted
   # end
 
+  remove_filter :order
+  remove_filter :slug
+  remove_filter :sub_categories
+
   controller do
     def find_resource
       scoped_collection.friendly.find(params[:id])
