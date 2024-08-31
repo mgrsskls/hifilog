@@ -15,7 +15,7 @@ _HiFi Log_ is a user-driven platform for hifi products and brands.
 - **Build your personal collection**<br>
   You can add existing or your own custom built products to your collection, assign them to different listening setups and upload photos of your own gear to show others what you own.
 - **Keep track of products you used to own**<br>
-  If the list of hi-fi gear you used to own becomes longer and longer, you can simply add them to your list of previously owned products.
+  If the list of hi-fi gear you used to own becomes longer and longer, you can simply add them to your list of previous products. After adding the date of ownership, you will get a history and statistics on your hifi gear.
 
 ## Setup
 

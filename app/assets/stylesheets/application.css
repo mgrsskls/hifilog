@@ -152,6 +152,7 @@
 		--color-transparency-25: rgba(0, 0, 0, 0.25);
 		--summary-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
 		--color-copy: var(--color-copy-on-light);
+		--color-copy-on-secondary: #fff;
 		--color-copy-on-accent: #fff;
 		--color-secondary: var(--color-secondary-on-light);
 		--color-input-placeholder: var(--color-copy-on-light);
@@ -184,6 +185,7 @@
 			--color-bg2: var(--color-blue-125);
 			--color-accent: var(--color-accent-on-dark);
 			--color-copy: var(--color-copy-on-dark);
+			--color-copy-on-secondary: var(--color-copy-on-light);
 			--color-copy-on-accent: var(--color-copy-on-light);
 			--color-secondary: var(--color-secondary-on-dark);
 
@@ -219,6 +221,7 @@
 		--color-bg2: var(--color-blue-125);
 		--color-accent: var(--color-accent-on-dark);
 		--color-copy: var(--color-copy-on-dark);
+		--color-copy-on-secondary: var(--color-copy-on-light);
 		--color-copy-on-accent: var(--color-copy-on-light);
 		--color-secondary: var(--color-secondary-on-dark);
 		--color-transparency-10: rgba(255, 255, 255, 0.1);

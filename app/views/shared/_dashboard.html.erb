@@ -14,8 +14,8 @@
         </a>
       </li>
       <li>
-        <a class="Dashboard-link" href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
-          <%= t('headings.profile') %>
+        <a class="Dashboard-link" href="<%= dashboard_statistics_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :statistics) %>>
+          <%= t('headings.statistics') %>
         </a>
       </li>
       <li>
@@ -60,6 +60,11 @@
         <small><%= user_notes_count(current_user) %></small>
       </li>
       <li class="Dashboard-separator">
+        <a class="Dashboard-link" href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
+          <%= t('headings.profile') %>
+        </a>
+      </li>
+      <li>
         <a class="Dashboard-link" href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>><%= t('headings.contributions') %></a>
       </li>
       <li>

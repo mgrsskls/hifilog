@@ -12,6 +12,7 @@ Rails.application.config.assets.version = "1.0"
 Rails.application.config.assets.precompile += %w(
   application.css
   changelog.css
+  charts.css
   contributions.css
   custom_product.css
   dashboard.css

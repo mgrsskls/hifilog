@@ -1,0 +1,147 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "charts", crossorigin: true, integrity: true %>
+<% end %>
+
+<%= render layout: "shared/dashboard" do %>
+  <div class="Heading">
+    <h1><%= t('headings.statistics') %></h1>
+  </div>
+
+  <div class="Statistics">
+    <div class="Statistics-header u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
+      <h2><%= t('statistics.headings.products_added_removed_per_year') %></h2>
+
+      <% if @products_added_removed_per_year.any? %>
+        <div class="ChartsToggle" role="tablist">
+          <button role="tab" type="button" aria-controls="products_added_removed_per_year" aria-selected="true"><%= t("statistics.products_added_removed_per_year") %></button>
+          <button role="tab" type="button" aria-controls="products_added_per_year"><%= t("statistics.products_added_per_year") %></button>
+          <button role="tab" type="button" aria-controls="products_removed_per_year"><%= t("statistics.products_removed_per_year") %></button>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @products_added_removed_per_year.any? %>
+      <%
+        [
+          [:products_added_removed_per_year, @products_added_removed_per_year],
+          [:products_added_per_year, @products_added_per_year],
+          [:products_removed_per_year, @products_removed_per_year],
+        ].each do |group|
+      %>
+        <div id="<%= group[0] %>"<%= " hidden" unless group[0] == :products_added_removed_per_year %> role="tabpanel">
+          <% if group[1].any? %>
+            <%
+              max_value = group[1]
+                .clone
+                .map { |g| g[:possessions] }
+
+              if group[0] == :products_added_removed_per_year
+                max_value = max_value.flat_map { |g| [g[:from], g[:to] ] }.max_by { |g| g.size }.size
+              elsif group[0] == :products_added_per_year
+                max_value = max_value.map { |g| g[:from] }.max_by { |g| g.size }.size
+              else
+                max_value = max_value.map { |g| g[:to] }.max_by { |g| g.size }.size
+              end
+            %>
+
+            <% multi = 10.to_f / max_value %>
+            <dl class="BarChart">
+              <% group[1].each do |group2| %>
+                <div class="BarChart-row BarChart-grid">
+                  <dt>
+                    <%= group2[:year] %>
+                  </dt>
+                  <dd>
+                    <% unless group[0] == :products_removed_per_year %>
+                      <span class="BarChart-label">Added</span>
+                      <% from = group2[:possessions][:from].size %>
+                      <span
+                        class="BarChart-data BarChart-data--positive<%= " BarChart-data--empty" if from == 0 %>"
+                        style="--size: <%= multi * from / 10 %>"
+                      >
+                        <%= from %>
+                      </span>
+                    <% end %>
+                    <% unless group[0] == :products_added_per_year %>
+                      <span class="BarChart-label">Removed</span>
+                      <% to = group2[:possessions][:to].size %>
+                      <span
+                        class="BarChart-data BarChart-data--negative<%= " BarChart-data--empty" if to == 0 %>"
+                        style="--size: <%= multi * to / 10 %>"
+                      >
+                        <%= to %>
+                      </span>
+                    <% end %>
+                  </dd>
+                </div>
+              <% end %>
+            </dl>
+          <% else %>
+            <%= render "shared/empty_state", message: t("empty_state.statistics.#{group[0]}") %>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <%= render "shared/empty_state", message: t('empty_state.statistics.products_added_removed') %>
+    <% end %>
+  </div>
+
+  <div class="Statistics">
+    <div class="Statistics-header u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
+      <h2><%= t('statistics.headings.products_per_brand') %></h2>
+
+      <% if @all_products_per_brand.any? %>
+        <div class="ChartsToggle" role="tablist">
+          <button role="tab" type="button" aria-controls="current_products_per_brand"<%= ' aria-selected="true"'.html_safe if @current_products_per_brand.any? %>><%= t("statistics.current_products_per_brand") %></button>
+          <button role="tab" type="button" aria-controls="all_products_per_brand"<%= ' aria-selected="true"'.html_safe unless @current_products_per_brand.any? %>><%= t("statistics.all_products_per_brand") %></button>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @all_products_per_brand.any? %>
+      <% [[:current_products_per_brand, @current_products_per_brand], [:all_products_per_brand, @all_products_per_brand]].each do |group| %>
+        <div id="<%= group[0] %>"<%= " hidden" if (group[0] == :current_products_per_brand && @current_products_per_brand.empty?) || (group[0] != :current_products_per_brand && @current_products_per_brand.any?) %> role="tabpanel">
+          <% if group[1].any? %>
+            <% multi = 10.to_f / group[1].first[1].size %>
+            <dl class="BarChart">
+              <% group[1].each do |brand| %>
+                <div class="BarChart-row">
+                  <dt>
+                    <%= brand[1][0][:possession].product.present? ? link_to(brand[0], brand[1][0][:possession].product.brand) : brand[0] %>
+                  </dt>
+                  <dd>
+                    <span class="BarChart-data" style="--size: <%= multi * brand[1].size / 10 %>">
+                      <%= brand[1].size %>
+                    </span>
+                  </dd>
+                </div>
+              <% end %>
+            </dl>
+          <% else %>
+            <%= render "shared/empty_state", message: t('empty_state.statistics.current_products_per_brand') %>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <%= render "shared/empty_state", message: t('empty_state.statistics.products_per_brand') %>
+    <% end %>
+  </div>
+
+  <%= javascript_tag nonce: true do %>
+    document.querySelectorAll(".ChartsToggle").forEach(toggle => {
+      toggle.addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") {
+          e.currentTarget.querySelectorAll("button").forEach(button => {
+            if (e.target == button) {
+              button.setAttribute("aria-selected", "true");
+              document.getElementById(button.getAttribute("aria-controls")).hidden = false;
+            } else {
+              button.setAttribute("aria-selected", "false");
+              document.getElementById(button.getAttribute("aria-controls")).hidden = true;
+            }
+          })
+        }
+      })
+    });
+  <% end %>
+<% end %>

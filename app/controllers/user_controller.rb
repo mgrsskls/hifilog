@@ -184,7 +184,107 @@ class UserController < ApplicationController
                    .group_by { |possession| possession[:date].year }
   end
 
+  def statistics
+    add_breadcrumb I18n.t('headings.statistics'), dashboard_statistics_path
+    @page_title = I18n.t('headings.statistics')
+    @active_dashboard_menu = :statistics
+
+    products_added_removed = current_user.possessions.where.not(period_from: nil).or(
+      current_user.possessions.where.not(period_to: nil)
+    )
+
+    years_added_removed = []
+    years_added = []
+    years_removed = []
+    products_added_removed_per_year = []
+    products_added_per_year = []
+    products_removed_per_year = []
+
+    products_added_removed.each do |product|
+      if product.period_from.present?
+        years_added_removed << product.period_from.year
+        years_added << product.period_from.year
+      end
+      if product.period_to.present?
+        years_added_removed << product.period_to.year
+        years_removed << product.period_to.year
+      end
+    end
+
+    years_added_removed.uniq.sort.each do |year|
+      products_added_removed_per_year << {
+        year:,
+        possessions: {
+          from: products_added_removed.select do |possession|
+            possession.period_from.present? && possession.period_from.year == year
+          end,
+          to: products_added_removed.select do |possession|
+            possession.period_to.present? && possession.period_to.year == year
+          end,
+        }
+      }
+    end
+
+    years_added.uniq.sort.each do |year|
+      products_added_per_year << {
+        year:,
+        possessions: {
+          from: products_added_removed.select do |possession|
+            possession.period_from.present? && possession.period_from.year == year
+          end,
+        }
+      }
+    end
+
+    years_removed.uniq.sort.each do |year|
+      products_removed_per_year << {
+        year:,
+        possessions: {
+          to: products_added_removed.select do |possession|
+            possession.period_to.present? && possession.period_to.year == year
+          end,
+        }
+      }
+    end
+
+    @products_added_removed_per_year = products_added_removed_per_year
+    @products_added_per_year = products_added_per_year
+    @products_removed_per_year = products_removed_per_year
+    @current_products_per_brand = get_products_per_brand
+    @all_products_per_brand = get_products_per_brand(all: true)
+  end
+
   private
+
+  def get_products_per_brand(all: false)
+    products_per_brand = current_user.possessions
+                                     .includes([:custom_product])
+                                     .includes([product: [:brand]])
+
+    products_per_brand = products_per_brand.where.not(prev_owned: true) unless all
+
+    products_per_brand = products_per_brand.map do |possession|
+      if possession.custom_product
+        {
+          brand_name: CustomProductPresenter.new(possession.custom_product).brand_name,
+          possession:
+        }
+      else
+        {
+          brand_name: possession.product.brand.name,
+          possession:
+        }
+      end
+    end
+
+    products_per_brand = products_per_brand.group_by do |possession|
+      possession[:brand_name]
+    end
+
+    products_per_brand.sort_by do |brand|
+      [-brand[1].size, brand[0].downcase]
+    end
+  end
 
   def get_data(data, model, event)
     data[[model, event]] || 0

@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-08-31">2024-08-31</time>
+
+- Added a private statistics page which shows the amount of products per brand as well as the amount of products added and removed from a collection per year.
+
 ## <time datetime="2024-08-21">2024-08-21</time>
 
 - Products can now have options, which could for example be colors, sizes, type of wood etc.

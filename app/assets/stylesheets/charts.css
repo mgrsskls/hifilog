@@ -1,0 +1,135 @@
+.Statistics {
+	container: statistics / inline-size;
+}
+
+.Statistics + .Statistics {
+	margin-block-start: 4rem;
+}
+
+.Statistics-header h2 {
+	margin-block: 0 0.5rem;
+}
+
+.BarChart {
+	display: grid;
+	align-items: center;
+}
+
+.BarChart-row {
+	display: grid;
+	align-items: center;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	padding: 0.75em;
+	border-radius: var(--border-radius);
+}
+
+.BarChart-row:nth-child(odd) {
+	background: var(--color-bg2);
+}
+
+.BarChart dt {
+	font-weight: 600;
+}
+
+.BarChart-grid {
+	gap: 0 4cqi;
+}
+
+.BarChart-grid dd {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0.25em 0.75em;
+}
+
+.BarChart-label {
+	font-size: 0.875em;
+	color: var(--color-secondary);
+}
+
+.BarChart-data {
+	--color: calc(100 - var(--size) * 100 + 100);
+
+	display: block;
+	box-sizing: border-box;
+	inline-size: calc(var(--size) * 100%);
+	background: hsl(var(--color), 80%, 60%);
+	border: 0.0625rem solid transparent;
+	text-align: end;
+	border-radius: var(--border-radius);
+	padding: 0.125em 0.5em;
+	min-inline-size: 3ch;
+	color: var(--color-copy-on-light);
+	font-weight: 600;
+}
+
+.BarChart-data--positive {
+	--color: 100;
+}
+
+.BarChart-data--negative {
+	--color: 0;
+}
+
+.BarChart-data--empty {
+	background: none;
+	padding-inline: 0;
+	text-align: start;
+}
+
+.ChartsToggle {
+	display: inline-flex;
+	border: 0.0625rem solid var(--color-secondary);
+	border-radius: var(--border-radius);
+}
+
+.ChartsToggle button {
+	font-size: 0.875em;
+	padding: 0.25em 0.75em;
+	border-radius: 0;
+}
+
+.ChartsToggle button:first-child {
+	border-start-start-radius: var(--border-radius);
+	border-end-start-radius: var(--border-radius);
+}
+
+.ChartsToggle button:last-child {
+	border-start-end-radius: var(--border-radius);
+	border-end-end-radius: var(--border-radius);
+}
+
+.ChartsToggle button:not(:first-child) {
+	border-inline-start-color: var(--color-secondary);
+}
+
+.ChartsToggle button[aria-selected="true"] {
+	background: var(--color-secondary);
+	color: var(--color-copy-on-secondary);
+}
+
+@container statistics (width < 40em) {
+	.BarChart {
+		grid-template-columns: 1fr;
+	}
+
+	.BarChart-row {
+		gap: 0.5em;
+	}
+}
+
+@container statistics (width >= 40em) {
+	.BarChart {
+		grid-template-columns: auto 1fr;
+		gap: 0 1em;
+	}
+
+	.BarChart dt {
+		text-align: end;
+	}
+
+	.BarChart-label {
+		text-align: end;
+	}
+}

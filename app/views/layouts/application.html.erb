@@ -121,8 +121,8 @@
                         </a>
                       </li>
                       <li>
-                        <a href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
-                          <span><%= t('headings.profile') %></span>
+                        <a href="<%= dashboard_statistics_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :statistics) %>>
+                          <span><%= t('headings.statistics') %></span>
                         </a>
                       </li>
                       <li>
@@ -167,6 +167,11 @@
                         </a>
                       </li>
                       <li class="Menu-subList-separator">
+                        <a href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
+                          <span><%= t('headings.profile') %></span>
+                        </a>
+                      </li>
+                      <li>
                         <a href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>>
                           <span><%= t('headings.contributions') %></span>
                         </a>

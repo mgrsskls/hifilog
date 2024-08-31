@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
     get 'custom-products/:id/edit', to: 'custom_products#edit', as: :edit_custom_product
     get 'history', to: 'user#history', as: :history
+    get 'statistics', to: 'user#statistics', as: :statistics
     resources :setups, only: [:index, :show, :new, :edit]
     resources :notes, only: [:index, :show, :edit]
   end
