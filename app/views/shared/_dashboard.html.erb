@@ -30,18 +30,6 @@
         <small><%= user_possessions_count(current_user) %></small>
       </li>
       <li>
-        <a class="Dashboard-link" href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
-          <%= Bookmark.model_name.human(count: 2) %>
-        </a>
-        <small><%= user_bookmarks_count(current_user) %></small>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
-          <%= Setup.model_name.human(count: 2) %>
-        </a>
-        <small><%= user_setups_count(current_user) %></small>
-      </li>
-      <li>
         <a class="Dashboard-link" href="<%= dashboard_custom_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :custom_products) %>>
           <%= CustomProduct.model_name.human(count: 2) %>
         </a>
@@ -52,6 +40,18 @@
           <%= t('headings.prev_owneds') %>
         </a>
         <small><%= user_prev_owneds_count(current_user) %></small>
+      </li>
+      <li>
+        <a class="Dashboard-link" href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
+          <%= Setup.model_name.human(count: 2) %>
+        </a>
+        <small><%= user_setups_count(current_user) %></small>
+      </li>
+      <li>
+        <a class="Dashboard-link" href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
+          <%= Bookmark.model_name.human(count: 2) %>
+        </a>
+        <small><%= user_bookmarks_count(current_user) %></small>
       </li>
       <li>
         <a class="Dashboard-link" href="<%= dashboard_notes_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :notes) %>>

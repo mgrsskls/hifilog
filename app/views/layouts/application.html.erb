@@ -137,18 +137,6 @@
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
-                          <span><%= Bookmark.model_name.human(count: 2) %></span>
-                          <small><%= user_bookmarks_count(current_user) %></small>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
-                          <span><%= Setup.model_name.human(count: 2) %></span>
-                          <small><%= user_setups_count(current_user) %></small>
-                        </a>
-                      </li>
-                      <li>
                         <a href="<%= dashboard_custom_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :custom_products) %>>
                           <span><%= CustomProduct.model_name.human(count: 2) %></span>
                           <small><%= user_custom_products_count(current_user) %></small>
@@ -158,6 +146,18 @@
                         <a href="<%= dashboard_prev_owneds_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :prev_owneds) %>>
                           <span><%= t('headings.prev_owneds') %></span>
                           <small><%= user_prev_owneds_count(current_user) %></small>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
+                          <span><%= Setup.model_name.human(count: 2) %></span>
+                          <small><%= user_setups_count(current_user) %></small>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
+                          <span><%= Bookmark.model_name.human(count: 2) %></span>
+                          <small><%= user_bookmarks_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
