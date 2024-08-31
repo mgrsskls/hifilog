@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_26_202623) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_31_181356) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -73,6 +73,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_26_202623) do
     t.index "lower((email)::text)", name: "index_admin_users_on_email", unique: true
     t.index ["email"], name: "index_admin_users_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  end
+
+  create_table "app_news", force: :cascade do |t|
+    t.text "text", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_news_users", id: false, force: :cascade do |t|
+    t.bigint "app_news_id", null: false
+    t.bigint "user_id", null: false
   end
 
   create_table "bookmarks", force: :cascade do |t|

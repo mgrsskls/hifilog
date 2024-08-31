@@ -69,6 +69,9 @@ en:
     one: 1 User
     other: "%{count} Users"
     zero: 0 Users
+  app_news:
+    heading: What's new?
+    mark_as_read: Mark as read
   back: Back
   bookmark:
     remove:

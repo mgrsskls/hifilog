@@ -1,6 +1,23 @@
 <%= render layout: "shared/dashboard" do %>
   <h1 class="Dashboard-headline"><span><%= t('headings.dashboard') %></span><%= ", #{current_user.user_name}" %>!</h1>
 
+  <% if @app_news.any? %>
+    <details class="AppNews">
+      <summary><%= t('app_news.heading') %></summary>
+      <div class="Rte">
+        <% @app_news.each do |news| %>
+          <div>
+            <time datetime="<%= formatted_date news.created_at %>"><%= formatted_date news.created_at %></time>
+            <%= news.formatted_text %>
+          </div>
+        <% end %>
+        <%= button_to app_news_mark_as_read_path(ids: @app_news.map(&:id)), class: "Button" do %>
+          <%= t('app_news.mark_as_read') %>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+
   <div class="DashboardStats">
     <h2>Your HiFi Gear</h2>
 

@@ -1,0 +1,43 @@
+.AppNews {
+	margin-block-start: 2rem;
+	border-radius: var(--border-radius);
+	background: var(--color-accent);
+	color: var(--color-copy-on-accent);
+}
+
+.AppNews summary {
+	--summary-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+
+	font-weight: 600;
+	font-size: 1.4rem;
+	line-height: 1.1;
+	padding: 1.5rem;
+
+	@media (prefers-color-scheme: dark) {
+		--summary-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+	}
+
+	&:is([data-theme="dark"] &) {
+		--summary-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+	}
+}
+
+.AppNews summary::after {
+	opacity: 0.5;
+}
+
+.AppNews .Rte {
+	padding: 1.5rem;
+	padding-block-start: 0;
+}
+
+.AppNews time {
+	font-size: 0.875em;
+	font-weight: 600;
+	color: var(--color-accent-secondary);
+}
+
+.AppNews button {
+	display: block;
+	margin-inline-start: auto;
+}

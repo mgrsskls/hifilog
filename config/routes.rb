@@ -64,6 +64,7 @@ Rails.application.routes.draw do
     get '/setups/:setup', to: 'users#show', as: :setup
     get '/history', to: 'users#history', as: :history
   end
+  post '/app_news/mark_as_read', to: 'app_news#mark_as_read'
 
   # /brands
   # /brands/:brand

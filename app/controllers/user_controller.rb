@@ -15,6 +15,12 @@ class UserController < ApplicationController
     @products_edited = get_data(data, 'Product', 'update')
     @brands_created = get_data(data, 'Brand', 'create')
     @brands_edited = get_data(data, 'Brand', 'update')
+
+    @app_news = AppNews.where('created_at > ?', current_user.created_at)
+                       .where.not(id: current_user.app_news_ids)
+                       .order(:created_at)
+                       .reverse
+                       .map { |news| AppNewsPresenter.new(news) }
   end
 
   def products

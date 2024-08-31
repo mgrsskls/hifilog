@@ -1,5 +1,6 @@
 @layer reset, global, components, utils;
 
+@import url("./application/app_news.css") layer(components);
 @import url("./application/avatar.css") layer(components);
 @import url("./application/back_link.css") layer(components);
 @import url("./application/breadcrumbs.css") layer(components);
@@ -89,6 +90,8 @@
 
 		--color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
 		--color-accent-on-dark: hsl(var(--hue-accent), 50%, 85%);
+		--color-secondary-accent-on-light: hsl(var(--hue-accent), 34%, 75%);
+		--color-secondary-accent-on-dark: hsl(var(--hue-accent), 50%, 25%);
 		--color-copy-on-light: hsl(var(--hue), 30%, 20%);
 		--color-copy-on-dark: hsl(var(--hue), 30%, 80%);
 		--color-secondary-on-light: hsl(var(--hue), 30%, 40%);
@@ -132,6 +135,7 @@
 		--color-bg-main: var(--color-bg-on-light);
 		--color-bg2: var(--color-blue-975);
 		--color-accent: var(--color-accent-on-light);
+		--color-accent-secondary: var(--color-secondary-accent-on-light);
 		--color-button-copy: var(--color-white);
 		--color-highlight-copy: var(--color-white);
 		--color-invalid-light: hsl(330, 40%, 90%);
@@ -184,6 +188,7 @@
 
 			--color-bg2: var(--color-blue-125);
 			--color-accent: var(--color-accent-on-dark);
+			--color-accent-secondary: var(--color-secondary-accent-on-dark);
 			--color-copy: var(--color-copy-on-dark);
 			--color-copy-on-secondary: var(--color-copy-on-light);
 			--color-copy-on-accent: var(--color-copy-on-light);
@@ -220,6 +225,7 @@
 
 		--color-bg2: var(--color-blue-125);
 		--color-accent: var(--color-accent-on-dark);
+		--color-accent-secondary: var(--color-secondary-accent-on-dark);
 		--color-copy: var(--color-copy-on-dark);
 		--color-copy-on-secondary: var(--color-copy-on-light);
 		--color-copy-on-accent: var(--color-copy-on-light);

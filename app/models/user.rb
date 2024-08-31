@@ -19,6 +19,7 @@ class User < ApplicationRecord
   has_many :bookmarks, dependent: :destroy
   has_many :custom_products, dependent: :destroy
   has_many :notes, dependent: :destroy
+  has_and_belongs_to_many :app_news
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_fill: [320, 320], format: :webp
   end
@@ -41,6 +42,7 @@ class User < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
+      app_news_id_eq
       avatar_attachment_id
       avatar_blob_id
       bookmarks_id
