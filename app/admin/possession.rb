@@ -1,19 +1,14 @@
 ActiveAdmin.register Possession do
-
-  # See permitted parameters documentation:
-  # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
-  #
-  # Uncomment all parameters which should be permitted for assignment
-  #
-  permit_params :name, :discontinued, :slug, :website, :country_code, :full_name
-  #
-  # or
-  #
-  # permit_params do
-  #   permitted = [:name, :discontinued, :slug]
-  #   permitted << :other if params[:action] == 'create' && current_user.admin?
-  #   permitted
-  # end
+  permit_params [
+    :user_id,
+    :product_id,
+    :product_variant_id,
+    :custom_product_id,
+    :product_option_id,
+    :prev_owned,
+    :period_from,
+    :period_to
+  ]
 
   remove_filter :custom_product
   remove_filter :image_attachment

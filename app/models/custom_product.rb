@@ -44,4 +44,23 @@ class CustomProduct < ApplicationRecord
 
     errors.add(:image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
   end
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[
+      created_at
+      description
+      id
+      id_value
+      name
+      updated_at
+      user_id
+      user_id_eq
+    ]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[
+      user
+    ]
+  end
 end

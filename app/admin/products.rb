@@ -1,18 +1,21 @@
 ActiveAdmin.register Product do
-  # See permitted parameters documentation:
-  # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
-  #
-  # Uncomment all parameters which should be permitted for assignment
-  #
-  permit_params :name, :brand_id, :discontinued, :slug, sub_category_ids: []
-  #
-  # or
-  #
-  # permit_params do
-  #   permitted = [:name, :brand_id, :discontinued, :slug]
-  #   permitted << :other if params[:action] == 'create' && current_user.admin?
-  #   permitted
-  # end
+  permit_params [
+    :brand_id,
+    :description,
+    :discontinued_day,
+    :discontinued_month,
+    :discontinued_year,
+    :discontinued,
+    :discontinued,
+    :name,
+    :price_currency,
+    :price,
+    :release_day,
+    :release_month,
+    :release_year,
+    :slug,
+    sub_category_ids: [],
+  ]
 
   remove_filter :description
   remove_filter :discontinued_day
