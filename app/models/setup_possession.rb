@@ -6,6 +6,18 @@ class SetupPossession < ApplicationRecord
   validates :setup, presence: true
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[]
+    %w[
+      id
+      id_value
+      possession_id
+      setup_id
+    ]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[
+      possession
+      setup
+    ]
   end
 end

@@ -102,4 +102,9 @@ class User < ApplicationRecord
 
     errors.add(:decorative_image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
   end
+
+  # This is used for dropdowns in active_admin
+  def display_name
+    email
+  end
 end
