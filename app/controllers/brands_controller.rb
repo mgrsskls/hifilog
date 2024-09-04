@@ -106,7 +106,7 @@ class BrandsController < ApplicationController
       brands = Brand.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
                     .order(order)
     else
-      brands = Brand.all.order(order)
+      brands = Brand.order(order)
     end
 
     @brands_query = params[:query].strip if params[:query].present?
@@ -117,7 +117,7 @@ class BrandsController < ApplicationController
 
   def all
     respond_to do |format|
-      format.json { render json: { brands: Brand.all.select([:name, :id]).order('LOWER(name)') } }
+      format.json { render json: { brands: Brand.select([:name, :id]).order('LOWER(name)') } }
     end
   end
 
@@ -183,7 +183,16 @@ class BrandsController < ApplicationController
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @brand = @sub_category ? Brand.new(sub_category_ids: [@sub_category.id]) : Brand.new
-    @categories = Category.includes([:sub_categories]).all.order(:order)
+    @categories = Category.includes([:sub_categories]).order(:order)
+  end
+
+  def edit
+    @brand = Brand.friendly.find(params[:id])
+    @page_title = I18n.t('edit_record', name: @brand.name)
+    @categories = Category.includes([:sub_categories]).order(:order)
+
+    add_breadcrumb @brand.name, brand_path(@brand)
+    add_breadcrumb I18n.t('edit')
   end
 
   def create
@@ -192,18 +201,9 @@ class BrandsController < ApplicationController
     if @brand.save
       redirect_to brand_path(@brand)
     else
-      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @categories = Category.includes([:sub_categories]).order(:order)
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def edit
-    @brand = Brand.friendly.find(params[:id])
-    @page_title = I18n.t('edit_record', name: @brand.name)
-    @categories = Category.includes([:sub_categories]).all.order(:order)
-
-    add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb I18n.t('edit')
   end
 
   def update
@@ -222,7 +222,7 @@ class BrandsController < ApplicationController
 
       redirect_to brand_path(@brand)
     else
-      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @categories = Category.includes([:sub_categories]).order(:order)
       render :edit, status: :unprocessable_entity
     end
   end

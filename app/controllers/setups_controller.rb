@@ -62,6 +62,13 @@ class SetupsController < ApplicationController
     add_breadcrumb I18n.t('setup.new.heading')
   end
 
+  def edit
+    @setup = current_user.setups.find(params[:id])
+
+    add_breadcrumb @setup.name, dashboard_setup_path(id: @setup.id)
+    add_breadcrumb I18n.t('edit')
+  end
+
   def create
     @setup = Setup.new(setup_params)
     @setup.user = current_user
@@ -77,13 +84,6 @@ class SetupsController < ApplicationController
       @setups = current_user.setups.order('LOWER(name)')
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def edit
-    @setup = current_user.setups.find(params[:id])
-
-    add_breadcrumb @setup.name, dashboard_setup_path(id: @setup.id)
-    add_breadcrumb I18n.t('edit')
   end
 
   def update

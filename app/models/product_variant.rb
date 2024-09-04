@@ -53,7 +53,6 @@ class ProductVariant < ApplicationRecord
             presence: true,
             if: -> { name.blank? }
   validates :product_id,
-            presence: true,
             numericality: { only_integer: true }
   validates :discontinued, inclusion: { in: [true, false] }
 

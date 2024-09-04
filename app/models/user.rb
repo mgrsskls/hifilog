@@ -5,7 +5,7 @@ class User < ApplicationRecord
 
   strip_attributes
 
-  enum profile_visibility: {
+  enum :profile_visibility, {
     hidden: 0,
     logged_in_only: 1,
     visible: 2,
