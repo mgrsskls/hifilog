@@ -59,7 +59,7 @@ class NotesController < ApplicationController
     @product_variant = note.product_variant if note.product_variant.present?
 
     if note.save
-      flash[:notice] = 'The note has been saved.'
+      flash[:notice] = I18n.t('note.messages.saved') # rubocop:disable Rails/ActionControllerFlashBeforeRender
 
       if @product_variant.present?
         redirect_back fallback_location: product_new_variant_notes_url(
@@ -71,7 +71,7 @@ class NotesController < ApplicationController
       end
     else
       note.errors.each do |error|
-        flash[:alert] = error.full_message
+        flash.now[:alert] = error.full_message
       end
       render :new, status: :unprocessable_entity
     end
@@ -85,7 +85,7 @@ class NotesController < ApplicationController
     @product_variant = @note.product_variant
 
     if @note.save
-      flash[:notice] = 'Success'
+      flash[:notice] = I18n.t('note.messages.saved') # rubocop:disable Rails/ActionControllerFlashBeforeRender
 
       if @product_variant.present?
         redirect_back fallback_location: product_new_variant_notes_url(
@@ -103,7 +103,7 @@ class NotesController < ApplicationController
   def destroy
     @note = current_user.notes.find(params[:id])
 
-    flash[:alert] = 'The note could not be deleted.' unless @note.destroy
+    flash[:alert] = I18n.t('note.messages.delete_failed') unless @note.destroy
 
     redirect_to dashboard_notes_path
   end

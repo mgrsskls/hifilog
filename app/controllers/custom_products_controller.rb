@@ -6,7 +6,6 @@ class CustomProductsController < ApplicationController
     @page_title = CustomProduct.model_name.human(count: 2)
 
     @custom_products = current_user.custom_products
-                                   .all
                                    .includes([image_attachment: [:blob]])
                                    .includes([:sub_categories])
                                    .order(:name).map do |custom_product|
@@ -37,9 +36,21 @@ class CustomProductsController < ApplicationController
 
   def new
     @custom_product = CustomProduct.new
-    @categories = Category.includes([:sub_categories]).all.order(:order)
+    @categories = Category.includes([:sub_categories]).order(:order)
 
     add_breadcrumb I18n.t('custom_product.new.breadcrumb')
+  end
+
+  def edit
+    @custom_product = current_user.custom_products.find(params[:id])
+    @categories = Category.includes([:sub_categories]).order(:order)
+
+    add_breadcrumb @custom_product.name, user_custom_product_path(
+      id: @custom_product.id,
+      user_id: current_user.user_name.downcase
+    )
+    add_breadcrumb I18n.t('edit')
+    @page_title = @custom_product.name
   end
 
   def create
@@ -59,31 +70,19 @@ class CustomProductsController < ApplicationController
       redirect_to user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
     else
       @active_dashboard_menu = :custom_products
-      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @categories = Category.includes([:sub_categories]).order(:order)
       render :new, status: :unprocessable_entity
     end
   end
 
-  def edit
-    @custom_product = current_user.custom_products.find(params[:id])
-    @categories = Category.includes([:sub_categories]).all.order(:order)
-
-    add_breadcrumb @custom_product.name, user_custom_product_path(
-      id: @custom_product.id,
-      user_id: current_user.user_name.downcase
-    )
-    add_breadcrumb I18n.t('edit')
-    @page_title = @custom_product.name
-  end
-
   def update
     @custom_product = current_user.custom_products.find(params[:id])
-    @categories = Category.includes([:sub_categories]).all.order(:order)
+    @categories = Category.includes([:sub_categories]).order(:order)
 
     @custom_product.image.purge if params[:custom_product][:delete_image]
 
     if @custom_product.update(custom_product_params)
-      flash[:notice] = I18n.t(
+      flash[:notice] = I18n.t( # rubocop:disable Rails/ActionControllerFlashBeforeRender
         'custom_product.messages.updated',
         link: ActionController::Base.helpers.link_to(
           @custom_product.name,
@@ -96,7 +95,7 @@ class CustomProductsController < ApplicationController
       )
     elsif custom_product_params[:image].present?
       @custom_product.errors.each do |error|
-        flash[:alert] = "The image #{error.message}"
+        flash[:alert] = "The image #{error.message}" # rubocop:disable Rails/ActionControllerFlashBeforeRender
       end
       redirect_back fallback_location: user_custom_product_url(
         user_id: @custom_product.user.user_name.downcase,

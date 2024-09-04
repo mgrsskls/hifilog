@@ -202,9 +202,6 @@ class UserController < ApplicationController
     years_added_removed = []
     years_added = []
     years_removed = []
-    products_added_removed_per_year = []
-    products_added_per_year = []
-    products_removed_per_year = []
 
     products_added_removed.each do |product|
       if product.period_from.present?
@@ -217,8 +214,8 @@ class UserController < ApplicationController
       end
     end
 
-    years_added_removed.uniq.sort.each do |year|
-      products_added_removed_per_year << {
+    products_added_removed_per_year = years_added_removed.uniq.sort.map do |year|
+      {
         year:,
         possessions: {
           from: products_added_removed.select do |possession|
@@ -231,8 +228,8 @@ class UserController < ApplicationController
       }
     end
 
-    years_added.uniq.sort.each do |year|
-      products_added_per_year << {
+    products_added_per_year = years_added.uniq.sort.map do |year|
+      {
         year:,
         possessions: {
           from: products_added_removed.select do |possession|
@@ -242,8 +239,8 @@ class UserController < ApplicationController
       }
     end
 
-    years_removed.uniq.sort.each do |year|
-      products_removed_per_year << {
+    products_removed_per_year = years_removed.uniq.sort.map do |year|
+      {
         year:,
         possessions: {
           to: products_added_removed.select do |possession|

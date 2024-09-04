@@ -59,6 +59,20 @@ class ProductVariantsController < ApplicationController
     @page_title = "#{I18n.t('product_variant.new.link')} — #{@product.display_name}"
   end
 
+  def edit
+    @product = Product.friendly.find(params[:product_id])
+    @product_variant = @product.product_variants.friendly.find(params[:variant])
+    @brand = @product.brand
+    @page_title = I18n.t('edit_record', name: @product_variant.display_name)
+
+    add_breadcrumb @product.display_name, @product
+    add_breadcrumb @product_variant.short_name, product_variant_path(
+      product_id: @product.friendly_id,
+      variant: @product_variant.friendly_id
+    )
+    add_breadcrumb I18n.t('edit')
+  end
+
   def create
     @product = Product.find(params[:product_id])
     @product_variant = ProductVariant.new(product_variant_params)
@@ -88,20 +102,6 @@ class ProductVariantsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def edit
-    @product = Product.friendly.find(params[:product_id])
-    @product_variant = @product.product_variants.friendly.find(params[:variant])
-    @brand = @product.brand
-    @page_title = I18n.t('edit_record', name: @product_variant.display_name)
-
-    add_breadcrumb @product.display_name, @product
-    add_breadcrumb @product_variant.short_name, product_variant_path(
-      product_id: @product.friendly_id,
-      variant: @product_variant.friendly_id
-    )
-    add_breadcrumb I18n.t('edit')
   end
 
   def update

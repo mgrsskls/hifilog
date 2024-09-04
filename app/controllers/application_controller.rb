@@ -20,15 +20,15 @@ class ApplicationController < ActionController::Base
   attr_writer :current_user
 
   def products_count
-    @products_count ||= Product.all.count
+    @products_count ||= Product.count
   end
 
   def brands_count
-    @brands_count ||= Brand.all.count
+    @brands_count ||= Brand.count
   end
 
   def categories_count
-    @categories_count ||= SubCategory.all.count
+    @categories_count ||= SubCategory.count
   end
 
   def newest_products

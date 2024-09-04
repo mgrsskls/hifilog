@@ -6,7 +6,7 @@ class Setup < ApplicationRecord
   auto_strip_attributes :name, squish: true
 
   validates :name, presence: true, uniqueness: { scope: :user }
-  validates :private, inclusion: { in: [true, false], message: 'must be selected' }
+  validates :private, inclusion: { in: [true, false], message: I18n.t('setup.validation.private.selected') }
   validates :user, presence: true
 
   def visibility

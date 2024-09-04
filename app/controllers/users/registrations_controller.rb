@@ -10,12 +10,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super
   end
 
-  # POST /resource
-  def create
-    @active_menu = :signup
-    super
-  end
-
   # GET /resource/edit
   def edit
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
@@ -23,6 +17,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
     @page_title = I18n.t('headings.account')
     @active_dashboard_menu = :account
 
+    super
+  end
+
+  # POST /resource
+  def create
+    @active_menu = :signup
     super
   end
 
