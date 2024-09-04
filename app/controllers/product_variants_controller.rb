@@ -60,8 +60,9 @@ class ProductVariantsController < ApplicationController
   end
 
   def create
+    @product = Product.find(params[:product_id])
     @product_variant = ProductVariant.new(product_variant_params)
-    @product = @product_variant.product
+    @product.product_variants << @product_variant
     @brand = @product.brand
     @product_variant.discontinued = @product.brand.discontinued ? true : product_variant_params[:discontinued]
 
@@ -80,7 +81,10 @@ class ProductVariantsController < ApplicationController
     end
 
     if @product_variant.save
-      redirect_to product_variant_url(product_id: @product.friendly_id, variant: @product_variant.friendly_id)
+      redirect_to product_variant_url(
+        product_id: @product.friendly_id,
+        variant: @product_variant.friendly_id
+      )
     else
       render :new, status: :unprocessable_entity
     end

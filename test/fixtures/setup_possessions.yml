@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  setup: with_products
+  possession: without_variant
+
+two:
+  setup: with_products
+  possession: with_variant

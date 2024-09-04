@@ -162,7 +162,7 @@
       <dt>Notes</dt>
       <dd>
         <% if @note.present? %>
-          Last updated: <%= link_to dashboard_note_path(@note) do %>
+          Last updated: <%= link_to product_new_notes_path(product_id: @product.friendly_id) do %>
             <time datetime="<%= formatted_datetime @note.updated_at %>" data-time="true"><%= formatted_datetime @note.updated_at %></time>
           <% end %>
         <% else %>

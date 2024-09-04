@@ -69,12 +69,29 @@ class PossessionsController < ApplicationController
     )
     flash[:alert] = I18n.t(:generic_error_message) unless @active_possession.save
 
-    redirect_back fallback_location: root_url
+    if @custom_product.present?
+      return redirect_back fallback_location: user_custom_product_url(
+        user_id: current_user.user_name.downcase,
+        id: @custom_product.id
+      )
+    end
+
+    if @variant.present?
+      return redirect_back fallback_location: product_product_variant_url(
+        variant: @variant.friendly_id,
+        product_id: @product.friendly_id
+      )
+    end
+
+    redirect_back fallback_location: product_url(id: @product.friendly_id)
   end
 
   def destroy
     possession = current_user.possessions.find(params[:id])
     is_prev_owned = possession.prev_owned?
+    product = possession.product
+    product_variant = possession.product_variant
+    custom_product = possession.custom_product
 
     possession_presenter = possession.custom_product_id ? CustomProductPossessionPresenter : PossessionPresenter
     presenter = possession_presenter.new(possession)
@@ -89,18 +106,35 @@ class PossessionsController < ApplicationController
       flash[:alert] = I18n.t(:generic_error_message)
     end
 
-    redirect_back fallback_location: root_url
+    if custom_product.present?
+      return redirect_back fallback_location: user_custom_product_url(
+        user_id: current_user.user_name.downcase,
+        id: custom_product.id
+      )
+    end
+
+    if product_variant.present?
+      return redirect_back fallback_location: product_product_variant_url(
+        variant: product_variant.friendly_id,
+        product_id: product.friendly_id
+      )
+    end
+
+    redirect_back fallback_location: product_url(id: product.friendly_id)
   end
 
   def update
     @possession = current_user.possessions.find(params[:id])
+    product = @possession.product
+    product_variant = @possession.product_variant
+    custom_product = @possession.custom_product
 
     return redirect_back fallback_location: root_url unless params[:possession]
 
     if params[:possession][:delete_image].present? && params[:possession][:delete_image].to_i == 1
       @possession.image.purge
       @possession.save
-      redirect_back fallback_location: root_url
+      return redirect_back fallback_location: root_url
     end
 
     if params[:setup_id]
@@ -121,7 +155,21 @@ class PossessionsController < ApplicationController
       end
     end
 
-    redirect_back fallback_location: root_url
+    if custom_product.present?
+      return redirect_back fallback_location: user_custom_product_url(
+        user_id: current_user.user_name.downcase,
+        id: custom_product.id
+      )
+    end
+
+    if product_variant.present?
+      return redirect_back fallback_location: product_product_variant_url(
+        variant: product_variant.friendly_id,
+        product_id: product.friendly_id
+      )
+    end
+
+    redirect_back fallback_location: product_url(id: product.friendly_id)
   end
 
   def move_to_prev_owneds
