@@ -4,9 +4,6 @@ with_products:
   name: With products
   user: with_everything
   private: true
-  possessions:
-    - without_variant
-    - with_variant
 
 without_products:
   name: Without products

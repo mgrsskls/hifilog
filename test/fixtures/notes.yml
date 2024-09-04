@@ -3,7 +3,6 @@
 one:
   text: MyText
   product: one
-  product_variant:
   user: with_everything
 
 two:

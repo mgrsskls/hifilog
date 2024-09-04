@@ -56,10 +56,19 @@ class NotesController < ApplicationController
     note.user = current_user
 
     @product = note.product
+    @product_variant = note.product_variant if note.product_variant.present?
 
     if note.save
-      flash[:notice] = 'Success'
-      redirect_back fallback_location: root_url
+      flash[:notice] = 'The note has been saved.'
+
+      if @product_variant.present?
+        redirect_back fallback_location: product_new_variant_notes_url(
+          product_id: @product.friendly_id,
+          variant: @product_variant.friendly_id
+        )
+      else
+        redirect_back fallback_location: product_new_notes_url(product_id: @product.friendly_id)
+      end
     else
       note.errors.each do |error|
         flash[:alert] = error.full_message
@@ -72,12 +81,21 @@ class NotesController < ApplicationController
     @note = current_user.notes.find(params[:id])
     @note.update(note_params)
 
+    @product = @note.product
+    @product_variant = @note.product_variant
+
     if @note.save
       flash[:notice] = 'Success'
-      redirect_back fallback_location: root_url
+
+      if @product_variant.present?
+        redirect_back fallback_location: product_new_variant_notes_url(
+          product_id: @product.friendly_id,
+          variant: @product_variant.friendly_id
+        )
+      else
+        redirect_back fallback_location: product_new_notes_url(product_id: @product.friendly_id)
+      end
     else
-      @product = @note.product
-      @product_variant = @note.product_variant
       render :new, status: :unprocessable_entity
     end
   end
