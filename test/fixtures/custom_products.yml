@@ -4,8 +4,14 @@ one:
   name: MyString
   description: MyText
   user: with_everything
+  sub_categories:
+    - one
+    - two
 
 two:
   name: MyString2
   description: MyText
   user: with_everything
+  sub_categories:
+    - one
+    - two

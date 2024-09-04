@@ -1129,12 +1129,8 @@ possessions = [
 ]
 
 if Rails.env.development?
-  living_room = Setup.create!(name: 'Living Room', private: false)
-  office = Setup.create!(name: 'Office', private: true)
-
-  user.setups << living_room
-  user.setups << office
-  user.save!
+  living_room = Setup.create!(name: 'Living Room', private: false, user:)
+  office = Setup.create!(name: 'Office', private: true, user:)
 
   living_room.possessions << possessions[1]
   living_room.possessions << possessions[3]

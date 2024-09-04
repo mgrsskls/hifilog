@@ -90,12 +90,18 @@ class CustomProductsController < ApplicationController
           user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
         )
       )
-      redirect_back fallback_location: root_url
+      redirect_back fallback_location: user_custom_product_url(
+        user_id: @custom_product.user.user_name.downcase,
+        id: @custom_product.id
+      )
     elsif custom_product_params[:image].present?
       @custom_product.errors.each do |error|
         flash[:alert] = "The image #{error.message}"
       end
-      redirect_back fallback_location: root_url
+      redirect_back fallback_location: user_custom_product_url(
+        user_id: @custom_product.user.user_name.downcase,
+        id: @custom_product.id
+      )
     else
       render :edit, status: :unprocessable_entity
     end

@@ -1,6 +1,4 @@
-<%= form_for @product_variant, url: product_product_variants_path, html: { class: "EntityForm", method: :post } do |f| %>
-  <%= f.hidden_field :product_id, value: @product.id %>
-
+<%= form_for @product_variant, url: product_product_variants_path(product_id: @product.id), html: { class: "EntityForm", method: :post } do |f| %>
   <% content_for :heading do %>
     <%= t('product_variant.new.heading') %>
     <% if @product && @product.name %>

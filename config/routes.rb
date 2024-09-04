@@ -47,7 +47,7 @@ Rails.application.routes.draw do
     get 'history', to: 'user#history', as: :history
     get 'statistics', to: 'user#statistics', as: :statistics
     resources :setups, only: [:index, :show, :new, :edit]
-    resources :notes, only: [:index, :show, :edit]
+    resources :notes, only: [:index, :show]
   end
 
   resources :notes, only: [:create, :destroy, :update]
@@ -55,7 +55,7 @@ Rails.application.routes.draw do
   resources :possessions, only: [:create, :destroy, :update] do
     post 'move_to_prev_owneds', to: 'possessions#move_to_prev_owneds'
   end
-  resources :setup_possessions, only: [:create, :update, :destroy]
+  resources :setup_possessions, only: [:destroy]
   resources :bookmarks, only: [:create, :destroy]
   resources :setups, only: [:create, :update, :destroy]
   resources :users, only: [:index, :show] do
