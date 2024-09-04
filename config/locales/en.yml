@@ -181,6 +181,9 @@ en:
     delete:
       confirm: Are you sure you want these notes?
       label: Delete
+    messages:
+      saved: The note has been saved.
+      delete_failed: The note could not be deleted.
   optional: optional
   possession:
     messages:
@@ -228,6 +231,9 @@ en:
       created: Your setup %{link} has been created.
       deleted: Your setup <b>%{name}</b> has been deleted.
       updated: Your setup <b>%{name}</b> has been updated.
+    validation:
+      private:
+        selected: must be selected.
     name_placeholder: e.g. Living room or Office
     private_values:
       "yes": Private

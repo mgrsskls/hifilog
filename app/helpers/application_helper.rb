@@ -64,9 +64,9 @@ module ApplicationHelper
   def round_up_or_down(num)
     significant_digits = 2
     exp = Math.log10(num).floor - (significant_digits - 1)
-    value = (num / 10.0**exp).round * 10**exp
+    value = (num / (10.0**exp)).round * (10**exp)
 
-    ceil = (num / 10.0**exp).ceil * 10**exp
+    ceil = (num / (10.0**exp)).ceil * (10**exp)
 
     dir = if num == value
             :eq
@@ -83,23 +83,25 @@ module ApplicationHelper
   end
 
   def user_has_product?(user, product_id, product_variant_id = nil)
-    user && user.possessions.where(product_id:, product_variant_id:, prev_owned: false).exists?
+    return false unless user
+
+    user.possessions.exists?(product_id:, product_variant_id:, prev_owned: false)
   end
 
   def user_has_bookmark?(user, product, variant_id = nil)
-    product && user && user.bookmarks.where(product_id: product.id, product_variant_id: variant_id).exists?
+    product && user && user.bookmarks.exists?(product_id: product.id, product_variant_id: variant_id)
   end
 
   def user_has_previously_owned?(user, product, variant_id = nil)
-    product && user && user.possessions.where(
+    product && user && user.possessions.exists?(
       product_id: product.id,
       product_variant_id: variant_id,
       prev_owned: true
-    ).exists?
+    )
   end
 
   def user_has_brand?(user, brand)
-    brand && user && user.products.where(brand_id: brand.id).exists?
+    brand && user && user.products.exists?(brand_id: brand.id)
   end
 
   def get_changelog(changes)

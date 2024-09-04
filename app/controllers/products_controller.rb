@@ -114,10 +114,10 @@ class ProductsController < ApplicationController
                           STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
                         .order(order)
     else
-      products = Product.all.order(order)
+      products = Product.order(order)
     end
 
-    CustomAttribute.all.find_each do |custom_attribute|
+    CustomAttribute.find_each do |custom_attribute|
       id_s = custom_attribute.id.to_s
       if params[:attr].present? && params[:attr][id_s].present?
         products = products.where('custom_attributes ->> ? = ?', id_s, params[:attr][id_s])
@@ -175,8 +175,8 @@ class ProductsController < ApplicationController
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
     @brand = @product.build_brand
-    @brands = Brand.all.order('LOWER(name)')
-    @categories = Category.includes([:sub_categories]).all.order(:order)
+    @brands = Brand.order('LOWER(name)')
+    @categories = Category.includes([:sub_categories]).order(:order)
 
     if params[:brand_id].present?
       @product.brand_id = params[:brand_id]
@@ -186,6 +186,16 @@ class ProductsController < ApplicationController
     end
 
     add_breadcrumb t('add_product')
+  end
+
+  def edit
+    @product = Product.friendly.find(params[:id])
+    @page_title = I18n.t('edit_record', name: @product.name)
+    @brand = @product.brand
+    @categories = Category.includes([:sub_categories]).ordered
+
+    add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
+    add_breadcrumb I18n.t('edit')
   end
 
   def create
@@ -198,7 +208,7 @@ class ProductsController < ApplicationController
       if sub_category_ids.present? && (sub_category_ids - brand.sub_category_ids).any?
         (sub_category_ids - brand.sub_category_ids).each do |id|
           sub_category = SubCategory.find(id.to_i)
-          brand.sub_categories << sub_category if sub_category && !brand.sub_categories.include?(sub_category)
+          brand.sub_categories << sub_category if sub_category && brand.sub_categories.exclude?(sub_category)
         end
       end
     else
@@ -224,7 +234,7 @@ class ProductsController < ApplicationController
           end
         end
       end
-      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @categories = Category.includes([:sub_categories]).order(:order)
       @product = product
       @brand = brand
       render :new, status: :unprocessable_entity
@@ -249,21 +259,11 @@ class ProductsController < ApplicationController
     if product.save
       redirect_to URI.parse(product_url(id: product.friendly_id)).path
     else
-      @categories = Category.includes([:sub_categories]).all.order(:order)
+      @categories = Category.includes([:sub_categories]).order(:order)
       @product = product
       @brand = brand
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def edit
-    @product = Product.friendly.find(params[:id])
-    @page_title = I18n.t('edit_record', name: @product.name)
-    @brand = @product.brand
-    @categories = Category.includes([:sub_categories]).ordered
-
-    add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
-    add_breadcrumb I18n.t('edit')
   end
 
   def update

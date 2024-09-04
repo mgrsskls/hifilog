@@ -86,43 +86,6 @@ class PossessionsController < ApplicationController
     redirect_back fallback_location: product_url(id: @product.friendly_id)
   end
 
-  def destroy
-    possession = current_user.possessions.find(params[:id])
-    is_prev_owned = possession.prev_owned?
-    product = possession.product
-    product_variant = possession.product_variant
-    custom_product = possession.custom_product
-
-    possession_presenter = possession.custom_product_id ? CustomProductPossessionPresenter : PossessionPresenter
-    presenter = possession_presenter.new(possession)
-
-    if possession&.destroy
-      flash[:notice] = if is_prev_owned
-                         I18n.t('possession.messages.removed_from_prev', name: presenter.display_name)
-                       else
-                         I18n.t('possession.messages.removed', name: presenter.display_name)
-                       end
-    else
-      flash[:alert] = I18n.t(:generic_error_message)
-    end
-
-    if custom_product.present?
-      return redirect_back fallback_location: user_custom_product_url(
-        user_id: current_user.user_name.downcase,
-        id: custom_product.id
-      )
-    end
-
-    if product_variant.present?
-      return redirect_back fallback_location: product_product_variant_url(
-        variant: product_variant.friendly_id,
-        product_id: product.friendly_id
-      )
-    end
-
-    redirect_back fallback_location: product_url(id: product.friendly_id)
-  end
-
   def update
     @possession = current_user.possessions.find(params[:id])
     product = @possession.product
@@ -144,7 +107,7 @@ class PossessionsController < ApplicationController
 
       unless @possession.save
         @possession.errors.full_messages.each do |error|
-          flash[:alert] = error
+          flash.now[:alert] = error
         end
       end
     end
@@ -153,6 +116,43 @@ class PossessionsController < ApplicationController
       @possession.errors.full_messages.each do |error|
         flash[:alert] = error
       end
+    end
+
+    if custom_product.present?
+      return redirect_back fallback_location: user_custom_product_url(
+        user_id: current_user.user_name.downcase,
+        id: custom_product.id
+      )
+    end
+
+    if product_variant.present?
+      return redirect_back fallback_location: product_product_variant_url(
+        variant: product_variant.friendly_id,
+        product_id: product.friendly_id
+      )
+    end
+
+    redirect_back fallback_location: product_url(id: product.friendly_id)
+  end
+
+  def destroy
+    possession = current_user.possessions.find(params[:id])
+    is_prev_owned = possession.prev_owned?
+    product = possession.product
+    product_variant = possession.product_variant
+    custom_product = possession.custom_product
+
+    possession_presenter = possession.custom_product_id ? CustomProductPossessionPresenter : PossessionPresenter
+    presenter = possession_presenter.new(possession)
+
+    if possession&.destroy
+      flash[:notice] = if is_prev_owned
+                         I18n.t('possession.messages.removed_from_prev', name: presenter.display_name)
+                       else
+                         I18n.t('possession.messages.removed', name: presenter.display_name)
+                       end
+    else
+      flash[:alert] = I18n.t(:generic_error_message)
     end
 
     if custom_product.present?

@@ -16,7 +16,7 @@
       <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button" %>
     </div>
     <div class="MenuMega-container">
-      <% Category.includes(:sub_categories).all.order(:order).each_with_index do |category, i| %>
+      <% Category.includes(:sub_categories).order(:order).each_with_index do |category, i| %>
         <% if i.even? %>
           <div>
         <% end %>
