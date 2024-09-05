@@ -38,7 +38,7 @@ class NotesController < ApplicationController
 
     @note = current_user.notes.find_by(
       product_id: @product.id,
-      product_variant_id: (@product_variant.id if @product_variant.present?)
+      product_variant_id: @product_variant.present? ? @product_variant.id : nil
     )
 
     display_name = @product_variant.present? ? @product_variant.display_name : @product.display_name
