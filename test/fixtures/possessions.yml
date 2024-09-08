@@ -1,8 +1,37 @@
-without_variant:
+current_product:
   product: one
-  user: with_everything
+  user: one
+  period_from: 2020-01-01
 
-with_variant:
-  product: with_variants
+current_product_variant:
+  product: one
   product_variant: one
-  user: with_everything
+  user: one
+  period_from: 2020-01-01
+
+current_custom_product:
+  custom_product: one
+  user: one
+  period_from: 2020-01-01
+
+prev_product:
+  product: two
+  user: one
+  prev_owned: true
+  period_from: 2020-01-01
+  period_to: 2022-01-01
+
+prev_product_variant:
+  product: two
+  product_variant: two
+  user: one
+  prev_owned: true
+  period_from: 2020-01-01
+  period_to: 2022-01-01
+
+prev_custom_product:
+  custom_product: two
+  user: one
+  prev_owned: true
+  period_from: 2020-01-01
+  period_to: 2022-01-01

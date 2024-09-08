@@ -1,6 +1,9 @@
 class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
+  include ApplicationHelper
+  include Description
+
   pg_search_scope :search_by_name_and_description,
                   against: [:name, :description],
                   ignoring: :accents,
@@ -41,6 +44,33 @@ class Brand < ApplicationRecord
 
   friendly_id :name, use: [:slugged, :history]
 
+  def categories
+    @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
+  end
+
+  def display_name
+    name
+  end
+
+  def url
+    brand_url(id: friendly_id)
+  end
+
+  def country_name
+    country_name_from_country_code country_code
+  end
+
+  def founded_date
+    formatted_date(founded_day, founded_month, founded_year)
+  end
+
+  def discontinued_date
+    return unless discontinued?
+
+    formatted_date(discontinued_day, discontinued_month, discontinued_year)
+  end
+
+  # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       country_code
@@ -63,44 +93,7 @@ class Brand < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-
-  def categories
-    @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
-  end
-
-  def display_name
-    name
-  end
-
-  def url
-    brand_url(id: friendly_id)
-  end
-
-  def country_name
-    return if country_code.nil?
-
-    country = ISO3166::Country[country_code]
-
-    return if country.nil?
-
-    country.translations[I18n.locale.to_s] || country.common_name || country.iso_short_name
-  end
-
-  def formatted_description
-    return if description.blank?
-
-    Redcarpet::Markdown.new(Redcarpet::Render::HTML.new).render(description)
-  end
-
-  def founded_date
-    formatted_date(founded_day, founded_month, founded_year)
-  end
-
-  def discontinued_date
-    return unless discontinued?
-
-    formatted_date(discontinued_day, discontinued_month, discontinued_year)
-  end
+  # :nocov:
 
   private
 

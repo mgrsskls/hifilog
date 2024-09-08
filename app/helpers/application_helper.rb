@@ -9,10 +9,6 @@ module ApplicationHelper
     " aria-current=#{active_menu == page ? 'true' : 'false'}"
   end
 
-  def active_dashboard_menu_state(active_dashboard_menu, page)
-    " aria-current=#{active_dashboard_menu == page ? 'true' : 'false'}"
-  end
-
   def abc
     ABC
   end
@@ -108,7 +104,7 @@ module ApplicationHelper
     PaperTrail::Serializers::YAML.load(changes)
   end
 
-  def country_name(country_code)
+  def country_name_from_country_code(country_code)
     return nil if country_code.nil?
 
     country = ISO3166::Country[country_code]
@@ -128,6 +124,12 @@ module ApplicationHelper
       attributes.push I18n.t("custom_attributes.#{custom_attribute_resource.options[custom_attribute[1].to_s]}")
     end
 
-    attributes.join(', ') if attributes.any?
+    attributes.join(', ')
+  end
+
+  def markdown_to_html(content)
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new)
+    Rails.logger.info content
+    markdown.render(content)
   end
 end

@@ -29,7 +29,7 @@
             <td><time datetime="<%= formatted_datetime note.updated_at %>" data-time="true"><%= formatted_datetime note.updated_at %></time></td>
             <td class="Table-actions u-textEnd">
               <% if note.product_variant.present? %>
-                <%= link_to "Edit", product_new_variant_notes_path(product_id: note.product.friendly_id, variant: note.product_variant.friendly_id) %>
+                <%= link_to "Edit", product_new_variant_notes_path(product_id: note.product.friendly_id, id: note.product_variant.friendly_id) %>
               <% else %>
                 <%= link_to "Edit", product_new_notes_path(product_id: note.product.friendly_id) %>
               <% end %>

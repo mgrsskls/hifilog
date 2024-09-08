@@ -1,17 +1,20 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  name: MyString
-  description: MyText
-  user: with_everything
+  name: name
+  description: description
+  user: one
   sub_categories:
     - one
-    - two
 
 two:
-  name: MyString2
-  description: MyText
-  user: with_everything
+  name: name2
+  description: description2
+  user: one
   sub_categories:
     - one
-    - two
+
+three:
+  name: name3
+  description: description3
+  user: one
+  sub_categories:
+    - one

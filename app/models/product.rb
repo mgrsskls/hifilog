@@ -3,6 +3,15 @@ class Product < ApplicationRecord
   include PgSearch::Model
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
+  include Format
+  include Description
+
+  extend FriendlyId
+
+  nilify_blanks
+
+  auto_strip_attributes :name, squish: true
+  auto_strip_attributes :description
 
   pg_search_scope :search_by_name_and_description,
                   against: [:name, :description],
@@ -17,15 +26,8 @@ class Product < ApplicationRecord
                   },
                   ranked_by: ':trigram'
 
-  nilify_blanks
-
-  auto_strip_attributes :name, squish: true
-  auto_strip_attributes :description
-
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
-
-  extend FriendlyId
 
   belongs_to :brand, counter_cache: :products_count
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
@@ -34,6 +36,8 @@ class Product < ApplicationRecord
   has_many :product_variants, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_many :product_options, dependent: :destroy
+
+  friendly_id :url_slug, use: [:slugged, :history]
 
   accepts_nested_attributes_for :brand
   accepts_nested_attributes_for :product_options
@@ -66,8 +70,25 @@ class Product < ApplicationRecord
 
   store_accessor :custom_attributes
 
-  friendly_id :url_slug, use: [:slugged, :history]
+  def display_name
+    return "#{brand.name} #{name}" if brand
 
+    name
+  end
+
+  def url_slug
+    display_name.parameterize
+  end
+
+  def path
+    product_path(id: friendly_id)
+  end
+
+  def url
+    product_url(id: friendly_id)
+  end
+
+  # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       brand_id
@@ -87,57 +108,5 @@ class Product < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-
-  def display_name
-    return "#{brand.name} #{name}" if brand
-
-    name
-  end
-
-  def url_slug
-    display_name.parameterize
-  end
-
-  def path
-    product_path(id: friendly_id)
-  end
-
-  def url
-    product_url(id: friendly_id)
-  end
-
-  def release_date
-    formatted_date(release_day, release_month, release_year)
-  end
-
-  def discontinued_date
-    return unless discontinued?
-
-    formatted_date(discontinued_day, discontinued_month, discontinued_year)
-  end
-
-  def display_price
-    "#{number_with_delimiter number_to_rounded(price, precision: 2)} #{price_currency}"
-  end
-
-  def formatted_description
-    return if description.blank?
-
-    Redcarpet::Markdown.new(Redcarpet::Render::HTML.new).render(description)
-  end
-
-  private
-
-  def formatted_date(day, month, year)
-    return nil if year.nil?
-    return year.to_s if month.nil?
-
-    formatted_month = month.to_s.rjust(2, '0')
-
-    return "#{formatted_month}/#{year}" if day.nil?
-
-    formatted_day = day.to_s.rjust(2, '0')
-
-    "#{formatted_day}/#{formatted_month}/#{year}"
-  end
+  # :nocov:
 end

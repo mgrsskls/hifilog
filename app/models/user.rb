@@ -40,23 +40,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable
 
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[
-      user_name
-      user_name_cont
-      user_name_end
-      user_name_eq
-      user_name_start
-    ]
-  end
-
-  def self.ransackable_associations(_auth_object = nil)
-    %w[]
-  end
-
   def profile_path
-    return if user_name.nil?
-
     user_path(user_name.downcase)
   end
 
@@ -104,7 +88,23 @@ class User < ApplicationRecord
   end
 
   # This is used for dropdowns in active_admin
+  # :nocov:
   def display_name
     email
   end
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[
+      user_name
+      user_name_cont
+      user_name_end
+      user_name_eq
+      user_name_start
+    ]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[]
+  end
+  # :nocov:
 end

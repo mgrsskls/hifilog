@@ -1,14 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  slug: mystring1
+  name: LTD 2024
+  slug: ltd-2024
   description: MyText
   release_day: 1
   release_month: 12
   release_year: 2000
   product: with_variants
   discontinued: false
+  price: 9999
+  price_currency: USD
 
 two:
   name: MyString2
@@ -19,3 +21,10 @@ two:
   release_year: 2002
   product: with_variants
   discontinued: true
+
+three:
+  name: MyString3
+  slug: mystring3
+  description: MyText
+  product: with_variants
+  discontinued: false

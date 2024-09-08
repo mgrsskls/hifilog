@@ -12,19 +12,28 @@ class BrandsController < ApplicationController
   def index
     @page_title = Brand.model_name.human(count: 2)
 
-    order = 'LOWER(name) ASC'
-    if params[:sort].present?
-      order = 'LOWER(name) ASC' if params[:sort] == 'name_asc'
-      order = 'LOWER(name) DESC' if params[:sort] == 'name_desc'
-      order = 'products_count ASC NULLS FIRST, LOWER(name)' if params[:sort] == 'products_asc'
-      order = 'products_count DESC NULLS LAST, LOWER(name)' if params[:sort] == 'products_desc'
-      order = 'country_code ASC, LOWER(name)' if params[:sort] == 'country_asc'
-      order = 'country_code DESC, LOWER(name)' if params[:sort] == 'country_desc'
-      order = 'created_at ASC, LOWER(name)' if params[:sort] == 'added_asc'
-      order = 'created_at DESC, LOWER(name)' if params[:sort] == 'added_desc'
-      order = 'updated_at ASC, LOWER(name)' if params[:sort] == 'updated_asc'
-      order = 'updated_at DESC, LOWER(name)' if params[:sort] == 'updated_desc'
-    end
+    order = case params[:sort]
+            when 'name_desc'
+              'LOWER(name) DESC'
+            when 'products_asc'
+              'products_count ASC NULLS FIRST, LOWER(name)'
+            when 'products_desc'
+              'products_count DESC NULLS LAST, LOWER(name)'
+            when 'country_asc'
+              'country_code ASC, LOWER(name)'
+            when 'country_desc'
+              'country_code DESC, LOWER(name)'
+            when 'added_asc'
+              'created_at ASC, LOWER(name)'
+            when 'added_desc'
+              'created_at DESC, LOWER(name)'
+            when 'updated_asc'
+              'updated_at ASC, LOWER(name)'
+            when 'updated_desc'
+              'updated_at DESC, LOWER(name)'
+            else
+              'LOWER(name) ASC'
+            end
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     if @sub_category
@@ -40,65 +49,27 @@ class BrandsController < ApplicationController
       add_breadcrumb Brand.model_name.human(count: 2)
     end
 
-    if params[:letter].present? &&
-       ABC.include?(params[:letter]) &&
-       @sub_category &&
-       params[:status].present?
-      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: @sub_category, discontinued:)
-                    .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .order(update_for_joined_tables(order))
-    elsif params[:letter].present? &&
-          ABC.include?(params[:letter]) &&
-          @category &&
-          params[:status].present?
-      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: { category_id: @category.id }, discontinued:)
-                    .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && ABC.include?(params[:letter]) && @sub_category
-      @category = Category.find(@sub_category.category_id)
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: @sub_category)
-                    .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && ABC.include?(params[:letter]) && @category
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: { category_id: @category.id })
-                    .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:status].present?
-      brands = Brand.where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
-                    .where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                    .order(order)
-    elsif @sub_category && params[:status].present?
-      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: @sub_category, discontinued:)
-                    .order(update_for_joined_tables(order))
-    elsif @category && params[:status].present?
-      discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: { category_id: @category.id }, discontinued:)
-                    .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && ABC.include?(params[:letter])
-      brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
-                    .order(order)
-    elsif @sub_category
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: @sub_category)
-                    .order(update_for_joined_tables(order))
-    elsif @category.present?
-      brands = Brand.joins(:sub_categories)
-                    .where(sub_categories: { category_id: @category.id })
-                    .order(update_for_joined_tables(order))
-    elsif params[:status].present?
-      brands = Brand.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                    .order(order)
+    brands = Brand.all
+
+    if params[:letter].present? && ABC.include?(params[:letter])
+      brands = brands.where('left(lower(brands.name),1) = ?', params[:letter].downcase)
+    end
+
+    if params[:status].present?
+      brands = brands.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+    end
+
+    if @sub_category || @category
+      brands = if @sub_category
+                 brands.joins(:sub_categories)
+                       .where(sub_categories: @sub_category)
+               else
+                 brands.joins(:sub_categories)
+                       .where(sub_categories: { category_id: @category.id })
+               end
+      brands = brands.order(update_for_joined_tables(order))
     else
-      brands = Brand.order(order)
+      brands = brands.order(order)
     end
 
     @brands_query = params[:query].strip if params[:query].present?
@@ -127,7 +98,7 @@ class BrandsController < ApplicationController
       add_breadcrumb @brand.name
     end
 
-    if params[:status].present? && STATUSES.include?(params[:status])
+    if params[:status].present?
       products = products.where(
         discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
       )

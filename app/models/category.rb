@@ -10,6 +10,11 @@ class Category < ApplicationRecord
 
   auto_strip_attributes :name, squish: true
 
+  def self.ordered
+    order('LOWER(name)')
+  end
+
+  # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       name
@@ -23,12 +28,5 @@ class Category < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-
-  def self.ordered
-    order('LOWER(name)')
-  end
-
-  def ordered_sub_categories
-    sub_categories.order(&:name)
-  end
+  # :nocov:
 end

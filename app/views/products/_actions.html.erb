@@ -1,4 +1,4 @@
-<% variant_id = @variant ? @variant.id : nil %>
+<% variant_id = @product_variant ? @product_variant.id : nil %>
 <% if user_signed_in? %>
   <% @possessions.each do |possession| %>
     <div class="ProductPossession" data-current="<%= !possession.prev_owned %>">
@@ -77,7 +77,7 @@
               <%= f.label :period_to, "Until" %>
               <%= f.date_field :period_to %>
             <% end %>
-            <% item = @variant.present? ? @variant : @product %>
+            <% item = @product_variant.present? ? @product_variant : @product %>
             <% if item.product_options.any? %>
               <label for="product-options-<%= possession.id %>">Option</label>
               <select name="possession[product_option_id]" id="product-options-<%= possession.id %>">
@@ -108,7 +108,7 @@
 <% end %>
 
 <div class="Product-action">
-  <%= button_to possessions_path(id: product.id, product_variant_id: variant_id), class: "Button Button--loadingIcon" do %>
+  <%= button_to possessions_path(id: @product.id, product_variant_id: variant_id), class: "Button Button--loadingIcon" do %>
     <span class="u-flex u-alignCenter u-gap-sm">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
       <%= t('add_to_collection').html_safe %>
@@ -117,7 +117,7 @@
 </div>
 
 <div class="Product-action">
-  <%= button_to possessions_path(id: product.id, product_variant_id: variant_id, prev_owned: true), class: "Button Button--secondary Button--loadingIcon" do %>
+  <%= button_to possessions_path(id: @product.id, product_variant_id: variant_id, prev_owned: true), class: "Button Button--secondary Button--loadingIcon" do %>
     <span class="u-flex u-alignCenter u-gap-sm">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
       <%= t('add_to_prev_owned').html_safe %>
@@ -134,7 +134,7 @@
       </span>
     <% end %>
   <% else %>
-    <%= button_to bookmarks_path(product_id: product.id, product_variant_id: variant_id), class: "Button Button--loadingIcon Button--secondary", "aria-pressed": "false" do %>
+    <%= button_to bookmarks_path(product_id: @product.id, product_variant_id: variant_id), class: "Button Button--loadingIcon Button--secondary", "aria-pressed": "false" do %>
       <span class="u-flex u-alignCenter u-gap-sm">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.6 3.32c1.1.13 1.9 1.08 1.9 2.19V21L12 17.25 4.5 21V5.5c0-1.1.8-2.05 1.9-2.18a48.5 48.5 0 0 1 11.2 0Z"/></svg>
         <%= t('add_to_bookmarks').html_safe %>

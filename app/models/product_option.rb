@@ -14,6 +14,12 @@ class ProductOption < ApplicationRecord
             uniqueness: { scope: :product_variant },
             if: -> { product_variant.present? }
 
+  # This is used for dropdowns in active_admin
+  # :nocov:
+  def display_name
+    option
+  end
+
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at
@@ -32,9 +38,5 @@ class ProductOption < ApplicationRecord
       product_variant
     ]
   end
-
-  # This is used for dropdowns in active_admin
-  def display_name
-    option
-  end
+  # :nocov:
 end

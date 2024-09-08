@@ -9,19 +9,12 @@ class PossessionsController < ApplicationController
     @page_title = I18n.t('headings.prev_owneds')
     @active_dashboard_menu = :prev_owneds
 
-    all = current_user.possessions
-                      .where(prev_owned: true)
-                      .includes([product: [{ sub_categories: :category }, :brand]])
-                      .includes([:product_variant])
-                      .includes([custom_product: [{ sub_categories: :category }]])
-                      .includes([image_attachment: [:blob]])
-                      .map do |possession|
-                        if possession.custom_product_id
-                          CustomProductPossessionPresenter.new(possession)
-                        else
-                          PreviousPossessionPresenter.new(possession)
-                        end
-                      end
+    all = map_possessions_to_presenter current_user.possessions
+                                                   .where(prev_owned: true)
+                                                   .includes([product: [{ sub_categories: :category }, :brand]])
+                                                   .includes([:product_variant])
+                                                   .includes([custom_product: [{ sub_categories: :category }]])
+                                                   .includes([image_attachment: [:blob]])
 
     all = all.sort_by { |possession| possession.display_name.downcase }
 
@@ -57,42 +50,27 @@ class PossessionsController < ApplicationController
 
   def create
     @product = Product.find(params[:id]) if params[:id].present?
-    @variant = ProductVariant.find(params[:product_variant_id]) if params[:product_variant_id].present?
+    @product_variant = ProductVariant.find(params[:product_variant_id]) if params[:product_variant_id].present?
     @custom_product = CustomProduct.find(params[:custom_product_id]) if params[:custom_product_id].present?
 
     @active_possession = Possession.new(
       user: current_user,
       product: @product || nil,
-      product_variant: @variant || nil,
+      product_variant: @product_variant || nil,
       custom_product: @custom_product || nil,
       prev_owned: params[:prev_owned] == 'true'
     )
     flash[:alert] = I18n.t(:generic_error_message) unless @active_possession.save
 
-    if @custom_product.present?
-      return redirect_back fallback_location: user_custom_product_url(
-        user_id: current_user.user_name.downcase,
-        id: @custom_product.id
-      )
-    end
-
-    if @variant.present?
-      return redirect_back fallback_location: product_product_variant_url(
-        variant: @variant.friendly_id,
-        product_id: @product.friendly_id
-      )
-    end
-
-    redirect_back fallback_location: product_url(id: @product.friendly_id)
+    redirect_back_to_product(
+      product: @product,
+      product_variant: @product_variant,
+      custom_product: @custom_product,
+    )
   end
 
   def update
     @possession = current_user.possessions.find(params[:id])
-    product = @possession.product
-    product_variant = @possession.product_variant
-    custom_product = @possession.custom_product
-
-    return redirect_back fallback_location: root_url unless params[:possession]
 
     if params[:possession][:delete_image].present? && params[:possession][:delete_image].to_i == 1
       @possession.image.purge
@@ -118,21 +96,11 @@ class PossessionsController < ApplicationController
       end
     end
 
-    if custom_product.present?
-      return redirect_back fallback_location: user_custom_product_url(
-        user_id: current_user.user_name.downcase,
-        id: custom_product.id
-      )
-    end
-
-    if product_variant.present?
-      return redirect_back fallback_location: product_product_variant_url(
-        variant: product_variant.friendly_id,
-        product_id: product.friendly_id
-      )
-    end
-
-    redirect_back fallback_location: product_url(id: product.friendly_id)
+    redirect_back_to_product(
+      product: @possession.product,
+      product_variant: @possession.product_variant,
+      custom_product: @possession.custom_product
+    )
   end
 
   def destroy
@@ -155,28 +123,22 @@ class PossessionsController < ApplicationController
       flash[:alert] = I18n.t(:generic_error_message)
     end
 
-    if custom_product.present?
-      return redirect_back fallback_location: user_custom_product_url(
-        user_id: current_user.user_name.downcase,
-        id: custom_product.id
-      )
-    end
-
-    if product_variant.present?
-      return redirect_back fallback_location: product_product_variant_url(
-        variant: product_variant.friendly_id,
-        product_id: product.friendly_id
-      )
-    end
-
-    redirect_back fallback_location: product_url(id: product.friendly_id)
+    redirect_back_to_product(
+      product:,
+      product_variant:,
+      custom_product:,
+    )
   end
 
   def move_to_prev_owneds
     possession = current_user.possessions.find(params[:possession_id])
     possession.update(prev_owned: true, setup: nil)
 
-    possession_presenter = possession.custom_product_id ? CustomProductPossessionPresenter : PreviousPossessionPresenter
+    product = possession.product
+    product_variant = possession.product_variant
+    custom_product = possession.custom_product
+
+    possession_presenter = custom_product.present? ? CustomProductPossessionPresenter : PreviousPossessionPresenter
     presenter = possession_presenter.new(possession)
 
     if possession.save
@@ -188,11 +150,13 @@ class PossessionsController < ApplicationController
       flash[:alert] = I18n.t(:generic_error_message)
     end
 
-    if params[:redirect_to]
-      redirect_to params[:redirect_to]
-    else
-      redirect_back fallback_location: root_url
-    end
+    return redirect_to params[:redirect_to] if params[:redirect_to]
+
+    redirect_back_to_product(
+      product:,
+      product_variant:,
+      custom_product:,
+    )
   end
 
   private

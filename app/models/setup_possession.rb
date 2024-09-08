@@ -4,6 +4,7 @@ class SetupPossession < ApplicationRecord
 
   validates :possession, uniqueness: true
 
+  # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       id
@@ -19,4 +20,5 @@ class SetupPossession < ApplicationRecord
       setup
     ]
   end
+  # :nocov:
 end

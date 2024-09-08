@@ -5,6 +5,7 @@ module PaperTrail
 
     include PaperTrail::VersionConcern
 
+    # :nocov:
     def self.ransackable_attributes(_auth_object = nil)
       %w[
         comment
@@ -23,5 +24,6 @@ module PaperTrail
     def self.ransackable_associations(_auth_object = nil)
       %w[]
     end
+    # :nocov:
   end
 end

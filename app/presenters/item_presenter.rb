@@ -41,12 +41,6 @@ class ItemPresenter
     @product.release_date
   end
 
-  # def product_options
-  #   return @product_variant.product_options if @product_variant.present?
-
-  #   @product.product_options
-  # end
-
   def show_path
     return @product_variant.path if @product_variant.present?
 
@@ -55,7 +49,7 @@ class ItemPresenter
 
   def edit_path
     if @product_variant.present?
-      return product_edit_variant_path(product_id: @product.friendly_id, variant: @product_variant.friendly_id)
+      return product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
     end
 
     edit_product_path(id: @product.friendly_id)

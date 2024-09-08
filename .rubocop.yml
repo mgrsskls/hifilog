@@ -32,6 +32,16 @@ Style/NumericPredicate:
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact
 
+Style/HashSyntax:
+  Enabled: true
+  Exclude:
+    - test/**/*
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - test/**/*
+
 Metrics/MethodLength:
   Enabled: false
 

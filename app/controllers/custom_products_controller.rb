@@ -126,7 +126,7 @@ class CustomProductsController < ApplicationController
     params.require(:custom_product).permit(:name, :description, :image, sub_category_ids: [])
   end
 
-  def get_redirect_if_unauthorized(user, possession)
+  def get_redirect_if_unauthorized(user, custom_product)
     return if user.visible?
 
     # if visited profile is not visible to logged out users and the current user is logged in
@@ -135,7 +135,7 @@ class CustomProductsController < ApplicationController
     # if the visited profile is not visible to anyone and the visiting user is a different user
     return root_url if user.hidden? && current_user != user
 
-    redir = user_custom_product_path(id: possession.id, user_id: user.user_name.downcase)
+    redir = user_custom_product_path(id: custom_product.id, user_id: user.user_name.downcase)
     new_user_session_url(redirect: URI.parse(redir).path)
   end
 end

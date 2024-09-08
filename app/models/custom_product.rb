@@ -1,4 +1,7 @@
 class CustomProduct < ApplicationRecord
+  include Description
+  include Image
+
   belongs_to :user
   has_one :possession, dependent: :destroy
   has_and_belongs_to_many :sub_categories
@@ -19,32 +22,7 @@ class CustomProduct < ApplicationRecord
     {}
   end
 
-  def formatted_description
-    return if description.blank?
-
-    Redcarpet::Markdown.new(Redcarpet::Render::HTML.new).render(description)
-  end
-
-  def validate_image_content_type
-    return unless image.attachment
-
-    unless [
-      'image/jpeg',
-      'image/webp',
-      'image/png',
-      'image/gif'
-    ].include?(image.attachment.blob.content_type)
-      errors.add(:image_content_type, 'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.')
-    end
-  end
-
-  def validate_image_file_size
-    return unless image.attachment
-    return if image.attachment.blob.byte_size < 5_000_000
-
-    errors.add(:image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
-  end
-
+  # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at
@@ -63,4 +41,5 @@ class CustomProduct < ApplicationRecord
       user
     ]
   end
+  # :nocov:
 end

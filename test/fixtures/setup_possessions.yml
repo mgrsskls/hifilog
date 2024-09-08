@@ -2,8 +2,12 @@
 
 one:
   setup: with_products
-  possession: without_variant
+  possession: current_product
 
 two:
   setup: with_products
-  possession: with_variant
+  possession: current_product_variant
+
+three:
+  setup: with_products
+  possession: current_custom_product

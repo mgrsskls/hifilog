@@ -4,7 +4,7 @@
       Notes
       <small>
         <% if @product_variant.present? %>
-          <%= link_to @product_variant.display_name, product_variant_path(product_id: @product.friendly_id, variant: @product_variant.friendly_id) %>
+          <%= link_to @product_variant.display_name, product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) %>
         <% else %>
           <%= link_to @product.display_name, product_path(id: @product.friendly_id) %>
         <% end %>
@@ -23,7 +23,7 @@
   </div>
   <div class="PageActions PageActions--divider">
     <div class="PageAction">
-      <%= link_to "Edit", @product_variant.present? ? product_new_variant_notes_path(product_id: @product.friendly_id, variant: @product_variant.friendly_id) : product_new_notes_path(product_id: @product.friendly_id), class: "Button" %>
+      <%= link_to "Edit", @product_variant.present? ? product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : product_new_notes_path(product_id: @product.friendly_id), class: "Button" %>
     </div>
     <div class="PageAction">
       <%= button_to t('note.delete.label'),

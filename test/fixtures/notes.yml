@@ -1,12 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  text: MyText
+  text: text
   product: one
-  user: with_everything
-
-two:
-  text: MyText
-  product: two
-  product_variant: one
-  user: with_everything
+  user: one

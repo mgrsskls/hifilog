@@ -12,23 +12,24 @@ class ProductsController < ApplicationController
   def index
     @page_title = Product.model_name.human(count: 2)
 
-    order = 'LOWER(name) ASC'
-    if params[:sort].present?
-      order = 'LOWER(name) ASC' if params[:sort] == 'name_asc'
-      order = 'LOWER(name) DESC' if params[:sort] == 'name_desc'
-      if params[:sort] == 'release_date_asc'
-        order = 'release_year ASC NULLS LAST, release_month ASC NULLS LAST, release_day ASC NULLS LAST, LOWER(name)'
-      end
-      if params[:sort] == 'release_date_desc'
-        order = 'release_year DESC NULLS LAST, release_month DESC NULLS LAST, release_day DESC NULLS LAST, LOWER(name)'
-      end
-      # order = 'price ASC, LOWER(name)' if params[:sort] == 'price_asc'
-      # order = 'price DESC, LOWER(name)' if params[:sort] == 'price_desc'
-      order = 'created_at ASC, LOWER(name)' if params[:sort] == 'added_asc'
-      order = 'created_at DESC, LOWER(name)' if params[:sort] == 'added_desc'
-      order = 'updated_at ASC, LOWER(name)' if params[:sort] == 'updated_asc'
-      order = 'updated_at DESC, LOWER(name)' if params[:sort] == 'updated_desc'
-    end
+    order = case params[:sort]
+            when 'name_desc'
+              'LOWER(name) DESC'
+            when 'release_date_asc'
+              'release_year ASC NULLS LAST, release_month ASC NULLS LAST, release_day ASC NULLS LAST, LOWER(name)'
+            when 'release_date_desc'
+              'release_year DESC NULLS LAST, release_month DESC NULLS LAST, release_day DESC NULLS LAST, LOWER(name)'
+            when 'added_asc'
+              'created_at ASC, LOWER(name)'
+            when 'added_desc'
+              'created_at DESC, LOWER(name)'
+            when 'updated_asc'
+              'updated_at ASC, LOWER(name)'
+            when 'updated_desc'
+              'updated_at DESC, LOWER(name)'
+            else
+              'LOWER(name) ASC'
+            end
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
 
@@ -52,69 +53,29 @@ class ProductsController < ApplicationController
       add_breadcrumb Product.model_name.human(count: 2)
     end
 
-    if params[:letter].present? && @sub_category && params[:status].present?
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: @sub_category.id)
-                        .where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
-                        .where(
-                          discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
-                        )
-                        .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && @category && params[:status].present?
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: { category_id: @category.id })
-                        .where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
-                        .where(
-                          discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
-                        )
-                        .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && @sub_category
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: @sub_category.id)
-                        .where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
-                        .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && @category
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: { category_id: @category.id })
-                        .where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
-                        .order(update_for_joined_tables(order))
-    elsif params[:letter].present? && params[:status].present?
-      products = Product.where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
-                        .where(
-                          discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
-                        )
-                        .order(update_for_joined_tables(order))
-    elsif @sub_category && params[:status].present?
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: @sub_category.id)
-                        .where(
-                          discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
-                        )
-                        .order(update_for_joined_tables(order))
-    elsif @category && params[:status].present?
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: { category_id: @category.id })
-                        .where(
-                          discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
-                        )
-                        .order(update_for_joined_tables(order))
-    elsif params[:letter].present?
-      products = Product.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
-                        .order(order)
-    elsif @sub_category
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: @sub_category.id)
-                        .order(update_for_joined_tables(order))
-    elsif @category
-      products = Product.joins(:sub_categories)
-                        .where(sub_categories: { category_id: @category.id })
-                        .order(update_for_joined_tables(order))
-    elsif params[:status].present?
-      products = Product.where(discontinued:
-                          STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
-                        .order(order)
+    products = Product.all
+
+    if params[:letter].present? && ABC.include?(params[:letter])
+      products = products.where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
+    end
+
+    if params[:status].present?
+      products = products.where(
+        discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
+      )
+    end
+
+    if @sub_category || @category
+      products = if @sub_category
+                   products.joins(:sub_categories)
+                           .where(sub_categories: @sub_category.id)
+                 else
+                   products.joins(:sub_categories)
+                           .where(sub_categories: { category_id: @category.id })
+                 end
+      products = products.order(update_for_joined_tables(order))
     else
-      products = Product.order(order)
+      products = products.order(order)
     end
 
     CustomAttribute.find_each do |custom_attribute|

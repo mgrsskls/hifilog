@@ -1,7 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  text: MyText
+  id: 1
+  text: |-
+    - list item 1
+    - list item 2
 
 two:
-  text: MyText
+  id: 2
+  text: MyText2

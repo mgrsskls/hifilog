@@ -22,77 +22,11 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)
+    @user = setup_user_page
+    return unless @user
 
-    return render 'not_found', status: :not_found if @user.nil?
+    get_possessions
 
-    unless current_user == @user
-      redirect_path = get_redirect_if_unauthorized(@user, false)
-      return redirect_to redirect_path if redirect_path
-    end
-
-    setup_user_page(@user)
-
-    if params[:setup]
-      setup = @user.setups.find(params[:setup])
-      all_possessions = setup.possessions
-    else
-      all_possessions = @user.possessions
-    end
-
-    all = all_possessions.where(prev_owned: false)
-                         .includes([product: [{ sub_categories: :category }, :brand]])
-                         .includes([product_variant: [:product]])
-                         .includes([:product_option])
-                         .includes([custom_product: [{ sub_categories: :category }]])
-                         .includes([image_attachment: [:blob]])
-                         .map do |possession|
-                           if possession.custom_product_id
-                             CustomProductPossessionPresenter.new(possession)
-                           else
-                             CurrentPossessionPresenter.new(possession)
-                           end
-                         end
-
-    all = all.sort_by { |possession| possession.display_name.downcase }
-
-    if params[:category].present?
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all.select do |possession|
-        @sub_category.products.include?(possession.product) ||
-          @sub_category.custom_products.include?(possession.custom_product)
-      end
-    else
-      @possessions = all
-    end
-
-    @categories = all.flat_map(&:sub_categories)
-                     .sort_by(&:name)
-                     .uniq
-                     .group_by(&:category)
-                     .sort_by { |category| category[0].order }
-                     .map do |c|
-                       [
-                         c[0],
-                         c[1].map do |sub_category|
-                           {
-                             name: sub_category.name,
-                             friendly_id: sub_category.friendly_id,
-                             path: (
-                               if setup
-                                 user_setup_path(
-                                   user_id: @user.user_name.downcase,
-                                   category: sub_category.friendly_id,
-                                   setup: setup.id
-                                 )
-                               else
-                                 user_path(id: @user.user_name.downcase, category: sub_category.friendly_id)
-                               end
-                             )
-                           }
-                         end
-                       ]
-                     end
     @reset_path = @user.profile_path
     @render_since = true
     @render_period = false
@@ -101,60 +35,11 @@ class UsersController < ApplicationController
   end
 
   def prev_owneds
-    @user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)
+    @user = setup_user_page
+    return unless @user
 
-    return render 'not_found', status: :not_found if @user.nil?
+    get_possessions(prev_owned: true)
 
-    unless current_user == @user
-      redirect_path = get_redirect_if_unauthorized(@user, true)
-      return redirect_to redirect_path if redirect_path
-    end
-
-    setup_user_page(@user)
-
-    all_possessions = @user.possessions
-                           .where(prev_owned: true)
-                           .includes([product: [{ sub_categories: :category }, :brand]])
-                           .includes([:product_variant])
-                           .includes([custom_product: [{ sub_categories: :category }]])
-                           .includes([image_attachment: [:blob]])
-                           .map do |possession|
-                             if possession.custom_product_id
-                               CustomProductPossessionPresenter.new(possession)
-                             else
-                               PreviousPossessionPresenter.new(possession)
-                             end
-                           end
-
-    all_possessions = all_possessions.sort_by { |possession| possession.display_name.downcase }
-
-    if params[:category].present?
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all_possessions.select { |possession| @sub_category.products.include?(possession.product) }
-    else
-      @possessions = all_possessions
-    end
-
-    @categories = all_possessions.flat_map(&:sub_categories)
-                                 .sort_by(&:name)
-                                 .uniq
-                                 .group_by(&:category)
-                                 .sort_by { |category| category[0].order }
-                                 .map do |c|
-                                   [
-                                     c[0],
-                                     c[1].map do |sub_category|
-                                       {
-                                         name: sub_category.name,
-                                         friendly_id: sub_category.friendly_id,
-                                         path: user_previous_products_path(
-                                           id: @user.user_name,
-                                           category: sub_category.friendly_id
-                                         )
-                                       }
-                                     end
-                                   ]
-                                 end
     @reset_path = user_previous_products_path(id: @user.user_name)
     @render_since = false
     @render_period = true
@@ -163,16 +48,8 @@ class UsersController < ApplicationController
   end
 
   def history
-    @user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)
-
-    return render 'not_found', status: :not_found if @user.nil?
-
-    unless current_user == @user
-      redirect_path = get_redirect_if_unauthorized(@user, false)
-      return redirect_to redirect_path if redirect_path
-    end
-
-    setup_user_page(@user)
+    @user = setup_user_page
+    return unless @user
 
     from = @user.possessions
                 .includes([product: [:brand]])
@@ -200,19 +77,21 @@ class UsersController < ApplicationController
               .includes([:custom_product])
               .includes([:product_option])
               .includes([image_attachment: [:blob]])
-              .where.not(period_to: nil).order(:period_to).map do |possession|
-      presenter = if possession.custom_product_id
-                    CustomProductPossessionPresenter.new(possession)
-                  else
-                    PossessionPresenter.new(possession)
-                  end
+              .where.not(period_to: nil)
+              .order(:period_to)
+              .map do |possession|
+                presenter = if possession.custom_product_id
+                              CustomProductPossessionPresenter.new(possession)
+                            else
+                              PossessionPresenter.new(possession)
+                            end
 
-      {
-        date: presenter.period_to,
-        type: :to,
-        presenter:
-      }
-    end
+                {
+                  date: presenter.period_to,
+                  type: :to,
+                  presenter:
+                }
+              end
 
     @possessions = (from + to)
                    .sort_by { |possession| possession[:date] }
@@ -229,7 +108,14 @@ class UsersController < ApplicationController
     add_breadcrumb User.model_name.human(count: 2)
   end
 
-  def setup_user_page(user)
+  def setup_user_page
+    user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)
+
+    if user.nil? || (user.hidden? && current_user != user) || (user.logged_in_only? && !user_signed_in?)
+      render 'not_found', status: :not_found
+      return nil
+    end
+
     @page_title = user.user_name
 
     data = PaperTrail::Version.where(whodunnit: user.id)
@@ -243,22 +129,56 @@ class UsersController < ApplicationController
     @brands_created = get_data(data, 'Brand', 'create')
     @brands_edited = get_data(data, 'Brand', 'update')
 
-    return unless current_user == user
+    if current_user == user
+      @active_menu = :dashboard
+      @active_dashboard_menu = :profile
+    end
 
-    @active_menu = :dashboard
-    @active_dashboard_menu = :profile
+    user
   end
 
-  def get_redirect_if_unauthorized(user, prev_owneds)
-    return if user.visible?
+  def get_possessions(prev_owned: false)
+    if params[:setup]
+      setup = @user.setups.find(params[:setup])
+      all_possessions = setup.possessions
+    else
+      all_possessions = @user.possessions
+    end
 
-    # if visited profile is not visible to logged out users and the current user is logged in
-    return if user.logged_in_only? && user_signed_in?
+    all = map_possessions_to_presenter all_possessions.where(prev_owned:)
+                                                      .includes([product: [{ sub_categories: :category }, :brand]])
+                                                      .includes([product_variant: [:product]])
+                                                      .includes([:product_option])
+                                                      .includes([custom_product: [{ sub_categories: :category }]])
+                                                      .includes([image_attachment: [:blob]])
 
-    # if the visited profile is not visible to anyone and the visiting user is a different user
-    return root_url if user.hidden? && current_user != user
+    all = all.sort_by { |possession| possession.display_name.downcase }
 
-    redir = prev_owneds ? user_previous_products_path(user_name: user.user_name) : user_path(user_name: user.user_name)
-    new_user_session_url(redirect: URI.parse(redir).path)
+    if params[:category].present?
+      @sub_category = SubCategory.friendly.find(params[:category])
+      @possessions = all.select do |possession|
+        @sub_category.products.include?(possession.product) ||
+          @sub_category.custom_products.include?(possession.custom_product)
+      end
+    else
+      @possessions = all
+    end
+
+    @categories = all.flat_map(&:sub_categories)
+                     .sort_by(&:name)
+                     .uniq
+                     .group_by(&:category)
+                     .sort_by { |category| category[0].order }
+                     .map do |c|
+                       [
+                         c[0],
+                         c[1].map do |sub_category|
+                           {
+                             name: sub_category.name,
+                             friendly_id: sub_category.friendly_id,
+                           }
+                         end
+                       ]
+                     end
   end
 end

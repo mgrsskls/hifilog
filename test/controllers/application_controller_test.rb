@@ -7,7 +7,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'index for logged in user redirects to dashboard' do
-    sign_in users(:hidden)
+    sign_in users(:one)
     get root_url
     assert_response :redirect
     assert_redirected_to dashboard_root_path

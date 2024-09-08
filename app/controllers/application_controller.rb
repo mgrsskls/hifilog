@@ -60,6 +60,38 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  private
+
+  def redirect_back_to_product(product: nil, product_variant: nil, custom_product: nil)
+    if custom_product.present?
+      return redirect_back fallback_location: user_custom_product_url(
+        user_id: current_user.user_name.downcase,
+        id: custom_product.id
+      )
+    end
+
+    if product_variant.present?
+      return redirect_back fallback_location: product_variant_url(
+        id: product_variant.friendly_id,
+        product_id: product_variant.product.friendly_id
+      )
+    end
+
+    redirect_back fallback_location: product_url(id: product.friendly_id)
+  end
+
+  def map_possessions_to_presenter(possessions)
+    possessions.map do |possession|
+      if possession.custom_product_id
+        CustomProductPossessionPresenter.new(possession)
+      elsif possession.prev_owned
+        PreviousPossessionPresenter.new(possession)
+      else
+        CurrentPossessionPresenter.new(possession)
+      end
+    end
+  end
+
   protected
 
   def configure_permitted_parameters

@@ -11,29 +11,28 @@ class ProductVariantsController < ApplicationController
     @brand = @product.brand
 
     if user_signed_in?
-      @possessions = current_user.possessions
-                                 .where(
-                                   product_id: @product.id,
-                                   product_variant_id: @variant.id,
-                                 )
-                                 .order([:prev_owned, :period_from, :period_to, :created_at])
-                                 .map do |possession|
-                                   if possession.prev_owned
-                                     PreviousPossessionPresenter.new(possession, :product_variant)
-                                   else
-                                     CurrentPossessionPresenter.new(possession, :product_variant)
-                                   end
-                                 end
-      @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: @variant.id)
-      @note = current_user.notes.find_by(product_variant_id: @variant.id)
+      @possessions = map_possessions_to_presenter current_user.possessions
+                                                              .where(
+                                                                product_id: @product.id,
+                                                                product_variant_id: @product_variant.id,
+                                                              )
+                                                              .order([
+                                                                       :prev_owned,
+                                                                       :period_from,
+                                                                       :period_to,
+                                                                       :created_at
+                                                                     ])
+
+      @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: @product_variant.id)
+      @note = current_user.notes.find_by(product_variant_id: @product_variant.id)
       @setups = current_user.setups.includes(:possessions)
     end
 
-    @public_possessions_with_image = @variant.possessions
-                                             .includes([:image_attachment])
-                                             .joins(:user)
-                                             .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
-                                             .select { |possession| possession.image.attached? }
+    @public_possessions_with_image = @product_variant.possessions
+                                                     .includes([:image_attachment])
+                                                     .joins(:user)
+                                                     .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
+                                                     .select { |possession| possession.image.attached? }
 
     @contributors = ActiveRecord::Base.connection.execute("
       SELECT DISTINCT
@@ -45,8 +44,8 @@ class ProductVariantsController < ApplicationController
     ")
 
     add_breadcrumb @product.display_name, @product
-    add_breadcrumb @variant.short_name
-    @page_title = "#{@product.display_name} #{@variant.short_name}"
+    add_breadcrumb @product_variant.short_name
+    @page_title = "#{@product.display_name} #{@product_variant.short_name}"
   end
 
   def new
@@ -61,14 +60,14 @@ class ProductVariantsController < ApplicationController
 
   def edit
     @product = Product.friendly.find(params[:product_id])
-    @product_variant = @product.product_variants.friendly.find(params[:variant])
+    @product_variant = @product.product_variants.friendly.find(params[:id])
     @brand = @product.brand
     @page_title = I18n.t('edit_record', name: @product_variant.display_name)
 
     add_breadcrumb @product.display_name, @product
     add_breadcrumb @product_variant.short_name, product_variant_path(
       product_id: @product.friendly_id,
-      variant: @product_variant.friendly_id
+      id: @product_variant.friendly_id
     )
     add_breadcrumb I18n.t('edit')
   end
@@ -97,7 +96,7 @@ class ProductVariantsController < ApplicationController
     if @product_variant.save
       redirect_to product_variant_url(
         product_id: @product.friendly_id,
-        variant: @product_variant.friendly_id
+        id: @product_variant.friendly_id
       )
     else
       render :new, status: :unprocessable_entity
@@ -128,7 +127,7 @@ class ProductVariantsController < ApplicationController
       redirect_to URI.parse(
         product_variant_url(
           product_id: @product_variant.product.friendly_id,
-          variant: @product_variant.friendly_id
+          id: @product_variant.friendly_id
         )
       ).path
     else
@@ -139,7 +138,7 @@ class ProductVariantsController < ApplicationController
 
   def changelog
     @product = Product.friendly.find(params[:product_id])
-    @product_variant = @product.product_variants.friendly.find(params[:variant])
+    @product_variant = @product.product_variants.friendly.find(params[:id])
     @brand = @product.brand
     @versions = @product_variant.versions.select do |v|
       log = get_changelog(v.object_changes)
@@ -163,29 +162,19 @@ class ProductVariantsController < ApplicationController
 
   def find_product_and_variant
     @product = Product.friendly.find(params[:product_id])
-    @variant = @product.product_variants.friendly.find(params[:variant])
+    @product_variant = @product.product_variants.friendly.find(params[:id])
 
-    return unless request.path != product_variant_path(product_id: @product.friendly_id, variant: params[:variant])
+    return unless request.path != product_variant_path(product_id: @product.friendly_id, id: params[:id])
 
     # If an old id or a numeric id was used to find the record, then
     # the request path will not match the product_path, and we should do
     # a 301 redirect that uses the current friendly id.
     redirect_to URI.parse(
-      product_variant_path(product_id: @product.friendly_id, variant: params[:variant])
+      product_variant_path(product_id: @product.friendly_id, id: params[:id])
     ).path, status: :moved_permanently
   end
 
   def product_variant_params
-    if params[:product_variant][:product_options_attributes].present?
-      options = {}
-
-      params[:product_variant][:product_options_attributes].each do |i, product_option|
-        options[i] = product_option if product_option[:option].present?
-      end
-
-      params[:product_variant][:product_options_attributes] = options
-    end
-
     params.require(:product_variant).permit(
       :name,
       :release_day,

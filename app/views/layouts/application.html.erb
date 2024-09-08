@@ -116,68 +116,68 @@
                     </span>
                     <ul class="MenuAccount-list Menu-subList" id="menu-account">
                       <li>
-                        <a href="<%= dashboard_root_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :dashboard) %>>
+                        <a href="<%= dashboard_root_path %>"<%= active_menu_state(@active_dashboard_menu, :dashboard) %>>
                           <span><%= t('dashboard') %></span>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_statistics_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :statistics) %>>
+                        <a href="<%= dashboard_statistics_path %>"<%= active_menu_state(@active_dashboard_menu, :statistics) %>>
                           <span><%= t('headings.statistics') %></span>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_history_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :history) %>>
+                        <a href="<%= dashboard_history_path %>"<%= active_menu_state(@active_dashboard_menu, :history) %>>
                           <span><%= t('headings.history') %></span>
                         </a>
                       </li>
                       <li class="Menu-subList-separator">
-                        <a href="<%= dashboard_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :products) %>>
+                        <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
                           <span><%= t('headings.collection') %></span>
                           <small><%= user_possessions_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_custom_products_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :custom_products) %>>
+                        <a href="<%= dashboard_custom_products_path %>"<%= active_menu_state(@active_dashboard_menu, :custom_products) %>>
                           <span><%= CustomProduct.model_name.human(count: 2) %></span>
                           <small><%= user_custom_products_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_prev_owneds_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :prev_owneds) %>>
+                        <a href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
                           <span><%= t('headings.prev_owneds') %></span>
                           <small><%= user_prev_owneds_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_setups_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :setups) %>>
+                        <a href="<%= dashboard_setups_path %>"<%= active_menu_state(@active_dashboard_menu, :setups) %>>
                           <span><%= Setup.model_name.human(count: 2) %></span>
                           <small><%= user_setups_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_bookmarks_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :bookmarks) %>>
+                        <a href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(@active_dashboard_menu, :bookmarks) %>>
                           <span><%= Bookmark.model_name.human(count: 2) %></span>
                           <small><%= user_bookmarks_count(current_user) %></small>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_notes_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :notes) %>>
+                        <a href="<%= dashboard_notes_path %>"<%= active_menu_state(@active_dashboard_menu, :notes) %>>
                           <span><%= Note.model_name.human(count: 2) %></span>
                           <small><%= user_notes_count(current_user) %></small>
                         </a>
                       </li>
                       <li class="Menu-subList-separator">
-                        <a href="<%= current_user.profile_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :profile) %>>
+                        <a href="<%= current_user.profile_path %>"<%= active_menu_state(@active_dashboard_menu, :profile) %>>
                           <span><%= t('headings.profile') %></span>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= dashboard_contributions_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :contributions) %>>
+                        <a href="<%= dashboard_contributions_path %>"<%= active_menu_state(@active_dashboard_menu, :contributions) %>>
                           <span><%= t('headings.contributions') %></span>
                         </a>
                       </li>
                       <li>
-                        <a href="<%= edit_user_registration_path %>"<%= active_dashboard_menu_state(@active_dashboard_menu, :account) %>>
+                        <a href="<%= edit_user_registration_path %>"<%= active_menu_state(@active_dashboard_menu, :account) %>>
                           <span><%= t('headings.account') %></span>
                         </a>
                       </li>

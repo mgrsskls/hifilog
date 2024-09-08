@@ -8,6 +8,7 @@ class Note < ApplicationRecord
   validates :product, presence: true
   validates :product_variant, uniqueness: { scope: [:user, :product] }
 
+  # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at
@@ -24,4 +25,5 @@ class Note < ApplicationRecord
       user
     ]
   end
+  # :nocov:
 end

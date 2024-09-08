@@ -80,17 +80,17 @@ Rails.application.routes.draw do
     get '/notes', to: 'notes#new', as: :new_notes
     resources :product_variants, only: [:create, :update]
     get '/variants/new', to: 'product_variants#new'
-    get '/v/:variant', to: 'product_variants#show', as: :variant
-    get '/v/:variant/edit', to: 'product_variants#edit', as: :edit_variant
-    get '/v/:variant/changelog', to: 'product_variants#changelog', as: :variant_changelog
-    get '/v/:variant/notes', to: 'notes#new', as: :new_variant_notes
+    get '/v/:id', to: 'product_variants#show', as: :variant
+    get '/v/:id/edit', to: 'product_variants#edit', as: :edit_variant
+    get '/v/:id/changelog', to: 'product_variants#changelog', as: :variant_changelog
+    get '/v/:id/notes', to: 'notes#new', as: :new_variant_notes
   end
 
   get '/search', to: "search#results"
 
   root "application#index"
 
-  get '/sitemap.xml', to: 'sitemap#xml'
+  get '/sitemap.xml', to: 'sitemap#xml', as: :sitemap
   get '/feed.rss', to: 'feed#rss', as: :rss
 
   get '/changelog', to: 'static#changelog'

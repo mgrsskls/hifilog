@@ -11,18 +11,18 @@
       <div class="Heading">
         <h1>
           <span><%= @product.brand.name %></span> <%= @product.name %>
-          <span class="Product-variantName">&mdash; <%= @variant.name_with_fallback %></span>
+          <span class="Product-variantName">&mdash; <%= @product_variant.name_with_fallback %></span>
         </h1>
       </div>
 
-      <% if @variant.description.present? %>
+      <% if @product_variant.description.present? %>
         <div class="Entity-description Rte">
-          <%= sanitize @variant.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+          <%= sanitize @product_variant.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
         </div>
       <% end %>
 
       <dl class="Data">
-        <% if @variant.discontinued? %>
+        <% if @product_variant.discontinued? %>
           <dt><%= t('status') %></dt>
           <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
         <% end %>
@@ -39,17 +39,17 @@
         </dd>
         <dt><%= Product.human_attribute_name(:release_date) %></dt>
         <dd>
-          <% if @variant.release_date.present? %>
-            <time datetime="<%= @variant.release_date %>" data-format="false"><%= @variant.release_date %></time>
+          <% if @product_variant.release_date.present? %>
+            <time datetime="<%= @product_variant.release_date %>" data-format="false"><%= @product_variant.release_date %></time>
           <% else %>
             -
           <% end %>
         </dd>
-        <% if @variant.discontinued? %>
+        <% if @product_variant.discontinued? %>
           <dt><%= t('discontinued') %></dt>
           <dd>
-            <% if @variant.discontinued_date.present? %>
-              <time datetime="<%= @variant.discontinued_date %>" data-format="false"><%= @variant.discontinued_date %></time>
+            <% if @product_variant.discontinued_date.present? %>
+              <time datetime="<%= @product_variant.discontinued_date %>" data-format="false"><%= @product_variant.discontinued_date %></time>
             <% else %>
               -
             <% end %>
@@ -57,19 +57,19 @@
         <% end %>
         <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
         <dd>
-          <% if @variant.price.present? %>
-            <%= @variant.display_price %>
+          <% if @product_variant.price.present? %>
+            <%= @product_variant.display_price %>
           <% else %>
             -
           <% end %>
         </dd>
       </dl>
 
-      <% if @variant.product_options.any? %>
+      <% if @product_variant.product_options.any? %>
         <div class="Product-section">
           <h2><%= Product.human_attribute_name(:product_options) %></h2>
           <ul>
-            <% @variant.product_options.each do |option| %>
+            <% @product_variant.product_options.each do |option| %>
               <li><%= option[:option] %></li>
             <% end %>
           </ul>
@@ -137,12 +137,12 @@
                   <td class="Table-symbols"><%= render "shared/symbols", product: @product %></td>
                 </tr>
                 <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
-                  <tr<% if @variant == variant %> aria-current="true"<% end %><% if user_has_product?(current_user, @product.id, variant.id) %> class="has-item"<% end %>>
+                  <tr<% if @product_variant == variant %> aria-current="true"<% end %><% if user_has_product?(current_user, @product.id, variant.id) %> class="has-item"<% end %>>
                     <th><b><%= link_to variant.name_with_fallback, variant.path %></b></th>
                     <td class="Table-sm"><%= variant.description.present? ? variant.description : "-" %></td>
                     <td class="Table-sm"><%= variant.release_date.present? ? variant.release_date : "-" %></td>
                     <td class="Table-sm"><%= variant.price.present? ? variant.display_price : "-" %></td>
-                    <td class="Table-symbols"><%= render "shared/symbols", product: @product, variant: variant %></td>
+                    <td class="Table-symbols"><%= render "shared/symbols", product: @product, id: variant %></td>
                   </tr>
                 <% end %>
               </tbody>
@@ -153,7 +153,7 @@
     </div>
   </div>
   <div class="Entity-sub Product-sub u-pullOut">
-    <%= render "products/actions", product: @product, variant: @variant, possessions: @possessions %>
+    <%= render "products/actions" %>
 
     <hr>
 
@@ -161,24 +161,24 @@
       <dt>Notes</dt>
       <dd>
         <% if @note.present? %>
-          Last Updated: <%= link_to product_new_variant_notes_path(product_id: @product.friendly_id, variant: @variant.friendly_id) do %>
+          Last Updated: <%= link_to product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) do %>
             <time datetime="<%= formatted_datetime @note.updated_at %>" data-time="true"><%= formatted_datetime @note.updated_at %></time>
           <% end %>
         <% else %>
-          <%= link_to "Add notes", user_signed_in? ? product_new_variant_notes_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_new_variant_notes_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
+          <%= link_to "Add notes", user_signed_in? ? product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)) %>
         <% end %>
       </dd>
       <dt><%= t('product.meta.owned_by') %></dt>
-      <dd><%= t('amount_users', count: @variant.users.size) %></dd>
+      <dd><%= t('amount_users', count: @product_variant.users.size) %></dd>
     </dl>
 
     <div class="Entity-meta">
       <ul class="Entity-metaLinks MetaLinks">
         <li>
-          <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
+          <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)) %>
         </li>
         <li>
-          <%= link_to t('headings.changelog'), user_signed_in? ? product_variant_changelog_path(product_id: @product.friendly_id, variant: @variant.friendly_id) : new_user_session_path(redirect: product_variant_changelog_path(product_id: @product.friendly_id, variant: @variant.friendly_id)) %>
+          <%= link_to t('headings.changelog'), user_signed_in? ? product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)) %>
         </li>
       </ul>
       <dl>

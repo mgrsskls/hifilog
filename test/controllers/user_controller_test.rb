@@ -6,7 +6,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to new_user_session_path
 
-    sign_in users(:visible)
+    sign_in users(:one)
 
     get dashboard_root_path
     assert_response :success
@@ -17,7 +17,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to new_user_session_path
 
-    sign_in users(:visible)
+    sign_in users(:one)
 
     get dashboard_products_path
     assert_response :success
@@ -31,7 +31,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to new_user_session_path
 
-    sign_in users(:visible)
+    sign_in users(:one)
 
     get dashboard_bookmarks_path
     assert_response :success
@@ -45,7 +45,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to new_user_session_path
 
-    sign_in users(:visible)
+    sign_in users(:one)
 
     get dashboard_prev_owneds_path
     assert_response :success
@@ -59,9 +59,31 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to new_user_session_path
 
-    sign_in users(:visible)
+    sign_in users(:one)
 
     get dashboard_contributions_path
+    assert_response :success
+  end
+
+  test 'history' do
+    get dashboard_history_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_history_path
+    assert_response :success
+  end
+
+  test 'statistics' do
+    get dashboard_statistics_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_statistics_path
     assert_response :success
   end
 end

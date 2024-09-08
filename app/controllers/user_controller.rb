@@ -20,7 +20,6 @@ class UserController < ApplicationController
                        .where.not(id: current_user.app_news_ids)
                        .order(:created_at)
                        .reverse
-                       .map { |news| AppNewsPresenter.new(news) }
   end
 
   def products
@@ -28,19 +27,17 @@ class UserController < ApplicationController
     @page_title = I18n.t('headings.collection')
     @active_dashboard_menu = :products
 
-    all = current_user.possessions
-                      .where(prev_owned: false)
-                      .includes([product: [{ sub_categories: :category }, :brand]])
-                      .includes([:product_variant, :product_option, :setup_possession, :setup])
-                      .includes([custom_product: [{ sub_categories: :category }]])
-                      .includes([image_attachment: [:blob]])
-                      .map do |possession|
-                        if possession.custom_product_id
-                          CustomProductPossessionPresenter.new(possession)
-                        else
-                          CurrentPossessionPresenter.new(possession)
-                        end
-                      end
+    all = map_possessions_to_presenter current_user.possessions
+                                                   .where(prev_owned: false)
+                                                   .includes([product: [{ sub_categories: :category }, :brand]])
+                                                   .includes([
+                                                               :product_variant,
+                                                               :product_option,
+                                                               :setup_possession,
+                                                               :setup
+                                                             ])
+                                                   .includes([custom_product: [{ sub_categories: :category }]])
+                                                   .includes([image_attachment: [:blob]])
 
     all = all.sort_by { |possession| possession.display_name.downcase }
 

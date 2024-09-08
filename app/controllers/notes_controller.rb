@@ -34,7 +34,7 @@ class NotesController < ApplicationController
 
   def new
     @product = Product.friendly.find(params[:product_id])
-    @product_variant = @product.product_variants.friendly.find(params[:variant]) if params[:variant].present?
+    @product_variant = @product.product_variants.friendly.find(params[:id]) if params[:id].present?
 
     @note = current_user.notes.find_by(
       product_id: @product.id,
@@ -45,59 +45,24 @@ class NotesController < ApplicationController
     add_breadcrumb Product.model_name.human(count: 2), products_path
     add_breadcrumb display_name, @product_variant.present? ? product_variant_path(
       product_id: @product.friendly_id,
-      variant: @product_variant.friendly_id
+      id: @product_variant.friendly_id
     ) : product_path(id: @product.friendly_id)
     add_breadcrumb 'Notes'
     @page_title = "Notes — #{display_name}"
   end
 
   def create
-    note = Note.new(note_params)
-    note.user = current_user
+    @note = Note.new(note_params)
+    @note.user = current_user
 
-    @product = note.product
-    @product_variant = note.product_variant if note.product_variant.present?
-
-    if note.save
-      flash[:notice] = I18n.t('note.messages.saved') # rubocop:disable Rails/ActionControllerFlashBeforeRender
-
-      if @product_variant.present?
-        redirect_back fallback_location: product_new_variant_notes_url(
-          product_id: @product.friendly_id,
-          variant: @product_variant.friendly_id
-        )
-      else
-        redirect_back fallback_location: product_new_notes_url(product_id: @product.friendly_id)
-      end
-    else
-      note.errors.each do |error|
-        flash.now[:alert] = error.full_message
-      end
-      render :new, status: :unprocessable_entity
-    end
+    save_note
   end
 
   def update
     @note = current_user.notes.find(params[:id])
     @note.update(note_params)
 
-    @product = @note.product
-    @product_variant = @note.product_variant
-
-    if @note.save
-      flash[:notice] = I18n.t('note.messages.saved') # rubocop:disable Rails/ActionControllerFlashBeforeRender
-
-      if @product_variant.present?
-        redirect_back fallback_location: product_new_variant_notes_url(
-          product_id: @product.friendly_id,
-          variant: @product_variant.friendly_id
-        )
-      else
-        redirect_back fallback_location: product_new_notes_url(product_id: @product.friendly_id)
-      end
-    else
-      render :new, status: :unprocessable_entity
-    end
+    save_note
   end
 
   def destroy
@@ -109,6 +74,29 @@ class NotesController < ApplicationController
   end
 
   private
+
+  def save_note
+    @product = @note.product
+    @product_variant = @note.product_variant
+
+    if @note.save
+      flash[:notice] = I18n.t('note.messages.saved') # rubocop:disable Rails/ActionControllerFlashBeforeRender
+
+      if @product_variant.present?
+        redirect_back fallback_location: product_new_variant_notes_url(
+          product_id: @product.friendly_id,
+          id: @product_variant.friendly_id
+        )
+      else
+        redirect_back fallback_location: product_new_notes_url(product_id: @product.friendly_id)
+      end
+    else
+      @note.errors.each do |error|
+        flash.now[:alert] = error.full_message
+      end
+      render :new, status: :unprocessable_entity
+    end
+  end
 
   def note_params
     params.require(:note).permit(:text, :product_id, :product_variant_id)

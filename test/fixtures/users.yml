@@ -1,25 +1,27 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+one:
+  email: user@example.com
+  user_name: one_username
+  confirmed_at: 2024-01-01
+  encrypted_password: $2a$12$Q2a2KrQdsYUbMR7z3McIHeWZ.P5n.sKPEr.S8SmRtR0FlG8dh5H1a # "encrypted_password"
+  profile_visibility: 2
 
 hidden:
   email: user1@example.com
   profile_visibility: hidden
   user_name: username1
   confirmed_at: 2024-01-01
-  products: []
 
 logged_in_only:
   email: user2@example.com
   profile_visibility: logged_in_only
   user_name: username2
   confirmed_at: 2024-01-01
-  products: []
 
 visible:
   email: user3@example.com
   profile_visibility: visible
   user_name: username3
   confirmed_at: 2024-01-01
-  products: []
 
 with_everything:
   email: user4@example.com
@@ -28,8 +30,9 @@ with_everything:
   confirmed_at: 2024-01-01
 
 without_anything:
+  encrypted_password: encrypted_password
   email: user5@example.com
   profile_visibility: visible
   user_name: username5
   confirmed_at: 2024-01-01
-  products: []
+  app_news: []

@@ -60,4 +60,6 @@ Rails.application.configure do
 
   # Compress CSS using a preprocessor.
   config.assets.css_compressor = nil
+
+  routes.default_url_options = { host: "http://localhost:3000" }
 end

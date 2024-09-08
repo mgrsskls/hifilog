@@ -2,10 +2,15 @@
 
 one:
   option: MyString
-  product_id:
-  product_variant_id:
+  product: one
+  product_variant:
 
 two:
   option: MyString2
-  product_id:
-  product_variant_id:
+  product: with_variants
+  product_variant: two
+
+three:
+  option: MyString2
+  product: one
+  product_variant:

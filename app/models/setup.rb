@@ -13,6 +13,7 @@ class Setup < ApplicationRecord
     private? ? I18n.t('setup.private_values.yes') : I18n.t('setup.private_values.no')
   end
 
+  # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       user_id
@@ -23,4 +24,5 @@ class Setup < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
+  # :nocov:
 end
