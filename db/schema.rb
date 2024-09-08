@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_08_193503) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_08_205340) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -209,7 +209,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_08_193503) do
   end
 
   create_table "product_variants", force: :cascade do |t|
-    t.citext "name", default: "", null: false
+    t.citext "name", default: ""
     t.text "description"
     t.integer "release_year"
     t.datetime "created_at", null: false
