@@ -48,7 +48,6 @@ class BrandsController < ApplicationController
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: @sub_category, discontinued:)
                     .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif params[:letter].present? &&
           ABC.include?(params[:letter]) &&
@@ -58,20 +57,17 @@ class BrandsController < ApplicationController
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: { category_id: @category.id }, discontinued:)
                     .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif params[:letter].present? && ABC.include?(params[:letter]) && @sub_category
       @category = Category.find(@sub_category.category_id)
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: @sub_category)
                     .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif params[:letter].present? && ABC.include?(params[:letter]) && @category
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: { category_id: @category.id })
                     .where('left(lower(brands.name),1) = ?', params[:letter].downcase)
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif params[:letter].present? && ABC.include?(params[:letter]) && params[:status].present?
       brands = Brand.where('left(lower(brands.name),1) = :prefix', prefix: params[:letter].downcase)
@@ -81,13 +77,11 @@ class BrandsController < ApplicationController
       discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: @sub_category, discontinued:)
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif @category && params[:status].present?
       discontinued = STATUSES.include?(params[:status]) && params[:status] == 'discontinued'
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: { category_id: @category.id }, discontinued:)
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif params[:letter].present? && ABC.include?(params[:letter])
       brands = Brand.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
@@ -95,12 +89,10 @@ class BrandsController < ApplicationController
     elsif @sub_category
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: @sub_category)
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif @category.present?
       brands = Brand.joins(:sub_categories)
                     .where(sub_categories: { category_id: @category.id })
-                    .distinct
                     .order(update_for_joined_tables(order))
     elsif params[:status].present?
       brands = Brand.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
