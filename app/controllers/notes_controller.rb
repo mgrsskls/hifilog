@@ -43,10 +43,13 @@ class NotesController < ApplicationController
 
     display_name = @product_variant.present? ? @product_variant.display_name : @product.display_name
     add_breadcrumb Product.model_name.human(count: 2), products_path
-    add_breadcrumb display_name, @product_variant.present? ? product_variant_path(
-      product_id: @product.friendly_id,
-      id: @product_variant.friendly_id
-    ) : product_path(id: @product.friendly_id)
+    add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
+    if @product_variant.present?
+      add_breadcrumb @product_variant.short_name, product_variant_path(
+        variant: @product_variant.friendly_id,
+        product_id: @product.friendly_id
+      )
+    end
     add_breadcrumb 'Notes'
     @page_title = "Notes — #{display_name}"
   end
