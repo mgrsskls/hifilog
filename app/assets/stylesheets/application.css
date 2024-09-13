@@ -139,6 +139,7 @@
 		--color-button-copy: var(--color-white);
 		--color-highlight-copy: var(--color-white);
 		--color-invalid-light: hsl(330, 40%, 90%);
+		--color-invalid-medium: hsl(330, 40%, 45%);
 		--color-invalid-dark: hsl(330, 85%, 25%);
 		--color-invalid-bg: var(--color-invalid-light);
 		--color-invalid-copy: var(--color-invalid-dark);

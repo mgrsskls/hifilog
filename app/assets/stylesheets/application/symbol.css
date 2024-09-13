@@ -5,9 +5,13 @@
 
 .Symbols-item {
 	flex: 0 0 var(--size);
-	display: flex;
+	display: flex !important;
 	align-items: center;
 	gap: 0.5em;
+}
+
+.Symbols-item[hidden] {
+	visibility: hidden !important;
 }
 
 .Symbol {

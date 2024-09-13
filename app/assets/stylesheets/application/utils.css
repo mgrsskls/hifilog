@@ -71,6 +71,10 @@
 	font-size: 0.875em;
 }
 
+.u-noWrap {
+	white-space: nowrap;
+}
+
 .u-hiddenVisually {
 	position: absolute;
 	width: 1px;

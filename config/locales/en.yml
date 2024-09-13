@@ -270,7 +270,7 @@ en:
     discontinued: Discontinued
     in_your_bookmarks: Bookmarked
     in_your_collection: In my collection
-    prev_owned: Previous product
+    prev_owned: Previously owned
   user:
     password_hint: 12 characters minimum
     edit:

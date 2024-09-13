@@ -12,6 +12,11 @@ class ProductVariantsController < ApplicationController
 
     if user_signed_in?
       @possessions = map_possessions_to_presenter current_user.possessions
+                                                              .includes([:product])
+                                                              .includes([:product_variant])
+                                                              .includes([:setup_possession])
+                                                              .includes([:setup])
+                                                              .includes([:product_option])
                                                               .where(
                                                                 product_id: @product.id,
                                                                 product_variant_id: @product_variant.id,
@@ -25,7 +30,7 @@ class ProductVariantsController < ApplicationController
 
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: @product_variant.id)
       @note = current_user.notes.find_by(product_variant_id: @product_variant.id)
-      @setups = current_user.setups.includes(:possessions)
+      @setups = current_user.setups
     end
 
     @public_possessions_with_image = @product_variant.possessions

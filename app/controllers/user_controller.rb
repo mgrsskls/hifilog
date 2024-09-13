@@ -1,4 +1,6 @@
 class UserController < ApplicationController
+  include ApplicationHelper
+
   before_action :authenticate_user!
   before_action :set_breadcrumb
 
@@ -252,6 +254,69 @@ class UserController < ApplicationController
     @products_removed_per_year = products_removed_per_year
     @current_products_per_brand = get_products_per_brand
     @all_products_per_brand = get_products_per_brand(all: true)
+  end
+
+  def has
+    if params[:brands].present?
+      possessions = current_user.possessions
+                                .includes([product: [:brand]])
+                                .includes([product_variant: [product: [:brand]]])
+                                .where(products: { brand_id: params[:brands] })
+
+      brands = params[:brands].map do |brand_id|
+        {
+          id: brand_id.to_i,
+          in_collection: possessions.any? do |possession|
+            possession.product.brand.id == brand_id.to_i && possession.prev_owned == false
+          end,
+          previously_owned: possessions.any? do |possession|
+            possession.product.brand.id == brand_id.to_i && possession.prev_owned == true
+          end,
+        }
+      end
+    end
+
+    if params[:products].present?
+      possessions = current_user.possessions
+                                .includes([:product])
+                                .where(product: params[:products], product_variant: nil)
+
+      products = params[:products].map do |product_id|
+        {
+          id: product_id.to_i,
+          in_collection: possessions.any? do |possession|
+            possession.product.id == product_id.to_i && possession.prev_owned == false
+          end,
+          previously_owned: possessions.any? do |possession|
+            possession.product.id == product_id.to_i && possession.prev_owned == true
+          end,
+        }
+      end
+    end
+
+    if params[:product_variants].present?
+      possessions = current_user.possessions
+                                .includes([:product_variant])
+                                .where(product_variant: params[:product_variants])
+
+      product_variants = params[:product_variants].map do |product_variant_id|
+        {
+          id: product_variant_id.to_i,
+          in_collection: possessions.any? do |possession|
+            possession.product_variant.id == product_variant_id.to_i && possession.prev_owned == false
+          end,
+          previously_owned: possessions.any? do |possession|
+            possession.product_variant.id == product_variant_id.to_i && possession.prev_owned == true
+          end,
+        }
+      end
+    end
+
+    render json: {
+      brands:,
+      products:,
+      product_variants:,
+    }
   end
 
   private

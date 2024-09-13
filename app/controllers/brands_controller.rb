@@ -64,8 +64,7 @@ class BrandsController < ApplicationController
                  brands.joins(:sub_categories)
                        .where(sub_categories: @sub_category)
                else
-                 brands.joins(:sub_categories)
-                       .where(sub_categories: { category_id: @category.id })
+                 brands.where(sub_categories: { category_id: @category.id })
                end
       brands = brands.order(update_for_joined_tables(order))
     else

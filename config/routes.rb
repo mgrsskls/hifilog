@@ -49,6 +49,7 @@ Rails.application.routes.draw do
     resources :setups, only: [:index, :show, :new, :edit]
     resources :notes, only: [:index, :show]
   end
+  get '/user/has', to: 'user#has', as: :has
 
   resources :notes, only: [:create, :destroy, :update]
   resources :custom_products, only: [:create, :destroy, :update]

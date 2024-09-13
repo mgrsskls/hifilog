@@ -18,6 +18,13 @@ class Possession < ApplicationRecord
 
   attr_accessor :delete_image
 
+  def brand
+    return product_variant.product.brand if product_variant.present?
+    return product.brand if product.present?
+
+    nil
+  end
+
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[

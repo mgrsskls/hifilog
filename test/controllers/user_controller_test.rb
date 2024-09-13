@@ -86,4 +86,41 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     get dashboard_statistics_path
     assert_response :success
   end
+
+  test 'has' do
+    get has_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get has_path
+
+    res = JSON.parse(@response.body)
+    assert_nil res[:brands]
+    assert_nil res[:products]
+    assert_nil res[:product_variants]
+    assert_response :success
+
+    get has_path, params: {
+      brands: [brands(:one).id, brands(:two).id],
+      products: [products(:one).id, products(:two).id],
+      product_variants: [product_variants(:one).id, product_variants(:two).id]
+    }
+
+    res = JSON.parse(@response.body)
+    assert_equal [
+      { 'id' => brands(:one).id, 'in_collection' => true, 'previously_owned' => false },
+      { 'id' => brands(:two).id, 'in_collection' => false, 'previously_owned' => true }
+    ], res['brands']
+    assert_equal [
+      { 'id' => products(:one).id, 'in_collection' => true, 'previously_owned' => false },
+      { 'id' => products(:two).id, 'in_collection' => false, 'previously_owned' => true }
+    ], res['products']
+    assert_equal [
+      { 'id' => product_variants(:one).id, 'in_collection' => true, 'previously_owned' => false },
+      { 'id' => product_variants(:two).id, 'in_collection' => false, 'previously_owned' => true }
+    ], res['product_variants']
+    assert_response :success
+  end
 end

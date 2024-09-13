@@ -129,7 +129,7 @@
               <th class="Table-symbols"><%= t('status') %></th>
             </thead>
             <tbody>
-              <tr aria-current="true"<% if user_has_product?(current_user, @product.id) %> class="has-item"<% end %>>
+              <tr aria-current="true"<% if @product.discontinued? %> class="is-discontinued"<% end %>>
                 <th><b><%= link_to @product.name, product_path(id: @product.friendly_id) %></b></th>
                 <td class="Table-sm">Initial / Stock version</td>
                 <td class="Table-sm"><%= @product.release_date.present? ? @product.release_date : "-" %></td>
@@ -137,12 +137,12 @@
                 <td class="Table-symbols"><%= render "shared/symbols", product: @product %></td>
               </tr>
               <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |product_variant| %>
-                <tr<% if user_has_product?(current_user, @product.id, product_variant.id) %> class="has-item"<% end %>>
+                <tr<% if product_variant.discontinued? %> class="is-discontinued"<% end %>>
                   <th><b><%= link_to product_variant.name_with_fallback, product_variant.path %></b></th>
                   <td class="Table-sm"><%= product_variant.description.present? ? product_variant.description : "-" %></td>
                   <td class="Table-sm"><%= product_variant.release_date.present? ? product_variant.release_date : "-" %></td>
                   <td class="Table-sm"><%= product_variant.price.present? ? product_variant.display_price : "-" %></td>
-                  <td class="Table-symbols"><%= render "shared/symbols", product: @product, product_variant: product_variant %></td>
+                  <td class="Table-symbols"><%= render "shared/symbols", product_variant: product_variant %></td>
                 </tr>
               <% end %>
             </tbody>
