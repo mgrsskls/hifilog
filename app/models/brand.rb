@@ -2,6 +2,7 @@ class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
   include ApplicationHelper
+  include FormatHelper
   include Description
 
   pg_search_scope :search_by_name_and_description,

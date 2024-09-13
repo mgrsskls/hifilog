@@ -6,14 +6,6 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal active_menu_state('page1', 'page2'), ' aria-current=false'
   end
 
-  test 'formatted_date' do
-    assert_equal formatted_date(Time.zone.local(2000, 1, 1)), '2000-01-01T00:00+0000'
-  end
-
-  test 'formatted_datetime' do
-    assert_equal formatted_datetime(Time.zone.local(2000, 1, 1, 12, 30)), '2000-01-01T12:30+0000'
-  end
-
   test 'user_has_product?' do
     assert_not user_has_product?(nil, products(:one))
     assert user_has_product?(users(:one), products(:one))

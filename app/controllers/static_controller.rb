@@ -1,5 +1,5 @@
 class StaticController < ApplicationController
-  include ApplicationHelper
+  include FormatHelper
 
   def changelog
     @html = markdown_to_html Rails.root.join('CHANGELOG.md').read

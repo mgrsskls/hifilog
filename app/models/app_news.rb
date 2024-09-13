@@ -1,5 +1,5 @@
 class AppNews < ApplicationRecord
-  include ApplicationHelper
+  include FormatHelper
 
   has_and_belongs_to_many :users
 
