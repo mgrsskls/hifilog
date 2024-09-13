@@ -1,19 +1,19 @@
 <% variant_id = @product_variant ? @product_variant.id : nil %>
 <% if user_signed_in? %>
   <% @possessions.each do |possession| %>
-    <div class="ProductPossession" data-current="<%= !possession.prev_owned %>">
+    <div class="EntityPossession" data-current="<%= !possession.prev_owned %>">
       <% if possession.errors.any? %>
         <%= render "shared/flash_messages", messages: possession.errors.map { |error| ["alert", error.full_message] } %>
       <% end %>
 
-      <div class="ProductPossession-heading u-flex u-alignCenter">
+      <div class="EntityPossession-heading u-flex u-alignCenter">
         <div>
           <%= render "shared/image_upload", item: ItemPresenter.new(possession), image_update_item: possession, size: "5.2rem", prefix: "possessions" %>
         </div>
         <div>
-          <b class="ProductPossession-headingName"><%= possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
+          <b class="EntityPossession-headingName"><%= possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
           <% if possession.period_from || possession.period_to || possession.setup || possession.product_option %>
-            <div class="ProductPossession-period">
+            <div class="EntityPossession-period">
               <% if possession.prev_owned %>
                 <% if possession.period_from && possession.period_to %>
                   <small>
@@ -55,10 +55,10 @@
           <% end %>
         </div>
       </div>
-      <details class="ProductPossession-metaLinks Entity-metaLinks">
+      <details class="EntityPossession-metaLinks Entity-metaLinks">
         <summary>Edit / Remove</summary>
-        <%= form_for possession, method: :put, html: { class: "ProductPossession-setup", id: "possession-form-#{possession.id}" } do |f| %>
-          <div class="ProductPossession-form">
+        <%= form_for possession, method: :put, html: { class: "EntityPossession-setup", id: "possession-form-#{possession.id}" } do |f| %>
+          <div class="EntityPossession-form">
             <% unless possession.prev_owned %>
               <%= f.label :period_from, "Since" %>
               <%= f.date_field :period_from %>

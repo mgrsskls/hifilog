@@ -82,3 +82,73 @@
 	margin-block-start: 3rem;
 	padding-inline: 1.2rem;
 }
+
+.EntityPossession {
+	border: 0.25rem solid var(--color-transparency-10);
+	border-radius: var(--border-radius);
+	padding: 0.75rem;
+	color: var(--color-secondary);
+}
+
+.EntityPossession[data-current="true"] {
+	background: var(--color-success-bg);
+	color: var(--color-success-copy);
+}
+
+.EntityPossession-heading {
+	margin-block: 0;
+	gap: 0.625rem;
+}
+
+.EntityPossession-headingName {
+	display: block;
+	line-height: 1.25;
+}
+
+.EntityPossession + .EntityPossession {
+	margin-block-start: 1rem;
+}
+
+.EntityPossession-heading + .EntityPossession-setup {
+	margin-block-start: 0.75rem;
+	border-block-start: var(--border) var(--color-transparency-15);
+	padding-block-start: 0.75rem;
+}
+
+.EntityPossession-setup + .EntityPossession-setup {
+	margin-block-start: 0.25rem;
+}
+
+.EntityPossession-period {
+	line-height: 1.5;
+	margin-block-start: 0.5rem;
+}
+
+.EntityPossession-period small {
+	display: block;
+}
+
+.EntityPossession-period span {
+	font-weight: 600;
+}
+
+.EntityPossession-form {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0.5rem;
+	padding-block: 1rem;
+}
+
+.EntityPossession-metaLinks {
+	margin-block-start: 0.75rem;
+	border-block-start: var(--border) var(--color-transparency-15);
+	padding-block-start: 0.5rem;
+	font-size: 0.875rem;
+}
+
+.EntityPossession-metaLinks summary {
+	flex-direction: row-reverse;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}

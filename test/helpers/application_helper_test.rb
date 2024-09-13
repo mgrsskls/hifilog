@@ -33,10 +33,13 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   test 'user_has_brand?' do
-    assert_not user_has_brand?(nil, brands(:one))
+    assert_not user_has_brand?(nil, brands(:one), false)
 
-    assert user_has_brand?(users(:one), brands(:one))
-    assert_not user_has_brand?(users(:without_anything), brands(:one))
+    assert user_has_brand?(users(:one), brands(:one), false)
+    assert_not user_has_brand?(users(:without_anything), brands(:one), false)
+
+    assert user_has_brand?(users(:one), brands(:two), true)
+    assert_not user_has_brand?(users(:without_anything), brands(:two), true)
   end
 
   test 'user_possessions_count' do

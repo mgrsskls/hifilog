@@ -57,19 +57,19 @@
   <% if user_signed_in? && @custom_product.user == current_user %>
     <div class="Entity-sub Product-sub u-pullOut">
       <% if @possession %>
-        <div class="ProductPossession" data-current="<%= !@possession.prev_owned %>">
+        <div class="EntityPossession" data-current="<%= !@possession.prev_owned %>">
           <% if @custom_product.errors.any? %>
             <%= render "shared/flash_messages", messages: @custom_product.errors.map { |error| ["alert", error.full_message] } %>
           <% end %>
 
-          <div class="ProductPossession-heading u-flex u-alignCenter">
+          <div class="EntityPossession-heading u-flex u-alignCenter">
             <div>
               <%= render "shared/image_upload", item: @custom_product, image_update_item: @custom_product, size: "4rem", prefix: "possessions" %>
             </div>
             <div>
-              <b class="ProductPossession-headingName"><%= @possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
+              <b class="EntityPossession-headingName"><%= @possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
               <% if @possession.period_from || @possession.period_to || @possession.setup %>
-                <div class="ProductPossession-period">
+                <div class="EntityPossession-period">
                   <% if @possession.prev_owned %>
                     <% if @possession.period_from && @possession.period_to %>
                       <small>
@@ -106,10 +106,10 @@
             </div>
           </div>
 
-          <details class="ProductPossession-metaLinks Entity-metaLinks">
+          <details class="EntityPossession-metaLinks Entity-metaLinks">
             <summary>Edit / Remove</summary>
-            <%= form_for @possession, method: :put, html: { class: "ProductPossession-setup", id: "possession-form-#{@possession.id}" } do |f| %>
-              <div class="ProductPossession-form">
+            <%= form_for @possession, method: :put, html: { class: "EntityPossession-setup", id: "possession-form-#{@possession.id}" } do |f| %>
+              <div class="EntityPossession-form">
                 <% unless @possession.prev_owned %>
                   <%= f.label :period_from, "Since" %>
                   <%= f.date_field :period_from %>

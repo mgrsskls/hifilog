@@ -61,6 +61,17 @@
   </div>
 
   <div class="Entity-sub u-pullOut">
+    <% if user_has_brand?(current_user, @brand, false) %>
+      <div class="EntityPossession" data-current="true">
+        You own <b><%= @brand.name %></b> products.
+      </div>
+      <hr>
+    <% elsif user_has_brand?(current_user, @brand, true) %>
+      <div class="EntityPossession" data-current="false">
+        You used to own <b><%= @brand.name %></b> products.
+      </div>
+      <hr>
+    <% end %>
     <dl>
       <dt><%= t('product.meta.owned_by') %></dt>
       <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>

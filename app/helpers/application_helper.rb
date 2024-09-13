@@ -96,8 +96,14 @@ module ApplicationHelper
     )
   end
 
-  def user_has_brand?(user, brand)
-    brand && user && user.products.exists?(brand_id: brand.id)
+  def user_has_brand?(user, brand, prev_owned)
+    return false unless brand && user
+
+    user.possessions
+        .where(prev_owned:)
+        .joins(:product)
+        .where({ product: { brand_id: brand.id } })
+        .any?
   end
 
   def get_changelog(changes)
