@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# If any command fails, exit immediately with that command's exit status
+set -eo pipefail
+
 echo Running pre-commit hook
 bundle exec rubocop --raise-cop-error
 bundle exec rails test
