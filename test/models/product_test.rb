@@ -21,4 +21,9 @@ class ProductTest < ActiveSupport::TestCase
   test 'url_slug' do
     assert_equal 'feliks-audio-elise', products(:one).url_slug
   end
+
+  test 'custom_attributes_list' do
+    assert_nil products(:without_custom_attributes).custom_attributes_list
+    assert_equal 'Stereo, Direct Drive', products(:with_custom_attributes).custom_attributes_list
+  end
 end

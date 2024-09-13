@@ -121,7 +121,7 @@ class BrandsController < ApplicationController
         order = 'release_year DESC NULLS LAST, release_month DESC NULLS LAST, release_day DESC NULLS LAST, LOWER(name)'
       end
     end
-    @products = products.includes([:sub_categories]).order(order).page(params[:page])
+    @products = products.includes([:sub_categories, :product_variants]).order(order).page(params[:page])
     @total_products_count = @brand.products.count
 
     @contributors = User.find_by_sql(["

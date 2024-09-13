@@ -90,9 +90,4 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_nil country_name_from_country_code(:xyz)
     assert_equal 'Germany', country_name_from_country_code(:de)
   end
-
-  test 'custom_attributes_list' do
-    assert_nil custom_attributes_list(products(:without_custom_attributes))
-    assert_equal 'Stereo, Direct Drive', custom_attributes_list(products(:with_custom_attributes))
-  end
 end

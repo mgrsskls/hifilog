@@ -36,7 +36,7 @@
             </td>
           <% end %>
           <td class="Table-sm">
-            <% attr_list = custom_attributes_list product %>
+            <% attr_list = product.custom_attributes_list %>
             <%= attr_list ? attr_list : "-" %>
           </td>
           <td class="Table-sm"><%= product.release_date.present? ? product.release_date : "-" %></td>
@@ -47,7 +47,7 @@
             </td>
           <% end %>
         </tr>
-        <% product.product_variants.order(:release_year, :release_month, :release_day).each do |product_variant| %>
+        <% product.product_variants.sort_by {|v| [v.release_year, v.release_month, v.release_day].compact}.each do |product_variant| %>
           <tr<% if product_variant.discontinued? %> class="is-discontinued"<% end %>>
             <th scope="row" class="Table-variant"><%= link_to (mark ? highlight(product_variant.name_with_fallback, mark) : product_variant.name_with_fallback), product_variant.path %></th>
             <% unless hide_brand %>
@@ -64,7 +64,7 @@
             <% end %>
             <td class="Table-sm">
               <span class="u-hiddenVisually">
-                <% attr_list = custom_attributes_list product %>
+                <% attr_list = product.custom_attributes_list %>
                 <%= attr_list ? attr_list : "-" %>
               </span>
             </td>

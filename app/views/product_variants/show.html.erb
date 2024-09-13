@@ -34,7 +34,7 @@
         <dd>
           <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
           <% if @product.custom_attributes.present? %>
-            <br><span class="Data-secondary"><%= custom_attributes_list @product %></span>
+            <br><span class="Data-secondary"><%= @product.custom_attributes_list %></span>
           <% end %>
         </dd>
         <dt><%= Product.human_attribute_name(:release_date) %></dt>

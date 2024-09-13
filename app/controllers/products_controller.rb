@@ -78,17 +78,22 @@ class ProductsController < ApplicationController
       products = products.order(order)
     end
 
-    CustomAttribute.find_each do |custom_attribute|
-      id_s = custom_attribute.id.to_s
-      if params[:attr].present? && params[:attr][id_s].present?
-        products = products.where('custom_attributes ->> ? = ?', id_s, params[:attr][id_s])
+    if params[:attr].present?
+      CustomAttribute.find_each do |custom_attribute|
+        id_s = custom_attribute.id.to_s
+        if params[:attr][id_s].present?
+          products = products.where('custom_attributes ->> ? = ?', id_s, params[:attr][id_s])
+        end
       end
     end
 
     @products_query = params[:query].strip if params[:query].present?
     products = products.search_by_name_and_description(@products_query) if @products_query.present?
 
-    @products = products.includes([:brand, :sub_categories, :product_variants]).page(params[:page])
+    @products = products.includes(:brand)
+                        .includes(:product_variants)
+                        .includes(sub_categories: [:custom_attributes])
+                        .page(params[:page])
   end
 
   def show

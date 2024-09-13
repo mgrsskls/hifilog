@@ -38,9 +38,6 @@
             <dt><%= Category.model_name.human %></dt>
             <dd>
               <%= @custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
-              <% if @custom_product.custom_attributes.present? %>
-                <br><span class="Data-secondary"><%= custom_attributes_list @custom_product %></span>
-              <% end %>
             </dd>
           </dl>
 

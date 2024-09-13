@@ -3,8 +3,13 @@ one:
   options:
     1: stereo
     2: dual-mono
+  sub_categories:
+    - one
 two:
   id: 2
   options:
     1: belt-drive
     2: direct-drive
+  sub_categories:
+    - one
+    - two
