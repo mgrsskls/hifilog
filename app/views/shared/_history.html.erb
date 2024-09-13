@@ -22,15 +22,7 @@
               <div class="HistoryList-content">
                 <small class="HistoryList-date">
                   <time datetime="<%= formatted_date possession[:date] %>"><%= formatted_date possession[:date] %></time>
-                  <% if possession[:presenter].owned_for.present? && (
-                    (
-                      possession[:type] == :from &&
-                      !possession[:presenter].prev_owned
-                    ) || (
-                      possession[:type] == :to &&
-                      possession[:presenter].prev_owned
-                    )
-                  ) %>
+                  <% if possession[:presenter].owned_for.present? && possession[:type] == :to %>
                     <br>Owned for <%= possession[:presenter].owned_for %>
                   <% end %>
                 </small>
