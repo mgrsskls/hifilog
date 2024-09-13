@@ -53,10 +53,12 @@ class BrandsController < ApplicationController
 
     if params[:letter].present? && ABC.include?(params[:letter])
       brands = brands.where('left(lower(brands.name),1) = ?', params[:letter].downcase)
+      @filter_applied = true
     end
 
-    if params[:status].present?
-      brands = brands.where(discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil)
+    if params[:status].present? && STATUSES.include?(params[:status])
+      brands = brands.where(discontinued: params[:status] == 'discontinued')
+      @filter_applied = true
     end
 
     if @sub_category || @category
@@ -71,8 +73,13 @@ class BrandsController < ApplicationController
       brands = brands.order(order)
     end
 
-    @brands_query = params[:query].strip if params[:query].present?
-    brands = brands.search_by_name_and_description(@brands_query) if @brands_query.present?
+    if params[:query].present?
+      @brands_query = params[:query].strip
+      if @brands_query.present?
+        brands = brands.search_by_name_and_description(@brands_query)
+        @filter_applied = true
+      end
+    end
 
     @brands = brands.includes(sub_categories: [:category]).page(params[:page])
   end
@@ -92,22 +99,30 @@ class BrandsController < ApplicationController
       products = @sub_category.products.where(brand_id: @brand.id)
       add_breadcrumb @brand.name, proc { :brand }
       add_breadcrumb @sub_category.name
+      @filter_applied = true
     else
       products = @brand.products
       add_breadcrumb @brand.name
     end
 
-    if params[:status].present?
-      products = products.where(
-        discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
-      )
-    end
-
-    @brands_query = params[:query].strip if params[:query].present?
-    products = products.search_by_name_and_description(@brands_query) if @brands_query.present?
-
     if params[:letter].present? && ABC.include?(params[:letter])
       products = products.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
+      @filter_applied = true
+    end
+
+    if params[:status].present? && STATUSES.include?(params[:status])
+      products = products.where(
+        discontinued: params[:status] == 'discontinued'
+      )
+      @filter_applied = true
+    end
+
+    if params[:query].present?
+      @brands_query = params[:query].strip
+      if @brands_query.present?
+        products = products.search_by_name_and_description(@brands_query)
+        @filter_applied = true
+      end
     end
 
     order = 'LOWER(name) ASC'

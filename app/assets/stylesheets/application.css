@@ -15,6 +15,7 @@
 @import url("./application/heading.css") layer(components);
 @import url("./application/image_dialog.css") layer(components);
 @import url("./application/image_gallery.css") layer(components);
+@import url("./application/index_page.css") layer(components);
 @import url("./application/instructions.css") layer(components);
 @import url("./application/menu.css") layer(components);
 @import url("./application/meta_links.css") layer(components);

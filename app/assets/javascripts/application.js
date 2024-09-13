@@ -9,7 +9,6 @@ import "./theme_toggle.js";
 	const filterClose = document.querySelector(".Filter-close");
 	const filterCategories = document.querySelectorAll('[name="category"]');
 	const filterSubCategories = document.querySelectorAll("[data-category]");
-	const sort = document.querySelector("#sort");
 	const buttonsWithLoadingState = document.querySelectorAll(
 		".Button--loadingIcon, .CheckboxButton",
 	);
@@ -33,10 +32,6 @@ import "./theme_toggle.js";
 	filterCategories.forEach((category) =>
 		category.addEventListener("change", onCategoryChange),
 	);
-
-	if (sort) {
-		sort.addEventListener("change", onSortChange);
-	}
 
 	buttonsWithLoadingState.forEach((el) => {
 		const button = el.closest("button");
@@ -180,10 +175,6 @@ import "./theme_toggle.js";
 				}
 			});
 		});
-	}
-
-	function onSortChange({ target }) {
-		target.closest("form").submit();
 	}
 
 	/**

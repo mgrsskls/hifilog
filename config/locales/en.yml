@@ -82,7 +82,7 @@ en:
   brand:
     new:
       heading: Add new Brand
-      link: Add Brand
+      link: Add
       submit: Submit
     founded: Founded
   changelog:
@@ -139,7 +139,7 @@ en:
     notes: "<p><b>You haven't created any private notes yet.</b></p><p>You can create these directly on a product page.</p>"
     prev_owneds: <p><b>You have not marked any products as previously owned yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then mark it as previously owned.</p>
     product_variants: <p><b>There are no product updates or other versions yet for <i>%{name}</i>.<br></b> You can <a href="%{path}">add an update / another version here</a>.</p>
-    products: "<p><b>There are no products yet.</b></p>"
+    products: "<p><b>No products found.</b></p>"
     products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}">add a product here</a>.</p>
     public_profile: "<p><i>%{name}</i> has not added any products to their collection yet.</p>"
     setup_products: <p><b>You have not added any products to this setup yet.</b></p><p>You can either do it by clicking on "Add / Remove Product" or directly on a product product page.</p>
@@ -193,7 +193,7 @@ en:
   product:
     new:
       heading: Add new Product
-      link: Add Product
+      link: Add
       submit: Submit
     remove:
       confirm: Are you sure you want to remove %{name} from your collection?

@@ -57,12 +57,14 @@ class ProductsController < ApplicationController
 
     if params[:letter].present? && ABC.include?(params[:letter])
       products = products.where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
+      @filter_applied = true
     end
 
-    if params[:status].present?
+    if params[:status].present? && STATUSES.include?(params[:status])
       products = products.where(
-        discontinued: STATUSES.include?(params[:status]) ? params[:status] == 'discontinued' : nil
+        discontinued: params[:status] == 'discontinued'
       )
+      @filter_applied = true
     end
 
     if @sub_category || @category
@@ -83,12 +85,18 @@ class ProductsController < ApplicationController
         id_s = custom_attribute.id.to_s
         if params[:attr][id_s].present?
           products = products.where('custom_attributes ->> ? = ?', id_s, params[:attr][id_s])
+          @filter_applied = true
         end
       end
     end
 
-    @products_query = params[:query].strip if params[:query].present?
-    products = products.search_by_name_and_description(@products_query) if @products_query.present?
+    if params[:query].present?
+      @products_query = params[:query].strip
+      if @products_query.present?
+        products = products.search_by_name_and_description(@products_query)
+        @filter_applied = true
+      end
+    end
 
     @products = products.includes(:brand)
                         .includes(:product_variants)

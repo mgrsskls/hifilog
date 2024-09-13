@@ -1,17 +1,36 @@
 .Filter {
+	position: relative;
+	z-index: 1;
 	border: var(--border-light);
 	border-radius: var(--border-radius);
 	background: var(--color-bg2);
 	padding: 0.75rem;
-	margin-block-end: 1rem;
-	gap: 1rem 2rem;
 	font-size: 0.875em;
-	position: relative;
-	z-index: 1;
+}
+
+.Filter-options {
+	display: grid;
+	gap: 0.75rem 1rem;
+	grid-template-columns: auto 1fr;
+}
+
+.Filter-section {
+	display: grid;
+	grid-column: 1 / -1;
+}
+
+.Filter-section:not(.Filter-section--attributes) {
+	grid-template-columns: subgrid;
+}
+
+.Filter-section--attributes {
+	margin-block-start: 1rem;
 }
 
 .Filter-option {
 	font-weight: 600;
+	line-height: 1.875rem;
+	grid-column: 1;
 }
 
 .Filter-close,
@@ -23,7 +42,7 @@
 .Filter-values {
 	display: flex;
 	gap: 0.75rem 1.5rem;
-	flex-wrap: wrap;
+	flex-direction: column;
 }
 
 .Filter-input {
@@ -36,6 +55,15 @@ html:where([data-theme="light"]) .Filter-input {
 	background: var(--color-white);
 }
 
+.Filter-actions {
+	margin-block-start: 1rem;
+	grid-column: 1 / -1;
+}
+
+.Filter-submit {
+	margin-inline-start: auto;
+}
+
 @media (prefers-color-scheme: dark) {
 	.Filter-input {
 		background: var(--color-input-bg);
@@ -46,9 +74,10 @@ html:where([data-theme="dark"]) .Filter-input {
 	background: var(--color-input-bg);
 }
 
-@media (max-width: 42rem) {
+@media (max-width: 48rem) {
 	.Filter {
 		display: grid;
+		gap: 1rem 2rem;
 		grid-template-columns: 1fr auto;
 		align-items: center;
 	}
@@ -67,6 +96,7 @@ html:where([data-theme="dark"]) .Filter-input {
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		box-sizing: border-box;
+		font-size: 1rem;
 	}
 
 	.Filter:has([aria-expanded="true"])::before {
@@ -75,16 +105,6 @@ html:where([data-theme="dark"]) .Filter-input {
 		position: fixed;
 		inset: 0;
 		background-color: rgba(0, 0, 0, 0.5);
-	}
-
-	.Filter-option {
-		display: block;
-		margin-block-end: 1em;
-		line-height: 1;
-	}
-
-	.Filter-section + .Filter-section {
-		margin-block-start: 2em;
 	}
 
 	.Filter-open {
@@ -97,83 +117,32 @@ html:where([data-theme="dark"]) .Filter-input {
 		display: none;
 	}
 
-	.Filter-actions {
-		margin-block-start: 2rem;
-	}
-
 	.Filter-status {
 		list-style: "";
 		padding: 0;
 		margin: 0;
+		color: var(--color-secondary);
 	}
 
-	.Filter-values {
-		flex-direction: column;
+	.Filter-status.is-active {
+		color: var(--color-success-copy);
+		font-weight: 600;
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
 	}
 }
 
-@media (min-width: 42.0625rem) {
+@media (min-width: 48.0625rem) {
 	.Filter-open,
 	.Filter-status,
 	.Filter-close {
 		display: none;
 	}
-
-	.Filter-options {
-		display: grid;
-		gap: 0.75rem 1rem;
-		grid-template-columns: auto 1fr auto;
-	}
-
-	.Filter-section:not([hidden]) {
-		display: grid;
-		grid-template-columns: subgrid;
-		grid-column: 1 / -1;
-	}
-
-	.Filter-option {
-		line-height: 1.875rem;
-		grid-column: 1;
-	}
-
-	.Filter .Pagination {
-		grid-column: 2 / -1;
-	}
-
-	.Filter-section:not(:has(~ .Filter-section)) {
-		grid-column-end: 3;
-	}
-
-	.Filter-actions {
-		grid-column: 3 / -1;
-	}
-}
-
-.FilterExtra {
-	margin-block: 1rem 2rem;
-	display: flex;
-	gap: 1rem;
 }
 
 .FilterInfo {
 	line-height: 1.2;
-	margin-block: 0;
-}
-
-@media (max-width: 32rem) {
-	.FilterExtra {
-		flex-direction: column;
-	}
-}
-
-@media (min-width: 32.0625rem) {
-	.FilterExtra {
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.FilterSort {
-		white-space: nowrap;
-		max-inline-size: 16rem;
-	}
+	text-align: center;
+	margin-block-end: 0;
 }

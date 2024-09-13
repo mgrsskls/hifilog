@@ -39,7 +39,7 @@
 
 .Button--secondary,
 ::file-selector-button {
-	background-color: transparent;
+	background-color: var(--color-bg-main);
 	border-color: currentColor;
 	color: var(--color-secondary);
 }
