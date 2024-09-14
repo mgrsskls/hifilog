@@ -51,13 +51,28 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    possessions = @user.possessions
-                       .where.not(period_from: nil)
+    possessions = @user.possessions.where.not(period_from: nil)
                        .or(@user.possessions.where.not(period_to: nil))
                        .includes([product: [:brand]])
-                       .includes([product_variant: [product: [:brand]]])
-                       .includes([:product_option, :custom_product])
-                       .includes([image_attachment: [:blob]])
+                       .includes(
+                         [
+                           product_variant: [
+                             product: [
+                               :brand
+                             ]
+                           ]
+                         ]
+                       )
+                       .includes(
+                         [
+                           custom_product:
+                             [
+                               { image_attachment: :blob }
+                             ]
+                         ]
+                       )
+                       .includes([{ image_attachment: :blob }])
+                       .includes([:product_option])
 
     from = possessions.reject { |possession| possession.period_from.nil? }.sort_by(&:period_from).map do |possession|
       presenter = if possession.custom_product_id
@@ -141,12 +156,36 @@ class UsersController < ApplicationController
 
     all = map_possessions_to_presenter all_possessions.where(prev_owned:)
                                                       .includes([product: [{ sub_categories: :category }, :brand]])
-                                                      .includes([product_variant: [:product]])
+                                                      .includes(
+                                                        [
+                                                          product_variant: [
+                                                            product: [
+                                                              { sub_categories: :category },
+                                                              :brand
+                                                            ]
+                                                          ]
+                                                        ]
+                                                      )
+                                                      .includes(
+                                                        [
+                                                          custom_product:
+                                                            [
+                                                              { sub_categories: :category, },
+                                                              :user,
+                                                              { image_attachment: :blob }
+                                                            ]
+                                                        ]
+                                                      )
+                                                      .includes({ image_attachment: :blob })
                                                       .includes([:product_option])
-                                                      .includes([custom_product: [{ sub_categories: :category }]])
-                                                      .includes([image_attachment: [:blob]])
-
-    all = all.sort_by { |possession| possession.display_name.downcase }
+                                                      .order(
+                                                        [
+                                                          'brand.name',
+                                                          'product.name',
+                                                          'product_variant.name',
+                                                          'custom_product.name'
+                                                        ]
+                                                      )
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])

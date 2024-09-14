@@ -96,9 +96,9 @@
             <% end %>
             <td class="Table-sm">
               <% if item.sub_categories.any? %>
-                <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+                <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(",<br>").html_safe %>
               <% else %>
-                <%= item.categories.map{ |category| category.name }.join(", ") %>
+                <%= item.categories.map{ |category| category.name }.join(",<br>").html_safe %>
               <% end %>
             </td>
             <% if include_setup %>

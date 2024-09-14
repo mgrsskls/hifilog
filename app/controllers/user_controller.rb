@@ -32,16 +32,38 @@ class UserController < ApplicationController
     all = map_possessions_to_presenter current_user.possessions
                                                    .where(prev_owned: false)
                                                    .includes([product: [{ sub_categories: :category }, :brand]])
-                                                   .includes([
-                                                               :product_variant,
-                                                               :product_option,
-                                                               :setup_possession,
-                                                               :setup
-                                                             ])
-                                                   .includes([custom_product: [{ sub_categories: :category }]])
-                                                   .includes([image_attachment: [:blob]])
-
-    all = all.sort_by { |possession| possession.display_name.downcase }
+                                                   .includes(
+                                                     [
+                                                       product_variant: [
+                                                         product: [
+                                                           { sub_categories: :category },
+                                                           :brand
+                                                         ]
+                                                       ]
+                                                     ]
+                                                   )
+                                                   .includes(
+                                                     [
+                                                       custom_product:
+                                                         [
+                                                           { sub_categories: :category, },
+                                                           :user,
+                                                           { image_attachment: :blob }
+                                                         ]
+                                                     ]
+                                                   )
+                                                   .includes([{ image_attachment: :blob }])
+                                                   .includes([:product_option])
+                                                   .includes([:setup_possession])
+                                                   .includes([:setup])
+                                                   .order(
+                                                     [
+                                                       'brand.name',
+                                                       'product.name',
+                                                       'product_variant.name',
+                                                       'custom_product.name'
+                                                     ]
+                                                   )
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])
@@ -151,11 +173,27 @@ class UserController < ApplicationController
     possessions = current_user.possessions.where.not(period_from: nil)
                               .or(current_user.possessions.where.not(period_to: nil))
                               .includes([product: [:brand]])
-                              .includes([product_variant: [product: [:brand]]])
-                              .includes([:product_option, :custom_product])
-                              .includes([image_attachment: [:blob]])
+                              .includes(
+                                [
+                                  product_variant: [
+                                    product: [
+                                      :brand
+                                    ]
+                                  ]
+                                ]
+                              )
+                              .includes(
+                                [
+                                  custom_product:
+                                    [
+                                      { image_attachment: :blob }
+                                    ]
+                                ]
+                              )
+                              .includes([{ image_attachment: :blob }])
+                              .includes([:product_option])
 
-    from = possessions.reject { |possession| possession.period_from.nil? }.sort_by(&:period_from).map do |possession|
+    from = possessions.reject { |possession| possession.period_from.nil? }.map do |possession|
       presenter = if possession.custom_product_id
                     CustomProductPossessionPresenter.new(possession)
                   else
@@ -169,7 +207,7 @@ class UserController < ApplicationController
       }
     end
 
-    to = possessions.reject { |possession| possession.period_to.nil? }.sort_by(&:period_to).map do |possession|
+    to = possessions.reject { |possession| possession.period_to.nil? }.map do |possession|
       presenter = if possession.custom_product_id
                     CustomProductPossessionPresenter.new(possession)
                   else

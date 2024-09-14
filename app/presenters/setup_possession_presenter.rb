@@ -6,7 +6,7 @@ class SetupPossessionPresenter < PossessionPresenter
   end
 
   def delete_path
-    setup_possession_path(SetupPossession.find_by(possession_id: @object.id, setup_id: @setup.id))
+    setup_possession_path(@object.setup_possession)
   end
 
   def delete_button_label

@@ -12,11 +12,36 @@ class PossessionsController < ApplicationController
     all = map_possessions_to_presenter current_user.possessions
                                                    .where(prev_owned: true)
                                                    .includes([product: [{ sub_categories: :category }, :brand]])
-                                                   .includes([:product_variant])
-                                                   .includes([custom_product: [{ sub_categories: :category }]])
-                                                   .includes([image_attachment: [:blob]])
-
-    all = all.sort_by { |possession| possession.display_name.downcase }
+                                                   .includes(
+                                                     [
+                                                       product_variant: [
+                                                         product: [
+                                                           { sub_categories: :category },
+                                                           :brand
+                                                         ]
+                                                       ]
+                                                     ]
+                                                   )
+                                                   .includes(
+                                                     [
+                                                       custom_product:
+                                                         [
+                                                           { sub_categories: :category, },
+                                                           :user,
+                                                           { image_attachment: :blob }
+                                                         ]
+                                                     ]
+                                                   )
+                                                   .includes([{ image_attachment: :blob }])
+                                                   .includes([:product_option])
+                                                   .order(
+                                                     [
+                                                       'brand.name',
+                                                       'product.name',
+                                                       'product_variant.name',
+                                                       'custom_product.name'
+                                                     ]
+                                                   )
 
     if params[:category].present?
       @sub_category = SubCategory.friendly.find(params[:category])

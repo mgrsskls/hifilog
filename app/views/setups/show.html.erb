@@ -14,7 +14,6 @@
   <%= render "shared/products",
     items: @possessions,
     categories: @categories,
-    sub_category: @sub_category,
     reset_path: @reset_path,
     empty_state: t('empty_state.setup_products'),
     include_images: true,
@@ -36,11 +35,10 @@
         <%= form_for @setup, method: :put do |f| %>
           <h2>Add Products <small>to <%= @setup.name %></small></h2>
           <div class="SetupAddProducts-list">
-            <% current_user.possessions.includes([product: [:brand]]).includes([:product_variant, :custom_product]).includes([image_attachment: [:blob]]).each do |possession| %>
-              <% presenter = possession.custom_product_id ? CustomProductPossessionPresenter.new(possession) : PossessionPresenter.new(possession) %>
+            <% @all_possessions .each do |presenter| %>
               <div class="SetupAddProducts-option">
-                <%= check_box_tag "setup[possession_ids][]", possession.id, { id: "setup_possession_ids_#{possession.id}", checked: @setup.possession_ids.include?(possession.id) } %>
-                <%= f.label :possession_ids, value: possession.id do %>
+                <%= check_box_tag "setup[possession_ids][]", presenter.id, { id: "setup_possession_ids_#{presenter.id}", checked: @setup.possession_ids.include?(presenter.id) } %>
+                <%= f.label :possession_ids, value: presenter.id do %>
                   <% if presenter.image.attached? %>
                     <picture>
                       <%= image_tag cdn_image_url(presenter.image.variant(:thumb)), "aria-hidden": "true", alt: "", width: 50, height: 50 %>
