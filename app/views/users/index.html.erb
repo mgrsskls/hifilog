@@ -7,8 +7,8 @@
 <% end %>
 <div class="Users">
   <div class="Users-ranking">
-    <table-saw class="u-pullOut" breakpoint="(max-width: 32rem)" type="container">
-      <table>
+    <div class="u-breakpoint u-breakpoint--xs">
+      <table class="u-breakpoint-item-l">
         <thead>
           <tr>
             <th class="Users-rank">Rank</th>
@@ -25,12 +25,12 @@
                 <% if user["profile_visibility"] == "hidden" %>
                   <div class="u-flex u-gap-md u-alignCenter">
                     <%= render "shared/avatar", user: user, size: 32 %>
-                    <%= user["user_name"] %>
+                    <b><%= user["user_name"] %></b>
                   </div>
                 <% else %>
                   <%= link_to user.profile_path, class: "u-flex u-gap-md u-alignCenter" do %>
                     <%= render "shared/avatar", user: user, size: 32 %>
-                    <span><%= user["user_name"] %></span>
+                    <b><%= user["user_name"] %></b>
                   <% end %>
                 <% end %>
               </td>
@@ -42,7 +42,42 @@
           <% end %>
         </tbody>
       </table>
-    </table-saw>
+      <ol class="EntityList EntityList--products u-breakpoint-item-s">
+        <% @users_by_products.each_with_index do |user, i| %>
+          <li class="EntityList-item">
+            <div class="EntityList-content">
+              <div class="EntityList-name">
+                <div class="u-flex u-gap-md u-spaceBetween">
+                  <% if user["profile_visibility"] == "hidden" %>
+                    <div class="u-flex u-gap-md u-alignCenter">
+                      <%= render "shared/avatar", user: user, size: 32 %>
+                      <b><%= user["user_name"] %></b>
+                    </div>
+                  <% else %>
+                    <%= link_to user.profile_path, class: "u-flex u-gap-md u-alignCenter" do %>
+                      <%= render "shared/avatar", user: user, size: 32 %>
+                      <b><%= user["user_name"] %></b>
+                    <% end %>
+                  <% end %>
+                  <div>
+                    <%= i + 1 %>.
+                  </div>
+                </div>
+              </div>
+              <div class="EntityList-categories">
+                <p>
+                  <b>Score:</b> <%= user["count"] %>
+                </p>
+
+                <p>
+                  <b>Member since:</b> <time datetime="<%= formatted_date user["created_at"] %>"><%= formatted_date user["created_at"] %></time>
+                </p>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+    </div>
   </div>
   <div class="Users-info Rte">
     <p>The score is the sum of all brands and products that a user has either created or edited.</p>

@@ -1,38 +1,71 @@
 <% mark ||= nil %>
 
-<table-saw class="u-pullOut" text-align breakpoint="(max-width: 40rem)" type="container">
-  <table>
-    <thead>
-      <tr>
-        <th><%= Brand.human_attribute_name(:name) %></th>
-        <th><%= Category.model_name.human(count: 2) %></th>
-        <th class="Table-products u-alignCenter"><%= Product.model_name.human(count: 2) %></th>
-        <th>Country</th>
+<table class="u-breakpoint-item-l">
+  <thead>
+    <tr>
+      <th><%= Brand.human_attribute_name(:name) %></th>
+      <th><%= Category.model_name.human(count: 2) %></th>
+      <th class="Table-products u-alignCenter"><%= Product.model_name.human(count: 2) %></th>
+      <th><%= t('activerecord.attributes.brand.country_code') %></th>
+      <% if user_signed_in? %>
+        <th class="Table-symbols">
+          <span class="u-hiddenVisually">Status</span>
+        </th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% brands.each do |brand| %>
+      <tr<% if brand.discontinued? %> class="is-discontinued"<% end %>>
+        <th scope="row"><b><%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %></b></th>
+        <td>
+          <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
+        </td>
+        <td class="Table-products"><%= brand.products_count.nil? ? "0" : brand.products_count %></td>
+        <td>
+          <%= brand.country_name.present? ? brand.country_name : "-" %>
+        </td>
         <% if user_signed_in? %>
-          <th class="Table-symbols">
-            <span class="u-hiddenVisually">Status</span>
-          </th>
+          <td class="Table-symbols">
+            <%= render "shared/symbols", brand: brand %>
+          </td>
         <% end %>
       </tr>
-    </thead>
-    <tbody>
-      <% brands.each do |brand| %>
-        <tr<% if brand.discontinued? %> class="is-discontinued"<% end %>>
-          <th scope="row"><b><%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %></b></th>
-          <td>
-            <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
-          </td>
-          <td class="Table-products"><%= brand.products_count.nil? ? "0" : brand.products_count %></td>
-          <td>
-            <%= brand.country_name.present? ? brand.country_name : "-" %>
-          </td>
-          <% if user_signed_in? %>
-            <td class="Table-symbols">
-              <%= render "shared/symbols", brand: brand %>
-            </td>
+    <% end %>
+  </tbody>
+</table>
+
+<ol class="EntityList EntityList--products u-breakpoint-item-s">
+  <% brands.each do |brand| %>
+    <li class="EntityList-item">
+      <div class="EntityList-content<% if brand.discontinued? %> is-discontinued<% end %>">
+        <div class="EntityList-name">
+          <div class="u-flex u-flexWrap u-gap-md u-spaceBetween">
+            <b>
+              <a href="<%= brand_path(id: brand.friendly_id) %>">
+                <%= mark ? highlight(brand.name, mark) : brand.name %>
+              </a>
+            </b>
+            <%= render "shared/symbols", brand: brand %>
+          </div>
+        </div>
+        <dl class="EntityList-data Data">
+          <% if brand.categories.any? %>
+            <dt><%= Category.model_name.human %></dt>
+            <dd>
+              <%= brand.categories.map{ |category| category.name }.join(", ").html_safe %>
+            </dd>
           <% end %>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</table-saw>
+
+          <dt><%= Product.model_name.human(count: 2) %></dt>
+          <dd><%= brand.products_count.nil? ? "0" : brand.products_count %></dd>
+
+          <% if brand.country_name.present? %>
+            <dt><%= t('activerecord.attributes.brand.country_code') %></dt>
+            <dd><%= brand.country_name %></dd>
+          <% end %>
+        </dl>
+      </div>
+    </li>
+  <% end %>
+</ol>

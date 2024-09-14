@@ -2,82 +2,160 @@
 <% hide_brand ||= false %>
 <% hide_category ||= false %>
 
-<table-saw class="u-pullOut" breakpoint="(max-width: 52rem)" type="container">
-  <table>
-    <thead>
-      <tr>
-        <th><%= Product.human_attribute_name(:name) %></th>
+<table class="u-breakpoint-item-l">
+  <thead>
+    <tr>
+      <th><%= Product.human_attribute_name(:name) %></th>
+      <% unless hide_brand %>
+        <th><%= Brand.model_name.human %></th>
+      <% end %>
+      <% unless hide_category %>
+        <th><%= Category.model_name.human %></th>
+      <% end %>
+      <th><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></th>
+      <th class="Table-date"><%= Product.human_attribute_name(:release_date) %></th>
+      <th><%= Product.human_attribute_name(:price) %></th>
+      <% if user_signed_in? %>
+        <th class="Table-symbols">
+          <span class="u-hiddenVisually">Status</span>
+        </th>
+      <% end %>
+    </tr>
+  </thead>
+  <% products.each do |product| %>
+    <tbody>
+      <tr<% if product.discontinued? %> class="is-discontinued"<% end %>>
+        <th scope="row"><b><%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %></b></th>
         <% unless hide_brand %>
-          <th><%= Brand.model_name.human %></th>
+          <td><%= product.brand.present? ? product.brand.name : "-" %></td>
         <% end %>
         <% unless hide_category %>
-          <th><%= Category.model_name.human %></th>
+          <td class="Table-sm">
+            <%= product.sub_categories.map(&:name).join(", <br>").html_safe %>
+          </td>
         <% end %>
-        <th><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></th>
-        <th class="Table-date"><%= Product.human_attribute_name(:release_date) %></th>
-        <th><%= Product.human_attribute_name(:price) %></th>
+        <td class="Table-sm">
+          <% attr_list = product.custom_attributes_list %>
+          <%= attr_list ? attr_list : "-" %>
+        </td>
+        <td class="Table-sm"><%= product.release_date.present? ? product.release_date : "-" %></td>
+        <td class="Table-sm u-noWrap"><%= product.price.present? ? product.display_price : "-" %></td>
         <% if user_signed_in? %>
-          <th class="Table-symbols">
-            <span class="u-hiddenVisually">Status</span>
-          </th>
+          <td class="Table-symbols">
+            <%= render "shared/symbols", product: product %>
+          </td>
         <% end %>
       </tr>
-    </thead>
-    <% products.each do |product| %>
-      <tbody>
-        <tr<% if product.discontinued? %> class="is-discontinued"<% end %>>
-          <th scope="row"><b><%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %></b></th>
+      <% product.product_variants.sort_by {|v| [v.release_year, v.release_month, v.release_day].compact}.each do |product_variant| %>
+        <tr<% if product_variant.discontinued? %> class="is-discontinued"<% end %>>
+          <th scope="row" class="Table-variant"><%= link_to (mark ? highlight(product_variant.name_with_fallback, mark) : product_variant.name_with_fallback), product_variant.path %></th>
           <% unless hide_brand %>
-            <td><%= product.brand.present? ? product.brand.name : "-" %></td>
+            <td>
+              <span class="u-hiddenVisually"><%= product_variant.product.brand.name %></span>
+            </td>
           <% end %>
           <% unless hide_category %>
             <td class="Table-sm">
-              <%= product.sub_categories.map(&:name).join(", <br>").html_safe %>
+              <span class="u-hiddenVisually">
+                <%= product.sub_categories.map(&:name).join(", <br>").html_safe %>
+              </span>
             </td>
           <% end %>
           <td class="Table-sm">
-            <% attr_list = product.custom_attributes_list %>
-            <%= attr_list ? attr_list : "-" %>
+            <span class="u-hiddenVisually">
+              <% attr_list = product.custom_attributes_list %>
+              <%= attr_list ? attr_list : "-" %>
+            </span>
           </td>
-          <td class="Table-sm"><%= product.release_date.present? ? product.release_date : "-" %></td>
-          <td class="Table-sm u-noWrap"><%= product.price.present? ? product.display_price : "-" %></td>
+          <td class="Table-sm"><%= product_variant.release_date.present? ? product_variant.release_date : "-" %></td>
+          <td class="Table-sm u-noWrap"><%= product_variant.price.present? ? product_variant.display_price : "-" %></td>
           <% if user_signed_in? %>
             <td class="Table-symbols">
-              <%= render "shared/symbols", product: product %>
+              <%= render "shared/symbols", product_variant: product_variant %>
             </td>
           <% end %>
         </tr>
-        <% product.product_variants.sort_by {|v| [v.release_year, v.release_month, v.release_day].compact}.each do |product_variant| %>
-          <tr<% if product_variant.discontinued? %> class="is-discontinued"<% end %>>
-            <th scope="row" class="Table-variant"><%= link_to (mark ? highlight(product_variant.name_with_fallback, mark) : product_variant.name_with_fallback), product_variant.path %></th>
-            <% unless hide_brand %>
-              <td>
-                <span class="u-hiddenVisually"><%= product_variant.product.brand.name %></span>
-              </td>
+      <% end %>
+    </tbody>
+  <% end %>
+</table>
+
+<ol class="EntityList EntityList--products u-breakpoint-item-s">
+  <% products.each do |product| %>
+    <li class="EntityList-item">
+      <div class="EntityList-content<% if product.discontinued? %> is-discontinued<% end %>">
+        <div class="EntityList-name">
+          <div class="u-flex u-flexWrap u-gap-md u-spaceBetween">
+            <a href="<%= product_path(id: product.friendly_id) %>">
+              <%= product.brand.name unless hide_brand %>
+              <b><%= mark ? highlight(product.name, mark) : product.name %></b>
+            </a>
+            <%= render "shared/symbols", product: product %>
+          </div>
+        </div>
+        <% if !hide_category or product.release_date.present? or product.display_price.present? or product.custom_attributes_list.present? %>
+          <dl class="EntityList-data Data">
+            <% if product.custom_attributes_list.present? or !hide_category %>
+              <dt><%= Category.model_name.human %></dt>
+              <dd>
+              <% unless hide_category %>
+                <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+              <% end %>
+              <% if product.custom_attributes_list.present? %>
+                <% unless hide_category %><br><% end %>
+                <%= product.custom_attributes_list %>
+              <% end %>
+              </dd>
             <% end %>
-            <% unless hide_category %>
-              <td class="Table-sm">
-                <span class="u-hiddenVisually">
-                  <%= product.sub_categories.map(&:name).join(", <br>").html_safe %>
-                </span>
-              </td>
+
+            <% if product.release_date.present? %>
+              <dt><%= t('activerecord.attributes.product.release_date') %></dt>
+              <dd><%= product.release_date %></dd>
             <% end %>
-            <td class="Table-sm">
-              <span class="u-hiddenVisually">
-                <% attr_list = product.custom_attributes_list %>
-                <%= attr_list ? attr_list : "-" %>
-              </span>
-            </td>
-            <td class="Table-sm"><%= product_variant.release_date.present? ? product_variant.release_date : "-" %></td>
-            <td class="Table-sm u-noWrap"><%= product_variant.price.present? ? product_variant.display_price : "-" %></td>
-            <% if user_signed_in? %>
-              <td class="Table-symbols">
-                <%= render "shared/symbols", product_variant: product_variant %>
-              </td>
+
+            <% if product.display_price.present? %>
+              <dt><%= t('activerecord.attributes.product.price') %></dt>
+              <dd><%= product.display_price %></dd>
             <% end %>
-          </tr>
+          </dl>
         <% end %>
-      </tbody>
-    <% end %>
-  </table>
-</table-saw>
+      </div>
+      <% if product.product_variants.any? %>
+        <details>
+          <summary>Versions / updates</summary>
+          <ol class="EntityList EntityList--productVariants">
+            <% product.product_variants.each do |product_variant| %>
+              <li class="EntityList-item">
+                <div class="EntityList-content<% if product_variant.discontinued? %> is-discontinued<% end %>">
+                  <div class="EntityList-name">
+                    <div class="u-flex u-flexWrap u-gap-md u-spaceBetween">
+                      <div>
+                        <a href="<%= product_variant_path(id: product_variant.friendly_id, product_id: product.friendly_id) %>">
+                          <b><%= mark ? highlight(product_variant.short_name, mark) : product_variant.short_name %></b>
+                        </a>
+                      </div>
+                      <%= render "shared/symbols", product_variant: product_variant %>
+                    </div>
+                  </div>
+                  <div class="EntityList-categories">
+                    <% if product_variant.release_date.present? %>
+                      <p>
+                        <b><%= t('activerecord.attributes.product.release_date') %>:</b> <%= product_variant.release_date %>
+                      </p>
+                    <% end %>
+
+                    <% if product_variant.display_price.present? %>
+                      <p>
+                        <b><%= t('activerecord.attributes.product.price') %>:</b> <%= product_variant.display_price %>
+                      </p>
+                    <% end %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ol>
+        </details>
+      <% end %>
+    </li>
+  <% end %>
+</ol>

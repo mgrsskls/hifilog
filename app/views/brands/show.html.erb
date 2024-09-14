@@ -60,14 +60,14 @@
     </div>
   </div>
 
-  <div class="Entity-sub u-pullOut">
+  <div class="Entity-sub">
     <% if user_has_brand?(current_user, @brand, false) %>
-      <div class="EntityPossession" data-current="true">
+      <div class="EntityPossession u-textCenter" data-current="true">
         You own <b><%= @brand.name %></b> products.
       </div>
       <hr>
     <% elsif user_has_brand?(current_user, @brand, true) %>
-      <div class="EntityPossession" data-current="false">
+      <div class="EntityPossession u-textCenter" data-current="false">
         You used to own <b><%= @brand.name %></b> products.
       </div>
       <hr>
@@ -130,8 +130,10 @@
   <div class="IndexPage-content">
     <% if @total_products_count > 0 %>
       <% if @products.any? %>
-        <%= render "shared/products_table", products: @products, hide_brand: true %>
-        <%= paginate @products, params: { anchor: "list" } %>
+        <div class="u-breakpoint u-breakpoint--l">
+          <%= render "shared/products_table", products: @products, hide_brand: true %>
+          <%= paginate @products, params: { anchor: "list" } %>
+        </div>
       <% else %>
         <%= render "shared/empty_state", message: t('empty_state.products') %>
       <% end %>

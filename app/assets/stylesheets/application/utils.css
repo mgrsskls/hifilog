@@ -32,6 +32,10 @@
 	align-items: center;
 }
 
+.u-alignStart {
+	align-items: start;
+}
+
 .u-alignEnd {
 	align-items: end;
 	text-align: end;
@@ -112,6 +116,58 @@
 
 @media (min-width: 54.0625rem) {
 	.u-hide-lg {
+		display: none;
+	}
+}
+
+.u-breakpoint {
+	container: listing / inline-size;
+}
+
+@container listing (width < 32rem) {
+	.u-breakpoint--xs > .u-breakpoint-item-l {
+		display: none;
+	}
+}
+
+@container listing (width >= 32rem) {
+	.u-breakpoint--xs > .u-breakpoint-item-s {
+		display: none;
+	}
+}
+
+@container listing (width < 40rem) {
+	.u-breakpoint--s > .u-breakpoint-item-l {
+		display: none;
+	}
+}
+
+@container listing (width >= 40rem) {
+	.u-breakpoint--s > .u-breakpoint-item-s {
+		display: none;
+	}
+}
+
+@container listing (width < 48rem) {
+	.u-breakpoint--m > .u-breakpoint-item-l {
+		display: none;
+	}
+}
+
+@container listing (width >= 48rem) {
+	.u-breakpoint--m > .u-breakpoint-item-s {
+		display: none;
+	}
+}
+
+@container listing (width < 56rem) {
+	.u-breakpoint--l > .u-breakpoint-item-l {
+		display: none;
+	}
+}
+
+@container listing (width >= 56rem) {
+	.u-breakpoint--l > .u-breakpoint-item-s {
 		display: none;
 	}
 }

@@ -1,0 +1,120 @@
+.EntityList {
+	list-style: "";
+	padding: 0;
+	margin: 0;
+}
+
+.EntityList--products > .EntityList-item:nth-child(odd) {
+	background: var(--color-bg2);
+}
+
+.EntityList-item {
+	border-block-end: var(--border-light);
+	padding-block: 1rem;
+}
+
+.EntityList-item[aria-current="true"] {
+	font-weight: 600;
+}
+
+.EntityList--productVariants {
+	border-block-start: var(--border-light);
+}
+
+.EntityList--productVariants .EntityList-item:first-child {
+	border-block-start: none;
+}
+
+.EntityList--productVariants .EntityList-item:last-child {
+	border-block-end: none;
+	padding-block-end: 0;
+}
+
+.EntityList--productVariants .EntityList-content {
+	padding-inline-start: 1.5rem;
+}
+
+.EntityList-item:first-child {
+	border-block-start: var(--border-light);
+}
+
+.EntityList-image {
+	padding-inline-start: 0.75rem;
+}
+
+.EntityList-content {
+	--spacing-inline: 0.75rem;
+
+	padding-inline: var(--spacing-inline);
+	flex: 1;
+}
+
+.EntityList-name {
+	font-size: 1.1rem;
+	line-height: 1.5;
+}
+
+.EntityList-name small {
+	font-size: 0.875rem;
+	margin-block-start: 1rem;
+}
+
+.is-discontinued > .EntityList-name {
+	position: relative;
+}
+
+.is-discontinued > .EntityList-name::before {
+	--size: 0.1875rem;
+
+	content: "";
+	display: block;
+	inline-size: 0;
+	block-size: 100%;
+	border-inline-start: var(--size) solid var(--color-discontinued-marker);
+	position: absolute;
+	inset-inline-end: calc(100% + var(--spacing-inline) - var(--size));
+}
+
+.EntityList-categories {
+	font-size: 0.875em;
+	margin-block: 0.25rem 0;
+	line-height: 1.5;
+}
+
+.EntityList-categories p {
+	margin-block-start: 0.5em;
+	margin-block-end: 0;
+}
+
+.EntityList-data {
+	margin-block-start: 0.75em;
+	font-size: 0.875em;
+}
+
+.EntityList-metaLinks {
+	font-size: 0.875em;
+	display: flex;
+	justify-content: end;
+	margin-block-start: 0.75rem;
+}
+
+.EntityList-item details {
+	padding-inline: 0.75rem;
+}
+
+.EntityList-item summary {
+	font-size: 0.875em;
+	font-weight: 600;
+	padding-block-start: 1.5rem;
+	color: var(--color-secondary);
+	justify-content: start;
+	gap: 0.5em;
+}
+
+.EntityList-item summary::after {
+	order: -1;
+}
+
+.EntityList-item [open] > summary {
+	padding-block-end: 0.75rem;
+}

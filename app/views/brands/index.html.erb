@@ -3,15 +3,16 @@
     <div class="IndexPage-headerFilter">
       <h1>
         <%= Brand.model_name.human(count: 2) %>
-        <% if @sub_category %>
-          <small><%= @sub_category.name %></small>
-        <% elsif @category %>
-          <small><%= @category.name %></small>
-        <% end %>
       </h1>
 
       <%= link_to t('brand.new.link'), user_signed_in? ? new_brand_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_brand_path(sub_category: params[:sub_category])), class: "Button" %>
     </div>
+
+    <% if @sub_category %>
+      <span class="IndexPage-category"><%= @sub_category.name %></span>
+    <% elsif @category %>
+      <span class="IndexPage-category"><%= @category.name %></span>
+    <% end %>
 
     <div class="IndexPage-filter">
       <%= render "shared/filter", reset_path: brands_path, collection: @brands, query: @brands_query do %>
@@ -40,8 +41,10 @@
 
   <div class="IndexPage-content">
     <% if @brands.any? %>
-      <%= render "shared/brands_table", brands: @brands %>
-      <%= paginate @brands %>
+      <div class="u-breakpoint u-breakpoint--s">
+        <%= render "shared/brands_table", brands: @brands %>
+        <%= paginate @brands %>
+      </div>
     <% else %>
       <%= render "shared/empty_state", message: t('empty_state.brands_filter', path: new_brand_path) %>
     <% end %>

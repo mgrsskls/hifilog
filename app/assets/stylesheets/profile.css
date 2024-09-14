@@ -159,7 +159,7 @@
 	}
 
 	.Profile-meta {
-		margin-block-end: 1rem;
+		margin-block: 0.75rem;
 		padding-inline: var(--page-spacing);
 		padding-block: 1rem;
 	}

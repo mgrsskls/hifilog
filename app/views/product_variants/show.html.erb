@@ -114,58 +114,11 @@
       <% end %>
 
       <div class="Product-section">
-        <% if @product.product_variants.any? %>
-          <div class="Heading">
-            <h2>All versions / updates</h2>
-            <%= link_to t('product_variant.new.link'), user_signed_in? ? product_variants_new_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: @product.friendly_id)) %>
-          </div>
-          <table-saw breakpoint="(max-width: 40rem)" type="container">
-            <table>
-              <thead>
-                <th class="u-hiddenVisually">
-                  <%= Product.human_attribute_name(:discontinued) %>
-                </th>
-                <th><%= Product.human_attribute_name(:name) %></th>
-                <th><%= Product.human_attribute_name(:description) %></th>
-                <th><%= Product.human_attribute_name(:release_date) %></th>
-                <th><%= Product.human_attribute_name(:price) %><sup>1</sup></th>
-                <th class="Table-symbols"><%= t('status') %></th>
-              </thead>
-              <tbody>
-                <tr<% if @product.discontinued? %> class="is-discontinued"<% end %>>
-                  <td class="u-hiddenVisually">
-                    <% if @product.discontinued? %>
-                      <%= Product.human_attribute_name(:discontinued) %>
-                    <% end %>
-                  </td>
-                  <th><b><%= link_to @product.name, product_path(id: @product.friendly_id) %></b></th>
-                  <td class="Table-sm">Initial / Stock version</td>
-                  <td class="Table-sm"><%= @product.release_date.present? ? @product.release_date : "-" %></td>
-                  <td class="Table-sm"><%= @product.price.present? ? @product.display_price : "-" %></td>
-                  <td class="Table-symbols"><%= render "shared/symbols", product: @product %></td>
-                </tr>
-                <% @product.product_variants.order(:release_year, :release_month, :release_day).each do |variant| %>
-                  <tr<% if @product_variant == variant %> aria-current="true"<% end %><% if variant.discontinued? %> class="is-discontinued"<% end %>>
-                    <td class="u-hiddenVisually">
-                      <% if variant.discontinued? %>
-                        <%= Product.human_attribute_name(:discontinued) %>
-                      <% end %>
-                    </td>
-                    <th><b><%= link_to variant.name_with_fallback, variant.path %></b></th>
-                    <td class="Table-sm"><%= variant.description.present? ? variant.description : "-" %></td>
-                    <td class="Table-sm"><%= variant.release_date.present? ? variant.release_date : "-" %></td>
-                    <td class="Table-sm"><%= variant.price.present? ? variant.display_price : "-" %></td>
-                    <td class="Table-symbols"><%= render "shared/symbols", product_variant: variant %></td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </table-saw>
-        <% end %>
+        <%= render "shared/product_variants", product: @product_variant.product, current: @product_variant %>
       </div>
     </div>
   </div>
-  <div class="Entity-sub Product-sub u-pullOut">
+  <div class="Entity-sub Product-sub">
     <%= render "products/actions" %>
 
     <hr>

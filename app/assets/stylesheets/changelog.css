@@ -8,6 +8,10 @@
 	list-style: "";
 }
 
+.Changelog-item + .Changelog-item {
+	margin-block-start: 1rem;
+}
+
 .Changelog-item:nth-child(odd) {
 	background: var(--color-bg2);
 	border-radius: var(--border-radius);
@@ -39,4 +43,24 @@
 
 .Changelog-itemComment {
 	margin-block-start: 1.5rem;
+}
+
+.Changelog table {
+	table-layout: fixed;
+}
+
+.Changelog .EntityList {
+	margin-block-start: 0.75rem;
+}
+
+.Changelog .EntityList tr {
+	border: none;
+}
+
+.Changelog .EntityList th {
+	width: 4em;
+}
+
+.Changelog .EntityList :is(th, td) {
+	padding-block: 0.5rem;
 }

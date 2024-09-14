@@ -11,7 +11,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 2rem;
+	gap: 1rem 2rem;
 }
 
 .IndexPage-headerFilter :is(h1, h2) {
@@ -43,7 +43,7 @@
 	.IndexPage {
 		grid-template: "header content" / 18rem 1fr;
 		align-items: start;
-		gap: 4rem;
+		gap: 3rem;
 	}
 
 	.IndexPage-header {

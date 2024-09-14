@@ -93,7 +93,6 @@ class Product < ApplicationRecord
 
     attributes = []
     custom_attributes.each do |custom_attribute|
-      # custom_attribute_resource = CustomAttribute.find(custom_attribute[0])
       custom_attribute_resource = sub_categories.flat_map(&:custom_attributes).find do |sub_custom_attribute|
         sub_custom_attribute.id == custom_attribute[0].to_i
       end

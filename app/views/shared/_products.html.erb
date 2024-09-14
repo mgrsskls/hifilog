@@ -1,5 +1,4 @@
 <% empty_state ||= "" %>
-<% pull_out ||= defined?(pull_out) ? pull_out : true %>
 <% include_images ||= defined?(include_images) ? include_images : true %>
 <% include_image_upload ||= defined?(include_image_upload) ? include_image_upload : true %>
 <% include_edit_link ||= false %>
@@ -10,10 +9,11 @@
 <% hide_period ||= false %>
 <% hide_since ||= false %>
 <% delete_dialog ||= false %>
+<% items_breakpoint ||= 'm' %>
 
-<div class="<%= "u-pullOut" if pull_out %> ProductListing">
+<div class="u-breakpoint u-breakpoint--<%= items_breakpoint %>">
   <% if items.any? %>
-    <table>
+    <table class="u-breakpoint-item-l">
       <thead>
         <tr>
           <% if include_images %>
@@ -35,7 +35,11 @@
             <th><%= Setup.model_name %></th>
           <% end %>
           <% if include_edit_link || include_delete_button %>
-            <th class="u-textEnd Table-actions">Actions</th>
+            <th class="u-textEnd Table-actions">
+              <span class="u-hiddenVisually">
+                Actions
+              </span>
+            </th>
           <% end %>
         </tr>
       </thead>
@@ -133,21 +137,21 @@
         <% end %>
       </tbody>
     </table>
-    <ol class="ProductList">
+    <ol class="EntityList EntityList--products u-breakpoint-item-s">
       <% items.each do |item| %>
-        <li class="ProductList-item">
+        <li class="EntityList-item">
           <% if include_images %>
-            <div class="u-flex u-gap-md">
-              <div>
+            <div class="u-flex">
+              <div class="EntityList-image">
                 <% if include_image_upload %>
                   <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
                 <% else %>
                   <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "list" %>
                 <% end %>
               </div>
-            <% end %>
-              <div class="ProductList-content">
-                <div class="ProductList-name">
+          <% end %>
+              <div class="EntityList-content">
+                <div class="EntityList-name">
                   <a href="<%= item.show_path %>">
                     <%= item.brand_name unless hide_brand %>
                     <b><%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %></b>
@@ -156,54 +160,49 @@
                     <br><small><%= item.product_option.option %></small>
                   <% end %>
                 </div>
-                <div class="ProductList-categories">
-                  <p>
+                <dl class="EntityList-data Data">
+                  <dt><%= Category.model_name.human %></dt>
+                  <dd>
                     <% if item.sub_categories.any? %>
                       <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
                     <% else %>
                       <%= item.categories.map{ |category| category.name }.join(", ") %>
                     <% end %>
-                  </p>
+                  </dd>
                   <% unless hide_since %>
                     <% if item.period_from %>
-                      <p>
-                        <b>Since:</b>
+                      <dt>Since</dt>
+                      <dd>
                         <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
-                      </p>
+                      </dd>
                     <% end %>
                   <% end %>
                   <% unless hide_period %>
-                    <% if item.period_from || item.period_to %>
-                      <p>
-                        <% if item.prev_owned %>
-                          <% if item.period_from && item.period_to %>
-                            <b>Owned from:</b>
-                            <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
-                          <% elsif item.period_from %>
-                            <b>Owned since:</b>
-                            <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
-                          <% elsif item.period_to %>
-                            <b>Owned until:</b>
-                            <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
-                          <% end %>
-                        <% else %>
-                          <% if item.period_from %>
-                            <b>Since:</b>
-                            <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
-                          <% end %>
-                        <% end %>
-                      </p>
+                    <% if item.prev_owned %>
+                      <% if item.period_from && item.period_to %>
+                        <dt>Owned from</dt>
+                        <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
+                      <% elsif item.period_from %>
+                        <dt>Owned since</dt>
+                        <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
+                      <% elsif item.period_to %>
+                        <dt>Owned until</dt>
+                        <dd><time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
+                      <% end %>
+                    <% else %>
+                      <% if item.period_from %>
+                        <dt>Since</dt>
+                        <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
+                      <% end %>
                     <% end %>
                   <% end %>
                   <% if include_setup && item.setup.present? %>
-                    <p>
-                      <b>Setup:</b>
-                      <%= item.setup.name %>
-                    </p>
+                    <dt>Setup</dt>
+                    <dd><%= item.setup.name %></dd>
                   <% end %>
-                </div>
+                </dl>
                 <% if include_edit_link || include_delete_button %>
-                  <div class="ProductList-metaLinks">
+                  <div class="EntityList-metaLinks">
                     <ul class="MetaLinks">
                       <% if include_edit_link %>
                         <li><%= link_to "Edit", item.edit_path %></li>

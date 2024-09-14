@@ -37,6 +37,7 @@
 	font-size: 0.8125rem;
 	box-sizing: border-box;
 	line-height: 1;
+	cursor: default;
 }
 
 .IconSymbol--positive {

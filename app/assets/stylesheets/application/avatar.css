@@ -29,11 +29,11 @@ a:has(.Avatar),
 	text-decoration: none !important;
 }
 
-a:has(.Avatar) span {
+a:has(.Avatar) :is(span, b) {
 	text-decoration: underline;
 }
 
-a .Avatar + span {
+a .Avatar + :is(span, b) {
 	text-decoration: underline;
 	text-underline-offset: var(--underline-offset);
 	text-decoration-thickness: var(--underline-width);

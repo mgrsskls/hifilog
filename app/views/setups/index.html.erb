@@ -5,40 +5,38 @@
   </div>
 
   <% if @setups.any? %>
-    <div class="u-pullOut">
-      <table>
-        <thead>
+    <table>
+      <thead>
+        <tr>
+          <th><%= Setup.human_attribute_name(:name) %></th>
+          <th class="u-textCenter"><%= Setup.human_attribute_name(:private) %></th>
+          <th class="u-hide-sm Table-products"><%= Product.model_name.human(count: 2) %></th>
+          <th class="u-textEnd Table-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @setups.each do |setup| %>
           <tr>
-            <th><%= Setup.human_attribute_name(:name) %></th>
-            <th class="u-textCenter"><%= Setup.human_attribute_name(:private) %></th>
-            <th class="Table-products"><%= Product.model_name.human(count: 2) %></th>
-            <th class="u-hide-sm u-textEnd Table-actions">Actions</th>
+            <th><b><%= link_to setup.name, dashboard_setup_path(setup) %></b></th>
+            <td class="u-textCenter"><%= setup.visibility %></td>
+            <td class="u-hide-sm Table-products"><%= setup.possessions.count %></td>
+            <td class="Table-sm">
+              <ul class="MetaLinks">
+                <li><%= link_to t('edit'), edit_dashboard_setup_path(id: setup.id) %></li>
+                <li>
+                  <%= button_to t('setup.delete.label'),
+                    setup_path(id: setup.id),
+                    method: :delete,
+                    class: "DeleteButton",
+                    "data-msg": t('setup.delete.confirm', name: setup.name)
+                  %>
+                </li>
+              </ul>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          <% @setups.each do |setup| %>
-            <tr>
-              <th><b><%= link_to setup.name, dashboard_setup_path(setup) %></b></th>
-              <td class="u-textCenter"><%= setup.visibility %></td>
-              <td class="Table-products"><%= setup.possessions.count %></td>
-              <td class="Table-sm u-hide-sm">
-                <ul class="MetaLinks">
-                  <li><%= link_to t('edit'), edit_dashboard_setup_path(id: setup.id) %></li>
-                  <li>
-                    <%= button_to t('setup.delete.label'),
-                      setup_path(id: setup.id),
-                      method: :delete,
-                      class: "DeleteButton",
-                      "data-msg": t('setup.delete.confirm', name: setup.name)
-                    %>
-                  </li>
-                </ul>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+        <% end %>
+      </tbody>
+    </table>
   <% else %>
     <%= render "shared/empty_state", message: t('empty_state.setups') %>
   <% end %>

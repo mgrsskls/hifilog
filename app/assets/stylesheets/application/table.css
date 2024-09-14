@@ -1,12 +1,3 @@
-table-saw {
-	container: table / inline-size;
-	display: block;
-}
-
-:is(nav, .Pagination, .FilterInfo) + :is(table, table-saw) {
-	margin-block-start: 2rem;
-}
-
 table {
 	border-collapse: collapse;
 	inline-size: 100%;
@@ -20,8 +11,15 @@ tr[aria-current="true"] {
 	font-weight: bold;
 }
 
-.is-discontinued {
-	border-inline-start: 0.1875rem solid var(--color-invalid-medium);
+tr.is-discontinued > :first-child {
+	background-image: linear-gradient(
+		to right,
+		var(--color-discontinued-marker) 0.1875rem,
+		transparent 0.1875rem
+	);
+	background-size: 100% calc(100% - 1.5rem);
+	background-position: left center;
+	background-repeat: no-repeat;
 }
 
 table:has(tbody + tbody) :is(thead, tbody) {
@@ -48,8 +46,7 @@ th {
 	text-align: start;
 }
 
-thead th,
-table-saw :is(tbody, tfoot) :is(th, td)::before {
+thead th {
 	color: var(--color-secondary);
 	font-size: 0.875rem;
 	font-weight: 600;
@@ -57,10 +54,6 @@ table-saw :is(tbody, tfoot) :is(th, td)::before {
 	letter-spacing: 0.05em;
 	vertical-align: top;
 	line-height: calc(var(--line-height) * 1rem);
-}
-
-table-saw :is(tbody, tfoot) :is(th, td)::before {
-	font-size: 0.75rem;
 }
 
 tbody th {
@@ -94,6 +87,7 @@ td {
 
 .Table-variant {
 	padding-inline-start: 1.5rem;
+	font-size: 0.875rem;
 }
 
 .Table-image {
@@ -118,95 +112,4 @@ table:has(.MetaLinks li:last-child:nth-child(2)) .Table-actions {
 
 table .Symbols {
 	justify-content: flex-end;
-}
-
-@container table (max-inline-size: 52rem) {
-	.ts_c_max_width__52rem_ :is(th, td) {
-		padding-block: 0;
-	}
-
-	.ts_c_max_width__52rem_
-		:is(.Table-products, .Table-date, .Table-symbols, .Table-image) {
-		width: auto !important;
-	}
-
-	.ts_c_max_width__52rem_ .Symbols {
-		justify-content: flex-start;
-	}
-
-	.ts_c_max_width__52rem_ .Table-variant {
-		padding-inline-start: 0.75rem;
-	}
-
-	.ts_c_max_width__52rem_ .Table-variant::before,
-	.ts_c_max_width__52rem_ .Table-variant ~ td::before {
-		padding-inline-start: 1.5rem;
-	}
-
-	.ts_c_max_width__52rem_ td:has(.u-hiddenVisually) {
-		display: none !important;
-	}
-
-	.ts_c_max_width__52rem_ td:has(.u-hiddenVisually),
-	.ts_c_max_width__52rem_ .Table-symbols:not(:has(.IconSymbol)) {
-		display: none !important;
-	}
-}
-
-@container table (max-inline-size: 40rem) {
-	.ts_c_max_width__40rem_ :is(th, td) {
-		padding-block: 0;
-	}
-
-	.ts_c_max_width__40rem_
-		:is(.Table-products, .Table-date, .Table-symbols, .Table-image) {
-		width: auto !important;
-	}
-
-	.ts_c_max_width__40rem_ .Symbols {
-		justify-content: flex-start;
-	}
-
-	.ts_c_max_width__40rem_ .Table-variant {
-		padding-inline-start: 0.75rem;
-	}
-
-	.ts_c_max_width__40rem_ .Table-variant::before,
-	.ts_c_max_width__40rem_ .Table-variant ~ td::before {
-		padding-inline-start: 1.5rem;
-	}
-
-	.ts_c_max_width__40rem_ td:has(.u-hiddenVisually),
-	.ts_c_max_width__40rem_ .Table-symbols:not(:has(.IconSymbol)) {
-		display: none !important;
-	}
-}
-
-@container table (max-inline-size: 32rem) {
-	.ts_c_max_width__32rem_ :is(th, td) {
-		padding-block: 0;
-	}
-
-	.ts_c_max_width__32rem_
-		:is(.Table-products, .Table-date, .Table-symbols, .Table-image) {
-		width: auto !important;
-	}
-
-	.ts_c_max_width__32rem_ .Symbols {
-		justify-content: flex-start;
-	}
-
-	.ts_c_max_width__32rem_ .Table-variant {
-		padding-inline-start: 0.75rem;
-	}
-
-	.ts_c_max_width__32rem_ .Table-variant::before,
-	.ts_c_max_width__32rem_ .Table-variant ~ td::before {
-		padding-inline-start: 1.5rem;
-	}
-
-	.ts_c_max_width__32rem_ td:has(.u-hiddenVisually),
-	.ts_c_max_width__32rem_ .Table-symbols:not(:has(.IconSymbol)) {
-		display: none !important;
-	}
 }

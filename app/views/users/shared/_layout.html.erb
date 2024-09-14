@@ -84,7 +84,7 @@
     </div>
   </div>
   <div class="Profile-content u-container" id="products">
-    <div class="Profile-meta u-pullOut">
+    <div class="Profile-meta">
       <div class="Profile-dataContainer">
         <dl class="Profile-data Data Data--grid">
           <div>
@@ -118,7 +118,7 @@
     </div>
     <div class="Profile-products">
       <div class="u-flex u-alignCenter u-spaceBetween u-flexWrap u-gap-md">
-        <div class="Tabs u-pullOut" id="tabs">
+        <div class="Tabs" id="tabs">
           <ul class="Tabs-list">
             <li><%= link_to t('headings.current_products'), "#{@user.profile_path}#products", "aria-current": request.path == @user.profile_path ? "page" : "false" %></li>
             <% @user.setups.where(private: false).each do |setup| %>

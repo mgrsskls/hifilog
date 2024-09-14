@@ -121,8 +121,8 @@
 	visibility: hidden;
 }
 
-@media (max-width: 32em) {
-	:is(table, table-saw) + .Pagination {
+@container listing (width < 28em) {
+	.Pagination--pages {
 		margin-block-start: 2rem;
 	}
 
@@ -135,8 +135,8 @@
 	}
 }
 
-@media (min-width: 32.0625em) {
-	:is(table, table-saw) + .Pagination {
+@container listing (width >= 28em) {
+	.Pagination--pages {
 		margin-block-start: 3rem;
 	}
 

@@ -7,6 +7,7 @@
 @import url("./application/button.css") layer(components);
 @import url("./application/checkbox_button.css") layer(components);
 @import url("./application/empty_state.css") layer(components);
+@import url("./application/entity_list.css") layer(components);
 @import url("./application/filter.css") layer(components);
 @import url("./application/flash_messages.css") layer(components);
 @import url("./application/footer.css") layer(components);
@@ -21,7 +22,6 @@
 @import url("./application/meta_links.css") layer(components);
 @import url("./application/page_actions.css") layer(components);
 @import url("./application/pagination.css") layer(components);
-@import url("./application/product_list.css") layer(components);
 @import url("./application/rte.css") layer(components);
 @import url("./application/skip.css") layer(components);
 @import url("./application/symbol.css") layer(components);
@@ -99,6 +99,7 @@
 		--color-secondary-on-dark: hsl(var(--hue), 30%, 65%);
 		--color-bg-on-light: hsl(204, 18.5%, 100%);
 		--color-bg-on-dark: hsl(204, 40%, 15%);
+		--color-discontinued-marker: var(--color-invalid-medium);
 
 		--color-menu-bg: var(--color-blue-175);
 		--color-header-bg: var(--color-blue-100);
@@ -266,6 +267,10 @@
 		box-sizing: border-box;
 	}
 
+	b {
+		font-weight: 600;
+	}
+
 	a,
 	button {
 		color: var(--color-accent);
@@ -311,7 +316,8 @@
 		margin-block: 0;
 	}
 
-	h1 small {
+	h1 small,
+	.IndexPage-category {
 		font-size: 1rem;
 		font-weight: 500;
 		display: block;
@@ -476,16 +482,7 @@
 
 	@media (max-width: 48em) {
 		html {
-			--page-spacing: 0.75rem;
-		}
-
-		main:not(:has(.Home)):not(:has(.Profile)),
-		.u-pullIn {
-			padding-inline: var(--page-spacing);
-		}
-
-		.u-pullOut {
-			margin-inline: calc(-1 * var(--page-spacing));
+			--page-spacing: 1rem;
 		}
 	}
 
@@ -516,7 +513,7 @@
 	}
 
 	.Data:not(.Data--inline):not(.Data--grid) dt {
-		padding-inline-end: 1.5rem;
+		padding-inline-end: 1rem;
 	}
 
 	.Data dd {

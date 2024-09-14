@@ -52,7 +52,7 @@
   </div>
 
   <% if user_signed_in? && @custom_product.user == current_user %>
-    <div class="Entity-sub Product-sub u-pullOut">
+    <div class="Entity-sub Product-sub">
       <% if @possession %>
         <div class="EntityPossession" data-current="<%= !@possession.prev_owned %>">
           <% if @custom_product.errors.any? %>

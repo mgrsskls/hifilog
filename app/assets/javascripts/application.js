@@ -188,11 +188,23 @@ import "./theme_toggle.js";
 
 	document.querySelectorAll(".Symbols").forEach((symbol) => {
 		if (symbol.dataset.productVariant) {
-			productVariantIds.push(parseInt(symbol.dataset.productVariant, 10));
+			const id = parseInt(symbol.dataset.productVariant, 10);
+
+			if (!productVariantIds.includes(id)) {
+				productVariantIds.push(id);
+			}
 		} else if (symbol.dataset.product) {
-			productIds.push(parseInt(symbol.dataset.product, 10));
+			const id = parseInt(symbol.dataset.product, 10);
+
+			if (!productIds.includes(id)) {
+				productIds.push(id);
+			}
 		} else if (symbol.dataset.brand) {
-			brandIds.push(parseInt(symbol.dataset.brand, 10));
+			const id = parseInt(symbol.dataset.brand, 10);
+
+			if (!brandIds.includes(id)) {
+				brandIds.push(id);
+			}
 		}
 	});
 
@@ -231,16 +243,16 @@ import "./theme_toggle.js";
 					if (!array) continue;
 
 					for (const item of array) {
-						const el = document.querySelector(
+						const elements = document.querySelectorAll(
 							`.Symbols[data-${alias}="${item.id}"]`,
 						);
 
-						if (el) {
+						elements.forEach((el) => {
 							el.querySelector('[data-symbol="in_collection"]').hidden =
 								!item.in_collection;
 							el.querySelector('[data-symbol="previously_owned"]').hidden =
 								!item.previously_owned;
-						}
+						});
 					}
 				}
 			});

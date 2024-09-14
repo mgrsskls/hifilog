@@ -3,15 +3,16 @@
     <div class="IndexPage-headerFilter">
       <h1>
         <%= Product.model_name.human(count: 2) %>
-        <% if @sub_category %>
-          <small><%= @sub_category.name %></small>
-        <% elsif @category %>
-          <small><%= @category.name %></small>
-        <% end %>
       </h1>
 
       <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button" %>
     </div>
+
+    <% if @sub_category %>
+      <span class="IndexPage-category"><%= @sub_category.name %></span>
+    <% elsif @category %>
+      <span class="IndexPage-category"><%= @category.name %></span>
+    <% end %>
 
     <div class="IndexPage-filter">
       <%= render "shared/filter", reset_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @products_query do %>
@@ -38,8 +39,10 @@
 
   <div class="IndexPage-content">
     <% if @products.any? %>
-      <%= render "shared/products_table", products: @products, hide_category: @sub_category.present? %>
-      <%= paginate @products %>
+      <div class="u-breakpoint u-breakpoint--l">
+        <%= render "shared/products_table", products: @products, hide_category: @sub_category.present? %>
+        <%= paginate @products %>
+      </div>
     <% else %>
       <%= render "shared/empty_state", message: t('empty_state.products_filter', path: new_product_path) %>
     <% end %>

@@ -4,10 +4,6 @@
 	align-items: start;
 }
 
-.Users-ranking table {
-	table-layout: initial;
-}
-
 .Users-info {
 	background: var(--color-bg2);
 	border-radius: var(--border-radius);
