@@ -17,6 +17,7 @@
 	.Dashboard-menu {
 		background: var(--color-bg2);
 		border-radius: var(--border-radius);
+		border: var(--border-light);
 		flex: 1;
 		min-inline-size: 12rem;
 		padding: 2rem;

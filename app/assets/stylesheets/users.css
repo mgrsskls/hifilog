@@ -7,6 +7,7 @@
 .Users-info {
 	background: var(--color-bg2);
 	border-radius: var(--border-radius);
+	border: var(--border-light);
 }
 
 @media (min-width: 40em) {
