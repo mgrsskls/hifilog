@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  include HistoryHelper
+
   before_action :set_breadcrumb, except: [:show, :prev_owneds, :history]
 
   def index
@@ -51,60 +53,7 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    possessions = @user.possessions.where.not(period_from: nil)
-                       .or(@user.possessions.where.not(period_to: nil))
-                       .includes([product: [:brand]])
-                       .includes(
-                         [
-                           product_variant: [
-                             product: [
-                               :brand
-                             ]
-                           ]
-                         ]
-                       )
-                       .includes(
-                         [
-                           custom_product:
-                             [
-                               { image_attachment: :blob }
-                             ]
-                         ]
-                       )
-                       .includes([{ image_attachment: :blob }])
-                       .includes([:product_option])
-
-    from = possessions.reject { |possession| possession.period_from.nil? }.sort_by(&:period_from).map do |possession|
-      presenter = if possession.custom_product_id
-                    CustomProductPossessionPresenter.new(possession)
-                  else
-                    PossessionPresenter.new(possession)
-                  end
-
-      {
-        date: presenter.period_from,
-        type: :from,
-        presenter:
-      }
-    end
-
-    to = possessions.reject { |possession| possession.period_to.nil? }.sort_by(&:period_to).map do |possession|
-      presenter = if possession.custom_product_id
-                    CustomProductPossessionPresenter.new(possession)
-                  else
-                    PossessionPresenter.new(possession)
-                  end
-
-      {
-        date: presenter.period_to,
-        type: :to,
-        presenter:
-      }
-    end
-
-    @possessions = (from + to)
-                   .sort_by { |possession| possession[:date] }
-                   .group_by { |possession| possession[:date].year }
+    @possessions = get_history_possessions(@user.possessions)
   end
 
   private
