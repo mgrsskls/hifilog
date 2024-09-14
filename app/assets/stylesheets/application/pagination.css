@@ -76,6 +76,7 @@
 .Pagination:not(.Pagination--subCategory)
 	:is(a[aria-current="true"], label:has(:checked)) {
 	border-color: currentColor;
+	outline: 0.0625em solid currentColor;
 	color: var(--color-accent);
 }
 
@@ -110,7 +111,7 @@
 	padding-inline: 0;
 }
 
-.Pagination [type="radio"] {
+.Pagination [type="checkbox"] {
 	position: absolute;
 	width: 1px;
 	height: 1px;

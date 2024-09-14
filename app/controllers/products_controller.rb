@@ -84,7 +84,7 @@ class ProductsController < ApplicationController
       CustomAttribute.find_each do |custom_attribute|
         id_s = custom_attribute.id.to_s
         if params[:attr][id_s].present?
-          products = products.where('custom_attributes ->> ? = ?', id_s, params[:attr][id_s])
+          products = products.where('custom_attributes ->> ? IN (?)', id_s, params[:attr][custom_attribute.id.to_s])
           @filter_applied = true
         end
       end

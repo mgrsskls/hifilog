@@ -76,16 +76,10 @@
             <div class="Filter-values">
               <% custom_attributes.each do |custom_attribute| %>
                 <ol class="Pagination">
-                  <li class="Pagination-all">
-                    <label>
-                      <input type="radio" name="attr[<%= custom_attribute.id %>]" value=""<%= ' checked aria-current="true"'.html_safe if params[:attr].blank? || params[:attr][custom_attribute.id].blank? %>>
-                      <%= t('filter.all') %>
-                    </label>
-                  </li>
                   <% custom_attribute.options.each do |option| %>
                     <li class="Pagination-item">
                       <label>
-                        <input type="radio" name="attr[<%= custom_attribute.id %>]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s] == option[0].to_s %>>
+                        <input type="checkbox" name="attr[<%= custom_attribute.id %>][]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s]&.include?(option[0].to_s) %>>
                         <%= t("custom_attributes.#{option[1]}") %>
                       </label>
                     </li>
