@@ -21,6 +21,9 @@
 		flex: 1;
 		min-inline-size: 12rem;
 		padding: 2rem;
+		align-self: start;
+		position: sticky;
+		inset-block-start: 6rem;
 	}
 
 	.Dashboard-products {
