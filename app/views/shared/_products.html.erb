@@ -141,93 +141,93 @@
       <% items.each do |item| %>
         <li class="EntityList-item">
           <% if include_images %>
-            <div class="u-flex">
-              <div class="EntityList-image">
-                <% if include_image_upload %>
-                  <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
-                <% else %>
-                  <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "list" %>
-                <% end %>
-              </div>
-          <% end %>
-              <div class="EntityList-content">
-                <div class="EntityList-name">
-                  <a href="<%= item.show_path %>">
-                    <%= item.brand_name unless hide_brand %>
-                    <b><%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %></b>
-                  </a>
-                  <% if item.product_option %>
-                    <br><small><%= item.product_option.option %></small>
-                  <% end %>
-                </div>
-                <dl class="EntityList-data Data">
-                  <dt><%= Category.model_name.human %></dt>
-                  <dd>
-                    <% if item.sub_categories.any? %>
-                      <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
-                    <% else %>
-                      <%= item.categories.map{ |category| category.name }.join(", ") %>
-                    <% end %>
-                  </dd>
-                  <% unless hide_since %>
-                    <% if item.period_from %>
-                      <dt>Since</dt>
-                      <dd>
-                        <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
-                      </dd>
-                    <% end %>
-                  <% end %>
-                  <% unless hide_period %>
-                    <% if item.prev_owned %>
-                      <% if item.period_from && item.period_to %>
-                        <dt>Owned from</dt>
-                        <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
-                      <% elsif item.period_from %>
-                        <dt>Owned since</dt>
-                        <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
-                      <% elsif item.period_to %>
-                        <dt>Owned until</dt>
-                        <dd><time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
-                      <% end %>
-                    <% else %>
-                      <% if item.period_from %>
-                        <dt>Since</dt>
-                        <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
-                      <% end %>
-                    <% end %>
-                  <% end %>
-                  <% if include_setup && item.setup.present? %>
-                    <dt>Setup</dt>
-                    <dd><%= item.setup.name %></dd>
-                  <% end %>
-                </dl>
-                <% if include_edit_link || include_delete_button %>
-                  <div class="EntityList-metaLinks">
-                    <ul class="MetaLinks">
-                      <% if include_edit_link %>
-                        <li><%= link_to "Edit", item.edit_path %></li>
-                      <% end %>
-                      <% if include_delete_button %>
-                        <li>
-                          <% if delete_dialog %>
-                            <%= render "shared/remove_product_from_possessions", possession: item, id: "#{item.id}-2" %>
-                          <% else %>
-                            <%= button_to item.delete_button_label,
-                              item.delete_path,
-                              method: :delete,
-                              class: "DeleteButton",
-                              "data-msg": item.delete_confirm_msg
-                            %>
-                          <% end %>
-                        </li>
-                      <% end %>
-                    </ul>
-                  </div>
-                <% end %>
-              </div>
-          <% if include_images %>
+            <div class="EntityList-image">
+              <% if include_image_upload %>
+                <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
+              <% else %>
+                <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "list" %>
+              <% end %>
             </div>
           <% end %>
+          <div class="EntityList-content">
+            <div class="EntityList-name">
+              <% unless hide_brand %>
+                <span>
+                  <%= item.brand_name %>
+                </span>
+              <% end %>
+              <a href="<%= item.show_path %>">
+                <b><%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %></b>
+              </a>
+              <% if item.product_option %>
+                <br><small><%= item.product_option.option %></small>
+              <% end %>
+            </div>
+            <dl class="EntityList-data Data">
+              <dt><%= Category.model_name.human %></dt>
+              <dd>
+                <% if item.sub_categories.any? %>
+                  <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
+                <% else %>
+                  <%= item.categories.map{ |category| category.name }.join(", ") %>
+                <% end %>
+              </dd>
+              <% unless hide_since %>
+                <% if item.period_from %>
+                  <dt>Since</dt>
+                  <dd>
+                    <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                  </dd>
+                <% end %>
+              <% end %>
+              <% unless hide_period %>
+                <% if item.prev_owned %>
+                  <% if item.period_from && item.period_to %>
+                    <dt>Owned from</dt>
+                    <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
+                  <% elsif item.period_from %>
+                    <dt>Owned since</dt>
+                    <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
+                  <% elsif item.period_to %>
+                    <dt>Owned until</dt>
+                    <dd><time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
+                  <% end %>
+                <% else %>
+                  <% if item.period_from %>
+                    <dt>Since</dt>
+                    <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if include_setup && item.setup.present? %>
+                <dt>Setup</dt>
+                <dd><%= item.setup.name %></dd>
+              <% end %>
+            </dl>
+            <% if include_edit_link || include_delete_button %>
+              <div class="EntityList-metaLinks">
+                <ul class="MetaLinks">
+                  <% if include_edit_link %>
+                    <li><%= link_to "Edit", item.edit_path %></li>
+                  <% end %>
+                  <% if include_delete_button %>
+                    <li>
+                      <% if delete_dialog %>
+                        <%= render "shared/remove_product_from_possessions", possession: item, id: "#{item.id}-2" %>
+                      <% else %>
+                        <%= button_to item.delete_button_label,
+                          item.delete_path,
+                          method: :delete,
+                          class: "DeleteButton",
+                          "data-msg": item.delete_confirm_msg
+                        %>
+                      <% end %>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+          </div>
         </li>
       <% end %>
     </ol>

@@ -177,6 +177,24 @@ import "./theme_toggle.js";
 		});
 	}
 
+	document
+		.querySelectorAll(".EntityList-productVariantsButton button")
+		.forEach((button) => {
+			button.addEventListener("click", ({ target }) => {
+				const id = target.getAttribute("aria-controls");
+				const isActive = target.getAttribute("aria-expanded") == "true";
+				const el = document.getElementById(id);
+
+				if (isActive) {
+					el.hidden = true;
+					target.setAttribute("aria-expanded", "false");
+				} else {
+					el.hidden = false;
+					target.setAttribute("aria-expanded", "true");
+				}
+			});
+		});
+
 	/**
 	 * Fetch if user has a product, product variant or brand.
 	 * Used for product and brand tables.

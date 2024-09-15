@@ -18,11 +18,11 @@
     <% brands.each do |brand| %>
       <tr<% if brand.discontinued? %> class="is-discontinued"<% end %>>
         <th scope="row"><b><%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %></b></th>
-        <td>
+        <td class="Table-sm">
           <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
         </td>
-        <td class="Table-products"><%= brand.products_count.nil? ? "0" : brand.products_count %></td>
-        <td>
+        <td class="Table-products Table-sm"><%= brand.products_count.nil? ? "0" : brand.products_count %></td>
+        <td class="Table-sm">
           <%= brand.country_name.present? ? brand.country_name : "-" %>
         </td>
         <% if user_signed_in? %>
@@ -40,14 +40,11 @@
     <li class="EntityList-item">
       <div class="EntityList-content<% if brand.discontinued? %> is-discontinued<% end %>">
         <div class="EntityList-name">
-          <div class="u-flex u-flexWrap u-gap-md u-spaceBetween">
-            <b>
-              <a href="<%= brand_path(id: brand.friendly_id) %>">
-                <%= mark ? highlight(brand.name, mark) : brand.name %>
-              </a>
-            </b>
-            <%= render "shared/symbols", brand: brand %>
-          </div>
+          <b>
+            <a href="<%= brand_path(id: brand.friendly_id) %>">
+              <%= mark ? highlight(brand.name, mark) : brand.name %>
+            </a>
+          </b>
         </div>
         <dl class="EntityList-data Data">
           <% if brand.categories.any? %>
@@ -65,6 +62,7 @@
             <dd><%= brand.country_name %></dd>
           <% end %>
         </dl>
+        <%= render "shared/symbols", brand: brand %>
       </div>
     </li>
   <% end %>

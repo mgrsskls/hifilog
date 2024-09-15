@@ -105,56 +105,54 @@
                     <div class="EntityList-name">
                       <b><%= t('brand.' + change[0]) %></b>
                     </div>
-                    <div class="EntityList-categories">
-                      <table>
-                        <tbody>
-                          <tr>
-                            <th><%= t('changelog.before') %></th>
-                            <td class="Changelog-old">
-                              <% if change[0] == "custom_attributes" %>
-                                <%= JSON.parse(change[1][0]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][0].nil? %>
-                              <% elsif change[0] == "brand_id" && change[1][0].present? %>
-                                <%= Brand.find(change[1][0]).name %>
-                              <% elsif change[0] == "country_code" && change[1][0].present? %>
-                                <%= country_name_from_country_code(change[1][0]) %>
-                              <% elsif !change[1][0].nil? %>
-                                <% if change[1][0] == false %>
-                                  No
-                                <% elsif change[1][0] == true %>
-                                  Yes
-                                <% else %>
-                                  <%= change[1][0] %>
-                                <% end %>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <th><%= t('changelog.before') %></th>
+                          <td class="Changelog-old">
+                            <% if change[0] == "custom_attributes" %>
+                              <%= JSON.parse(change[1][0]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][0].nil? %>
+                            <% elsif change[0] == "brand_id" && change[1][0].present? %>
+                              <%= Brand.find(change[1][0]).name %>
+                            <% elsif change[0] == "country_code" && change[1][0].present? %>
+                              <%= country_name_from_country_code(change[1][0]) %>
+                            <% elsif !change[1][0].nil? %>
+                              <% if change[1][0] == false %>
+                                No
+                              <% elsif change[1][0] == true %>
+                                Yes
                               <% else %>
-                                -
+                                <%= change[1][0] %>
                               <% end %>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th><%= t('changelog.after') %></th>
-                            <td class="Changelog-new">
-                              <% if change[0] == "custom_attributes" %>
-                                <%= JSON.parse(change[1][1]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][1].nil? %>
-                              <% elsif change[0] == "brand_id" && change[1][1].present? %>
-                                <%= Brand.find(change[1][1]).name %>
-                              <% elsif change[0] == "country_code" && change[1][1].present? %>
-                                <%= country_name_from_country_code(change[1][1]) %>
-                              <% elsif !change[1][1].nil? %>
-                                <% if change[1][1] == false %>
-                                  No
-                                <% elsif change[1][1] == true %>
-                                  Yes
-                                <% else %>
-                                  <%= change[1][1] %>
-                                <% end %>
+                            <% else %>
+                              -
+                            <% end %>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th><%= t('changelog.after') %></th>
+                          <td class="Changelog-new">
+                            <% if change[0] == "custom_attributes" %>
+                              <%= JSON.parse(change[1][1]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][1].nil? %>
+                            <% elsif change[0] == "brand_id" && change[1][1].present? %>
+                              <%= Brand.find(change[1][1]).name %>
+                            <% elsif change[0] == "country_code" && change[1][1].present? %>
+                              <%= country_name_from_country_code(change[1][1]) %>
+                            <% elsif !change[1][1].nil? %>
+                              <% if change[1][1] == false %>
+                                No
+                              <% elsif change[1][1] == true %>
+                                Yes
                               <% else %>
-                                -
+                                <%= change[1][1] %>
                               <% end %>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                            <% else %>
+                              -
+                            <% end %>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </li>
               <% end %>

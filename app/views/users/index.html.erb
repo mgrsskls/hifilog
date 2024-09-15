@@ -47,7 +47,10 @@
           <li class="EntityList-item">
             <div class="EntityList-content">
               <div class="EntityList-name">
-                <div class="u-flex u-gap-md u-spaceBetween">
+                <div class="u-flex u-gap-md">
+                  <div>
+                    <%= i + 1 %>.
+                  </div>
                   <% if user["profile_visibility"] == "hidden" %>
                     <div class="u-flex u-gap-md u-alignCenter">
                       <%= render "shared/avatar", user: user, size: 32 %>
@@ -59,20 +62,17 @@
                       <b><%= user["user_name"] %></b>
                     <% end %>
                   <% end %>
-                  <div>
-                    <%= i + 1 %>.
-                  </div>
                 </div>
               </div>
-              <div class="EntityList-categories">
-                <p>
-                  <b>Score:</b> <%= user["count"] %>
-                </p>
+              <dl class="EntityList-data Data">
+                <dt>Score:</dt>
+                <dd><%= user["count"] %></dd>
 
-                <p>
-                  <b>Member since:</b> <time datetime="<%= formatted_date user["created_at"] %>"><%= formatted_date user["created_at"] %></time>
-                </p>
-              </div>
+                <dt>Member since:</dt>
+                <dd>
+                  <time datetime="<%= formatted_date user["created_at"] %>"><%= formatted_date user["created_at"] %></time>
+                </dd>
+              </dl>
             </div>
           </li>
         <% end %>

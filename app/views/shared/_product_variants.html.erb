@@ -39,16 +39,11 @@
       <li class="EntityList-item"<%= " aria-current=true" if current == product %>>
         <div class="EntityList-content<% if product.discontinued? %> is-discontinued<% end %>">
           <div class="EntityList-name">
-            <div class="u-flex u-flexWrap u-gap-md u-spaceBetween">
-              <div>
-                <b>
-                  <%= link_to product.name, product_path(id: product.friendly_id) %>
-                </b>
-                <br>
-                <small>Initial / Stock version</small>
-              </div>
-              <%= render "shared/symbols", product: product %>
-            </div>
+            <b>
+              <%= link_to product.name, product_path(id: product.friendly_id) %>
+            </b>
+            <br>
+            <small>Initial / Stock version</small>
           </div>
           <dl class="EntityList-data Data">
             <% if product.release_date.present? %>
@@ -61,26 +56,21 @@
               <dd><%= product.display_price %></dd>
             <% end %>
           </dl>
+          <%= render "shared/symbols", product: product %>
         </div>
       </li>
       <% product.product_variants.order(:release_year, :release_month, :release_day).each do |product_variant| %>
         <li class="EntityList-item"<%= " aria-current=true" if current == product_variant %>>
           <div class="EntityList-content<% if product_variant.discontinued? %> is-discontinued<% end %>">
             <div class="EntityList-name">
-              <div class="u-flex u-flexWrap u-gap-md u-spaceBetween">
-                <div>
-                  <b>
-                    <%= link_to product_variant.name_with_fallback, product_variant.path %>
-                  </b>
-                  <% if product_variant.description.present? %>
-                    <br>
-                    <small>
-                      <%= product_variant.description %>
-                    </small>
-                  <% end %>
-                </div>
-                <%= render "shared/symbols", product_variant: product_variant %>
-              </div>
+              <b>
+                <%= link_to product_variant.name_with_fallback, product_variant.path %>
+              </b>
+              <% if product_variant.description.present? %>
+                <small>
+                  <%= product_variant.description %>
+                </small>
+              <% end %>
             </div>
             <dl class="EntityList-data Data">
               <% if product_variant.release_date.present? %>
@@ -93,6 +83,7 @@
                 <dd><%= product_variant.display_price %></dd>
               <% end %>
             </dl>
+            <%= render "shared/symbols", product_variant: product_variant %>
           </div>
         </li>
       <% end %>

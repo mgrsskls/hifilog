@@ -1,17 +1,15 @@
 .Symbols {
 	display: flex;
 	gap: 0.5rem;
+	min-inline-size: 1.5rem;
+	justify-content: flex-end;
 }
 
 .Symbols-item {
 	flex: 0 0 var(--size);
-	display: flex !important;
+	display: flex;
 	align-items: center;
 	gap: 0.5em;
-}
-
-.Symbols-item[hidden] {
-	visibility: hidden !important;
 }
 
 .Symbol {

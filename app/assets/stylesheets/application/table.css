@@ -3,10 +3,6 @@ table {
 	inline-size: 100%;
 }
 
-tr {
-	padding-block: 1rem;
-}
-
 tr[aria-current="true"] {
 	font-weight: bold;
 }
@@ -58,12 +54,13 @@ thead th {
 
 tbody th {
 	font-weight: normal;
+	padding-inline-start: 1.25rem;
 }
 
 th,
 td {
 	padding-inline: 0.75rem;
-	padding-block: 0.75rem;
+	padding-block: 1rem;
 }
 
 :is(th, td):not(:last-child) {
@@ -86,7 +83,7 @@ td {
 }
 
 .Table-variant {
-	padding-inline-start: 1.5rem;
+	padding-inline-start: 2.5rem;
 	font-size: 0.875rem;
 }
 
