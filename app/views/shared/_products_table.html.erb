@@ -93,17 +93,14 @@
           </a>
         </div>
         <dl class="EntityList-data Data">
-          <% if product.custom_attributes_list.present? or !hide_category %>
+          <% unless hide_category %>
             <dt><%= Category.model_name.human %></dt>
-            <dd>
-            <% unless hide_category %>
-              <%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %>
-            <% end %>
-            <% if product.custom_attributes_list.present? %>
-              <% unless hide_category %><br><% end %>
-              <%= product.custom_attributes_list %>
-            <% end %>
-            </dd>
+            <dd><%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %></dd>
+          <% end %>
+
+          <% if product.custom_attributes_list.present? %>
+            <dt><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></dt>
+            <dd><%= product.custom_attributes_list %></dd>
           <% end %>
 
           <% if product.release_date.present? %>
