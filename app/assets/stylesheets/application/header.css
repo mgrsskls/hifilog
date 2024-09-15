@@ -1,12 +1,11 @@
 .Header {
 	--gap: 2rem;
-	--height: 3.75rem;
 	--divider-color: var(--color-transparency-25);
 
 	display: flex;
 	gap: var(--gap);
 	align-items: center;
-	block-size: var(--height);
+	block-size: var(--header-height);
 }
 
 .Header-menu {
@@ -93,7 +92,7 @@
 
 	.Header-menuContainer {
 		position: fixed;
-		inset: var(--height) 0 0 0;
+		inset: var(--header-height) 0 0 0;
 		background: var(--color-blue-150);
 		padding: calc(2 * var(--page-spacing));
 		overscroll-behavior: contain;

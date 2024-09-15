@@ -2,79 +2,93 @@
   <%= stylesheet_link_tag "dashboard", crossorigin: true, integrity: true %>
 <% end %>
 <div class="Dashboard">
-  <nav class="Dashboard-menu" aria-label="<%= t('headings.dashboard') %>">
-    <div class="Dashboard-userName<%= " Dashboard-userName--sm" if current_user.user_name.size > 10 %> u-flex u-alignCenter u-gap-md">
-      <%= render "shared/avatar", user: current_user, size: 48 %>
-      <span><%= current_user.user_name %></span>
-    </div>
-    <ul class="Dashboard-links">
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_root_path %>"<%= active_menu_state(@active_dashboard_menu, :dashboard) %>>
-          Dashboard
-        </a>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_statistics_path %>"<%= active_menu_state(@active_dashboard_menu, :statistics) %>>
-          <%= t('headings.statistics') %>
-        </a>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_history_path %>"<%= active_menu_state(@active_dashboard_menu, :history) %>>
-          <%= t('headings.history') %>
-        </a>
-      </li>
-      <li class="Dashboard-separator">
-        <a class="Dashboard-link" href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
-          <%= t('headings.collection') %>
-        </a>
-        <small><%= user_possessions_count(current_user) %></small>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_custom_products_path %>"<%= active_menu_state(@active_dashboard_menu, :custom_products) %>>
-          <%= CustomProduct.model_name.human(count: 2) %>
-        </a>
-        <small><%= user_custom_products_count(current_user) %></small>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
-          <%= t('headings.prev_owneds') %>
-        </a>
-        <small><%= user_prev_owneds_count(current_user) %></small>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_setups_path %>"<%= active_menu_state(@active_dashboard_menu, :setups) %>>
-          <%= Setup.model_name.human(count: 2) %>
-        </a>
-        <small><%= user_setups_count(current_user) %></small>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(@active_dashboard_menu, :bookmarks) %>>
-          <%= Bookmark.model_name.human(count: 2) %>
-        </a>
-        <small><%= user_bookmarks_count(current_user) %></small>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_notes_path %>"<%= active_menu_state(@active_dashboard_menu, :notes) %>>
-          <%= Note.model_name.human(count: 2) %>
-        </a>
-        <small><%= user_notes_count(current_user) %></small>
-      </li>
-      <li class="Dashboard-separator">
-        <a class="Dashboard-link" href="<%= current_user.profile_path %>"<%= active_menu_state(@active_dashboard_menu, :profile) %>>
-          <%= t('headings.profile') %>
-        </a>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= dashboard_contributions_path %>"<%= active_menu_state(@active_dashboard_menu, :contributions) %>><%= t('headings.contributions') %></a>
-      </li>
-      <li>
-        <a class="Dashboard-link" href="<%= edit_user_registration_path %>"<%= active_menu_state(@active_dashboard_menu, :account) %>><%= t('headings.account') %></a>
-      </li>
-      <li>
-        <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete, class: "Dashboard-link"  %>
-      </li>
-    </ul>
-  </nav>
+  <div class="Dashboard-menu">
+    <nav class="Sidebar" aria-label="<%= t('headings.dashboard') %>">
+      <div class="Dashboard-userName<%= " Dashboard-userName--sm" if current_user.user_name.size > 10 %> u-flex u-alignCenter u-gap-md">
+        <%= render "shared/avatar", user: current_user, size: 48 %>
+        <span><%= current_user.user_name %></span>
+      </div>
+      <ul class="Sidebar-menu">
+        <li>
+          <a class="Sidebar-link" href="<%= dashboard_root_path %>"<%= active_menu_state(@active_dashboard_menu, :dashboard) %>>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a class="Sidebar-link" href="<%= dashboard_statistics_path %>"<%= active_menu_state(@active_dashboard_menu, :statistics) %>>
+            <%= t('headings.statistics') %>
+          </a>
+        </li>
+        <li>
+          <a class="Sidebar-link" href="<%= dashboard_history_path %>"<%= active_menu_state(@active_dashboard_menu, :history) %>>
+            <%= t('headings.history') %>
+          </a>
+        </li>
+        <li class="Sidebar-separator">
+          <span>
+            <a class="Sidebar-link" href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
+              <%= t('headings.collection') %>
+            </a>
+            <small><%= user_possessions_count(current_user) %></small>
+          </span>
+        </li>
+        <li>
+          <span>
+            <a class="Sidebar-link" href="<%= dashboard_custom_products_path %>"<%= active_menu_state(@active_dashboard_menu, :custom_products) %>>
+              <%= CustomProduct.model_name.human(count: 2) %>
+            </a>
+            <small><%= user_custom_products_count(current_user) %></small>
+          </span>
+        </li>
+        <li>
+          <span>
+            <a class="Sidebar-link" href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
+              <%= t('headings.prev_owneds') %>
+            </a>
+            <small><%= user_prev_owneds_count(current_user) %></small>
+          </span>
+        </li>
+        <li>
+          <span>
+            <a class="Sidebar-link" href="<%= dashboard_setups_path %>"<%= active_menu_state(@active_dashboard_menu, :setups) %>>
+              <%= Setup.model_name.human(count: 2) %>
+            </a>
+            <small><%= user_setups_count(current_user) %></small>
+          </span>
+        </li>
+        <li>
+          <span>
+            <a class="Sidebar-link" href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(@active_dashboard_menu, :bookmarks) %>>
+              <%= Bookmark.model_name.human(count: 2) %>
+            </a>
+            <small><%= user_bookmarks_count(current_user) %></small>
+          </span>
+        </li>
+        <li>
+          <span>
+            <a class="Sidebar-link" href="<%= dashboard_notes_path %>"<%= active_menu_state(@active_dashboard_menu, :notes) %>>
+              <%= Note.model_name.human(count: 2) %>
+            </a>
+            <small><%= user_notes_count(current_user) %></small>
+          </span>
+        </li>
+        <li class="Sidebar-separator">
+          <a class="Sidebar-link" href="<%= current_user.profile_path %>"<%= active_menu_state(@active_dashboard_menu, :profile) %>>
+            <%= t('headings.profile') %>
+          </a>
+        </li>
+        <li>
+          <a class="Sidebar-link" href="<%= dashboard_contributions_path %>"<%= active_menu_state(@active_dashboard_menu, :contributions) %>><%= t('headings.contributions') %></a>
+        </li>
+        <li>
+          <a class="Sidebar-link" href="<%= edit_user_registration_path %>"<%= active_menu_state(@active_dashboard_menu, :account) %>><%= t('headings.account') %></a>
+        </li>
+        <li>
+          <%= button_to t('user_form.logout'), destroy_user_session_path, method: :delete, class: "Sidebar-link"  %>
+        </li>
+      </ul>
+    </nav>
+  </div>
 
   <div class="Dashboard-products">
     <%= yield %>

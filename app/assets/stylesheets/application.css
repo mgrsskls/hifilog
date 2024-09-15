@@ -23,6 +23,7 @@
 @import url("./application/page_actions.css") layer(components);
 @import url("./application/pagination.css") layer(components);
 @import url("./application/rte.css") layer(components);
+@import url("./application/sidebar.css") layer(components);
 @import url("./application/skip.css") layer(components);
 @import url("./application/symbol.css") layer(components);
 @import url("./application/table.css") layer(components);
@@ -508,7 +509,7 @@
 	}
 
 	.Data dt {
-		font-weight: 600;
+		font-weight: 500;
 		color: var(--color-secondary);
 	}
 

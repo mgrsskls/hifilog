@@ -1,0 +1,115 @@
+.DashboardStatsWrapper {
+	container: wrapper / inline-size;
+}
+
+.DashboardStats {
+	--gap: clamp(0.75rem, 5cqi, 1.5rem);
+
+	display: grid;
+	grid-template-columns: repeat(var(--cols, 1), 1fr);
+	gap: 0 var(--gap);
+}
+
+.DashboardStats h2 {
+	margin-block: 1.5em 0;
+	grid-column: 1 / -1;
+}
+
+.DashboardStats h3 {
+	margin-block-start: 0;
+	line-height: 1;
+}
+
+.Dashboard-emptyState {
+	grid-column: 1 / -1;
+}
+
+.DashboardNumbers {
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	margin: 0;
+	padding: 0;
+	list-style: "";
+	gap: var(--gap);
+}
+
+h2 + .DashboardNumbers {
+	margin-block-start: 1.5rem;
+}
+
+.DashboardNumber {
+	display: flex;
+	justify-content: space-between;
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	text-decoration: none;
+	padding: 7.5%;
+	background: var(--color-bg2);
+	color: inherit;
+	gap: 1rem;
+	block-size: 100%;
+	box-sizing: border-box;
+	container: number / inline-size;
+}
+
+a .DashboardNumber-heading {
+	text-decoration: underline;
+}
+
+.DashboardNumber-heading {
+	margin: 0;
+	font-size: 0.875em;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.DashboardNumber-value {
+	font-size: 2.4rem;
+	font-size: clamp(1.2rem, 16cqi, 2rem);
+	font-weight: bold;
+	line-height: 1;
+	color: var(--color-accent);
+}
+
+.DashboardNumbersWrapper {
+	display: grid;
+	grid-template-columns: subgrid;
+}
+
+h2 + .DashboardNumbersWrapper {
+	margin-block-start: 1.5rem;
+}
+
+@container wrapper (min-width: 20.0625rem) and (max-width: 40rem) {
+	.DashboardStats {
+		--cols: 2;
+	}
+}
+
+@container wrapper (max-width: 40rem) {
+	.DashboardNumber {
+		align-items: center;
+	}
+}
+
+@container wrapper (min-width: 40.0625rem) {
+	.DashboardStats {
+		--cols: 4;
+	}
+
+	.DashboardNumbersWrapper {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / calc(var(--cols) - 1);
+	}
+
+	.DashboardNumbersWrapper + .DashboardNumbersWrapper {
+		grid-column: calc(var(--cols) - 1) / -1;
+	}
+
+	.DashboardNumber {
+		flex-direction: column;
+	}
+}

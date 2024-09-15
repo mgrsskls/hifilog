@@ -2,53 +2,6 @@
   <%= stylesheet_link_tag "profile", crossorigin: true, integrity: true %>
 <% end %>
 
-<% content_for :js_bottom do %>
-  <%= javascript_tag nonce: true do %>
-    {
-      const tabs = document.querySelector("#tabs");
-      const tabsList = tabs.querySelector(".Tabs-list");
-      const activeTab = tabsList.querySelector('[aria-current="page"]');
-
-      let timeout;
-
-      if (tabs.clientWidth < tabs.scrollWidth) {
-        setScrollHint();
-        activeTab.scrollIntoView({
-          inline: "center",
-        });
-
-        tabs.addEventListener("scroll", () => {
-          requestAnimationFrame(setScrollHint);
-        }, { passive: true });
-      }
-
-      function setScrollHint() {
-        tabs.classList.add("is-scrollable");
-        tabs.classList.toggle("at-start", tabs.scrollLeft <= 0);
-        tabs.classList.toggle("at-end", tabs.scrollWidth - tabs.clientWidth - tabs.scrollLeft <= 0);
-      }
-
-      function removeScrollHint() {
-        tabs.classList.remove("is-scrollable");
-        tabs.classList.remove("at-start");
-        tabs.classList.remove("at-end");
-      }
-
-      window.addEventListener("resize", () => {
-        clearTimeout(timeout);
-
-        timeout = setTimeout(() => {
-          if (tabs.clientWidth < tabs.scrollWidth) {
-            setScrollHint();
-          } else {
-            removeScrollHint();
-          }
-        }, 500);
-      });
-    }
-  <% end %>
-<% end %>
-
 <% if @user.hidden? %>
   <div class="Profile-hiddenNotice">
     <p class="u-container">
@@ -65,69 +18,57 @@
       </picture>
     <% end %>
   </div>
-  <div class="Profile-heading is-dark">
-    <div class="u-container">
-      <div class="Profile-headingContainer">
-        <div class="Profile-avatar">
-          <%= render "shared/avatar", user: @user %>
-        </div>
-        <div class="Profile-headingContent">
-          <h1 class="h3"><%= @user.user_name %></h1>
-          <dl class="Data Data--inline">
-            <dt>Member since</dt>
-            <dd>
-              <time datetime="<%= formatted_date @user.created_at %>"><%= formatted_date @user.created_at %></time>
-            </dd>
-          </dl>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="Profile-content u-container" id="products">
     <div class="Profile-meta">
-      <div class="Profile-dataContainer">
-        <dl class="Profile-data Data Data--grid">
-          <div>
-            <dt><%= t('headings.current_products') %></dt>
-            <dd><%= user_possessions_count(@user) %></dd>
-          </div>
-          <div>
-            <dt><%= t('headings.prev_owneds') %></dt>
-            <dd><%= user_prev_owneds_count(@user) %></dd>
-          </div>
-        </dl>
-        <dl class="Profile-data Data Data--grid">
-        <div>
-          <dt>Products created</dt>
-          <dd><%= @products_created %></dd>
-          </div>
-          <div>
-          <dt>Products edited</dt>
-          <dd><%= @products_edited %></dd>
-          </div>
-          <div>
-          <dt>Brands created</dt>
-          <dd><%= @brands_created %></dd>
-          </div>
-          <div>
-          <dt>Brands edited</dt>
-          <dd><%= @brands_edited %></dd>
-          </div>
-        </dl>
-      </div>
+      <nav class="Sidebar">
+        <figure class="Sidebar-userName">
+          <%= render "shared/avatar", user: @user, size: 48 %>
+          <figcaption class="is-dark">
+            <h1><%= @user.user_name %></h1>
+            <small>
+              <b>Member since</b> <time datetime="<%= formatted_date @user.created_at %>"><%= formatted_date @user.created_at %></time>
+            </small>
+          </figcaption>
+        </figure>
+        <button class="Sidebar-toggle h3" aria-expanded="false">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="12" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
+          <%= @heading %>
+        </button>
+        <ul class="Sidebar-menu" id="sidebar-menu">
+          <li>
+            <span>
+              <%= link_to t('headings.current_products'), @user.profile_path, "aria-current": request.path == @user.profile_path ? "page" : "false", class: "Sidebar-link" %>
+              <small><%= user_possessions_count(@user) %></small>
+            </span>
+            <% setups = @user.setups.where(private: false) %>
+            <% if setups.any? %>
+              <ul>
+                <% setups.each do |setup| %>
+                  <li>
+                    <%= link_to setup.name, user_setup_path(user_id: @user.user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: @user.user_name, setup: setup.id) ? "page" : "false", class: "Sidebar-link" %>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+          </li>
+          <li>
+            <span>
+              <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+              <small><%= user_prev_owneds_count(@user) %></small>
+            </span>
+          </li>
+          <li>
+            <%= link_to t('headings.history'), user_history_path(user_id: @user.user_name), "aria-current": request.path == user_history_path(user_id: @user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+          </li>
+          <li class="Sidebar-separator">
+            <%= link_to t('headings.contributions'), user_contributions_path(user_id: @user.user_name), "aria-current": request.path == user_contributions_path(user_id: @user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+          </li>
+        </ul>
+      </nav>
     </div>
     <div class="Profile-products">
-      <div class="u-flex u-alignCenter u-spaceBetween u-flexWrap u-gap-md">
-        <div class="Tabs" id="tabs">
-          <ul class="Tabs-list">
-            <li><%= link_to t('headings.current_products'), "#{@user.profile_path}#products", "aria-current": request.path == @user.profile_path ? "page" : "false" %></li>
-            <% @user.setups.where(private: false).each do |setup| %>
-              <li><%= link_to setup.name, user_setup_path(user_id: @user.user_name, setup: setup.id, anchor: 'products'), "aria-current": request.path == user_setup_path(user_id: @user.user_name, setup: setup.id) ? "page" : "false" %></li>
-            <% end %>
-            <li><%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name, anchor: 'products'), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false" %></li>
-            <li><%= link_to t('headings.history'), user_history_path(user_id: @user.user_name, anchor: 'products'), "aria-current": request.path == user_history_path(user_id: @user.user_name) ? "page" : "false" %></li>
-          </ul>
-        </div>
+      <div class="Heading">
+        <h2><%= @heading %></h2>
         <%= render "shared/category_filter", categories: @categories if @categories %>
       </div>
 

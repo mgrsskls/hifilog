@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   include HistoryHelper
 
-  before_action :set_breadcrumb, except: [:show, :prev_owneds, :history]
+  before_action :set_breadcrumb, only: [:index]
 
   def index
     @page_title = User.model_name.human(count: 2)
@@ -33,6 +33,12 @@ class UsersController < ApplicationController
     @render_since = true
     @render_period = false
 
+    @heading = if @setup.present?
+                 @setup.name
+               else
+                 I18n.t('headings.current_products')
+               end
+
     render 'show'
   end
 
@@ -45,6 +51,7 @@ class UsersController < ApplicationController
     @reset_path = user_previous_products_path(id: @user.user_name)
     @render_since = false
     @render_period = true
+    @heading = I18n.t('headings.prev_owneds')
 
     render 'show'
   end
@@ -54,6 +61,25 @@ class UsersController < ApplicationController
     return unless @user
 
     @possessions = get_history_possessions(@user.possessions)
+    @heading = I18n.t('headings.history')
+  end
+
+  def contributions
+    @user = setup_user_page
+    return unless @user
+
+    data = PaperTrail::Version.where(whodunnit: @user.id)
+                              .select(:item_id)
+                              .distinct
+                              .group('item_type', 'event')
+                              .count
+
+    @products_created = get_data(data, 'Product', 'create')
+    @products_edited = get_data(data, 'Product', 'update')
+    @brands_created = get_data(data, 'Brand', 'create')
+    @brands_edited = get_data(data, 'Brand', 'update')
+
+    @heading = I18n.t('headings.contributions')
   end
 
   private
@@ -76,17 +102,6 @@ class UsersController < ApplicationController
 
     @page_title = user.user_name
 
-    data = PaperTrail::Version.where(whodunnit: user.id)
-                              .select(:item_id)
-                              .distinct
-                              .group('item_type', 'event')
-                              .count
-
-    @products_created = get_data(data, 'Product', 'create')
-    @products_edited = get_data(data, 'Product', 'update')
-    @brands_created = get_data(data, 'Brand', 'create')
-    @brands_edited = get_data(data, 'Brand', 'update')
-
     if current_user == user
       @active_menu = :dashboard
       @active_dashboard_menu = :profile
@@ -97,8 +112,8 @@ class UsersController < ApplicationController
 
   def get_possessions(prev_owned: false)
     if params[:setup]
-      setup = @user.setups.find(params[:setup])
-      all_possessions = setup.possessions
+      @setup = @user.setups.find(params[:setup])
+      all_possessions = @setup.possessions
     else
       all_possessions = @user.possessions
     end

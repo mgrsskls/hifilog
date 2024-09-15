@@ -4,6 +4,7 @@ import "./theme_toggle.js";
 	let scrollY = 0;
 
 	const headerToggle = document.querySelector(".Header-toggle");
+	const sidebarToggle = document.querySelector(".Sidebar-toggle");
 	const menuButtons = document.querySelectorAll("button.MenuMain-link");
 	const filterOpen = document.querySelector(".Filter-open");
 	const filterClose = document.querySelector(".Filter-close");
@@ -15,6 +16,10 @@ import "./theme_toggle.js";
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);
+	}
+
+	if (sidebarToggle) {
+		sidebarToggle.addEventListener("click", onSidebarToggle);
 	}
 
 	if (filterOpen) {
@@ -143,6 +148,18 @@ import "./theme_toggle.js";
 		} else {
 			button.setAttribute("aria-expanded", "false");
 			window.requestAnimationFrame(() => window.scrollTo(0, scrollY));
+		}
+	}
+
+	function onSidebarToggle({ currentTarget: button }) {
+		const shouldOpen = button.getAttribute("aria-expanded") === "false";
+
+		if (shouldOpen) {
+			button.parentNode.classList.add("is-dark");
+			button.setAttribute("aria-expanded", "true");
+		} else {
+			button.parentNode.classList.remove("is-dark");
+			button.setAttribute("aria-expanded", "false");
 		}
 	}
 

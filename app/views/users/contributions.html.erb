@@ -1,0 +1,44 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "numbers", crossorigin: true, integrity: true %>
+<% end %>
+<%= render layout: "users/shared/layout" do %>
+  <div class="DashboardStatsWrapper">
+    <div class="DashboardStats">
+      <div class="DashboardNumbersWrapper">
+        <h3><%= Product.model_name.human(count: 2) %></h3>
+        <ul class="DashboardNumbers">
+          <li>
+            <div class="DashboardNumber">
+              <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
+              <span class="DashboardNumber-value"><%= @products_created %></span>
+            </div>
+          </li>
+          <li>
+            <div class="DashboardNumber">
+              <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
+              <span class="DashboardNumber-value"><%= @products_edited %></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="DashboardNumbersWrapper">
+        <h3><%= Brand.model_name.human(count: 2) %></h3>
+        <ul class="DashboardNumbers">
+          <li>
+            <div class="DashboardNumber">
+              <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
+              <span class="DashboardNumber-value"><%= @brands_created %></span>
+            </div>
+          </li>
+          <li>
+            <div class="DashboardNumber">
+              <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
+              <span class="DashboardNumber-value"><%= @brands_edited %></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

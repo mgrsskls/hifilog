@@ -111,7 +111,7 @@
 @media (min-width: 54.0625rem) {
 	.Menu-subList {
 		position: absolute;
-		inset-block-start: var(--height);
+		inset-block-start: var(--header-height);
 		background: var(--color-menu-bg);
 		max-block-size: calc(100dvb - var(--header-height));
 		overflow-y: auto;

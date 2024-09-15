@@ -221,13 +221,13 @@
     <% end %>
     <main id="content">
       <% if (params[:controller] == "application" && params[:action] == "index") ||
-            (
-              @user.present? &&
-              params[:controller] == "users" &&
-              (
-                params[:action] == "show" || params[:action] == "prev_owneds" || params[:action] == "history"
-              )
-            )
+        (
+          @user.present? &&
+          params[:controller] == "users" &&
+          (
+            ["show", "prev_owneds", "history", "contributions"].include?(params[:action])
+          )
+        )
       %>
         <%= yield %>
       <% else %>

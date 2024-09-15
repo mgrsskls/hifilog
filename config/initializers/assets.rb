@@ -21,6 +21,7 @@ Rails.application.config.assets.precompile += %w(
   history.css
   home.css
   notes.css
+  numbers.css
   product.css
   profile.css
   search_results.css
