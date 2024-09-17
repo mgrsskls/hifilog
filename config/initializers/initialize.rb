@@ -1,3 +1,19 @@
+PgSearch.multisearch_options = {
+	ignoring: :accents,
+	using: {
+		tsearch: {
+			any_word: true,
+			highlight: {
+				StartSel: '<mark>',
+				StopSel: '</mark>',
+				MaxFragments: 3,
+				FragmentDelimiter: ' […] '
+			}
+		}
+	},
+	ranked_by: ':trigram'
+}
+
 APP_NAME = 'HiFi Log'
 CURRENCIES = [
 	{
@@ -240,7 +256,7 @@ CURRENCIES = [
 		name: "ETB (Ethiopian Birr)",
 		api: true,
 	},
-  {
+	{
 		id: "EUR",
 		name: "Euro (EUR)",
 		api: true,
@@ -740,7 +756,7 @@ CURRENCIES = [
 		name: "TMT (Turkmenistani Manat)",
 		api: false,
 	},
-  {
+	{
 		id: "USD",
 		name: "U.S. Dollar (USD)",
 		api: true,

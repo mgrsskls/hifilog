@@ -93,7 +93,7 @@ class ProductsController < ApplicationController
     if params[:query].present?
       @products_query = params[:query].strip
       if @products_query.present?
-        products = products.search_by_name_and_description(@products_query)
+        products = products.search_by_name(@products_query)
         @filter_applied = true
       end
     end

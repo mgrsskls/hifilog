@@ -76,7 +76,7 @@ class BrandsController < ApplicationController
     if params[:query].present?
       @brands_query = params[:query].strip
       if @brands_query.present?
-        brands = brands.search_by_name_and_description(@brands_query)
+        brands = brands.search_by_name(@brands_query)
         @filter_applied = true
       end
     end
@@ -120,7 +120,7 @@ class BrandsController < ApplicationController
     if params[:query].present?
       @brands_query = params[:query].strip
       if @brands_query.present?
-        products = products.search_by_name_and_description(@brands_query)
+        products = products.search_by_name(@brands_query)
         @filter_applied = true
       end
     end

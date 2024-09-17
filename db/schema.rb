@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_08_205340) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_16_182245) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -179,6 +179,15 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_08_205340) do
     t.index ["product_id"], name: "index_notes_product_id"
     t.index ["product_variant_id"], name: "index_notes_product_variant_id"
     t.index ["user_id", "product_id", "product_variant_id"], name: "index_notes_on_user_id_and_product_id_and_product_variant_id", unique: true
+  end
+
+  create_table "pg_search_documents", force: :cascade do |t|
+    t.text "content"
+    t.string "searchable_type"
+    t.bigint "searchable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
   end
 
   create_table "possessions", force: :cascade do |t|

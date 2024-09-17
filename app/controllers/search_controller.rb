@@ -11,19 +11,23 @@ class SearchController < ApplicationController
     if @query.nil? || @query.length < MIN_CHARS
       flash.now[:alert] = I18n.t('search_results.alert.minimum_chars', min: MIN_CHARS)
     else
+      add_breadcrumb "“#{@query}”"
+      query_arr = [@query]
       query_split_up = @query.split
-      @products = get_products(query_split_up, 20)
-      @brands = get_brands(query_split_up, 20)
+      query_arr += query_split_up + [query_split_up.join] if query_split_up.size > 1
+      results = PgSearch.multisearch(query_arr).with_pg_search_highlight.page(params[:page])
+
+      if params[:filter].present? && %w[products brands].include?(params[:filter])
+        searchable_type = case params[:filter]
+                          when 'products' then %w[Product ProductVariant]
+                          when 'brands' then ['Brand']
+                          end
+
+        results = results.where(searchable_type:)
+      end
+
+      @query_arr = query_arr
+      @results = results
     end
-  end
-
-  private
-
-  def get_products(query, limit)
-    Product.search_by_name_and_description(query).limit(limit).includes([:brand, :sub_categories])
-  end
-
-  def get_brands(query, limit)
-    Brand.search_by_name_and_description(query).limit(limit)
   end
 end

@@ -111,7 +111,7 @@
 	padding-inline: 0;
 }
 
-.Pagination [type="checkbox"] {
+.Pagination :is([type="checkbox"], [type="radio"]) {
 	position: absolute;
 	width: 1px;
 	height: 1px;

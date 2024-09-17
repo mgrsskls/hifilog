@@ -215,8 +215,9 @@ en:
   search_results:
     alert:
       minimum_chars: Please enter at least %{min} characters.
-    heading: "<span>Search results for</span> &ldquo;%{query}&rdquo;"
+    heading: "<span>Search results for</span> “%{query}”"
     none:
+      all: <p><b>No result found for &ldquo;<i>%{query}</i>&rdquo;.</b></p>
       brands: <p><b>No brands found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a brand here</a>.</p>
       products: <p><b>No products found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a product here</a>.</p>
   setup:

@@ -2,32 +2,100 @@
   <% content_for :css do %>
     <%= stylesheet_link_tag "search_results", crossorigin: true, integrity: true %>
   <% end %>
-  <div class="Heading">
-    <h1><%= t('search_results.heading', query: h(@query)).html_safe %></h1>
-  </div>
-
   <div class="SearchResults">
-    <div class="SearchResults-section">
-      <h2><%= Product.model_name.human(count: 2) %></h2>
-      <% if @products.any? %>
-        <div class="u-breakpoint u-breakpoint--l">
-          <%= render "shared/products_table", products: @products, mark: @query %>
-        </div>
-      <% else %>
-        <%= render "shared/empty_state", message: t('search_results.none.products', query: h(@query), path: new_product_path).html_safe %>
-      <% end %>
+    <div class="Heading">
+      <h1><%= t('search_results.heading', query: h(@query)).html_safe %></h1>
     </div>
-    <div class="SearchResults-section">
-      <h2><%= Brand.model_name.human(count: 2) %></h2>
-      <% if @brands.any? %>
-        <div class="u-breakpoint u-breakpoint--l">
-          <%= render "shared/brands_table", brands: @brands, mark: @query %>
-        </div>
-      <% else %>
-        <%= render "shared/empty_state", message: t('search_results.none.brands', query: h(@query), path: new_brand_path).html_safe %>
-      <% end %>
-    </div>
-  </div>
 
-  <%= render "shared/page_actions" %>
+    <form id="search-filter">
+      <input type="hidden" name="query" value="<%= @query %>">
+      <div class="Pagination">
+        <label>
+          <input type="radio" id="filter-all" value="" name="filter"<%= " checked" if params[:filter].blank? %>>
+          All
+        </label>
+        <label>
+          <input type="radio" id="filter-products" value="products" name="filter"<%= " checked" if params[:filter] == 'products' %>>
+          <%= Product.model_name.human(count: 2) %>
+        </label>
+        <label>
+          <input type="radio" id="filter-brands" value="brands" name="filter"<%= " checked" if params[:filter] == 'brands' %>>
+          <%= Brand.model_name.human(count: 2) %>
+        </label>
+        <button class="Button">Filter</button>
+        <%= javascript_tag nonce: true do %>
+          {
+            const form = document.getElementById("search-filter");
+
+            if (form) {
+              const button = form.querySelector("button");
+
+              if (button) {
+                button.hidden = true;
+
+                form.querySelectorAll("input").forEach(input => {
+                  input.addEventListener("change", () => {
+                    form.submit();
+                  })
+                });
+              }
+            }
+          }
+        <% end %>
+      </div>
+    </form>
+
+    <% if @results.any? %>
+      <div class="SearchResults-list">
+        <% @results.each do |result| %>
+          <article class="SearchResult">
+            <div class="u-flex u-spaceBetween u-alignCenter u-gap-md u-flexWrap">
+              <div class="SearchResult-entityName">
+                <%
+                  normalized_query = @query.downcase
+                  normalized_result = sanitize(result.pg_search_highlight.strip&.downcase)
+
+                  if result.searchable_type == "Product"
+                    name = result.searchable.name
+                    path = product_path(result.searchable.friendly_id)
+                %>
+                  <%= result.searchable.brand.name %> <%= link_to name, path %>
+                <% elsif result.searchable_type == "ProductVariant"
+                    name = result.searchable.name
+                    path = product_variant_path(id: result.searchable.friendly_id, product_id: result.searchable.product.friendly_id)
+                %>
+                  <%= result.searchable.product.brand.name %> <%= link_to name, path %>
+                <%  elsif result.searchable_type == "Brand"
+                    name = result.searchable.name
+                    path = brand_path(result.searchable.friendly_id)
+                %>
+                  <%= link_to name, path %>
+                <% end %>
+              </div>
+              <% if result.searchable_type == "Product" or result.searchable_type == "ProductVariant" %>
+                <small><%= Product.model_name.human %></small>
+              <% elsif result.searchable_type == "Brand" %>
+                <small><%= Brand.model_name.human %></small>
+              <% end %>
+            </div>
+
+            <% if !name.downcase.include?(normalized_query) && name.downcase != normalized_result %>
+              <p>
+                <%= markdown_to_html("#{result.pg_search_highlight} […]").html_safe %>
+              </p>
+            <% end %>
+          </article>
+        <% end %>
+      </div>
+      <%= paginate @results %>
+    <% else %>
+      <% if params[:filter] == 'products' %>
+        <%= render "shared/empty_state", message: t('search_results.none.products', query: h(@query), path: new_product_path).html_safe %>
+      <% elsif params[:filter] == 'brands' %>
+        <%= render "shared/empty_state", message: t('search_results.none.brands', query: h(@query), path: new_brand_path).html_safe %>
+      <% else %>
+        <%= render "shared/empty_state", message: t('search_results.none.all', query: h(@query)) %>
+      <% end %>
+    <% end %>
+  </div>
 <% end %>

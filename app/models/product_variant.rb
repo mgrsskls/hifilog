@@ -1,5 +1,6 @@
 class ProductVariant < ApplicationRecord
   include Rails.application.routes.url_helpers
+  include PgSearch::Model
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
   include Format
@@ -11,6 +12,12 @@ class ProductVariant < ApplicationRecord
 
   auto_strip_attributes :name, squish: true
   auto_strip_attributes :description
+
+  multisearchable against: [
+    :name,
+    :description,
+    :release_year
+  ]
 
   has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment

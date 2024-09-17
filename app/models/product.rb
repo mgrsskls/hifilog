@@ -13,8 +13,9 @@ class Product < ApplicationRecord
   auto_strip_attributes :name, squish: true
   auto_strip_attributes :description
 
-  pg_search_scope :search_by_name_and_description,
-                  against: [:name, :description],
+  multisearchable against: [:name, :description]
+  pg_search_scope :search_by_name,
+                  against: [:name],
                   ignoring: :accents,
                   using: {
                     tsearch: {
