@@ -1,5 +1,6 @@
 module ApplicationHelper
   ABC = ('a'..'z').to_a.freeze
+  STATUSES = %w[discontinued continued].freeze
 
   def current_page?(test_path)
     request.path == test_path
@@ -11,6 +12,10 @@ module ApplicationHelper
 
   def abc
     ABC
+  end
+
+  def statuses
+    STATUSES
   end
 
   def user_possessions_count(user)
