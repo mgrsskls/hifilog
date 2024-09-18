@@ -108,33 +108,47 @@ class BrandsController < ApplicationController
       @filter_applied = true
     end
 
-    if params[:status].present? && STATUSES.include?(params[:status])
-      products = products.where(
-        discontinued: params[:status] == 'discontinued'
-      )
+    if STATUSES.include?(params[:status])
+      products = products.left_outer_joins(:product_variants)
+                         .where(product_variants: { discontinued: params[:status] == 'discontinued' })
+                         .or(
+                           products.where(discontinued: params[:status] == 'discontinued')
+                         )
       @filter_applied = true
     end
 
     if params[:query].present?
       @brands_query = params[:query].strip
       if @brands_query.present?
-        products = products.search_by_name(@brands_query)
+        products = products.left_outer_joins(:product_variants)
+                           .where('product_variants.name ILIKE ?', "%#{@brands_query}%")
+                           .or(
+                             products.where('products.name ILIKE ?', "%#{@brands_query}%")
+                           )
         @filter_applied = true
       end
     end
 
-    order = 'LOWER(name) ASC'
-    if params[:sort].present?
-      order = 'LOWER(name) ASC' if params[:sort] == 'name_asc'
-      order = 'LOWER(name) DESC' if params[:sort] == 'name_desc'
-      if params[:sort] == 'release_date_asc'
-        order = 'release_year ASC NULLS LAST, release_month ASC NULLS LAST, release_day ASC NULLS LAST, LOWER(name)'
-      end
-      if params[:sort] == 'release_date_desc'
-        order = 'release_year DESC NULLS LAST, release_month DESC NULLS LAST, release_day DESC NULLS LAST, LOWER(name)'
-      end
-    end
-    @products = products.includes([:sub_categories, :product_variants]).order(order).page(params[:page])
+    order = case params[:sort]
+            when 'name_desc'
+              'LOWER(products.name) DESC'
+            when 'release_date_asc'
+              'products.release_year ASC NULLS LAST,
+               products.release_month ASC NULLS LAST,
+               products.release_day ASC NULLS LAST,
+               LOWER(products.name)'
+            when 'release_date_desc'
+              'products.release_year DESC NULLS LAST,
+               products.release_month DESC NULLS LAST,
+               products.release_day DESC NULLS LAST,
+               LOWER(products.name)'
+            else
+              'LOWER(products.name) ASC'
+            end
+
+    @products = products.distinct
+                        .select('products.*, LOWER(products.name)')
+                        .includes([:sub_categories, :product_variants]).order(order).page(params[:page])
     @total_products_count = @brand.products.count
 
     @contributors = User.find_by_sql(["

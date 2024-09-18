@@ -14,18 +14,6 @@ class Product < ApplicationRecord
   auto_strip_attributes :description
 
   multisearchable against: [:name, :description]
-  pg_search_scope :search_by_name,
-                  against: [:name],
-                  ignoring: :accents,
-                  using: {
-                    tsearch: {
-                      any_word: true,
-                    },
-                    trigram: {
-                      threshold: 0.2
-                    },
-                  },
-                  ranked_by: ':trigram'
 
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment

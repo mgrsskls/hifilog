@@ -12,21 +12,27 @@ class ProductsController < ApplicationController
 
     order = case params[:sort]
             when 'name_desc'
-              'LOWER(name) DESC'
+              'LOWER(products.name) DESC'
             when 'release_date_asc'
-              'release_year ASC NULLS LAST, release_month ASC NULLS LAST, release_day ASC NULLS LAST, LOWER(name)'
+              'products.release_year ASC NULLS LAST,
+               products.release_month ASC NULLS LAST,
+               products.release_day ASC NULLS LAST,
+               LOWER(products.name)'
             when 'release_date_desc'
-              'release_year DESC NULLS LAST, release_month DESC NULLS LAST, release_day DESC NULLS LAST, LOWER(name)'
+              'products.release_year DESC NULLS LAST,
+               products.release_month DESC NULLS LAST,
+               products.release_day DESC NULLS LAST,
+               LOWER(products.name)'
             when 'added_asc'
-              'created_at ASC, LOWER(name)'
+              'products.created_at ASC, LOWER(products.name)'
             when 'added_desc'
-              'created_at DESC, LOWER(name)'
+              'products.created_at DESC, LOWER(products.name)'
             when 'updated_asc'
-              'updated_at ASC, LOWER(name)'
+              'products.updated_at ASC, LOWER(products.name)'
             when 'updated_desc'
-              'updated_at DESC, LOWER(name)'
+              'products.updated_at DESC, LOWER(products.name)'
             else
-              'LOWER(name) ASC'
+              'LOWER(products.name) ASC'
             end
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
@@ -58,24 +64,13 @@ class ProductsController < ApplicationController
       @filter_applied = true
     end
 
-    if params[:status].present? && STATUSES.include?(params[:status])
-      products = products.where(
-        discontinued: params[:status] == 'discontinued'
-      )
+    if STATUSES.include?(params[:status])
+      products = products.left_outer_joins(:product_variants)
+                         .where(product_variants: { discontinued: params[:status] == 'discontinued' })
+                         .or(
+                           products.where(discontinued: params[:status] == 'discontinued')
+                         )
       @filter_applied = true
-    end
-
-    if @sub_category || @category
-      products = if @sub_category
-                   products.joins(:sub_categories)
-                           .where(sub_categories: @sub_category.id)
-                 else
-                   products.joins(:sub_categories)
-                           .where(sub_categories: { category_id: @category.id })
-                 end
-      products = products.order(update_for_joined_tables(order))
-    else
-      products = products.order(order)
     end
 
     if params[:attr].present?
@@ -91,12 +86,33 @@ class ProductsController < ApplicationController
     if params[:query].present?
       @products_query = params[:query].strip
       if @products_query.present?
-        products = products.search_by_name(@products_query)
+        products = products.left_outer_joins(:product_variants)
+                           .where(
+                             'product_variants.name ILIKE ? AND product_variants.discontinued IN (?)',
+                             "%#{@products_query}%",
+                             STATUSES.include?(params[:status]) ? [params[:status] == 'discontinued'] : [true, false]
+                           )
+                           .or(
+                             products.where('products.name ILIKE ?', "%#{@products_query}%")
+                           )
         @filter_applied = true
       end
     end
 
-    @products = products.includes(:brand)
+    if @sub_category || @category
+      products = if @sub_category
+                   products.joins(:sub_categories)
+                           .where(sub_categories: @sub_category.id)
+                 else
+                   products.joins(:sub_categories)
+                           .where(sub_categories: { category_id: @category.id })
+                 end
+    end
+
+    @products = products.order(order)
+                        .distinct
+                        .select('products.*, LOWER(products.name)')
+                        .includes(:brand)
                         .includes(:product_variants)
                         .includes(sub_categories: [:custom_attributes])
                         .page(params[:page])
