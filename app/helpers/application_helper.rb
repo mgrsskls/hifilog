@@ -18,10 +18,10 @@ module ApplicationHelper
     STATUSES
   end
 
-  def user_possessions_count(user)
+  def user_possessions_count(user:, prev_owned: false)
     return unless user
 
-    user.possessions.where(prev_owned: false).count
+    user.possessions.select { |p| p.prev_owned == prev_owned }.length
   end
 
   def user_bookmarks_count(user)
@@ -40,12 +40,6 @@ module ApplicationHelper
     return unless user
 
     user.custom_products.count
-  end
-
-  def user_prev_owneds_count(user)
-    return unless user
-
-    user.possessions.where(prev_owned: true).count
   end
 
   def user_notes_count(user)

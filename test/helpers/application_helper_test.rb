@@ -35,9 +35,13 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   test 'user_possessions_count' do
-    assert_nil user_possessions_count(nil)
-    assert_equal user_possessions_count(users(:one)), 3
-    assert_equal user_possessions_count(users(:without_anything)), 0
+    assert_nil user_possessions_count(user: nil)
+    assert_equal user_possessions_count(user: users(:one)), 3
+    assert_equal user_possessions_count(user: users(:without_anything)), 0
+
+    assert_nil user_possessions_count(user: nil, prev_owned: true)
+    assert_equal user_possessions_count(user: users(:one), prev_owned: true), 3
+    assert_equal user_possessions_count(user: users(:without_anything), prev_owned: true), 0
   end
 
   test 'user_bookmarks_count' do
@@ -56,12 +60,6 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_nil user_custom_products_count(nil)
     assert_equal user_custom_products_count(users(:one)), 3
     assert_equal user_custom_products_count(users(:without_anything)), 0
-  end
-
-  test 'user_prev_owneds_count' do
-    assert_nil user_prev_owneds_count(nil)
-    assert_equal user_prev_owneds_count(users(:one)), 3
-    assert_equal user_prev_owneds_count(users(:without_anything)), 0
   end
 
   test 'user_notes_count' do

@@ -38,7 +38,7 @@
           <li>
             <span>
               <%= link_to t('headings.current_products'), @user.profile_path, "aria-current": request.path == @user.profile_path ? "page" : "false", class: "Sidebar-link" %>
-              <small><%= user_possessions_count(@user) %></small>
+              <small><%= user_possessions_count(user: @user) %></small>
             </span>
             <% setups = @user.setups.where(private: false) %>
             <% if setups.any? %>
@@ -54,7 +54,7 @@
           <li>
             <span>
               <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false", class: "Sidebar-link" %>
-              <small><%= user_prev_owneds_count(@user) %></small>
+              <small><%= user_possessions_count(user: @user, prev_owned: true) %></small>
             </span>
           </li>
           <li>

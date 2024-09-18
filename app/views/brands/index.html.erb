@@ -32,7 +32,7 @@
       <% end %>
     </div>
 
-    <% if @brands.any? %>
+    <% if @brands.length > 0 %>
       <p class="FilterInfo">
         <small><%= page_entries_info @brands %></small>
       </p>
@@ -40,7 +40,7 @@
   </div>
 
   <div class="IndexPage-content">
-    <% if @brands.any? %>
+    <% if @brands.length > 0 %>
       <div class="u-breakpoint u-breakpoint--s">
         <%= render "shared/brands_table", brands: @brands %>
         <%= paginate @brands %>

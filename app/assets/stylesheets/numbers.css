@@ -78,7 +78,7 @@ a .DashboardNumber-heading {
 	grid-template-columns: subgrid;
 }
 
-h2 + .DashboardNumbersWrapper {
+h2 ~ .DashboardNumbersWrapper {
 	margin-block-start: 1.5rem;
 }
 

@@ -149,7 +149,7 @@ class BrandsController < ApplicationController
     @products = products.distinct
                         .select('products.*, LOWER(products.name)')
                         .includes([:sub_categories, :product_variants]).order(order).page(params[:page])
-    @total_products_count = @brand.products.count
+    @total_products_count = @brand.products.length
 
     @contributors = User.find_by_sql(["
       SELECT DISTINCT

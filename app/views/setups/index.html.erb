@@ -19,7 +19,7 @@
           <tr>
             <th><b><%= link_to setup.name, dashboard_setup_path(setup) %></b></th>
             <td class="u-textCenter"><%= setup.visibility %></td>
-            <td class="u-hide-sm Table-products"><%= setup.possessions.count %></td>
+            <td class="u-hide-sm Table-products"><%= setup.possessions.length %></td>
             <td class="Table-sm">
               <ul class="MetaLinks">
                 <li><%= link_to t('edit'), edit_dashboard_setup_path(id: setup.id) %></li>

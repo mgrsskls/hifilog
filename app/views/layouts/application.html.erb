@@ -138,7 +138,7 @@
                       <li class="Menu-subList-separator">
                         <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
                           <span><%= t('headings.collection') %></span>
-                          <small><%= user_possessions_count(current_user) %></small>
+                          <small><%= user_possessions_count(user: current_user) %></small>
                         </a>
                       </li>
                       <li>
@@ -150,7 +150,7 @@
                       <li>
                         <a href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
                           <span><%= t('headings.prev_owneds') %></span>
-                          <small><%= user_prev_owneds_count(current_user) %></small>
+                          <small><%= user_possessions_count(user: current_user, prev_owned: true) %></small>
                         </a>
                       </li>
                       <li>
@@ -244,7 +244,7 @@
       <% end %>
     </main>
     <footer class="is-dark">
-      <% if newest_products.any? or newest_brands.any? %>
+      <% if newest_products.length > 0 or newest_brands.length > 0 %>
         <div class="Newest">
           <div class="u-container">
             <div class="Heading">
@@ -257,7 +257,7 @@
             </div>
 
             <div class="Newest-lists u-flex u-flexWrap">
-              <% if newest_products.any? %>
+              <% if newest_products.length > 0 %>
                 <div>
                   <h3><%= Product.model_name.human(count: 2) %></h3>
                   <ol>
@@ -270,7 +270,7 @@
                   </ol>
                 </div>
               <% end %>
-              <% if newest_brands.any? %>
+              <% if newest_brands.length > 0 %>
                 <div>
                   <h3><%= Brand.model_name.human(count: 2) %></h3>
                   <ol>

@@ -30,7 +30,7 @@
       <% end %>
     </div>
 
-    <% if @products.any? %>
+    <% if @products.length > 0 %>
       <p class="FilterInfo">
         <small><%= page_entries_info @products %></small>
       </p>
@@ -38,7 +38,7 @@
   </div>
 
   <div class="IndexPage-content">
-    <% if @products.any? %>
+    <% if @products.length > 0 %>
       <div class="u-breakpoint u-breakpoint--l">
         <%= render "shared/products_table", products: @products, hide_category: @sub_category.present? %>
         <%= paginate @products %>
