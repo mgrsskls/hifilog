@@ -53,7 +53,7 @@ class ProductsController < ApplicationController
 
     products = Product.all
 
-    if params[:letter].present? && ABC.include?(params[:letter])
+    if ABC.include?(params[:letter])
       products = products.where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
       @filter_applied = true
     end

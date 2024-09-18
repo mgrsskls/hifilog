@@ -49,12 +49,12 @@ class BrandsController < ApplicationController
 
     brands = Brand.all
 
-    if params[:letter].present? && ABC.include?(params[:letter])
+    if ABC.include?(params[:letter])
       brands = brands.where('left(lower(brands.name),1) = ?', params[:letter].downcase)
       @filter_applied = true
     end
 
-    if params[:status].present? && STATUSES.include?(params[:status])
+    if STATUSES.include?(params[:status])
       brands = brands.where(discontinued: params[:status] == 'discontinued')
       @filter_applied = true
     end
@@ -103,7 +103,7 @@ class BrandsController < ApplicationController
       add_breadcrumb @brand.name
     end
 
-    if params[:letter].present? && ABC.include?(params[:letter])
+    if ABC.include?(params[:letter])
       products = products.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
       @filter_applied = true
     end
