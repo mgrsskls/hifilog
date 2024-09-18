@@ -47,7 +47,14 @@
           </td>
         <% end %>
       </tr>
-      <% product.product_variants.select { |v| !(params[:status].present? && params[:status] == 'continued' && v.discontinued?) }.sort_by {|v| [v.release_year, v.release_month, v.release_day].compact}.each do |product_variant| %>
+      <% product.product_variants
+                .select { |v|
+                  params[:status].present? && statuses.include?(params[:status]) ? v.discontinued == (params[:status] == 'discontinued') : true
+                }
+                .sort_by {|v|
+                  [v.release_year, v.release_month, v.release_day].compact
+                }
+                .each do |product_variant| %>
         <tr<% if product_variant.discontinued? %> class="is-discontinued"<% end %>>
           <th scope="row" class="Table-variant">
             <%= link_to (mark ? highlight(product_variant.name_with_fallback, mark) : product_variant.name_with_fallback), product_variant.path %>
