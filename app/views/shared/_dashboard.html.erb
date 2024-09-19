@@ -29,7 +29,7 @@
             <a class="Sidebar-link" href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
               <%= t('headings.collection') %>
             </a>
-            <small><%= user_possessions_count(user: current_user) %></small>
+            <small data-user-count="products"></small>
           </span>
         </li>
         <li>
@@ -37,7 +37,7 @@
             <a class="Sidebar-link" href="<%= dashboard_custom_products_path %>"<%= active_menu_state(@active_dashboard_menu, :custom_products) %>>
               <%= CustomProduct.model_name.human(count: 2) %>
             </a>
-            <small><%= user_custom_products_count(current_user) %></small>
+            <small data-user-count="custom_products"></small>
           </span>
         </li>
         <li>
@@ -45,7 +45,7 @@
             <a class="Sidebar-link" href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
               <%= t('headings.prev_owneds') %>
             </a>
-            <small><%= user_possessions_count(user: current_user, prev_owned: true) %></small>
+            <small data-user-count="previous_products"></small>
           </span>
         </li>
         <li>
@@ -53,7 +53,7 @@
             <a class="Sidebar-link" href="<%= dashboard_setups_path %>"<%= active_menu_state(@active_dashboard_menu, :setups) %>>
               <%= Setup.model_name.human(count: 2) %>
             </a>
-            <small><%= user_setups_count(current_user) %></small>
+            <small data-user-count="setups"></small>
           </span>
         </li>
         <li>
@@ -61,7 +61,7 @@
             <a class="Sidebar-link" href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(@active_dashboard_menu, :bookmarks) %>>
               <%= Bookmark.model_name.human(count: 2) %>
             </a>
-            <small><%= user_bookmarks_count(current_user) %></small>
+            <small data-user-count="bookmarks"></small>
           </span>
         </li>
         <li>
@@ -69,7 +69,7 @@
             <a class="Sidebar-link" href="<%= dashboard_notes_path %>"<%= active_menu_state(@active_dashboard_menu, :notes) %>>
               <%= Note.model_name.human(count: 2) %>
             </a>
-            <small><%= user_notes_count(current_user) %></small>
+            <small data-user-count="notes"></small>
           </span>
         </li>
         <li class="Sidebar-separator">

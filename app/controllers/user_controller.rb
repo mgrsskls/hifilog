@@ -303,6 +303,19 @@ class UserController < ApplicationController
     }
   end
 
+  def counts
+    return unless user_signed_in?
+
+    render json: {
+      products: user_possessions_count(user: current_user, prev_owned: false),
+      custom_products: user_custom_products_count(current_user),
+      previous_products: user_possessions_count(user: current_user, prev_owned: true),
+      setups: user_setups_count(current_user),
+      bookmarks: user_bookmarks_count(current_user),
+      notes: user_notes_count(current_user)
+    }
+  end
+
   private
 
   def get_products_per_brand(all: false)

@@ -50,6 +50,7 @@ Rails.application.routes.draw do
     resources :notes, only: [:index, :show]
   end
   get '/user/has', to: 'user#has', as: :has
+  get '/user/counts', to: 'user#counts', as: :counts
 
   resources :notes, only: [:create, :destroy, :update]
   resources :custom_products, only: [:create, :destroy, :update]

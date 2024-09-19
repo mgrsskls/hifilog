@@ -10,15 +10,51 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= javascript_tag nonce: true do %>
       {
-        const currentTheme = localStorage.theme;
+        const { theme } = localStorage;
 
-        if (currentTheme) {
-          document.documentElement.dataset.theme = currentTheme;
+        document.addEventListener("DOMContentLoaded", () => {
+          if (theme) {
+            document.documentElement.dataset.theme = theme;
+            document.querySelector(`theme-toggle input[value="${theme}"]`).checked = true;
+          }
 
-          document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector(`theme-toggle input[value="${currentTheme}"]`).checked = true;
-          });
-        }
+          <% if user_signed_in? %>
+            readUserCounts();
+            fetchUserCounts();
+          <% end %>
+        });
+
+        <% if user_signed_in? %>
+          function readUserCounts() {
+            const { userCounts } = localStorage;
+
+            if (userCounts) {
+              try {
+                renderUserCounts(JSON.parse(userCounts));
+              } catch(e) {}
+            }
+          }
+
+          function fetchUserCounts() {
+            fetch("<%= counts_path %>")
+              .then(res => res.json())
+              .then(res => {
+                renderUserCounts(res);
+
+                try {
+                  localStorage.setItem('userCounts', JSON.stringify(res));
+                } catch(e) {}
+              });
+          }
+
+          function renderUserCounts(userCounts) {
+            Object.entries(userCounts).forEach(([type, count]) => {
+              document.querySelectorAll(`[data-user-count="${type}"]`).forEach(el => {
+                el.textContent = count;
+              });
+            });
+          }
+        <% end %>
       }
     <% end %>
     <%= yield :js %>
@@ -138,37 +174,37 @@
                       <li class="Menu-subList-separator">
                         <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
                           <span><%= t('headings.collection') %></span>
-                          <small><%= user_possessions_count(user: current_user) %></small>
+                          <small data-user-count="products"></small>
                         </a>
                       </li>
                       <li>
                         <a href="<%= dashboard_custom_products_path %>"<%= active_menu_state(@active_dashboard_menu, :custom_products) %>>
                           <span><%= CustomProduct.model_name.human(count: 2) %></span>
-                          <small><%= user_custom_products_count(current_user) %></small>
+                          <small data-user-count="custom_products"></small>
                         </a>
                       </li>
                       <li>
                         <a href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
                           <span><%= t('headings.prev_owneds') %></span>
-                          <small><%= user_possessions_count(user: current_user, prev_owned: true) %></small>
+                          <small data-user-count="previous_products"></small>
                         </a>
                       </li>
                       <li>
                         <a href="<%= dashboard_setups_path %>"<%= active_menu_state(@active_dashboard_menu, :setups) %>>
                           <span><%= Setup.model_name.human(count: 2) %></span>
-                          <small><%= user_setups_count(current_user) %></small>
+                          <small data-user-count="setups"></small>
                         </a>
                       </li>
                       <li>
                         <a href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(@active_dashboard_menu, :bookmarks) %>>
                           <span><%= Bookmark.model_name.human(count: 2) %></span>
-                          <small><%= user_bookmarks_count(current_user) %></small>
+                          <small data-user-count="bookmarks"></small>
                         </a>
                       </li>
                       <li>
                         <a href="<%= dashboard_notes_path %>"<%= active_menu_state(@active_dashboard_menu, :notes) %>>
                           <span><%= Note.model_name.human(count: 2) %></span>
-                          <small><%= user_notes_count(current_user) %></small>
+                          <small data-user-count="notes"></small>
                         </a>
                       </li>
                       <li class="Menu-subList-separator">
