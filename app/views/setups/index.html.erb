@@ -4,7 +4,7 @@
     <%= link_to t('setup.new.link'), new_dashboard_setup_path, class: "Button" %>
   </div>
 
-  <% if @setups.any? %>
+  <% if @setups.length > 0 %>
     <table>
       <thead>
         <tr>
