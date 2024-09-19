@@ -4,7 +4,7 @@ class SetupsController < ApplicationController
 
   def index
     @page_title = Setup.model_name.human(count: 2)
-    @setups = current_user.setups.order('LOWER(name)')
+    @setups = current_user.setups.includes([:possessions]).order('LOWER(name)')
   end
 
   def show
