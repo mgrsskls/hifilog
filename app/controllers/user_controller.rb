@@ -101,23 +101,27 @@ class UserController < ApplicationController
     @page_title = Bookmark.model_name.human(count: 2)
     @active_dashboard_menu = :bookmarks
 
-    all_bookmarks = current_user.bookmarks.joins(:product)
+    all_bookmarks = current_user.bookmarks
                                 .includes([product: [{ sub_categories: :category }, :brand]])
                                 .includes([:product_variant])
-                                .order('LOWER(products.name)')
-                                .map { |bookmark| BookmarkPresenter.new(bookmark) }
+
+    bookmarks = all_bookmarks
 
     if params[:category].present?
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @bookmarks = all_bookmarks.select { |bookmark| @sub_category.products.include?(bookmark.product) }
+      sub_cat = SubCategory.friendly.find(params[:category])
 
-      if @bookmarks.empty?
-        @bookmarks = all_bookmarks
-        @sub_category = nil
+      if sub_cat
+        bookmarks = bookmarks.where({ product: { products_sub_categories: { sub_category_id: sub_cat.id } } })
+                             .order(['brand.name', 'LOWER(product.name)'])
+        @sub_category = sub_cat
+      else
+        bookmarks = bookmarks.order(['brand.name', 'LOWER(products.name)'])
       end
     else
-      @bookmarks = all_bookmarks
+      bookmarks = bookmarks.order(['brand.name', 'LOWER(products.name)'])
     end
+
+    @bookmarks = bookmarks.map { |bookmark| BookmarkPresenter.new(bookmark) }
 
     @categories = all_bookmarks.map(&:product)
                                .flat_map(&:sub_categories)
