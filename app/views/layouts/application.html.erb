@@ -64,7 +64,7 @@
     <%= yield :css %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <meta name="description" content="<%= t('meta_description', products_count: products_count, products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count) %>">
+    <meta name="description" content="<%= t('meta_description') %>">
     <link rel="icon" href="/favicon.ico?v=6" sizes="32x32">
     <link rel="icon" href="/icon.svg?v=8" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8">
@@ -79,7 +79,7 @@
     <meta property="og:image:height" content="630">
     <meta name="og:url" content="https://www.hifilog.com<%= request.fullpath %>">
     <meta name="og:og:site_name" content="<%= APP_NAME %>">
-    <meta name="og:description" content="<%= t('meta_description', products_count: products_count, products_path: products_path, brands_count: brands_count, brands_path: brands_path, categories_count: categories_count) %>">
+    <meta name="og:description" content="<%= t('meta_description') %>">
   </head>
 
   <body>
