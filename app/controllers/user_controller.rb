@@ -66,34 +66,29 @@ class UserController < ApplicationController
                                                      ]
                                                    )
 
-    if params[:category].present?
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all.select do |possession|
-        @sub_category.products.include?(possession.product) ||
-          @sub_category.custom_products.include?(possession.custom_product)
-      end
-    else
-      @possessions = all
-    end
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
 
-    @categories = all.flat_map(&:sub_categories)
-                     .sort_by(&:name)
-                     .uniq
-                     .group_by(&:category)
-                     .sort_by { |category| category[0].order }
-                     .map do |c|
-                       [
-                         c[0],
-                         c[1].map do |sub_category|
-                           {
-                             name: sub_category.name,
-                             friendly_id: sub_category.friendly_id,
-                             path: dashboard_products_path(category: sub_category.friendly_id)
-                           }
-                         end
-                       ]
-                     end
-    @reset_path = dashboard_products_path
+    @possessions = all
+    @possessions = @possessions.select { |p| p.sub_categories.include?(@sub_category) } if @sub_category
+
+    @categories = all
+                  .flat_map(&:sub_categories)
+                  .sort_by(&:name)
+                  .uniq
+                  .group_by(&:category)
+                  .sort_by { |category| category[0].order }
+                  .map do |c|
+                    [
+                      c[0],
+                      c[1].map do |sub_category|
+                        {
+                          name: sub_category.name,
+                          friendly_id: sub_category.friendly_id,
+                          path: dashboard_products_path(category: sub_category.friendly_id)
+                        }
+                      end
+                    ]
+                  end
   end
 
   def bookmarks
