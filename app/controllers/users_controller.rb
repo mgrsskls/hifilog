@@ -29,7 +29,6 @@ class UsersController < ApplicationController
 
     get_possessions
 
-    @reset_path = @user.profile_path
     @render_since = true
     @render_period = false
 
@@ -48,7 +47,6 @@ class UsersController < ApplicationController
 
     get_possessions(prev_owned: true)
 
-    @reset_path = user_previous_products_path(id: @user.user_name)
     @render_since = false
     @render_period = true
     @heading = I18n.t('headings.prev_owneds')

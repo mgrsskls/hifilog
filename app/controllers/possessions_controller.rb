@@ -70,7 +70,6 @@ class PossessionsController < ApplicationController
                          end
                        ]
                      end
-    @reset_path = dashboard_prev_owneds_path
   end
 
   def create

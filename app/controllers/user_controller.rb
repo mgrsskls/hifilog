@@ -141,7 +141,6 @@ class UserController < ApplicationController
                                    end
                                  ]
                                end
-    @reset_path = dashboard_bookmarks_path
   end
 
   def contributions

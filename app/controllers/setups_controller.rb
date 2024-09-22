@@ -84,7 +84,6 @@ class SetupsController < ApplicationController
                          end
                        ]
                      end
-    @reset_path = dashboard_setup_path(@setup)
   end
 
   def new
