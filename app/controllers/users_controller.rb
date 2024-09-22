@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   include HistoryHelper
+  include Possessions
 
   before_action :set_breadcrumb, only: [:index]
 
@@ -27,7 +28,9 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    get_possessions
+    @setup = @user.setups.find(params[:setup]) if params[:setup]
+
+    possessions_for_user(user: @user, prev_owned: false, setup: @setup)
 
     @render_since = true
     @render_period = false
@@ -45,7 +48,7 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    get_possessions(prev_owned: true)
+    possessions_for_user(user: @user, prev_owned: true)
 
     @render_since = false
     @render_period = true
@@ -106,74 +109,5 @@ class UsersController < ApplicationController
     end
 
     user
-  end
-
-  def get_possessions(prev_owned: false)
-    if params[:setup]
-      @setup = @user.setups.find(params[:setup])
-      all_possessions = @setup.possessions
-    else
-      all_possessions = @user.possessions
-    end
-
-    all = map_possessions_to_presenter all_possessions.where(prev_owned:)
-                                                      .includes([product: [{ sub_categories: :category }, :brand]])
-                                                      .includes(
-                                                        [
-                                                          product_variant: [
-                                                            product: [
-                                                              { sub_categories: :category },
-                                                              :brand
-                                                            ]
-                                                          ]
-                                                        ]
-                                                      )
-                                                      .includes(
-                                                        [
-                                                          custom_product:
-                                                            [
-                                                              { sub_categories: :category, },
-                                                              :user,
-                                                              { image_attachment: :blob }
-                                                            ]
-                                                        ]
-                                                      )
-                                                      .includes({ image_attachment: :blob })
-                                                      .includes([:product_option])
-                                                      .order(
-                                                        [
-                                                          'brand.name',
-                                                          'product.name',
-                                                          'product_variant.name',
-                                                          'custom_product.name'
-                                                        ]
-                                                      )
-
-    if params[:category].present?
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all.select do |possession|
-        @sub_category.products.include?(possession.product) ||
-          @sub_category.custom_products.include?(possession.custom_product)
-      end
-    else
-      @possessions = all
-    end
-
-    @categories = all.flat_map(&:sub_categories)
-                     .sort_by(&:name)
-                     .uniq
-                     .group_by(&:category)
-                     .sort_by { |category| category[0].order }
-                     .map do |c|
-                       [
-                         c[0],
-                         c[1].map do |sub_category|
-                           {
-                             name: sub_category.name,
-                             friendly_id: sub_category.friendly_id,
-                           }
-                         end
-                       ]
-                     end
   end
 end

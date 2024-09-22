@@ -37,9 +37,9 @@ Rails.application.routes.draw do
 
   scope '/dashboard', as: :dashboard do
     root 'user#dashboard'
-    get 'products', to: 'user#products', as: :products
-    get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
+    get 'products', to: 'possessions#current', as: :products
     get 'previous-products', to: 'possessions#previous', as: :prev_owneds
+    get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
     get 'contributions', to: 'user#contributions', as: :contributions
     get 'custom-products', to: 'custom_products#index', as: :custom_products
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
