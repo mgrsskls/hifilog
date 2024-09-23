@@ -83,7 +83,7 @@ class NotesController < ApplicationController
     @product_variant = @note.product_variant
 
     if @note.save
-      flash[:notice] = I18n.t('note.messages.saved') # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      flash[:notice] = I18n.t('note.messages.saved')
 
       if @product_variant.present?
         redirect_back fallback_location: product_new_variant_notes_url(
