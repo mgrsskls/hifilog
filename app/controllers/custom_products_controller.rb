@@ -82,7 +82,7 @@ class CustomProductsController < ApplicationController
     @custom_product.image.purge if params[:custom_product][:delete_image]
 
     if @custom_product.update(custom_product_params)
-      flash[:notice] = I18n.t( # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      flash[:notice] = I18n.t(
         'custom_product.messages.updated',
         link: ActionController::Base.helpers.link_to(
           @custom_product.name,
@@ -95,7 +95,7 @@ class CustomProductsController < ApplicationController
       )
     elsif custom_product_params[:image].present?
       @custom_product.errors.each do |error|
-        flash[:alert] = "The image #{error.message}" # rubocop:disable Rails/ActionControllerFlashBeforeRender
+        flash[:alert] = "The image #{error.message}"
       end
       redirect_back fallback_location: user_custom_product_url(
         user_id: @custom_product.user.user_name.downcase,
