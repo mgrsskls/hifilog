@@ -29,8 +29,16 @@ class UsersController < ApplicationController
     return unless @user
 
     @setup = @user.setups.find(params[:setup]) if params[:setup]
+    possessions = @setup ? @setup.possessions : @user.possessions.where(prev_owned: false)
 
-    possessions_for_user(user: @user, prev_owned: false, setup: @setup)
+    all = map_possessions_to_presenter get_possessions_for_user(possessions:)
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @possessions = if @sub_category
+                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                   else
+                     all
+                   end
+    @categories = get_grouped_sub_categories(possessions: all)
 
     @render_since = true
     @render_period = false
@@ -48,7 +56,14 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    possessions_for_user(user: @user, prev_owned: true)
+    all = map_possessions_to_presenter get_possessions_for_user(possessions: @user.possessions.where(prev_owned: true))
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @possessions = if @sub_category
+                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                   else
+                     all
+                   end
+    @categories = get_grouped_sub_categories(possessions: all)
 
     @render_since = false
     @render_period = true

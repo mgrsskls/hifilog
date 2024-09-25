@@ -11,7 +11,16 @@ class PossessionsController < ApplicationController
     @page_title = I18n.t('headings.collection')
     @active_dashboard_menu = :products
 
-    possessions_for_user(user: current_user, prev_owned: false)
+    all = map_possessions_to_presenter get_possessions_for_user(
+      possessions: current_user.possessions.where(prev_owned: false)
+    )
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @possessions = if @sub_category
+                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                   else
+                     all
+                   end
+    @categories = get_grouped_sub_categories(possessions: all)
   end
 
   def previous
@@ -21,7 +30,16 @@ class PossessionsController < ApplicationController
     @page_title = I18n.t('headings.prev_owneds')
     @active_dashboard_menu = :prev_owneds
 
-    possessions_for_user(user: current_user, prev_owned: true)
+    all = map_possessions_to_presenter get_possessions_for_user(
+      possessions: current_user.possessions.where(prev_owned: true)
+    )
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @possessions = if @sub_category
+                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                   else
+                     all
+                   end
+    @categories = get_grouped_sub_categories(possessions: all)
   end
 
   def create

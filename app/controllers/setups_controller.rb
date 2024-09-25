@@ -1,4 +1,6 @@
 class SetupsController < ApplicationController
+  include Possessions
+
   before_action :authenticate_user!
   before_action :set_breadcrumb
 
@@ -13,77 +15,35 @@ class SetupsController < ApplicationController
     add_breadcrumb @setup.name, dashboard_setup_path(@setup)
     @page_title = @setup.name
 
-    @all_possessions = current_user.possessions
-                                   .includes([product: [{ sub_categories: :category }, :brand]])
-                                   .includes(
-                                     [
-                                       product_variant: [
-                                         product: [
-                                           { sub_categories: :category },
-                                           :brand
-                                         ]
-                                       ]
-                                     ]
-                                   )
-                                   .includes(
-                                     [
-                                       custom_product:
-                                        [
-                                          { sub_categories: :category, },
-                                          :user,
-                                          { image_attachment: :blob }
-                                        ]
-                                     ]
-                                   )
-                                   .includes([{ image_attachment: :blob }])
-                                   .includes([:product_option])
-                                   .includes([:setup_possession])
-                                   .includes([:setup])
-                                   .order(
-                                     [
-                                       'brand.name',
-                                       'product.name',
-                                       'product_variant.name',
-                                       'custom_product.name'
-                                     ]
-                                   )
-                                   .map do |possession|
-                                     if possession.custom_product
-                                       CustomProductSetupPossessionPresenter.new(possession, @setup)
-                                     else
-                                       SetupPossessionPresenter.new(possession, @setup)
-                                     end
-                                   end
+    @all_possessions = map_possessions_to_presenter current_user
+                       .possessions.where(prev_owned: false)
+                       .includes([product: [:brand]])
+                       .includes([product_variant: [product: [:brand]]])
+                       .includes([custom_product: [{ image_attachment: :blob }]])
+                       .includes([{ image_attachment: :blob }])
+                       .order(
+                         [
+                           'brand.name',
+                           'product.name',
+                           'product_variant.name',
+                           'custom_product.name'
+                         ]
+                       )
 
-    all = @all_possessions.select { |possession| possession.setup == @setup }
-
-    if params[:category].present?
-      @sub_category = SubCategory.friendly.find(params[:category])
-      @possessions = all.select do |possession|
-        @sub_category.products.include?(possession.product) ||
-          @sub_category.custom_products.include?(possession.custom_product)
+    all = get_possessions_for_user(possessions: @setup.possessions).map do |possession|
+      if possession.custom_product
+        CustomProductSetupPossessionPresenter.new(possession, @setup)
+      else
+        SetupPossessionPresenter.new(possession, @setup)
       end
-    else
-      @possessions = all
     end
-
-    @categories = all.flat_map(&:sub_categories)
-                     .sort_by(&:name)
-                     .uniq
-                     .group_by(&:category)
-                     .sort_by { |category| category[0].order }
-                     .map do |c|
-                       [
-                         c[0],
-                         c[1].map do |sub_category|
-                           {
-                             name: sub_category.name,
-                             friendly_id: sub_category.friendly_id,
-                             path: dashboard_setup_path(id: @setup.id, category: sub_category.friendly_id)
-                           }
-                         end
-                       ]
-                     end
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @possessions = if @sub_category
+                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                   else
+                     all
+                   end
+    @categories = get_grouped_sub_categories(possessions: all)
   end
 
   def new
