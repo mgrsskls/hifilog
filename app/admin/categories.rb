@@ -1,5 +1,5 @@
 ActiveAdmin.register Category do
-  permit_params :name, :slug, :order
+  permit_params :name, :slug, :order, :column
 
   remove_filter :order
   remove_filter :slug

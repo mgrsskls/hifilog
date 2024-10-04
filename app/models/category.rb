@@ -17,6 +17,7 @@ class Category < ApplicationRecord
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
+      column
       name
       name_cont
       name_end
