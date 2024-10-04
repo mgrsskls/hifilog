@@ -16,10 +16,9 @@
       <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button" %>
     </div>
     <div class="MenuMega-container">
-      <% Category.includes(:sub_categories).order(:order).each_with_index do |category, i| %>
-        <% if i.even? %>
-          <div>
-        <% end %>
+      <% Category.includes(:sub_categories).order(:order).group_by(&:column).each do |columns| %>
+        <div>
+          <% columns[1].each do |category| %>
             <div class="MenuMega-list">
               <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: category.friendly_id }),
                 class: "MegaMenu MegaMenu-link MegaMenu-link--lvl1 Menu-link--lvl1",
@@ -38,9 +37,8 @@
                 <% end %>
               </ul>
             </div>
-        <% if i.odd? %>
-          </div>
-        <% end %>
+          <% end %>
+        </div>
       <% end %>
     </div>
   </div>
