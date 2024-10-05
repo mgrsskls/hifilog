@@ -95,6 +95,14 @@
 	color: var(--color-success-copy);
 }
 
+.EntityPossession--bookmark {
+	background: var(--color-blue-925);
+}
+
+.EntityPossession--bookmark form + form {
+	margin-block-start: 1rem;
+}
+
 .EntityPossession-heading {
 	margin-block: 0;
 	gap: 0.625rem;

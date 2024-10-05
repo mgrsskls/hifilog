@@ -28,7 +28,11 @@ class BookmarksController < ApplicationController
   def update
     bookmark = current_user.bookmarks.find(params[:id])
 
-    bookmark.update(bookmark_list_id: nil) if params[:remove_from_bookmark_list].present?
+    if params[:bookmark_list_id].present?
+      bookmark.update(bookmark_list_id: params[:bookmark_list_id])
+    else
+      bookmark.update(bookmark_list_id: nil)
+    end
 
     redirect_to params[:redirect_to] || dashboard_bookmarks_path
   end

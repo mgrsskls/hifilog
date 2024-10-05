@@ -13,6 +13,7 @@ import "./theme_toggle.js";
 	const buttonsWithLoadingState = document.querySelectorAll(
 		".Button--loadingIcon, .CheckboxButton",
 	);
+	const selectBookmarkList = document.querySelector("#select-bookmark-list");
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);
@@ -28,6 +29,10 @@ import "./theme_toggle.js";
 
 	if (filterClose) {
 		filterClose.addEventListener("click", onCloseFilter);
+	}
+
+	if (selectBookmarkList) {
+		selectBookmarkList.addEventListener("change", onSelectBookmarkList);
 	}
 
 	menuButtons.forEach((category) =>
@@ -192,6 +197,10 @@ import "./theme_toggle.js";
 				}
 			});
 		});
+	}
+
+	function onSelectBookmarkList({ target }) {
+		target.closest("form").submit();
 	}
 
 	document

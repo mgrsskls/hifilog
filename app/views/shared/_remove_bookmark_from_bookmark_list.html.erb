@@ -11,7 +11,7 @@
           Yes
         <% end %>
         <%= form_for possession, method: :put do %>
-          <input type="hidden" name="remove_from_bookmark_list" value="1">
+          <input type="hidden" name="bookmark_list_id" value="">
           <% if redirect_to %>
             <input type="hidden" name="redirect_to" value="<%= redirect_to %>">
           <% end %>
