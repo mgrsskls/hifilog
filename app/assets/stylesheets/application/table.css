@@ -7,15 +7,31 @@ tr[aria-current="true"] {
 	font-weight: bold;
 }
 
-tr.is-discontinued > :first-child {
+.is-continued th {
+	font-weight: 700;
+}
+
+.is-continued th span {
+	font-weight: 600;
+}
+
+tr:is(.is-continued, .is-discontinued) > :first-child {
 	background-image: linear-gradient(
 		to right,
-		var(--color-discontinued-marker) 0.1875rem,
+		var(--color) 0.1875rem,
 		transparent 0.1875rem
 	);
 	background-size: 100% calc(100% - 1.5rem);
 	background-position: left center;
 	background-repeat: no-repeat;
+}
+
+tr.is-continued {
+	--color: var(--color-continued-marker);
+}
+
+tr.is-discontinued {
+	--color: var(--color-discontinued-marker);
 }
 
 table:has(tbody + tbody) :is(thead, tbody) {

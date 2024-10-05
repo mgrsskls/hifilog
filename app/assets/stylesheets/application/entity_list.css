@@ -158,6 +158,11 @@
 
 .EntityList-name {
 	line-height: 1.5;
+	position: relative;
+}
+
+.is-continued > .EntityList-name {
+	font-weight: 700;
 }
 
 .EntityList--productVariants .EntityList-name {
@@ -175,20 +180,24 @@
 	margin-block-start: 0.5rem;
 }
 
-.is-discontinued > .EntityList-name {
-	position: relative;
-}
-
-.is-discontinued > .EntityList-name::before {
+.EntityList-name::before {
 	--size: 0.1875rem;
 
 	content: "";
 	display: block;
 	inline-size: 0;
 	block-size: 100%;
-	border-inline-start: var(--size) solid var(--color-discontinued-marker);
+	border-inline-start: var(--size) solid var(--color);
 	position: absolute;
 	inset-inline-end: calc(100% + var(--spacing-inline) - var(--size));
+}
+
+.is-continued > .EntityList-name::before {
+	--color: var(--color-continued-marker);
+}
+
+.is-discontinued > .EntityList-name::before {
+	--color: var(--color-discontinued-marker);
 }
 
 .EntityList-data {

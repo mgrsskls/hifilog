@@ -23,12 +23,12 @@
   </thead>
   <% products.each do |product| %>
     <tbody>
-      <tr<% if product.discontinued? %> class="is-discontinued"<% end %>>
+      <tr class="is-<%= product.discontinued? ? "discontinued" : "continued" %>">
         <th scope="row">
           <% unless hide_brand %>
-            <%= product.brand.name %><br>
+            <span><%= product.brand.name %></span><br>
           <% end %>
-          <b><%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %></b>
+          <%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %>
         </th>
         <% unless hide_category %>
           <td class="Table-sm">
@@ -55,7 +55,7 @@
                   [v.release_year, v.release_month, v.release_day].compact
                 }
                 .each do |product_variant| %>
-        <tr<% if product_variant.discontinued? %> class="is-discontinued"<% end %>>
+        <tr class="is-<%= product_variant.discontinued? ? "discontinued" : "continued" %>">
           <th scope="row" class="Table-variant">
             <%= link_to (mark ? highlight(product_variant.name_with_fallback, mark) : product_variant.name_with_fallback), product_variant.path %>
           </th>
@@ -88,7 +88,7 @@
 <ol class="EntityList EntityList--products u-breakpoint-item-s">
   <% products.each do |product| %>
     <li class="EntityList-item">
-      <div class="EntityList-content<% if product.discontinued? %> is-discontinued<% end %>">
+      <div class="EntityList-content is-<%= product.discontinued? ? "discontinued" : "continued" %>">
         <div class="EntityList-name">
           <% unless hide_brand %>
             <span>
@@ -96,7 +96,7 @@
             </span>
           <% end %>
           <a href="<%= product_path(id: product.friendly_id) %>">
-            <b><%= mark ? highlight(product.name, mark) : product.name %></b>
+            <%= mark ? highlight(product.name, mark) : product.name %>
           </a>
         </div>
         <dl class="EntityList-data Data">
@@ -133,10 +133,10 @@
           <ol class="EntityList EntityList--productVariants" id="entity-list-variants-<%= product.id %>" hidden>
             <% product.product_variants.each do |product_variant| %>
               <li class="EntityList-item">
-                <div class="EntityList-content<% if product_variant.discontinued? %> is-discontinued<% end %>">
+                <div class="EntityList-content is-<%= product_variant.discontinued? ? "discontinued" : "continued" %>">
                   <div class="EntityList-name">
                     <a href="<%= product_variant_path(id: product_variant.friendly_id, product_id: product.friendly_id) %>">
-                      <b><%= mark ? highlight(product_variant.short_name, mark) : product_variant.short_name %></b>
+                      <%= mark ? highlight(product_variant.short_name, mark) : product_variant.short_name %>
                     </a>
                   </div>
                   <dl class="EntityList-data Data">

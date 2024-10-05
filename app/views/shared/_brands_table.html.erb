@@ -16,8 +16,10 @@
   </thead>
   <tbody>
     <% brands.each do |brand| %>
-      <tr<% if brand.discontinued? %> class="is-discontinued"<% end %>>
-        <th scope="row"><b><%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %></b></th>
+      <tr class="is-<%= brand.discontinued? ? "discontinued" : "continued" %>">
+        <th scope="row">
+          <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
+        </th>
         <td class="Table-sm">
           <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
         </td>
@@ -38,13 +40,9 @@
 <ol class="EntityList EntityList--products u-breakpoint-item-s">
   <% brands.each do |brand| %>
     <li class="EntityList-item">
-      <div class="EntityList-content<% if brand.discontinued? %> is-discontinued<% end %>">
+      <div class="EntityList-content is-<%= brand.discontinued? ? "discontinued" : "continued" %>">
         <div class="EntityList-name">
-          <b>
-            <a href="<%= brand_path(id: brand.friendly_id) %>">
-              <%= mark ? highlight(brand.name, mark) : brand.name %>
-            </a>
-          </b>
+          <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
         </div>
         <dl class="EntityList-data Data">
           <% if brand.categories.any? %>

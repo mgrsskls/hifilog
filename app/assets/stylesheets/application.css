@@ -100,6 +100,7 @@
 		--color-secondary-on-dark: hsl(var(--hue), 30%, 65%);
 		--color-bg-on-light: hsl(204, 18.5%, 100%);
 		--color-bg-on-dark: hsl(204, 40%, 15%);
+		--color-continued-marker: var(--color-success-medium);
 		--color-discontinued-marker: var(--color-invalid-medium);
 
 		--color-menu-bg: var(--color-blue-175);
