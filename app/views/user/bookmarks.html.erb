@@ -1,14 +1,5 @@
-<%= render layout: "shared/dashboard" do %>
-  <div class="Heading">
-    <h1><%= Bookmark.model_name.human(count: 2) %></h1>
-    <%= render "shared/category_filter", categories: @categories %>
-  </div>
-
-  <%= render "shared/products",
-    items: @bookmarks,
-    empty_state: t('empty_state.bookmarks'),
-    include_delete_button: true,
-    hide_since: true,
-    hide_period: true
-  %>
+<% content_for :css do %>
+  <%= stylesheet_link_tag "bookmarks", crossorigin: true, integrity: true %>
 <% end %>
+
+<%= render "shared/bookmarks", heading: Bookmark.model_name.human(count: 2), categories: @categories, bookmark_lists: @bookmark_lists, bookmarks: @bookmarks, render_lists: true %>

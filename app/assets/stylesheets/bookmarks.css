@@ -1,0 +1,29 @@
+.BookmarksLists {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5em 1em;
+	background: var(--color-bg2);
+	border-radius: var(--border-radius);
+	border: var(--border-light);
+	padding: 0.75rem;
+	margin-block-end: 3rem;
+}
+
+.BookmarksLists h2 {
+	margin-block: 0;
+	font-size: 1em;
+}
+
+.BookmarksLists ol {
+	margin: 0;
+	padding: 0;
+	list-style: "";
+	display: flex;
+	gap: 0.5em 1em;
+	flex-wrap: wrap;
+}
+
+.BookmarksLists .Button {
+	margin-inline-start: auto;
+}

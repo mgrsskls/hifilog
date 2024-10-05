@@ -3,6 +3,7 @@
 with_product:
   user: one
   product: one
+  bookmark_list: one
 
 with_product_variant:
   user: one

@@ -1,0 +1,20 @@
+<%= render layout: "shared/dashboard" do %>
+  <%= form_for @bookmark_list, html: { class: "EntityForm", method: :post } do |f| %>
+    <% content_for :heading do %>
+      <%= t('bookmark_list.new.heading') %>
+    <% end %>
+
+    <%= render "form", f: f %>
+  <% end %>
+<% end %>
+
+<dialog id="content-explanation">
+  <div class="Rte">
+    <h2>What are bookmark lists?</h2>
+    <p>You can create lists and assign your bookmarks to those.</p>
+    <p>This can be helpful if you for example bookmark lots of products of one category or if you want to get a whole new setup and have all the bookmarks for that in one place.</p>
+    <form method="dialog">
+      <button class="Button">Close</button>
+    </form>
+  </div>
+</dialog>

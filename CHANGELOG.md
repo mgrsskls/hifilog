@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2024-10-05">2024-10-05</time>
+
+- Users can now assign their bookmarks to lists and categorize them that way.
+
 ## <time datetime="2024-08-31">2024-08-31</time>
 
 - Added a private statistics page which shows the amount of products per brand as well as the amount of products added and removed from a collection per year.

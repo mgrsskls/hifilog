@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_04_192628) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_05_082341) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -86,12 +86,23 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_04_192628) do
     t.bigint "user_id", null: false
   end
 
+  create_table "bookmark_lists", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "user_id"], name: "index_bookmark_lists_on_name_and_user_id", unique: true
+    t.index ["user_id"], name: "index_bookmark_lists_on_user_id"
+  end
+
   create_table "bookmarks", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "product_variant_id"
+    t.bigint "bookmark_list_id"
+    t.index ["bookmark_list_id"], name: "index_bookmarks_on_bookmark_list_id"
     t.index ["product_id", "user_id", "product_variant_id"], name: "idx_on_product_id_user_id_product_variant_id_24cc95bae4", unique: true
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
@@ -330,6 +341,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_04_192628) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bookmark_lists", "users"
   add_foreign_key "bookmarks", "product_variants"
   add_foreign_key "bookmarks", "products"
   add_foreign_key "bookmarks", "users"

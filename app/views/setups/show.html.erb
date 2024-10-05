@@ -1,5 +1,5 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag "setup", crossorigin: true, integrity: true %>
+  <%= stylesheet_link_tag "add_entity_dialog", crossorigin: true, integrity: true %>
 <% end %>
 
 <%= render layout: "shared/dashboard" do %>
@@ -30,12 +30,12 @@
       <button type="button" data-dialog="add-products" class="Button">
         Add / Remove products
       </button>
-      <dialog class="SetupAddProducts" id="add-products">
+      <dialog class="AddEntityDialog" id="add-products">
         <%= form_for @setup, method: :put do |f| %>
           <h2>Add Products <small>to <%= @setup.name %></small></h2>
-          <div class="SetupAddProducts-list">
+          <div class="AddEntityDialog-list">
             <% @all_possessions .each do |presenter| %>
-              <div class="SetupAddProducts-option">
+              <div class="AddEntityDialog-option">
                 <%= check_box_tag "setup[possession_ids][]", presenter.id, { id: "setup_possession_ids_#{presenter.id}", checked: @setup.possession_ids.include?(presenter.id) } %>
                 <%= f.label :possession_ids, value: presenter.id do %>
                   <% if presenter.image.attached? %>
@@ -48,7 +48,7 @@
                     </span>
                   <% end %>
                   <%= presenter.display_name %>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="SetupAddProducts-checkmark"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.8 6 6 9-13.6"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="AddEntityDialog-checkmark"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.8 6 6 9-13.6"/></svg>
                 <% end %>
               </div>
             <% end %>

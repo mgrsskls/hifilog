@@ -40,6 +40,9 @@ Rails.application.routes.draw do
     get 'products', to: 'possessions#current', as: :products
     get 'previous-products', to: 'possessions#previous', as: :prev_owneds
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
+    get 'bookmarks/new', to: 'bookmark_lists#new', as: :new_bookmark_list
+    get 'bookmarks/:id', to: 'bookmark_lists#show', as: :bookmark_list
+    get 'bookmarks/:id/edit', to: 'bookmark_lists#edit', as: :edit_bookmark_list
     get 'contributions', to: 'user#contributions', as: :contributions
     get 'custom-products', to: 'custom_products#index', as: :custom_products
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
@@ -52,13 +55,14 @@ Rails.application.routes.draw do
   get '/user/has', to: 'user#has', as: :has
   get '/user/counts', to: 'user#counts', as: :counts
 
+  resources :bookmark_lists, only: [:create, :update, :destroy]
   resources :notes, only: [:create, :destroy, :update]
   resources :custom_products, only: [:create, :destroy, :update]
   resources :possessions, only: [:create, :destroy, :update] do
     post 'move_to_prev_owneds', to: 'possessions#move_to_prev_owneds'
   end
   resources :setup_possessions, only: [:destroy]
-  resources :bookmarks, only: [:create, :destroy]
+  resources :bookmarks, only: [:create, :update, :destroy]
   resources :setups, only: [:create, :update, :destroy]
   resources :users, only: [:index, :show] do
     get '/custom-products/:id', to: 'custom_products#show', as: :custom_product

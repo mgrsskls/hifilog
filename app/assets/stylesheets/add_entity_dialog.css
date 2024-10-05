@@ -1,101 +1,119 @@
-.SetupAddProducts {
+.AddEntityDialog {
 	padding: var(--page-spacing);
+	inline-size: 100%;
+	max-inline-size: 64rem;
 	max-block-size: calc(100dvb - 4rem);
 	box-sizing: border-box;
 }
 
-.SetupAddProducts h2 {
+.AddEntityDialog h2 {
 	margin-block-start: 0;
 }
 
-.SetupAddProducts h2 small {
+.AddEntityDialog h2 small {
 	display: block;
 	font-size: 1rem;
 	color: var(--color-secondary);
 	margin-block-start: 0.5rem;
 }
 
-.SetupAddProducts-list {
+.AddEntityDialog-list {
 	display: grid;
 	gap: 1rem;
 	grid-template-columns: repeat(var(--cols), 1fr);
 }
 
-.SetupAddProducts-option {
+.AddEntityDialog-option {
 	max-inline-size: 16rem;
 	position: relative;
 	font-size: 0.875rem;
 }
 
-.SetupAddProducts-checkmark {
+.AddEntityDialog-checkmark {
 	display: none;
 	color: var(--color-secondary);
 	block-size: 1.25rem;
 	inline-size: 1.25rem;
 }
 
-.SetupAddProducts-option label {
+.AddEntityDialog-option label {
 	display: grid;
-	grid-template-columns: 3.125rem 1fr auto;
+	grid-template-columns: 1fr auto;
 	align-items: center;
 	gap: 0.5rem;
+	block-size: 100%;
 	line-height: 1.4;
-	padding: 0.25rem;
-	padding-inline-end: 0.75rem;
+	padding-block: 0.25rem;
+	padding-inline: 0.75rem;
 	border-radius: var(--border-radius);
 	cursor: pointer;
 }
 
-.SetupAddProducts-option input:focus ~ label {
+.AddEntityDialog-option label:has(img, .OpenImageDialog-placeholder) {
+	grid-template-columns: 3.125rem 1fr auto;
+	padding-inline-start: 0.25rem;
+}
+
+.AddEntityDialog-option input:focus ~ label {
 	outline: 0.125rem solid var(--color-focus-outline);
 	outline-offset: 0.1875rem;
 }
 
-.SetupAddProducts-option :is(label:hover, input:focus ~ label) {
+.AddEntityDialog-option :is(label:hover, input:focus ~ label) {
 	background: var(--color-bg2);
 }
 
-.SetupAddProducts-option :checked + label .SetupAddProducts-checkmark {
+.AddEntityDialog-option :checked + label .AddEntityDialog-checkmark {
 	display: block;
 }
 
-.SetupAddProducts-option input {
+.AddEntityDialog-option input {
 	position: absolute;
 	inset-block-start: 0;
 	inset-inline-start: 0;
 	opacity: 0.01;
 }
 
-.SetupAddProducts-option input:checked + label {
+.AddEntityDialog-option input:checked + label {
 	color: var(--color-copy-on-accent);
 	background: var(--color-accent);
 }
 
-.SetupAddProducts-option input:checked + label .SetupAddProducts-checkmark {
+.AddEntityDialog-option input:checked + label .AddEntityDialog-checkmark {
 	display: block;
 	color: currentColor;
 }
 
+.AddEntityDialog-option small {
+	display: block;
+	color: var(--color-secondary);
+	margin-block-start: 0.25em;
+}
+
+.AddEntityDialog-option input:checked + label small {
+	color: var(--color-copy-on-accent);
+}
+
 @media (min-width: 32.0625rem) {
-	.SetupAddProducts-list {
+	.AddEntityDialog-list {
 		--cols: 1;
 	}
 }
 
 @media (min-width: 32.0625rem) and (max-width: 48rem) {
-	.SetupAddProducts-list {
+	.AddEntityDialog-list {
 		--cols: 2;
 	}
 }
 
 @media (min-width: 48.0625rem) and (max-width: 62rem) {
-	.SetupAddProducts-list {
+	.AddEntityDialog-list {
 		--cols: 3;
 	}
 }
 
 @media (min-width: 62.0625rem) {
-	.SetupAddProducts-list {
+	.AddEntityDialog-list {
 		--cols: 4;
 	}
 }

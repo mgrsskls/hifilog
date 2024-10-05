@@ -10,6 +10,7 @@
 <% hide_since ||= false %>
 <% delete_dialog ||= false %>
 <% items_breakpoint ||= 'm' %>
+<% remove_entity_partial ||= 'shared/remove_product_from_possessions' %>
 
 <div class="u-breakpoint u-breakpoint--<%= items_breakpoint %>">
   <% if items.any? %>
@@ -65,7 +66,7 @@
               <% end %>
             </th>
             <% unless hide_release_date %>
-              <td class="Table-date">
+              <td class="Table-sm Table-date">
                 <% if item.release_date.present? %>
                   <time datetime="<%= item.release_date %>" data-format="false"><%= item.release_date %></time>
                 <% else %>
@@ -119,7 +120,7 @@
                   <% if include_delete_button %>
                     <li>
                       <% if delete_dialog %>
-                        <%= render "shared/remove_product_from_possessions", possession: item, id: item.id %>
+                        <%= render remove_entity_partial, possession: item, id: item.id %>
                       <% else %>
                         <%= button_to item.delete_button_label,
                           item.delete_path,

@@ -1,0 +1,13 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "add_entity_dialog", crossorigin: true, integrity: true %>
+<% end %>
+
+<%= render "shared/bookmarks",
+  heading: @bookmark_list.name,
+  categories: @categories,
+  bookmark_lists: @bookmark_lists,
+  bookmarks: @bookmarks,
+  delete_button_label: t('bookmark_list.remove_bookmark.label'),
+  delete_confirm_msg: 'bookmark_list.remove_bookmark.confirm',
+  delete_dialog: true
+%>

@@ -18,5 +18,5 @@
 }
 
 .Instructions-content {
-	padding: 0 var(--spacing) var(--spacing);
+	padding-inline: var(--spacing);
 }

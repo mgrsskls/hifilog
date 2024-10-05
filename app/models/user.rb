@@ -17,6 +17,7 @@ class User < ApplicationRecord
   has_many :setups, dependent: :destroy
   has_many :setup_possessions, through: :setups
   has_many :bookmarks, dependent: :destroy
+  has_many :bookmark_lists, dependent: :destroy
   has_many :custom_products, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_and_belongs_to_many :app_news
@@ -95,6 +96,7 @@ class User < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
+      bookmark_lists_id
       user_name
       user_name_cont
       user_name_end

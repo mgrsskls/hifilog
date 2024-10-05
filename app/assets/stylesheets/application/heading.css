@@ -4,7 +4,14 @@
 	justify-content: space-between;
 	align-items: center;
 	gap: 2rem;
+}
+
+.Heading:has(h1) {
 	margin-block-end: clamp(1.5rem, 4vi, 2.5rem);
+}
+
+.Heading:has(h2) {
+	margin-block-end: 1rem;
 }
 
 .Heading-info {
@@ -17,4 +24,32 @@
 
 .Heading h2 {
 	margin-block: 0;
+}
+
+.Heading-infoButton {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	font-weight: 500;
+	font-size: 0.875em;
+}
+
+.Heading-infoButton span {
+	text-decoration: underline;
+}
+
+.Heading-infoButton::after {
+	content: "i";
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	inline-size: 1.5em;
+	aspect-ratio: 1;
+	background: var(--color-secondary);
+	color: var(--color-copy-on-secondary);
+	line-height: 1;
+	font-weight: 600;
+	text-decoration: none;
+	font-size: 0.875em;
 }

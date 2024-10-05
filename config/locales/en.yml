@@ -79,6 +79,23 @@ en:
       label: Remove
     messages:
       removed: <b>%{name}</b> has been removed from your bookmarks.
+  bookmark_list:
+    delete:
+      confirm: Are you sure you want to delete your bookmark list %{name}? Please note that the bookmarks in this list will remain in your bookmarks.
+      label: Delete
+    new:
+      heading: Add new bookmark list
+      submit: Save
+    messages:
+      created: Your bookmark list %{link} has been created.
+      deleted: Your bookmark list <b>%{name}</b> has been deleted.
+      updated: Your bookmark list <b>%{name}</b> has been updated.
+    name_placeholder: e.g. "Portable HP Amps with DAC" or "New office setup"
+    remove_bookmark:
+      confirm: Do you want remove <b>%{name}</b> from your bookmarks?
+      label: Remove
+    update:
+      label: Edit
   brand:
     new:
       heading: Add new Brand
