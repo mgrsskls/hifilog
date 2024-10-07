@@ -75,6 +75,7 @@ class Brand < ApplicationRecord
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
+      pg_search_document_id
       country_code
       country_code_cont
       country_code_end
