@@ -76,11 +76,11 @@ module ApplicationHelper
   end
 
   def user_has_bookmark?(user, product, variant_id = nil)
-    product && user && user.bookmarks.exists?(product_id: product.id, product_variant_id: variant_id)
+    product && user&.bookmarks&.exists?(product_id: product.id, product_variant_id: variant_id)
   end
 
   def user_has_previously_owned?(user, product, variant_id = nil)
-    product && user && user.possessions.exists?(
+    product && user&.possessions&.exists?(
       product_id: product.id,
       product_variant_id: variant_id,
       prev_owned: true
