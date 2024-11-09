@@ -11,7 +11,8 @@ class ApplicationController < ActionController::Base
                 :brands_count,
                 :categories_count,
                 :newest_brands,
-                :newest_products
+                :newest_products,
+                :menu_categories
 
   def index
     redirect_to dashboard_root_path if user_signed_in?
@@ -19,27 +20,43 @@ class ApplicationController < ActionController::Base
 
   attr_writer :current_user
 
+  def menu_categories
+    Rails.cache.fetch('/menu_categories') do
+      Category.includes(:sub_categories).order(:order).group_by(&:column)
+    end
+  end
+
   def products_count
-    @products_count ||= Product.count
+    Rails.cache.fetch('/product_count') do
+      Product.count
+    end
   end
 
   def brands_count
-    @brands_count ||= Brand.count
+    Rails.cache.fetch('/brands_count') do
+      Brand.count
+    end
   end
 
   def categories_count
-    @categories_count ||= SubCategory.count
+    Rails.cache.fetch('/categories_count') do
+      SubCategory.count
+    end
   end
 
   def newest_products
-    products = Product.includes([:brand]).order(created_at: :desc).limit(10)
-    product_variants = ProductVariant.includes([product: [:brand]]).order(created_at: :desc).limit(10)
+    Rails.cache.fetch('/newest_products') do
+      products = Product.includes([:brand]).order(created_at: :desc).limit(10)
+      product_variants = ProductVariant.includes([product: [:brand]]).order(created_at: :desc).limit(10)
 
-    @newest_products ||= (products + product_variants).sort_by(&:created_at).reverse.take(10)
+      (products + product_variants).sort_by(&:created_at).reverse.take(10)
+    end
   end
 
   def newest_brands
-    @newest_brands ||= Brand.limit(10).order(created_at: :desc)
+    Rails.cache.fetch('/newest_brands') do
+      Brand.order(created_at: :desc).limit(10).to_a
+    end
   end
 
   def after_sign_in_path_for(user)

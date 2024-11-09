@@ -408,7 +408,6 @@
         }
       });
     <% end %>
-    <%#= javascript_tag nonce: true, type: "speculationrules" do %>
     <%= content_tag(:script, nonce: content_security_policy_nonce, type: "speculationrules") do %>
       {
         "prefetch": [

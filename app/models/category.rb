@@ -10,6 +10,9 @@ class Category < ApplicationRecord
 
   auto_strip_attributes :name, squish: true
 
+  after_destroy :invalidate_cache
+  after_save :invalidate_cache
+
   def self.ordered
     order('LOWER(name)')
   end
@@ -30,4 +33,17 @@ class Category < ApplicationRecord
     %w[]
   end
   # :nocov:
+
+  private
+
+  def invalidate_cache
+    Rails.cache.delete('/menu_categories')
+    Rails.cache.delete('/categories_count')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
 end

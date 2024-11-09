@@ -59,6 +59,9 @@ class Product < ApplicationRecord
 
   store_accessor :custom_attributes
 
+  after_destroy :invalidate_cache
+  after_save :invalidate_cache
+
   def display_name
     return "#{brand.name} #{name}" if brand
 
@@ -115,4 +118,17 @@ class Product < ApplicationRecord
     %w[]
   end
   # :nocov:
+
+  private
+
+  def invalidate_cache
+    Rails.cache.delete('/newest_products')
+    Rails.cache.delete('/products_count')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
 end

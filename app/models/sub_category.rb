@@ -14,6 +14,8 @@ class SubCategory < ApplicationRecord
   validates :name, uniqueness: { scope: :category }, presence: true
   validates :slug, uniqueness: { scope: :category }, presence: true
 
+  after_save :invalidate_cache
+
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
@@ -31,4 +33,16 @@ class SubCategory < ApplicationRecord
     %w[]
   end
   # :nocov:
+
+  private
+
+  def invalidate_cache
+    Rails.cache.delete('/menu_categories')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
 end

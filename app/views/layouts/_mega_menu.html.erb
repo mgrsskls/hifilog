@@ -16,7 +16,7 @@
       <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button" %>
     </div>
     <div class="MenuMega-container">
-      <% Category.includes(:sub_categories).order(:order).group_by(&:column).each do |columns| %>
+      <% menu_categories.each do |columns| %>
         <div>
           <% columns[1].each do |category| %>
             <div class="MenuMega-list">

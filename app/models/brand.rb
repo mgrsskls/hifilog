@@ -46,6 +46,11 @@ class Brand < ApplicationRecord
 
   friendly_id :name, use: [:slugged, :history]
 
+  after_destroy :invalidate_cache
+  after_destroy :invalidate_count_cache
+  after_save :invalidate_cache
+  after_save :invalidate_count_cache
+
   def categories
     @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
   end
@@ -111,5 +116,25 @@ class Brand < ApplicationRecord
     formatted_day = day.to_s.rjust(2, '0')
 
     "#{formatted_day}/#{formatted_month}/#{year}"
+  end
+
+  def invalidate_cache
+    Rails.cache.delete('/newest_brands')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
+
+  def invalidate_count_cache
+    Rails.cache.delete('/brands_count')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
   end
 end
