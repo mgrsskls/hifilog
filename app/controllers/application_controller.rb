@@ -1,6 +1,7 @@
 require 'redcarpet'
 
 class ApplicationController < ActionController::Base
+  before_action :block_bots
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -78,6 +79,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def block_bots
+    head :forbidden if BOTS.any? { |user_agent| request.user_agent&.include? user_agent }
+  end
 
   def redirect_back_to_product(product: nil, product_variant: nil, custom_product: nil)
     if custom_product.present?
