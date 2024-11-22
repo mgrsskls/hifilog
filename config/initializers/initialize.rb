@@ -830,6 +830,7 @@ CURRENCIES = [
 
 BOTS = [
 	"AdsBot-Google",
+	"AhrefsBot",
 	"Amazonbot",
 	"anthropic-ai",
 	"Applebot",
