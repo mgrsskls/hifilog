@@ -829,7 +829,7 @@ CURRENCIES = [
 ].freeze
 
 BOTS = [
-	"AdsBot-Google",
+	"AdsBot",
 	"AhrefsBot",
 	"Amazonbot",
 	"anthropic-ai",
@@ -843,7 +843,7 @@ BOTS = [
 	"ClaudeBot",
 	"cohere-ai",
 	"DataForSeoBot",
-	"FacebookBot",
+	"Facebook",
 	"FriendlyCrawler",
 	"Google-Extended",
 	"GoogleOther",
@@ -852,14 +852,12 @@ BOTS = [
 	"magpie-crawler",
 	"Meltwater",
 	"meta-externalagent",
-	"meta-externalagent/1.1",
 	"omgili",
-	"omgilibot",
 	"peer39_crawler",
-	"peer39_crawler/1.0",
 	"PerplexityBot",
 	"PiplBot",
 	"Seekr",
+	"semrush",
 	"Twitterbot",
 	"YouBot",
 ].freeze
