@@ -81,7 +81,9 @@ class ApplicationController < ActionController::Base
   private
 
   def block_bots
-    head :forbidden if BOTS.any? { |user_agent| request.user_agent&.include? user_agent }
+    head :forbidden if BOTS.any? do |user_agent|
+      request.user_agent.downcase.include?(user_agent.downcase) if request.user_agent.present?
+    end
   end
 
   def redirect_back_to_product(product: nil, product_variant: nil, custom_product: nil)
