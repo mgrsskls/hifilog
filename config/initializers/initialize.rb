@@ -836,6 +836,7 @@ BOTS = [
 	"Applebot",
 	"AwarioRssBot",
 	"AwarioSmartBot",
+	"bingbot",
 	"Bytespider",
 	"CCBot",
 	"ChatGPT-User",
