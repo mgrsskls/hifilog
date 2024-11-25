@@ -10,7 +10,7 @@ gem "rails", "~> 8.0.0"
 gem "sprockets-rails"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 6.4"
+gem "puma", "~> 6.5"
 
 gem "devise"
 gem "activeadmin"
