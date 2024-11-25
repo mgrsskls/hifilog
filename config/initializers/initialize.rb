@@ -843,6 +843,7 @@ BOTS = [
 	"ClaudeBot",
 	"cohere-ai",
 	"DataForSeoBot",
+	"DotBot",
 	"Facebook",
 	"FriendlyCrawler",
 	"Google",
