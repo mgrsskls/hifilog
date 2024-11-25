@@ -286,7 +286,7 @@ GEM
       activesupport (>= 6.1)
     psych (5.2.0)
       stringio
-    puma (6.4.3)
+    puma (6.5.0)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.1.8)
@@ -464,7 +464,7 @@ DEPENDENCIES
   paper_trail
   pg
   pg_search
-  puma (~> 6.4)
+  puma (~> 6.5)
   rack-timeout
   rails (~> 8.0.0)
   redcarpet
