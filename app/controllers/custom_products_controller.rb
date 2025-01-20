@@ -123,7 +123,7 @@ class CustomProductsController < ApplicationController
   end
 
   def custom_product_params
-    params.require(:custom_product).permit(:name, :description, :image, sub_category_ids: [])
+    params.expect(custom_product: [:name, :description, :image, { sub_category_ids: [] }])
   end
 
   def get_redirect_if_unauthorized(user, custom_product)

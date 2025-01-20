@@ -112,6 +112,6 @@ class SetupsController < ApplicationController
   end
 
   def setup_params
-    params.require(:setup).permit(:name, :private, possession_ids: [])
+    params.expect(setup: [:name, :private, { possession_ids: [] }])
   end
 end

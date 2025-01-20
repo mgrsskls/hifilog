@@ -156,6 +156,6 @@ class PossessionsController < ApplicationController
   private
 
   def possession_params
-    params.require(:possession).permit(:image, :period_from, :period_to, :product_option_id)
+    params.expect(possession: [:image, :period_from, :period_to, :product_option_id])
   end
 end

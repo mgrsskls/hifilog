@@ -341,57 +341,57 @@ class ProductsController < ApplicationController
       params[:product][:product_options_attributes] = options
     end
 
-    params.require(:product)
-          .permit(
-            :name,
-            :brand_id,
-            :discontinued,
-            :release_day,
-            :release_month,
-            :release_year,
-            :discontinued_day,
-            :discontinued_month,
-            :discontinued_year,
-            :description,
-            :price,
-            :price_currency,
-            custom_attributes: {},
-            sub_category_ids: [],
-            product_options_attributes: {},
-            brand_attributes: [
-              :name,
-              :discontinued,
-              :full_name,
-              :website,
-              :country_code,
-              :founded_day,
-              :founded_month,
-              :founded_year,
-              :discontinued_day,
-              :discontinued_month,
-              :discontinued_year,
-              :description
-            ]
-          )
+    params
+      .expect(
+        product: [:name,
+                  :brand_id,
+                  :discontinued,
+                  :release_day,
+                  :release_month,
+                  :release_year,
+                  :discontinued_day,
+                  :discontinued_month,
+                  :discontinued_year,
+                  :description,
+                  :price,
+                  :price_currency,
+                  { custom_attributes: {},
+                    sub_category_ids: [],
+                    product_options_attributes: {},
+                    brand_attributes: [
+                      :name,
+                      :discontinued,
+                      :full_name,
+                      :website,
+                      :country_code,
+                      :founded_day,
+                      :founded_month,
+                      :founded_year,
+                      :discontinued_day,
+                      :discontinued_month,
+                      :discontinued_year,
+                      :description
+                    ] }]
+      )
   end
 
   def product_update_params
-    params.require(:product)
-          .permit(
-            :name,
-            :discontinued,
-            :release_day,
-            :release_month,
-            :release_year,
-            :discontinued_day,
-            :discontinued_month,
-            :discontinued_year,
-            :description,
-            :price,
-            :price_currency,
-            :comment,
-            custom_attributes: {},
-            sub_category_ids: [],
-          )
+    params
+      .expect(
+        product: [:name,
+                  :discontinued,
+                  :release_day,
+                  :release_month,
+                  :release_year,
+                  :discontinued_day,
+                  :discontinued_month,
+                  :discontinued_year,
+                  :description,
+                  :price,
+                  :price_currency,
+                  :comment,
+                  { custom_attributes: {},
+                    sub_category_ids: [] }],
+      )
   end
 end

@@ -180,38 +180,38 @@ class ProductVariantsController < ApplicationController
   end
 
   def product_variant_params
-    params.require(:product_variant).permit(
-      :name,
-      :release_day,
-      :release_month,
-      :release_year,
-      :discontinued,
-      :discontinued_day,
-      :discontinued_month,
-      :discontinued_year,
-      :description,
-      :price,
-      :price_currency,
-      :product_id,
-      product_options_attributes: {},
+    params.expect(
+      product_variant: [:name,
+                        :release_day,
+                        :release_month,
+                        :release_year,
+                        :discontinued,
+                        :discontinued_day,
+                        :discontinued_month,
+                        :discontinued_year,
+                        :description,
+                        :price,
+                        :price_currency,
+                        :product_id,
+                        { product_options_attributes: {} }],
     )
   end
 
   def product_variant_update_params
-    params.require(:product_variant).permit(
-      :name,
-      :release_day,
-      :release_month,
-      :release_year,
-      :discontinued,
-      :discontinued_day,
-      :discontinued_month,
-      :discontinued_year,
-      :description,
-      :price,
-      :price_currency,
-      :product_id,
-      :comment,
+    params.expect(
+      product_variant: [:name,
+                        :release_day,
+                        :release_month,
+                        :release_year,
+                        :discontinued,
+                        :discontinued_day,
+                        :discontinued_month,
+                        :discontinued_year,
+                        :description,
+                        :price,
+                        :price_currency,
+                        :product_id,
+                        :comment],
     )
   end
 end
