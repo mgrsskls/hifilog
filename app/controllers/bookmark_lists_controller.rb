@@ -106,6 +106,6 @@ class BookmarkListsController < InheritedResources::Base
   end
 
   def bookmark_list_params
-    params.require(:bookmark_list).permit(:name, bookmark_ids: [])
+    params.expect(bookmark_list: [:name, { bookmark_ids: [] }])
   end
 end

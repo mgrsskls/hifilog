@@ -258,21 +258,21 @@ class BrandsController < ApplicationController
   end
 
   def brand_params
-    params.require(:brand).permit(
-      :name,
-      :discontinued,
-      :full_name,
-      :website,
-      :country_code,
-      :founded_day,
-      :founded_month,
-      :founded_year,
-      :discontinued_day,
-      :discontinued_month,
-      :discontinued_year,
-      :description,
-      :comment,
-      sub_category_ids: [],
+    params.expect(
+      brand: [:name,
+              :discontinued,
+              :full_name,
+              :website,
+              :country_code,
+              :founded_day,
+              :founded_month,
+              :founded_year,
+              :discontinued_day,
+              :discontinued_month,
+              :discontinued_year,
+              :description,
+              :comment,
+              { sub_category_ids: [] }],
     )
   end
 end

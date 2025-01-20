@@ -102,6 +102,6 @@ class NotesController < ApplicationController
   end
 
   def note_params
-    params.require(:note).permit(:text, :product_id, :product_variant_id)
+    params.expect(note: [:text, :product_id, :product_variant_id])
   end
 end
