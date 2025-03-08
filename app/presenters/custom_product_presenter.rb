@@ -7,9 +7,7 @@ class CustomProductPresenter
     @custom_product = object
   end
 
-  def image
-    @custom_product.image
-  end
+  delegate :image, to: :@custom_product
 
   def short_name
     @custom_product.name
