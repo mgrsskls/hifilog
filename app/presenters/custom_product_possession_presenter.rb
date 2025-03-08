@@ -27,13 +27,9 @@ class CustomProductPossessionPresenter < CustomProductPresenter
     I18n.t('product.remove_from_prev_owneds.confirm', name: display_name)
   end
 
-  def setup
-    @object.setup
-  end
+  delegate :setup, to: :@object
 
-  def prev_owned
-    @object.prev_owned
-  end
+  delegate :prev_owned, to: :@object
 
   def owned_for
     parsed_from = period_from.to_date if period_from.present?

@@ -55,9 +55,7 @@ class CustomProductPresenter
     sub_categories.map(&:category).uniq
   end
 
-  def sub_categories
-    @custom_product.sub_categories
-  end
+  delegate :sub_categories, to: :@custom_product
 
   def product_variant
     nil
