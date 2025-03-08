@@ -1,13 +1,13 @@
 {
 	"devDependencies": {
-		"@axe-core/cli": "^4.10.0",
-		"chromedriver": "^130.0.4",
+		"@axe-core/cli": "^4.10.1",
+		"chromedriver": "^134.0.0",
 		"cssnano": "^7.0.6",
 		"esbuild": "^0.25.0",
-		"postcss": "^8.4.47",
+		"postcss": "^8.5.3",
 		"postcss-cli": "^11.0.0",
 		"postcss-import": "^16.1.0",
-		"prettier": "^3.3.3"
+		"prettier": "^3.5.3"
 	},
 	"scripts": {
 		"watch:css": "postcss ./app/assets/stylesheets/*.css --dir ./app/assets/builds/ --watch",
