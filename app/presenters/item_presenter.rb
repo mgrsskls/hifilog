@@ -71,15 +71,9 @@ class ItemPresenter
     I18n.t('product.remove.confirm', name: display_name)
   end
 
-  def brand
-    @product.brand
-  end
+  delegate :brand, to: :@product
 
-  def categories
-    @product.categories
-  end
+  delegate :categories, to: :@product
 
-  def sub_categories
-    @product.sub_categories
-  end
+  delegate :sub_categories, to: :@product
 end
