@@ -7,6 +7,10 @@ class CustomProductPresenter
     @custom_product = object
   end
 
+  def image
+    @custom_product.image
+  end
+
   def short_name
     @custom_product.name
   end
