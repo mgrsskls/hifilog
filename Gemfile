@@ -51,7 +51,7 @@ group :development do
   gem "web-console"
   gem 'bullet'
   gem 'database_consistency', require: false
-  gem 'i18n-tasks', '~> 1.0.14', group: :development
+  gem 'i18n-tasks', '~> 1.0.15', group: :development
 end
 
 group :test do
