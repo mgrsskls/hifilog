@@ -363,7 +363,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    scout_apm (5.6.0)
+    scout_apm (5.6.1)
       parser
     securerandom (0.4.1)
     sentry-rails (5.22.4)
