@@ -131,7 +131,7 @@ GEM
     country_select (10.0.1)
       countries (> 5.0, < 8.0)
     crass (1.0.6)
-    cssbundling-rails (1.4.1)
+    cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
     csv (3.3.2)
     database_consistency (2.0.4)
