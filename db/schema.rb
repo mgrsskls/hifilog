@@ -10,14 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_05_082341) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_203158) do
+  create_schema "_heroku"
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
-  enable_extension "plpgsql"
   enable_extension "unaccent"
 
   create_table "active_admin_comments", force: :cascade do |t|
@@ -84,6 +85,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_05_082341) do
   create_table "app_news_users", id: false, force: :cascade do |t|
     t.bigint "app_news_id", null: false
     t.bigint "user_id", null: false
+    t.index ["app_news_id", "user_id"], name: "index_app_news_users_on_app_news_id_and_user_id", unique: true
   end
 
   create_table "bookmark_lists", force: :cascade do |t|
@@ -154,6 +156,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_05_082341) do
   create_table "custom_attributes_sub_categories", id: false, force: :cascade do |t|
     t.bigint "sub_category_id", null: false
     t.bigint "custom_attribute_id", null: false
+    t.index ["sub_category_id", "custom_attribute_id"], name: "idx_on_sub_category_id_custom_attribute_id_b00c6955d4", unique: true
   end
 
   create_table "custom_products", force: :cascade do |t|
@@ -168,6 +171,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_05_082341) do
   create_table "custom_products_sub_categories", id: false, force: :cascade do |t|
     t.bigint "custom_product_id", null: false
     t.bigint "sub_category_id", null: false
+    t.index ["custom_product_id", "sub_category_id"], name: "idx_on_custom_product_id_sub_category_id_7b23a66fa1", unique: true
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -276,6 +280,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_05_082341) do
   create_table "products_sub_categories", id: false, force: :cascade do |t|
     t.bigint "product_id", null: false
     t.bigint "sub_category_id", null: false
+    t.index ["product_id", "sub_category_id"], name: "idx_on_product_id_sub_category_id_b7601e15e2", unique: true
   end
 
   create_table "setup_possessions", force: :cascade do |t|
