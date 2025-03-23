@@ -39,5 +39,6 @@
 !/app/assets/builds/.keep
 /coverage
 
-dump.sql
+*.sql
+*.dump
 .env
