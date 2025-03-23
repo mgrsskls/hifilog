@@ -112,7 +112,7 @@
                   <%= f.date_field :period_from %>
                   <% if @setups.any? %>
                     <label for="setup-select-<%= @possession.id %>">Setup</label>
-                    <select name="possession[setup_id]" class="SetupSelect" id="setup-select-<%= @possession.id %>">
+                    <select name="setup_id" class="SetupSelect" id="setup-select-<%= @possession.id %>">
                       <option value="">None</option>
                       <% @setups.each do |setup| %>
                         <option value="<%= setup.id %>"<%= " selected" if @possession.setup == setup %>><%= setup.name %></option>
