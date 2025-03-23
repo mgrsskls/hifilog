@@ -33,7 +33,7 @@
           </div>
         <% end %>
 
-        <div class="CustomProduct-content">
+        <div class="CustomProduct-content Rte">
           <dl class="Data">
             <dt><%= Category.model_name.human %></dt>
             <dd>
@@ -42,7 +42,7 @@
           </dl>
 
           <% if @custom_product.description.present? %>
-            <div class="Entity-description Rte">
+            <div class="Entity-description">
               <%= sanitize @custom_product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
             </div>
           <% end %>
