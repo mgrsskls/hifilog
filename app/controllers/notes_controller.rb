@@ -19,7 +19,8 @@ class NotesController < ApplicationController
       Redcarpet::Render::HTML.new,
       tables: true,
       strikethrough: true,
-      superscript: true
+      superscript: true,
+      hard_wrap: true,
     )
     @html = markdown.render(@note.text)
     @product = Product.find(@note.product_id)
