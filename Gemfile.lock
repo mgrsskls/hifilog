@@ -363,8 +363,6 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    scout_apm (5.6.1)
-      parser
     securerandom (0.4.1)
     sentry-rails (5.23.0)
       railties (>= 5.0)
@@ -459,7 +457,6 @@ DEPENDENCIES
   rubocop
   rubocop-rails
   sassc-rails
-  scout_apm
   sentry-rails
   sentry-ruby
   simplecov
