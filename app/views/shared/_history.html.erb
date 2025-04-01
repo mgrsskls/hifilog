@@ -33,9 +33,9 @@
                       <small><%= possession[:presenter].product_option[:option] %></small>
                     <% end %>
                   </div>
-                  <% if possession[:presenter].image.attached? %>
+                  <% if possession[:presenter].images.attached? %>
                     <picture>
-                      <%= image_tag cdn_image_url(possession[:presenter].image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                      <%= image_tag cdn_image_url(possession[:presenter].highlighted_image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                     </picture>
                   <% end %>
                 </div>

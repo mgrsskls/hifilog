@@ -14,6 +14,16 @@ class PossessionPresenter < ItemPresenter
     possession_path(@object.id)
   end
 
+  def highlighted_image
+    if @object.images.attached?
+      return @object.images.find(@object.highlighted_image_id) if @object.highlighted_image_id
+
+      return @object.images.first
+    end
+
+    nil
+  end
+
   delegate :period_from, to: :@object
 
   delegate :period_to, to: :@object

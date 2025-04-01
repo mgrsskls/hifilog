@@ -80,33 +80,35 @@
           <h2>User photos</h2>
           <ul class="ImageLightbox ImageGallery" style="--size: 7.5rem;">
             <% @public_possessions_with_image.each_with_index do |possession, i| %>
-              <li class="ImageLightbox-item">
-                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= possession.image.id %>">
-                  <picture>
-                    <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
-                  </picture>
-                </button>
-                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= possession.image.id %>">
-                  <picture>
-                    <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
-                  </picture>
-                  <div class="ImageGallery-info is-dark">
-                    <% if @public_possessions_with_image.size > 1 %>
-                      <% if i < @public_possessions_with_image.size - 1 %>
-                        <button type="button" rel="next" aria-label="Next">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
-                        </button>
+              <% possession.images.each do |image| %>
+                <li class="ImageLightbox-item">
+                  <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
+                    <picture>
+                      <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                    </picture>
+                  </button>
+                  <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
+                    <picture>
+                      <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                    </picture>
+                    <div class="ImageGallery-info is-dark">
+                      <% if @public_possessions_with_image.size > 1 %>
+                        <% if i < @public_possessions_with_image.size - 1 %>
+                          <button type="button" rel="next" aria-label="Next">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
+                          </button>
+                        <% end %>
+                        <% if i > 0 %>
+                          <button type="button" rel="prev" aria-label="Previous">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
+                          </button>
+                        <% end %>
                       <% end %>
-                      <% if i > 0 %>
-                        <button type="button" rel="prev" aria-label="Previous">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
-                        </button>
-                      <% end %>
-                    <% end %>
-                    <p>by <%= link_to possession.user.user_name, possession.user.profile_path %></p>
-                  </div>
-                </dialog>
-              </li>
+                      <p>by <%= link_to possession.user.user_name, possession.user.profile_path %></p>
+                    </div>
+                  </dialog>
+                </li>
+              <% end %>
             <% end %>
           </ul>
         </div>

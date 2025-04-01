@@ -38,9 +38,9 @@
               <div class="AddEntityDialog-option">
                 <%= check_box_tag "setup[possession_ids][]", presenter.id, { id: "setup_possession_ids_#{presenter.id}", checked: @setup.possession_ids.include?(presenter.id) } %>
                 <%= f.label :possession_ids, value: presenter.id do %>
-                  <% if presenter.image.attached? %>
+                  <% if presenter.images.attached? %>
                     <picture>
-                      <%= image_tag cdn_image_url(presenter.image.variant(:thumb)), "aria-hidden": "true", alt: "", width: 50, height: 50 %>
+                      <%= image_tag cdn_image_url(presenter.highlighted_image.variant(:thumb)), "aria-hidden": "true", alt: "", width: 50, height: 50 %>
                     </picture>
                   <% else %>
                     <span class="OpenImageDialog-placeholder" style="inline-size: 3.125rem;">

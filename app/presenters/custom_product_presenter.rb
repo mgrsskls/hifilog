@@ -49,6 +49,19 @@ class CustomProductPresenter
     @custom_product
   end
 
+  def highlighted_image
+    if @custom_product.images.attached?
+      if @custom_product.highlighted_image_id &&
+         @custom_product.images.find_by(id: @custom_product.highlighted_image_id)
+        return @custom_product.images.find_by(id: @custom_product.highlighted_image_id)
+      end
+
+      return @custom_product.images.first
+    end
+
+    nil
+  end
+
   def brand_name
     'Custom'
   end

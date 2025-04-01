@@ -4,6 +4,10 @@
 	padding-inline: var(--page-spacing);
 }
 
+.u-grid {
+	display: grid;
+}
+
 .u-block {
 	display: block;
 }

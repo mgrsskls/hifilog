@@ -16,11 +16,11 @@ module HistoryHelper
                        [
                          custom_product:
                            [
-                             { image_attachment: :blob }
+                             { images_attachments: :blob }
                            ]
                        ]
                      )
-                     .includes([{ image_attachment: :blob }])
+                     .includes([{ images_attachments: :blob }])
                      .includes([:product_option])
 
     from = all.reject { |possession| possession.period_from.nil? }.map do |possession|

@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-04-01">2025-04-01</time>
+
+- It is now possible to upload multiple images for a product.
+
 ## <time datetime="2024-10-05">2024-10-05</time>
 
 - Users can now assign their bookmarks to lists and categorize them that way.

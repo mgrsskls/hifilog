@@ -44,6 +44,17 @@
 		min-block-size: 10em;
 	}
 
+	fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	legend {
+		margin: 0;
+		padding: 0;
+	}
+
 	select {
 		background: none;
 	}
@@ -419,6 +430,8 @@
 		background: var(--color-bg-main);
 		padding: 1rem;
 		border-radius: var(--border-radius);
+		max-block-size: calc(100dvb - 4rem);
+		box-sizing: border-box;
 	}
 
 	dialog::backdrop {

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_203158) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_01_194516) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -165,6 +165,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_203158) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.bigint "highlighted_image_id"
     t.index ["user_id", "name"], name: "index_custom_products_on_user_id_and_name", unique: true
   end
 
@@ -216,6 +217,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_203158) do
     t.datetime "period_from"
     t.datetime "period_to"
     t.bigint "product_option_id"
+    t.bigint "highlighted_image_id"
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"
     t.index ["product_variant_id"], name: "index_possessions_product_variant_id"
     t.index ["user_id"], name: "index_possessions_user_id"

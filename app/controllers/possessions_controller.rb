@@ -66,12 +66,6 @@ class PossessionsController < ApplicationController
   def update
     @possession = current_user.possessions.find(params[:id])
 
-    if params[:possession][:delete_image].present? && params[:possession][:delete_image].to_i == 1
-      @possession.image.purge
-      @possession.save
-      return redirect_back fallback_location: root_url
-    end
-
     if params[:setup_id]
       setup = current_user.setups.find(params[:setup_id]) if params[:setup_id].present?
 
@@ -84,7 +78,12 @@ class PossessionsController < ApplicationController
       end
     end
 
-    unless @possession.update(possession_params)
+    if @possession.update(possession_params)
+      params[:delete_image]&.each do |id|
+        image = @possession.images.find(id)
+        image.purge
+      end
+    else
       @possession.errors.full_messages.each do |error|
         flash[:alert] = error
       end
@@ -156,6 +155,10 @@ class PossessionsController < ApplicationController
   private
 
   def possession_params
-    params.expect(possession: [:image, :period_from, :period_to, :product_option_id])
+    if params[:delete_image]&.include?(params[:possession][:highlighted_image_id])
+      params[:possession][:highlighted_image_id] = nil
+    end
+
+    params.expect(possession: [:period_from, :period_to, :product_option_id, :highlighted_image_id, { images: [] }])
   end
 end

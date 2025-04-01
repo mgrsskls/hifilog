@@ -16,21 +16,35 @@
       </div>
 
       <div class="CustomProduct">
-        <% if @custom_product.image.attached? %>
-          <div class="CustomProduct-image ImageLightbox">
-            <div class="ImageLightbox-item">
-              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @custom_product.image.id %>">
+        <% if @custom_product.images.attached? %>
+          <ul class="CustomProduct-image ImageLightbox ImageGallery">
+            <li class="ImageLightbox-item">
+              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @custom_product.highlighted_image.id %>">
                 <picture>
-                  <%= image_tag cdn_image_url(@custom_product.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                  <%= image_tag cdn_image_url(@custom_product.highlighted_image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                 </picture>
               </button>
-              <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= @custom_product.image.id %>">
+              <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= @custom_product.highlighted_image.id %>">
                 <picture>
-                  <%= image_tag cdn_image_url(@custom_product.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                  <%= image_tag cdn_image_url(@custom_product.highlighted_image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                 </picture>
               </dialog>
-            </div>
-          </div>
+            </li>
+            <% @custom_product.images.reject { |image| image.id == @custom_product.highlighted_image.id }.each do |image| %>
+              <li class="ImageLightbox-item">
+                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
+                  <picture>
+                    <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                  </picture>
+                </button>
+                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
+                  <picture>
+                    <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                  </picture>
+                </dialog>
+              </li>
+            <% end %>
+          </ul>
         <% end %>
 
         <div class="CustomProduct-content Rte">
@@ -42,7 +56,7 @@
           </dl>
 
           <% if @custom_product.description.present? %>
-            <div class="Entity-description">
+            <div class="CustomProduct-description Entity-description">
               <%= sanitize @custom_product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li a) %>
             </div>
           <% end %>

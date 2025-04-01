@@ -73,6 +73,6 @@ html:where([data-theme="light"])
 	}
 }
 
-.ImageDialog-delete {
+.ImageDialog-delete + .ImageDialog-delete {
 	margin-block-start: 0.5rem;
 }

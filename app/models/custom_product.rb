@@ -5,7 +5,7 @@ class CustomProduct < ApplicationRecord
   belongs_to :user
   has_one :possession, dependent: :destroy
   has_and_belongs_to_many :sub_categories
-  has_one_attached :image do |attachable|
+  has_many_attached :images do |attachable|
     attachable.variant :thumb, resize_to_fill: [320, 320], format: :webp
     attachable.variant :large, resize_to_limit: [1200, 1200], format: :webp
   end

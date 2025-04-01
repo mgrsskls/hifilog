@@ -6,7 +6,7 @@ class CustomProductsController < ApplicationController
     @page_title = CustomProduct.model_name.human(count: 2)
 
     @custom_products = current_user.custom_products
-                                   .includes([image_attachment: [:blob]])
+                                   .includes([:images_attachments])
                                    .includes([:sub_categories])
                                    .order(:name).map do |custom_product|
       CustomProductPresenter.new(custom_product)
@@ -79,8 +79,6 @@ class CustomProductsController < ApplicationController
     @custom_product = current_user.custom_products.find(params[:id])
     @categories = Category.includes([:sub_categories]).order(:order)
 
-    @custom_product.image.purge if params[:custom_product][:delete_image]
-
     if @custom_product.update(custom_product_params)
       flash[:notice] = I18n.t(
         'custom_product.messages.updated',
@@ -89,14 +87,12 @@ class CustomProductsController < ApplicationController
           user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
         )
       )
-      redirect_back fallback_location: user_custom_product_url(
-        user_id: @custom_product.user.user_name.downcase,
-        id: @custom_product.id
-      )
-    elsif custom_product_params[:image].present?
-      @custom_product.errors.each do |error|
-        flash[:alert] = "The image #{error.message}"
+
+      params[:delete_image]&.each do |id|
+        image = @custom_product.images.find(id)
+        image.purge
       end
+
       redirect_back fallback_location: user_custom_product_url(
         user_id: @custom_product.user.user_name.downcase,
         id: @custom_product.id
@@ -123,7 +119,11 @@ class CustomProductsController < ApplicationController
   end
 
   def custom_product_params
-    params.expect(custom_product: [:name, :description, :image, { sub_category_ids: [] }])
+    if params[:delete_image]&.include?(params[:custom_product][:highlighted_image_id])
+      params[:custom_product][:highlighted_image_id] = nil
+    end
+
+    params.expect(custom_product: [:name, :description, :highlighted_image_id, { sub_category_ids: [], images: [] }])
   end
 
   def get_redirect_if_unauthorized(user, custom_product)

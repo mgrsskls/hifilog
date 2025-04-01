@@ -1,14 +1,14 @@
-<% if item.image.attached? %>
+<% if item.images.attached? %>
   <button class="OpenImageDialog" data-dialog="<%= prefix %>-image-dialog-<%= item.id %>" aria-label="Enlarge image">
     <span class="OpenImageDialog-placeholder">
       <picture>
-        <%= image_tag cdn_image_url(item.image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+        <%= image_tag cdn_image_url(item.highlighted_image.variant(:thumb)), "aria-hidden": "true", alt: "", loading: "lazy" %>
       </picture>
     </span>
   </button>
   <dialog class="ImageDialog" id="<%= prefix %>-image-dialog-<%= item.id %>">
     <picture>
-      <%= image_tag cdn_image_url(item.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+      <%= image_tag cdn_image_url(item.highlighted_image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
     </picture>
   </dialog>
 <% else %>

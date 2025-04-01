@@ -15,8 +15,7 @@ AllCops:
     - config.ru
     - vendor/**/*
 
-require:
-  - rubocop-rails
+plugins: rubocop-rails
 
 Style/Documentation:
   Description: "Document classes and non-namespace modules."

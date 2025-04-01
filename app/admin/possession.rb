@@ -11,8 +11,9 @@ ActiveAdmin.register Possession do
   ]
 
   remove_filter :custom_product
-  remove_filter :image_attachment
-  remove_filter :image_blob
+  remove_filter :highlighted_image_id
+  remove_filter :images_attachments
+  remove_filter :images_blobs
   remove_filter :prev_owned
   remove_filter :product
   remove_filter :product_option

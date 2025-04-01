@@ -20,11 +20,11 @@ module Possessions
             [
               { sub_categories: :category, },
               :user,
-              { image_attachment: :blob }
+              { images_attachments: :blob }
             ]
         ]
       )
-      .includes([{ image_attachment: :blob }])
+      .includes([{ images_attachments: :blob }])
       .includes([:product_option])
       .includes([:setup_possession])
       .includes([:setup])

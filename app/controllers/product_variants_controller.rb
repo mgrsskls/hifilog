@@ -34,10 +34,11 @@ class ProductVariantsController < ApplicationController
     end
 
     @public_possessions_with_image = @product_variant.possessions
-                                                     .includes([:image_attachment])
+                                                     .includes([:images_attachments])
                                                      .joins(:user)
                                                      .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
-                                                     .select { |possession| possession.image.attached? }
+                                                     .select { |possession| possession.images.attached? }
+                                                     .map { |possession| PossessionPresenter.new(possession) }
 
     @contributors = ActiveRecord::Base.connection.execute("
       SELECT DISTINCT

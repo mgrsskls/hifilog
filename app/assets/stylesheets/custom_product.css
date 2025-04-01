@@ -6,9 +6,24 @@
 
 .CustomProduct-image {
 	inline-size: 20rem;
+	list-style: "";
+	padding: 0;
+	margin: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+}
+
+.CustomProduct-image .ImageLightbox-item:first-child {
+	grid-column: 1 / -1;
 }
 
 .CustomProduct-content {
 	flex: 1 1 calc(100% - 20rem - 3rem);
 	min-inline-size: 16rem;
+}
+
+.CustomProduct-description {
+	border-block-start: var(--border) var(--color-transparency-15);
+	padding-block-start: calc(2rem - 1em);
+	margin-block-start: 2rem;
 }

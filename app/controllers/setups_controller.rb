@@ -19,8 +19,8 @@ class SetupsController < ApplicationController
                        .possessions.where(prev_owned: false)
                        .includes([product: [:brand]])
                        .includes([product_variant: [product: [:brand]]])
-                       .includes([custom_product: [{ image_attachment: :blob }]])
-                       .includes([{ image_attachment: :blob }])
+                       .includes([custom_product: [{ images_attachments: :blob }]])
+                       .includes([{ images_attachments: :blob }])
                        .order(
                          [
                            'brand.name',

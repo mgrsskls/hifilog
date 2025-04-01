@@ -82,14 +82,14 @@
           <ul class="ImageLightbox ImageGallery" style="--size: 7.5rem;">
             <% @public_possessions_with_image.each_with_index do |possession, i| %>
               <li class="ImageLightbox-item">
-                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= possession.image.id %>">
+                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= possession.highlighted_image.id %>">
                   <picture>
-                    <%= image_tag cdn_image_url(possession.image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                    <%= image_tag cdn_image_url(possession.highlighted_image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                   </picture>
                 </button>
-                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= possession.image.id %>">
+                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= possession.highlighted_image.id %>">
                   <picture>
-                    <%= image_tag cdn_image_url(possession.image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                    <%= image_tag cdn_image_url(possession.highlighted_image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                   </picture>
                   <div class="ImageGallery-info is-dark">
                     <% if @public_possessions_with_image.size > 1 %>
