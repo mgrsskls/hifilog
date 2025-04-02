@@ -11,6 +11,8 @@ class CustomProductPossessionPresenter < CustomProductPresenter
     @custom_product = object.custom_product
   end
 
+  delegate :images, to: :@custom_product
+
   def image_update_item
     @custom_product
   end
