@@ -52,7 +52,7 @@
                 <% if include_image_upload %>
                   <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "table" %>
                 <% else %>
-                  <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "table" %>
+                  <%= render "shared/product_image_dialog", item: item, prefix: "table" %>
                 <% end %>
               </td>
             <% end %>
@@ -146,7 +146,7 @@
               <% if include_image_upload %>
                 <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
               <% else %>
-                <%= render "shared/product_image_dialog", item: item, image_update_item: item.image_update_item, prefix: "list" %>
+                <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
               <% end %>
             </div>
           <% end %>

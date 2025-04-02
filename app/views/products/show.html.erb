@@ -14,105 +14,104 @@
         </h1>
       </div>
 
-      <% if @product.description.present? %>
-        <div class="Entity-description Rte">
-          <%= sanitize @product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
-        </div>
-      <% end %>
-
-      <dl class="Data">
-        <% if @product.discontinued? %>
-          <dt><%= t('status') %></dt>
-          <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
-        <% end %>
-        <% if @product.brand.present? %>
-          <dt><%= Brand.model_name.human %></dt>
-          <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
-        <% end %>
-        <dt><%= Category.model_name.human %></dt>
-        <dd>
-          <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
-          <% if @product.custom_attributes.present? %>
-            <br><span class="Data-secondary"><%= @product.custom_attributes_list %></span>
-          <% end %>
-        </dd>
-        <dt><%= Product.human_attribute_name(:release_date) %></dt>
-        <dd>
-          <% if @product.release_date.present? %>
-            <time datetime="<%= @product.release_date %>" data-format="false"><%= @product.release_date %></time>
-          <% else %>
-            -
-          <% end %>
-        </dd>
-        <% if @product.discontinued? %>
-          <dt><%= t('discontinued') %></dt>
-          <dd>
-            <% if @product.discontinued_date.present? %>
-              <time datetime="<%= @product.discontinued_date %>" data-format="false"><%= @product.discontinued_date %></time>
-            <% else %>
-              -
-            <% end %>
-          </dd>
-        <% end %>
-        <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
-        <dd>
-          <% if @product.price.present? %>
-            <%= @product.display_price %>
-          <% else %>
-            -
-          <% end %>
-        </dd>
-      </dl>
-
-      <% if @product.product_options.any? %>
-        <div class="Product-section">
-          <h2><%= Product.human_attribute_name(:product_options) %></h2>
-          <ul>
-            <% @product.product_options.each do |option| %>
-              <li><%= option[:option] %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <% if @public_possessions_with_image.any? %>
-        <div class="Product-section">
-          <h2>User photos</h2>
-          <ul class="ImageLightbox ImageGallery" style="--size: 7.5rem;">
-            <% @public_possessions_with_image.each_with_index do |possession, i| %>
-              <% possession.images.each do |image| %>
-                <li class="ImageLightbox-item">
-                  <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
-                    <picture>
-                      <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
-                    </picture>
-                  </button>
-                  <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
-                    <picture>
-                      <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
-                    </picture>
-                    <div class="ImageGallery-info is-dark">
-                      <% if @public_possessions_with_image.size > 1 %>
-                        <% if i < @public_possessions_with_image.size - 1 %>
-                          <button type="button" rel="next" aria-label="Next">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
-                          </button>
-                        <% end %>
-                        <% if i > 0 %>
-                          <button type="button" rel="prev" aria-label="Previous">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
-                          </button>
-                        <% end %>
+      <div class="Entity-content">
+        <% if @images.any? %>
+          <ul class="Entity-image ImageLightbox ImageGallery">
+            <% @images.each_with_index do |image, i| %>
+              <li class="ImageLightbox-item">
+                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
+                  <picture>
+                    <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                  </picture>
+                </button>
+                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
+                  <picture>
+                    <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                  </picture>
+                  <div class="ImageGallery-info is-dark">
+                    <% if @images.size > 1 %>
+                      <% if i < @images.size - 1 %>
+                        <button type="button" rel="next" aria-label="Next">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
+                        </button>
                       <% end %>
-                      <p>by <%= link_to possession.user.user_name, possession.user.profile_path %></p>
-                    </div>
-                  </dialog>
-                </li>
-              <% end %>
+                      <% if i > 0 %>
+                        <button type="button" rel="prev" aria-label="Previous">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
+                        </button>
+                      <% end %>
+                    <% end %>
+                    <p>by <%= link_to image.user.user_name, image.user.profile_path %></p>
+                  </div>
+                </dialog>
+              </li>
             <% end %>
           </ul>
+        <% end %>
+
+        <div class="Entity-text">
+          <% if @product.description.present? %>
+            <div class="Entity-section Rte">
+              <%= sanitize @product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+            </div>
+          <% end %>
+
+          <dl class="Entity-section Data">
+            <% if @product.discontinued? %>
+              <dt><%= t('status') %></dt>
+              <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
+            <% end %>
+            <% if @product.brand.present? %>
+              <dt><%= Brand.model_name.human %></dt>
+              <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
+            <% end %>
+            <dt><%= Category.model_name.human %></dt>
+            <dd>
+              <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
+              <% if @product.custom_attributes.present? %>
+                <br><span class="Data-secondary"><%= @product.custom_attributes_list %></span>
+              <% end %>
+            </dd>
+            <dt><%= Product.human_attribute_name(:release_date) %></dt>
+            <dd>
+              <% if @product.release_date.present? %>
+                <time datetime="<%= @product.release_date %>" data-format="false"><%= @product.release_date %></time>
+              <% else %>
+                -
+              <% end %>
+            </dd>
+            <% if @product.discontinued? %>
+              <dt><%= t('discontinued') %></dt>
+              <dd>
+                <% if @product.discontinued_date.present? %>
+                  <time datetime="<%= @product.discontinued_date %>" data-format="false"><%= @product.discontinued_date %></time>
+                <% else %>
+                  -
+                <% end %>
+              </dd>
+            <% end %>
+            <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
+            <dd>
+              <% if @product.price.present? %>
+                <%= @product.display_price %>
+              <% else %>
+                -
+              <% end %>
+            </dd>
+          </dl>
+
+          <% if @product.product_options.any? %>
+            <div class="Product-section">
+              <h2><%= Product.human_attribute_name(:product_options) %></h2>
+              <ul>
+                <% @product.product_options.each do |option| %>
+                  <li><%= option[:option] %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
         </div>
-      <% end %>
+      </div>
     </div>
 
     <div class="Product-section">

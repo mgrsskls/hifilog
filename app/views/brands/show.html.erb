@@ -11,6 +11,12 @@
         </div>
       </div>
 
+      <% if @brand.description.present? %>
+        <div class="Entity-section Rte">
+          <%= sanitize @brand.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+        </div>
+      <% end %>
+
       <dl class="Data">
         <% if @brand.discontinued %>
           <dt><%= t('status') %></dt>
@@ -49,13 +55,6 @@
             <dd><%= section[1].map { |c| link_to c.name, products_path(sub_category: c.friendly_id) }.join(", ").html_safe %></dd>
           <% end %>
         </dl>
-      <% end %>
-
-      <% if @brand.description.present? %>
-        <h2>About</h2>
-        <div class="Entity-description Rte">
-          <%= sanitize @brand.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
-        </div>
       <% end %>
     </div>
   </div>

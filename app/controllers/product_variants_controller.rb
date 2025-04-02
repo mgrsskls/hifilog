@@ -33,12 +33,13 @@ class ProductVariantsController < ApplicationController
       @setups = current_user.setups
     end
 
-    @public_possessions_with_image = @product_variant.possessions
-                                                     .includes([:images_attachments])
-                                                     .joins(:user)
-                                                     .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
-                                                     .select { |possession| possession.images.attached? }
-                                                     .map { |possession| PossessionPresenter.new(possession) }
+    @images = @product_variant.possessions
+                              .includes([:images_attachments])
+                              .joins(:user)
+                              .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
+                              .select { |possession| possession.images.attached? }
+                              .flat_map(&:images)
+                              .map { |image| ImagePresenter.new image }
 
     @contributors = ActiveRecord::Base.connection.execute("
       SELECT DISTINCT

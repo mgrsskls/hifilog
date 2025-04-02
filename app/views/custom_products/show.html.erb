@@ -1,7 +1,6 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "entity", crossorigin: true, integrity: true %>
   <%= stylesheet_link_tag "product", crossorigin: true, integrity: true %>
-  <%= stylesheet_link_tag "custom_product", crossorigin: true, integrity: true %>
 <% end %>
 <% content_for :js do %>
   <%= javascript_include_tag "gallery", type: "module", nonce: true, crossorigin: true, integrity: true %>
@@ -15,9 +14,9 @@
         </h1>
       </div>
 
-      <div class="CustomProduct">
+      <div class="Entity-content">
         <% if @custom_product.images.attached? %>
-          <ul class="CustomProduct-image ImageLightbox ImageGallery">
+          <ul class="Entity-image ImageLightbox ImageGallery">
             <li class="ImageLightbox-item">
               <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @custom_product.highlighted_image.id %>">
                 <picture>
@@ -47,19 +46,19 @@
           </ul>
         <% end %>
 
-        <div class="CustomProduct-content Rte">
-          <dl class="Data">
+        <div class="Entity-text">
+          <% if @custom_product.description.present? %>
+            <div class="Entity-section Rte">
+              <%= sanitize @custom_product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li a) %>
+            </div>
+          <% end %>
+
+          <dl class="Entity-section Data">
             <dt><%= Category.model_name.human %></dt>
             <dd>
               <%= @custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
             </dd>
           </dl>
-
-          <% if @custom_product.description.present? %>
-            <div class="CustomProduct-description Entity-description">
-              <%= sanitize @custom_product.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li a) %>
-            </div>
-          <% end %>
         </div>
       </div>
     </div>
