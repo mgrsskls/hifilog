@@ -32,6 +32,16 @@ ActiveAdmin.register ProductVariant do
   remove_filter :users
   remove_filter :versions
 
+  index do
+    id_column
+    column :name
+    column :description
+    column :price
+    column :price_currency
+    column :discontinued
+    actions
+  end
+
   controller do
     def find_resource
       scoped_collection.friendly.find(params[:id])

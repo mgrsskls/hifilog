@@ -72,6 +72,16 @@ ActiveAdmin.register Product do
     active_admin_comments_for(resource)
   end
 
+  index do
+    id_column
+    column :name
+    column :brand
+    column :price
+    column :price_currency
+    column :discontinued
+    actions
+  end
+
   controller do
     def find_resource
       scoped_collection.friendly.find(params[:id])

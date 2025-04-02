@@ -19,4 +19,14 @@ ActiveAdmin.register User do
   remove_filter :decorative_image_attachment
   remove_filter :decorative_image_blob
   remove_filter :email
+
+  index do
+    id_column
+    column :email
+    column :user_name
+    column :created_at
+    column :confirmed_at
+    column :possessions
+    actions
+  end
 end

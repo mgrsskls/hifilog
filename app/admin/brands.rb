@@ -29,6 +29,16 @@ ActiveAdmin.register Brand do
   remove_filter :versions
   remove_filter :website
 
+  index do
+    id_column
+    column :name
+    column :full_name
+    column :discontinued
+    column :website
+    column :country_code
+    actions
+  end
+
   controller do
     def find_resource
       scoped_collection.friendly.find(params[:id])
