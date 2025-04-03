@@ -24,7 +24,7 @@
 	margin-block-start: 0.5rem;
 }
 
-@media (max-width: 54rem) {
+@media (width < 54rem) {
 	.MenuMega {
 		--page-spacing: 0;
 
@@ -62,7 +62,7 @@
 	}
 }
 
-@media (min-width: 54.0625rem) {
+@media (width >= 54rem) {
 	.MenuMega {
 		inset-inline: 0;
 		background: var(--color-menu-bg);

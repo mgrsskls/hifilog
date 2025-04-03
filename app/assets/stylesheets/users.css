@@ -10,13 +10,13 @@
 	border: var(--border-light);
 }
 
-@media (min-width: 40em) {
+@media (width >= 40rem) {
 	.Users-rank {
 		inline-size: 3rem;
 	}
 }
 
-@media (max-width: 54rem) {
+@media (width < 54rem) {
 	.Users {
 		flex-direction: column;
 	}
@@ -30,7 +30,7 @@
 	}
 }
 
-@media (min-width: 54.065rem) {
+@media (width >= 54rem) {
 	.Users-ranking {
 		flex: 1;
 	}

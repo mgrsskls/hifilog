@@ -82,19 +82,19 @@ h2 ~ .DashboardNumbersWrapper {
 	margin-block-start: 1.5rem;
 }
 
-@container wrapper (min-width: 20.0625rem) and (max-width: 40rem) {
+@container wrapper (width >= 20rem) and (width < 40rem) {
 	.DashboardStats {
 		--cols: 2;
 	}
 }
 
-@container wrapper (max-width: 40rem) {
+@container wrapper (width < 40rem) {
 	.DashboardNumber {
 		align-items: center;
 	}
 }
 
-@container wrapper (min-width: 40.0625rem) {
+@container wrapper (width >= 40rem) {
 	.DashboardStats {
 		--cols: 4;
 	}

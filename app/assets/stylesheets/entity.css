@@ -64,7 +64,7 @@
 	margin-block-end: 2rem;
 }
 
-@media (max-width: 48rem) {
+@media (width < 48rem) {
 	.Entity {
 		flex-direction: column;
 	}
@@ -74,7 +74,7 @@
 	}
 }
 
-@media (min-width: 48.065rem) {
+@media (width >= 48rem) {
 	.Entity {
 		display: flex;
 		gap: 2rem;

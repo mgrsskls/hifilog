@@ -122,7 +122,7 @@
 	visibility: hidden;
 }
 
-@container listing (width < 28em) {
+@container listing (width < 28rem) {
 	.Pagination--pages {
 		margin-block-start: 2rem;
 	}
@@ -136,7 +136,7 @@
 	}
 }
 
-@container listing (width >= 28em) {
+@container listing (width >= 28rem) {
 	.Pagination--pages {
 		margin-block-start: 3rem;
 	}

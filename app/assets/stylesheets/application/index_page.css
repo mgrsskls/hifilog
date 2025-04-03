@@ -30,7 +30,7 @@
 	margin-block-start: 0;
 }
 
-@media (max-width: 48rem) {
+@media (width < 48rem) {
 	.IndexPage {
 		grid-template:
 			"header"
@@ -39,7 +39,7 @@
 	}
 }
 
-@media (min-width: 48.0625rem) {
+@media (width >= 48rem) {
 	.IndexPage {
 		grid-template: "header content" / 18rem 1fr;
 		align-items: start;

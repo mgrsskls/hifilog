@@ -12,7 +12,7 @@
 	flex: 0 0 9.75rem;
 }
 
-@media (max-width: 30rem) {
+@media (width < 30rem) {
 	.Menu-home {
 		flex-basis: 7.5rem;
 	}
@@ -87,7 +87,7 @@
 	}
 }
 
-@media (max-width: 54rem) {
+@media (width < 54rem) {
 	.MenuList {
 		flex-direction: column;
 		flex: 1;
@@ -108,7 +108,7 @@
 	}
 }
 
-@media (min-width: 54.0625rem) {
+@media (width >= 54rem) {
 	.Menu-subList {
 		position: absolute;
 		inset-block-start: var(--header-height);

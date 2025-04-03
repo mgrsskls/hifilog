@@ -484,7 +484,7 @@
 		position: relative;
 	}
 
-	@media (max-width: 36em) {
+	@media (width < 36rem) {
 		h1,
 		.h1 {
 			font-size: 2.2rem;
@@ -496,13 +496,13 @@
 		}
 	}
 
-	@media (max-width: 48em) {
+	@media (width < 48rem) {
 		html {
 			--page-spacing: 1rem;
 		}
 	}
 
-	@media (min-width: 48.0625em) {
+	@media (width >= 48rem) {
 		html {
 			--page-spacing: 1.5rem;
 		}

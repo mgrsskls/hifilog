@@ -106,7 +106,7 @@
 	max-inline-size: 30em;
 }
 
-@media (max-width: 48em) {
+@media (width < 48rem) {
 	.Home-content {
 		padding-inline: 2rem;
 	}
@@ -121,13 +121,13 @@
 	}
 }
 
-@media (max-width: 62em) {
+@media (width < 62rem) {
 	.Home-picture {
 		aspect-ratio: 2;
 	}
 }
 
-@media (min-width: 48.0625em) {
+@media (width >= 48rem) {
 	.Home {
 		display: grid;
 		grid-template-columns: repeat(24, 1fr);
@@ -172,7 +172,7 @@
 	}
 }
 
-@media (min-width: 62.0625em) {
+@media (width >= 62rem) {
 	main:has(.Home) {
 		background: var(--color-bg2);
 	}

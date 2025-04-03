@@ -9,7 +9,7 @@
 	transform: rotate(0.5turn);
 }
 
-@media (max-width: 54rem) {
+@media (width < 54rem) {
 	.MenuMain .MenuMain-item + .MenuMain-item,
 	.MenuAccount {
 		border-block-start: var(--border) var(--divider-color);
@@ -22,7 +22,7 @@
 	}
 }
 
-@media (min-width: 54.0625rem) {
+@media (width >= 54rem) {
 	.MenuMain-link {
 		display: flex;
 		align-items: center;
@@ -49,7 +49,7 @@
 	}
 }
 
-@media (min-width: 54.0625rem) and (max-width: 64rem) {
+@media (width >= 54rem) and (width < 64rem) {
 	.MenuMain-link--mega {
 		padding-inline: 1rem;
 	}

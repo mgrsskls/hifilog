@@ -74,7 +74,7 @@ html:where([data-theme="dark"]) .Filter-input {
 	background: var(--color-input-bg);
 }
 
-@media (max-width: 48rem) {
+@media (width < 48rem) {
 	.Filter {
 		display: grid;
 		gap: 1rem 2rem;
@@ -133,7 +133,7 @@ html:where([data-theme="dark"]) .Filter-input {
 	}
 }
 
-@media (min-width: 48.0625rem) {
+@media (width >= 48rem) {
 	.Filter-open,
 	.Filter-status,
 	.Filter-close {

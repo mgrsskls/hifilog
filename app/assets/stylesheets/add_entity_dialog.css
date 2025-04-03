@@ -94,25 +94,25 @@
 	color: var(--color-copy-on-accent);
 }
 
-@media (min-width: 32.0625rem) {
+@media (width >= 32rem) {
 	.AddEntityDialog-list {
 		--cols: 1;
 	}
 }
 
-@media (min-width: 32.0625rem) and (max-width: 48rem) {
+@media (width >= 32rem) and (width < 48rem) {
 	.AddEntityDialog-list {
 		--cols: 2;
 	}
 }
 
-@media (min-width: 48.0625rem) and (max-width: 62rem) {
+@media (width >= 48rem) and (width < 62rem) {
 	.AddEntityDialog-list {
 		--cols: 3;
 	}
 }
 
-@media (min-width: 62.0625rem) {
+@media (width >= 62rem) {
 	.AddEntityDialog-list {
 		--cols: 4;
 	}
