@@ -14,6 +14,10 @@ class PossessionPresenter < ItemPresenter
     possession_path(@object.id)
   end
 
+  def sorted_images
+    @object.images.sort_by { |image| @object.highlighted_image_id == image.id ? 0 : 1 }
+  end
+
   def highlighted_image
     if @object.images.attached?
       return @object.images.find(@object.highlighted_image_id) if @object.highlighted_image_id

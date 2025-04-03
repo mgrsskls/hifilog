@@ -49,6 +49,10 @@ class CustomProductPresenter
     @custom_product
   end
 
+  def sorted_images
+    @custom_product.images.sort_by { |image| @custom_product.highlighted_image_id == image.id ? 0 : 1 }
+  end
+
   def highlighted_image
     if @custom_product.images.attached?
       if @custom_product.highlighted_image_id &&

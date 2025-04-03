@@ -143,7 +143,8 @@ class ProductsController < ApplicationController
                       .joins(:user)
                       .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
                       .select { |possession| possession.images.attached? }
-                      .flat_map(&:images)
+                      .map { |possession| PossessionPresenter.new possession }
+                      .flat_map(&:sorted_images)
                       .map { |image| ImagePresenter.new image }
 
     @contributors = ActiveRecord::Base.connection.execute("

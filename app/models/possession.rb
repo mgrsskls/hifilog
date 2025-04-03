@@ -10,7 +10,7 @@ class Possession < ApplicationRecord
   has_one :setup_possession, dependent: :destroy
   has_one :setup, through: :setup_possession
   has_many_attached :images do |attachable|
-    attachable.variant :thumb, resize_to_fill: [320, 320], format: :webp
+    attachable.variant :thumb, resize_to_fill: [640, 640], format: :webp
     attachable.variant :large, resize_to_limit: [1200, 1200], format: :webp
   end
 
