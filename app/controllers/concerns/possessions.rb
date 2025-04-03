@@ -30,10 +30,10 @@ module Possessions
       .includes([:setup])
       .order(
         [
+          'custom_product.name',
           'brand.name',
           'product.name',
-          'product_variant.name',
-          'custom_product.name'
+          'product_variant.name'
         ]
       )
   end
