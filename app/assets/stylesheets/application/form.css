@@ -4,12 +4,6 @@
 	margin-inline: auto;
 }
 
-.Form-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-	gap: 1rem 2rem;
-}
-
 .Form small {
 	display: inline-block;
 	line-height: 1.4;
@@ -32,7 +26,7 @@
 	max-inline-size: 28rem;
 }
 
-:not(.Form-grid) > .Form-field + .Form-field {
+.Form-field + .Form-field {
 	margin-block-start: var(--spacing-top, 1rem);
 }
 

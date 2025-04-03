@@ -5,67 +5,63 @@
 
   <h2><%= t("user.edit.update.heading") %></h2>
 
-  <div class="Form Form--wide">
+  <div class="Form">
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= render "shared/flash_messages", messages: resource.errors.full_messages.map { |message| [ :alert, message ] } if resource.errors.full_messages.any? %>
 
-      <div class="Form-grid">
-        <div class="Form-field">
-          <%= f.label :user_name, class: "Form-label" do %>
-            <%= t('user.edit.update.fields.user_name') %>
-          <% end %>
-          <%= f.text_field :user_name, required: true %>
-        </div>
+      <div class="Form-field">
+        <%= f.label :user_name, class: "Form-label" do %>
+          <%= t('user.edit.update.fields.user_name') %>
+        <% end %>
+        <%= f.text_field :user_name, required: true %>
+      </div>
 
-        <div class="Form-field">
-          <%= f.label :email, class: "Form-label" do %>
-            <%= t('user.edit.update.fields.email') %>
-          <% end %>
-          <%= f.email_field :email, required: true, autocomplete: "email" %>
-        </div>
+      <div class="Form-field">
+        <%= f.label :email, class: "Form-label" do %>
+          <%= t('user.edit.update.fields.email') %>
+        <% end %>
+        <%= f.email_field :email, required: true, autocomplete: "email" %>
+      </div>
 
-        <div class="Form-field">
-          <%= f.label :password, class: "Form-label" do %>
-            <%= t('user.edit.update.fields.password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
-          <% end %>
-          <%= f.password_field :password, autocomplete: "new-password" %>
-          <% if @minimum_password_length %>
-            <small class="Form-hint"><%= t('user.edit.update.minimum_password_length', minimum: @minimum_password_length) %></small>
-          <% end %>
-        </div>
+      <div class="Form-field">
+        <%= f.label :password, class: "Form-label" do %>
+          <%= t('user.edit.update.fields.password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password" %>
+        <% if @minimum_password_length %>
+          <small class="Form-hint"><%= t('user.edit.update.minimum_password_length', minimum: @minimum_password_length) %></small>
+        <% end %>
+      </div>
 
-        <div class="Form-field">
-          <%= f.label :password_confirmation, class: "Form-label" do %>
-            <%= t('user.edit.update.fields.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
-          <% end %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-        </div>
+      <div class="Form-field">
+        <%= f.label :password_confirmation, class: "Form-label" do %>
+          <%= t('user.edit.update.fields.confirm_password') %> <small><i>(<%= t('user.edit.update.leave_blank') %>)</i></small>
+        <% end %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
       </div>
 
       <h3>Visibility</h3>
 
-      <div class="Form-field">
-        <div>
-          <%= f.radio_button :profile_visibility, :hidden, checked: current_user.hidden? %>
-          <%= f.label :profile_visibility_hidden, t("user.edit.update.profile_visibility.hidden") %>
-        </div>
-        <div>
-          <%= f.radio_button :profile_visibility, :logged_in_only, checked: current_user.logged_in_only? %>
-          <%= f.label :profile_visibility_logged_in_only, t("user.edit.update.profile_visibility.logged_in_only") %>
-        </div>
-        <div>
-          <%= f.radio_button :profile_visibility, :visible, checked: current_user.visible? %>
-          <%= f.label :profile_visibility_visible, t("user.edit.update.profile_visibility.visible") %>
-        </div>
-
-        <% unless current_user.hidden? %>
-          <p>
-            <%= t('user.edit.update.profile_url') %><br>
-            <a href="<%= current_user.profile_path %>"><b><%= request.protocol + request.host_with_port + current_user.profile_path %></b></a>
-          </p>
-        <% end %>
+      <div>
+        <%= f.radio_button :profile_visibility, :hidden, checked: current_user.hidden? %>
+        <%= f.label :profile_visibility_hidden, t("user.edit.update.profile_visibility.hidden") %>
       </div>
+      <div>
+        <%= f.radio_button :profile_visibility, :logged_in_only, checked: current_user.logged_in_only? %>
+        <%= f.label :profile_visibility_logged_in_only, t("user.edit.update.profile_visibility.logged_in_only") %>
+      </div>
+      <div>
+        <%= f.radio_button :profile_visibility, :visible, checked: current_user.visible? %>
+        <%= f.label :profile_visibility_visible, t("user.edit.update.profile_visibility.visible") %>
+      </div>
+
+      <% unless current_user.hidden? %>
+        <p>
+          <%= t('user.edit.update.profile_url') %><br>
+          <a href="<%= current_user.profile_path %>"><b><%= request.protocol + request.host_with_port + current_user.profile_path %></b></a>
+        </p>
+      <% end %>
 
       <h3>Images</h3>
       <div class="Form-field">
@@ -122,13 +118,10 @@
 
       <h3><%= t('user.edit.update.save.heading') %></h3>
 
-
-      <div class="Form-grid">
-        <div class="Form-field">
-          <%= f.label :current_password, class: "Form-label" %>
-          <%= f.password_field :current_password, required: true, autocomplete: "current-password" %>
-          <small class="Form-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
-        </div>
+      <div class="Form-field">
+        <%= f.label :current_password, class: "Form-label" %>
+        <%= f.password_field :current_password, required: true, autocomplete: "current-password" %>
+        <small class="Form-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
       </div>
 
       <div class="Form-submit">
