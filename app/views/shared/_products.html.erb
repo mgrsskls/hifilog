@@ -2,7 +2,6 @@
 <% include_images ||= defined?(include_images) ? include_images : true %>
 <% include_image_upload ||= defined?(include_image_upload) ? include_image_upload : true %>
 <% include_edit_link ||= false %>
-<% include_delete_button ||= false %>
 <% include_setup ||= false %>
 <% hide_brand ||= false %>
 <% hide_release_date ||= false %>
@@ -35,13 +34,11 @@
           <% if include_setup %>
             <th><%= Setup.model_name %></th>
           <% end %>
-          <% if include_edit_link || include_delete_button %>
-            <th class="u-textEnd Table-actions">
-              <span class="u-hiddenVisually">
-                Actions
-              </span>
-            </th>
-          <% end %>
+          <th class="u-textEnd Table-actions">
+            <span class="u-hiddenVisually">
+              Actions
+            </span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -111,29 +108,25 @@
                 <%= item.setup.present? ? item.setup.name : "-" %>
               </td>
             <% end %>
-            <% if include_edit_link || include_delete_button %>
-              <td class="Table-sm">
-                <ul class="MetaLinks">
-                  <% if include_edit_link %>
-                    <li><%= link_to "Edit", item.edit_path %></li>
+            <td class="Table-sm">
+              <ul class="MetaLinks">
+                <% if include_edit_link %>
+                  <li><%= link_to "Edit", item.edit_path %></li>
+                <% end %>
+                <li>
+                  <% if delete_dialog %>
+                    <%= render remove_entity_partial, possession: item, id: item.id %>
+                  <% else %>
+                    <%= button_to item.delete_button_label,
+                      item.delete_path,
+                      method: :delete,
+                      class: "DeleteButton",
+                      "data-msg": item.delete_confirm_msg
+                    %>
                   <% end %>
-                  <% if include_delete_button %>
-                    <li>
-                      <% if delete_dialog %>
-                        <%= render remove_entity_partial, possession: item, id: item.id %>
-                      <% else %>
-                        <%= button_to item.delete_button_label,
-                          item.delete_path,
-                          method: :delete,
-                          class: "DeleteButton",
-                          "data-msg": item.delete_confirm_msg
-                        %>
-                      <% end %>
-                    </li>
-                  <% end %>
-                </ul>
-              </td>
-            <% end %>
+                </li>
+              </ul>
+            </td>
           </tr>
         <% end %>
       </tbody>
@@ -205,29 +198,25 @@
                 <dd><%= item.setup.name %></dd>
               <% end %>
             </dl>
-            <% if include_edit_link || include_delete_button %>
-              <div class="EntityList-metaLinks">
-                <ul class="MetaLinks">
-                  <% if include_edit_link %>
-                    <li><%= link_to "Edit", item.edit_path %></li>
+            <div class="EntityList-metaLinks">
+              <ul class="MetaLinks">
+                <% if include_edit_link %>
+                  <li><%= link_to "Edit", item.edit_path %></li>
+                <% end %>
+                <li>
+                  <% if delete_dialog %>
+                    <%= render "shared/remove_product_from_possessions", possession: item, id: "#{item.id}-2" %>
+                  <% else %>
+                    <%= button_to item.delete_button_label,
+                      item.delete_path,
+                      method: :delete,
+                      class: "DeleteButton",
+                      "data-msg": item.delete_confirm_msg
+                    %>
                   <% end %>
-                  <% if include_delete_button %>
-                    <li>
-                      <% if delete_dialog %>
-                        <%= render "shared/remove_product_from_possessions", possession: item, id: "#{item.id}-2" %>
-                      <% else %>
-                        <%= button_to item.delete_button_label,
-                          item.delete_path,
-                          method: :delete,
-                          class: "DeleteButton",
-                          "data-msg": item.delete_confirm_msg
-                        %>
-                      <% end %>
-                    </li>
-                  <% end %>
-                </ul>
-              </div>
-            <% end %>
+                </li>
+              </ul>
+            </div>
           </div>
         </li>
       <% end %>

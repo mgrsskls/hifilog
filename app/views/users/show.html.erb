@@ -1,13 +1,69 @@
+<% content_for :js do %>
+  <%= javascript_include_tag "gallery", type: "module", nonce: true, crossorigin: true, integrity: true %>
+<% end %>
 <%= render layout: "users/shared/layout" do %>
-  <%= render "shared/products",
-    user: @user,
-    items: @possessions,
-    hide_since: @render_period,
-    hide_period: @render_since,
-    hide_release_date: true,
-    empty_state: t('empty_state.public_profile', name: h(@user.user_name)),
-    include_images: true,
-    items_breakpoint: 's',
-    heading: @heading
-  %>
+  <ul class="ProfilePossessions">
+    <% @possessions.each do |possession| %>
+      <li class="ProfilePossessions-item">
+        <div class="ProfilePossessions-header">
+          <h3 class="h4">
+            <a href="<%= possession.show_path %>">
+              <b><%= possession.display_name %></b>
+            </a>
+            <% if possession.product_option %>
+              <div>
+                <small><%= possession.product_option.option %></small>
+              </div>
+            <% end %>
+          </h3>
+          <% if possession.period_from.present? %>
+            <small>
+              Since <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+            </small>
+          <% end %>
+        </div>
+        <ul class="ProfilePossessions-images ImageLightbox ImageGallery">
+          <% if possession.images.attached? %>
+            <% possession.images.each_with_index do |image, i| %>
+              <li class="ImageLightbox-item">
+                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
+                  <picture>
+                    <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                  </picture>
+                </button>
+                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
+                  <picture>
+                    <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                  </picture>
+                  <div class="ImageGallery-info is-dark">
+                    <% if possession.images.size > 1 %>
+                      <% if i < possession.images.size - 1 %>
+                        <button type="button" rel="next" aria-label="Next">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
+                        </button>
+                      <% end %>
+                      <% if i > 0 %>
+                        <button type="button" rel="prev" aria-label="Previous">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
+                        </button>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </dialog>
+              </li>
+            <% end %>
+          <% end %>
+        </ul>
+        <p>
+          <small>
+            <% if possession.sub_categories.any? %>
+              <%= possession.sub_categories.map{ |sub_category| sub_category.name }.join(", ").html_safe %>
+            <% else %>
+              <%= possession.categories.map{ |category| category.name }.join(", ").html_safe %>
+            <% end %>
+          </small>
+        </p>
+      </li>
+    <% end %>
+  </ul>
 <% end %>

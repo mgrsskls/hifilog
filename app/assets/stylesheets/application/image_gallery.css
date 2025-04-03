@@ -9,12 +9,16 @@
 
 .ImageGallery-thumb {
 	display: block;
+	inline-size: 100%;
+	background: var(--color-blue-925);
+	box-sizing: border-box;
 }
 
 .ImageGallery-thumb img {
 	border: var(--border) var(--color-transparency-15);
 	border-radius: var(--border-radius);
 	aspect-ratio: 1;
+	box-sizing: border-box;
 }
 
 .ImageGallery-dialog {
