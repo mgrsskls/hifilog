@@ -35,8 +35,8 @@
                   <picture>
                     <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                   </picture>
-                  <div class="ImageGallery-info is-dark">
-                    <% if possession.sorted_images.size > 1 %>
+                  <% if possession.sorted_images.size > 1 %>
+                    <div class="ImageGallery-info is-dark">
                       <% if i < possession.sorted_images.size - 1 %>
                         <button type="button" rel="next" aria-label="Next">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
@@ -47,8 +47,8 @@
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
                         </button>
                       <% end %>
-                    <% end %>
-                  </div>
+                    </div>
+                  <% end %>
                 </dialog>
               </li>
             <% end %>
