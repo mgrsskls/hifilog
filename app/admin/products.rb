@@ -79,6 +79,9 @@ ActiveAdmin.register Product do
     column :price
     column :price_currency
     column :discontinued
+    column :owned_by do |product_variant|
+      product_variant.possessions.count
+    end
     actions
   end
 

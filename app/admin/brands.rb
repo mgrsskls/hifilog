@@ -36,6 +36,12 @@ ActiveAdmin.register Brand do
     column :discontinued
     column :website
     column :country_code
+    column :products do |brand|
+      brand.products.count
+    end
+    column :sub_categories do |brand|
+      brand.sub_categories.count
+    end
     actions
   end
 

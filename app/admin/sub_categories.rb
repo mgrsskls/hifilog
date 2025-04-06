@@ -38,6 +38,9 @@ ActiveAdmin.register SubCategory do
     column :category
     column :slug
     column :custom_attributes
+    column :products do |sub_category|
+      sub_category.products.count
+    end
     actions
   end
 

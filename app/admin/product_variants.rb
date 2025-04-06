@@ -34,11 +34,17 @@ ActiveAdmin.register ProductVariant do
 
   index do
     id_column
+    column :product do |product_variant|
+      link_to "#{product_variant.product.brand.name} #{product_variant.product.name}", admin_product_path(product_variant.product)
+    end
     column :name
     column :description
     column :price
     column :price_currency
     column :discontinued
+    column :owned_by do |product_variant|
+      product_variant.possessions.count
+    end
     actions
   end
 
