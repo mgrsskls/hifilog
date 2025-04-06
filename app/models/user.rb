@@ -102,6 +102,7 @@ class User < ApplicationRecord
       user_name_end
       user_name_eq
       user_name_start
+      receives_newsletter
     ]
   end
 

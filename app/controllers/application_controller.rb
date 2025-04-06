@@ -122,7 +122,7 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:sign_up, keys: [:user_name])
     devise_parameter_sanitizer.permit(
       :account_update,
-      keys: [:profile_visibility, :user_name, :avatar, :decorative_image]
+      keys: [:profile_visibility, :user_name, :avatar, :decorative_image, :receives_newsletter]
     )
   end
 end

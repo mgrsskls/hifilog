@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_01_194516) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_06_090356) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -186,6 +186,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_194516) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "newsletters", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "notes", force: :cascade do |t|
     t.text "text", null: false
     t.bigint "product_id", null: false
@@ -326,6 +332,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_194516) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
+    t.boolean "receives_newsletter", default: true
     t.index "lower((email)::text)", name: "index_users_on_email", unique: true
     t.index "lower((user_name)::text)", name: "index_users_on_user_name", unique: true
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true

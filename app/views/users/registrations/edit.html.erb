@@ -116,6 +116,19 @@
         <% end %>
       </div>
 
+      <h3>Newsletter</h3>
+
+      <p>Once in a while we send out newsletters with updates regarding <i>HiFi&thinsp;Log</i>.<br>You can unsubscribe any time.</p>
+
+      <div>
+        <%= f.radio_button :receives_newsletter, true, checked: current_user.receives_newsletter? %>
+        <%= f.label :receives_newsletter_true, t("user.edit.update.receives_newsletter.true") %>
+      </div>
+      <div>
+        <%= f.radio_button :receives_newsletter, false, checked: !current_user.receives_newsletter? %>
+        <%= f.label :receives_newsletter_false, t("user.edit.update.receives_newsletter.false") %>
+      </div>
+
       <h3><%= t('user.edit.update.save.heading') %></h3>
 
       <div class="Form-field">

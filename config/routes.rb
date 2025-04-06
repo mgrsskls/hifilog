@@ -35,6 +35,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get 'newsletters/unsubscribe', to: 'user#newsletter_unsubscribe', as: :newsletters_unsubscribe
+
   scope '/dashboard', as: :dashboard do
     root 'user#dashboard'
     get 'products', to: 'possessions#current', as: :products

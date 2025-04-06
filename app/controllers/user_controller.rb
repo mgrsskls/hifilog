@@ -2,8 +2,9 @@ class UserController < ApplicationController
   include ApplicationHelper
   include HistoryHelper
   include Bookmarks
+  include NewsletterHelper
 
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:newsletter_unsubscribe]
   before_action :set_breadcrumb
 
   def dashboard
@@ -231,6 +232,16 @@ class UserController < ApplicationController
       bookmarks: user_bookmarks_count(current_user),
       notes: user_notes_count(current_user)
     }
+  end
+
+  def newsletter_unsubscribe
+    if verify_unsubscribe_hash(params[:hash])
+      user = User.find_by(email: params[:email])
+      user.update(receives_newsletter: false)
+      redirect_to root_path, notice: I18n.t('newsletter.messages.unsubscribed')
+    else
+      redirect_to root_path, alert: I18n.t('newsletter.messages.invalid_unsubscribe_link')
+    end
   end
 
   private

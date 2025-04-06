@@ -1,5 +1,5 @@
 ActiveAdmin.register User do
-  permit_params :email, :encrypted_password, :reset_password_token, :reset_password_sent_at, :remember_created_at, :random_username, :user_name, :unconfirmed_email
+  permit_params :email, :encrypted_password, :reset_password_token, :reset_password_sent_at, :remember_created_at, :random_username, :user_name, :unconfirmed_email, :receives_newsletter
 
   remove_filter :reset_password_token
   remove_filter :profile_visibility
@@ -26,7 +26,10 @@ ActiveAdmin.register User do
     column :user_name
     column :created_at
     column :confirmed_at
-    column :possessions
+    column :possessions do |user|
+      user.possessions.count
+    end
+    column :receives_newsletter
     actions
   end
 end
