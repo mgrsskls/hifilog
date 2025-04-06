@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
     elsif request.parameters[:redirect]
       request.parameters[:redirect]
     else
-      dashboard_root_path
+      stored_location_for(user) || dashboard_root_path
     end
   end
 
