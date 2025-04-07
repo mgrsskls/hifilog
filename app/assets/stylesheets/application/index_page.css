@@ -47,7 +47,13 @@
 	}
 
 	.IndexPage-header {
+		--top: 6rem;
+
 		position: sticky;
-		inset-block-start: 6rem;
+		inset-block-start: var(--top);
+		max-block-size: calc(100dvb - var(--top));
+		overflow-y: auto;
+		padding-block-end: 2rem;
+		box-sizing: border-box;
 	}
 }

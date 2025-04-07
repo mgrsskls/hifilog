@@ -6,6 +6,7 @@ class CustomAttribute < ApplicationRecord
     %w[
       sub_categories
       sub_categories_id
+      label
     ]
   end
 

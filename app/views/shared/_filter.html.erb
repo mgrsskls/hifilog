@@ -36,19 +36,24 @@
           </select>
         </div>
 
-        <div class="Filter-section">
-          <label for="filter-status" class="Filter-option"><%= t('status') %></label>
-          <select class="Filter-input" name="status" id="filter-status">
-            <option value=""<%= ' selected'.html_safe if params[:status].blank? %>>
-              <%= t('filter.all') %>
-            </option>
-            <option value="continued"<%= ' selected'.html_safe if params[:status] == "continued" %>>
-              <%= t('continued') %>
-            </option>
-            <option value="discontinued"<%= ' selected'.html_safe if params[:status] == "discontinued" %>>
-              <%= t('discontinued') %>
-            </option>
-          </select>
+        <div class="Filter-section Filter-section--attributes">
+          <fieldset>
+            <legend class="Filter-option" class="Filter-option"><%= t('status') %></legend>
+            <ul class="Pagination">
+              <li class="Pagination-item">
+                <label>
+                  <input type="checkbox" name="status" value="continued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "continued" %>>
+                  <%= t('continued') %>
+                </label>
+              </li>
+              <li class="Pagination-item">
+                <label>
+                  <input type="checkbox" name="status" value="discontinued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "discontinued" %>>
+                  <%= t('discontinued') %>
+                </label>
+              </li>
+            </ul>
+          </fieldset>
         </div>
 
         <% if sub_categories.any? %>
@@ -72,19 +77,24 @@
         <% end %>
 
         <% if custom_attributes.any? && (@sub_category || ['loudspeakers', 'headphones'].include?(@category.slug)) %>
-          <div class="Filter-section Filter-section--attributes">
+          <div class="Filter-section Filter-section--attributes Filter-section--divider">
             <div class="Filter-values">
               <% custom_attributes.each do |custom_attribute| %>
-                <ol class="Pagination">
-                  <% custom_attribute.options.each do |option| %>
-                    <li class="Pagination-item">
-                      <label>
-                        <input type="checkbox" name="attr[<%= custom_attribute.id %>][]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s]&.include?(option[0].to_s) %>>
-                        <%= t("custom_attributes.#{option[1]}") %>
-                      </label>
-                    </li>
+                <fieldset>
+                  <% if custom_attribute.label.present? %>
+                    <legend class="Filter-option"><%= t("custom_attribute_labels.#{custom_attribute.label}") %></legend>
                   <% end %>
-                </ol>
+                  <ul class="Pagination">
+                    <% custom_attribute.options.each do |option| %>
+                      <li class="Pagination-item">
+                        <label>
+                          <input type="checkbox" name="attr[<%= custom_attribute.id %>][]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s]&.include?(option[0].to_s) %>>
+                          <%= t("custom_attributes.#{option[1]}") %>
+                        </label>
+                      </li>
+                    <% end %>
+                  </ul>
+                </fieldset>
               <% end %>
             </div>
           </div>

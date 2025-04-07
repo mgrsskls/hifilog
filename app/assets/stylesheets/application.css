@@ -44,15 +44,20 @@
 		min-block-size: 10em;
 	}
 
-	fieldset {
-		margin: 0;
+	legend {
 		padding: 0;
-		border: 0;
+		display: table;
 	}
 
-	legend {
+	fieldset {
+		border: 0;
+		padding: 0.01em 0 0 0;
 		margin: 0;
-		padding: 0;
+		min-width: 0;
+	}
+
+	body:not(:-moz-handler-blocked) fieldset {
+		display: table-cell;
 	}
 
 	select {

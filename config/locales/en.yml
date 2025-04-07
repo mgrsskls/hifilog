@@ -109,7 +109,7 @@ en:
     by: by
     change: Edited
     comment: Comment
-  continued: Existing / In Production
+  continued: In Production
   custom_attributes:
     active: Active
     belt-drive: Belt Drive
@@ -130,6 +130,15 @@ en:
     tube: Tube
     wired: Wired
     wireless: Wireless
+  custom_attribute_labels:
+    amplifier_channel_type: Channel type
+    amplifier_type: Amplifier type
+    cartridge_type: Type
+    headphone_connection_type: Connection
+    headphone_driver_type: Driver type
+    loudspeaker_amplification_type: Amplification
+    turntable_cartridge_type: Cartridge type
+    turntable_drive_type: Drive type
   custom_product:
     new:
       breadcrumb: New
