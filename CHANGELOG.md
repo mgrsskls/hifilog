@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-04-07">2025-04-07</time>
+
+- Products and product variants can now be marked as DIY kits.
+
 ## <time datetime="2025-04-01">2025-04-01</time>
 
 - It is now possible to upload multiple images for a product.

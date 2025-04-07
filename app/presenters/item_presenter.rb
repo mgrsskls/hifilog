@@ -23,6 +23,12 @@ class ItemPresenter
     end
   end
 
+  def diy_kit?
+    return @product_variant.diy_kit? if @product_variant.present?
+
+    @product.diy_kit?
+  end
+
   def short_name
     return @product_variant.short_name if @product_variant.present?
 

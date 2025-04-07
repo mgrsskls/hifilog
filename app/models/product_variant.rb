@@ -110,6 +110,7 @@ class ProductVariant < ApplicationRecord
       pg_search_document_id
       discontinued
       discontinued_eq
+      diy_kit
       name
       name_cont
       name_end

@@ -73,6 +73,15 @@ class ProductsController < ApplicationController
       @filter_applied = true
     end
 
+    if params[:diy_kit].present?
+      products = products.left_outer_joins(:product_variants)
+                         .where(product_variants: { diy_kit: params[:diy_kit] })
+                         .or(
+                           products.where(diy_kit: params[:diy_kit])
+                         )
+      @filter_applied = true
+    end
+
     if params[:attr].present?
       CustomAttribute.find_each do |custom_attribute|
         id_s = custom_attribute.id.to_s
@@ -349,6 +358,7 @@ class ProductsController < ApplicationController
         product: [:name,
                   :brand_id,
                   :discontinued,
+                  :diy_kit,
                   :release_day,
                   :release_month,
                   :release_year,
@@ -383,6 +393,7 @@ class ProductsController < ApplicationController
       .expect(
         product: [:name,
                   :discontinued,
+                  :diy_kit,
                   :release_day,
                   :release_month,
                   :release_year,

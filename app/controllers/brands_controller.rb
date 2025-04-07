@@ -117,6 +117,15 @@ class BrandsController < ApplicationController
       @filter_applied = true
     end
 
+    if params[:diy_kit].present?
+      products = products.left_outer_joins(:product_variants)
+                         .where(product_variants: { diy_kit: params[:diy_kit] })
+                         .or(
+                           products.where(diy_kit: params[:diy_kit])
+                         )
+      @filter_applied = true
+    end
+
     if params[:query].present?
       @brands_query = params[:query].strip
       if @brands_query.present?

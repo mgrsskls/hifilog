@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_07_123726) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_07_181523) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -258,6 +258,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_07_123726) do
     t.integer "discontinued_day"
     t.integer "discontinued_month"
     t.integer "discontinued_year"
+    t.boolean "diy_kit", default: false, null: false
     t.index ["product_id", "name", "release_year"], name: "index_product_variants_on_product_id_and_name_and_release_year", unique: true
   end
 
@@ -278,6 +279,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_07_123726) do
     t.integer "discontinued_year"
     t.integer "discontinued_month"
     t.integer "discontinued_day"
+    t.boolean "diy_kit", default: false, null: false
     t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
     t.index ["brand_id"], name: "index_products_on_brand_id"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin

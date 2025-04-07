@@ -104,6 +104,7 @@ class Product < ApplicationRecord
       brand_id_eq
       discontinued
       discontinued_eq
+      diy_kit
       name
       name_cont
       name_end

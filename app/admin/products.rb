@@ -7,6 +7,7 @@ ActiveAdmin.register Product do
     :discontinued_year,
     :discontinued,
     :discontinued,
+    :diy_kit,
     :name,
     :price_currency,
     :price,
@@ -46,6 +47,7 @@ ActiveAdmin.register Product do
       f.input :discontinued_day
       f.input :discontinued_month
       f.input :discontinued_year
+      f.input :diy_kit
       f.input :price
       f.input :price_currency
       f.input :slug
@@ -62,6 +64,7 @@ ActiveAdmin.register Product do
       row :updated_at
       row :brand
       row :discontinued
+      row :diy_kit
       row :description
       row :slug
       row :sub_categories do |product|
@@ -79,6 +82,7 @@ ActiveAdmin.register Product do
     column :price
     column :price_currency
     column :discontinued
+    column :diy_kit
     column :owned_by do |product_variant|
       product_variant.possessions.count
     end

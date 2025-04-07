@@ -9,6 +9,10 @@ class CustomProductPresenter
 
   delegate :image, to: :@custom_product
 
+  def diy_kit?
+    false
+  end
+
   def short_name
     @custom_product.name
   end

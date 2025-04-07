@@ -25,10 +25,19 @@
     <tbody>
       <tr class="is-<%= product.discontinued? ? "discontinued" : "continued" %>">
         <th scope="row">
-          <% unless hide_brand %>
-            <span><%= product.brand.name %></span><br>
-          <% end %>
-          <%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %>
+          <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
+            <div>
+              <% unless hide_brand %>
+                <span><%= product.brand.name %></span><br>
+              <% end %>
+              <%= link_to (mark ? highlight(product.name, mark) : product.name), product_path(id: product.friendly_id) %>
+            </div>
+            <% if product.diy_kit? %>
+              <span class="Tag">
+                <%= t('activerecord.attributes.product.diy_kit') %>
+              </span>
+            <% end %>
+          </div>
         </th>
         <% unless hide_category %>
           <td class="Table-sm">
@@ -57,7 +66,14 @@
                 .each do |product_variant| %>
         <tr class="is-<%= product_variant.discontinued? ? "discontinued" : "continued" %>">
           <th scope="row" class="Table-variant">
-            <%= link_to (mark ? highlight(product_variant.name_with_fallback, mark) : product_variant.name_with_fallback), product_variant.path %>
+            <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
+              <%= link_to (mark ? highlight(product_variant.name_with_fallback, mark) : product_variant.name_with_fallback), product_variant.path %>
+              <% if product_variant.diy_kit? %>
+                <span class="Tag">
+                  <%= t('activerecord.attributes.product.diy_kit') %>
+                </span>
+              <% end %>
+            </div>
           </th>
           <% unless hide_category %>
             <td class="Table-sm">
@@ -90,14 +106,23 @@
     <li class="EntityList-item">
       <div class="EntityList-content is-<%= product.discontinued? ? "discontinued" : "continued" %>">
         <div class="EntityList-name">
-          <% unless hide_brand %>
-            <span>
-              <%= product.brand.name %>
-            </span>
-          <% end %>
-          <a href="<%= product_path(id: product.friendly_id) %>">
-            <%= mark ? highlight(product.name, mark) : product.name %>
-          </a>
+          <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
+            <div>
+              <% unless hide_brand %>
+                <span>
+                  <%= product.brand.name %>
+                </span>
+              <% end %>
+              <a href="<%= product_path(id: product.friendly_id) %>">
+                <%= mark ? highlight(product.name, mark) : product.name %>
+              </a>
+            </div>
+            <% if product.diy_kit? %>
+              <span class="Tag">
+                <%= t('activerecord.attributes.product.diy_kit') %>
+              </span>
+            <% end %>
+          </div>
         </div>
         <dl class="EntityList-data Data">
           <% unless hide_category %>
@@ -135,9 +160,18 @@
               <li class="EntityList-item">
                 <div class="EntityList-content is-<%= product_variant.discontinued? ? "discontinued" : "continued" %>">
                   <div class="EntityList-name">
-                    <a href="<%= product_variant_path(id: product_variant.friendly_id, product_id: product.friendly_id) %>">
-                      <%= mark ? highlight(product_variant.short_name, mark) : product_variant.short_name %>
-                    </a>
+                    <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
+                      <div>
+                        <a href="<%= product_variant_path(id: product_variant.friendly_id, product_id: product.friendly_id) %>">
+                          <%= mark ? highlight(product_variant.short_name, mark) : product_variant.short_name %>
+                        </a>
+                      </div>
+                      <% if product_variant.diy_kit? %>
+                        <span class="Tag">
+                          <%= t('activerecord.attributes.product.diy_kit') %>
+                        </span>
+                      <% end %>
+                    </div>
                   </div>
                   <dl class="EntityList-data Data">
                     <% if product_variant.release_date.present? %>

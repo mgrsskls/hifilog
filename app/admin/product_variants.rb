@@ -13,6 +13,7 @@ ActiveAdmin.register ProductVariant do
     :discontinued_year,
     :discontinued_month,
     :discontinued_day,
+    :diy_kit,
   ]
 
   remove_filter :description
@@ -42,6 +43,7 @@ ActiveAdmin.register ProductVariant do
     column :price
     column :price_currency
     column :discontinued
+    column :diy_kit
     column :owned_by do |product_variant|
       product_variant.possessions.count
     end

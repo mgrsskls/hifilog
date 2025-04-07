@@ -207,16 +207,17 @@ import "./theme_toggle.js";
 		.querySelectorAll(".EntityList-productVariantsButton button")
 		.forEach((button) => {
 			button.addEventListener("click", ({ target }) => {
-				const id = target.getAttribute("aria-controls");
-				const isActive = target.getAttribute("aria-expanded") == "true";
+				const button = target.closest("button");
+				const id = button.getAttribute("aria-controls");
+				const isActive = button.getAttribute("aria-expanded") == "true";
 				const el = document.getElementById(id);
 
 				if (isActive) {
 					el.hidden = true;
-					target.setAttribute("aria-expanded", "false");
+					button.setAttribute("aria-expanded", "false");
 				} else {
 					el.hidden = false;
-					target.setAttribute("aria-expanded", "true");
+					button.setAttribute("aria-expanded", "true");
 				}
 			});
 		});

@@ -133,6 +133,24 @@
     </div>
   <% end %>
 
+  <div class="Form-field Form-field--inline Entity-discontinued">
+    <span class="Form-label"><%= t('activerecord.attributes.product.diy_kit') %></span>
+    <div class="Form-options">
+      <% if prefix == "product_variant" %>
+        <%= f.radio_button :diy_kit, 0, checked: ((entity.diy_kit.nil? && (entity.product.diy_kit.nil? || entity.product.diy_kit == false)) || entity.diy_kit == false) %>
+      <% else %>
+        <%= f.radio_button :diy_kit, 0, checked: (entity.diy_kit.nil? || entity.diy_kit == false) %>
+      <% end %>
+      <%= f.label :diy_kit, "No", value: 0 %>
+       <% if prefix == "product_variant" %>
+        <%= f.radio_button :diy_kit, 1, checked: (entity.diy_kit.nil? && entity.product.diy_kit == true) || entity.diy_kit == true %>
+      <% else %>
+        <%= f.radio_button :diy_kit, 1, checked: (entity.diy_kit == true) %>
+      <% end %>
+      <%= f.label :diy_kit, "Yes", value: 1  %>
+    </div>
+  </div>
+
   <div class="Form-field Entity-discontinuedDate"<%= "hidden" unless entity.discontinued? || @brand.discontinued %>>
     <%= f.label :discontinued_date, class: "Form-label" do %>
       <%= Product.human_attribute_name(:discontinued_date) %> <small><i>(optional)</i></small>
