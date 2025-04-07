@@ -58,7 +58,8 @@
       </tr>
       <% product.product_variants
                 .select { |v|
-                  params[:status].present? && statuses.include?(params[:status]) ? v.discontinued == (params[:status] == 'discontinued') : true
+                  params[:status].present? && statuses.include?(params[:status]) ? v.discontinued == (params[:status] == 'discontinued') : true &&
+                  params[:diy_kit].present? ? v.diy_kit == ActiveModel::Type::Boolean.new.cast(params[:diy_kit]) : true
                 }
                 .sort_by {|v|
                   [v.release_year, v.release_month, v.release_day].compact
@@ -156,7 +157,13 @@
             </button>
           </div>
           <ol class="EntityList EntityList--productVariants" id="entity-list-variants-<%= product.id %>" hidden>
-            <% product.product_variants.each do |product_variant| %>
+            <% product.product_variants.select { |v|
+                  params[:status].present? && statuses.include?(params[:status]) ? v.discontinued == (params[:status] == 'discontinued') : true &&
+                  params[:diy_kit].present? ? v.diy_kit == ActiveModel::Type::Boolean.new.cast(params[:diy_kit]) : true
+                }
+                .sort_by {|v|
+                  [v.release_year, v.release_month, v.release_day].compact
+                }.each do |product_variant| %>
               <li class="EntityList-item">
                 <div class="EntityList-content is-<%= product_variant.discontinued? ? "discontinued" : "continued" %>">
                   <div class="EntityList-name">
