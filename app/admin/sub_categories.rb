@@ -12,7 +12,7 @@ ActiveAdmin.register SubCategory do
       f.input :name
       f.input :slug
       f.input :category_id, label: "Category", as: :radio, collection: Category.all
-      #f.input :custom_attribute_ids, as: :check_boxes, collection: CustomAttribute.all, member_label: :options
+      f.input :custom_attribute_ids, label: "Custom attributes", as: :check_boxes, collection: CustomAttribute.all.map { |ca| [ca.label, ca.id] }
     end
     f.submit
   end
@@ -37,7 +37,11 @@ ActiveAdmin.register SubCategory do
     end
     column :category
     column :slug
-    column :custom_attributes
+    column :custom_attributes do |sub_category|
+      sub_category.custom_attributes.map do |custom_attribute|
+        link_to t("custom_attribute_labels.#{custom_attribute.label}"), admin_custom_attribute_path(custom_attribute)
+      end
+    end
     column :products do |sub_category|
       sub_category.products.count
     end
