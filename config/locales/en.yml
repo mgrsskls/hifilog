@@ -114,7 +114,6 @@ en:
     active: Active
     belt-drive: Belt Drive
     direct-drive: Direct Drive
-    diy-kit: DIY kit
     dual-mono: Dual-Mono
     dynamic: Dynamic
     electrostatic: Electrostatic
@@ -126,7 +125,6 @@ en:
     optical: Optical
     passive: Passive
     planar: Planar Magnetic
-    pre-assembled: Pre-assembled
     solid_state: Solid State
     stereo: Stereo
     tube: Tube
@@ -135,7 +133,6 @@ en:
   custom_attribute_labels:
     amplifier_channel_type: Channel type
     amplifier_type: Amplifier type
-    assembly: Assembly
     cartridge_type: Type
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
