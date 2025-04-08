@@ -40,6 +40,11 @@ en:
       custom_product:
         description: Description
         name: Name
+      possession:
+        price_purchase: Purchase price
+        price_purchase_currency: Currency
+        price_sale: Sales price
+        price_sale_currency: Currency
       product:
         description: Description
         discontinued: Discontinued
@@ -177,6 +182,7 @@ en:
       products_removed_per_year: "<p><b>You have not added the dates of ownership to your previous products yet.</b></p><p>You can do that directly on the product page. Afterwards they will appear in this statistic.</p>"
       products_per_brand: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, they will appear in this statistic.</p>"
       current_products_per_brand: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection, they will appear in this statistic.</p>"
+      costs: "<p><b>You have not added any prices to your products yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add how much you spend on them and how much you got for them after selling them.</p>"
     user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
     user_products: <p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>
   filter:
@@ -294,6 +300,7 @@ en:
     headings:
       products_added_removed_per_year: Products added & removed
       products_per_brand: Products per brand
+      costs: Spendings & Earnings
     all_products_per_brand: Current & previous
     current_products_per_brand: Current
     products_added_removed_per_year: Added & removed

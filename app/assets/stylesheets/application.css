@@ -139,6 +139,8 @@
 
 		block-size: 100%;
 		background: var(--color-bg-main);
+		scroll-padding-block-start: calc(var(--header-height) + 2rem);
+		scroll-behavior: smooth;
 	}
 
 	:where(html),

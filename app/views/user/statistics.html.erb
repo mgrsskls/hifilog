@@ -7,9 +7,27 @@
     <h1><%= t('headings.statistics') %></h1>
   </div>
 
+  <ol class="StatisticsIndex">
+    <li>
+      <a href="#products-added-removed-per-year">
+        <%= t('statistics.headings.products_added_removed_per_year') %>
+      </a>
+    </li>
+    <li>
+      <a href="#products-per-brand">
+        <%= t('statistics.headings.products_per_brand') %>
+      </a>
+    </li>
+    <li>
+      <a href="#spendings-earnings">
+        <%= t('statistics.headings.costs') %>
+      </a>
+    </li>
+  </ol>
+
   <div class="Statistics">
     <div class="Statistics-header u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
-      <h2><%= t('statistics.headings.products_added_removed_per_year') %></h2>
+      <h2 id="products-added-removed-per-year"><%= t('statistics.headings.products_added_removed_per_year') %></h2>
 
       <% if @products_added_removed_per_year.any? %>
         <div class="ChartsToggle" role="tablist">
@@ -32,7 +50,6 @@
           <% if group[1].any? %>
             <%
               max_value = group[1]
-                .clone
                 .map { |g| g[:possessions] }
 
               if group[0] == :products_added_removed_per_year
@@ -88,7 +105,7 @@
 
   <div class="Statistics">
     <div class="Statistics-header u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
-      <h2><%= t('statistics.headings.products_per_brand') %></h2>
+      <h2 id="products-per-brand"><%= t('statistics.headings.products_per_brand') %></h2>
 
       <% if @all_products_per_brand.any? %>
         <div class="ChartsToggle" role="tablist">
@@ -124,6 +141,54 @@
       <% end %>
     <% else %>
       <%= render "shared/empty_state", message: t('empty_state.statistics.products_per_brand') %>
+    <% end %>
+  </div>
+
+  <div class="Statistics">
+    <div class="Statistics-header u-flex u-spaceBetween u-alignCenter u-flexWrap u-gap-md">
+      <h2 id="spendings-earnings"><%= t('statistics.headings.costs') %></h2>
+    </div>
+
+    <% if @total_earnings_and_spendings.any? %>
+      <%
+        max_value = @total_earnings_and_spendings
+          .flat_map { |g| [g[:spendings], g[:earnings]] }
+          .reject { |value| value.nil? }
+          .max
+      %>
+
+      <% multi = 10.to_f / max_value %>
+      <dl class="BarChart">
+        <% @total_earnings_and_spendings.each do |currency| %>
+          <div class="BarChart-row BarChart-grid">
+            <dt>
+              <%= currency[:currency] %>
+            </dt>
+            <dd>
+              <% if currency[:spendings].present? %>
+                <span class="BarChart-label">Spendings</span>
+                <span
+                  class="BarChart-data BarChart-data--negative<%= " BarChart-data--empty" if currency[:spendings] == 0 %>"
+                  style="--size: <%= multi * currency[:spendings] / 10 %>"
+                >
+                  <%= number_with_delimiter number_to_rounded(currency[:spendings], precision: 2) %>
+                </span>
+              <% end %>
+              <% if currency[:earnings].present? %>
+                <span class="BarChart-label">Earnings</span>
+                <span
+                  class="BarChart-data BarChart-data--positive<%= " BarChart-data--empty" if currency[:earnings] == 0 %>"
+                  style="--size: <%= multi * currency[:earnings] / 10 %>"
+                >
+                  <%= number_with_delimiter number_to_rounded(currency[:earnings], precision: 2) %>
+                </span>
+              <% end %>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    <% else %>
+      <%= render "shared/empty_state", message: t('empty_state.statistics.costs') %>
     <% end %>
   </div>
 

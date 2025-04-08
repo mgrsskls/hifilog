@@ -94,7 +94,7 @@
             <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
             <dd>
               <% if @product_variant.price.present? %>
-                <%= @product_variant.display_price %>
+                <%= display_price(@product_variant.price, @product_variant.price_currency) %>
               <% else %>
                 -
               <% end %>

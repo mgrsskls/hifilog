@@ -1,5 +1,16 @@
+.StatisticsIndex {
+	list-style: "";
+	margin: 0;
+	margin-block-end: 4rem;
+	padding: 0;
+	display: flex;
+	gap: 1rem;
+}
+
 .Statistics {
 	container: statistics / inline-size;
+	border-block-start: var(--border) var(--color-transparency-15);
+	padding-block-start: 3.5rem;
 }
 
 .Statistics + .Statistics {

@@ -11,10 +11,6 @@ module Format
     formatted_date(discontinued_day, discontinued_month, discontinued_year)
   end
 
-  def display_price
-    "#{number_with_delimiter number_to_rounded(price, precision: 2)} #{price_currency}"
-  end
-
   private
 
   def formatted_date(day, month, year)

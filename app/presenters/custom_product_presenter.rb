@@ -9,6 +9,14 @@ class CustomProductPresenter
 
   delegate :image, to: :@custom_product
 
+  def price_purchase
+    nil
+  end
+
+  def price_sale
+    nil
+  end
+
   def diy_kit?
     false
   end

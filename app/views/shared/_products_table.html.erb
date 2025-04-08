@@ -49,7 +49,7 @@
           <%= attr_list ? attr_list : "-" %>
         </td>
         <td class="Table-sm"><%= product.release_date.present? ? product.release_date : "-" %></td>
-        <td class="Table-sm u-noWrap"><%= product.price.present? ? product.display_price : "-" %></td>
+        <td class="Table-sm u-noWrap"><%= product.price.present? ? display_price(product.price, product.price_currency) : "-" %></td>
         <% if user_signed_in? %>
           <td class="Table-symbols">
             <%= render "shared/symbols", product: product %>
@@ -90,7 +90,7 @@
             </span>
           </td>
           <td class="Table-sm"><%= product_variant.release_date.present? ? product_variant.release_date : "-" %></td>
-          <td class="Table-sm u-noWrap"><%= product_variant.price.present? ? product_variant.display_price : "-" %></td>
+          <td class="Table-sm u-noWrap"><%= product_variant.price.present? ? display_price(product_variant.price, product_variant.price_currency) : "-" %></td>
           <% if user_signed_in? %>
             <td class="Table-symbols">
               <%= render "shared/symbols", product_variant: product_variant %>
@@ -141,9 +141,9 @@
             <dd><%= product.release_date %></dd>
           <% end %>
 
-          <% if product.display_price.present? %>
+          <% if product.price.present? %>
             <dt><%= t('activerecord.attributes.product.price') %></dt>
-            <dd><%= product.display_price %></dd>
+            <dd><%= display_price(product.price, product.price_currency) %></dd>
           <% end %>
         </dl>
         <%= render "shared/symbols", product: product %>
@@ -186,9 +186,9 @@
                       <dd><%= product_variant.release_date %></dd>
                     <% end %>
 
-                    <% if product_variant.display_price.present? %>
+                    <% if product_variant.price.present? %>
                       <dt><%= t('activerecord.attributes.product.price') %></dt>
-                      <dd><%= product_variant.display_price %></dd>
+                      <dd><%= display_price(product_variant.price, product_variant.price_currency) %></dd>
                     <% end %>
                   </dl>
                   <%= render "shared/symbols", product_variant: product_variant %>

@@ -2,6 +2,11 @@ class PossessionPresenter < ItemPresenter
   include Rails.application.routes.url_helpers
   include ActionView::Helpers::DateHelper
 
+  delegate :price_purchase, to: :@object
+  delegate :price_purchase_currency, to: :@object
+  delegate :price_sale, to: :@object
+  delegate :price_sale_currency, to: :@object
+
   def image_update_item
     @object
   end

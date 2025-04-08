@@ -7,7 +7,11 @@ ActiveAdmin.register Possession do
     :product_option_id,
     :prev_owned,
     :period_from,
-    :period_to
+    :period_to,
+    :price_purchase,
+    :price_purchase_currency,
+    :price_sale,
+    :price_sale_currency,
   ]
 
   remove_filter :custom_product

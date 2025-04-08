@@ -159,7 +159,12 @@
 	display: block;
 }
 
+.EntityPossession-period small + small {
+	margin-block-start: 0.25rem;
+}
+
 .EntityPossession-period span {
+	display: block;
 	font-weight: 600;
 }
 
@@ -169,6 +174,22 @@
 	align-items: center;
 	gap: 0.5rem;
 	padding-block: 1rem;
+
+	label {
+		font-weight: 600;
+	}
+}
+
+.EntityPossession-formPrice {
+	margin-block-end: 1rem;
+
+	> div + div {
+		margin-block-start: 0.5rem;
+	}
+
+	label {
+		font-weight: 600;
+	}
 }
 
 .EntityPossession-metaLinks {

@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class ProductVariantTest < ActiveSupport::TestCase
+  include ApplicationHelper
+
   test 'discontinued_date' do
     product_variant = product_variants(:one)
     assert_nil product_variant.discontinued_date
@@ -55,7 +57,7 @@ class ProductVariantTest < ActiveSupport::TestCase
   end
 
   test 'display_price' do
-    assert_equal '9,999.00 USD', product_variants(:one).display_price
+    assert_equal '9,999.00 USD', display_price(product_variants(:one).price, product_variants(:one).price_currency)
   end
 
   test 'formatted_description' do

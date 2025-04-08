@@ -6,13 +6,13 @@
         <%= render "shared/flash_messages", messages: possession.errors.map { |error| ["alert", error.full_message] } %>
       <% end %>
 
-      <div class="EntityPossession-heading u-flex u-alignCenter">
+      <div class="EntityPossession-heading u-flex">
         <div>
           <%= render "shared/image_upload", item: ItemPresenter.new(possession), image_update_item: possession, size: "5.2rem", prefix: "possessions" %>
         </div>
         <div>
           <b class="EntityPossession-headingName"><%= possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
-          <% if possession.period_from || possession.period_to || possession.setup || possession.product_option %>
+          <% if possession.period_from || possession.period_to || possession.setup || possession.product_option || possession.price_purchase || possession.price_sale %>
             <div class="EntityPossession-period">
               <% if possession.prev_owned %>
                 <% if possession.period_from && possession.period_to %>
@@ -51,6 +51,18 @@
                   <%= possession.product_option.option %>
                 </small>
               <% end %>
+              <% if possession.price_purchase %>
+                <small>
+                  <span><%= Possession.human_attribute_name(:price_purchase) %>:</span>
+                  <%= display_price(possession.price_purchase, possession.price_purchase_currency) %>
+                </small>
+              <% end %>
+              <% if possession.price_sale %>
+                <small>
+                  <span><%= Possession.human_attribute_name(:price_sale) %>:</span>
+                  <%= display_price(possession.price_sale, possession.price_sale_currency) %>
+                </small>
+              <% end %>
             </div>
           <% end %>
         </div>
@@ -86,6 +98,48 @@
                   <option value="<%= option.id %>"<%= " selected" if possession.product_option == option %>><%= option.option %></option>
                 <% end %>
               </select>
+            <% end %>
+          </div>
+          <div class="EntityPossession-formPrice">
+            <div class="u-flex u-gap-md">
+              <div>
+                <%= f.label :price_purchase %>
+                <%= f.text_field :price_purchase, inputmode: "number" %>
+              </div>
+              <div>
+                <%= f.label :price_purchase_currency %>
+                <%= f.select :price_purchase_currency do %>
+                  <option value=""></option>
+                  <% ['USD', 'EUR'].each do |id| %>
+                    <option value="<%= id %>"<%= " selected" if f.object[:price_purchase_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
+                  <% end %>
+                  <hr>
+                  <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
+                    <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_purchase_currency] == currency[:id] %>><%= currency[:name] %></option>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+            <% if possession.prev_owned %>
+              <div class="u-flex u-gap-md">
+                <div>
+                  <%= f.label :price_sale %>
+                  <%= f.text_field :price_sale, inputmode: "number" %>
+                </div>
+                <div>
+                  <%= f.label :price_sale_currency %>
+                  <%= f.select :price_sale_currency do %>
+                    <option value=""></option>
+                    <% ['USD', 'EUR'].each do |id| %>
+                      <option value="<%= id %>"<%= " selected" if f.object[:price_sale_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
+                    <% end %>
+                    <hr>
+                    <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
+                      <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_sale_currency] == currency[:id] %>><%= currency[:name] %></option>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
             <% end %>
           </div>
         <% end %>

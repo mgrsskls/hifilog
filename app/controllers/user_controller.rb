@@ -156,6 +156,26 @@ class UserController < ApplicationController
     @products_removed_per_year = products_removed_per_year
     @current_products_per_brand = get_products_per_brand
     @all_products_per_brand = get_products_per_brand(all: true)
+
+    purchase_possessions = current_user.possessions.where.not(price_purchase: nil).group_by(&:price_purchase_currency)
+    sale_possessions = current_user.possessions.where.not(price_sale: nil).group_by(&:price_sale_currency)
+
+    total_spendings = purchase_possessions.map do |possession|
+      {
+        currency: possession[0],
+        spendings: possession[1].map(&:price_purchase).sum
+      }
+    end
+    total_earnings = sale_possessions.map do |possession|
+      {
+        currency: possession[0],
+        earnings: possession[1].map(&:price_sale).sum
+      }
+    end
+
+    @total_earnings_and_spendings = (total_spendings + total_earnings).group_by { |h| h[:currency] }.map do |_, hashes|
+      hashes.reduce({}) { |merged_hash, h| merged_hash.merge(h) }
+    end
   end
 
   def has

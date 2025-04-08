@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-04-08">2025-04-08</time>
+
+- Users can now add the price of a purchase to their products, as well as the price they sold them for. The total spend and revenue are displayed on the statistics page.
+
 ## <time datetime="2025-04-07">2025-04-07</time>
 
 - Products and product variants can now be marked as DIY kits.

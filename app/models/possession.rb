@@ -30,6 +30,10 @@ class Possession < ApplicationRecord
     %w[
       user_id
       user_id_eq
+      price_purchase
+      price_purchase_currency
+      price_sale
+      price_sale_currency
     ]
   end
 

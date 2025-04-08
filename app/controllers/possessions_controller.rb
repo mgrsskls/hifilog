@@ -159,6 +159,7 @@ class PossessionsController < ApplicationController
       params[:possession][:highlighted_image_id] = nil
     end
 
-    params.expect(possession: [:period_from, :period_to, :product_option_id, :highlighted_image_id, { images: [] }])
+    params.expect(possession: [:period_from, :period_to, :product_option_id, :highlighted_image_id, :price_purchase,
+                               :price_purchase_currency, :price_sale, :price_sale_currency, { images: [] }])
   end
 end

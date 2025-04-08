@@ -1,4 +1,7 @@
 module ApplicationHelper
+  include ActionView::Helpers::NumberHelper
+  include ActiveSupport::NumberHelper
+
   ABC = ('a'..'z').to_a.freeze
   STATUSES = %w[discontinued continued].freeze
 
@@ -16,6 +19,10 @@ module ApplicationHelper
 
   def statuses
     STATUSES
+  end
+
+  def display_price(price, currency)
+    "#{number_with_delimiter number_to_rounded(price, precision: 2)} #{currency}"
   end
 
   def user_possessions_count(user:, prev_owned: false)

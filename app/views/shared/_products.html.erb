@@ -87,6 +87,10 @@
                 <% else %>
                   -
                 <% end %>
+                <% if item.price_purchase.present? %>
+                  <br>
+                  <%= display_price(item.price_purchase, item.price_purchase_currency) %>
+                <% end %>
               </td>
             <% end %>
             <% unless hide_period %>
@@ -96,12 +100,20 @@
                 <% else %>
                   -
                 <% end %>
+                <% if item.price_purchase.present? %>
+                  <br>
+                  <%= display_price(item.price_purchase, item.price_purchase_currency) %>
+                <% end %>
               </td>
               <td class="Table-sm">
                 <% if item.period_to.present? %>
                   <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
                 <% else %>
                   -
+                <% end %>
+                <% if item.price_sale.present? %>
+                  <br>
+                  <%= display_price(item.price_sale, item.price_sale_currency) %>
                 <% end %>
               </td>
             <% end %>
@@ -201,6 +213,14 @@
                     <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
                   <% end %>
                 <% end %>
+              <% end %>
+              <% if item.price_purchase.present? %>
+                <dt><%= Possession.human_attribute_name(:price_purchase) %></dt>
+                <dd><%= display_price(item.price_purchase, item.price_purchase_currency) %></dd>
+              <% end %>
+              <% if item.price_sale.present? %>
+                <dt><%= Possession.human_attribute_name(:price_sale) %></dt>
+                <dd><%= display_price(item.price_sale, item.price_sale_currency) %></dd>
               <% end %>
               <% if include_setup && item.setup.present? %>
                 <dt>Setup</dt>
