@@ -16,10 +16,23 @@
               </div>
             <% end %>
           </h3>
-          <% if possession.period_from.present? %>
+
+          <% if possession.prev_owned %>
             <small>
-              Since <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+              <% if possession.period_from && possession.period_to %>
+                Owned from <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time> &ndash; <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+              <% elsif possession.period_from %>
+                Owned since <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+              <% elsif possession.period_to %>
+                Owned until <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+              <% end %>
             </small>
+          <% else %>
+            <% if possession.period_from %>
+              <small>
+                Since <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+              </small>
+            <% end %>
           <% end %>
         </div>
         <ul class="ProfilePossessions-images ImageLightbox ImageGallery">
