@@ -140,6 +140,10 @@
 		position: relative;
 	}
 
+	.Sidebar-userName .Avatar {
+		--size: 254 !important;
+	}
+
 	.Sidebar-userName figcaption {
 		position: absolute;
 		inset-block-start: 50%;
