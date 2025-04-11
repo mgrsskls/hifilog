@@ -1,26 +1,3 @@
-.StatisticsIndex {
-	list-style: "";
-	margin: 0;
-	margin-block-end: 4rem;
-	padding: 0;
-	display: flex;
-	gap: 1rem;
-}
-
-.Statistics {
-	container: statistics / inline-size;
-	border-block-start: var(--border) var(--color-transparency-15);
-	padding-block-start: 3.5rem;
-}
-
-.Statistics + .Statistics {
-	margin-block-start: 4rem;
-}
-
-.Statistics-header h2 {
-	margin-block: 0 0.5rem;
-}
-
 .BarChart {
 	display: grid;
 	align-items: center;
@@ -44,10 +21,10 @@
 }
 
 .BarChart-grid {
-	gap: 0 4cqi;
+	gap: 0 1em;
 }
 
-.BarChart-grid dd {
+.BarChart-grid dd:has(:nth-child(2)) {
 	display: grid;
 	grid-template-columns: auto 1fr;
 	align-items: center;
@@ -61,6 +38,7 @@
 
 .BarChart-data {
 	--color: calc(100 - var(--size) * 100 + 100);
+	--lightness: 15%;
 
 	display: block;
 	box-sizing: border-box;
@@ -70,9 +48,12 @@
 	text-align: end;
 	border-radius: var(--border-radius);
 	padding: 0.125em 0.5em;
-	min-inline-size: 3ch;
-	color: var(--color-copy-on-light);
+	color: light-dark(
+		hsl(var(--color), 100%, var(--lightness-light, var(--lightness))),
+		hsl(var(--color), 100%, var(--lightness-dark, var(--lightness)))
+	);
 	font-weight: 600;
+	white-space: nowrap;
 }
 
 .BarChart-data--positive {
@@ -80,44 +61,38 @@
 }
 
 .BarChart-data--negative {
-	--color: 0;
+	--color: -10;
+}
+
+.BarChart-data--neutral {
+	--color: -100;
+	--lightness: 90%;
+}
+
+.BarChart-data--sm:not(.BarChart-data--empty) {
+	text-indent: calc(100% + 1em);
+}
+
+.BarChart-data:is(.BarChart-data--sm, .BarChart-data--empty) {
+	--lightness-dark: 90%;
+}
+
+.BarChart-data--positive:is(.BarChart-data--sm, .BarChart-data--empty) {
+	--lightness-dark: 90%;
+}
+
+.BarChart-data--negative:is(.BarChart-data--sm, .BarChart-data--empty) {
+	--lightness-dark: 90%;
+}
+
+.BarChart-data--neutral:is(.BarChart-data--sm, .BarChart-data--empty) {
+	--lightness-dark: 10%;
 }
 
 .BarChart-data--empty {
 	background: none;
 	padding-inline: 0;
 	text-align: start;
-}
-
-.ChartsToggle {
-	display: inline-flex;
-	border: 0.0625rem solid var(--color-secondary);
-	border-radius: var(--border-radius);
-}
-
-.ChartsToggle button {
-	font-size: 0.875em;
-	padding: 0.25em 0.75em;
-	border-radius: 0;
-}
-
-.ChartsToggle button:first-child {
-	border-start-start-radius: var(--border-radius);
-	border-end-start-radius: var(--border-radius);
-}
-
-.ChartsToggle button:last-child {
-	border-start-end-radius: var(--border-radius);
-	border-end-end-radius: var(--border-radius);
-}
-
-.ChartsToggle button:not(:first-child) {
-	border-inline-start-color: var(--color-secondary);
-}
-
-.ChartsToggle button[aria-selected="true"] {
-	background: var(--color-secondary);
-	color: var(--color-copy-on-secondary);
 }
 
 @container statistics (width < 40em) {
@@ -136,8 +111,16 @@
 		gap: 0 1em;
 	}
 
+	.BarChart--fixed {
+		grid-template-columns: 12em 1fr;
+	}
+
 	.BarChart dt {
+		display: flex;
+		align-items: center;
+		justify-content: end;
 		text-align: end;
+		min-block-size: 3.5em;
 	}
 
 	.BarChart-label {

@@ -1,0 +1,110 @@
+<%= render layout: "layout", locals: {
+  active: :yearly,
+  overview_statistics: [{
+    label: "Every year you get",
+    value: @yearly_amount_of_products.present? ? number_to_rounded(@yearly_amount_of_products, precision: 1) : 0,
+    unit: Product.model_name.human(count: @yearly_amount_of_products)
+  }, {
+    label: "Every year you spend",
+    value: @yearly_amount_of_spendings.present? ? number_with_delimiter(number_to_rounded(@yearly_amount_of_spendings[:spendings], precision: 0)) : 0,
+    unit: @yearly_amount_of_spendings.present? ? @yearly_amount_of_spendings[:currency] : "n/a"
+  }]
+} do %>
+  <% if @products_added_removed_per_year.any? %>
+    <p class="c-secondary"><i>These are average values <b>since <%= @products_added_removed_per_year.first[:year] %></b>, based on the information you have provided about your products.</i></p>
+  <% end %>
+
+  <div class="StatisticsSection">
+    <h2><%= Product.model_name.human(count: 2) %></h2>
+
+    <% if @products_added_removed_per_year.any? %>
+      <p class="c-secondary">These are the number of products you have added to or removed from your collection each year:</p>
+
+      <%
+        max_value = @products_added_removed_per_year
+          .map { |g| g[:possessions] }
+          .flat_map { |g| [g[:from], g[:to] ] }.max_by { |g| g.size }.size
+      %>
+      <% multi = 10.to_f / max_value %>
+      <dl class="BarChart">
+        <% @products_added_removed_per_year.each do |group| %>
+          <div class="BarChart-row BarChart-grid">
+            <dt>
+              <%= group[:year] %>
+            </dt>
+            <dd>
+              <span class="BarChart-label">Added</span>
+              <% from = group[:possessions][:from].size %>
+              <span
+                class="BarChart-data BarChart-data--positive<%= " BarChart-data--empty" if from == 0 %>"
+                style="--size: <%= multi * from / 10 %>"
+              >
+                <%= from %>
+              </span>
+              <span class="BarChart-label">Removed</span>
+              <% to = group[:possessions][:to].size %>
+              <span
+                class="BarChart-data BarChart-data--negative<%= " BarChart-data--empty" if to == 0 %>"
+                style="--size: <%= multi * to / 10 %>"
+              >
+                <%= to %>
+              </span>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    <% else %>
+      <%= render "shared/empty_state", message: t('empty_state.statistics.products_added_removed') %>
+    <% end %>
+  </div>
+
+  <div class="StatisticsSection">
+    <h2>Costs</h2>
+
+    <% if @yearly_costs.any? %>
+      <p class="c-secondary">This is what you have spent and sold every year:</p>
+
+      <dl class="BarChart">
+        <%
+          max_value = @yearly_costs
+            .flat_map { |y| y[:currencies] }
+            .flat_map { |g| [g[:spendings], g[:earnings]] }
+            .reject { |value| value.nil? }
+            .max
+        %>
+        <% multi = 10.to_f / max_value %>
+        <% @yearly_costs.each do |group| %>
+          <div class="BarChart-row BarChart-grid">
+            <dt><%= group[:year] %></dt>
+            <dd>
+              <% group[:currencies].each do |currency| %>
+                <% if currency[:spendings].present? %>
+                  <% size = multi * currency[:spendings] / 10 %>
+                  <span class="BarChart-label">Spendings</span>
+                  <span
+                    class="BarChart-data BarChart-data--negative<%= " BarChart-data--empty" if currency[:spendings] == 0 %><%= " BarChart-data--sm" if size < 0.6 %>"
+                    style="--size: <%= size %>"
+                  >
+                    <%= number_with_delimiter number_to_rounded(currency[:spendings], precision: 2) %> <%= currency[:currency] %>
+                  </span>
+                <% end %>
+                <% if currency[:earnings].present? %>
+                  <% size = multi * currency[:earnings] / 10 %>
+                  <span class="BarChart-label">Earnings</span>
+                  <span
+                    class="BarChart-data BarChart-data--positive<%= " BarChart-data--empty" if currency[:earnings] == 0 %><%= " BarChart-data--sm" if size < 0.6 %>"
+                    style="--size: <%= size %>"
+                  >
+                    <%= number_with_delimiter number_to_rounded(currency[:earnings], precision: 2) %> <%= currency[:currency] %>
+                  </span>
+                <% end %>
+              <% end %>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    <% else %>
+      <%= render "shared/empty_state", message: t('empty_state.statistics.yearly_costs') %>
+    <% end %>
+  </div>
+<% end %>

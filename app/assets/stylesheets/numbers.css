@@ -53,6 +53,10 @@ h2 + .DashboardNumbers {
 	container: number / inline-size;
 }
 
+.DashboardNumber--large {
+	gap: 0.25rem;
+}
+
 a .DashboardNumber-heading {
 	text-decoration: underline;
 }
@@ -65,12 +69,21 @@ a .DashboardNumber-heading {
 	letter-spacing: 0.05em;
 }
 
+.DashboardNumber--large .DashboardNumber-heading {
+	font-size: 1em;
+}
+
 .DashboardNumber-value {
 	font-size: 2.4rem;
 	font-size: clamp(1.2rem, 16cqi, 2rem);
 	font-weight: bold;
 	line-height: 1;
 	color: var(--color-accent);
+	margin-block-start: 0.5rem;
+}
+
+.DashboardNumber--large .DashboardNumber-value {
+	font-size: clamp(1.2rem, 20cqi, 3rem);
 }
 
 .DashboardNumbersWrapper {

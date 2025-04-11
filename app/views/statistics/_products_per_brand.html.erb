@@ -1,0 +1,21 @@
+<% if products_per_brand.any? %>
+  <p class="c-secondary"><%= subline %></p>
+
+  <% multi = 10.to_f / products_per_brand.first[1].size %>
+  <dl class="BarChart BarChart--fixed">
+    <% products_per_brand.each do |brand| %>
+      <div class="BarChart-row">
+        <dt>
+          <%= brand[1][0][:possession].product.present? ? link_to(brand[0], brand[1][0][:possession].product.brand) : brand[0] %>
+        </dt>
+        <dd>
+          <span class="BarChart-data" style="--size: <%= multi * brand[1].size / 10 %>">
+            <%= brand[1].size %>
+          </span>
+        </dd>
+      </div>
+    <% end %>
+  </dl>
+<% else %>
+  <%= render "shared/empty_state", message: empty_state %>
+<% end %>

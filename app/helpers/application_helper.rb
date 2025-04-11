@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ModuleLength
 module ApplicationHelper
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
@@ -117,4 +118,29 @@ module ApplicationHelper
 
     country.translations[I18n.locale.to_s] || country.common_name || country.iso_short_name
   end
+
+  def get_products_per_brand(possessions:)
+    products_per_brand = possessions.map do |possession|
+      if possession.custom_product
+        {
+          brand_name: CustomProductPresenter.new(possession.custom_product).brand_name,
+          possession:
+        }
+      else
+        {
+          brand_name: possession.product.brand.name,
+          possession:
+        }
+      end
+    end
+
+    products_per_brand = products_per_brand.group_by do |possession|
+      possession[:brand_name]
+    end
+
+    products_per_brand.sort_by do |brand|
+      [-brand[1].size, brand[0].downcase]
+    end
+  end
 end
+# rubocop:enable Metrics/ModuleLength

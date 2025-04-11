@@ -14,7 +14,6 @@ Rails.application.config.assets.precompile += %w(
   application.css
   bookmarks.css
   changelog.css
-  charts.css
   contributions.css
   dashboard.css
   entity.css
@@ -26,6 +25,7 @@ Rails.application.config.assets.precompile += %w(
   product.css
   profile.css
   search_results.css
+  statistics.css
   users.css
 
   application.js

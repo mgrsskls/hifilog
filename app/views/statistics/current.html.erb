@@ -1,0 +1,38 @@
+<%= render layout: "layout", locals: {
+  active: :current,
+  overview_statistics: [{
+    label: "You currently own",
+    value: @current_amount_of_products,
+    unit: Product.model_name.human(count: @current_amount_of_products)
+  }, {
+    label: "You have products from",
+    value: @current_amount_of_brands,
+    unit: Brand.model_name.human(count: @current_amount_of_brands)
+  }, {
+    label: "Your current products cost",
+    value: @current_spendings.any? ? number_with_delimiter(number_to_rounded(@current_spendings[0][:spendings], precision: 0)) : 0,
+    unit: @current_spendings.any? && @current_spendings[0][:currency].present? ? @current_spendings[0][:currency] : "n/a"
+  }]
+} do %>
+  <div class="StatisticsSection">
+    <h2><%= Product.model_name.human(count: 2) %></h2>
+    <%= render "longest_products", longest_products: @current_longest_products, subline: 'You currently own these products the longest:', empty_state: t('empty_state.statistics.current_duration') %>
+  </div>
+
+  <div class="StatisticsSection">
+    <h2><%= Brand.model_name.human(count: 2) %></h2>
+    <%= render "products_per_brand", products_per_brand: @current_products_per_brand, subline: 'You currently have the most products from these brands:', empty_state: t('empty_state.statistics.current_products_per_brand') %>
+  </div>
+
+  <div class="StatisticsSection">
+    <h2>Costs</h2>
+    <% if @current_products_per_cost.any? %>
+      <p class="c-secondary">These products are currently your most expensive:</p>
+      <% @current_products_per_cost.each do |group| %>
+        <%= render "products_per_cost", products_per_cost: group %>
+      <% end %>
+    <% else %>
+      <%= render "shared/empty_state", message: t('empty_state.statistics.current_costs') %>
+    <% end %>
+  </div>
+<% end %>

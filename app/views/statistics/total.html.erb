@@ -1,0 +1,94 @@
+<%= render layout: "layout", locals: {
+  active: :total,
+  overview_statistics: [{
+    label: "In total you owned",
+    value: @total_amount_of_products,
+    unit: Product.model_name.human(count: @total_amount_of_products)
+  }, {
+    label: "You had products from",
+    value: @total_amount_of_brands,
+    unit: Brand.model_name.human(count: @total_amount_of_brands)
+  }, {
+    label: "All your products cost",
+    value: @total_earnings_and_spendings.any? && @total_earnings_and_spendings[0][:spendings].present? ? number_with_delimiter(number_to_rounded(@total_earnings_and_spendings[0][:spendings], precision: 0)) : 0,
+    unit: @total_earnings_and_spendings.any? && @total_earnings_and_spendings[0][:currency].present? ? @total_earnings_and_spendings[0][:currency] : "n/a"
+  }]
+} do %>
+  <div class="StatisticsSection">
+    <h2><%= Product.model_name.human(count: 2) %></h2>
+    <%= render "longest_products", longest_products: @total_longest_products, subline: 'You have owned these products the longest:', empty_state: t('empty_state.statistics.total_duration') %>
+  </div>
+
+  <div class="StatisticsSection">
+    <h2><%= Brand.model_name.human(count: 2) %></h2>
+    <%= render "products_per_brand", products_per_brand: @total_products_per_brand, subline: 'You had the most products from these brands:', empty_state: t('empty_state.statistics.total_products_per_brand') %>
+  </div>
+
+  <div class="StatisticsSection">
+    <h2>Costs</h2>
+
+    <% if @total_earnings_and_spendings.any? %>
+      <p class="c-secondary">These were your total costs and income:</p>
+
+      <%
+        max_value = @total_earnings_and_spendings
+          .flat_map { |g| [g[:spendings], g[:earnings]] }
+          .reject { |value| value.nil? }
+          .max
+      %>
+      <% multi = 10.to_f / max_value %>
+      <dl class="BarChart BarChart--fixed">
+        <% @total_earnings_and_spendings.each do |currency| %>
+          <div class="BarChart-row BarChart-grid">
+            <% if currency[:spendings].present? %>
+              <% size = multi * currency[:spendings] / 10 %>
+              <dt>Spent</dt>
+              <dd>
+                <span
+                  class="BarChart-data BarChart-data--negative<%= " BarChart-data--empty" if currency[:spendings] == 0 %><%= " BarChart-data--sm" if size < 0.6 %>"
+                  style="--size: <%= size %>"
+                >
+                  <%= number_with_delimiter number_to_rounded(currency[:spendings], precision: 2) %> <%= currency[:currency] %>
+                </span>
+              </dd>
+            <% end %>
+            <% if currency[:earnings].present? %>
+              <% size = multi * currency[:earnings] / 10 %>
+              <dt>Sold</dt>
+              <dd>
+                <span
+                  class="BarChart-data BarChart-data--positive<%= " BarChart-data--empty" if currency[:earnings] == 0 %><%= " BarChart-data--sm" if size < 0.6 %>"
+                  style="--size: <%= size %>"
+                >
+                  <%= number_with_delimiter number_to_rounded(currency[:earnings], precision: 2) %> <%= currency[:currency] %>
+                </span>
+              </dd>
+            <% end %>
+            <% if currency[:spendings].present? && currency[:earnings].present? %>
+              <% size = multi * (currency[:spendings] - currency[:earnings]) / 10 %>
+              <dt>Total</dt>
+              <dd>
+                <span
+                  class="BarChart-data BarChart-data--neutral<%= " BarChart-data--sm" if size < 0.6 %>"
+                  style="--size: <%= size %>"
+                >
+                  <% sum = currency[:spendings] - currency[:earnings] %>
+                  <%= number_with_delimiter number_to_rounded(sum, precision: 2) %> <%= currency[:currency] %>
+                </span>
+              </dd>
+            <% end %>
+          </div>
+        <% end %>
+      </dl>
+    <% else %>
+      <%= render "shared/empty_state", message: t('empty_state.statistics.costs') %>
+    <% end %>
+
+    <% if @total_products_per_cost.any? %>
+      <p class="c-secondary">These products were your most expensive ones:</p>
+      <% @total_products_per_cost.each do |group| %>
+        <%= render "products_per_cost", products_per_cost: group %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

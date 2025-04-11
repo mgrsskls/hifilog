@@ -77,13 +77,13 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'statistics' do
-    get dashboard_statistics_path
+    get dashboard_statistics_root_path
     assert_response :redirect
     assert_redirected_to new_user_session_path
 
     sign_in users(:one)
 
-    get dashboard_statistics_path
+    get dashboard_statistics_root_path
     assert_response :success
   end
 

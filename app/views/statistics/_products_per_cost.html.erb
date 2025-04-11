@@ -1,0 +1,24 @@
+<% if products_per_cost[:possessions].any? %>
+  <% max_value = products_per_cost[:possessions].map(&:price_purchase).max%>
+  <% multi = 10.to_f / max_value %>
+  <dl class="BarChart BarChart--fixed">
+    <% products_per_cost[:possessions].each do |possession| %>
+      <div class="BarChart-row BarChart-grid">
+        <dt>
+          <%= link_to possession.display_name, possession.show_path %>
+        </dt>
+        <dd>
+          <% size = multi * possession.price_purchase / 10 %>
+          <span
+            class="BarChart-data <%= " BarChart-data--empty" if possession.price_purchase == 0 %><%= " BarChart-data--sm" if size < 0.6 %>"
+            style="--size: <%= size %>"
+          >
+            <%= number_to_rounded(possession.price_purchase, precision: 0) %> <%= products_per_cost[:currency] %>
+          </span>
+        </dd>
+      </div>
+    <% end %>
+  </dl>
+<% else %>
+  <%= render "shared/empty_state", message: t('empty_state.statistics.costs') %>
+<% end %>

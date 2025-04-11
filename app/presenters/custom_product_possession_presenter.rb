@@ -13,6 +13,10 @@ class CustomProductPossessionPresenter < CustomProductPresenter
 
   delegate :images, to: :@custom_product
 
+  def product_name
+    @custom_product.name
+  end
+
   def image_update_item
     @custom_product
   end

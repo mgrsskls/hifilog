@@ -25,6 +25,24 @@ class Possession < ApplicationRecord
     nil
   end
 
+  def year_of_purchase
+    return nil if period_from.nil?
+
+    period_from.year
+  end
+
+  def duration
+    return nil if period_from.nil?
+
+    if prev_owned
+      return nil if period_to.nil?
+
+      return period_to - period_from
+    end
+
+    Time.zone.now - period_from
+  end
+
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[

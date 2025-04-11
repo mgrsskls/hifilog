@@ -175,3 +175,7 @@
 		display: none;
 	}
 }
+
+.c-secondary {
+	color: var(--color-secondary);
+}

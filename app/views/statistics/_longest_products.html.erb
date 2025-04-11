@@ -1,0 +1,26 @@
+<% if longest_products.any? %>
+  <p class="c-secondary"><%= subline %></p>
+
+  <% max_value = longest_products.map(&:duration).max %>
+  <% multi = 10.to_f / max_value %>
+  <dl class="BarChart BarChart--fixed">
+    <% longest_products.each do |possession| %>
+      <div class="BarChart-row BarChart-grid">
+        <dt>
+          <%= link_to possession.display_name, possession.show_path %>
+        </dt>
+        <dd>
+          <% size = multi * possession.duration / 10 %>
+          <span
+            class="BarChart-data <%= " BarChart-data--empty" if possession.duration == 0 %><%= " BarChart-data--sm" if size < 0.6 %>"
+            style="--size: <%= size %>"
+          >
+            <%= distance_of_time_in_words possession.duration %>
+          </span>
+        </dd>
+      </div>
+    <% end %>
+  </dl>
+<% else %>
+  <%= render "shared/empty_state", message: empty_state %>
+<% end %>
