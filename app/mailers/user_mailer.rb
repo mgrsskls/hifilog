@@ -7,6 +7,8 @@ class UserMailer < ApplicationMailer
     @unsubscribe_hash = generate_unsubscribe_hash(recipient.email)
     @email = recipient.email
 
+    headers['List-Unsubscribe'] = "<#{newsletters_unsubscribe_url(email: @email, hash: @unsubscribe_hash)}>"
+
     mail(
       from: 'HiFi Log Newsletter <newsletter@mail.hifilog.com>',
       to: recipient.email,
