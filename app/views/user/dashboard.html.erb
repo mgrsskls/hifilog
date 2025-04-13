@@ -10,7 +10,7 @@
       <div class="Rte">
         <% @app_news.each do |news| %>
           <div>
-            <time datetime="<%= formatted_date news.created_at %>"><%= formatted_date news.created_at %></time>
+            <time datetime="<%= news.created_at %>"><%= format_date(news.created_at).html_safe %></time>
             <%= news.formatted_text %>
           </div>
         <% end %>

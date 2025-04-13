@@ -48,7 +48,7 @@
           <% attr_list = product.custom_attributes_list %>
           <%= attr_list ? attr_list : "-" %>
         </td>
-        <td class="Table-sm"><%= product.release_date.present? ? product.release_date : "-" %></td>
+        <td class="Table-sm"><%= product.release_date.present? ? product.formatted_release_date.html_safe : "-" %></td>
         <td class="Table-sm u-noWrap"><%= product.price.present? ? display_price(product.price, product.price_currency) : "-" %></td>
         <% if user_signed_in? %>
           <td class="Table-symbols">
@@ -89,7 +89,7 @@
               <%= attr_list ? attr_list : "-" %>
             </span>
           </td>
-          <td class="Table-sm"><%= product_variant.release_date.present? ? product_variant.release_date : "-" %></td>
+          <td class="Table-sm"><%= product_variant.release_date.present? ? product_variant.formatted_release_date.html_safe : "-" %></td>
           <td class="Table-sm u-noWrap"><%= product_variant.price.present? ? display_price(product_variant.price, product_variant.price_currency) : "-" %></td>
           <% if user_signed_in? %>
             <td class="Table-symbols">
@@ -138,7 +138,7 @@
 
           <% if product.release_date.present? %>
             <dt><%= t('activerecord.attributes.product.release_date') %></dt>
-            <dd><%= product.release_date %></dd>
+            <dd><%= product.formatted_release_date.html_safe %></dd>
           <% end %>
 
           <% if product.price.present? %>
@@ -183,7 +183,7 @@
                   <dl class="EntityList-data Data">
                     <% if product_variant.release_date.present? %>
                       <dt><%= t('activerecord.attributes.product.release_date') %></dt>
-                      <dd><%= product_variant.release_date %></dd>
+                      <dd><%= product_variant.formatted_release_date.html_safe %></dd>
                     <% end %>
 
                     <% if product_variant.price.present? %>

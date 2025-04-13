@@ -329,6 +329,10 @@
 		padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
 	}
 
+	time {
+		font-variant-numeric: tabular-nums;
+	}
+
 	h1,
 	.h1 {
 		font-size: 2.6rem;

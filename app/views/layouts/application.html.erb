@@ -299,7 +299,7 @@
                   <ol>
                     <% newest_products.each do |product| %>
                       <li>
-                        <time datetime="<%= formatted_date product.created_at %>"><%= formatted_date product.created_at %></time>:
+                        <time datetime="<%= format_iso_date product.created_at %>"><%= format_date(product.created_at).html_safe %></time>:
                         <%= link_to product.display_name, product.path %>
                       </li>
                     <% end %>
@@ -312,7 +312,7 @@
                   <ol>
                     <% newest_brands.each do |brand| %>
                       <li>
-                        <time datetime="<%= formatted_date brand.created_at %>"><%= formatted_date brand.created_at %></time>:
+                        <time datetime="<%= format_iso_date brand.created_at %>"><%= format_date(brand.created_at).html_safe %></time>:
                         <%= link_to brand.name, brand_path(id: brand.friendly_id) %>
                       </li>
                     <% end %>
@@ -386,28 +386,6 @@
         </div>
       </div>
     </footer>
-    <%= javascript_tag nonce: true do %>
-      document.querySelectorAll('time:not([data-format="false"])').forEach(time => {
-        const date = new Date(time.dateTime);
-
-        if (time.dataset.time) {
-          time.textContent = `${date.toLocaleDateString([], {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })}, ${date.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-          })}`;
-        } else {
-          time.textContent = date.toLocaleDateString([], {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          });
-        }
-      });
-    <% end %>
     <%= content_tag(:script, nonce: content_security_policy_nonce, type: "speculationrules") do %>
       {
         "prefetch": [

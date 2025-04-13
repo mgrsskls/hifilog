@@ -36,7 +36,7 @@
               </td>
               <td><%= user["count"] %></td>
               <td>
-                <time datetime="<%= formatted_date user["created_at"] %>"><%= formatted_date user["created_at"] %></time>
+                <time datetime="<%= user["created_at"] %>"><%= format_date(user["created_at"]).html_safe %></time>
               </td>
             </tr>
           <% end %>
@@ -70,7 +70,7 @@
 
                 <dt>Member since:</dt>
                 <dd>
-                  <time datetime="<%= formatted_date user["created_at"] %>"><%= formatted_date user["created_at"] %></time>
+                  <time datetime="<%= user["created_at"] %>"><%= format_date(user["created_at"]).html_safe %></time>
                 </dd>
               </dl>
             </div>

@@ -12,7 +12,7 @@
     <% if @note&.updated_at %>
       <p class="u-textEnd">
         <small>
-          <b>Last updated:</b> <time datetime="<%= formatted_datetime @note.updated_at %>" data-time="true"><%= formatted_datetime @note.updated_at %></time>
+          <b>Last updated:</b> <time datetime="<%= format_iso_datetime @note.updated_at %>"><%= format_datetime(@note.updated_at).html_safe %></time>
         </small>
       </p>
     <% end %>

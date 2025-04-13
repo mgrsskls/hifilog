@@ -75,7 +75,7 @@
             <dt><%= Product.human_attribute_name(:release_date) %></dt>
             <dd>
               <% if @product.release_date.present? %>
-                <time datetime="<%= @product.release_date %>" data-format="false"><%= @product.release_date %></time>
+                <time datetime="<%= @product.release_date %>"><%= @product.formatted_release_date.html_safe %></time>
               <% else %>
                 -
               <% end %>
@@ -84,7 +84,7 @@
               <dt><%= t('discontinued') %></dt>
               <dd>
                 <% if @product.discontinued_date.present? %>
-                  <time datetime="<%= @product.discontinued_date %>" data-format="false"><%= @product.discontinued_date %></time>
+                  <time datetime="<%= @product.discontinued_date %>"><%= @product.formatted_discontinued_date.html_safe %></time>
                 <% else %>
                   -
                 <% end %>
@@ -128,7 +128,7 @@
       <dd>
         <% if @note.present? %>
           Last updated: <%= link_to product_new_notes_path(product_id: @product.friendly_id) do %>
-            <time datetime="<%= formatted_datetime @note.updated_at %>" data-time="true"><%= formatted_datetime @note.updated_at %></time>
+            <time datetime="<%= format_iso_datetime @note.updated_at %>"><%= format_datetime(@note.updated_at).html_safe %></time>
           <% end %>
         <% else %>
           <%= link_to "Add notes", user_signed_in? ? product_new_notes_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_new_notes_path(product_id: @product.friendly_id)) %>

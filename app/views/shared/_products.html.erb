@@ -74,7 +74,7 @@
             <% unless hide_release_date %>
               <td class="Table-sm Table-date">
                 <% if item.release_date.present? %>
-                  <time datetime="<%= item.release_date %>" data-format="false"><%= item.release_date %></time>
+                  <time datetime="<%= item.release_date %>"><%= item.formatted_release_date.html_safe %></time>
                 <% else %>
                   -
                 <% end %>
@@ -83,7 +83,7 @@
             <% unless hide_since %>
               <td class="Table-sm">
                 <% if item.period_from.present? %>
-                  <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                  <time datetime="<%= item.period_from %>"><%= format_date(item.period_from).html_safe %></time>
                 <% else %>
                   -
                 <% end %>
@@ -96,7 +96,7 @@
             <% unless hide_period %>
               <td class="Table-sm">
                 <% if item.period_from.present? %>
-                  <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                  <time datetime="<%= item.period_from %>"><%= format_date(item.period_from).html_safe %></time>
                 <% else %>
                   -
                 <% end %>
@@ -107,7 +107,7 @@
               </td>
               <td class="Table-sm">
                 <% if item.period_to.present? %>
-                  <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time>
+                  <time datetime="<%= item.period_to %>"><%= format_date(item.period_to).html_safe %></time>
                 <% else %>
                   -
                 <% end %>
@@ -191,7 +191,7 @@
                 <% if item.period_from %>
                   <dt>Since</dt>
                   <dd>
-                    <time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time>
+                    <time datetime="<%= item.period_from %>"><%= format_date(item.period_from).html_safe %></time>
                   </dd>
                 <% end %>
               <% end %>
@@ -199,18 +199,18 @@
                 <% if item.prev_owned %>
                   <% if item.period_from && item.period_to %>
                     <dt>Owned from</dt>
-                    <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time> &ndash; <time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
+                    <dd><time datetime="<%= item.period_from %>"><%= format_date(item.period_from).html_safe %></time> &ndash; <time datetime="<%= item.period_to %>"><%= format_date(item.period_to).html_safe %></time></dd>
                   <% elsif item.period_from %>
                     <dt>Owned since</dt>
-                    <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
+                    <dd><time datetime="<%= item.period_from %>"><%= format_date(item.period_from).html_safe %></time></dd>
                   <% elsif item.period_to %>
                     <dt>Owned until</dt>
-                    <dd><time datetime="<%= formatted_date item.period_to %>"><%= formatted_date item.period_to %></time></dd>
+                    <dd><time datetime="<%= item.period_to %>"><%= format_date(item.period_to).html_safe %></time></dd>
                   <% end %>
                 <% else %>
                   <% if item.period_from %>
                     <dt>Since</dt>
-                    <dd><time datetime="<%= formatted_date item.period_from %>"><%= formatted_date item.period_from %></time></dd>
+                    <dd><time datetime="<%= item.period_from %>"><%= format_date(item.period_from).html_safe %></time></dd>
                   <% end %>
                 <% end %>
               <% end %>

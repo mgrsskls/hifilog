@@ -18,24 +18,24 @@
                 <% if possession.period_from && possession.period_to %>
                   <small>
                     <span class="u-block">Owned from:</span>
-                    <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time> &ndash; <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+                    <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time> &ndash; <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
                   </small>
                 <% elsif possession.period_from %>
                   <small>
                     <span>Owned since:</span>
-                    <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+                    <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
                   </small>
                 <% elsif possession.period_to %>
                   <small>
                     <span>Owned until:</span>
-                    <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+                    <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
                   </small>
                 <% end %>
               <% else %>
                 <% if possession.period_from %>
                   <small>
                     <span>Since:</span>
-                    <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+                    <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
                   </small>
                 <% end %>
               <% end %>

@@ -26,7 +26,7 @@
               %>
               <b><%= link_to name, path %></b>
             </th>
-            <td><time datetime="<%= formatted_datetime note.updated_at %>" data-time="true"><%= formatted_datetime note.updated_at %></time></td>
+            <td><time datetime="<%= format_iso_datetime note.updated_at %>"><%= format_datetime(note.updated_at).html_safe %></time></td>
             <td class="Table-actions u-textEnd">
               <% if note.product_variant.present? %>
                 <%= link_to "Edit", product_new_variant_notes_path(product_id: note.product.friendly_id, id: note.product_variant.friendly_id) %>

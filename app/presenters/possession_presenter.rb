@@ -7,6 +7,9 @@ class PossessionPresenter < ItemPresenter
   delegate :price_sale, to: :@object
   delegate :price_sale_currency, to: :@object
 
+  delegate :period_from, to: :@object
+  delegate :period_to, to: :@object
+
   def image_update_item
     @object
   end
@@ -32,10 +35,6 @@ class PossessionPresenter < ItemPresenter
 
     nil
   end
-
-  delegate :period_from, to: :@object
-
-  delegate :period_to, to: :@object
 
   def owned_for
     return unless period_from.present? && period_to.present? && prev_owned

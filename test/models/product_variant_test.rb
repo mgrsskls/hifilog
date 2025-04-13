@@ -3,27 +3,27 @@ require 'test_helper'
 class ProductVariantTest < ActiveSupport::TestCase
   include ApplicationHelper
 
-  test 'discontinued_date' do
+  test 'formatted_discontinued_date' do
     product_variant = product_variants(:one)
-    assert_nil product_variant.discontinued_date
+    assert_nil product_variant.formatted_discontinued_date
 
     product_variant.update!(
       discontinued: true,
     )
-    assert_nil product_variant.discontinued_date
+    assert_nil product_variant.formatted_discontinued_date
 
     product_variant.update!(
       discontinued: true,
       discontinued_year: 2020
     )
-    assert_equal '2020', product_variant.discontinued_date
+    assert_equal '2020', product_variant.formatted_discontinued_date
 
     product_variant.update!(
       discontinued: true,
       discontinued_year: 2020,
       discontinued_month: 12
     )
-    assert_equal '12/2020', product_variant.discontinued_date
+    assert_equal '2020&thinsp;/&thinsp;12', product_variant.formatted_discontinued_date
 
     product_variant.update!(
       discontinued: true,
@@ -31,7 +31,7 @@ class ProductVariantTest < ActiveSupport::TestCase
       discontinued_month: 12,
       discontinued_day: 31
     )
-    assert_equal '31/12/2020', product_variant.discontinued_date
+    assert_equal '2020&thinsp;/&thinsp;12&thinsp;/&thinsp;31', product_variant.formatted_discontinued_date
   end
 
   test 'name_with_fallback' do

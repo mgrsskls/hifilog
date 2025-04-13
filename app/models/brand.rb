@@ -2,7 +2,7 @@ class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
   include ApplicationHelper
-  include FormatHelper
+  include Format
   include Description
 
   multisearchable against: [:name, :description]
@@ -68,13 +68,18 @@ class Brand < ApplicationRecord
   end
 
   def founded_date
-    formatted_date(founded_day, founded_month, founded_year)
+    return if founded_year.blank?
+
+    Date.new(founded_year.to_i, founded_month.present? ? founded_month.to_i : 1,
+             founded_day.present? ? founded_day.to_i : 1)
   end
 
   def discontinued_date
     return unless discontinued?
+    return if discontinued_year.blank?
 
-    formatted_date(discontinued_day, discontinued_month, discontinued_year)
+    Date.new(discontinued_year.to_i, discontinued_month.present? ? discontinued_month.to_i : 1,
+             discontinued_day.present? ? discontinued_day.to_i : 1)
   end
 
   # :nocov:
@@ -104,19 +109,6 @@ class Brand < ApplicationRecord
   # :nocov:
 
   private
-
-  def formatted_date(day, month, year)
-    return nil if year.nil?
-    return year.to_s if month.nil?
-
-    formatted_month = month.to_s.rjust(2, '0')
-
-    return "#{formatted_month}/#{year}" if day.nil?
-
-    formatted_day = day.to_s.rjust(2, '0')
-
-    "#{formatted_day}/#{formatted_month}/#{year}"
-  end
 
   def invalidate_cache
     Rails.cache.delete('/newest_brands')

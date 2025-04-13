@@ -76,7 +76,7 @@
             <dt><%= Product.human_attribute_name(:release_date) %></dt>
             <dd>
               <% if @product_variant.release_date.present? %>
-                <time datetime="<%= @product_variant.release_date %>" data-format="false"><%= @product_variant.release_date %></time>
+                <time datetime="<%= @product_variant.release_date %>"><%= @product_variant.formatted_release_date.html_safe %></time>
               <% else %>
                 -
               <% end %>
@@ -85,7 +85,7 @@
               <dt><%= t('discontinued') %></dt>
               <dd>
                 <% if @product_variant.discontinued_date.present? %>
-                  <time datetime="<%= @product_variant.discontinued_date %>" data-format="false"><%= @product_variant.discontinued_date %></time>
+                  <time datetime="<%= @product_variant.discontinued_date %>"><%= @product_variant.formatted_discontinued_date.html_safe %></time>
                 <% else %>
                   -
                 <% end %>
@@ -129,7 +129,7 @@
       <dd>
         <% if @note.present? %>
           Last Updated: <%= link_to product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) do %>
-            <time datetime="<%= formatted_datetime @note.updated_at %>" data-time="true"><%= formatted_datetime @note.updated_at %></time>
+            <time datetime="<%= format_iso_datetime @note.updated_at %>"><%= format_datetime(@note.updated_at).html_safe %></time>
           <% end %>
         <% else %>
           <%= link_to "Add notes", user_signed_in? ? product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)) %>

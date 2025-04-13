@@ -1,9 +1,30 @@
 module FormatHelper
-  def formatted_date(date)
+  def format_partial_date(day, month, year)
+    return nil if year.nil?
+    return year.to_s if month.nil?
+
+    formatted_month = month.to_s.rjust(2, '0')
+
+    return "#{year}&thinsp;/&thinsp;#{formatted_month}" if day.nil?
+
+    formatted_day = day.to_s.rjust(2, '0')
+
+    "#{year}&thinsp;/&thinsp;#{formatted_month}&thinsp;/&thinsp;#{formatted_day}"
+  end
+
+  def format_date(date)
+    date.strftime('%Y&thinsp;/&thinsp;%m&thinsp;/&thinsp;%d')
+  end
+
+  def format_iso_date(date)
     date.strftime('%Y-%m-%dT00:00+0000')
   end
 
-  def formatted_datetime(datetime)
+  def format_datetime(date)
+    date.strftime('%Y&thinsp;/&thinsp;%m&thinsp;/&thinsp;%d - %H:%M')
+  end
+
+  def format_iso_datetime(datetime)
     datetime.strftime('%Y-%m-%dT%H:%M+0000')
   end
 

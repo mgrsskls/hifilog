@@ -96,6 +96,21 @@ class Product < ApplicationRecord
     attributes.join(', ')
   end
 
+  def release_date
+    return if release_year.blank?
+
+    Date.new(release_year.to_i, release_month.present? ? release_month.to_i : 1,
+             release_day.present? ? release_day.to_i : 1)
+  end
+
+  def discontinued_date
+    return unless discontinued?
+    return if discontinued_year.blank?
+
+    Date.new(discontinued_year.to_i, discontinued_month.present? ? discontinued_month.to_i : 1,
+             discontinued_day.present? ? discontinued_day.to_i : 1)
+  end
+
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[

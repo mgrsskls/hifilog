@@ -33,7 +33,7 @@
             <%= user_fallback.html_safe %>
           <% end %>
           &mdash;
-          <time data-time="true" datetime="<%= formatted_datetime version.created_at %>"><%= formatted_datetime version.created_at %></time>
+          <time datetime="<%= format_iso_datetime version.created_at %>"><%= format_datetime(version.created_at).html_safe %></time>
         </p>
         <div class="u-breakpoint u-breakpoint--s">
           <% changelog = get_changelog(version.object_changes) %>

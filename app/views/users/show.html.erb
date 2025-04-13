@@ -20,17 +20,17 @@
           <% if possession.prev_owned %>
             <small>
               <% if possession.period_from && possession.period_to %>
-                Owned from <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time> &ndash; <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+                Owned from <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time> &ndash; <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
               <% elsif possession.period_from %>
-                Owned since <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+                Owned since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
               <% elsif possession.period_to %>
-                Owned until <time datetime="<%= formatted_date possession.period_to %>"><%= formatted_date possession.period_to %></time>
+                Owned until <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
               <% end %>
             </small>
           <% else %>
             <% if possession.period_from %>
               <small>
-                Since <time datetime="<%= formatted_date possession.period_from %>"><%= formatted_date possession.period_from %></time>
+                Since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
               </small>
             <% end %>
           <% end %>
