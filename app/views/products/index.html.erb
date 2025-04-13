@@ -15,7 +15,7 @@
     <% end %>
 
     <div class="IndexPage-filter">
-      <%= render "shared/filter", reset_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @products_query do %>
+      <%= render "shared/filter", reset_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @products_query, diy_kit_filter: true do %>
         <label class="Filter-option" for="sort">Sort</label>
         <select class="Filter-input" name="sort" id="sort">
           <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>

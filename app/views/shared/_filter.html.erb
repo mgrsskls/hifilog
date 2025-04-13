@@ -1,4 +1,5 @@
 <% jump_to_list ||= false %>
+<% diy_kit_filter ||= false %>
 <% collection ||= nil %>
 <% categories ||= [] %>
 <% sub_categories ||= [] %>
@@ -56,25 +57,27 @@
           </fieldset>
         </div>
 
-        <div class="Filter-section Filter-section--attributes">
-          <fieldset>
-            <legend class="Filter-option" class="Filter-option"><%= t('activerecord.attributes.product.diy_kit') %></legend>
-            <ul class="Pagination">
-              <li class="Pagination-item">
-                <label>
-                  <input type="checkbox" name="diy_kit" value="1"<%= ' checked aria-current="true"'.html_safe if params[:diy_kit] == "1" %>>
-                  Yes
-                </label>
-              </li>
-              <li class="Pagination-item">
-                <label>
-                  <input type="checkbox" name="diy_kit" value="0"<%= ' checked aria-current="true"'.html_safe if params[:diy_kit] == "0" %>>
-                  No
-                </label>
-              </li>
-            </ul>
-          </fieldset>
-        </div>
+        <% if diy_kit_filter %>
+          <div class="Filter-section Filter-section--attributes">
+            <fieldset>
+              <legend class="Filter-option" class="Filter-option"><%= t('activerecord.attributes.product.diy_kit') %></legend>
+              <ul class="Pagination">
+                <li class="Pagination-item">
+                  <label>
+                    <input type="checkbox" name="diy_kit" value="1"<%= ' checked aria-current="true"'.html_safe if params[:diy_kit] == "1" %>>
+                    Yes
+                  </label>
+                </li>
+                <li class="Pagination-item">
+                  <label>
+                    <input type="checkbox" name="diy_kit" value="0"<%= ' checked aria-current="true"'.html_safe if params[:diy_kit] == "0" %>>
+                    No
+                  </label>
+                </li>
+              </ul>
+            </fieldset>
+          </div>
+        <% end %>
 
         <% if sub_categories.any? %>
           <div class="Filter-section">
