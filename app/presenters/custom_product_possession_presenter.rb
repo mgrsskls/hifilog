@@ -4,14 +4,18 @@ class CustomProductPossessionPresenter < CustomProductPresenter
 
   delegate_missing_to :@object
 
+  delegate :price_purchase, to: :@object
+  delegate :price_purchase_currency, to: :@object
+  delegate :price_sale, to: :@object
+  delegate :price_sale_currency, to: :@object
+  delegate :images, to: :@custom_product
+
   def initialize(object)
     super
 
     @object = object
     @custom_product = object.custom_product
   end
-
-  delegate :images, to: :@custom_product
 
   def product_name
     @custom_product.name

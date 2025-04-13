@@ -72,9 +72,9 @@
             <%= render "shared/flash_messages", messages: @custom_product.errors.map { |error| ["alert", error.full_message] } %>
           <% end %>
 
-          <div class="EntityPossession-heading u-flex u-alignCenter">
+          <div class="EntityPossession-heading u-flex">
             <div>
-              <%= render "shared/image_upload", item: @custom_product, image_update_item: @custom_product, size: "4rem", prefix: "possessions" %>
+              <%= render "shared/image_upload", item: @custom_product, image_update_item: @custom_product, size: "5.2rem", prefix: "possessions" %>
             </div>
             <div>
               <b class="EntityPossession-headingName"><%= @possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
@@ -111,6 +111,12 @@
                       <%= link_to @possession.setup.name, dashboard_setup_path(@possession.setup) %>
                     </small>
                   <% end %>
+                  <% if @possession.price_purchase %>
+                    <small>
+                      <span><%= Possession.human_attribute_name(:price_purchase) %>:</span>
+                      <%= display_price(@possession.price_purchase, @possession.price_purchase_currency) %>
+                    </small>
+                  <% end %>
                 </div>
               <% end %>
             </div>
@@ -137,6 +143,48 @@
                   <%= f.date_field :period_from %>
                   <%= f.label :period_to, "Until" %>
                   <%= f.date_field :period_to %>
+                <% end %>
+              </div>
+              <div class="EntityPossession-formPrice">
+                <div class="u-flex u-gap-md">
+                  <div>
+                    <%= f.label :price_purchase %>
+                    <%= f.text_field :price_purchase, inputmode: "number" %>
+                  </div>
+                  <div>
+                    <%= f.label :price_purchase_currency %>
+                    <%= f.select :price_purchase_currency do %>
+                      <option value=""></option>
+                      <% ['USD', 'EUR'].each do |id| %>
+                        <option value="<%= id %>"<%= " selected" if f.object[:price_purchase_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
+                      <% end %>
+                      <hr>
+                      <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
+                        <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_purchase_currency] == currency[:id] %>><%= currency[:name] %></option>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+                <% if @possession.prev_owned %>
+                  <div class="u-flex u-gap-md">
+                    <div>
+                      <%= f.label :price_sale %>
+                      <%= f.text_field :price_sale, inputmode: "number" %>
+                    </div>
+                    <div>
+                      <%= f.label :price_sale_currency %>
+                      <%= f.select :price_sale_currency do %>
+                        <option value=""></option>
+                        <% ['USD', 'EUR'].each do |id| %>
+                          <option value="<%= id %>"<%= " selected" if f.object[:price_sale_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
+                        <% end %>
+                        <hr>
+                        <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
+                          <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_sale_currency] == currency[:id] %>><%= currency[:name] %></option>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
                 <% end %>
               </div>
             <% end %>
