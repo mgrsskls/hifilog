@@ -15,7 +15,7 @@
     <% end %>
 
     <div class="IndexPage-filter">
-      <%= render "shared/filter", reset_path: brands_path, collection: @brands, query: @brands_query do %>
+      <%= render "shared/filter", reset_path: brands_path, collection: @brands, query: @brands_query, type: :brands do %>
         <label class="Filter-option" for="sort"><%= t('sort_by.label') %></label>
         <select class="Filter-input" name="sort" id="sort">
           <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>

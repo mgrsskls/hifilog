@@ -1,5 +1,6 @@
 <% jump_to_list ||= false %>
-<% diy_kit_filter ||= false %>
+<% render_diy_kit_filter = type == :products %>
+<% filter_active_label = type == :products ? t('continued') : t('active') %>
 <% collection ||= nil %>
 <% categories ||= [] %>
 <% sub_categories ||= [] %>
@@ -44,7 +45,7 @@
               <li class="Pagination-item">
                 <label>
                   <input type="checkbox" name="status" value="continued"<%= ' checked aria-current="true"'.html_safe if params[:status] == "continued" %>>
-                  <%= t('continued') %>
+                  <%= filter_active_label %>
                 </label>
               </li>
               <li class="Pagination-item">
@@ -57,7 +58,7 @@
           </fieldset>
         </div>
 
-        <% if diy_kit_filter %>
+        <% if render_diy_kit_filter %>
           <div class="Filter-section Filter-section--attributes">
             <fieldset>
               <legend class="Filter-option" class="Filter-option"><%= t('activerecord.attributes.product.diy_kit') %></legend>
