@@ -89,7 +89,7 @@
                 <% end %>
                 <% if item.price_purchase.present? %>
                   <br>
-                  <%= display_price(item.price_purchase, item.price_purchase_currency) %>
+                  <span class="u-noWrap"><%= display_price(item.price_purchase, item.price_purchase_currency) %></span>
                 <% end %>
               </td>
             <% end %>
@@ -102,7 +102,7 @@
                 <% end %>
                 <% if item.price_purchase.present? %>
                   <br>
-                  <%= display_price(item.price_purchase, item.price_purchase_currency) %>
+                  <span class="u-noWrap"><%= display_price(item.price_purchase, item.price_purchase_currency) %></span>
                 <% end %>
               </td>
               <td class="Table-sm">
