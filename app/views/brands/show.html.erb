@@ -13,7 +13,7 @@
 
       <% if @brand.description.present? %>
         <div class="Entity-section Rte">
-          <%= sanitize @brand.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+          <%= @brand.formatted_description %>
         </div>
       <% end %>
 

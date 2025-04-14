@@ -1,0 +1,37 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "note_editor", crossorigin: true, integrity: true %>
+<% end %>
+<% content_for :js do %>
+  <%= javascript_include_tag "notes", type: "module", nonce: true, crossorigin: true, integrity: true %>
+<% end %>
+<div class="Form-field NoteEditor">
+  <ul class="NoteEditor-options">
+    <li class="NoteEditor-option">
+      <button type="button" data-type="bold" aria-label="bold">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h6.5a4.5 4.5 0 1 0 0-9H6v9Zm0 0h7.5a4.5 4.5 0 1 1 0 9H6v-9Z"/></svg>
+      </button>
+    </li>
+    <li class="NoteEditor-option">
+      <button type="button" data-type="italic" aria-label="Italic">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3h10M4 21h10m1-18L9 21"/></svg>
+      </button>
+    </li>
+    <li class="NoteEditor-option">
+      <button type="button" data-type="ul" aria-label="Bullet list">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h13M8 12h13M8 18h13M3.5 6h0m0 6h0m0 6h0M4 6a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm0 6a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm0 6a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/></svg>
+      </button>
+    </li>
+    <li class="NoteEditor-option">
+      <button type="button" data-type="ol" aria-label="Numbered List">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M3 5l2-1v6m0 0H3m2 0h2m0 10H3l3.4-3a1.7 1.7 0 0 0-1.1-3H5a2 2 0 0 0-2 1.5"/></svg>
+      </button>
+    </li>
+    <li class="NoteEditor-option">
+      <button type="button" data-type="quote" aria-label="Quote">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 9h10M7 13h5m9 7-3.3-1.7c-.3 0-.4-.2-.5-.2a2 2 0 0 0-.4 0l-.6-.1h-10c-1.1 0-1.7 0-2.1-.2a2 2 0 0 1-.9-.9c-.2-.4-.2-1-.2-2.1V7.2c0-1.1 0-1.7.2-2.1.2-.4.5-.7.9-.9C4.5 4 5 4 6.2 4h11.6c1.1 0 1.7 0 2.1.2.4.2.7.5.9.9.2.4.2 1 .2 2.1V20Z"/></svg>
+      </button>
+    </li>
+  </ul>
+
+  <div id="NoteEditor-text" class="Rte"></div>
+</div>

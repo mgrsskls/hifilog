@@ -53,7 +53,7 @@
         <div class="Entity-text">
           <% if @product_variant.description.present? %>
             <div class="Entity-section Rte">
-              <%= sanitize @product_variant.formatted_description.html_safe, tags: %w(p b i strong em br ul ol li) %>
+              <%= @product_variant.formatted_description %>
             </div>
           <% end %>
 

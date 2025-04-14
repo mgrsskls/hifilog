@@ -1,9 +1,4 @@
 .NoteEditor {
-	max-inline-size: 40rem;
-	margin-inline: auto;
-}
-
-.NoteEditor-container {
 	--bg: var(--color-bg2);
 
 	background: var(--bg);
@@ -34,6 +29,8 @@
 
 #NoteEditor-text {
 	padding: 2em;
+	padding-block-start: 1em;
+	min-block-size: 5em;
 }
 
 #NoteEditor-text .ProseMirror:focus-within {

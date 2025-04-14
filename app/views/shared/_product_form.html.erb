@@ -72,7 +72,8 @@
         <%= Product.human_attribute_name(:description) %> <small><i>(optional)</i></small>
       <% end %>
     </h2>
-    <%= f.text_area :description %>
+    <%= f.text_area :description, hidden: true, "data-note-textarea": true %>
+    <%= render "shared/markdown_editor" %>
   </div>
 
   <div class="Form-field">

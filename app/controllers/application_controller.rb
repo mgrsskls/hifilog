@@ -1,5 +1,3 @@
-require 'redcarpet'
-
 class ApplicationController < ActionController::Base
   # before_action :block_bots
   before_action :configure_permitted_parameters, if: :devise_controller?

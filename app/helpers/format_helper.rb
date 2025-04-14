@@ -29,7 +29,13 @@ module FormatHelper
   end
 
   def markdown_to_html(content)
-    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(hard_wrap: true))
-    markdown.render(content)
+    Commonmarker.to_html(
+      content,
+      options: {
+        render: {
+          unsafe: true
+        }
+      }
+    )
   end
 end

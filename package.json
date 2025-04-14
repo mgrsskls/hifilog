@@ -1,11 +1,11 @@
 {
 	"devDependencies": {
 		"@axe-core/cli": "^4.10.1",
-		"chromedriver": "^134.0.0",
+		"chromedriver": "^135.0.1",
 		"cssnano": "^7.0.6",
-		"esbuild": "^0.25.0",
+		"esbuild": "^0.25.2",
 		"postcss": "^8.5.3",
-		"postcss-cli": "^11.0.0",
+		"postcss-cli": "^11.0.1",
 		"postcss-import": "^16.1.0",
 		"prettier": "^3.5.3"
 	},
@@ -31,9 +31,6 @@
 		"useTabs": true
 	},
 	"dependencies": {
-		"@milkdown/core": "^7.4.0",
-		"@milkdown/plugin-listener": "^7.4.0",
-		"@milkdown/preset-commonmark": "^7.4.0",
-		"@milkdown/preset-gfm": "^7.4.0"
+		"@milkdown/kit": "^7.8.0"
 	}
 }

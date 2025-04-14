@@ -3,7 +3,7 @@ import {
 	rootCtx,
 	defaultValueCtx,
 	editorViewOptionsCtx,
-} from "@milkdown/core";
+} from "@milkdown/kit/core";
 import {
 	commonmark,
 	toggleEmphasisCommand,
@@ -11,13 +11,11 @@ import {
 	wrapInBlockquoteCommand,
 	wrapInBulletListCommand,
 	wrapInOrderedListCommand,
-	insertHrCommand,
-} from "@milkdown/preset-commonmark";
-import { listener, listenerCtx } from "@milkdown/plugin-listener";
-import { gfm, toggleStrikethroughCommand } from "@milkdown/preset-gfm";
-import { callCommand } from "@milkdown/utils";
+} from "@milkdown/kit/preset/commonmark";
+import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
+import { callCommand } from "@milkdown/kit/utils";
 
-const textInput = document.querySelector('[name="note[text]"]');
+const textInput = document.querySelector("[data-note-textarea]");
 
 document.querySelectorAll(".NoteEditor-option button").forEach((button) => {
 	button.addEventListener("click", () => {
@@ -28,9 +26,6 @@ document.querySelectorAll(".NoteEditor-option button").forEach((button) => {
 			case "italic":
 				call(toggleEmphasisCommand.key);
 				break;
-			case "strikethrough":
-				call(toggleStrikethroughCommand.key);
-				break;
 			case "ul":
 				call(wrapInBulletListCommand.key);
 				break;
@@ -39,9 +34,6 @@ document.querySelectorAll(".NoteEditor-option button").forEach((button) => {
 				break;
 			case "quote":
 				call(wrapInBlockquoteCommand.key);
-				break;
-			case "hr":
-				call(insertHrCommand.key);
 				break;
 		}
 	});
@@ -68,12 +60,13 @@ Editor.make()
 	})
 	.use(listener)
 	.use(commonmark)
-	.use(gfm)
 	.create()
 	.then((e) => {
 		editor = e;
 
-		document.querySelector("#NoteEditor-text .editor").focus();
+		if (textInput?.dataset.noteTextarea === "focus") {
+			document.querySelector("#NoteEditor-text .editor").focus();
+		}
 	});
 
 function call(command) {

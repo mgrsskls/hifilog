@@ -29,4 +29,8 @@
 	> * + * {
 		margin-block-start: calc(var(--line-height) * 0.75em);
 	}
+
+	li p {
+		margin-block: 0;
+	}
 }

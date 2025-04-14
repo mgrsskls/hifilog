@@ -1,4 +1,5 @@
 class NotesController < ApplicationController
+  include ActionView::Helpers::SanitizeHelper
   before_action :authenticate_user!
 
   def index
@@ -15,14 +16,21 @@ class NotesController < ApplicationController
     @active_dashboard_menu = :notes
 
     @note = current_user.notes.find(params[:id])
-    markdown = Redcarpet::Markdown.new(
-      Redcarpet::Render::HTML.new,
-      tables: true,
-      strikethrough: true,
-      superscript: true,
-      hard_wrap: true,
+    @html = sanitize(
+      Commonmarker.to_html(
+        @note.text,
+        options: {
+          extension: {
+            strikethrough: false,
+            tagfilter: false,
+            table: false,
+            autolink: false,
+            tasklist: false,
+          }
+        }
+      ),
+      tags: %w[p b i strong em br ul ol li del blockquote]
     )
-    @html = markdown.render(@note.text)
     @product = Product.find(@note.product_id)
     @product_variant = ProductVariant.find(@note.product_variant_id) if @note.product_variant_id.present?
 

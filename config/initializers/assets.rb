@@ -20,7 +20,8 @@ Rails.application.config.assets.precompile += %w(
   entity_form.css
   history.css
   home.css
-  notes.css
+  note.css
+  note_editor.css
   numbers.css
   product.css
   profile.css

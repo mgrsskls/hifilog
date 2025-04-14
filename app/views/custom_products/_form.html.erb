@@ -44,7 +44,8 @@
     <h2 class="h3 Form-label">
       <%= CustomProduct.human_attribute_name(:description) %> <small><i>(optional)</i></small>
     </h2>
-    <%= f.text_area :description %>
+    <%= f.text_area :description, hidden: true, "data-note-textarea": true %>
+    <%= render "shared/markdown_editor" %>
   </div>
 
   <div class="Form-submit">
