@@ -118,8 +118,19 @@
 	color: var(--color-success-copy);
 }
 
-.EntityPossession--bookmark {
+.EntityPossession--bookmark,
+html:where([data-theme="light"]) .EntityPossession--bookmark {
 	background: var(--color-blue-925);
+}
+
+@media (prefers-color-scheme: dark) {
+	.EntityPossession--bookmark {
+		background: var(--color-blue-175);
+	}
+}
+
+:is(html:where([data-theme="dark"]), .is-dark) .EntityPossession--bookmark {
+	background: var(--color-blue-175);
 }
 
 .EntityPossession--bookmark form + form {

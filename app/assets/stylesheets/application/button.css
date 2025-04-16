@@ -15,8 +15,8 @@
 .Button[aria-pressed="true"] {
 	--size: 1.75em;
 
-	color: var(--color-bookmark-dark);
-	background: var(--color-bookmark-light);
+	color: var(--color-bookmark-copy);
+	background: var(--color-bookmark-bg);
 	border: var(--border);
 	font-weight: 600;
 }
