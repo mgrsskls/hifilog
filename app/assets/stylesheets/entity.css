@@ -3,10 +3,8 @@
 	gap: 2rem;
 }
 
-.Entity:not(:has(.CustomProduct)) {
-	padding-block-end: 3rem;
-	margin-block-end: 3rem;
-	border-block-end: var(--border-light);
+.Entity:last-child {
+	padding-block-end: 2rem;
 }
 
 .Entity-content {
@@ -102,8 +100,10 @@
 
 .Footnotes {
 	font-size: 0.875em;
-	margin-block-start: 3rem;
 	padding-inline: 1.2rem;
+	padding-block-start: 3rem;
+	margin-block-start: 3rem;
+	border-block-start: var(--border-light);
 }
 
 .EntityPossession {

@@ -1,0 +1,31 @@
+.Tabs {
+	--size: 0.1875rem;
+	--color: var(--color-transparency-10);
+
+	list-style: "";
+	padding: 0;
+	margin: 0;
+	display: flex;
+	border-block-end: var(--size) solid var(--color);
+	margin-block-end: 2rem;
+}
+
+.Tabs a {
+	border: var(--size) solid var(--color);
+	display: block;
+	padding: 0.3em 0.7em;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	margin-block-end: calc(-1 * var(--size));
+	text-decoration: none;
+}
+
+.Tabs [aria-current="false"] {
+	border-color: transparent;
+}
+
+.Tabs [aria-current="true"] {
+	border-block-end-color: var(--color-bg-main);
+	font-weight: 600;
+	position: relative;
+}

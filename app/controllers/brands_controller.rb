@@ -3,7 +3,7 @@ class BrandsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
-  before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
+  before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog, :products]
   before_action :set_active_menu
   before_action :find_brand, only: [:show]
 
@@ -90,17 +90,37 @@ class BrandsController < ApplicationController
 
   def show
     @brand = Brand.includes(sub_categories: [:category]).friendly.find(params[:id])
+
+    @contributors = User.find_by_sql(["
+      SELECT DISTINCT
+        users.id, users.user_name, users.profile_visibility,
+        versions.item_type, versions.item_id FROM users
+      JOIN versions
+      ON users.id = CAST(versions.whodunnit AS integer)
+      WHERE versions.item_id = ? AND versions.item_type = 'Brand'
+    ", @brand.id])
+
+    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
+
+    @page_title = @brand.name
+    add_breadcrumb @brand.name, brand_path(@brand)
+  end
+
+  def products
+    @brand = Brand.includes(sub_categories: [:category]).friendly.find(params[:brand_id])
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @category = @sub_category.category if @sub_category.present?
 
     if @sub_category
       products = @sub_category.products.where(brand_id: @brand.id)
-      add_breadcrumb @brand.name, proc { :brand }
+      add_breadcrumb @brand.name, brand_path(@brand)
+      add_breadcrumb Product.model_name.human(count: 2), brand_products_path(brand_id: @brand.friendly_id)
       add_breadcrumb @sub_category.name
       @filter_applied = true
     else
       products = @brand.products
-      add_breadcrumb @brand.name
+      add_breadcrumb @brand.name, brand_path(@brand)
+      add_breadcrumb Product.model_name.human(count: 2)
     end
 
     if ABC.include?(params[:letter])
@@ -159,17 +179,6 @@ class BrandsController < ApplicationController
                         .select('products.*, LOWER(products.name)')
                         .includes([:sub_categories, :product_variants]).order(order).page(params[:page])
     @total_products_count = @brand.products.length
-
-    @contributors = User.find_by_sql(["
-      SELECT DISTINCT
-        users.id, users.user_name, users.profile_visibility,
-        versions.item_type, versions.item_id FROM users
-      JOIN versions
-      ON users.id = CAST(versions.whodunnit AS integer)
-      WHERE versions.item_id = ? AND versions.item_type = 'Brand'
-    ", @brand.id])
-
-    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
 
     @page_title = @brand.name
   end

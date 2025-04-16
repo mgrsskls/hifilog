@@ -1,6 +1,6 @@
 .Rte {
 	> :is(p, ul, ol, blockquote, hr) {
-		max-inline-size: 40rem;
+		max-inline-size: 54rem;
 	}
 
 	hr {

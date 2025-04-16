@@ -1,0 +1,23 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "tabs", crossorigin: true, integrity: true %>
+<% end %>
+
+<div class="Heading">
+  <div>
+    <h1><%= @brand.name %></h1>
+    <% if @brand.full_name %><small><%= @brand.full_name %></small><% end %>
+  </div>
+</div>
+
+<nav>
+  <ul class="Tabs">
+    <li>
+      <%= link_to "Overview", brand_path(id: @brand.slug), "aria-current": active == :main %>
+    </li>
+    <li>
+      <%= link_to Product.model_name.human(count: 2), brand_products_path(brand_id: @brand.slug), "aria-current": active == :products %>
+    </li>
+  </ul>
+</nav>
+
+<%= yield %>

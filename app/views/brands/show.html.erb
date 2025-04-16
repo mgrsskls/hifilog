@@ -1,157 +1,96 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "entity", crossorigin: true, integrity: true %>
 <% end %>
-<div class="Entity">
-  <div class="Entity-main">
-    <div class="Product-details">
-      <div class="Heading">
-        <div>
-          <h1><%= @brand.name %></h1>
-          <% if @brand.full_name %><small><%= @brand.full_name %></small><% end %>
-        </div>
-      </div>
 
-      <% if @brand.description.present? %>
-        <div class="Entity-section Rte">
-          <%= @brand.formatted_description %>
-        </div>
-      <% end %>
-
-      <dl class="Data">
-        <% if @brand.discontinued %>
-          <dt><%= t('status') %></dt>
-          <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
+<%= render layout: "layout", locals: { active: :main } do %>
+  <div class="Entity">
+    <div class="Entity-main">
+      <div class="Product-details">
+        <% if @brand.description.present? %>
+          <div class="Entity-section Rte">
+            <%= @brand.formatted_description %>
+          </div>
         <% end %>
-        <dt><%= Brand.human_attribute_name(:country_code) %></dt>
-        <dd><%= @brand.country_name.present? ? @brand.country_name : "-" %></dd>
-        <dt><%= Brand.human_attribute_name(:website) %></dt>
-        <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website, rel: "noreferrer noopener") : "-" %></dd>
-        <dt><%= t('brand.founded') %></dt>
-        <dd>
-          <% if @brand.founded_date.present? %>
-            <time datetime="<%= format_iso_date @brand.founded_date %>"><%= @brand.formatted_founded_date.html_safe %></time>
-          <% else %>
-            -
+
+        <dl class="Data">
+          <% if @brand.discontinued %>
+            <dt><%= t('status') %></dt>
+            <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
           <% end %>
-        </dd>
-        <% if @brand.discontinued? %>
-          <dt><%= t('discontinued') %></dt>
+          <dt><%= Brand.human_attribute_name(:country_code) %></dt>
+          <dd><%= @brand.country_name.present? ? @brand.country_name : "-" %></dd>
+          <dt><%= Brand.human_attribute_name(:website) %></dt>
+          <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website, rel: "noreferrer noopener") : "-" %></dd>
+          <dt><%= t('brand.founded') %></dt>
           <dd>
-            <% if @brand.discontinued_date.present? %>
-              <time datetime="<%= format_iso_date @brand.discontinued_date %>"><%= @brand.formatted_discontinued_date.html_safe %></time>
+            <% if @brand.founded_date.present? %>
+              <time datetime="<%= format_iso_date @brand.founded_date %>"><%= @brand.formatted_founded_date.html_safe %></time>
             <% else %>
               -
             <% end %>
           </dd>
-        <% end %>
-      </dl>
-
-      <% if @all_sub_categories_grouped.any? %>
-        <h2><%= Category.model_name.human(count: 2) %></h2>
-
-        <dl class="Data">
-          <% @all_sub_categories_grouped.each do |section| %>
-            <dt><%= section[0].name %></dt>
-            <dd><%= section[1].map { |c| link_to c.name, products_path(sub_category: c.friendly_id) }.join(", ").html_safe %></dd>
+          <% if @brand.discontinued? %>
+            <dt><%= t('discontinued') %></dt>
+            <dd>
+              <% if @brand.discontinued_date.present? %>
+                <time datetime="<%= format_iso_date @brand.discontinued_date %>"><%= @brand.formatted_discontinued_date.html_safe %></time>
+              <% else %>
+                -
+              <% end %>
+            </dd>
           <% end %>
         </dl>
-      <% end %>
+
+        <% if @all_sub_categories_grouped.any? %>
+          <h2><%= Category.model_name.human(count: 2) %></h2>
+
+          <dl class="Data">
+            <% @all_sub_categories_grouped.each do |section| %>
+              <dt><%= section[0].name %></dt>
+              <dd><%= section[1].map { |c| link_to c.name, products_path(sub_category: c.friendly_id) }.join(", ").html_safe %></dd>
+            <% end %>
+          </dl>
+        <% end %>
+      </div>
     </div>
-  </div>
 
-  <div class="Entity-sub">
-    <% if user_has_brand?(current_user, @brand, false) %>
-      <div class="EntityPossession u-textCenter" data-current="true">
-        You own <b><%= @brand.name %></b> products.
-      </div>
-      <hr>
-    <% elsif user_has_brand?(current_user, @brand, true) %>
-      <div class="EntityPossession u-textCenter" data-current="false">
-        You used to own <b><%= @brand.name %></b> products.
-      </div>
-      <hr>
-    <% end %>
-    <dl>
-      <dt><%= t('product.meta.owned_by') %></dt>
-      <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>
-    </dl>
-
-    <div class="Entity-meta">
+    <div class="Entity-sub">
+      <% if user_has_brand?(current_user, @brand, false) %>
+        <div class="EntityPossession u-textCenter" data-current="true">
+          You own <b><%= @brand.name %></b> products.
+        </div>
+        <hr>
+      <% elsif user_has_brand?(current_user, @brand, true) %>
+        <div class="EntityPossession u-textCenter" data-current="false">
+          You used to own <b><%= @brand.name %></b> products.
+        </div>
+        <hr>
+      <% end %>
       <dl>
-        <dt><%= t('headings.contributors') %></dt>
-        <dd>
-          <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
-          </ul>
-        </dd>
+        <dt><%= t('product.meta.owned_by') %></dt>
+        <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>
       </dl>
 
-      <hr>
+      <div class="Entity-meta">
+        <dl>
+          <dt><%= t('headings.contributors') %></dt>
+          <dd>
+            <%= @contributors.any? ? @contributors.map { |c| c["profile_visibility"] != 0 ? (link_to c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }.join(", ").html_safe : "hifilog.com" %>
+            </ul>
+          </dd>
+        </dl>
 
-      <ul class="Entity-metaLinks MetaLinks">
-        <li>
-          <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
-        </li>
-        <li>
-          <%= link_to t('headings.changelog'), user_signed_in? ? brand_changelog_path(@brand) : new_user_session_path(redirect: brand_changelog_path(@brand)) %>
-        </li>
-      </ul>
+        <hr>
+
+        <ul class="Entity-metaLinks MetaLinks">
+          <li>
+            <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
+          </li>
+          <li>
+            <%= link_to t('headings.changelog'), user_signed_in? ? brand_changelog_path(@brand) : new_user_session_path(redirect: brand_changelog_path(@brand)) %>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-</div>
-
-<div class="IndexPage" id="list">
-  <div class="IndexPage-header">
-    <div class="IndexPage-headerFilter">
-      <h2><%= Product.model_name.human(count: 2) %></h2>
-
-      <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
-    </div>
-
-    <div class="IndexPage-filter">
-      <%= render "shared/filter", reset_path: brand_path(id: @brand.friendly_id), collection: @products, query: @brands_query, sub_categories: @all_sub_categories_grouped, jump_to_list: true, type: :products do %>
-        <label class="Filter-option" for="sort">Sort</label>
-        <select class="Filter-input" name="sort" id="sort">
-          <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
-          <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
-          <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
-          <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('sort_by.release_date_asc') %></option>
-        </select>
-      <% end %>
-    </div>
-
-    <% if @products.any? %>
-      <p class="FilterInfo">
-        <small><%= page_entries_info @products %></small>
-      </p>
-    <% end %>
-  </div>
-
-  <div class="IndexPage-content">
-    <% if @total_products_count > 0 %>
-      <% if @products.any? %>
-        <div class="u-breakpoint u-breakpoint--l">
-          <%= render "shared/products_table", products: @products, hide_brand: true %>
-          <%= paginate @products, params: { anchor: "list" } %>
-        </div>
-      <% else %>
-        <%= render "shared/empty_state", message: t('empty_state.products') %>
-      <% end %>
-    <% else %>
-      <%= render "shared/empty_state", message: t('empty_state.cta', name: h(@brand.name), path: user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id))) %>
-    <% end %>
-
-    <%= render "shared/page_actions" %>
-  </div>
-</div>
-
-<% if @brands_query %>
-  <%= javascript_tag nonce: true do %>
-    {
-      const list = document.querySelector("#list");
-
-      if (list) {
-        list.scrollIntoView();
-      }
-    }
-  <% end %>
 <% end %>

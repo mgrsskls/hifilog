@@ -1,5 +1,6 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "statistics", crossorigin: true, integrity: true %>
+  <%= stylesheet_link_tag "tabs", crossorigin: true, integrity: true %>
 <% end %>
 
 <%= render layout: "shared/dashboard" do %>
@@ -8,7 +9,7 @@
   </div>
 
   <div class="Statistics">
-    <ul class="StatisticsNavigation">
+    <ul class="Tabs">
       <li>
         <%= link_to "Current", dashboard_statistics_root_path, "aria-current": active == :current %>
       </li>

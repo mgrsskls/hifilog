@@ -1,0 +1,58 @@
+<%= render layout: "layout", locals: { active: :products } do %>
+  <div class="IndexPage" id="list">
+    <div class="IndexPage-header">
+      <div class="IndexPage-headerFilter">
+        <h2><%= Product.model_name.human(count: 2) %></h2>
+
+        <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
+      </div>
+
+      <div class="IndexPage-filter">
+        <%= render "shared/filter", reset_path: brand_path(id: @brand.friendly_id), collection: @products, query: @brands_query, sub_categories: @all_sub_categories_grouped, jump_to_list: true, type: :products do %>
+          <label class="Filter-option" for="sort">Sort</label>
+          <select class="Filter-input" name="sort" id="sort">
+            <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
+            <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
+            <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
+            <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('sort_by.release_date_asc') %></option>
+          </select>
+        <% end %>
+      </div>
+
+      <% if @products.any? %>
+        <p class="FilterInfo">
+          <small><%= page_entries_info @products %></small>
+        </p>
+      <% end %>
+    </div>
+
+    <div class="IndexPage-content">
+      <% if @total_products_count > 0 %>
+        <% if @products.any? %>
+          <div class="u-breakpoint u-breakpoint--l">
+            <%= render "shared/products_table", products: @products, hide_brand: true %>
+            <%= paginate @products, params: { anchor: "list" } %>
+          </div>
+        <% else %>
+          <%= render "shared/empty_state", message: t('empty_state.products') %>
+        <% end %>
+      <% else %>
+        <%= render "shared/empty_state", message: t('empty_state.cta', name: h(@brand.name), path: user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id))) %>
+      <% end %>
+
+      <%= render "shared/page_actions" %>
+    </div>
+  </div>
+
+  <% if @brands_query %>
+    <%= javascript_tag nonce: true do %>
+      {
+        const list = document.querySelector("#list");
+
+        if (list) {
+          list.scrollIntoView();
+        }
+      }
+    <% end %>
+  <% end %>
+<% end %>
