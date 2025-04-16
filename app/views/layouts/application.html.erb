@@ -59,6 +59,7 @@
     <% end %>
     <%= yield :js %>
     <%= javascript_include_tag "application", type: "module", nonce: true, crossorigin: true, integrity: true %>
+    <%= javascript_include_tag "signed_in", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
     <%= javascript_include_tag "delete_form", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
     <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
     <%= yield :css %>
