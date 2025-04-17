@@ -1,4 +1,5 @@
 import "./theme_toggle.js";
+import "./_search.js";
 
 {
 	let scrollY = 0;

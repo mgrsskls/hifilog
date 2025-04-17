@@ -144,10 +144,14 @@
 	.Header-search {
 		align-self: center;
 		inline-size: 14em;
+		block-size: var(--header-height);
+		display: flex;
 	}
 
 	.Search {
 		--padding: 0.5em;
+
+		align-self: center;
 	}
 
 	.Search-input {

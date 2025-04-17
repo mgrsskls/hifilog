@@ -1,0 +1,16 @@
+<% if results.any? %>
+  <div class="SearchResults-list">
+    <% results.each do |result| %>
+      <%= render "result", result: result, query: query %>
+    <% end %>
+  </div>
+  <%= paginate results %>
+<% else %>
+  <% if params[:filter] == 'products' %>
+    <%= render "shared/empty_state", message: t('search_results.none.products', query: h(query), path: new_product_path).html_safe %>
+  <% elsif params[:filter] == 'brands' %>
+    <%= render "shared/empty_state", message: t('search_results.none.brands', query: h(query), path: new_brand_path).html_safe %>
+  <% else %>
+    <%= render "shared/empty_state", message: t('search_results.none.all', query: h(query)) %>
+  <% end %>
+<% end %>

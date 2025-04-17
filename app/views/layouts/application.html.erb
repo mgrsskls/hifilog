@@ -101,7 +101,7 @@
               <% if params[:filter].present? %>
                 <input type="hidden" name="filter" value="<%= params[:filter] %>">
               <% end %>
-              <%= text_field_tag :query, @query, id: "search-sm", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 1, required: true %>
+              <%= text_field_tag :query, @query, id: "search-sm", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 2, required: true, autocomplete: 'off' %>
               <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -134,13 +134,14 @@
                   <% if params[:filter].present? %>
                     <input type="hidden" name="filter" value="<%= params[:filter] %>">
                   <% end %>
-                  <%= text_field_tag :query, @query, id: "search-lg", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 1, required: true %>
+                  <%= text_field_tag :query, @query, id: "search-lg", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 2, required: true, autocomplete: 'off' %>
                   <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
                   <% end %>
                 <% end %>
+                <div aria-live="polite" class="Search-xhrResults"></div>
               </search>
             </div>
             <nav aria-label="Account">

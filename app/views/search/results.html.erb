@@ -1,10 +1,7 @@
 <% unless flash.any? %>
-  <% content_for :css do %>
-    <%= stylesheet_link_tag "search_results", crossorigin: true, integrity: true %>
-  <% end %>
   <div class="SearchResults">
     <div class="Heading">
-      <h1><%= t('search_results.heading', query: h(@query)).html_safe %></h1>
+      <h1><%= sanitize t('search_results.heading', query: h(@query)).html_safe %></h1>
     </div>
 
     <form id="search-filter">
@@ -45,57 +42,6 @@
       </div>
     </form>
 
-    <% if @results.any? %>
-      <div class="SearchResults-list">
-        <% @results.each do |result| %>
-          <article class="SearchResult">
-            <div class="u-flex u-spaceBetween u-alignCenter u-gap-md u-flexWrap">
-              <div class="SearchResult-entityName">
-                <%
-                  normalized_query = @query.downcase
-                  normalized_result = sanitize(result.pg_search_highlight.strip&.downcase)
-
-                  if result.searchable_type == "Product"
-                    name = result.searchable.name
-                    path = product_path(result.searchable.friendly_id)
-                %>
-                  <%= result.searchable.brand.name %> <%= link_to name, path %>
-                <% elsif result.searchable_type == "ProductVariant"
-                    name = result.searchable.name
-                    path = product_variant_path(id: result.searchable.friendly_id, product_id: result.searchable.product.friendly_id)
-                %>
-                  <%= result.searchable.product.brand.name %> <%= link_to name, path %>
-                <%  elsif result.searchable_type == "Brand"
-                    name = result.searchable.name
-                    path = brand_path(result.searchable.friendly_id)
-                %>
-                  <%= link_to name, path %>
-                <% end %>
-              </div>
-              <% if result.searchable_type == "Product" or result.searchable_type == "ProductVariant" %>
-                <small><%= Product.model_name.human %></small>
-              <% elsif result.searchable_type == "Brand" %>
-                <small><%= Brand.model_name.human %></small>
-              <% end %>
-            </div>
-
-            <% if !name.downcase.include?(normalized_query) && name.downcase != normalized_result %>
-              <p>
-                <%= markdown_to_html("#{result.pg_search_highlight} […]").html_safe %>
-              </p>
-            <% end %>
-          </article>
-        <% end %>
-      </div>
-      <%= paginate @results %>
-    <% else %>
-      <% if params[:filter] == 'products' %>
-        <%= render "shared/empty_state", message: t('search_results.none.products', query: h(@query), path: new_product_path).html_safe %>
-      <% elsif params[:filter] == 'brands' %>
-        <%= render "shared/empty_state", message: t('search_results.none.brands', query: h(@query), path: new_brand_path).html_safe %>
-      <% else %>
-        <%= render "shared/empty_state", message: t('search_results.none.all', query: h(@query)) %>
-      <% end %>
-    <% end %>
+    <%= render "list", results: @results, query: @query %>
   </div>
 <% end %>

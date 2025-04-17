@@ -1,0 +1,37 @@
+<article class="SearchResult">
+  <div class="u-flex u-spaceBetween u-alignCenter u-gap-md u-flexWrap">
+    <div class="SearchResult-entityName">
+      <%
+        normalized_query = query.downcase
+        normalized_result = sanitize(result.pg_search_highlight.strip&.downcase)
+
+        if result.searchable_type == "Product"
+          name = result.searchable.name
+          path = product_path(result.searchable.friendly_id)
+      %>
+        <%= result.searchable.brand.name %> <%= link_to name, path %>
+      <% elsif result.searchable_type == "ProductVariant"
+          name = result.searchable.name
+          path = product_variant_path(id: result.searchable.friendly_id, product_id: result.searchable.product.friendly_id)
+      %>
+        <%= result.searchable.product.brand.name %> <%= link_to name, path %>
+      <%  elsif result.searchable_type == "Brand"
+          name = result.searchable.name
+          path = brand_path(result.searchable.friendly_id)
+      %>
+        <%= link_to name, path %>
+      <% end %>
+    </div>
+    <% if result.searchable_type == "Product" or result.searchable_type == "ProductVariant" %>
+      <small><%= Product.model_name.human %></small>
+    <% elsif result.searchable_type == "Brand" %>
+      <small><%= Brand.model_name.human %></small>
+    <% end %>
+  </div>
+
+  <% if !name.downcase.include?(normalized_query) && name.downcase != normalized_result %>
+    <p>
+      <%= markdown_to_html("#{result.pg_search_highlight} […]").html_safe %>
+    </p>
+  <% end %>
+</article>

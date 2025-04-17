@@ -1,0 +1,14 @@
+<% if results.any? %>
+  <p class="SearchResults--xhr-title"><%= t('search_results.heading', query: h(@query)).html_safe %>:</p>
+  <div class="SearchResults--xhr">
+    <% results.each do |result| %>
+      <%= render "result", result: result, query: query %>
+    <% end %>
+  </div>
+  <%= paginate results %>
+  <p class="SearchResults--xhr-seeAll">
+    <a href="<%= search_path(query: query) %>">See all results</a>
+  </p>
+<% else %>
+  <div class="SearchResults--xhr-emptyState"><%= sanitize t('search_results.none.all', query: h(query)) %></div>
+<% end %>
