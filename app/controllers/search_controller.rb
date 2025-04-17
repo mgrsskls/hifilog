@@ -41,7 +41,7 @@ class SearchController < ApplicationController
   def query_results
     query_arr = [@query]
     query_split_up = @query.split
-    query_arr += query_split_up + [query_split_up.join] if query_split_up.size > 1
+    query_arr += [query_split_up.join] if query_split_up.size > 1
     results = PgSearch.multisearch(query_arr).with_pg_search_highlight.page(params[:page])
 
     if params[:filter].present? && %w[products brands].include?(params[:filter])

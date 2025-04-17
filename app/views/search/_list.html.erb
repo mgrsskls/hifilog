@@ -1,4 +1,4 @@
-<% if results.any? %>
+<% if results.length > 0 %>
   <div class="SearchResults-list">
     <% results.each do |result| %>
       <%= render "result", result: result, query: query %>
