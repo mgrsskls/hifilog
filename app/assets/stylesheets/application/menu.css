@@ -10,6 +10,16 @@
 .Menu-home {
 	display: block;
 	flex: 0 0 9.75rem;
+	text-decoration: none;
+	line-height: 1;
+	white-space: nowrap;
+
+	span {
+		font-size: 0.75em;
+		color: var(--color-secondary);
+		display: block;
+		margin-block-start: 0.5em;
+	}
 }
 
 @media (width < 30rem) {

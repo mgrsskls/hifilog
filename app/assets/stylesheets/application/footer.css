@@ -1,6 +1,6 @@
 .Footer {
 	background: var(--color-blue-125);
-	padding-block: 1rem;
+	padding-block: 2rem;
 	color: var(--color-header-copy);
 	font-size: 0.875em;
 }
@@ -22,14 +22,18 @@
 	gap: var(--gap);
 }
 
+.Footer-supportingWrapper {
+	margin-block-start: 1rem;
+	border-block-start: var(--border) var(--color-transparency-25);
+	padding-block-start: 1rem;
+}
+
 .Footer-supporting {
 	display: flex;
 	gap: 1rem 2rem;
 	align-items: center;
 	flex-wrap: wrap;
-	margin-block-start: 1rem;
-	border-block-start: var(--border) var(--color-transparency-25);
-	padding-block-start: 1rem;
+	margin-block-start: 2rem;
 }
 
 .Footer-supporting h2 {
@@ -74,11 +78,11 @@
 
 .Footer a {
 	color: inherit;
-	text-decoration: none;
 }
 
 .Footer a:hover {
 	text-decoration: underline;
+	color: #fff;
 }
 
 .Footer a[aria-current="page"] {
