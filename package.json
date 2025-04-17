@@ -1,7 +1,7 @@
 {
 	"devDependencies": {
 		"@axe-core/cli": "^4.10.1",
-		"chromedriver": "^135.0.1",
+		"chromedriver": "^135.0.2",
 		"cssnano": "^7.0.6",
 		"esbuild": "^0.25.2",
 		"postcss": "^8.5.3",
