@@ -1,15 +1,19 @@
 ActiveAdmin.register AppNews do
   permit_params :text
 
-  remove_filter :text
-  remove_filter :users
+  config.filters = false
 
   index do
+    selectable_column
     id_column
     column :text
-    column :created_at
-    column :updated_at
-    column :marked_as_read do |app_news|
+    column "Created", sortable: :created_at do |entity|
+      "#{entity.created_at.strftime("%m.%d.%Y")}<br><small>#{entity.created_at.strftime("%H:%M")}</small>".html_safe
+    end
+    column "Updated", sortable: :updated_at do |entity|
+      "#{entity.updated_at.strftime("%m.%d.%Y")}<br><small>#{entity.updated_at.strftime("%H:%M")}</small>".html_safe
+    end
+    column "Read by" do |app_news|
       app_news.users.count
     end
   end

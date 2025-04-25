@@ -1,6 +1,8 @@
 ActiveAdmin.register CustomAttribute do
   permit_params :label, sub_category_ids: []
 
+  config.filters = false
+
   form do |f|
     f.inputs do
       f.input :label

@@ -31,6 +31,7 @@ ActiveAdmin.register SubCategory do
   end
 
   index do
+    selectable_column
     column :id
     column ("Name") do |c|
       SubCategory.find(c.id)

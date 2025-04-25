@@ -4,7 +4,6 @@ ActiveAdmin.register_page "Dashboard" do
 
   content title: proc { I18n.t("active_admin.dashboard") } do
     section do
-      h2 "Recently updated content"
       table_for PaperTrail::Version.where.not(event: :destroy).order('id desc').limit(50) do
         column :id
         column :item_type

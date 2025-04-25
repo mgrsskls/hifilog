@@ -1,9 +1,7 @@
 ActiveAdmin.register Category do
   permit_params :name, :slug, :order, :column
 
-  remove_filter :order
-  remove_filter :slug
-  remove_filter :sub_categories
+  config.filters = false
 
   controller do
     def find_resource

@@ -1,6 +1,8 @@
 ActiveAdmin.register Brand do
   permit_params :country_code, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :founded_day, :founded_month, :founded_year, :full_name, :name, :slug, :website
 
+  remove_filter :created_at
+  remove_filter :updated_at
   remove_filter :description
   remove_filter :discontinued_day
   remove_filter :discontinued_month
@@ -9,6 +11,7 @@ ActiveAdmin.register Brand do
   remove_filter :founded_month
   remove_filter :founded_year
   remove_filter :full_name
+  remove_filter :pg_search_document
   remove_filter :products
   remove_filter :slug
   remove_filter :slugs
@@ -16,9 +19,15 @@ ActiveAdmin.register Brand do
   remove_filter :website
 
   index do
+    selectable_column
     id_column
-    column :name
-    column :full_name
+    column "Name" do |brand|
+      if brand.full_name.present?
+        "#{brand.name}<small><br>#{brand.full_name}</small>".html_safe
+      else
+        brand.name
+      end
+    end
     column :discontinued
     column :website
     column :country_code

@@ -1,32 +1,19 @@
 ActiveAdmin.register ProductVariant do
   permit_params :product_id, :name, :description, :release_year, :release_month, :release_day, :price, :price_currency, :slug, :discontinued, :discontinued_year, :discontinued_month, :discontinued_day, :diy_kit
 
-  remove_filter :description
-  remove_filter :discontinued_day
-  remove_filter :discontinued_month
-  remove_filter :discontinued_year
-  remove_filter :notes
-  remove_filter :possessions
-  remove_filter :price
-  remove_filter :price_currency
-  remove_filter :product_options
-  remove_filter :release_day
-  remove_filter :release_month
-  remove_filter :release_year
-  remove_filter :slug
-  remove_filter :slugs
-  remove_filter :users
-  remove_filter :versions
+  config.filters = false
 
   index do
+    selectable_column
     id_column
     column :product do |product_variant|
       link_to "#{product_variant.product.brand.name} #{product_variant.product.name}", admin_product_path(product_variant.product)
     end
     column :name
     column :description
-    column :price
-    column :price_currency
+    column "Price", sortable: :price do |entity|
+      "#{entity.price} #{entity.price_currency}"
+    end
     column :discontinued
     column :diy_kit
     column :owned_by do |product_variant|

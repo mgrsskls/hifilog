@@ -1,12 +1,15 @@
 ActiveAdmin.register Product do
   permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :price_currency, :price, :release_day, :release_month, :release_year, :slug, sub_category_ids: []
 
+  remove_filter :created_at
+  remove_filter :updated_at
   remove_filter :description
   remove_filter :discontinued_day
   remove_filter :discontinued_month
   remove_filter :discontinued_year
   remove_filter :notes
   remove_filter :possessions
+  remove_filter :pg_search_document
   remove_filter :price
   remove_filter :price_currency
   remove_filter :product_options
@@ -59,11 +62,13 @@ ActiveAdmin.register Product do
   end
 
   index do
+    selectable_column
     id_column
     column :name
     column :brand
-    column :price
-    column :price_currency
+    column "Price", sortable: :price do |entity|
+      "#{entity.price} #{entity.price_currency}"
+    end
     column :discontinued
     column :diy_kit
     column :owned_by do |product_variant|
