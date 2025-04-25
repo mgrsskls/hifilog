@@ -1,20 +1,5 @@
 ActiveAdmin.register ProductVariant do
-  permit_params [
-    :product_id,
-    :name,
-    :description,
-    :release_year,
-    :release_month,
-    :release_day,
-    :price,
-    :price_currency,
-    :slug,
-    :discontinued,
-    :discontinued_year,
-    :discontinued_month,
-    :discontinued_day,
-    :diy_kit,
-  ]
+  permit_params :product_id, :name, :description, :release_year, :release_month, :release_day, :price, :price_currency, :slug, :discontinued, :discontinued_year, :discontinued_month, :discontinued_day, :diy_kit
 
   remove_filter :description
   remove_filter :discontinued_day

@@ -1,22 +1,5 @@
 ActiveAdmin.register Product do
-  permit_params [
-    :brand_id,
-    :description,
-    :discontinued_day,
-    :discontinued_month,
-    :discontinued_year,
-    :discontinued,
-    :discontinued,
-    :diy_kit,
-    :name,
-    :price_currency,
-    :price,
-    :release_day,
-    :release_month,
-    :release_year,
-    :slug,
-    sub_category_ids: [],
-  ]
+  permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :price_currency, :price, :release_day, :release_month, :release_year, :slug, sub_category_ids: []
 
   remove_filter :description
   remove_filter :discontinued_day

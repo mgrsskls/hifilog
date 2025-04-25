@@ -1,19 +1,5 @@
 ActiveAdmin.register Brand do
-  permit_params [
-    :country_code,
-    :description,
-    :discontinued_day,
-    :discontinued_month,
-    :discontinued_year,
-    :discontinued,
-    :founded_day,
-    :founded_month,
-    :founded_year,
-    :full_name,
-    :name,
-    :slug,
-    :website
-  ]
+  permit_params :country_code, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :founded_day, :founded_month, :founded_year, :full_name, :name, :slug, :website
 
   remove_filter :description
   remove_filter :discontinued_day
