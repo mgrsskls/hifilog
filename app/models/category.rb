@@ -13,10 +13,6 @@ class Category < ApplicationRecord
   after_destroy :invalidate_cache
   after_save :invalidate_cache
 
-  def self.ordered
-    order('LOWER(name)')
-  end
-
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[
