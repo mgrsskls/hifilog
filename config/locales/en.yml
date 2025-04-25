@@ -132,14 +132,17 @@ en:
     optical: Optical
     passive: Passive
     planar: Planar Magnetic
+    rca: RCA
     solid_state: Solid State
     stereo: Stereo
     tube: Tube
     wired: Wired
     wireless: Wireless
+    xlr: XLR
   custom_attribute_labels:
     amplifier_channel_type: Channel type
     amplifier_type: Amplifier type
+    cable_interconnect_type: Type
     cartridge_type: Type
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
