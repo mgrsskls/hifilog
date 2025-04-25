@@ -1,13 +1,16 @@
 {
+	"type": "module",
 	"devDependencies": {
 		"@axe-core/cli": "^4.10.1",
+		"@tailwindcss/postcss": "^4.1.4",
 		"chromedriver": "^135.0.2",
 		"cssnano": "^7.0.6",
 		"esbuild": "^0.25.2",
 		"postcss": "^8.5.3",
 		"postcss-cli": "^11.0.1",
 		"postcss-import": "^16.1.0",
-		"prettier": "^3.5.3"
+		"prettier": "^3.5.3",
+		"tailwindcss": "^4.1.4"
 	},
 	"scripts": {
 		"watch:css": "postcss ./app/assets/stylesheets/*.css --dir ./app/assets/builds/ --watch",
@@ -23,14 +26,11 @@
 		"type": "git",
 		"url": "git+https://github.com/mgrsskls/hifi-gear.git"
 	},
-	"engines": {
-		"node": "^20.11.1",
-		"npm": "^10.2.4"
-	},
 	"prettier": {
 		"useTabs": true
 	},
 	"dependencies": {
+		"@activeadmin/activeadmin": "4.0.0-beta15",
 		"@milkdown/kit": "^7.8.0"
 	}
 }

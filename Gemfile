@@ -13,7 +13,7 @@ gem "sprockets-rails"
 gem "puma", "~> 6.6"
 
 gem "devise"
-gem "activeadmin"
+gem "activeadmin", "~> 4.0.0.beta15"
 gem "breadcrumbs_on_rails"
 gem "kaminari"
 gem "friendly_id"
@@ -63,6 +63,7 @@ end
 
 gem "cssbundling-rails", "~> 1.4"
 gem "jsbundling-rails"
+gem "importmap-rails"
 gem "stackprof"
 gem "sentry-ruby"
 gem "sentry-rails"

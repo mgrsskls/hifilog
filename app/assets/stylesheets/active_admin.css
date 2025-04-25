@@ -1,0 +1,39 @@
+@config "../../../tailwind-active_admin.config.js";
+@import "tailwindcss";
+
+@utility ring-opacity-5 {
+	--tw-ring-opacity: 0.05;
+}
+
+@theme {
+	--color-hifilog: #0f1c24;
+	--color-gray-50: hsl(204, 40%, 95%);
+	--color-gray-100: hsl(204, 40%, 90%);
+	--color-gray-200: hsl(204, 40%, 80%);
+	--color-gray-300: hsl(204, 40%, 70%);
+	--color-gray-400: hsl(204, 40%, 60%);
+	--color-gray-500: hsl(204, 40%, 50%);
+	--color-gray-600: hsl(204, 40%, 40%);
+	--color-gray-700: hsl(204, 40%, 30%);
+	--color-gray-800: hsl(204, 40%, 20%);
+	--color-gray-900: hsl(204, 40%, 10%);
+	--color-gray-950: hsl(204, 40%, 5%);
+}
+
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentColor);
+	}
+}
+
+a {
+	color: hsl(311, 34%, 25%);
+}
+
+.dark a {
+	color: hsl(313, 50%, 85%);
+}

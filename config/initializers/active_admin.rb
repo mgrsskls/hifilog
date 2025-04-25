@@ -6,18 +6,6 @@ ActiveAdmin.setup do |config|
   #
   config.site_title = "HiFi Log"
 
-  # Set the link url for the title. For example, to take
-  # users to your main site. Defaults to no link.
-  #
-  # config.site_title_link = "/"
-
-  # Set an optional image to be displayed for the header
-  # instead of a string (overrides :site_title)
-  #
-  # Note: Aim for an image that's 21px high so it fits in the header.
-  #
-  # config.site_title_image = "logo.png"
-
   # == Load Paths
   #
   # By default Active Admin files go inside app/admin/.
@@ -122,12 +110,6 @@ ActiveAdmin.setup do |config|
   # Default:
   config.logout_link_path = :destroy_admin_user_session_path
 
-  # This setting changes the http method used when rendering the
-  # link. For example :get, :delete, :put, etc..
-  #
-  # Default:
-  # config.logout_link_method = :get
-
   # == Root
   #
   # Set the action to call for the root path. You can set different
@@ -187,23 +169,6 @@ ActiveAdmin.setup do |config|
   #
   config.localize_format = :long
 
-  # == Setting a Favicon
-  #
-  # config.favicon = 'favicon.ico'
-
-  # == Meta Tags
-  #
-  # Add additional meta tags to the head element of active admin pages.
-  #
-  # Add tags to all pages logged in users see:
-  #   config.meta_tags = { author: 'My Company' }
-
-  # By default, sign up/sign in/recover password pages are excluded
-  # from showing up in search engine results by adding a robots meta
-  # tag. You can reset the hash of meta tags included in logged out
-  # pages:
-  #   config.meta_tags_for_logged_out_pages = {}
-
   # == Removing Breadcrumbs
   #
   # Breadcrumbs are enabled by default. You can customize them for individual
@@ -217,21 +182,6 @@ ActiveAdmin.setup do |config|
   # resources or you can enable them globally from here.
   #
   # config.create_another = true
-
-  # == Register Stylesheets & Javascripts
-  #
-  # We recommend using the built in Active Admin layout and loading
-  # up your own stylesheets / javascripts to customize the look
-  # and feel.
-  #
-  # To load a stylesheet:
-  #   config.register_stylesheet 'my_stylesheet.css'
-  #
-  # You can provide an options hash for more control, which is passed along to stylesheet_link_tag():
-  #   config.register_stylesheet 'my_print_stylesheet.css', media: :print
-  #
-  # To load a javascript file:
-  #   config.register_javascript 'my_javascript.js'
 
   # == CSV options
   #
@@ -322,33 +272,10 @@ ActiveAdmin.setup do |config|
   #  ]
   # config.filter_method_for_large_association = '_start'
 
-  # == Head
-  #
-  # You can add your own content to the site head like analytics. Make sure
-  # you only pass content you trust.
-  #
-  # config.head = ''.html_safe
-
-  # == Footer
-  #
-  # By default, the footer shows the current Active Admin version. You can
-  # override the content of the footer here.
-  #
-  # config.footer = 'my custom footer text'
-
   # == Sorting
   #
   # By default ActiveAdmin::OrderClause is used for sorting logic
   # You can inherit it with own class and inject it for all resources
   #
   # config.order_clause = MyOrderClause
-
-  # == Webpacker
-  #
-  # By default, Active Admin uses Sprocket's asset pipeline.
-  # You can switch to using Webpacker here.
-  #
-  # config.use_webpacker = true
-
-  config.register_javascript "active_admin.js", nonce: true
 end
