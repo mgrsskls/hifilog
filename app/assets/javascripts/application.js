@@ -14,6 +14,23 @@ import "./_search.js";
 	const buttonsWithLoadingState = document.querySelectorAll(
 		".Button--loadingIcon, .CheckboxButton",
 	);
+	const filterCheckboxes = document.querySelectorAll(".Filter .Pagination");
+
+	filterCheckboxes.forEach((el) => {
+		if (el.querySelectorAll('[type="checkbox"]').length == 2) {
+			el.querySelectorAll('[type="checkbox"]').forEach((checkbox) => {
+				checkbox.addEventListener("change", ({ target }) => {
+					if (target.checked) {
+						Array.from(
+							target
+								.closest(".Pagination")
+								.querySelectorAll('[type="checkbox"]'),
+						).filter((checkbox) => checkbox !== target)[0].checked = false;
+					}
+				});
+			});
+		}
+	});
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);
