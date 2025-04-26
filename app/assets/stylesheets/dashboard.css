@@ -6,20 +6,20 @@
 
 @media (width >= 48rem) {
 	.Dashboard {
-		display: flex;
+		display: grid;
+		grid-template: "header content" / 17rem 1fr;
+		align-items: start;
 		gap: clamp(2rem, 4vi, 4rem);
 	}
 
 	.Dashboard-menu {
-		flex: 1;
-		min-inline-size: 16rem;
-		align-self: start;
 		position: sticky;
 		inset-block-start: 6rem;
+		grid-area: header;
 	}
 
 	.Dashboard-products {
-		flex: 4;
+		grid-area: content;
 	}
 
 	.Dashboard-userName {
