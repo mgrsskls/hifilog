@@ -11,11 +11,9 @@ class Brand < ApplicationRecord
                   ignoring: :accents,
                   using: {
                     tsearch: {
+                      prefix: true,
                       any_word: true,
-                    },
-                    trigram: {
-                      threshold: 0.3
-                    },
+                    }
                   },
                   ranked_by: ':trigram'
 

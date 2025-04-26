@@ -1,19 +1,3 @@
-PgSearch.multisearch_options = {
-	ignoring: :accents,
-	using: {
-		tsearch: {
-			any_word: true,
-			highlight: {
-				StartSel: '<mark>',
-				StopSel: '</mark>',
-				MaxFragments: 3,
-				FragmentDelimiter: ' […] '
-			}
-		}
-	},
-	ranked_by: ':trigram'
-}
-
 APP_NAME = 'HiFi Log'
 CURRENCIES = [
 	{

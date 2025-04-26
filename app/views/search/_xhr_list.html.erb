@@ -5,7 +5,6 @@
       <%= render "result", result: result, query: query %>
     <% end %>
   </div>
-  <%= paginate results %>
   <p class="SearchResults--xhr-seeAll">
     <a href="<%= search_path(query: query) %>">See all results</a>
   </p>
