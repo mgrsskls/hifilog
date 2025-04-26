@@ -29,7 +29,7 @@
       <% @categories.each do |category| %>
         <details <% if (category.sub_category_ids & @custom_product.sub_category_ids).any? %>open<% end %>>
           <summary><%= category.name %></summary>
-          <% category.sub_categories.each do |sub_category| %>
+          <% category.sub_categories.order(:order, :name).each do |sub_category| %>
             <div class="Options-item">
               <%= check_box_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.id, @custom_product.sub_category_ids.include?(sub_category.id), name: "custom_product[sub_category_ids][]" %>
               <%= label_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.name %>

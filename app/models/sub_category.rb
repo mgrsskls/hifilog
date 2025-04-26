@@ -26,6 +26,7 @@ class SubCategory < ApplicationRecord
       name_end
       name_eq
       name_start
+      order
     ]
   end
 

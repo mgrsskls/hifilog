@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_08_141801) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_26_170346) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -321,6 +321,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_141801) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.citext "slug", null: false
+    t.integer "order"
     t.index ["category_id", "name"], name: "index_sub_categories_category_id_name", unique: true
     t.index ["category_id", "slug"], name: "index_sub_categories_category_id_slug", unique: true
   end
