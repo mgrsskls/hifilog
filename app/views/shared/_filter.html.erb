@@ -38,6 +38,26 @@
           </select>
         </div>
 
+        <% if sub_categories.any? %>
+          <div class="Filter-section">
+            <label class="Filter-option" for="filter-sub-categories" class="Filter-option"><%= Category.model_name.human %></label>
+            <select class="Filter-input" name="sub_category" id="filter-sub-categories">
+              <option value=""<%= ' selected'.html_safe unless @sub_category.present? %>>
+                <%= t('filter.all') %>
+              </option>
+              <% sub_categories.each do |category| %>
+                <optgroup label="<%= category[0].name %>">
+                  <% category[1].each do |sub_category| %>
+                    <option value="<%= sub_category.slug %>"<%= ' selected'.html_safe if @sub_category.present? && @sub_category.slug == sub_category.slug %>>
+                      <%= sub_category.name %>
+                    </option>
+                  <% end %>
+                </optgroup>
+              <% end %>
+            </select>
+          </div>
+        <% end %>
+
         <div class="Filter-section Filter-section--attributes">
           <fieldset>
             <legend class="Filter-option" class="Filter-option"><%= t('status') %></legend>
@@ -77,26 +97,6 @@
                 </li>
               </ul>
             </fieldset>
-          </div>
-        <% end %>
-
-        <% if sub_categories.any? %>
-          <div class="Filter-section">
-            <label class="Filter-option" for="filter-sub-categories" class="Filter-option"><%= Category.model_name.human %></label>
-            <select class="Filter-input" name="sub_category" id="filter-sub-categories">
-              <option value=""<%= ' selected'.html_safe unless @sub_category.present? %>>
-                <%= t('filter.all') %>
-              </option>
-              <% sub_categories.each do |category| %>
-                <optgroup label="<%= category[0].name %>">
-                  <% category[1].each do |sub_category| %>
-                    <option value="<%= sub_category.slug %>"<%= ' selected'.html_safe if @sub_category.present? && @sub_category.slug == sub_category.slug %>>
-                      <%= sub_category.name %>
-                    </option>
-                  <% end %>
-                </optgroup>
-              <% end %>
-            </select>
           </div>
         <% end %>
 

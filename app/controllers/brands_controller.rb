@@ -111,6 +111,8 @@ class BrandsController < ApplicationController
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @category = @sub_category.category if @sub_category.present?
 
+    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
+
     if @sub_category
       products = @sub_category.products.where(brand_id: @brand.id)
       add_breadcrumb @brand.name, brand_path(@brand)
