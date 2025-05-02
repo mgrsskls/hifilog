@@ -26,7 +26,7 @@
                 <span><%= category.name %></span>
               <% end %>
               <ul>
-                <% category.sub_categories.order(:order, :name).each do |sub_category| %>
+                <% category.sub_categories.each do |sub_category| %>
                   <li>
                     <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { sub_category: sub_category.friendly_id }),
                       class: "MegaMenu MegaMenu-link MegaMenu-link--lvl2",

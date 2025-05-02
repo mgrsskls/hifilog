@@ -192,13 +192,13 @@ class BrandsController < ApplicationController
 
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     @brand = @sub_category ? Brand.new(sub_category_ids: [@sub_category.id]) : Brand.new
-    @categories = Category.includes([:sub_categories]).order(:order)
+    @categories = Category.includes([:sub_categories])
   end
 
   def edit
     @brand = Brand.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @brand.name)
-    @categories = Category.includes([:sub_categories]).order(:order)
+    @categories = Category.includes([:sub_categories])
 
     add_breadcrumb @brand.name, brand_path(@brand)
     add_breadcrumb I18n.t('edit')
@@ -210,7 +210,7 @@ class BrandsController < ApplicationController
     if @brand.save
       redirect_to brand_path(@brand)
     else
-      @categories = Category.includes([:sub_categories]).order(:order)
+      @categories = Category.includes([:sub_categories])
       render :new, status: :unprocessable_entity
     end
   end
@@ -231,7 +231,7 @@ class BrandsController < ApplicationController
 
       redirect_to brand_path(@brand)
     else
-      @categories = Category.includes([:sub_categories]).order(:order)
+      @categories = Category.includes([:sub_categories])
       render :edit, status: :unprocessable_entity
     end
   end

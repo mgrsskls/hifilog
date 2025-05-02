@@ -1,6 +1,8 @@
 class Category < ApplicationRecord
   extend FriendlyId
 
+  default_scope { order(order: :asc) }
+
   has_many :sub_categories, dependent: :destroy
 
   friendly_id :name, use: [:slugged]

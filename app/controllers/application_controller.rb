@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
 
   def menu_categories
     Rails.cache.fetch('/menu_categories') do
-      Category.includes(:sub_categories).order(:order).group_by(&:column)
+      Category.includes(:sub_categories).group_by(&:column)
     end
   end
 

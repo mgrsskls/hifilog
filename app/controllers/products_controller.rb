@@ -176,7 +176,7 @@ class ProductsController < ApplicationController
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
     @brand = @product.build_brand
     @brands = Brand.order('LOWER(name)')
-    @categories = Category.includes([:sub_categories]).order(:order)
+    @categories = Category.includes([:sub_categories])
 
     if params[:brand_id].present?
       @product.brand_id = params[:brand_id]
@@ -192,7 +192,7 @@ class ProductsController < ApplicationController
     @product = Product.friendly.find(params[:id])
     @page_title = I18n.t('edit_record', name: @product.name)
     @brand = @product.brand
-    @categories = Category.includes([:sub_categories]).order(:order)
+    @categories = Category.includes([:sub_categories])
 
     add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
     add_breadcrumb I18n.t('edit')
@@ -234,7 +234,7 @@ class ProductsController < ApplicationController
           end
         end
       end
-      @categories = Category.includes([:sub_categories]).order(:order)
+      @categories = Category.includes([:sub_categories])
       @product = product
       @brand = brand
       render :new, status: :unprocessable_entity
@@ -259,7 +259,7 @@ class ProductsController < ApplicationController
     if product.save
       redirect_to URI.parse(product_url(id: product.friendly_id)).path
     else
-      @categories = Category.includes([:sub_categories]).order(:order)
+      @categories = Category.includes([:sub_categories])
       @product = product
       @brand = brand
       render :new, status: :unprocessable_entity
@@ -293,7 +293,7 @@ class ProductsController < ApplicationController
     if @product.update(product_update_params)
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
-      @categories = Category.order(:order)
+      @categories = Category
       @brand = Brand.find(@product.brand_id)
       render :edit, status: :unprocessable_entity
     end

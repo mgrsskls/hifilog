@@ -36,14 +36,14 @@ class CustomProductsController < ApplicationController
 
   def new
     @custom_product = CustomProduct.new
-    @categories = Category.includes([:sub_categories]).order(:order)
+    @categories = Category.includes([:sub_categories])
 
     add_breadcrumb I18n.t('custom_product.new.breadcrumb')
   end
 
   def edit
     @custom_product = current_user.custom_products.find(params[:id])
-    @categories = Category.includes([:sub_categories]).order(:order)
+    @categories = Category.includes([:sub_categories])
 
     add_breadcrumb @custom_product.name, user_custom_product_path(
       id: @custom_product.id,
@@ -70,14 +70,14 @@ class CustomProductsController < ApplicationController
       redirect_to user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
     else
       @active_dashboard_menu = :custom_products
-      @categories = Category.includes([:sub_categories]).order(:order)
+      @categories = Category.includes([:sub_categories])
       render :new, status: :unprocessable_entity
     end
   end
 
   def update
     @custom_product = current_user.custom_products.find(params[:id])
-    @categories = Category.includes([:sub_categories]).order(:order)
+    @categories = Category.includes([:sub_categories])
 
     if @custom_product.update(custom_product_params)
       flash[:notice] = I18n.t(

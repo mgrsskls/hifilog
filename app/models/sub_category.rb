@@ -1,6 +1,8 @@
 class SubCategory < ApplicationRecord
   extend FriendlyId
 
+  default_scope { order(order: :asc, name: :asc) }
+
   belongs_to :category
   has_and_belongs_to_many :products, join_table: :products_sub_categories
   has_and_belongs_to_many :brands
