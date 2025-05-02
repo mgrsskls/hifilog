@@ -37,3 +37,7 @@ a {
 .dark a {
 	color: hsl(313, 50%, 85%);
 }
+
+.active-menu-item:not(:has(+ ul .active-menu-item)) {
+	@apply bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white;
+}

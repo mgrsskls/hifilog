@@ -1,6 +1,8 @@
 ActiveAdmin.register User do
   permit_params :email, :encrypted_password, :reset_password_token, :reset_password_sent_at, :remember_created_at, :random_username, :user_name, :unconfirmed_email, :receives_newsletter
 
+  menu priority: 1
+
   config.filters = false
 
   index do

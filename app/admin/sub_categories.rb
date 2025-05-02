@@ -1,6 +1,8 @@
 ActiveAdmin.register SubCategory do
   permit_params :name, :category_id, :slug, :order, custom_attribute_ids: []
 
+  menu parent: "Settings"
+
   remove_filter :brands
   remove_filter :custom_attributes
   remove_filter :custom_products

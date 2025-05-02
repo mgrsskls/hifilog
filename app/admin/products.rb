@@ -1,6 +1,8 @@
 ActiveAdmin.register Product do
   permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :price_currency, :price, :release_day, :release_month, :release_year, :slug, sub_category_ids: []
 
+  menu priority: 3
+
   remove_filter :created_at
   remove_filter :updated_at
   remove_filter :description
@@ -21,6 +23,10 @@ ActiveAdmin.register Product do
   remove_filter :slugs
   remove_filter :users
   remove_filter :versions
+
+  action_item :add_variant, only: :show do
+    link_to 'Add Variant', new_admin_product_variant_path(product_variant: { product_id: @product.id }), class: 'action-item-button'
+  end
 
   form do |f|
     f.inputs do

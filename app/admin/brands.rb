@@ -1,6 +1,8 @@
 ActiveAdmin.register Brand do
   permit_params :country_code, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :founded_day, :founded_month, :founded_year, :full_name, :name, :slug, :website, sub_category_ids: []
 
+  menu priority: 2
+
   remove_filter :created_at
   remove_filter :updated_at
   remove_filter :description
@@ -17,6 +19,10 @@ ActiveAdmin.register Brand do
   remove_filter :slugs
   remove_filter :versions
   remove_filter :website
+
+  action_item :add_product, only: :show do
+    link_to 'Add Product', new_admin_product_path(product: { brand_id: @brand.id }), class: 'action-item-button'
+  end
 
   index do
     selectable_column

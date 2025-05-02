@@ -1,6 +1,8 @@
 ActiveAdmin.register Newsletter do
   permit_params :content
 
+  menu parent: "HiFi Log"
+
   config.filters = false
 
   after_create do |newsletter|
@@ -18,7 +20,7 @@ ActiveAdmin.register Newsletter do
     id_column
     column :content
     column "Created", sortable: :created_at do |entity|
-      "#{entity.created_at.strftime("%m.%d.%Y")}<br><small>#{entity.created_at.strftime("%H:%M")}</small>".html_safe
+      "#{entity.created_at&.strftime("%m.%d.%Y")}<br><small>#{entity.created_at&.strftime("%H:%M")}</small>".html_safe
     end
     actions
   end

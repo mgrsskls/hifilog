@@ -1,0 +1,19 @@
+<div id="main-menu" class="fixed top-0 xl:top-16 bottom-0 start-0 z-40 w-72 xl:w-60 p-4 overflow-y-auto transition-transform duration-200 -translate-x-full xl:translate-x-0 bg-white dark:bg-gray-950 xl:border-e xl:border-gray-200 xl:dark:border-white/10" tabindex="-1">
+  <ul role="list" class="flex flex-1 flex-col space-y-1.5">
+    <% current_menu.items(self).each do |item| %>
+      <% children = item.items(self).presence %>
+      <li>
+        <%= link_to item.label(self), item.url(self), item.html_options.merge(class: "text-gray-600 font-bold hover:text-gray-900 dark:text-gray-400 dark:hover:text-white block rounded-md py-1.5 px-2 text-sm no-underline hover:underline #{(current_menu_item?(item) ? "active-menu-item" : "")}") %>
+        <% if children %>
+          <ul role="list" class="mt-1 ml-2 space-y-1">
+            <% children.each do |j| %>
+              <li data-item-id="<%= j.id %>">
+                <%= link_to j.label(self), j.url(self), j.html_options.merge(class: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white block rounded-md py-1.5 px-2 text-sm no-underline hover:underline #{(current_menu_item?(j) ? "active-menu-item" : "")}") %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>

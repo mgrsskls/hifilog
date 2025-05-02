@@ -1,6 +1,8 @@
 ActiveAdmin.register PaperTrail::Version do
   actions :index, :show
 
+  menu priority: 999
+
   def controller
     def index
       column :id

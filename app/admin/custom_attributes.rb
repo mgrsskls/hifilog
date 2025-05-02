@@ -3,6 +3,8 @@ ActiveAdmin.register CustomAttribute do
 
   config.filters = false
 
+  menu parent: "Settings"
+
   form do |f|
     f.inputs do
       f.input :label

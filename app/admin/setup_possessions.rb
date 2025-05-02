@@ -3,6 +3,8 @@ ActiveAdmin.register SetupPossession do
     actions :all, except: [:show, :edit]
   end
 
+  menu parent: "Users"
+
   remove_filter :possession
 
   index do

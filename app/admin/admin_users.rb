@@ -3,6 +3,8 @@ ActiveAdmin.register AdminUser do
 
   config.filters = false
 
+  menu parent: "Settings"
+
   index do
     selectable_column
     id_column
