@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.3.6"
+ruby "3.4.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.2"
@@ -49,9 +49,9 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  gem 'bullet'
-  gem 'database_consistency', require: false
-  gem 'i18n-tasks', '~> 1.0.15', group: :development
+  gem "bullet"
+  gem "database_consistency", require: false
+  gem "i18n-tasks", "~> 1.0.15", group: :development
 end
 
 group :test do
