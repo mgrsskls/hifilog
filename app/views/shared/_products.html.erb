@@ -74,7 +74,7 @@
             <% unless hide_release_date %>
               <td class="Table-sm Table-date">
                 <% if item.release_date.present? %>
-                  <time datetime="<%= item.release_date %>"><%= item.formatted_release_date.html_safe %></time>
+                  <time datetime="<%= item.release_date %>"><%= sanitize item.formatted_release_date %></time>
                 <% else %>
                   -
                 <% end %>

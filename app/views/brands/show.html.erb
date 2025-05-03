@@ -24,7 +24,7 @@
           <dt><%= t('brand.founded') %></dt>
           <dd>
             <% if @brand.founded_date.present? %>
-              <time datetime="<%= format_iso_date @brand.founded_date %>"><%= @brand.formatted_founded_date.html_safe %></time>
+              <time datetime="<%= format_iso_date @brand.founded_date %>"><%= sanitize @brand.formatted_founded_date %></time>
             <% else %>
               -
             <% end %>
@@ -33,7 +33,7 @@
             <dt><%= t('discontinued') %></dt>
             <dd>
               <% if @brand.discontinued_date.present? %>
-                <time datetime="<%= format_iso_date @brand.discontinued_date %>"><%= @brand.formatted_discontinued_date.html_safe %></time>
+                <time datetime="<%= format_iso_date @brand.discontinued_date %>"><%= sanitize @brand.formatted_discontinued_date %></time>
               <% else %>
                 -
               <% end %>

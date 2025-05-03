@@ -75,7 +75,7 @@
             <dt><%= Product.human_attribute_name(:release_date) %></dt>
             <dd>
               <% if @product.release_date.present? %>
-                <time datetime="<%= @product.release_date %>"><%= @product.formatted_release_date.html_safe %></time>
+                <time datetime="<%= @product.release_date %>"><%= sanitize @product.formatted_release_date %></time>
               <% else %>
                 -
               <% end %>
@@ -84,7 +84,7 @@
               <dt><%= t('discontinued') %></dt>
               <dd>
                 <% if @product.discontinued_date.present? %>
-                  <time datetime="<%= @product.discontinued_date %>"><%= @product.formatted_discontinued_date.html_safe %></time>
+                  <time datetime="<%= @product.discontinued_date %>"><%= sanitize @product.formatted_discontinued_date %></time>
                 <% else %>
                   -
                 <% end %>
