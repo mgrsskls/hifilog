@@ -2,15 +2,15 @@
 	"type": "module",
 	"devDependencies": {
 		"@axe-core/cli": "^4.10.1",
-		"@tailwindcss/postcss": "^4.1.4",
+		"@tailwindcss/postcss": "^4.1.5",
 		"chromedriver": "^135.0.2",
 		"cssnano": "^7.0.6",
-		"esbuild": "^0.25.2",
+		"esbuild": "^0.25.3",
 		"postcss": "^8.5.3",
 		"postcss-cli": "^11.0.1",
 		"postcss-import": "^16.1.0",
 		"prettier": "^3.5.3",
-		"tailwindcss": "^4.1.4"
+		"tailwindcss": "^4.1.5"
 	},
 	"scripts": {
 		"watch:css": "postcss ./app/assets/stylesheets/*.css --dir ./app/assets/builds/ --watch",
@@ -31,6 +31,6 @@
 	},
 	"dependencies": {
 		"@activeadmin/activeadmin": "4.0.0-beta15",
-		"@milkdown/kit": "^7.8.0"
+		"@milkdown/kit": "^7.9.0"
 	}
 }
