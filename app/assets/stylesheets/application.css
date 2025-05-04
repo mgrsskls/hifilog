@@ -305,11 +305,11 @@
 		color: var(--color-copy);
 	}
 
-	:is(a, input, textarea, button) {
+	:is(a, input, textarea, button, select) {
 		border-radius: var(--border-radius);
 	}
 
-	:is(a, input, textarea, button):focus-visible {
+	:is(a, input, textarea, button, select):focus-visible {
 		outline: 0.125rem solid var(--color-focus-outline);
 		outline-offset: 0.1875rem;
 	}

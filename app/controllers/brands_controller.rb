@@ -36,12 +36,18 @@ class BrandsController < ApplicationController
     @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
     if @sub_category
       @category = Category.find(@sub_category.category_id)
+      @custom_attributes = @sub_category.custom_attributes
       add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
       add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name
     elsif params[:category].present?
       add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
       @category = Category.friendly.find(params[:category])
+      if @category
+        @custom_attributes = CustomAttribute.joins(:sub_categories)
+                                            .where(sub_categories: { id: @category.sub_categories.map(&:id) })
+                                            .distinct
+      end
       add_breadcrumb @category.name
     else
       add_breadcrumb Brand.model_name.human(count: 2)
@@ -64,6 +70,40 @@ class BrandsController < ApplicationController
       @filter_applied = true
     end
 
+    if params[:diy_kit].present?
+      brands = brands.left_joins(products: [:product_variants])
+      brands = if params[:diy_kit] == '0'
+                 brands.where(products: { product_variants: { diy_kit: false } })
+                       .or(brands.where(products: { diy_kit: false }))
+                       .distinct
+               else
+                 brands.where(products: { product_variants: { diy_kit: true } })
+                       .or(brands.where(products: { diy_kit: true }))
+                       .distinct
+               end
+      @filter_applied = true
+    end
+
+    if params[:attr].present?
+      CustomAttribute.find_each do |custom_attribute|
+        id_s = custom_attribute.id.to_s
+        if params[:attr][id_s].present?
+          brands = brands.joins(:products)
+                         .where('custom_attributes ->> ? IN (?)', id_s, params[:attr][custom_attribute.id.to_s])
+                         .distinct
+          @filter_applied = true
+        end
+      end
+    end
+
+    if params[:query].present?
+      @brands_query = params[:query].strip
+      if @brands_query.present?
+        brands = brands.search_by_name(@brands_query).with_pg_search_rank
+        @filter_applied = true
+      end
+    end
+
     if @sub_category || @category
       brands = if @sub_category
                  brands.joins(:sub_categories)
@@ -72,16 +112,10 @@ class BrandsController < ApplicationController
                  brands.where(sub_categories: { category_id: @category.id })
                end
       brands = brands.order(update_for_joined_tables(order))
+    elsif params[:diy_kit].present? || params[:attr].present?
+      brands = brands.order(update_for_joined_tables(order))
     else
       brands = brands.order(order)
-    end
-
-    if params[:query].present?
-      @brands_query = params[:query].strip
-      if @brands_query.present?
-        brands = brands.search_by_name(@brands_query)
-        @filter_applied = true
-      end
     end
 
     @brands = brands.includes(sub_categories: [:category]).page(params[:page])
@@ -123,15 +157,22 @@ class BrandsController < ApplicationController
       add_breadcrumb @brand.name, brand_path(@brand)
       add_breadcrumb Product.model_name.human(count: 2), brand_products_path(brand_id: @brand.friendly_id)
       add_breadcrumb @sub_category.name
+      @custom_attributes = @sub_category.custom_attributes
       @filter_applied = true
     else
       products = @brand.products
       add_breadcrumb @brand.name, brand_path(@brand)
       add_breadcrumb Product.model_name.human(count: 2)
+
+      if @category
+        @custom_attributes = CustomAttribute.joins(:sub_categories)
+                                            .where(sub_categories: { id: @category.sub_categories.map(&:id) })
+                                            .distinct
+      end
     end
 
     if ABC.include?(params[:letter])
-      products = products.where('left(lower(name),1) = :prefix', prefix: params[:letter].downcase)
+      products = products.where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
       @filter_applied = true
     end
 
@@ -146,11 +187,29 @@ class BrandsController < ApplicationController
 
     if params[:diy_kit].present?
       products = products.left_outer_joins(:product_variants)
-                         .where(product_variants: { diy_kit: params[:diy_kit] })
-                         .or(
-                           products.where(diy_kit: params[:diy_kit])
-                         )
+
+      products = if params[:diy_kit] == '0'
+                   products.where(product_variants: { diy_kit: false })
+                           .or(
+                             products.where(diy_kit: false)
+                           )
+                 else
+                   products.where(product_variants: { diy_kit: true })
+                           .or(
+                             products.where(diy_kit: true)
+                           )
+                 end
       @filter_applied = true
+    end
+
+    if params[:attr].present?
+      CustomAttribute.find_each do |custom_attribute|
+        id_s = custom_attribute.id.to_s
+        if params[:attr][id_s].present?
+          products = products.where('custom_attributes ->> ? IN (?)', id_s, params[:attr][custom_attribute.id.to_s])
+          @filter_applied = true
+        end
+      end
     end
 
     if params[:query].present?
