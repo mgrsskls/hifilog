@@ -41,6 +41,7 @@ class Brand < ApplicationRecord
   validates :founded_year,
             numericality: { only_integer: true },
             if: -> { founded_year.present? }
+  validate :country_code_has_allowed_value
 
   friendly_id :name, use: [:slugged, :history]
 
@@ -78,6 +79,12 @@ class Brand < ApplicationRecord
 
     Date.new(discontinued_year.to_i, discontinued_month.present? ? discontinued_month.to_i : 1,
              discontinued_day.present? ? discontinued_day.to_i : 1)
+  end
+
+  def country_code_has_allowed_value
+    return if country_code.nil? || ISO3166::Country.all.map(&:alpha2).include?(country_code)
+
+    errors.add(:country_code, 'is not a correct country code')
   end
 
   # :nocov:
