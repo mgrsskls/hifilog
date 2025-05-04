@@ -1,4 +1,5 @@
 <% jump_to_list ||= false %>
+<% render_country_filter = type == :brands %>
 <% render_diy_kit_filter = type == :products %>
 <% filter_active_label = type == :products ? t('continued') : t('active') %>
 <% collection ||= nil %>
@@ -37,6 +38,26 @@
             <% end %>
           </select>
         </div>
+
+        <% if render_country_filter %>
+          <div class="Filter-section">
+            <label for="filter-country" class="Filter-option">
+              <%= Brand.human_attribute_name(:country_code) %>
+            </label>
+            <%= country_select(nil,
+              "country",
+              {
+                include_blank: "All",
+                priority_countries: Brand.where.not(country_code: nil).map(&:country_code).uniq,
+                selected: params[:country]&.upcase
+              },
+              {
+                class: "Filter-input",
+                id: "filter-country"
+              })
+            %>
+          </div>
+        <% end %>
 
         <% if sub_categories.any? %>
           <div class="Filter-section">

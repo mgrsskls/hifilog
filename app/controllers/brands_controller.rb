@@ -59,6 +59,11 @@ class BrandsController < ApplicationController
       @filter_applied = true
     end
 
+    if params[:country].present?
+      brands = brands.where(country_code: params[:country].upcase)
+      @filter_applied = true
+    end
+
     if @sub_category || @category
       brands = if @sub_category
                  brands.joins(:sub_categories)
