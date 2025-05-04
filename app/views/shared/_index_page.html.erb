@@ -1,0 +1,54 @@
+<div class="IndexPage" id="list">
+  <div class="IndexPage-header">
+    <div class="IndexPage-headerFilter">
+      <%= yield :header %>
+    </div>
+
+    <% if render_category %>
+      <% if sub_category %>
+        <span class="IndexPage-category"><%= sub_category.name %></span>
+      <% elsif category %>
+        <span class="IndexPage-category"><%= category.name %></span>
+      <% end %>
+    <% end %>
+
+    <div class="IndexPage-filter">
+      <%= yield :filter %>
+    </div>
+  </div>
+  <div class="IndexPage-content">
+    <% if records.length > 0 %>
+      <div class="u-breakpoint u-breakpoint--l">
+        <div class="IndexPage-contentHeader">
+          <p class="FilterInfo">
+            <small><%= page_entries_info records %></small>
+          </p>
+          <form class="u-flex u-alignCenter u-gap-md">
+            <input type="hidden" name="query" value="<%= params[:query] %>">
+            <input type="hidden" name="letter" value="<%= params[:letter] %>">
+            <input type="hidden" name="status" value="<%= params[:status] %>">
+            <input type="hidden" name="sub_category" value="<%= params[:sub_category] %>">
+            <input type="hidden" name="diy_kit" value="<%= params[:diy_kit] %>">
+            <% params[:attr]&.each do |attr| %>
+              <% attr[1].each do |value| %>
+                <input type="hidden" name="attr[<%= attr[0] %>][]" value="<%= value %>">
+              <% end %>
+            <% end %>
+            <%= yield :sort %>
+            <%= javascript_tag nonce: true do %>
+              document.querySelector("#sort").addEventListener("change", ({ target }) => {
+                target.closest("form").submit();
+              });
+            <% end %>
+          </form>
+        </div>
+        <%= yield :table %>
+        <%= paginate records %>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state", message: empty_state_message %>
+    <% end %>
+
+    <%= render "shared/page_actions" %>
+  </div>
+</div>

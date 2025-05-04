@@ -75,10 +75,23 @@ class ProductsController < ApplicationController
 
     if params[:diy_kit].present?
       products = products.left_outer_joins(:product_variants)
-                         .where(product_variants: { diy_kit: params[:diy_kit] })
-                         .or(
-                           products.where(diy_kit: params[:diy_kit])
-                         )
+
+      products = if params[:diy_kit] == '0'
+                   products.where(product_variants: { diy_kit: false })
+                           .or(
+                             products.where(diy_kit: false)
+                           )
+                 else
+                   products.where(product_variants: { diy_kit: true })
+                           .or(
+                             products.where(diy_kit: true)
+                           )
+                 end
+      @filter_applied = true
+    end
+
+    if params[:country].present?
+      products = products.joins(:brand).where(brand: { country_code: params[:country].upcase })
       @filter_applied = true
     end
 

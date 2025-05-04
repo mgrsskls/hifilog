@@ -23,7 +23,47 @@
         <td class="Table-sm">
           <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
         </td>
-        <td class="Table-products Table-sm"><%= brand.products_count.nil? ? "0" : brand.products_count %></td>
+        <td class="Table-products Table-sm">
+          <%
+            products_count = if params[:attr].present? || params[:diy_kit].present?
+              products = brand.products
+
+              if sub_category.present?
+                products = products.joins(:sub_categories)
+                                   .where(sub_categories: sub_category.id)
+              end
+
+              if params[:diy_kit].present?
+                products = products.left_outer_joins(:product_variants)
+                products = if params[:diy_kit] == '0'
+                            products.where(product_variants: { diy_kit: false })
+                                    .or(
+                                      products.where(diy_kit: false)
+                                    )
+                          else
+                            products.where(product_variants: { diy_kit: true })
+                                    .or(
+                                      products.where(diy_kit: true)
+                                    )
+                          end
+              end
+
+              if params[:attr].present?
+                CustomAttribute.find_each do |custom_attribute|
+                  id_s = custom_attribute.id.to_s
+                  if params[:attr][id_s].present?
+                    products = products.where('custom_attributes ->> ? IN (?)', id_s, params[:attr][custom_attribute.id.to_s])
+                  end
+                end
+              end
+
+              products.size
+            else
+              brand.products_count.nil? ? "0" : brand.products_count
+            end
+          %>
+          <%= link_to products_count, brand_products_path(brand_id: brand.friendly_id, sub_category: params[:sub_category], diy_kit: params[:diy_kit], attr: params[:attr]&.to_unsafe_h) %>
+        </td>
         <td class="Table-sm">
           <%= brand.country_name.present? ? brand.country_name : "-" %>
         </td>
@@ -53,7 +93,7 @@
           <% end %>
 
           <dt><%= Product.model_name.human(count: 2) %></dt>
-          <dd><%= brand.products_count.nil? ? "0" : brand.products_count %></dd>
+          <dd><%= link_to (brand.products_count.nil? ? "0" : brand.products_count), brand_products_path(brand_id: brand.friendly_id) %></dd>
 
           <% if brand.country_name.present? %>
             <dt><%= t('activerecord.attributes.brand.country_code') %></dt>

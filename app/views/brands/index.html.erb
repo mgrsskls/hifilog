@@ -1,54 +1,37 @@
-<div class="IndexPage">
-  <div class="IndexPage-header">
-    <div class="IndexPage-headerFilter">
-      <h1>
-        <%= Brand.model_name.human(count: 2) %>
-      </h1>
+<% content_for :header do %>
+  <h1><%= Brand.model_name.human(count: 2) %></h1>
+  <%= link_to t('brand.new.link'), user_signed_in? ? new_brand_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_brand_path(sub_category: params[:sub_category])), class: "Button" %>
+<% end %>
 
-      <%= link_to t('brand.new.link'), user_signed_in? ? new_brand_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_brand_path(sub_category: params[:sub_category])), class: "Button" %>
-    </div>
+<% content_for :filter do %>
+  <%= render "shared/filter", reset_path: brands_path(sub_category: params[:sub_category]), collection: @brands, query: @brands_query, type: :brands, custom_attributes: @custom_attributes %>
+<% end %>
 
-    <% if @sub_category %>
-      <span class="IndexPage-category"><%= @sub_category.name %></span>
-    <% elsif @category %>
-      <span class="IndexPage-category"><%= @category.name %></span>
-    <% end %>
+<% content_for :sort do %>
+  <input type="hidden" name="country" value="<%= params[:country] %>">
+  <label for="sort"><%= t('sort_by.label') %></label>
+  <select name="sort" id="sort">
+    <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
+    <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
+    <option value="products_desc"<%= " selected" if params[:sort] == "products_desc" %>><%= t('sort_by.products_desc') %></option>
+    <option value="products_asc"<%= " selected" if params[:sort] == "products_asc" %>><%= t('sort_by.products_asc') %></option>
+    <option value="country_asc"<%= " selected" if params[:sort] == "country_asc" %>><%= t('sort_by.country_asc') %></option>
+    <option value="country_desc"<%= " selected" if params[:sort] == "country_desc" %>><%= t('sort_by.country_desc') %></option>
+    <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>><%= t('sort_by.added_desc') %></option>
+    <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>><%= t('sort_by.added_asc') %></option>
+    <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>><%= t('sort_by.updated_desc') %></option>
+    <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>><%= t('sort_by.updated_asc') %></option>
+  </select>
+<% end %>
 
-    <div class="IndexPage-filter">
-      <%= render "shared/filter", reset_path: brands_path, collection: @brands, query: @brands_query, type: :brands do %>
-        <label class="Filter-option" for="sort"><%= t('sort_by.label') %></label>
-        <select class="Filter-input" name="sort" id="sort">
-          <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
-          <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
-          <option value="products_desc"<%= " selected" if params[:sort] == "products_desc" %>><%= t('sort_by.products_desc') %></option>
-          <option value="products_asc"<%= " selected" if params[:sort] == "products_asc" %>><%= t('sort_by.products_asc') %></option>
-          <option value="country_asc"<%= " selected" if params[:sort] == "country_asc" %>><%= t('sort_by.country_asc') %></option>
-          <option value="country_desc"<%= " selected" if params[:sort] == "country_desc" %>><%= t('sort_by.country_desc') %></option>
-          <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>><%= t('sort_by.added_desc') %></option>
-          <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>><%= t('sort_by.added_asc') %></option>
-          <option value="updated_desc"<%= " selected" if params[:sort] == "updated_desc" %>><%= t('sort_by.updated_desc') %></option>
-          <option value="updated_asc"<%= " selected" if params[:sort] == "updated_asc" %>><%= t('sort_by.updated_asc') %></option>
-        </select>
-      <% end %>
-    </div>
+<% content_for :table do %>
+  <%= render "shared/brands_table", brands: @brands, sub_category: @sub_category %>
+<% end %>
 
-    <% if @brands.length > 0 %>
-      <p class="FilterInfo">
-        <small><%= page_entries_info @brands %></small>
-      </p>
-    <% end %>
-  </div>
-
-  <div class="IndexPage-content">
-    <% if @brands.length > 0 %>
-      <div class="u-breakpoint u-breakpoint--s">
-        <%= render "shared/brands_table", brands: @brands %>
-        <%= paginate @brands %>
-      </div>
-    <% else %>
-      <%= render "shared/empty_state", message: t('empty_state.brands_filter', path: new_brand_path) %>
-    <% end %>
-
-    <%= render "shared/page_actions" %>
-  </div>
-</div>
+<%= render "shared/index_page",
+  records: @brands,
+  empty_state_message: t('empty_state.brands_filter', path: new_brand_path),
+  category: @category,
+  sub_category: @sub_category,
+  render_category: true
+%>

@@ -16,6 +16,7 @@
 
 .IndexPage-headerFilter :is(h1, h2) {
 	margin-block: 0;
+	line-height: 1;
 }
 
 .IndexPage-filter {
@@ -24,6 +25,20 @@
 
 .IndexPage-content {
 	grid-area: content;
+}
+
+.IndexPage-contentHeader {
+	margin-block-end: 1rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem 2rem;
+}
+
+@container listing (width < 24rem) {
+	.IndexPage-contentHeader {
+		flex-direction: column;
+	}
 }
 
 .IndexPage-content .EmptyState {
