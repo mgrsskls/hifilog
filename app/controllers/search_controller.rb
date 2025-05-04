@@ -53,6 +53,6 @@ class SearchController < ApplicationController
       results = results.where(searchable_type:)
     end
 
-    results
+    results.includes([:searchable])
   end
 end
