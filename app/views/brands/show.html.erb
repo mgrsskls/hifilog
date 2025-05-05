@@ -47,7 +47,7 @@
           <dl class="Data">
             <% @all_sub_categories_grouped.each do |section| %>
               <dt><%= section[0].name %></dt>
-              <dd><%= section[1].map { |c| link_to c.name, brand_products_path(@brand, sub_category: c.slug) }.join(", ").html_safe %></dd>
+              <dd><%= section[1].map { |c| link_to c.name, brand_products_path(@brand, category:  "#{section[0].slug}[#{c.slug}]") }.join(", ").html_safe %></dd>
             <% end %>
           </dl>
         <% end %>

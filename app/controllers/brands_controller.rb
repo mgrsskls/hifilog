@@ -33,21 +33,24 @@ class BrandsController < ApplicationController
               'LOWER(name) ASC'
             end
 
-    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
+    if params[:category].present?
+      category, sub_category = params[:category].split('[')
+      sub_category = sub_category.chomp(']') if sub_category.present?
+
+      @sub_category = SubCategory.friendly.find(sub_category) if sub_category.present?
+      @category = Category.friendly.find(category)
+    end
+
     if @sub_category
-      @category = Category.find(@sub_category.category_id)
       @custom_attributes = @sub_category.custom_attributes
       add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
       add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name
-    elsif params[:category].present?
+    elsif @category
       add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
-      @category = Category.friendly.find(params[:category])
-      if @category
-        @custom_attributes = CustomAttribute.joins(:sub_categories)
-                                            .where(sub_categories: { id: @category.sub_categories.map(&:id) })
-                                            .distinct
-      end
+      @custom_attributes = CustomAttribute.joins(:sub_categories)
+                                          .where(sub_categories: { id: @category.sub_categories.map(&:id) })
+                                          .distinct
       add_breadcrumb @category.name
     else
       add_breadcrumb Brand.model_name.human(count: 2)
@@ -147,28 +150,31 @@ class BrandsController < ApplicationController
 
   def products
     @brand = Brand.includes(sub_categories: [:category]).friendly.find(params[:brand_id])
-    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
-    @category = @sub_category.category if @sub_category.present?
 
-    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
+    if params[:category].present?
+      category, sub_category = params[:category].split('[')
+      sub_category = sub_category.chomp(']') if sub_category.present?
+
+      @sub_category = SubCategory.friendly.find(sub_category) if sub_category.present?
+      @category = Category.friendly.find(category)
+    end
+
+    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |c| c[0].order }
+
+    add_breadcrumb @brand.name, brand_path(@brand)
+    add_breadcrumb Product.model_name.human(count: 2)
+
+    products = @brand.products
 
     if @sub_category
       products = @sub_category.products.where(brand_id: @brand.id)
-      add_breadcrumb @brand.name, brand_path(@brand)
-      add_breadcrumb Product.model_name.human(count: 2), brand_products_path(brand_id: @brand.friendly_id)
-      add_breadcrumb @sub_category.name
       @custom_attributes = @sub_category.custom_attributes
       @filter_applied = true
-    else
-      products = @brand.products
-      add_breadcrumb @brand.name, brand_path(@brand)
-      add_breadcrumb Product.model_name.human(count: 2)
-
-      if @category
-        @custom_attributes = CustomAttribute.joins(:sub_categories)
-                                            .where(sub_categories: { id: @category.sub_categories.map(&:id) })
-                                            .distinct
-      end
+    elsif @category
+      products = products.where(sub_categories: { category_id: @category.id })
+      @custom_attributes = CustomAttribute.joins(:sub_categories)
+                                          .where(sub_categories: { id: @category.sub_categories.map(&:id) })
+                                          .distinct
     end
 
     if ABC.include?(params[:letter])

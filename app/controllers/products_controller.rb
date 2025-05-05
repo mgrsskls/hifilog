@@ -35,24 +35,26 @@ class ProductsController < ApplicationController
               'LOWER(products.name) ASC'
             end
 
-    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
+    if params[:category].present?
+      category, sub_category = params[:category].split('[')
+      sub_category = sub_category.chomp(']') if sub_category.present?
+
+      @sub_category = SubCategory.friendly.find(sub_category) if sub_category.present?
+      @category = Category.friendly.find(category)
+    end
 
     if @sub_category
-      @category = Category.find(@sub_category.category_id)
       @custom_attributes = @sub_category.custom_attributes
       add_breadcrumb Product.model_name.human(count: 2), proc { :products }
       add_breadcrumb @category.name, products_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name
-    elsif params[:category].present?
-      @category = Category.friendly.find(params[:category])
+    elsif @category
       add_breadcrumb Product.model_name.human(count: 2), proc { :products }
       add_breadcrumb @category.name
 
-      if @category
-        @custom_attributes = CustomAttribute.joins(:sub_categories)
-                                            .where(sub_categories: { id: @category.sub_categories.map(&:id) })
-                                            .distinct
-      end
+      @custom_attributes = CustomAttribute.joins(:sub_categories)
+                                          .where(sub_categories: { id: @category.sub_categories.map(&:id) })
+                                          .distinct
     else
       add_breadcrumb Product.model_name.human(count: 2)
     end
