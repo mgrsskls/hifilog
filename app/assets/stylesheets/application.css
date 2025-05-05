@@ -342,6 +342,10 @@
 		margin-block: 0;
 	}
 
+	.h1-sm {
+		font-size: 2.2rem;
+	}
+
 	h1 small,
 	.IndexPage-category {
 		font-size: 1rem;
@@ -350,6 +354,10 @@
 		display: block;
 		color: var(--color-secondary);
 		margin-block-start: 0.25rem;
+	}
+
+	.IndexPage-category {
+		font-size: 1.2rem;
 	}
 
 	h1 span {

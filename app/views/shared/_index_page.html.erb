@@ -2,18 +2,18 @@
   <div class="IndexPage-header">
     <div class="IndexPage-headerFilter">
       <%= yield :header %>
-    </div>
 
-    <% if render_category %>
-      <% if sub_category %>
-        <span class="IndexPage-category"><%= sub_category.name %></span>
-      <% elsif category %>
-        <span class="IndexPage-category"><%= category.name %></span>
-      <% end %>
-    <% end %>
+      <div class="IndexPage-addLink IndexPage-addLink--s">
+        <%= yield :add_link %>
+      </div>
+    </div>
 
     <div class="IndexPage-filter">
       <%= yield :filter %>
+    </div>
+
+    <div class="IndexPage-addLink IndexPage-addLink--l">
+      <%= yield :add_link %>
     </div>
   </div>
   <div class="IndexPage-content">

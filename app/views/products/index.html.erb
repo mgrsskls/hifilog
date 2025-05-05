@@ -1,10 +1,21 @@
 <% content_for :header do %>
-  <h1><%= Product.model_name.human(count: 2) %></h1>
-  <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button" %>
+  <h1 class="h1-sm">
+    <% if @sub_category %>
+      <%= @sub_category.name %>
+    <% elsif @category %>
+      <%= @category.name %>
+    <% else %>
+      <%= Product.model_name.human(count: 2) %>
+    <% end %>
+  </h1>
 <% end %>
 
 <% content_for :filter do %>
   <%= render "shared/filter", reset_path: products_path(sub_category: params[:sub_category]), collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products %>
+<% end %>
+
+<% content_for :add_link do %>
+  <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button Button--secondary" %>
 <% end %>
 
 <% content_for :sort do %>

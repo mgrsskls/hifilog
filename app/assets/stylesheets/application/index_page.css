@@ -19,8 +19,25 @@
 	line-height: 1;
 }
 
-.IndexPage-filter {
+.IndexPage-headerFilter .h1-sm {
+	line-height: 1.2;
+}
+
+.IndexPage-filter,
+.IndexPage-addLink--l {
 	margin-block-start: 2rem;
+}
+
+@media (width < 48rem) {
+	.IndexPage-addLink--l {
+		display: none;
+	}
+}
+
+@media (width >= 48rem) {
+	.IndexPage-addLink--s {
+		display: none;
+	}
 }
 
 .IndexPage-content {

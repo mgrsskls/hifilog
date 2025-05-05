@@ -1,11 +1,14 @@
 <%= render layout: "layout", locals: { active: :products } do %>
   <% content_for :header do %>
     <h2><%= Product.model_name.human(count: 2) %></h2>
-    <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id)), class: "Button" %>
   <% end %>
 
   <% content_for :filter do %>
     <%= render "shared/filter", reset_path: brand_path(id: @brand.friendly_id, sub_category: params[:sub_category]), collection: @products, query: @brands_query, sub_categories: @all_sub_categories_grouped, type: :brand_products, custom_attributes: @custom_attributes %>
+  <% end %>
+
+  <% content_for :add_link do %>
+    <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug)), class: "Button Button--secondary" %>
   <% end %>
 
   <% content_for :sort do %>

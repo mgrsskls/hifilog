@@ -1,10 +1,20 @@
 <% content_for :header do %>
-  <h1><%= Brand.model_name.human(count: 2) %></h1>
-  <%= link_to t('brand.new.link'), user_signed_in? ? new_brand_path(sub_category: params[:sub_category]) : new_user_session_path(redirect: new_brand_path(sub_category: params[:sub_category])), class: "Button" %>
+  <h1>
+    <%= Brand.model_name.human(count: 2) %>
+    <% if @sub_category %>
+      <span class="IndexPage-category"><%= @sub_category.name %></span>
+    <% elsif @category %>
+      <span class="IndexPage-category"><%= @category.name %></span>
+    <% end %>
+  </h1>
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: brands_path(sub_category: params[:sub_category]), collection: @brands, query: @brands_query, type: :brands, custom_attributes: @custom_attributes %>
+  <%= render "shared/filter", reset_path: brands_path(sub_category: @sub_category&.slug), collection: @brands, query: @brands_query, type: :brands, custom_attributes: @custom_attributes %>
+<% end %>
+
+<% content_for :add_link do %>
+  <%= link_to t('brand.new.link'), user_signed_in? ? new_brand_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_brand_path(sub_category: @sub_category&.slug)), class: "Button Button--secondary" %>
 <% end %>
 
 <% content_for :sort do %>
