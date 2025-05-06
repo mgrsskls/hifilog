@@ -14,6 +14,14 @@ two:
   sub_categories:
     - two
 
+diy_kit:
+  name: DIY Amp
+  brand: two
+  slug: diy-amp
+  sub_categories:
+    - two
+  diy_kit: true
+
 with_custom_attributes:
   name: with_custom_attributes
   brand: one
@@ -99,3 +107,11 @@ release_date_d:
   sub_categories:
     - one
   release_day: 1
+
+discontinued:
+  name: discontinued
+  brand: three
+  slug: discontinued
+  sub_categories:
+    - one
+  discontinued: true

@@ -198,4 +198,51 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     get path
     assert_response :success
   end
+
+  test 'filter by category returns only brands in that category' do
+    get brands_url(category: categories(:one).slug)
+    assert_response :success
+    expected_names = Brand.joins(:sub_categories)
+                          .where(sub_categories: { category_id: categories(:one).id })
+                          .distinct
+                          .pluck(:name)
+    expected_names.each do |name|
+      assert_match name, @response.body
+    end
+  end
+
+  test 'filter by sub_category returns only brands in that sub_category' do
+    get brands_url(sub_category: sub_categories(:one).slug)
+    assert_response :success
+    expected_names = Brand.joins(:sub_categories)
+                          .where(sub_categories: { id: sub_categories(:one).id })
+                          .distinct
+                          .pluck(:name)
+    expected_names.each do |name|
+      assert_match name, @response.body
+    end
+  end
+
+  test 'filter by status returns only discontinued brands' do
+    get brands_url(status: 'discontinued')
+    assert_response :success
+    Brand.where(discontinued: true).pluck(:name).each do |name|
+      assert_match name, @response.body
+    end
+  end
+
+  test 'filter by letter returns only brands starting with that letter' do
+    get brands_url(letter: 'a')
+    assert_response :success
+    Brand.where('LOWER(name) LIKE ?', 'a%').pluck(:name).each do |name|
+      assert_match name, @response.body
+    end
+  end
+
+  test 'filter by query returns only matching brands' do
+    brand = brands(:one)
+    get brands_url(query: brand.name)
+    assert_response :success
+    assert_match brand.name, @response.body
+  end
 end

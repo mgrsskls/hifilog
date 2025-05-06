@@ -2,9 +2,7 @@
 module ApplicationHelper
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
-
-  ABC = ('a'..'z').to_a.freeze
-  STATUSES = %w[discontinued continued].freeze
+  include FilterConstants
 
   def current_page?(test_path)
     request.path == test_path

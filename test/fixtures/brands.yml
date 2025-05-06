@@ -3,7 +3,19 @@
 one:
   name: Feliks Audio
   slug: feliks-audio
-
+  country_code: US
+  sub_categories:
+    - one
 two:
   name: ZMF
   slug: zmf
+  country_code: DE
+  sub_categories:
+    - two
+three:
+  name: Brand Three
+  slug: brand-three
+  country_code: US
+  discontinued: true
+  sub_categories:
+    - two

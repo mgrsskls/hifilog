@@ -339,16 +339,6 @@ class ProductsController < ApplicationController
     redirect_to URI.parse(product_path(@product)).path, status: :moved_permanently
   end
 
-  def update_for_joined_tables(order)
-    order
-      .sub('LOWER(name)', 'LOWER(products.name)')
-      .sub('release_year', 'products.release_year')
-      .sub('release_month', 'products.release_month')
-      .sub('release_day', 'products.release_day')
-      .sub('created_at', 'products.created_at')
-      .sub('updated_at', 'products.updated_at')
-  end
-
   def set_active_menu
     @active_menu = :products
   end
