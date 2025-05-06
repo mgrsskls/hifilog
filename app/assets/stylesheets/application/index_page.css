@@ -79,7 +79,7 @@
 	}
 
 	.IndexPage-header {
-		--top: 6rem;
+		--top: 9.125rem;
 
 		position: sticky;
 		inset-block-start: var(--top);

@@ -327,7 +327,7 @@
 	}
 
 	main:not(:has(.Home)):not(:has(.Profile)) {
-		padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
+		padding-block: 3rem clamp(3rem, 5vw, 4rem);
 	}
 
 	time {
