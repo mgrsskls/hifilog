@@ -43,14 +43,17 @@ class BrandsController < ApplicationController
 
     if @sub_category
       @custom_attributes = @sub_category.custom_attributes
+      filtered_products = Product.joins(:sub_categories).where(sub_categories: { id: @sub_category.id })
       add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
       add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name
     elsif @category
-      add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
       @custom_attributes = CustomAttribute.joins(:sub_categories)
                                           .where(sub_categories: { id: @category.sub_categories.map(&:id) })
                                           .distinct
+      filtered_products = Product.joins(:sub_categories)
+                                 .where(sub_categories: { id: @category.sub_categories.map(&:id) })
+      add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
       add_breadcrumb @category.name
     else
       add_breadcrumb Brand.model_name.human(count: 2)
@@ -74,16 +77,14 @@ class BrandsController < ApplicationController
     end
 
     if params[:diy_kit].present?
+      diy_kit = params[:diy_kit] == '1'
       brands = brands.left_joins(products: [:product_variants])
-      brands = if params[:diy_kit] == '0'
-                 brands.where(products: { product_variants: { diy_kit: false } })
-                       .or(brands.where(products: { diy_kit: false }))
-                       .distinct
-               else
-                 brands.where(products: { product_variants: { diy_kit: true } })
-                       .or(brands.where(products: { diy_kit: true }))
-                       .distinct
-               end
+      brands = brands.where(products: { product_variants: { diy_kit: } })
+                     .or(brands.where(products: { diy_kit: }))
+                     .distinct
+      filtered_products = filtered_products.left_joins(:product_variants)
+                                           .where(product_variants: { diy_kit: })
+                                           .or(filtered_products.where(diy_kit:))
       @filter_applied = true
     end
 
@@ -94,6 +95,11 @@ class BrandsController < ApplicationController
           brands = brands.joins(:products)
                          .where('custom_attributes ->> ? IN (?)', id_s, params[:attr][custom_attribute.id.to_s])
                          .distinct
+          filtered_products = filtered_products.where(
+            'custom_attributes ->> ? IN (?)',
+            id_s,
+            params[:attr][custom_attribute.id.to_s]
+          )
           @filter_applied = true
         end
       end
@@ -122,6 +128,7 @@ class BrandsController < ApplicationController
     end
 
     @brands = brands.includes(sub_categories: [:category]).page(params[:page])
+    @product_counts = filtered_products&.group(:brand_id)&.count || nil
   end
 
   def all
