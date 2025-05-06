@@ -127,6 +127,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_26_170346) do
     t.integer "founded_month"
     t.integer "founded_day"
     t.index "\"left\"((name)::text, 1)", name: "index_brands_name_prefix"
+    t.index ["country_code"], name: "index_brands_on_country_code"
+    t.index ["discontinued"], name: "index_brands_on_discontinued"
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_brands_on_name", unique: true
     t.index ["slug"], name: "index_brands_on_slug", unique: true
@@ -136,6 +138,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_26_170346) do
     t.bigint "brand_id", null: false
     t.bigint "sub_category_id", null: false
     t.index ["brand_id", "sub_category_id"], name: "index_brands_sub_categories_on_brand_id_and_sub_category_id", unique: true
+    t.index ["brand_id"], name: "index_brands_sub_categories_on_brand_id"
+    t.index ["sub_category_id"], name: "index_brands_sub_categories_on_sub_category_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -157,7 +161,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_26_170346) do
   create_table "custom_attributes_sub_categories", id: false, force: :cascade do |t|
     t.bigint "sub_category_id", null: false
     t.bigint "custom_attribute_id", null: false
+    t.index ["custom_attribute_id"], name: "index_custom_attributes_sub_categories_on_custom_attribute_id"
     t.index ["sub_category_id", "custom_attribute_id"], name: "idx_on_sub_category_id_custom_attribute_id_b00c6955d4", unique: true
+    t.index ["sub_category_id"], name: "index_custom_attributes_sub_categories_on_sub_category_id"
   end
 
   create_table "custom_products", force: :cascade do |t|
@@ -287,8 +293,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_26_170346) do
     t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
     t.index ["brand_id"], name: "index_products_on_brand_id"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
+    t.index ["discontinued"], name: "index_products_on_discontinued"
+    t.index ["diy_kit"], name: "index_products_on_diy_kit"
     t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
+    t.index ["name"], name: "index_products_on_name"
+    t.index ["release_day"], name: "index_products_on_release_day"
+    t.index ["release_month"], name: "index_products_on_release_month"
+    t.index ["release_year"], name: "index_products_on_release_year"
     t.index ["slug"], name: "index_products_on_slug"
   end
 
@@ -296,6 +308,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_26_170346) do
     t.bigint "product_id", null: false
     t.bigint "sub_category_id", null: false
     t.index ["product_id", "sub_category_id"], name: "idx_on_product_id_sub_category_id_b7601e15e2", unique: true
+    t.index ["product_id"], name: "index_products_sub_categories_on_product_id"
+    t.index ["sub_category_id"], name: "index_products_sub_categories_on_sub_category_id"
   end
 
   create_table "setup_possessions", force: :cascade do |t|
