@@ -5,6 +5,7 @@
 <% sub_categories ||= [] %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
+  <input type="hidden" name="sort" value="<%= params[:sort] %>">
   <% if @category.present? %>
     <%= hidden_field_tag :category, @sub_category.present? ? "#{@category.friendly_id}[#{@sub_category.friendly_id}]" : @category.friendly_id %>
   <% end %>
