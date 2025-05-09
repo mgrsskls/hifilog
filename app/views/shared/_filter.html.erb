@@ -1,8 +1,68 @@
-<% render_country_filter = (type == :products or type == :brands) %>
 <% filter_active_label = (type == :products or type == :brand_products) ? t('continued') : t('active') %>
-<% collection ||= nil %>
-<% categories ||= [] %>
 <% sub_categories ||= [] %>
+
+<% country_filter = capture do %>
+  <div class="Filter-section">
+    <label for="filter-country" class="Filter-option">
+      <%= Brand.human_attribute_name(:country_code) %>
+    </label>
+    <%= country_select(nil,
+      "country",
+      {
+        include_blank: "All",
+        priority_countries: Brand.where.not(country_code: nil).map { |b| b.country_code.upcase }.uniq,
+        selected: params[:country]&.upcase
+      },
+      {
+        class: "Filter-input",
+        id: "filter-country"
+      })
+    %>
+  </div>
+<% end %>
+
+<% diy_kit = capture do %>
+  <div class="Filter-section">
+    <label for="filter-diy-kit" class="Filter-option">Assembly</label>
+    <select class="Filter-input" name="diy_kit" id="filter-diy-kit">
+      <option value=""<%= ' selected'.html_safe if params[:diy_kit].blank? %>>
+        <%= t("filter.all") %>
+      </option>
+      <option value="0"<%= ' selected'.html_safe if params[:diy_kit] == "0" %>>
+        Pre-assembled
+      </option>
+      <option value="1"<%= ' selected'.html_safe if params[:diy_kit] == "1" %>>
+        DIY kit
+      </option>
+    </select>
+  </div>
+<% end %>
+
+<% custom_attributes = capture do %>
+  <% if custom_attributes&.any? && (@sub_category || ['loudspeakers', 'headphones'].include?(@category&.slug)) %>
+    <div class="Filter-section Filter-section--attributes">
+      <div class="Filter-values">
+        <% custom_attributes.each do |custom_attribute| %>
+          <fieldset>
+            <% if custom_attribute.label.present? %>
+              <legend class="Filter-option"><%= t("custom_attribute_labels.#{custom_attribute.label}") %></legend>
+            <% end %>
+            <ul class="Pagination">
+              <% custom_attribute.options.each do |option| %>
+                <li class="Pagination-item">
+                  <label>
+                    <input type="checkbox" name="attr[<%= custom_attribute.id %>][]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s]&.include?(option[0].to_s) %>>
+                    <%= t("custom_attributes.#{option[1]}") %>
+                  </label>
+                </li>
+              <% end %>
+            </ul>
+          </fieldset>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
   <input type="hidden" name="sort" value="<%= params[:sort] %>">
@@ -31,26 +91,6 @@
             <% end %>
           </select>
         </div>
-
-        <% if render_country_filter %>
-          <div class="Filter-section">
-            <label for="filter-country" class="Filter-option">
-              <%= Brand.human_attribute_name(:country_code) %>
-            </label>
-            <%= country_select(nil,
-              "country",
-              {
-                include_blank: "All",
-                priority_countries: Brand.where.not(country_code: nil).map { |b| b.country_code.upcase }.uniq,
-                selected: params[:country]&.upcase
-              },
-              {
-                class: "Filter-input",
-                id: "filter-country"
-              })
-            %>
-          </div>
-        <% end %>
 
         <div class="Filter-section">
           <label for="filter-status" class="Filter-option"><%= t('status') %></label>
@@ -90,51 +130,23 @@
           </div>
         <% end %>
 
-        <% if type == :brands %>
+        <% if type == :products %>
+          <%= diy_kit %>
+          <%= custom_attributes %>
+
           <div class="Filter-section Filter-section--divider Filter-options">
-            <span class="Filter-legend">Products</span>
+            <span class="Filter-legend">Brands</span>
+            <%= country_filter %>
+          </div>
         <% end %>
 
-              <div class="Filter-section">
-                <label for="filter-diy-kit" class="Filter-option">Assembly</label>
-                <select class="Filter-input" name="diy_kit" id="filter-diy-kit">
-                  <option value=""<%= ' selected'.html_safe if params[:diy_kit].blank? %>>
-                    <%= t("filter.all") %>
-                  </option>
-                  <option value="0"<%= ' selected'.html_safe if params[:diy_kit] == "0" %>>
-                    Pre-assembled
-                  </option>
-                  <option value="1"<%= ' selected'.html_safe if params[:diy_kit] == "1" %>>
-                    DIY kit
-                  </option>
-                </select>
-              </div>
-
-              <% if custom_attributes&.any? && (@sub_category || ['loudspeakers', 'headphones'].include?(@category&.slug)) %>
-                <div class="Filter-section Filter-section--attributes">
-                  <div class="Filter-values">
-                    <% custom_attributes.each do |custom_attribute| %>
-                      <fieldset>
-                        <% if custom_attribute.label.present? %>
-                          <legend class="Filter-option"><%= t("custom_attribute_labels.#{custom_attribute.label}") %></legend>
-                        <% end %>
-                        <ul class="Pagination">
-                          <% custom_attribute.options.each do |option| %>
-                            <li class="Pagination-item">
-                              <label>
-                                <input type="checkbox" name="attr[<%= custom_attribute.id %>][]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s]&.include?(option[0].to_s) %>>
-                                <%= t("custom_attributes.#{option[1]}") %>
-                              </label>
-                            </li>
-                          <% end %>
-                        </ul>
-                      </fieldset>
-                    <% end %>
-                  </div>
-                </div>
-              <% end %>
-
         <% if type == :brands %>
+          <%= country_filter %>
+
+          <div class="Filter-section Filter-section--divider Filter-options">
+            <span class="Filter-legend">Products</span>
+            <%= diy_kit %>
+            <%= custom_attributes %>
           </div>
         <% end %>
 
