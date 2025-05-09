@@ -93,68 +93,31 @@ class ProductsController < ApplicationController
   end
 
   def create
-    product = Product.new(product_params)
-
-    if product_params[:brand_id].present?
-      brand = Brand.find(product_params[:brand_id]) if product_params[:brand_id]
-
-      sub_category_ids = product_params[:sub_category_ids]
-      if sub_category_ids.present? && (sub_category_ids - brand.sub_category_ids).any?
-        (sub_category_ids - brand.sub_category_ids).each do |id|
-          sub_category = SubCategory.find(id.to_i)
-          brand.sub_categories << sub_category if sub_category && brand.sub_categories.exclude?(sub_category)
-        end
-      end
-    else
-      brand = Brand.new(product_params[:brand_attributes])
-      sub_category_ids = product_params[:sub_category_ids]
-      if sub_category_ids.present?
-        sub_category_ids.each do |id|
-          sub_category = SubCategory.find(id.to_i)
-          brand.sub_categories << sub_category if sub_category
-        end
-      end
-    end
+    @product = Product.new(product_params)
+    brand = assign_brand_from_params(product_params)
 
     unless brand.save
       if params[:product_options_attributes].present?
-        params[:product_options_attributes].each do |option|
-          if option[1][:id].present? && option[1][:option].present?
-            product.product_options.find(option[1][:id]).update(option: option[1][:option])
-          elsif option[1][:id].present?
-            product.product_options.find(option[1][:id]).delete
-          elsif option[1][:option].present?
-            product.product_options << ProductOption.new(option: option[1][:option])
-          end
-        end
+        process_product_options(@product,
+                                params[:product_options_attributes])
       end
       @categories = Category.includes([:sub_categories])
-      @product = product
       @brand = brand
-      render :new, status: :unprocessable_entity
-      return
+      render :new, status: :unprocessable_entity and return
     end
 
-    product.brand_id = brand.id
-    product.discontinued = brand.discontinued ? true : product_params[:discontinued]
+    @product.brand_id = brand.id
+    @product.discontinued = brand.discontinued ? true : product_params[:discontinued]
 
     if params[:product_options_attributes].present?
-      params[:product_options_attributes].each do |option|
-        if option[1][:id].present? && option[1][:option].present?
-          product.product_options.find(option[1][:id]).update(option: option[1][:option])
-        elsif option[1][:id].present?
-          product.product_options.find(option[1][:id]).delete
-        elsif option[1][:option].present?
-          product.product_options << ProductOption.new(option: option[1][:option])
-        end
-      end
+      process_product_options(@product,
+                              params[:product_options_attributes])
     end
 
-    if product.save
-      redirect_to URI.parse(product_url(id: product.friendly_id)).path
+    if @product.save
+      redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
       @categories = Category.includes([:sub_categories])
-      @product = product
       @brand = brand
       render :new, status: :unprocessable_entity
     end
@@ -162,32 +125,22 @@ class ProductsController < ApplicationController
 
   def update
     @product = Product.find(params[:id])
-
     old_name = @product.name
     @product.slug = nil if old_name != product_update_params[:name]
 
     if product_update_params[:custom_attributes].present?
-      product_update_params[:custom_attributes].each do |custom_attribute|
-        custom_attribute[1] = custom_attribute[1].to_i
-      end
+      convert_custom_attributes_to_integer!(product_update_params[:custom_attributes])
     end
 
     if params[:product_options_attributes].present?
-      params[:product_options_attributes].each do |option|
-        if option[1][:id].present? && option[1][:option].present?
-          @product.product_options.find(option[1][:id]).update(option: option[1][:option])
-        elsif option[1][:id].present?
-          @product.product_options.find(option[1][:id]).delete
-        elsif option[1][:option].present?
-          @product.product_options << ProductOption.new(option: option[1][:option])
-        end
-      end
+      process_product_options(@product,
+                              params[:product_options_attributes])
     end
 
     if @product.update(product_update_params)
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
-      @categories = Category
+      @categories = Category.includes([:sub_categories])
       @brand = Brand.find(@product.brand_id)
       render :edit, status: :unprocessable_entity
     end
@@ -328,6 +281,44 @@ class ProductsController < ApplicationController
       PreviousPossessionPresenter.new(possession, :product)
     else
       CurrentPossessionPresenter.new(possession, :product)
+    end
+  end
+
+  def assign_brand_from_params(params)
+    if params[:brand_id].present?
+      brand = Brand.find(params[:brand_id])
+      sub_category_ids = params[:sub_category_ids] || []
+      sub_category_ids = sub_category_ids.map(&:to_i)
+      missing_sub_ids = sub_category_ids - brand.sub_category_ids
+      missing_sub_ids.each do |id|
+        sub_category = SubCategory.find(id)
+        brand.sub_categories << sub_category if sub_category && brand.sub_categories.exclude?(sub_category)
+      end
+    else
+      brand = Brand.new(params[:brand_attributes])
+      (params[:sub_category_ids] || []).each do |id|
+        sub_category = SubCategory.find(id.to_i)
+        brand.sub_categories << sub_category if sub_category
+      end
+    end
+    brand
+  end
+
+  def process_product_options(product, options_attributes)
+    options_attributes.each_value do |option|
+      if option[:id].present? && option[:option].present?
+        product.product_options.find(option[:id]).update(option: option[:option])
+      elsif option[:id].present?
+        product.product_options.find(option[:id]).delete
+      elsif option[:option].present?
+        product.product_options << ProductOption.new(option: option[:option])
+      end
+    end
+  end
+
+  def convert_custom_attributes_to_integer!(custom_attributes)
+    custom_attributes.each do |key, value|
+      custom_attributes[key] = value.to_i
     end
   end
 end
