@@ -1,6 +1,7 @@
 class BrandsController < ApplicationController
   include ApplicationHelper
   include FilterableService
+  include FriendlyFinder
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
@@ -134,14 +135,7 @@ class BrandsController < ApplicationController
   private
 
   def find_brand
-    @brand = Brand.friendly.find(params[:id])
-
-    return unless request.path != brand_path(@brand)
-
-    # If an old id or a numeric id was used to find the record, then
-    # the request path will not match the brand_path, and we should do
-    # a 301 redirect that uses the current friendly id.
-    redirect_to URI.parse(brand_path(id: @brand.friendly_id)).path, status: :moved_permanently
+    @brand = find_resource(Brand, :id, path_helper: ->(b) { brand_path(b) })
   end
 
   def set_active_menu

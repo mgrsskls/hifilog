@@ -1,6 +1,7 @@
 class ProductsController < ApplicationController
   include ApplicationHelper
   include FilterableService
+  include FriendlyFinder
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
@@ -162,13 +163,7 @@ class ProductsController < ApplicationController
   private
 
   def find_product
-    @product = Product.friendly.find(params[:id])
-    return if request.path == product_path(@product)
-
-    # If an old id or a numeric id was used to find the record, then
-    # the request path will not match the product_path, and we should do
-    # a 301 redirect that uses the current friendly id.
-    redirect_to URI.parse(product_path(@product)).path, status: :moved_permanently
+    @product = find_resource(Product, :id, path_helper: ->(p) { product_path(p) })
   end
 
   def set_active_menu
