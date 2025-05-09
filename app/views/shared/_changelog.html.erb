@@ -53,7 +53,7 @@
                   <td>
                     <span class="Changelog-old">
                       <% if change[0] == "custom_attributes" %>
-                        <%= JSON.parse(change[1][0]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][0].nil? %>
+                        <%= sanitize JSON.parse(change[1][0]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][0].nil? %>
                       <% elsif change[0] == "brand_id" && change[1][0].present? %>
                         <%= Brand.find(change[1][0]).name %>
                       <% elsif change[0] == "country_code" && change[1][0].present? %>
@@ -74,7 +74,7 @@
                   <td>
                     <span class="Changelog-new">
                       <% if change[0] == "custom_attributes" %>
-                        <%= JSON.parse(change[1][1]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][1].nil? %>
+                        <%= sanitize JSON.parse(change[1][1]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][1].nil? %>
                       <% elsif change[0] == "brand_id" && change[1][1].present? %>
                         <%= Brand.find(change[1][1]).name %>
                       <% elsif change[0] == "country_code" && change[1][1].present? %>
