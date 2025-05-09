@@ -1,5 +1,6 @@
 class BrandsController < ApplicationController
   include ApplicationHelper
+  include FilterableService
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
@@ -188,28 +189,5 @@ class BrandsController < ApplicationController
       :category, :letter, :status, :diy_kit, :query, :sort,
       attr: {}
     )
-  end
-
-  def extract_filter_context(params)
-    return [nil, nil, CustomAttribute.none] if params[:category].blank?
-
-    category_str, sub_category_str = params[:category].split('[')
-    sub_category_str = sub_category_str&.chomp(']')
-    category = begin
-      Category.friendly.find(category_str)
-    rescue StandardError
-      nil
-    end
-    sub_category = SubCategory.friendly.find(sub_category_str) if sub_category_str.present?
-    custom_attributes =
-      if sub_category
-        sub_category.custom_attributes
-      elsif category
-        CustomAttribute.joins(:sub_categories)
-                       .where(sub_categories: { id: category.sub_categories.ids }).distinct
-      else
-        CustomAttribute.none
-      end
-    [category, sub_category, custom_attributes]
   end
 end
