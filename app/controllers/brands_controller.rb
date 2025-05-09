@@ -3,7 +3,7 @@ class BrandsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
-  before_action :set_breadcrumb
+  before_action :set_breadcrumb, except: [:index]
   before_action :set_active_menu
   before_action :find_brand, only: [:show]
 
@@ -23,6 +23,7 @@ class BrandsController < ApplicationController
 
     @page_title = Brand.model_name.human(count: 2)
 
+    add_breadcrumb Brand.model_name.human(count: 2)
     if @sub_category
       add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name

@@ -1,19 +1,16 @@
 # frozen_string_literal: true
 
-# Service for filtering products based on params
 class ProductFilterService
   include FilterConstants
   include FilterableService
 
-  # Result struct for returning filter results
   Result = Struct.new(:products, keyword_init: true)
 
   def initialize(params, brand, category = nil, sub_category = nil)
     @params = params.to_h.symbolize_keys
-    @brand = brand
     @category = category
     @sub_category = sub_category
-    @products = brand.products
+    @products = brand.present? ? brand.products : Product.all
   end
 
   def filter
@@ -28,6 +25,7 @@ class ProductFilterService
     products = apply_ordering(products, @params)
     products = apply_letter_filter(products, @params, 'products.name')
     products = apply_status_filter(products, @params)
+    products = apply_country_filter(products, @params)
     products = apply_diy_kit_filter(products, @params)
     products = apply_custom_attributes_filter(products, @params)
     products = apply_search_filter(products, @params)
@@ -45,6 +43,12 @@ class ProductFilterService
     scope.left_outer_joins(:product_variants)
          .where(product_variants: { discontinued: })
          .or(scope.where(discontinued:))
+  end
+
+  def apply_country_filter(scope, params)
+    return scope if params[:country].blank?
+
+    scope.left_outer_joins(:brand).where(brand: { country_code: params[:country].upcase })
   end
 
   def apply_diy_kit_filter(scope, params)

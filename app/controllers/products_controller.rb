@@ -3,143 +3,28 @@ class ProductsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
-  before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
+  before_action :set_breadcrumb, except: [:index]
   before_action :set_active_menu
   before_action :find_product, only: [:show]
 
   def index
+    @category, @sub_category, @custom_attributes = extract_filter_context(product_filter_params)
+
+    filter = ProductFilterService.new(product_filter_params, nil, @category, @sub_category).filter
+    @products = filter.products
+                      .includes(:brand, :product_variants, sub_categories: [:custom_attributes])
+                      .page(params[:page])
+    @products_query = params[:query].strip if params[:query].present?
+
     @page_title = Product.model_name.human(count: 2)
 
-    order = case params[:sort]
-            when 'name_desc'
-              'LOWER(products.name) DESC'
-            when 'release_date_asc'
-              'products.release_year ASC NULLS LAST,
-               products.release_month ASC NULLS LAST,
-               products.release_day ASC NULLS LAST,
-               LOWER(products.name)'
-            when 'release_date_desc'
-              'products.release_year DESC NULLS LAST,
-               products.release_month DESC NULLS LAST,
-               products.release_day DESC NULLS LAST,
-               LOWER(products.name)'
-            when 'added_asc'
-              'products.created_at ASC, LOWER(products.name)'
-            when 'added_desc'
-              'products.created_at DESC, LOWER(products.name)'
-            when 'updated_asc'
-              'products.updated_at ASC, LOWER(products.name)'
-            when 'updated_desc'
-              'products.updated_at DESC, LOWER(products.name)'
-            else
-              'LOWER(products.name) ASC'
-            end
-
-    if params[:category].present?
-      category, sub_category = params[:category].split('[')
-      sub_category = sub_category.chomp(']') if sub_category.present?
-
-      @sub_category = SubCategory.friendly.find(sub_category) if sub_category.present?
-      @category = Category.friendly.find(category)
-    end
-
+    add_breadcrumb Product.model_name.human(count: 2)
     if @sub_category
-      @custom_attributes = @sub_category.custom_attributes
-      add_breadcrumb Product.model_name.human(count: 2), proc { :products }
       add_breadcrumb @category.name, products_path(category: @category.friendly_id)
       add_breadcrumb @sub_category.name
     elsif @category
-      add_breadcrumb Product.model_name.human(count: 2), proc { :products }
       add_breadcrumb @category.name
-
-      @custom_attributes = CustomAttribute.joins(:sub_categories)
-                                          .where(sub_categories: { id: @category.sub_categories.map(&:id) })
-                                          .distinct
-    else
-      add_breadcrumb Product.model_name.human(count: 2)
     end
-
-    products = Product.all
-
-    if ABC.include?(params[:letter])
-      products = products.where('left(lower(products.name),1) = :prefix', prefix: params[:letter].downcase)
-      @filter_applied = true
-    end
-
-    if STATUSES.include?(params[:status])
-      products = products.left_outer_joins(:product_variants)
-                         .where(product_variants: { discontinued: params[:status] == 'discontinued' })
-                         .or(
-                           products.where(discontinued: params[:status] == 'discontinued')
-                         )
-      @filter_applied = true
-    end
-
-    if params[:diy_kit].present?
-      products = products.left_outer_joins(:product_variants)
-
-      products = if params[:diy_kit] == '0'
-                   products.where(product_variants: { diy_kit: false })
-                           .or(
-                             products.where(diy_kit: false)
-                           )
-                 else
-                   products.where(product_variants: { diy_kit: true })
-                           .or(
-                             products.where(diy_kit: true)
-                           )
-                 end
-      @filter_applied = true
-    end
-
-    if params[:country].present?
-      products = products.joins(:brand).where(brand: { country_code: params[:country].upcase })
-      @filter_applied = true
-    end
-
-    if params[:attr].present?
-      CustomAttribute.find_each do |custom_attribute|
-        id_s = custom_attribute.id.to_s
-        if params[:attr][id_s].present?
-          products = products.where('custom_attributes ->> ? IN (?)', id_s, params[:attr][custom_attribute.id.to_s])
-          @filter_applied = true
-        end
-      end
-    end
-
-    if params[:query].present?
-      @products_query = params[:query].strip
-      if @products_query.present?
-        products = products.left_outer_joins(:product_variants)
-                           .where(
-                             'product_variants.name ILIKE ? AND product_variants.discontinued IN (?)',
-                             "%#{@products_query}%",
-                             STATUSES.include?(params[:status]) ? [params[:status] == 'discontinued'] : [true, false]
-                           )
-                           .or(
-                             products.where('products.name ILIKE ?', "%#{@products_query}%")
-                           )
-        @filter_applied = true
-      end
-    end
-
-    if @sub_category || @category
-      products = if @sub_category
-                   products.joins(:sub_categories)
-                           .where(sub_categories: @sub_category.id)
-                 else
-                   products.joins(:sub_categories)
-                           .where(sub_categories: { category_id: @category.id })
-                 end
-    end
-
-    @products = products.order(order)
-                        .distinct
-                        .select('products.*, LOWER(products.name)')
-                        .includes(:brand)
-                        .includes(:product_variants)
-                        .includes(sub_categories: [:custom_attributes])
-                        .page(params[:page])
   end
 
   def show
@@ -147,29 +32,23 @@ class ProductsController < ApplicationController
 
     if user_signed_in?
       @possessions = current_user.possessions
-                                 .includes([:product, :product_option, :setup_possession, :setup])
+                                 .includes(:product, :product_option, :setup_possession, :setup)
                                  .where(product_id: @product.id, product_variant_id: nil)
                                  .order([:prev_owned, :period_from, :period_to, :created_at])
-                                 .map do |possession|
-                                   if possession.prev_owned
-                                     PreviousPossessionPresenter.new(possession, :product)
-                                   else
-                                     CurrentPossessionPresenter.new(possession, :product)
-                                   end
-                                 end
+                                 .map { |possession| map_possession_to_presenter(possession) }
       @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: nil)
       @note = current_user.notes.find_by(product_id: @product.id, product_variant_id: nil)
       @setups = current_user.setups.includes(:possessions)
     end
 
     @images = @product.possessions
-                      .includes([:images_attachments])
+                      .includes(:images_attachments)
                       .joins(:user)
                       .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
                       .select { |possession| possession.images.attached? }
                       .map { |possession| PossessionPresenter.new possession }
                       .flat_map(&:sorted_images)
-                      .map { |image| ImagePresenter.new image }
+                      .map { |image| ImagePresenter.new(image) }
 
     @contributors = ActiveRecord::Base.connection.execute("
       SELECT DISTINCT
@@ -181,7 +60,7 @@ class ProductsController < ApplicationController
     ")
 
     add_breadcrumb @product.display_name
-    @page_title = "#{@product.brand.name if @product.brand.present?} #{@product.name}".strip
+    @page_title = [@product.brand&.name, @product.name].compact.join(' ')
   end
 
   def new
@@ -330,8 +209,7 @@ class ProductsController < ApplicationController
 
   def find_product
     @product = Product.friendly.find(params[:id])
-
-    return unless request.path != product_path(@product)
+    return if request.path == product_path(@product)
 
     # If an old id or a numeric id was used to find the record, then
     # the request path will not match the product_path, and we should do
@@ -344,7 +222,7 @@ class ProductsController < ApplicationController
   end
 
   def set_breadcrumb
-    add_breadcrumb Product.model_name.human(count: 2), products_path
+    add_breadcrumb Product.model_name.human(count: 2), proc { :products }
   end
 
   def product_params
@@ -412,5 +290,44 @@ class ProductsController < ApplicationController
                   { custom_attributes: {},
                     sub_category_ids: [] }],
       )
+  end
+
+  def product_filter_params
+    params.permit(:category, :letter, :status, :diy_kit, :country, :query, :sort, attr: {})
+  end
+
+  def extract_filter_context(params)
+    return [nil, nil, CustomAttribute.none] if params[:category].blank?
+
+    parts = params[:category].split('[')
+    category_str = parts[0]
+    sub_category_str = parts[1].present? ? parts[1].chomp(']') : nil
+
+    category = begin
+      Category.friendly.find(category_str)
+    rescue StandardError
+      nil
+    end
+    sub_category = sub_category_str.present? ? SubCategory.friendly.find(sub_category_str) : nil
+
+    custom_attributes =
+      if sub_category
+        sub_category.custom_attributes
+      elsif category
+        CustomAttribute.joins(:sub_categories)
+                       .where(sub_categories: { id: category.sub_categories.ids })
+                       .distinct
+      else
+        CustomAttribute.none
+      end
+    [category, sub_category, custom_attributes]
+  end
+
+  def map_possession_to_presenter(possession)
+    if possession.prev_owned
+      PreviousPossessionPresenter.new(possession, :product)
+    else
+      CurrentPossessionPresenter.new(possession, :product)
+    end
   end
 end
