@@ -22,12 +22,18 @@ class BrandsController < ApplicationController
     @product_counts = @brands.to_h do |brand|
       [
         brand.id,
-        ProductFilterService.new(
-          active_index_product_filters,
-          brand,
-          @category,
-          @sub_category
-        ).filter.products.size
+        if active_index_filters.keys.map(&:to_s).any? do |el|
+          allowed_index_product_filter_params.to_h.keys.include?(el)
+        end
+          ProductFilterService.new(
+            active_index_product_filters,
+            brand,
+            @category,
+            @sub_category
+          ).filter.products.size
+        else
+          brand.products_count
+        end
       ]
     end
     @brands_query = params[:query].strip if params[:query].present?
