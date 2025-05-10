@@ -12,7 +12,7 @@ class BrandsController < ApplicationController
 
   def index
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
-    @filter_applied = active_index_filters.any?
+    @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
     filter = BrandFilterService.new(active_index_filters, @category, @sub_category).filter
     @brands = filter.brands

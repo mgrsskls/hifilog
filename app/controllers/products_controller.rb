@@ -14,7 +14,7 @@ class ProductsController < ApplicationController
 
   def index
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
-    @filter_applied = active_index_filters.any?
+    @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
     filter = ProductFilterService.new(active_index_filters, nil, @category, @sub_category).filter
     @products = filter.products
