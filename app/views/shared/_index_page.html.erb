@@ -29,7 +29,7 @@
             <input type="hidden" name="status" value="<%= params[:status] %>">
             <input type="hidden" name="category" value="<%= params[:category] %>">
             <input type="hidden" name="diy_kit" value="<%= params[:diy_kit] %>">
-            <% params[:attr]&.each do |attr| %>
+            <% params[:attr].present? && params[:attr]&.each do |attr| %>
               <% attr[1].each do |value| %>
                 <input type="hidden" name="attr[<%= attr[0] %>][]" value="<%= value %>">
               <% end %>

@@ -2,6 +2,7 @@ class BrandsController < ApplicationController
   include ApplicationHelper
   include FilterableService
   include FriendlyFinder
+  include FilterParamsBuilder
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
@@ -10,16 +11,24 @@ class BrandsController < ApplicationController
   before_action :find_brand, only: [:show]
 
   def index
-    @category, @sub_category, @custom_attributes = extract_filter_context(brand_filter_params)
+    @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
+    @filter_applied = active_index_filters.any?
 
-    filter = BrandFilterService.new(brand_filter_params, @category, @sub_category).filter
+    filter = BrandFilterService.new(active_index_filters, @category, @sub_category).filter
     @brands = filter.brands
                     .includes(sub_categories: [:category])
                     .page(params[:page])
+
     @product_counts = @brands.to_h do |brand|
-      [brand.id,
-       ProductFilterService.new(brands_index_product_filter_params, brand, @category,
-                                @sub_category).filter.products.size]
+      [
+        brand.id,
+        ProductFilterService.new(
+          active_index_product_filters,
+          brand,
+          @category,
+          @sub_category
+        ).filter.products.size
+      ]
     end
     @brands_query = params[:query].strip if params[:query].present?
 
@@ -58,13 +67,15 @@ class BrandsController < ApplicationController
 
   def products
     @brand = Brand.includes(sub_categories: [:category], products: [:product_variants]).friendly.find(params[:brand_id])
-    @category, @sub_category, @custom_attributes = extract_filter_context(product_filter_params)
-    filter = ProductFilterService.new(product_filter_params, @brand, @category, @sub_category).filter
+    @category, @sub_category, @custom_attributes = extract_filter_context(allowed_show_product_filter_params)
+    @filter_applied = active_show_product_filters.any?
+    filter = ProductFilterService.new(active_show_product_filters, @brand, @category, @sub_category).filter
     @products = filter.products
                       .includes([:sub_categories, :product_variants])
                       .page(params[:page])
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |c| c[0].order }
+    @products_query = params[:query].strip if params[:query].present?
 
     @page_title = @brand.name
     add_breadcrumb @brand.name, brand_path(@brand)
@@ -165,23 +176,34 @@ class BrandsController < ApplicationController
     )
   end
 
-  def brand_filter_params
+  def allowed_index_filter_params
     params.permit(
       :category, :letter, :status, :country, :diy_kit, :query, :sort,
       attr: {}
     )
   end
 
-  def brands_index_product_filter_params
+  def allowed_index_product_filter_params
     params.permit(
       :category, :diy_kit, attr: {}
     )
   end
 
-  def product_filter_params
+  def allowed_show_product_filter_params
     params.permit(
-      :category, :letter, :status, :diy_kit, :query, :sort,
-      attr: {}
+      :category, :letter, :status, :diy_kit, :query, :sort, attr: {}
     )
+  end
+
+  def active_index_filters
+    build_filters(allowed_index_filter_params)
+  end
+
+  def active_index_product_filters
+    build_filters(allowed_index_product_filter_params)
+  end
+
+  def active_show_product_filters
+    build_filters(allowed_show_product_filter_params)
   end
 end

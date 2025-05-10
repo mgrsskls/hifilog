@@ -1,77 +1,35 @@
 require 'test_helper'
 
 class ProductsControllerTest < ActionDispatch::IntegrationTest
+  parameter_combinations = [
+    { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
+    { sort: ['name_asc'] },
+    { letter: ['a'] },
+    { status: ['discontinued'] },
+    { country: ['DE'] },
+    { diy_kit: ['1'] },
+    { attr: [{ '1': ['1'] }] },
+    { query: ['atrium'] }
+  ]
+
+  (1..parameter_combinations.size).each do |n|
+    parameter_combinations.combination(n).each do |params_group|
+      values = params_group.map { |param| param.values.first }
+      value_combinations = values.first.product(*values[1..])
+
+      value_combinations.each do |combo|
+        params = params_group.map(&:keys).flatten.zip(combo).to_h
+
+        define_method("test_index_#{params}") do
+          get products_url, params: params
+          assert_response :success
+        end
+      end
+    end
+  end
+
   test 'index' do
     get products_url
-    assert_response :success
-
-    get products_url(sort: :name_asc)
-    assert_response :success
-
-    get products_url(sort: :name_desc)
-    assert_response :success
-
-    get products_url(sort: :release_date_asc)
-    assert_response :success
-
-    get products_url(sort: :release_date_desc)
-    assert_response :success
-
-    get products_url(sort: :added_asc)
-    assert_response :success
-
-    get products_url(sort: :added_desc)
-    assert_response :success
-
-    get products_url(sort: :updated_asc)
-    assert_response :success
-
-    get products_url(sort: :updated_desc)
-    assert_response :success
-
-    get products_url(sub_category: sub_categories(:one).slug)
-    assert_response :success
-
-    get products_url(category: categories(:one).slug)
-    assert_response :success
-
-    get products_url(status: 'discontinued')
-    assert_response :success
-
-    get products_url(status: 'does-not-exist')
-    assert_response :success
-
-    get products_url(letter: 'a')
-    assert_response :success
-
-    get products_url(letter: 'a', sub_category: sub_categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get products_url(letter: 'a', sub_category: sub_categories(:one).slug)
-    assert_response :success
-
-    get products_url(letter: 'a', status: 'discontinued')
-    assert_response :success
-
-    get products_url(sub_category: sub_categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get products_url(letter: 'a', category: categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get products_url(letter: 'a', category: categories(:one).slug)
-    assert_response :success
-
-    get products_url(category: categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get products_url(query: products(:one).name)
-    assert_response :success
-
-    get products_url(query: products(:one).name, sub_category: products(:one).sub_categories.first.slug)
-    assert_response :success
-
-    get products_url(query: 'does-not-exist')
     assert_response :success
   end
 

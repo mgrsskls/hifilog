@@ -11,8 +11,7 @@ class FilterableServiceTest < ActiveSupport::TestCase
   end
 
   test 'apply_letter_filter returns only brands with correct initial' do
-    params = { letter: 'a' }
-    result = @dummy.apply_letter_filter(@scope, params, 'brands.name')
+    result = @dummy.apply_letter_filter(@scope, 'a', 'brands.name')
     assert(result.all? { |b| b.name.downcase.starts_with?('a') })
   end
 end

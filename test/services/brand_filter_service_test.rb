@@ -68,11 +68,6 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
     assert_equal counts.sort.reverse, counts
   end
 
-  test 'returns all brands with invalid params' do
-    result = BrandFilterService.new({ status: 'invalid' }).filter
-    assert_equal Brand.all.to_a.sort_by(&:id), result.brands.to_a.sort_by(&:id)
-  end
-
   test 'return all brands without any params' do
     result = BrandFilterService.new({}).filter
     assert_equal Brand.all.to_a.sort_by(&:id), result.brands.to_a.sort_by(&:id)

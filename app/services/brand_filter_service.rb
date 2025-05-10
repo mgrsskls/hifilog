@@ -4,13 +4,10 @@ class BrandFilterService
   include FilterConstants
   include FilterableService
 
-  # Result struct for returning filter results
-  Result = Struct.new(:brands, keyword_init: true)
+  Result = Struct.new(:brands)
 
-  def initialize(params, category = nil, sub_category = nil)
-    @params = params.to_h.symbolize_keys.slice(
-      :letter, :status, :country, :diy_kit, :attr, :query, :sort
-    )
+  def initialize(filters, category = nil, sub_category = nil)
+    @filters = filters
     @category = category
     @sub_category = sub_category
     @brands = Brand.all
@@ -25,13 +22,13 @@ class BrandFilterService
       brands = brands.joins(:sub_categories).where(sub_categories: { category_id: @category.id })
     end
 
-    brands = apply_ordering(brands, @params)
-    brands = apply_letter_filter(brands, @params, 'brands.name')
-    brands = apply_status_filter(brands, @params)
-    brands = apply_country_filter(brands, @params)
-    brands = apply_diy_kit_filter(brands, @params)
-    brands = apply_custom_attributes_filter(brands, @params)
-    brands = apply_search_filter(brands, @params)
+    brands = apply_ordering(brands, @filters[:sort])
+    brands = apply_letter_filter(brands, @filters[:letter], 'brands.name') if @filters[:letter].present?
+    brands = apply_status_filter(brands, @filters[:status]) if @filters[:status].present?
+    brands = apply_country_filter(brands, @filters[:country]) if @filters[:country].present?
+    brands = apply_diy_kit_filter(brands, @filters[:diy_kit]) if @filters[:diy_kit].present?
+    brands = apply_custom_attributes_filter(brands, @filters[:attr]) if @filters[:attr].present?
+    brands = apply_search_filter(brands, @filters[:query]) if @filters[:query].present?
     brands = brands.select('brands.*, LOWER(brands.name) AS lower_name').distinct
 
     Result.new(brands:)
@@ -39,51 +36,43 @@ class BrandFilterService
 
   private
 
-  def apply_country_filter(scope, params)
-    return scope if params[:country].blank?
-
-    scope.where(country_code: params[:country].upcase)
+  def apply_country_filter(scope, value)
+    scope.where(country_code: value.strip.upcase)
   end
 
-  def apply_diy_kit_filter(scope, params)
-    return scope if params[:diy_kit].blank?
-
-    diy_kit = params[:diy_kit] == '1'
+  def apply_diy_kit_filter(scope, value)
+    diy_kit = value == '1'
     scope = scope.left_joins(products: [:product_variants])
     scope.where(products: { product_variants: { diy_kit: } })
          .or(scope.where(products: { diy_kit: }))
          .distinct
   end
 
-  def apply_custom_attributes_filter(scope, params)
-    return scope if params[:attr].blank?
-
-    relevant_ids = params[:attr].keys.map(&:to_i)
+  def apply_custom_attributes_filter(scope, value)
+    relevant_ids = value.keys.map(&:to_i)
     CustomAttribute.where(id: relevant_ids).find_each do |custom_attribute|
       id_s = custom_attribute.id.to_s
-      next if params[:attr][id_s].blank?
+      next if value[id_s].blank?
 
       scope = scope.joins(:products)
-                   .where('custom_attributes ->> ? IN (?)', id_s, params[:attr][id_s])
+                   .where('custom_attributes ->> ? IN (?)', id_s, value[id_s])
                    .distinct
     end
     scope
   end
 
-  def apply_search_filter(scope, params)
-    return scope if params[:query].blank?
-
-    scope.search_by_name(params[:query].strip).with_pg_search_rank
+  def apply_search_filter(scope, value)
+    scope.search_by_name(value.strip).with_pg_search_rank
   end
 
-  def apply_status_filter(scope, params, discontinued_column = 'discontinued')
-    return scope unless params[:status].present? && STATUSES.include?(params[:status])
+  def apply_status_filter(scope, value)
+    discontinued = value == 'discontinued'
 
-    scope.where(discontinued_column => params[:status] == 'discontinued')
+    scope.where(discontinued:)
   end
 
-  def apply_ordering(scope, params)
-    order = case params[:sort]
+  def apply_ordering(scope, value)
+    order = case value&.downcase
             when 'name_desc' then 'lower_name DESC'
             when 'products_asc' then 'brands.products_count ASC NULLS FIRST, lower_name'
             when 'products_desc' then 'brands.products_count DESC NULLS LAST, lower_name'

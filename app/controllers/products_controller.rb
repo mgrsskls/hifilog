@@ -1,7 +1,10 @@
 class ProductsController < ApplicationController
+  include ActionView::Helpers::NumberHelper
+  include ActiveSupport::NumberHelper
   include ApplicationHelper
   include FilterableService
   include FriendlyFinder
+  include FilterParamsBuilder
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
@@ -10,9 +13,10 @@ class ProductsController < ApplicationController
   before_action :find_product, only: [:show]
 
   def index
-    @category, @sub_category, @custom_attributes = extract_filter_context(product_filter_params)
+    @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
+    @filter_applied = active_index_filters.any?
 
-    filter = ProductFilterService.new(product_filter_params, nil, @category, @sub_category).filter
+    filter = ProductFilterService.new(active_index_filters, nil, @category, @sub_category).filter
     @products = filter.products
                       .includes(:brand, :product_variants, sub_categories: [:custom_attributes])
                       .page(params[:page])
@@ -241,8 +245,12 @@ class ProductsController < ApplicationController
       )
   end
 
-  def product_filter_params
+  def allowed_index_filter_params
     params.permit(:category, :letter, :status, :diy_kit, :country, :query, :sort, attr: {})
+  end
+
+  def active_index_filters
+    build_filters(allowed_index_filter_params)
   end
 
   def map_possession_to_presenter(possession)

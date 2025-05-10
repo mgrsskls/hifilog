@@ -1,118 +1,67 @@
 require 'test_helper'
 
 class BrandsControllerTest < ActionDispatch::IntegrationTest
-  test 'should get index' do
+  index_params = [
+    { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
+    { sort: ['name_asc'] },
+    { letter: ['a'] },
+    { status: ['discontinued'] },
+    { country: ['DE'] },
+    { diy_kit: ['1'] },
+    { attr: [{ '1': ['1'] }] },
+    { query: ['atrium'] }
+  ]
+
+  show_products_params = [
+    { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
+    { sort: ['name_asc'] },
+    { letter: ['a'] },
+    { status: ['discontinued'] },
+    { diy_kit: ['1'] },
+    { attr: [{ '1': ['1'] }] },
+    { query: ['atrium'] }
+  ]
+
+  test 'index' do
     get brands_url
-    assert_response :success
-
-    get brands_url(sort: :name_asc)
-    assert_response :success
-
-    get brands_url(sort: :name_desc)
-    assert_response :success
-
-    get brands_url(sort: :products_asc)
-    assert_response :success
-
-    get brands_url(sort: :products_desc)
-    assert_response :success
-
-    get brands_url(sort: :country_asc)
-    assert_response :success
-
-    get brands_url(sort: :country_desc)
-    assert_response :success
-
-    get brands_url(sort: :added_asc)
-    assert_response :success
-
-    get brands_url(sort: :added_desc)
-    assert_response :success
-
-    get brands_url(sort: :updated_asc)
-    assert_response :success
-
-    get brands_url(sort: :updated_desc)
-    assert_response :success
-
-    get brands_url(sub_category: sub_categories(:one).slug)
-    assert_response :success
-
-    get brands_url(category: categories(:one).slug)
-    assert_response :success
-
-    get brands_url(status: 'discontinued')
-    assert_response :success
-
-    get brands_url(status: 'does-not-exist')
-    assert_response :success
-
-    get brands_url(letter: 'a')
-    assert_response :success
-
-    get brands_url(letter: 'a', sub_category: sub_categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get brands_url(letter: 'a', sub_category: sub_categories(:one).slug)
-    assert_response :success
-
-    get brands_url(letter: 'a', status: 'discontinued')
-    assert_response :success
-
-    get brands_url(sub_category: sub_categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get brands_url(letter: 'a', category: categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get brands_url(letter: 'a', category: categories(:one).slug)
-    assert_response :success
-
-    get brands_url(category: categories(:one).slug, status: 'discontinued')
-    assert_response :success
-
-    get brands_url(query: brands(:one).name)
-    assert_response :success
-
-    get brands_url(query: brands(:one).name, sub_category: brands(:one).products.first.sub_categories.first.slug)
-    assert_response :success
-
-    get brands_url(query: 'does-not-exist')
     assert_response :success
   end
 
-  test 'should get show' do
-    brand = brands(:one)
+  (1..index_params.size).each do |n|
+    index_params.combination(n).each do |params_group|
+      values = params_group.map { |param| param.values.first }
+      value_combinations = values.first.product(*values[1..])
 
-    get brand_url(id: brand.friendly_id)
-    assert_response :success
+      value_combinations.each do |combo|
+        params = params_group.map(&:keys).flatten.zip(combo).to_h
 
-    get brand_url(id: brand.friendly_id, sort: :name_asc)
-    assert_response :success
+        define_method("test_index_#{params}") do
+          get brands_url, params: params
+          assert_response :success
+        end
+      end
+    end
+  end
 
-    get brand_url(id: brand.friendly_id, sort: :name_desc)
+  test 'show' do
+    get brand_url(id: brands(:one).friendly_id)
     assert_response :success
+  end
 
-    get brand_url(id: brand.friendly_id, sort: :release_date_asc)
-    assert_response :success
+  (1..show_products_params.size).each do |n|
+    show_products_params.combination(n).each do |params_group|
+      values = params_group.map { |param| param.values.first }
+      value_combinations = values.first.product(*values[1..])
 
-    get brand_url(id: brand.friendly_id, sort: :release_date_desc)
-    assert_response :success
+      value_combinations.each do |combo|
+        params = params_group.map(&:keys).flatten.zip(combo).to_h
 
-    get brand_url(id: brand.friendly_id, status: 'discontinued')
-    assert_response :success
-
-    get brand_url(id: brand.friendly_id, status: 'does-not-exist')
-    assert_response :success
-
-    get brand_url(id: brand.friendly_id, letter: 'a')
-    assert_response :success
-
-    get brand_url(id: brand.friendly_id, query: brand.products.first.name)
-    assert_response :success
-
-    get brand_url(id: brand.friendly_id, sub_category: brand.products.first.sub_categories.first.slug)
-    assert_response :success
+        define_method("test_show_products_#{params}") do
+          get brand_products_url(brand_id: brands(:one).slug), params: params
+          assert_response :success
+        end
+      end
+    end
   end
 
   test 'new' do

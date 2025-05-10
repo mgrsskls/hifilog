@@ -4,7 +4,7 @@
   <% end %>
 
   <% content_for :filter do %>
-    <%= render "shared/filter", reset_path: brand_path(id: @brand.friendly_id, sub_category: params[:sub_category]), collection: @products, query: @brands_query, sub_categories: @all_sub_categories_grouped, type: :brand_products, custom_attributes: @custom_attributes %>
+    <%= render "shared/filter", reset_path: brand_path(id: @brand.friendly_id, sub_category: params[:sub_category]), collection: @products, query: @products_query, sub_categories: @all_sub_categories_grouped, type: :brand_products, custom_attributes: @custom_attributes %>
   <% end %>
 
   <% content_for :add_link do %>

@@ -150,6 +150,11 @@
           </div>
         <% end %>
 
+        <% if type == :brand_products %>
+          <%= diy_kit %>
+          <%= custom_attributes %>
+        <% end %>
+
         <div class="Filter-actions u-flex u-gap-md">
           <button class="Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
           <div class="Filter-submit u-flex u-gap-md u-alignCenter">
