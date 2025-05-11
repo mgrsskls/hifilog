@@ -291,8 +291,6 @@ en:
     added_desc: "Added: Newest first"
     brands_products_release_date_desc: "Products: Newest first"
     brands_products_release_date_asc: "Products: Oldest first"
-    country_asc: "Country: A first"
-    country_desc: "Country: Z first"
     name_asc: "Name: A first"
     name_desc: "Name: Z first"
     products_asc: "Products: Least first"

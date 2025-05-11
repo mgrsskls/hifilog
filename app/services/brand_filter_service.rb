@@ -76,8 +76,6 @@ class BrandFilterService
             when 'name_desc' then 'lower_name DESC'
             when 'products_asc' then 'brands.products_count ASC NULLS FIRST, lower_name'
             when 'products_desc' then 'brands.products_count DESC NULLS LAST, lower_name'
-            when 'country_asc' then 'brands.country_code ASC, lower_name'
-            when 'country_desc' then 'brands.country_code DESC, lower_name'
             when 'added_asc' then 'brands.created_at ASC, lower_name'
             when 'added_desc' then 'brands.created_at DESC, lower_name'
             when 'updated_asc' then 'brands.updated_at ASC, lower_name'
