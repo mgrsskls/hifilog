@@ -8,17 +8,18 @@
 }
 
 .Menu-home {
-	display: block;
-	flex: 0 0 9.75rem;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.325rem 1rem;
 	text-decoration: none;
 	line-height: 1;
 	white-space: nowrap;
 
 	span {
-		font-size: 0.75em;
 		color: var(--color-secondary);
 		display: block;
-		margin-block-start: 0.5em;
+		font-size: clamp(0.75em, 1.5cqi, 0.875em);
 	}
 }
 

@@ -294,7 +294,7 @@
 	}
 
 	html {
-		--page-spacing: clamp(1rem, 5vw, 3rem);
+		--page-spacing: clamp(0.625rem, 3vi, 2.5rem);
 	}
 
 	.Data {

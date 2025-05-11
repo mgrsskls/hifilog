@@ -9,6 +9,10 @@
 	transform: rotate(0.5turn);
 }
 
+.MenuMain-link--account > * {
+	flex-shrink: 0;
+}
+
 @media (width < 54rem) {
 	.MenuMain .MenuMain-item + .MenuMain-item,
 	.MenuAccount {
