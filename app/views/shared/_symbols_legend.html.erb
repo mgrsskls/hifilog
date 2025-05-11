@@ -1,48 +1,52 @@
-<dl class="SymbolsLegend">
-  <div class="SymbolsLegend-item">
-    <dt>
-      <span style="display: block; width: 0.1875rem; height: 1.5rem; background: var(--color-success-medium);">
-        <span class="u-hiddenVisually"><%= t('continued') %></span>
-      </span>
-    </dt>
-    <dd>
-      <%= t('continued') %>
-    </dd>
-  </div>
-  <div class="SymbolsLegend-item">
-    <dt>
-      <span style="display: block; width: 0.1875rem; height: 1.5rem; background: var(--color-invalid-medium);">
-        <span class="u-hiddenVisually"><%= t('symbols.discontinued') %></span>
-      </span>
-    </dt>
-    <dd>
-      <%= t('symbols.discontinued') %>
-    </dd>
-  </div>
+<div class="SymbolsLegends">
+  <dl class="SymbolsLegend">
+    <div class="SymbolsLegend-item">
+      <dt>
+        <span style="display: block; width: 0.1875rem; height: 1.5rem; background: var(--color-success-medium);">
+          <span class="u-hiddenVisually"><%= t('continued') %></span>
+        </span>
+      </dt>
+      <dd>
+        <%= t('continued') %>
+      </dd>
+    </div>
+    <div class="SymbolsLegend-item">
+      <dt>
+        <span style="display: block; width: 0.1875rem; height: 1.5rem; background: var(--color-invalid-medium);">
+          <span class="u-hiddenVisually"><%= t('symbols.discontinued') %></span>
+        </span>
+      </dt>
+      <dd>
+        <%= t('symbols.discontinued') %>
+      </dd>
+    </div>
+  </dl>
   <% if user_signed_in? %>
-    <div class="SymbolsLegend-item">
-      <dt>
-        <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-      </dt>
-      <dd>
-        <%= t('symbols.in_your_collection') %>
-      </dd>
-    </div>
-    <div class="SymbolsLegend-item">
-      <dt>
-        <span class="IconSymbol IconSymbol--prevOwned">P</span>
-      </dt>
-      <dd>
-        <%= t('symbols.prev_owned') %>
-      </dd>
-    </div>
-    <div class="SymbolsLegend-item">
-      <dt>
-        <svg class="IconSymbol IconSymbol--bookmark" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.6 3.32c1.1.13 1.9 1.08 1.9 2.19V21L12 17.25 4.5 21V5.5c0-1.1.8-2.05 1.9-2.18a48.5 48.5 0 0 1 11.2 0Z"/></svg>
-      </dt>
-      <dd>
-        <%= t('symbols.in_your_bookmarks') %>
-      </dd>
-    </div>
+    <dl class="SymbolsLegend">
+      <div class="SymbolsLegend-item SymbolsLegend-item--user">
+        <dt>
+          <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        </dt>
+        <dd>
+          <%= t('symbols.in_your_collection') %>
+        </dd>
+      </div>
+      <div class="SymbolsLegend-item">
+        <dt>
+          <span class="IconSymbol IconSymbol--prevOwned">P</span>
+        </dt>
+        <dd>
+          <%= t('symbols.prev_owned') %>
+        </dd>
+      </div>
+      <div class="SymbolsLegend-item">
+        <dt>
+          <svg class="IconSymbol IconSymbol--bookmark" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.6 3.32c1.1.13 1.9 1.08 1.9 2.19V21L12 17.25 4.5 21V5.5c0-1.1.8-2.05 1.9-2.18a48.5 48.5 0 0 1 11.2 0Z"/></svg>
+        </dt>
+        <dd>
+          <%= t('symbols.in_your_bookmarks') %>
+        </dd>
+      </div>
+    </dl>
   <% end %>
-</dl>
+</div>

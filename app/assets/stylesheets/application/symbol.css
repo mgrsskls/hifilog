@@ -75,12 +75,17 @@
 	stroke-width: 1.5px;
 }
 
+.SymbolsLegends {
+	container: legends / inline-size;
+	display: flex;
+	justify-content: space-between;
+	gap: 2rem;
+}
+
 .SymbolsLegend {
 	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
 	gap: 1.5rem;
-	margin-block: 0;
+	margin-block: 4rem 0;
 	font-size: 0.875em;
 }
 
@@ -88,4 +93,10 @@
 	display: flex;
 	align-items: center;
 	gap: 0.75em;
+}
+
+@container legends (width < 46em) {
+	.SymbolsLegend {
+		flex-direction: column;
+	}
 }
