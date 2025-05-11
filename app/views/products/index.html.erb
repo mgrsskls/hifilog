@@ -1,7 +1,7 @@
 <% content_for :header do %>
   <% if @sub_category %>
     <h1 class="h1-sm">
-      <small><%= @category.name %></small><span class="u-hiddenVisually">:</span> <%= @sub_category.name %>
+      <span class="IndexPage-category"><%= @category.name %></span><span class="u-hiddenVisually">:</span> <%= @sub_category.name %>
     </h1>
   <% else %>
     <h1><%= @category ? @category.name : Product.model_name.human(count: 2) %></h1>

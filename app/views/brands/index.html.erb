@@ -1,12 +1,11 @@
 <% content_for :header do %>
-  <h1>
-    <%= Brand.model_name.human(count: 2) %>
-    <% if @sub_category %>
-      <span class="IndexPage-category"><%= @sub_category.name %></span>
-    <% elsif @category %>
-      <span class="IndexPage-category"><%= @category.name %></span>
-    <% end %>
-  </h1>
+  <% if @sub_category %>
+    <h1 class="h1-sm">
+      <span class="IndexPage-category"><%= @category.name %></span><span class="u-hiddenVisually">:</span> <%= @sub_category.name %>
+    </h1>
+  <% else %>
+    <h1><%= @category ? @category.name : Brand.model_name.human(count: 2) %></h1>
+  <% end %>
 <% end %>
 
 <% content_for :filter do %>
