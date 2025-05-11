@@ -19,23 +19,24 @@ class BrandsController < ApplicationController
                     .includes(sub_categories: [:category])
                     .page(params[:page])
 
-    @product_counts = @brands.to_h do |brand|
-      [
-        brand.id,
-        if active_index_filters.keys.map(&:to_s).any? do |el|
-          allowed_index_product_filter_params.to_h.keys.include?(el)
-        end
-          ProductFilterService.new(
-            active_index_product_filters,
-            brand,
-            @category,
-            @sub_category
-          ).filter.products.size
-        else
-          brand.products_count
-        end
-      ]
+    @product_counts = if active_index_filters.keys.map(&:to_s).any? do |el|
+      allowed_index_product_filter_params.to_h.keys.include?(el)
     end
+                        ProductFilterService.new(
+                          active_index_product_filters,
+                          @brands,
+                          @category,
+                          @sub_category
+                        ).filter.products.group_by(&:brand_id).transform_values(&:length)
+                      else
+                        @brands.to_h do |brand|
+                          [
+                            brand.id,
+                            brand.products_count
+                          ]
+                        end
+                      end
+
     @brands_query = params[:query].strip if params[:query].present?
 
     @page_title = Brand.model_name.human(count: 2)
@@ -75,7 +76,7 @@ class BrandsController < ApplicationController
     @brand = Brand.includes(sub_categories: [:category], products: [:product_variants]).friendly.find(params[:brand_id])
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_show_product_filter_params)
     @filter_applied = active_show_product_filters.any?
-    filter = ProductFilterService.new(active_show_product_filters, @brand, @category, @sub_category).filter
+    filter = ProductFilterService.new(active_show_product_filters, [@brand], @category, @sub_category).filter
     @products = filter.products
                       .includes([:sub_categories, :product_variants])
                       .page(params[:page])

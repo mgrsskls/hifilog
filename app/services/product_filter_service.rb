@@ -6,11 +6,11 @@ class ProductFilterService
 
   Result = Struct.new(:products, keyword_init: true)
 
-  def initialize(filters, brand, category = nil, sub_category = nil)
+  def initialize(filters, brands, category = nil, sub_category = nil)
     @filters = filters
     @category = category
     @sub_category = sub_category
-    @products = brand.present? ? brand.products : Product.all
+    @products = brands.any? ? Product.where(brand_id: brands.map(&:id)) : Product.all
   end
 
   def filter
