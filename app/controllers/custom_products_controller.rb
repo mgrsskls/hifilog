@@ -39,6 +39,7 @@ class CustomProductsController < ApplicationController
     @categories = Category.includes([:sub_categories])
 
     add_breadcrumb I18n.t('custom_product.new.breadcrumb')
+    @page_title = I18n.t('custom_product.new.heading')
   end
 
   def edit
@@ -50,7 +51,7 @@ class CustomProductsController < ApplicationController
       user_id: current_user.user_name.downcase
     )
     add_breadcrumb I18n.t('edit')
-    @page_title = @custom_product.name
+    @page_title = "#{t('edit')} #{@custom_product.name}"
   end
 
   def create

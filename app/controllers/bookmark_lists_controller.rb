@@ -48,6 +48,7 @@ class BookmarkListsController < InheritedResources::Base
     @bookmark_list = BookmarkList.new
 
     add_breadcrumb I18n.t('bookmark_list.new.heading')
+    @page_title = I18n.t('bookmark_list.new.heading')
   end
 
   def edit
@@ -55,6 +56,7 @@ class BookmarkListsController < InheritedResources::Base
 
     add_breadcrumb @bookmark_list.name, dashboard_bookmark_list_path(@bookmark_list)
     add_breadcrumb I18n.t('edit')
+    @page_title = "#{t('edit')} #{@bookmark_list.name}"
   end
 
   def create

@@ -2,13 +2,9 @@ class StatisticsController < ApplicationController
   include ApplicationHelper
 
   before_action :authenticate_user!
-  before_action :set_breadcrumb
+  before_action :set_menu
 
   def current
-    add_breadcrumb I18n.t('headings.statistics'), dashboard_statistics_root_path
-    @page_title = I18n.t('headings.statistics')
-    @active_dashboard_menu = :statistics
-
     current_possessions = current_user.possessions
                                       .where.not(prev_owned: true)
                                       .includes([:product_variant])
@@ -48,6 +44,7 @@ class StatisticsController < ApplicationController
   end
 
   def total
+    add_breadcrumb 'Total'
     possessions = current_user.possessions
                               .includes([:product_variant])
                               .includes([:custom_product])
@@ -108,6 +105,7 @@ class StatisticsController < ApplicationController
   end
 
   def yearly
+    add_breadcrumb 'Yearly'
     possessions = current_user.possessions
                               .includes([:product_variant])
                               .includes([:custom_product])
@@ -248,8 +246,10 @@ class StatisticsController < ApplicationController
 
   private
 
-  def set_breadcrumb
-    @active_menu = :dashboard
+  def set_menu
+    @page_title = I18n.t('headings.statistics')
+    @active_dashboard_menu = :statistics
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
+    add_breadcrumb I18n.t('headings.statistics'), dashboard_statistics_root_path
   end
 end

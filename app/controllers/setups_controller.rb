@@ -50,6 +50,7 @@ class SetupsController < ApplicationController
     @setup = Setup.new(private: true)
 
     add_breadcrumb I18n.t('setup.new.heading')
+    @page_title = I18n.t('setup.new.heading')
   end
 
   def edit
@@ -57,6 +58,7 @@ class SetupsController < ApplicationController
 
     add_breadcrumb @setup.name, dashboard_setup_path(id: @setup.id)
     add_breadcrumb I18n.t('edit')
+    @page_title = "#{t('edit')} #{@setup.name}"
   end
 
   def create
