@@ -35,10 +35,6 @@
 	.Dashboard-products {
 		grid-area: content;
 		padding-block: 4rem;
-
-		&:has(.Breadcrumbs) {
-			padding-block-start: 2rem;
-		}
 	}
 
 	.Dashboard-userName {

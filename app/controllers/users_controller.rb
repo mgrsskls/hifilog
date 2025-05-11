@@ -2,8 +2,6 @@ class UsersController < ApplicationController
   include HistoryHelper
   include Possessions
 
-  before_action :set_breadcrumb, only: [:index]
-
   def index
     @page_title = User.model_name.human(count: 2)
     @users_by_products = User.find_by_sql('
@@ -102,10 +100,6 @@ class UsersController < ApplicationController
 
   def get_data(data, model, event)
     data[[model, event]] || 0
-  end
-
-  def set_breadcrumb
-    add_breadcrumb User.model_name.human(count: 2)
   end
 
   def setup_user_page

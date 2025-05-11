@@ -3,7 +3,6 @@
 @import url("./application/app_news.css") layer(components);
 @import url("./application/avatar.css") layer(components);
 @import url("./application/back_link.css") layer(components);
-@import url("./application/breadcrumbs.css") layer(components);
 @import url("./application/button.css") layer(components);
 @import url("./application/checkbox_button.css") layer(components);
 @import url("./application/empty_state.css") layer(components);

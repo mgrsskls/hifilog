@@ -2,7 +2,7 @@ class SetupsController < ApplicationController
   include Possessions
 
   before_action :authenticate_user!
-  before_action :set_breadcrumb
+  before_action :set_menu
 
   def index
     @page_title = Setup.model_name.human(count: 2)
@@ -12,7 +12,6 @@ class SetupsController < ApplicationController
   def show
     @setup = current_user.setups.find(params[:id])
 
-    add_breadcrumb @setup.name, dashboard_setup_path(@setup)
     @page_title = @setup.name
 
     @all_possessions = map_possessions_to_presenter current_user
@@ -49,15 +48,12 @@ class SetupsController < ApplicationController
   def new
     @setup = Setup.new(private: true)
 
-    add_breadcrumb I18n.t('setup.new.heading')
     @page_title = I18n.t('setup.new.heading')
   end
 
   def edit
     @setup = current_user.setups.find(params[:id])
 
-    add_breadcrumb @setup.name, dashboard_setup_path(id: @setup.id)
-    add_breadcrumb I18n.t('edit')
     @page_title = "#{t('edit')} #{@setup.name}"
   end
 
@@ -106,9 +102,7 @@ class SetupsController < ApplicationController
 
   private
 
-  def set_breadcrumb
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb Setup.model_name.human(count: 2), dashboard_setups_path
+  def set_menu
     @active_dashboard_menu = :setups
     @active_menu = :dashboard
   end

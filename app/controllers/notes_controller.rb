@@ -3,8 +3,6 @@ class NotesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb Note.model_name.human(count: 2), dashboard_notes_path
     @active_menu = :dashboard
     @active_dashboard_menu = :notes
     @notes = current_user.notes.order('updated_at DESC, created_at DESC')
@@ -35,9 +33,6 @@ class NotesController < ApplicationController
     @product_variant = ProductVariant.find(@note.product_variant_id) if @note.product_variant_id.present?
 
     display_name = @product_variant.present? ? @product_variant.display_name : @product.display_name
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb Note.model_name.human(count: 2), dashboard_notes_path
-    add_breadcrumb display_name
     @page_title = "#{Note.model_name.human(count: 2)} — #{display_name}"
   end
 
@@ -51,15 +46,6 @@ class NotesController < ApplicationController
     )
 
     display_name = @product_variant.present? ? @product_variant.display_name : @product.display_name
-    add_breadcrumb Product.model_name.human(count: 2), products_path
-    add_breadcrumb @product.display_name, product_path(id: @product.friendly_id)
-    if @product_variant.present?
-      add_breadcrumb @product_variant.short_name, product_variant_path(
-        variant: @product_variant.friendly_id,
-        product_id: @product.friendly_id
-      )
-    end
-    add_breadcrumb 'Notes'
     @page_title = "Notes — #{display_name}"
   end
 

@@ -6,7 +6,6 @@ class BrandsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
-  before_action :set_breadcrumb, except: [:index]
   before_action :set_active_menu
   before_action :find_brand, only: [:show]
 
@@ -40,14 +39,6 @@ class BrandsController < ApplicationController
     @brands_query = params[:query].strip if params[:query].present?
 
     @page_title = Brand.model_name.human(count: 2)
-
-    add_breadcrumb Brand.model_name.human(count: 2)
-    if @sub_category
-      add_breadcrumb @category.name, brands_path(category: @category.friendly_id)
-      add_breadcrumb @sub_category.name
-    elsif @category
-      add_breadcrumb @category.name
-    end
   end
 
   def all
@@ -69,7 +60,6 @@ class BrandsController < ApplicationController
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
 
     @page_title = @brand.name
-    add_breadcrumb @brand.name, brand_path(@brand)
   end
 
   def products
@@ -85,8 +75,6 @@ class BrandsController < ApplicationController
     @products_query = params[:query].strip if params[:query].present?
 
     @page_title = @brand.name
-    add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb Product.model_name.human(count: 2)
   end
 
   def new
@@ -95,7 +83,6 @@ class BrandsController < ApplicationController
     @categories = Category.includes([:sub_categories])
 
     @page_title = I18n.t('brand.new.heading')
-    add_breadcrumb I18n.t('brand.new.heading')
   end
 
   def edit
@@ -103,8 +90,6 @@ class BrandsController < ApplicationController
     @categories = Category.includes([:sub_categories])
 
     @page_title = I18n.t('edit_record', name: @brand.name)
-    add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb I18n.t('edit')
   end
 
   def create
@@ -145,9 +130,6 @@ class BrandsController < ApplicationController
       log = get_changelog(v.object_changes)
       log.length > 1 || (log.length == 1 && log['slug'].nil?)
     end
-
-    add_breadcrumb @brand.name, brand_path(@brand)
-    add_breadcrumb I18n.t('headings.changelog')
   end
 
   private
@@ -158,10 +140,6 @@ class BrandsController < ApplicationController
 
   def set_active_menu
     @active_menu = :brands
-  end
-
-  def set_breadcrumb
-    add_breadcrumb Brand.model_name.human(count: 2), proc { :brands }
   end
 
   def brand_params

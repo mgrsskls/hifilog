@@ -3,7 +3,6 @@ class ProductVariantsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
-  before_action :set_breadcrumb, only: [:show, :new, :edit, :changelog]
   before_action :set_active_menu
   before_action :find_product_and_variant, only: [:show]
 
@@ -51,8 +50,6 @@ class ProductVariantsController < ApplicationController
       WHERE versions.item_id = #{@product.id} AND versions.item_type = 'Product'
     ")
 
-    add_breadcrumb @product.display_name, @product
-    add_breadcrumb @product_variant.short_name
     @page_title = "#{@product.display_name} #{@product_variant.short_name}"
   end
 
@@ -61,8 +58,6 @@ class ProductVariantsController < ApplicationController
     @product_variant = ProductVariant.new(product: @product)
     @brand = @product.brand
 
-    add_breadcrumb @product.display_name, @product
-    add_breadcrumb I18n.t('product_variant.new.link')
     @page_title = "#{I18n.t('product_variant.new.link')} — #{@product.display_name}"
   end
 
@@ -71,13 +66,6 @@ class ProductVariantsController < ApplicationController
     @product_variant = @product.product_variants.friendly.find(params[:id])
     @brand = @product.brand
     @page_title = I18n.t('edit_record', name: @product_variant.display_name)
-
-    add_breadcrumb @product.display_name, @product
-    add_breadcrumb @product_variant.short_name, product_variant_path(
-      product_id: @product.friendly_id,
-      id: @product_variant.friendly_id
-    )
-    add_breadcrumb I18n.t('edit')
   end
 
   def create
@@ -152,20 +140,12 @@ class ProductVariantsController < ApplicationController
       log = get_changelog(v.object_changes)
       log.length > 1 || (log.length == 1 && log['slug'].nil?)
     end
-
-    add_breadcrumb @product.display_name, @product.path
-    add_breadcrumb @product_variant.short_name, @product_variant.path
-    add_breadcrumb I18n.t('headings.changelog')
   end
 
   private
 
   def set_active_menu
     @active_menu = :products
-  end
-
-  def set_breadcrumb
-    add_breadcrumb Product.model_name.human(count: 2), products_path
   end
 
   def find_product_and_variant

@@ -5,7 +5,7 @@ class UserController < ApplicationController
   include NewsletterHelper
 
   before_action :authenticate_user!, except: [:newsletter_unsubscribe]
-  before_action :set_breadcrumb
+  before_action :set_menu
 
   def dashboard
     @page_title = I18n.t('dashboard')
@@ -28,7 +28,6 @@ class UserController < ApplicationController
   end
 
   def bookmarks
-    add_breadcrumb Bookmark.model_name.human(count: 2), dashboard_bookmarks_path
     @page_title = Bookmark.model_name.human(count: 2)
     @active_dashboard_menu = :bookmarks
 
@@ -59,7 +58,6 @@ class UserController < ApplicationController
   end
 
   def contributions
-    add_breadcrumb I18n.t('headings.contributions'), dashboard_contributions_path
     @page_title = I18n.t('headings.contributions')
     @active_dashboard_menu = :contributions
 
@@ -85,7 +83,6 @@ class UserController < ApplicationController
   end
 
   def history
-    add_breadcrumb I18n.t('headings.history'), dashboard_history_path
     @page_title = I18n.t('headings.history')
     @active_dashboard_menu = :history
     @possessions = get_history_possessions(current_user.possessions)
@@ -183,8 +180,7 @@ class UserController < ApplicationController
     data[[model, event]] || 0
   end
 
-  def set_breadcrumb
+  def set_menu
     @active_menu = :dashboard
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
   end
 end

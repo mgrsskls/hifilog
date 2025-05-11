@@ -151,7 +151,6 @@ en:
     turntable_drive_type: Drive type
   custom_product:
     new:
-      breadcrumb: New
       heading: Add new Custom Product
       link: Add Custom Product
     delete:

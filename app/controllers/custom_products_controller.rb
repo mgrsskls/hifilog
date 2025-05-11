@@ -1,6 +1,6 @@
 class CustomProductsController < ApplicationController
   before_action :authenticate_user!, except: [:show]
-  before_action :set_breadcrumb, except: [:show]
+  before_action :set_menu, except: [:show]
 
   def index
     @page_title = CustomProduct.model_name.human(count: 2)
@@ -28,9 +28,6 @@ class CustomProductsController < ApplicationController
 
     @setups = current_user.setups if @user == current_user
 
-    add_breadcrumb User.model_name.human(count: 2), users_path
-    add_breadcrumb @user.user_name, user_path(id: @user.user_name.downcase)
-    add_breadcrumb @custom_product.display_name
     @page_title = @custom_product.display_name
   end
 
@@ -38,7 +35,6 @@ class CustomProductsController < ApplicationController
     @custom_product = CustomProduct.new
     @categories = Category.includes([:sub_categories])
 
-    add_breadcrumb I18n.t('custom_product.new.breadcrumb')
     @page_title = I18n.t('custom_product.new.heading')
   end
 
@@ -46,11 +42,6 @@ class CustomProductsController < ApplicationController
     @custom_product = current_user.custom_products.find(params[:id])
     @categories = Category.includes([:sub_categories])
 
-    add_breadcrumb @custom_product.name, user_custom_product_path(
-      id: @custom_product.id,
-      user_id: current_user.user_name.downcase
-    )
-    add_breadcrumb I18n.t('edit')
     @page_title = "#{t('edit')} #{@custom_product.name}"
   end
 
@@ -112,9 +103,7 @@ class CustomProductsController < ApplicationController
 
   private
 
-  def set_breadcrumb
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb CustomProduct.model_name.human(count: 2), dashboard_custom_products_path
+  def set_menu
     @active_dashboard_menu = :custom_products
     @active_menu = :dashboard
   end

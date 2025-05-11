@@ -6,8 +6,6 @@ class PossessionsController < ApplicationController
 
   def current
     @active_menu = :dashboard
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('headings.collection'), dashboard_products_path
     @page_title = I18n.t('headings.collection')
     @active_dashboard_menu = :products
 
@@ -25,8 +23,6 @@ class PossessionsController < ApplicationController
 
   def previous
     @active_menu = :dashboard
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('headings.prev_owneds'), dashboard_prev_owneds_path
     @page_title = I18n.t('headings.prev_owneds')
     @active_dashboard_menu = :prev_owneds
 

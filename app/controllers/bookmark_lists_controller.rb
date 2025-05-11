@@ -2,12 +2,11 @@ class BookmarkListsController < InheritedResources::Base
   include Bookmarks
 
   before_action :authenticate_user!
-  before_action :set_breadcrumb
+  before_action :set_menu
 
   def show
     @bookmark_list = current_user.bookmark_lists.find(params[:id])
 
-    add_breadcrumb @bookmark_list.name
     @page_title = Bookmark.model_name.human(count: 2)
     @active_dashboard_menu = :bookmarks
 
@@ -47,15 +46,12 @@ class BookmarkListsController < InheritedResources::Base
   def new
     @bookmark_list = BookmarkList.new
 
-    add_breadcrumb I18n.t('bookmark_list.new.heading')
     @page_title = I18n.t('bookmark_list.new.heading')
   end
 
   def edit
     @bookmark_list = current_user.bookmark_lists.find(params[:id])
 
-    add_breadcrumb @bookmark_list.name, dashboard_bookmark_list_path(@bookmark_list)
-    add_breadcrumb I18n.t('edit')
     @page_title = "#{t('edit')} #{@bookmark_list.name}"
   end
 
@@ -100,9 +96,7 @@ class BookmarkListsController < InheritedResources::Base
 
   private
 
-  def set_breadcrumb
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb Bookmark.model_name.human(count: 2), dashboard_bookmarks_path
+  def set_menu
     @active_dashboard_menu = :bookmarks
     @active_menu = :dashboard
   end

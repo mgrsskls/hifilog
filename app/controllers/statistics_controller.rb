@@ -44,7 +44,6 @@ class StatisticsController < ApplicationController
   end
 
   def total
-    add_breadcrumb 'Total'
     possessions = current_user.possessions
                               .includes([:product_variant])
                               .includes([:custom_product])
@@ -105,7 +104,6 @@ class StatisticsController < ApplicationController
   end
 
   def yearly
-    add_breadcrumb 'Yearly'
     possessions = current_user.possessions
                               .includes([:product_variant])
                               .includes([:custom_product])
@@ -250,7 +248,5 @@ class StatisticsController < ApplicationController
     @page_title = I18n.t('headings.statistics')
     @active_menu = :dashboard
     @active_dashboard_menu = :statistics
-    add_breadcrumb I18n.t('dashboard'), dashboard_root_path
-    add_breadcrumb I18n.t('headings.statistics'), dashboard_statistics_root_path
   end
 end

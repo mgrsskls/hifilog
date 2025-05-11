@@ -1,6 +1,4 @@
 class SearchController < ApplicationController
-  add_breadcrumb I18n.t('search')
-
   MIN_CHARS = 2
 
   def results
@@ -30,7 +28,6 @@ class SearchController < ApplicationController
       if @query.nil? || @query.length < MIN_CHARS
         flash.now[:alert] = I18n.t('search_results.alert.minimum_chars', min: MIN_CHARS)
       else
-        add_breadcrumb "“#{@query}”"
         @results = query_results
       end
     end

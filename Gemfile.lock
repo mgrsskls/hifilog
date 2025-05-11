@@ -117,8 +117,6 @@ GEM
     bindex (0.8.1)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
-    breadcrumbs_on_rails (4.1.0)
-      railties (>= 5.0)
     builder (3.3.0)
     bullet (8.0.5)
       activesupport (>= 3.0.0)
@@ -433,7 +431,6 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1)
   barnes
   bootsnap
-  breadcrumbs_on_rails
   bullet
   commonmarker
   country_select
