@@ -16,16 +16,20 @@
 
 .IndexPage-headerFilter :is(h1, h2) {
 	margin-block: 0;
-	line-height: 1;
-}
 
-.IndexPage-headerFilter .h1-sm {
-	line-height: 1.2;
+	small:not(:last-child) {
+		margin-block-end: 0.5rem;
+	}
 }
 
 .IndexPage-filter,
 .IndexPage-addLink--l {
 	margin-block-start: 2rem;
+}
+
+.IndexPage-addLink--l {
+	border-block-start: var(--border-light);
+	padding-block-start: 2rem;
 }
 
 @media (width < 48rem) {
@@ -42,6 +46,7 @@
 
 .IndexPage-content {
 	grid-area: content;
+	padding-block: 2rem;
 }
 
 .IndexPage-contentHeader {
@@ -68,24 +73,37 @@
 			"header"
 			"content";
 		gap: 2rem;
+		padding-block: 3rem;
 	}
 }
 
 @media (width >= 48rem) {
 	.IndexPage {
-		grid-template: "header content" / 17rem 1fr;
+		grid-template: "header content" / var(--sidebar-size) 1fr;
 		align-items: start;
-		gap: clamp(2rem, 4vi, 4rem);
 	}
 
 	.IndexPage-header {
-		--top: 9.125rem;
+		--top: var(--header-height);
 
 		position: sticky;
 		inset-block-start: var(--top);
-		max-block-size: calc(100dvb - var(--top));
 		overflow-y: auto;
-		padding-block-end: 2rem;
+		padding-block: 2rem;
+		padding-inline-end: var(--page-spacing);
 		box-sizing: border-box;
+		border-inline-end: var(--border-light);
+		display: flex;
+		flex-direction: column;
+	}
+
+	.IndexPage--fullPage .IndexPage-header {
+		block-size: calc(100dvb - var(--top));
+	}
+
+	.IndexPage-content {
+		border-inline-start: var(--border-light);
+		padding-inline-start: var(--page-spacing);
+		margin-inline-start: calc(-1 * 0.0625rem);
 	}
 }

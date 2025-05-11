@@ -118,10 +118,7 @@ class UsersController < ApplicationController
 
     @page_title = user.user_name
 
-    if current_user == user
-      @active_menu = :dashboard
-      @active_dashboard_menu = :profile
-    end
+    @active_dashboard_menu = :profile if current_user == user
 
     user
   end

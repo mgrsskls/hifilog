@@ -31,10 +31,6 @@
 		border-radius: 0;
 	}
 
-	.MenuMain-link[aria-expanded="true"] {
-		background: var(--color-menu-bg);
-	}
-
 	.MenuMain-link {
 		position: relative;
 		padding-inline: 0.75rem;
@@ -42,6 +38,16 @@
 
 	.MenuMain-link--mega {
 		padding-inline: 1.5rem;
+	}
+
+	.MenuMain-link[aria-current="true"] {
+		background: var(--color-menu-main-active-bg);
+		color: var(--color-menu-main-active-copy);
+	}
+
+	.MenuMain-link[aria-expanded="true"] {
+		background: var(--color-menu-bg);
+		color: #fff;
 	}
 
 	.MenuMain-item--account {

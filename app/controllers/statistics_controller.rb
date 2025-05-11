@@ -248,6 +248,7 @@ class StatisticsController < ApplicationController
 
   def set_menu
     @page_title = I18n.t('headings.statistics')
+    @active_menu = :dashboard
     @active_dashboard_menu = :statistics
     add_breadcrumb I18n.t('dashboard'), dashboard_root_path
     add_breadcrumb I18n.t('headings.statistics'), dashboard_statistics_root_path

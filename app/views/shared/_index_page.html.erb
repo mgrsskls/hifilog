@@ -1,4 +1,5 @@
-<div class="IndexPage" id="list">
+<% full_page ||= false %>
+<div class="IndexPage<%= " IndexPage--fullPage" if full_page %>" id="list">
   <div class="IndexPage-header">
     <div class="IndexPage-headerFilter">
       <%= yield :header %>

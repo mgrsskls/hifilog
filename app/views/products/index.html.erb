@@ -1,13 +1,11 @@
 <% content_for :header do %>
-  <h1 class="h1-sm">
-    <% if @sub_category %>
-      <%= @sub_category.name %>
-    <% elsif @category %>
-      <%= @category.name %>
-    <% else %>
-      <%= Product.model_name.human(count: 2) %>
-    <% end %>
-  </h1>
+  <% if @sub_category %>
+    <h1 class="h1-sm">
+      <small><%= @category.name %></small><span class="u-hiddenVisually">:</span> <%= @sub_category.name %>
+    </h1>
+  <% else %>
+    <h1><%= @category ? @category.name : Product.model_name.human(count: 2) %></h1>
+  <% end %>
 <% end %>
 
 <% content_for :filter do %>
@@ -42,5 +40,5 @@
   empty_state_message: t('empty_state.products_filter', path: new_product_path),
   category: @category,
   sub_category: @sub_category,
-  render_category: true
+  full_page: true
 %>

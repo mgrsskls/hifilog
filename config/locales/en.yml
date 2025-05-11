@@ -196,6 +196,7 @@ en:
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
   headings:
     account: Account
+    brands: Brands
     changelog: Changelog
     collection: Collection
     contributions: Contributions
@@ -206,6 +207,7 @@ en:
     edited: Edited
     history: History
     prev_owneds: Previous products
+    products: Products
     profile: Profile
     statistics: Statistics
   home:

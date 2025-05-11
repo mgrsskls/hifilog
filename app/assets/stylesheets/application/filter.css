@@ -1,10 +1,6 @@
 .Filter {
 	position: relative;
 	z-index: 1;
-	border: var(--border-light);
-	border-radius: var(--border-radius);
-	background: var(--color-bg2);
-	padding: 0.75rem;
 	font-size: 0.875em;
 }
 
@@ -29,8 +25,6 @@
 
 .Filter-section--divider {
 	padding-block-start: 0.75rem;
-	margin-block-start: 0.75rem;
-	border-block-start: var(--border) var(--color-transparency-15);
 }
 
 .Filter-legend {
@@ -68,12 +62,8 @@ html:where([data-theme="light"]) .Filter-input {
 }
 
 .Filter-actions {
-	margin-block-start: 0.5rem;
+	margin-block-start: 1rem;
 	grid-column: 1 / -1;
-}
-
-.Filter-submit {
-	margin-inline-start: auto;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,12 +76,22 @@ html:where([data-theme="dark"]) .Filter-input {
 	background: var(--color-input-bg);
 }
 
+.FilterInfo {
+	line-height: 1.2;
+	text-align: center;
+	margin-block: 0;
+}
+
 @media (width < 48rem) {
 	.Filter {
 		display: grid;
 		gap: 1rem 2rem;
 		grid-template-columns: 1fr auto;
 		align-items: center;
+		border: var(--border-light);
+		border-radius: var(--border-radius);
+		background: var(--color-bg2);
+		padding: 0.75rem;
 	}
 
 	.Filter-form {
@@ -143,6 +143,10 @@ html:where([data-theme="dark"]) .Filter-input {
 		gap: 0.5em;
 		align-items: center;
 	}
+
+	.Filter-submit {
+		margin-inline-start: auto;
+	}
 }
 
 @media (width >= 48rem) {
@@ -151,10 +155,8 @@ html:where([data-theme="dark"]) .Filter-input {
 	.Filter-close {
 		display: none;
 	}
-}
 
-.FilterInfo {
-	line-height: 1.2;
-	text-align: center;
-	margin-block: 0;
+	.Filter-submit {
+		inline-size: 100%;
+	}
 }

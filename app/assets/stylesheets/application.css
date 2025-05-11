@@ -92,6 +92,7 @@
 		--line-height: 1.75;
 		--input-padding: 0.325em 1em;
 		--header-height: 3.75rem;
+		--sidebar-size: clamp(17rem, 26vi, 20rem);
 
 		--hue: 204;
 		--sat: 25%;
@@ -137,6 +138,11 @@
 		--color-input-bg: var(--color-blue-975);
 		--color-input-placeholder: var(--color-copy-on-light);
 		--color-input: var(--color-copy-on-light);
+
+		--color-transparency-10-dark: rgba(255, 255, 255, 0.1);
+		--color-transparency-15-dark: rgba(255, 255, 255, 0.15);
+		--color-transparency-25-dark: rgba(255, 255, 255, 0.25);
+		--summary-arrow-dark: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
 
 		block-size: 100%;
 		background: var(--color-bg-main);
@@ -185,6 +191,8 @@
 		--color-secondary: var(--color-secondary-on-light);
 		--color-input-placeholder: var(--color-copy-on-light);
 		--color-input: var(--color-copy-on-light);
+		--color-menu-main-active-copy: var(--color-copy-on-light);
+		--color-menu-main-active-bg: var(--color-bg-main);
 
 		color-scheme: light;
 		accent-color: var(--color-accent-on-light);
@@ -218,10 +226,11 @@
 			--color-copy-on-accent: var(--color-copy-on-light);
 			--color-secondary: var(--color-secondary-on-dark);
 
-			--color-transparency-10: rgba(255, 255, 255, 0.1);
-			--color-transparency-15: rgba(255, 255, 255, 0.15);
-			--color-transparency-25: rgba(255, 255, 255, 0.25);
-			--summary-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+			--color-transparency-10: var(--color-transparency-10-dark);
+			--color-transparency-15: var(--color-transparency-15-dark);
+			--color-transparency-25: var(--color-transparency-25-dark);
+			--summary-arrow: var(--summary-arrow-dark);
+			--color-menu-main-active-copy: var(--color-white);
 
 			color-scheme: dark;
 			accent-color: var(--color-accent-on-dark);
@@ -254,14 +263,18 @@
 		--color-copy-on-secondary: var(--color-copy-on-light);
 		--color-copy-on-accent: var(--color-copy-on-light);
 		--color-secondary: var(--color-secondary-on-dark);
-		--color-transparency-10: rgba(255, 255, 255, 0.1);
-		--color-transparency-15: rgba(255, 255, 255, 0.15);
-		--color-transparency-25: rgba(255, 255, 255, 0.25);
-		--summary-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9' fill='none'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 1 8 8 1 1'/%3E%3C/svg%3E");
+		--color-transparency-10: var(--color-transparency-10-dark);
+		--color-transparency-15: var(--color-transparency-15-dark);
+		--color-transparency-25: var(--color-transparency-25-dark);
+		--summary-arrow: var(--summary-arrow-dark);
 
 		color-scheme: dark;
 		accent-color: var(--color-accent-on-dark);
 		color: var(--color-copy-on-dark);
+	}
+
+	html:where([data-theme="dark"]) {
+		--color-menu-main-active-copy: var(--color-white);
 	}
 
 	.is-secondary {
@@ -326,8 +339,10 @@
 		z-index: 9999;
 	}
 
-	main:not(:has(.Home)):not(:has(.Profile)) {
-		padding-block: 3rem clamp(3rem, 5vw, 4rem);
+	main:not(:has(.Home)):not(:has(.Profile)):not(:has(.IndexPage--fullPage)):not(
+			:has(.Dashboard)
+		) {
+		padding-block: clamp(1.5rem, 5vw, 3rem);
 	}
 
 	time {
@@ -343,7 +358,7 @@
 	}
 
 	.h1-sm {
-		font-size: 2.2rem;
+		font-size: 2rem;
 	}
 
 	h1 small,
@@ -530,16 +545,8 @@
 		}
 	}
 
-	@media (width < 48rem) {
-		html {
-			--page-spacing: 1rem;
-		}
-	}
-
-	@media (width >= 48rem) {
-		html {
-			--page-spacing: 1.5rem;
-		}
+	html {
+		--page-spacing: clamp(1rem, 5vw, 3rem);
 	}
 
 	.Data {

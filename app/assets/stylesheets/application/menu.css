@@ -77,10 +77,6 @@
 		text-decoration-thickness: var(--underline-width);
 	}
 
-	.MenuList [aria-current="true"] span {
-		color: #fff;
-	}
-
 	.MenuList [aria-current="page"] span {
 		color: var(--color-accent);
 	}

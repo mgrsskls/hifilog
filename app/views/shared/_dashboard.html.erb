@@ -3,7 +3,7 @@
 <% end %>
 <div class="Dashboard">
   <div class="Dashboard-menu">
-    <nav class="Sidebar" aria-label="<%= t('headings.dashboard') %>">
+    <nav aria-label="<%= t('headings.dashboard') %>">
       <div class="Dashboard-userName<%= " Dashboard-userName--sm" if current_user.user_name.size > 10 %> u-flex u-alignCenter u-gap-md">
         <%= render "shared/avatar", user: current_user, size: 48 %>
         <span><%= current_user.user_name %></span>
@@ -91,6 +91,18 @@
   </div>
 
   <div class="Dashboard-products">
+    <% unless render_breadcrumbs.empty? %>
+      <nav aria-label="Breadcrumbs" class="Breadcrumbs">
+        <ol class="Breadcrumbs-list">
+          <li>
+            <%= link_to root_path, class: "Breadcrumbs-home" do %>
+              <svg aria-label="Home" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><path d="M9 2a1 1 0 0 0-2 0L2 8a1 1 0 0 0 1 1h1v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V9h1a1 1 0 0 0 1-1L9 2Z"/></svg>
+            <% end %>
+          </li>
+          <%= render_breadcrumbs :tag => :li, :separator => "" %>
+        </ol>
+      </nav>
+    <% end %>
     <%= yield %>
   </div>
 </div>
