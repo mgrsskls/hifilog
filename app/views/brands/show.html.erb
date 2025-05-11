@@ -2,7 +2,7 @@
   <%= stylesheet_link_tag "entity", crossorigin: true, integrity: true %>
 <% end %>
 
-<%= render layout: "layout", locals: { active: :main } do %>
+<%= render layout: "layout", locals: { active: :main, brand: @brand } do %>
   <div class="Entity">
     <div class="Entity-main">
       <div class="Product-details">

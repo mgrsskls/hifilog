@@ -31,7 +31,7 @@
   </details>
 <% end %>
 
-<%= render "shared/product_form", f: f, entity: @product, include_comment: include_comment, prefix: "product" do %>
+<%= render "shared/product_form", f: f, entity: product, include_comment: include_comment, prefix: "product", brand: brand do %>
   <div class="Form-field">
     <h2 class="h3 Form-label">
       <%= f.label :name %>
@@ -39,8 +39,8 @@
     <%= f.text_field :name, required: true %>
   </div>
 
-  <% unless @brand && @brand.id %>
-    <% unless @brand && @brand.errors.any? %>
+  <% unless brand && brand.id %>
+    <% unless brand && brand.errors.any? %>
       <div class="Form-field">
         <h2 class="h3 Form-label">
           <%= f.label :brand %>
@@ -55,14 +55,14 @@
         </div>
       </template>
     <% end %>
-    <div class="Form-field ProductFormAddBrand" <%= "hidden" unless @brand && @brand.errors.any? %>>
-      <% unless @brand && @brand.errors.any? %>
+    <div class="Form-field ProductFormAddBrand" <%= "hidden" unless brand && brand.errors.any? %>>
+      <% unless brand && brand.errors.any? %>
         <p><b>We could not find the brand you are looking for.</b><br>Please feel free to contribute it by adding it here:</p>
       <% end %>
       <fieldset class="ProductFormAddBrand-fieldset">
         <legend>Add new brand</legend>
         <%= f.fields_for :brand do |brand_form| %>
-          <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } if @brand && @brand.errors.any? %>
+          <%= render "shared/flash_messages", messages: brand.errors.map { |error| ["alert", error.full_message] } if brand && brand.errors.any? %>
           <div class="Form-field">
             <%= brand_form.label :name, class: "Form-label" %>
             <%= brand_form.text_field :name %>
@@ -111,9 +111,9 @@
           <div class="Form-field Form-field--inline">
             <span class="Form-label"><%= t('symbols.discontinued') %></span>
             <div class="Form-options">
-              <%= brand_form.radio_button :discontinued, 0, checked: @brand.nil? || (@brand.discontinued.nil? || @brand.discontinued) == false %>
+              <%= brand_form.radio_button :discontinued, 0, checked: brand.nil? || (brand.discontinued.nil? || brand.discontinued) == false %>
               <%= brand_form.label :discontinued, "No", value: 0 %>
-              <%= brand_form.radio_button :discontinued, 1, checked: !@brand.nil? && @brand.discontinued == true %>
+              <%= brand_form.radio_button :discontinued, 1, checked: !brand.nil? && brand.discontinued == true %>
               <%= brand_form.label :discontinued, "Yes", value: 1  %>
             </div>
           </div>
@@ -125,12 +125,12 @@
   <div class="Form-field">
     <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
     <div class="Options is-light EntityForm-subCategories">
-      <% @categories.each do |category| %>
-        <details <% if (category.sub_category_ids & @product.sub_category_ids).any? %>open<% end %>>
+      <% categories.each do |category| %>
+        <details <% if (category.sub_category_ids & product.sub_category_ids).any? %>open<% end %>>
           <summary><%= category.name %></summary>
           <% category.sub_categories.each do |sub_category| %>
             <div class="Options-item">
-              <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, @product.sub_category_ids.include?(sub_category.id), name: "product[sub_category_ids][]" %>
+              <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, product.sub_category_ids.include?(sub_category.id), name: "product[sub_category_ids][]" %>
               <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
             </div>
           <% end %>
@@ -146,7 +146,7 @@
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
           <% custom_attribute.options.each do |option| %>
             <div class="Form-options">
-              <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.id}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if @product.custom_attributes.present? && @product.custom_attributes["#{custom_attribute.id}"] == option[0] %><%#= " disabled" if !@product.sub_category_ids.include?(sub_category.id) %>>
+              <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.id}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes["#{custom_attribute.id}"] == option[0] %><%#= " disabled" if !product.sub_category_ids.include?(sub_category.id) %>>
               <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"><%= t("custom_attributes.#{option[1]}") %></label>
             </div>
           <% end %>

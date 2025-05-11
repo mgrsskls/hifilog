@@ -10,8 +10,8 @@
     </button>
   </div>
 
-  <% if @bookmark_list.errors.any? %>
-    <%= render "shared/flash_messages", messages: @bookmark_list.errors.map { |error| ["alert", error.full_message] } %>
+  <% if bookmark_list.errors.any? %>
+    <%= render "shared/flash_messages", messages: bookmark_list.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
 
   <div class="Form-field">

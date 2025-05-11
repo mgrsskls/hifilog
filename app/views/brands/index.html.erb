@@ -10,7 +10,7 @@
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: brands_path(sub_category: @sub_category&.slug), collection: @brands, query: @brands_query, type: :brands, custom_attributes: @custom_attributes %>
+  <%= render "shared/filter", reset_path: brands_path(sub_category: @sub_category&.slug), collection: @brands, query: @brands_query, type: :brands, custom_attributes: @custom_attributes, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
 <% end %>
 
 <% content_for :add_link do %>
@@ -35,7 +35,7 @@
 <% end %>
 
 <% content_for :table do %>
-  <%= render "shared/brands_table", brands: @brands, category: @category, sub_category: @sub_category %>
+  <%= render "shared/brands_table", brands: @brands, category: @category, sub_category: @sub_category, product_counts: @product_counts %>
 <% end %>
 
 <%= render "shared/index_page",

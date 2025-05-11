@@ -29,7 +29,7 @@
   </details>
 <% end %>
 
-<%= render "shared/product_form", f: f, entity: @product_variant, include_comment: include_comment, prefix: "product_variant" do %>
+<%= render "shared/product_form", f: f, entity: product_variant, include_comment: include_comment, prefix: "product_variant", brand: brand do %>
   <div class="Form-field">
     <h2 class="h3 Form-label">
       <%= f.label :name, class: "Form-label" do %>

@@ -1,10 +1,10 @@
-<%= render layout: "shared/dashboard" do %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <%= form_for @bookmark_list, html: { class: "EntityForm", method: :post } do |f| %>
     <% content_for :heading do %>
       <%= t('bookmark_list.new.heading') %>
     <% end %>
 
-    <%= render "form", f: f %>
+    <%= render "form", f: f, bookmark_list: @bookmark_list %>
   <% end %>
 <% end %>
 

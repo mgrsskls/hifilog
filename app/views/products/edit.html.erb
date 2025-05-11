@@ -8,7 +8,7 @@
     Since <i><%= link_to @brand.name, brand_path(id: @brand.friendly_id) %></i> has been discontinued, this product is automatically set to discontinued as well.
   <% end %>
 
-  <%= render "form", additional_instructions: ["You can leave a comment to describe why your change was necessary, in case you found incorrect information or something similar."], include_comment: true, f: f %>
+  <%= render "form", additional_instructions: ["You can leave a comment to describe why your change was necessary, in case you found incorrect information or something similar."], include_comment: true, f: f, product: @product, brand: @brand, categories: @categories %>
 <% end %>
 
 <%= render "shared/options_dialog" %>

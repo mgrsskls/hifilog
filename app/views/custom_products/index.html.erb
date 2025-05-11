@@ -1,4 +1,4 @@
-<%= render layout: "shared/dashboard" do %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <div class="Heading">
     <h1><%= CustomProduct.model_name.human(count: 2) %></h1>
     <%= link_to t('custom_product.new.link'), dashboard_new_custom_product_path, class: "Button" %>

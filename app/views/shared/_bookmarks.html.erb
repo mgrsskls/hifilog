@@ -1,12 +1,16 @@
 <% render_lists ||= false %>
+<% bookmark_list ||= nil %>
+<% bookmark_lists ||= [] %>
 <% delete_button_label ||= nil %>
 <% delete_confirm_msg ||= nil %>
 <% delete_dialog ||= false %>
+<% categories ||= [] %>
+<% sub_category ||= nil %>
 
-<%= render layout: "shared/dashboard" do %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: active_dashboard_menu } do %>
   <div class="Heading">
     <h1><%= heading %></h1>
-    <%= render "shared/category_filter", categories: categories unless render_lists %>
+    <%= render "shared/category_filter", categories: categories, sub_category: sub_category unless render_lists %>
   </div>
 
   <% if render_lists %>
@@ -28,7 +32,7 @@
     </div>
     <div class="Heading">
       <h2><%= "All bookmarks" %></h2>
-      <%= render "shared/category_filter", categories: categories %>
+      <%= render "shared/category_filter", categories: categories, sub_category: sub_category %>
     </div>
   <% end %>
 
@@ -43,20 +47,20 @@
     hide_period: true
   %>
 
-  <% if @bookmark_list %>
+  <% if bookmark_list %>
     <div class="PageActions">
       <div class="PageAction">
         <button type="button" data-dialog="add-products" class="Button">
           Add / remove bookmarks
         </button>
         <dialog class="AddEntityDialog" id="add-products">
-          <%= form_for @bookmark_list, method: :put do |f| %>
+          <%= form_for bookmark_list, method: :put do |f| %>
             <input type="hidden" name="bookmark_list[bookmark_ids][]">
-            <h2>Add bookmarks <small>to <%= @bookmark_list.name %></small></h2>
+            <h2>Add bookmarks <small>to <%= bookmark_list.name %></small></h2>
             <div class="AddEntityDialog-list">
-              <% @all_bookmarks.each do |presenter| %>
+              <% all_bookmarks.each do |presenter| %>
                 <div class="AddEntityDialog-option">
-                  <%= check_box_tag "bookmark_list[bookmark_ids][]", presenter.id, { id: "bookmark_list_bookmark_ids_#{presenter.id}", checked: @bookmark_list.bookmark_ids.include?(presenter.id) } %>
+                  <%= check_box_tag "bookmark_list[bookmark_ids][]", presenter.id, { id: "bookmark_list_bookmark_ids_#{presenter.id}", checked: bookmark_list.bookmark_ids.include?(presenter.id) } %>
                   <%= f.label :bookmark_ids, value: presenter.id do %>
                     <span>
                       <%= presenter.display_name %>
@@ -82,13 +86,13 @@
       </div>
       <div class="PageAction u-flex u-gap-md">
         <%= button_to t('bookmark_list.delete.label'),
-          bookmark_list_path(id: @bookmark_list.id),
+          bookmark_list_path(id: bookmark_list.id),
           method: :delete,
           class: "DeleteButton Button Button--negative",
-          "data-msg": t('bookmark_list.delete.confirm', name: @bookmark_list.name)
+          "data-msg": t('bookmark_list.delete.confirm', name: bookmark_list.name)
         %>
         <%= link_to t('bookmark_list.update.label'),
-          dashboard_edit_bookmark_list_path(id: @bookmark_list.id),
+          dashboard_edit_bookmark_list_path(id: bookmark_list.id),
           class: "Button Button--secondary"
         %>
       </div>

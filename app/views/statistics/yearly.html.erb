@@ -1,5 +1,6 @@
 <%= render layout: "layout", locals: {
   active: :yearly,
+  active_dashboard_menu: @active_dashboard_menu,
   overview_statistics: [{
     label: "Every year you get",
     value: @yearly_amount_of_products.present? ? number_to_rounded(@yearly_amount_of_products, precision: 1) : 0,

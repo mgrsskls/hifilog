@@ -2,13 +2,13 @@
   <%= stylesheet_link_tag "add_entity_dialog", crossorigin: true, integrity: true %>
 <% end %>
 
-<%= render layout: "shared/dashboard" do %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <div class="Heading">
     <div>
       <h1><%= @setup.name %></h1>
       <% if @setup.private? %><small>Private</small><% end %>
     </div>
-    <%= render "shared/category_filter", categories: @categories %>
+    <%= render "shared/category_filter", categories: @categories, sub_category: @sub_category %>
   </div>
 
   <%= render "shared/products",

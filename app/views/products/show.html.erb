@@ -119,7 +119,7 @@
     </div>
   </div>
   <div class="Entity-sub Product-sub">
-    <%= render "products/actions" %>
+    <%= render "products/actions", possessions: @possessions, product: @product, product_variant: @product_variant, bookmark: @bookmark, setups: @setups %>
 
     <hr>
 

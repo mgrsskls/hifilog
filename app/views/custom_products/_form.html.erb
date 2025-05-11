@@ -12,8 +12,8 @@
     <h1><%= yield :heading %></h1>
   </div>
 
-  <% if @custom_product.errors.any? %>
-    <%= render "shared/flash_messages", messages: @custom_product.errors.map { |error| ["alert", error.full_message] } %>
+  <% if custom_product.errors.any? %>
+    <%= render "shared/flash_messages", messages: custom_product.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
 
   <div class="Form-field">
@@ -26,12 +26,12 @@
   <div class="Form-field">
     <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
     <div class="Options is-light EntityForm-subCategories">
-      <% @categories.each do |category| %>
-        <details <% if (category.sub_category_ids & @custom_product.sub_category_ids).any? %>open<% end %>>
+      <% categories.each do |category| %>
+        <details <% if (category.sub_category_ids & custom_product.sub_category_ids).any? %>open<% end %>>
           <summary><%= category.name %></summary>
           <% category.sub_categories.each do |sub_category| %>
             <div class="Options-item">
-              <%= check_box_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.id, @custom_product.sub_category_ids.include?(sub_category.id), name: "custom_product[sub_category_ids][]" %>
+              <%= check_box_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.id, custom_product.sub_category_ids.include?(sub_category.id), name: "custom_product[sub_category_ids][]" %>
               <%= label_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
             </div>
           <% end %>

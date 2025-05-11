@@ -2,4 +2,4 @@
   <%= stylesheet_link_tag "bookmarks", crossorigin: true, integrity: true %>
 <% end %>
 
-<%= render "shared/bookmarks", heading: Bookmark.model_name.human(count: 2), categories: @categories, bookmark_lists: @bookmark_lists, bookmarks: @bookmarks, render_lists: true %>
+<%= render "shared/bookmarks", heading: Bookmark.model_name.human(count: 2), categories: @categories, bookmark_lists: @bookmark_lists, bookmarks: @bookmarks, all_bookmarks: @all_bookmarks, render_lists: true, active_dashboard_menu: @active_dashboard_menu, sub_category: @sub_category %>

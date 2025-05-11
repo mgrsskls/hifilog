@@ -122,10 +122,10 @@
               <nav aria-label="Main" class="Menu">
                 <ul class="MenuMain MenuList">
                   <li class="MenuMain-item">
-                    <%= render "layouts/mega_menu", entity: 'products', symbol: :products, cta_label: t('product.new.link'), cta_path: new_product_path %>
+                    <%= render "layouts/mega_menu", entity: 'products', symbol: :products, cta_label: t('product.new.link'), cta_path: new_product_path, active_menu: @active_menu %>
                   </li>
                   <li class="MenuMain-item">
-                    <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('brand.new.link'), cta_path: new_brand_path %>
+                    <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('brand.new.link'), cta_path: new_brand_path, active_menu: @active_menu %>
                   </li>
                 </ul>
               </nav>

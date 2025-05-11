@@ -1,4 +1,4 @@
-<%= render layout: "users/shared/layout" do %>
+<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category } do %>
   <% if @possessions.any? %>
     <%= render "shared/history",
       possessions: @possessions

@@ -10,8 +10,8 @@
     <h1><%= yield :heading %></h1>
   </div>
 
-  <% if @setup.errors.any? %>
-    <%= render "shared/flash_messages", messages: @setup.errors.map { |error| ["alert", error.full_message] } %>
+  <% if setup.errors.any? %>
+    <%= render "shared/flash_messages", messages: setup.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
 
   <div class="Form-field">
@@ -29,11 +29,11 @@
     </p>
     <div class="u-flex u-alignCenter u-gap-md">
       <div class="u-flex u-alignCenter u-gap-sm">
-        <%= f.radio_button :private, 1, required: true, checked: @setup.present? ? @setup.private? : false %>
+        <%= f.radio_button :private, 1, required: true, checked: setup.present? ? setup.private? : false %>
         <%= f.label :private, t('setup.private_values.yes'), value: 1 %>
       </div>
       <div class="u-flex u-alignCenter u-gap-sm">
-        <%= f.radio_button :private, 0, required: true, checked: @setup.present? ? !@setup.private? : false %>
+        <%= f.radio_button :private, 0, required: true, checked: setup.present? ? !setup.private? : false %>
         <%= f.label :private, t('setup.private_values.no'), value: 0 %>
       </div>
     </div>

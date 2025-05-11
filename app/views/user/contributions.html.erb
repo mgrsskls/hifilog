@@ -1,7 +1,7 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "contributions", crossorigin: true, integrity: true %>
 <% end %>
-<%= render layout: "shared/dashboard" do %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <div class="Heading">
     <h1><%= t('headings.contributions') %></h1>
   </div>

@@ -1,7 +1,7 @@
 <% content_for :js do %>
   <%= javascript_include_tag "gallery", type: "module", nonce: true, crossorigin: true, integrity: true %>
 <% end %>
-<%= render layout: "users/shared/layout" do %>
+<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category } do %>
   <ul class="ProfilePossessions">
     <% @possessions.each do |possession| %>
       <li class="ProfilePossessions-item">

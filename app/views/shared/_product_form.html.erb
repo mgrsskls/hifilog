@@ -116,10 +116,10 @@
     <small>If you for example only know the year, you can also omit day and month.</small>
   </div>
 
-  <% if @brand && @brand.discontinued %>
+  <% if brand && brand.discontinued %>
     <p class="EntityForm-note">
       <small>
-        Since <i><%= @brand.name %></i> has been discontinued, this product will automatically be set to discontinued as well.
+        Since <i><%= brand.name %></i> has been discontinued, this product will automatically be set to discontinued as well.
       </small>
     </p>
   <% else %>
@@ -152,14 +152,14 @@
     </div>
   </div>
 
-  <div class="Form-field Entity-discontinuedDate"<%= "hidden" unless entity.discontinued? || @brand.discontinued %>>
+  <div class="Form-field Entity-discontinuedDate"<%= "hidden" unless entity.discontinued? || brand.discontinued %>>
     <%= f.label :discontinued_date, class: "Form-label" do %>
       <%= Product.human_attribute_name(:discontinued_date) %> <small><i>(optional)</i></small>
     <% end %>
     <div class="EntityForm-date">
-      <%= f.select :discontinued_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day", disabled: (!entity.discontinued && !@brand.discontinued) } %>
-      <%= select_month(entity.discontinued_month, { field_name: "discontinued_month", prefix: prefix, prompt: "Month" }, { "aria-label": "Month", disabled: (!entity.discontinued && !@brand.discontinued) }) %>
-      <%= f.text_field :discontinued_year, inputmode: "number", list: "years", placeholder: "Year", disabled: (!entity.discontinued && !@brand.discontinued), "aria-label": "Year" %>
+      <%= f.select :discontinued_day, (1..31).map { |d| [d, d] }, { include_blank: "Day" }, { "aria-label": "Day", disabled: (!entity.discontinued && !brand.discontinued) } %>
+      <%= select_month(entity.discontinued_month, { field_name: "discontinued_month", prefix: prefix, prompt: "Month" }, { "aria-label": "Month", disabled: (!entity.discontinued && !brand.discontinued) }) %>
+      <%= f.text_field :discontinued_year, inputmode: "number", list: "years", placeholder: "Year", disabled: (!entity.discontinued && !brand.discontinued), "aria-label": "Year" %>
     </div>
     <small>If you for example only know the year, you can also omit day and month.</small>
     <datalist id="years">

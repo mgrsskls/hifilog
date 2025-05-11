@@ -11,7 +11,7 @@
     <% if @brand && @brand.name %>Since <i><%= @brand.name %></i> has been discontinued, this variant will automatically be set to discontinued as well.<% end %>
   <% end %>
 
-  <%= render "form", f: f, include_comment: false %>
+  <%= render "form", f: f, include_comment: false, product_variant: @product_variant, brand: @brand %>
 <% end %>
 
 <%= render "shared/options_dialog" %>

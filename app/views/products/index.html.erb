@@ -11,7 +11,7 @@
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: products_path(sub_category: params[:sub_category]), collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products %>
+  <%= render "shared/filter", reset_path: products_path(sub_category: params[:sub_category]), collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
 <% end %>
 
 <% content_for :add_link do %>
@@ -34,7 +34,7 @@
 <% end %>
 
 <% content_for :table do %>
-  <%= render "shared/products_table", products: @products, hide_category: @sub_category.present? %>
+  <%= render "shared/products_table", products: @products, hide_category: @sub_category.present?, filter_applied: @filter_applied %>
 <% end %>
 
 <%= render "shared/index_page",

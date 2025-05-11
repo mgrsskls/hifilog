@@ -6,7 +6,7 @@
     <span><%= @product_variant.display_name %></span>
   <% end %>
 
-  <%= render "form", additional_instructions: ["You can leave a comment to describe why your change was necessary, in case you found incorrect information or something similar."], include_comment: true, f: f %>
+  <%= render "form", additional_instructions: ["You can leave a comment to describe why your change was necessary, in case you found incorrect information or something similar."], include_comment: true, f: f, product_variant: @product_variant, brand: @brand %>
 <% end %>
 
 <%= render "shared/options_dialog" %>

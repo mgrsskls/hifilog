@@ -1,8 +1,10 @@
+<% categories ||= [] %>
+
 <% content_for :css do %>
   <%= stylesheet_link_tag "profile", crossorigin: true, integrity: true %>
 <% end %>
 
-<% if @user.hidden? %>
+<% if user.hidden? %>
   <div class="Profile-hiddenNotice">
     <p class="u-container">
       Your profile is not visible to other users. You can change this in your <%= link_to "account settings", edit_user_registration_path %>.
@@ -12,9 +14,9 @@
 
 <div class="Profile">
   <div class="Profile-header">
-    <% if @user.decorative_image.attached? %>
+    <% if user.decorative_image.attached? %>
       <picture>
-        <%= image_tag cdn_image_url(@user.decorative_image.variant(:large)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314 %>
+        <%= image_tag cdn_image_url(user.decorative_image.variant(:large)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314 %>
       </picture>
     <% end %>
   </div>
@@ -22,30 +24,30 @@
     <div class="Profile-meta">
       <nav class="Sidebar">
         <figure class="Sidebar-userName">
-          <%= render "shared/avatar", user: @user, size: 48 %>
+          <%= render "shared/avatar", user: user, size: 48 %>
           <figcaption class="is-dark">
-            <h1><%= @user.user_name %></h1>
+            <h1><%= user.user_name %></h1>
             <small>
-              <b>Member since</b> <time datetime="<%= @user.created_at %>"><%= format_date(@user.created_at).html_safe %></time>
+              <b>Member since</b> <time datetime="<%= user.created_at %>"><%= format_date(user.created_at).html_safe %></time>
             </small>
           </figcaption>
         </figure>
         <button class="Sidebar-toggle h3" aria-expanded="false">
           <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="12" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
-          <%= @heading %>
+          <%= heading %>
         </button>
         <ul class="Sidebar-menu" id="sidebar-menu">
           <li>
             <span>
-              <%= link_to t('headings.current_products'), @user.profile_path, "aria-current": request.path == @user.profile_path ? "page" : "false", class: "Sidebar-link" %>
-              <small><%= user_possessions_count(user: @user) %></small>
+              <%= link_to t('headings.current_products'), user.profile_path, "aria-current": request.path == user.profile_path ? "page" : "false", class: "Sidebar-link" %>
+              <small><%= user_possessions_count(user: user) %></small>
             </span>
-            <% setups = @user.setups.where(private: false) %>
+            <% setups = user.setups.where(private: false) %>
             <% if setups.any? %>
               <ul>
                 <% setups.each do |setup| %>
                   <li>
-                    <%= link_to setup.name, user_setup_path(user_id: @user.user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: @user.user_name, setup: setup.id) ? "page" : "false", class: "Sidebar-link" %>
+                    <%= link_to setup.name, user_setup_path(user_id: user.user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: user.user_name, setup: setup.id) ? "page" : "false", class: "Sidebar-link" %>
                   </li>
                 <% end %>
               </ul>
@@ -53,23 +55,23 @@
           </li>
           <li>
             <span>
-              <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: @user.user_name), "aria-current": request.path == user_previous_products_path(user_id: @user.user_name) ? "page" : "false", class: "Sidebar-link" %>
-              <small><%= user_possessions_count(user: @user, prev_owned: true) %></small>
+              <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: user.user_name), "aria-current": request.path == user_previous_products_path(user_id: user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+              <small><%= user_possessions_count(user: user, prev_owned: true) %></small>
             </span>
           </li>
           <li>
-            <%= link_to t('headings.history'), user_history_path(user_id: @user.user_name), "aria-current": request.path == user_history_path(user_id: @user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+            <%= link_to t('headings.history'), user_history_path(user_id: user.user_name), "aria-current": request.path == user_history_path(user_id: user.user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>
           <li class="Sidebar-separator">
-            <%= link_to t('headings.contributions'), user_contributions_path(user_id: @user.user_name), "aria-current": request.path == user_contributions_path(user_id: @user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+            <%= link_to t('headings.contributions'), user_contributions_path(user_id: user.user_name), "aria-current": request.path == user_contributions_path(user_id: user.user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>
         </ul>
       </nav>
     </div>
     <div class="Profile-products">
       <div class="Heading">
-        <h2><%= @heading %></h2>
-        <%= render "shared/category_filter", categories: @categories if @categories %>
+        <h2><%= heading %></h2>
+        <%= render "shared/category_filter", categories: categories, sub_category: sub_category %>
       </div>
 
       <div class="Profile-main">

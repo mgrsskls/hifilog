@@ -151,12 +151,12 @@
       <% if product.product_variants.any? %>
         <div class="EntityList-productVariants">
           <div class="EntityList-productVariantsButton">
-            <button aria-expanded="<%= @filter_applied ? "true" : "false" %>" aria-controls="entity-list-variants-<%= product.id %>">
+            <button aria-expanded="<%= filter_applied ? "true" : "false" %>" aria-controls="entity-list-variants-<%= product.id %>">
               <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="12" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
               Versions / updates
             </button>
           </div>
-          <ol class="EntityList EntityList--productVariants" id="entity-list-variants-<%= product.id %>"<%= " hidden" unless @filter_applied %>>
+          <ol class="EntityList EntityList--productVariants" id="entity-list-variants-<%= product.id %>"<%= " hidden" unless filter_applied %>>
             <% product.product_variants.select { |v|
                   params[:status].present? && statuses.include?(params[:status]) ? v.discontinued == (params[:status] == 'discontinued') : true &&
                   params[:diy_kit].present? ? v.diy_kit == ActiveModel::Type::Boolean.new.cast(params[:diy_kit]) : true

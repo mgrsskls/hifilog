@@ -1,5 +1,5 @@
 <% filter_active_label = (type == :products or type == :brand_products) ? t('continued') : t('active') %>
-<% sub_categories ||= [] %>
+<% categories ||= [] %>
 
 <% country_filter = capture do %>
   <div class="Filter-section">
@@ -39,7 +39,7 @@
 <% end %>
 
 <% custom_attributes = capture do %>
-  <% if custom_attributes&.any? && (@sub_category || ['loudspeakers', 'headphones'].include?(@category&.slug)) %>
+  <% if custom_attributes&.any? && (sub_category || ['loudspeakers', 'headphones'].include?(category&.slug)) %>
     <div class="Filter-section Filter-section--attributes">
       <div class="Filter-values">
         <% custom_attributes.each do |custom_attribute| %>
@@ -66,8 +66,8 @@
 
 <%= form_tag request.path, method: :get, id: "filter" do |f| %>
   <input type="hidden" name="sort" value="<%= params[:sort] %>">
-  <% if @category.present? %>
-    <%= hidden_field_tag :category, @sub_category.present? ? "#{@category.friendly_id}[#{@sub_category.friendly_id}]" : @category.friendly_id %>
+  <% if category.present? %>
+    <%= hidden_field_tag :category, sub_category.present? ? "#{category.friendly_id}[#{sub_category.friendly_id}]" : category.friendly_id %>
   <% end %>
   <div class="Filter">
     <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>
@@ -107,21 +107,21 @@
           </select>
         </div>
 
-        <% if sub_categories.any? %>
+        <% if categories.any? %>
           <div class="Filter-section">
             <label class="Filter-option" for="filter-sub-categories" class="Filter-option"><%= Category.model_name.human %></label>
             <select class="Filter-input" name="category" id="filter-sub-categories">
-              <option value=""<%= ' selected'.html_safe unless @sub_category.present? %>>
+              <option value=""<%= ' selected'.html_safe unless sub_category.present? %>>
                 <%= t('filter.all') %>
               </option>
-              <% sub_categories.each do |category| %>
-                <option value="<%= category[0].slug %>"<%= ' selected'.html_safe if @category.present? && @category.slug == category[0].slug %>>
-                  <%= category[0].name %>
+              <% categories.each do |group| %>
+                <option value="<%= group[0].slug %>"<%= ' selected'.html_safe if category.present? && category.slug == group[0].slug %>>
+                  <%= group[0].name %>
                 </option>
-                <optgroup label="<%= category[0].name %> categories">
-                  <% category[1].each do |sub_category| %>
-                    <option value="<%= category[0].slug %>[<%= sub_category.slug %>]"<%= ' selected'.html_safe if @sub_category.present? && @sub_category.slug == sub_category.slug %>>
-                      <%= sub_category.name %>
+                <optgroup label="<%= group[0].name %> categories">
+                  <% group[1].each do |sub| %>
+                    <option value="<%= group[0].slug %>[<%= sub.slug %>]"<%= ' selected'.html_safe if sub_category.present? && sub_category.slug == sub.slug %>>
+                      <%= sub.name %>
                     </option>
                   <% end %>
                 </optgroup>
@@ -165,8 +165,8 @@
       </div>
     </div>
 
-    <p class="Filter-status<%= " is-active" if @filter_applied %>">
-      <% if @filter_applied %>
+    <p class="Filter-status<%= " is-active" if filter_applied %>">
+      <% if filter_applied %>
         <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Filters applied.
       <% else %>
         No filters applied.

@@ -1,7 +1,7 @@
-<%= render layout: "shared/dashboard" do %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <div class="Heading">
     <h1><%= t('headings.collection') %></h1>
-    <%= render "shared/category_filter", categories: @categories %>
+    <%= render "shared/category_filter", categories: @categories, sub_category: @sub_category %>
   </div>
 
   <%= render "shared/products",

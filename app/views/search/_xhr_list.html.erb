@@ -1,5 +1,5 @@
 <% if results.any? %>
-  <p class="SearchResults--xhr-title"><%= t('search_results.heading', query: h(@query)).html_safe %>:</p>
+  <p class="SearchResults--xhr-title"><%= t('search_results.heading', query: h(query)).html_safe %>:</p>
   <div class="SearchResults--xhr">
     <% results.each do |result| %>
       <%= render "result", result: result, query: query %>

@@ -4,8 +4,8 @@
       <option value="">All Categories</option>
       <% categories.each do |section| %>
         <optgroup label="<%= section[0].name %>">
-          <% section[1].each do |sub_category| %>
-            <option value="<%= sub_category[:friendly_id] %>"<%= " selected" if @sub_category && @sub_category.friendly_id == sub_category[:friendly_id] %>><%= sub_category[:name] %></option>
+          <% section[1].each do |sub| %>
+            <option value="<%= sub[:friendly_id] %>"<%= " selected" if sub_category && sub_category.friendly_id == sub[:friendly_id] %>><%= sub[:name] %></option>
           <% end %>
         </optgroup>
       <% end %>
