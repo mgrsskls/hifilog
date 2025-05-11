@@ -1,0 +1,46 @@
+dd {
+	margin: 0;
+}
+
+input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
+	all: unset;
+}
+
+textarea {
+	form-sizing: normal;
+	min-block-size: 10em;
+}
+
+legend {
+	padding: 0;
+	display: table;
+}
+
+fieldset {
+	border: 0;
+	padding: 0.01em 0 0 0;
+	margin: 0;
+	min-width: 0;
+}
+
+body:not(:-moz-handler-blocked) fieldset {
+	display: table-cell;
+}
+
+select {
+	background: none;
+}
+
+button {
+	all: unset;
+	border: var(--border) transparent;
+	cursor: pointer;
+}
+
+svg {
+	display: block;
+}
+
+summary {
+	cursor: default;
+}
