@@ -239,22 +239,10 @@ class ProductsController < ApplicationController
 
   def assign_brand_from_params(params)
     if params[:brand_id].present?
-      brand = Brand.find(params[:brand_id])
-      sub_category_ids = params[:sub_category_ids] || []
-      sub_category_ids = sub_category_ids.map(&:to_i)
-      missing_sub_ids = sub_category_ids - brand.sub_category_ids
-      missing_sub_ids.each do |id|
-        sub_category = SubCategory.find(id)
-        brand.sub_categories << sub_category if sub_category && brand.sub_categories.exclude?(sub_category)
-      end
+      Brand.find(params[:brand_id])
     else
-      brand = Brand.new(params[:brand_attributes])
-      (params[:sub_category_ids] || []).each do |id|
-        sub_category = SubCategory.find(id.to_i)
-        brand.sub_categories << sub_category if sub_category
-      end
+      Brand.new(params[:brand_attributes])
     end
-    brand
   end
 
   def process_product_options(product, options_attributes)

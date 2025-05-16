@@ -61,6 +61,7 @@ class Product < ApplicationRecord
 
   after_destroy :invalidate_cache
   after_save :invalidate_cache
+  after_save :update_brand_sub_categories
 
   def display_name
     return "#{brand.name} #{name}" if brand
@@ -146,5 +147,12 @@ class Product < ApplicationRecord
     # rubocop:disable Style/RedundantReturn
     return true
     # rubocop:enable Style/RedundantReturn
+  end
+
+  def update_brand_sub_categories
+    return unless brand
+
+    brand.sub_categories << (sub_categories - brand.sub_categories)
+    brand.save
   end
 end
