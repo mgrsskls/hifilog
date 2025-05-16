@@ -43,7 +43,14 @@ ActiveAdmin.register Product do
       f.input :price
       f.input :price_currency
       f.input :description
-      f.input :sub_category_ids, label: "Subcategories", as: :check_boxes, collection: SubCategory.all
+      f.li class: "mb-4" do
+        f.fieldset do
+          f.legend class: "font-bold text-xl" do "Categories" end
+          Category.all.each do |category|
+            f.input :sub_category_ids, label: "<b>#{category.name}</b>".html_safe, as: :check_boxes, collection: category.sub_categories
+          end
+        end
+      end
     end
     f.submit
   end
