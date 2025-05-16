@@ -1,5 +1,5 @@
 ActiveAdmin.register SubCategory do
-  permit_params :name, :category_id, :slug, :order, custom_attribute_ids: []
+  permit_params :name, :category_id, :order, custom_attribute_ids: []
 
   menu parent: "Settings"
 
@@ -15,7 +15,6 @@ ActiveAdmin.register SubCategory do
   form do |f|
     f.inputs do
       f.input :name
-      f.input :slug
       f.input :order
       f.input :category_id, label: "Category", as: :radio, collection: Category.all
       f.input :custom_attribute_ids, label: "Custom attributes", as: :check_boxes, collection: CustomAttribute.all.map { |ca| [ca.label, ca.id] }
@@ -43,7 +42,6 @@ ActiveAdmin.register SubCategory do
       SubCategory.find(c.id)
     end
     column :category
-    column :slug
     column :order
     column :custom_attributes do |sub_category|
       sub_category.custom_attributes.map do |custom_attribute|

@@ -1,5 +1,5 @@
 ActiveAdmin.register Product do
-  permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :price_currency, :price, :release_day, :release_month, :release_year, :slug, sub_category_ids: []
+  permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :price_currency, :price, :release_day, :release_month, :release_year, sub_category_ids: []
 
   menu priority: 3
 
@@ -42,7 +42,6 @@ ActiveAdmin.register Product do
       f.input :diy_kit
       f.input :price
       f.input :price_currency
-      f.input :slug
       f.input :description
       f.input :sub_category_ids, label: "Subcategories", as: :check_boxes, collection: SubCategory.all
     end
