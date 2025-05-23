@@ -1,0 +1,187 @@
+.Calculator {
+	pre {
+		line-height: 1;
+	}
+
+	.Settings {
+		padding: clamp(1rem, 4vi, 2rem);
+		background: var(--color-bg2);
+		border: 0.0625rem solid rgba(0, 0, 0, 0.35);
+	}
+
+	.Settings select {
+		inline-size: auto;
+	}
+
+	fieldset + fieldset {
+		margin-block-start: 1rem;
+	}
+
+	.Settings legend {
+		font-weight: 600;
+		font-size: 1.4rem;
+		display: block;
+		margin: 0;
+		margin-block-end: 0.75rem;
+		padding: 0;
+		line-height: 1;
+	}
+
+	[type="text"] {
+		inline-size: 5em;
+		text-align: end;
+	}
+
+	.FormElements {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 2rem;
+	}
+
+	.FormElements .FormElements {
+		gap: 0.5rem 1rem;
+	}
+
+	.FormElements-title {
+		display: block;
+		margin-block-end: 0.5rem;
+	}
+
+	label {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
+	}
+
+	.Unit {
+		color: hsl(210, 33%, 46%);
+	}
+
+	.Table {
+		overflow-x: auto;
+	}
+
+	table {
+		border-spacing: 0;
+		border-collapse: collapse;
+		min-inline-size: 100%;
+		font-variant-numeric: tabular-nums;
+		background: var(--color-bg2);
+	}
+
+	th,
+	td {
+		border: 0.0625rem solid rgba(0, 0, 0, 0.35);
+		text-align: end;
+	}
+
+	th,
+	td > button {
+		padding: 0.25rem 0.5rem;
+	}
+
+	td {
+		padding: 0;
+		background: hsl(var(--hue), 100%, var(--lightness, 80%));
+	}
+
+	td[data-match="true"] {
+		--hue: 120 !important;
+		--lightness: 50%;
+	}
+
+	td:has(button:hover) {
+		--lightness: 90%;
+	}
+
+	td > button {
+		color: #000;
+		cursor: pointer;
+		display: block;
+		inline-size: 100%;
+		line-height: 1.4;
+		box-sizing: border-box;
+	}
+
+	td > button span {
+		display: block;
+		white-space: nowrap;
+		font-size: 0.75rem;
+		text-align: end;
+	}
+
+	td > button > span + span {
+		margin-block-start: 0.5rem;
+	}
+
+	dialog {
+		text-align: start;
+		border: none;
+	}
+
+	dialog::backdrop {
+		background: rgba(0, 0, 0, 0.35);
+	}
+
+	dialog b {
+		display: block;
+		margin-block-end: 0.5rem;
+	}
+
+	dl {
+		display: grid;
+		grid-template-columns: auto auto;
+		margin: 0;
+	}
+
+	dl div {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+	}
+
+	dd {
+		text-align: end;
+	}
+
+	.Dialog-divider {
+		margin-block-start: 1rem;
+		padding-block-start: 1rem;
+		border-block-start: var(--border-light);
+	}
+
+	dialog form {
+		display: flex;
+		justify-content: end;
+		margin-block-start: 2rem;
+	}
+
+	dialog button {
+		inline-size: auto;
+	}
+
+	.Button--icon {
+		--size: 1.25em;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+		font-size: 1.25rem;
+		height: var(--size);
+		width: var(--size);
+		border-radius: 50%;
+		padding: 0;
+	}
+
+	.u-mt-sm {
+		margin-block-start: 0.5rem;
+	}
+
+	.Include {
+		margin-block: 2rem 0.5rem;
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+	}
+}

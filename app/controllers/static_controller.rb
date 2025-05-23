@@ -1,5 +1,6 @@
 class StaticController < ApplicationController
   include FormatHelper
+  content_security_policy false, only: [:amp_to_headphone_calculator]
 
   def changelog
     @html = markdown_to_html Rails.root.join('CHANGELOG.md').read
@@ -30,5 +31,13 @@ class StaticController < ApplicationController
     @no_index = true
 
     render 'static'
+  end
+
+  def amp_to_headphone_calculator
+    @reduced_layout = true
+    @meta_desc = 'Calculate resistors for an amplifier to headphone adapter using an L-Pad, ' \
+                 'a reversed L-Pad or a three resistor network.'
+    @page_title = 'Calculate Resistors for an Amplifier to Headphone Adapter'
+    render 'amp_to_headphone_calculator'
   end
 end

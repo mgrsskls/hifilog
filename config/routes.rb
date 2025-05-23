@@ -111,6 +111,9 @@ Rails.application.routes.draw do
   get '/about', to: 'static#about'
   get '/privacy-policy', to: 'static#privacy_policy'
   get '/imprint', to: 'static#imprint'
+  scope '/calculators' do
+    get '/resistors-for-amplifier-to-headphone-adapter', to: 'static#amp_to_headphone_calculator'
+  end
 
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
   get '*url', to: 'application#not_found', via: :all, constraints: lambda { |req| req.format == :html }

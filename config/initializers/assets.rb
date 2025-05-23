@@ -12,6 +12,7 @@ Rails.application.config.assets.version = "1.0"
 Rails.application.config.assets.precompile += %w(
   active_admin.css
   add_entity_dialog.css
+  amp_to_headphone_calculator.css
   application.css
   bookmarks.css
   changelog.css
@@ -30,6 +31,7 @@ Rails.application.config.assets.precompile += %w(
   tabs.css
   users.css
 
+  alpine.js
   application.js
   delete_form.js
   entity_form.js
