@@ -29,7 +29,7 @@ class BrandFilterService
     brands = apply_diy_kit_filter(brands, @filters[:diy_kit]) if @filters[:diy_kit].present?
     brands = apply_custom_attributes_filter(brands, @filters[:attr]) if @filters[:attr].present?
     brands = apply_search_filter(brands, @filters[:query]) if @filters[:query].present?
-    brands = brands.select('brands.*, LOWER(brands.name) AS lower_name').distinct
+    brands = brands.select('brands.*, LOWER(brands.name)').distinct
 
     Result.new(brands:)
   end
@@ -73,14 +73,14 @@ class BrandFilterService
 
   def apply_ordering(scope, value)
     order = case value&.downcase
-            when 'name_desc' then 'lower_name DESC'
-            when 'products_asc' then 'brands.products_count ASC NULLS FIRST, lower_name'
-            when 'products_desc' then 'brands.products_count DESC NULLS LAST, lower_name'
-            when 'added_asc' then 'brands.created_at ASC, lower_name'
-            when 'added_desc' then 'brands.created_at DESC, lower_name'
-            when 'updated_asc' then 'brands.updated_at ASC, lower_name'
-            when 'updated_desc' then 'brands.updated_at DESC, lower_name'
-            else 'lower_name ASC'
+            when 'name_desc' then 'LOWER(brands.name) DESC'
+            when 'products_asc' then 'brands.products_count ASC NULLS FIRST, LOWER(brands.name)'
+            when 'products_desc' then 'brands.products_count DESC NULLS LAST, LOWER(brands.name)'
+            when 'added_asc' then 'brands.created_at ASC, LOWER(brands.name)'
+            when 'added_desc' then 'brands.created_at DESC, LOWER(brands.name)'
+            when 'updated_asc' then 'brands.updated_at ASC, LOWER(brands.name)'
+            when 'updated_desc' then 'brands.updated_at DESC, LOWER(brands.name)'
+            else 'LOWER(brands.name) ASC'
             end
 
     scope.order(order)
