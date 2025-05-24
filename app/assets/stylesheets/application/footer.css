@@ -85,7 +85,7 @@
 	color: #fff;
 }
 
-.Footer a[aria-current="page"] {
+.Footer a:is([aria-current="page"], [aria-current="true"]) {
 	color: var(--color-white);
 	text-decoration: underline;
 }

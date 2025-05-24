@@ -335,6 +335,9 @@
                   </li>
                 <% end %>
                 <li>
+                  <%= link_to "Calculators", calculators_root_path, "aria-current": @active_menu == :calculators ? (params[:action] == "calculators" ? "page" : "true") : "false" %>
+                </li>
+                <li>
                   <%= link_to "Imprint", imprint_path, "aria-current": params[:controller] == "static" && params[:action] == "imprint" ? "page" : "false" %>
                 </li>
                 <li>
