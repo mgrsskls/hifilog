@@ -32,6 +32,7 @@ Rails.application.config.assets.precompile += %w(
   users.css
 
   alpine.js
+  amp_to_headphone_calculator.js
   application.js
   delete_form.js
   entity_form.js

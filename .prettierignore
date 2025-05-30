@@ -7,4 +7,3 @@ public/*.html
 storage/
 tmp/
 vendor/
-alpine.js

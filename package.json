@@ -32,6 +32,7 @@
 	},
 	"dependencies": {
 		"@activeadmin/activeadmin": "4.0.0-beta15",
-		"@milkdown/kit": "^7.9.0"
+		"@milkdown/kit": "^7.9.0",
+		"alpinejs": "^3.14.9"
 	}
 }

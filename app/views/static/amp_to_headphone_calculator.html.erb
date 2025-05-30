@@ -2,207 +2,11 @@
   <%= stylesheet_link_tag "amp_to_headphone_calculator", crossorigin: true, integrity: true %>
 <% end %>
 <% content_for :js do %>
+  <%= javascript_include_tag "amp_to_headphone_calculator", defer: true, nonce: true, crossorigin: true, integrity: true %>
   <%= javascript_include_tag "alpine", defer: true, nonce: true, crossorigin: true, integrity: true %>
 <% end %>
 
-<div class="Calculator" x-data="{
-  impedance: [300],
-  ampOutputImpedance: 3,
-  r3: 12,
-  resistances: [1,1.5,1.8,2.2,2.7,3.3,3.9,4.7,5.6,6.8,8.2,10,12,15,18,22,27,33,39,47,68,82,100],
-  minSpeakerLoad: 8,
-  maxSpeakerLoad: 10,
-  minAttenuation: 12,
-  maxAttenuation: 16,
-  minDampingFactor: 8,
-  maxDampingFactor: 50,
-  circuit: 'l-pad',
-  include: 'all',
-  getSpeakerLoad(impedance, r1, r2, r3) {
-    if (this.circuit === 'l-pad') {
-      return impedance.map(imp => {
-        return r1 + (
-          1 / (
-            (1 / r2) + (1 / imp)
-          )
-        );
-      });
-    }
-
-    if (this.circuit === 'reversed-l-pad') {
-      return impedance.map(imp => {
-        return 1 / (
-          (1 / r1) + (1 / (r2 + imp))
-        )
-      });
-    }
-
-    if (this.circuit === 'three') {
-      return impedance.map(imp => {
-        return 1 / (
-          (
-            1 / (
-              (
-                1 / (
-                  1 / imp + 1 / r3
-                )
-              ) + r2
-            )
-          ) +
-          (
-            1 / r1
-          )
-        )
-      });
-    }
-  },
-  getAttenuation(impedance, r1, r2, r3) {
-    if (this.circuit === 'l-pad') {
-      return impedance.map(imp => {
-        const safeDiv = (val) => val === 0 ? 0 : 1 / val;
-
-        if (r1 === 0 && r2 === 0 && imp === 0) {
-          return 0;
-        }
-
-        const reciprocalSum = safeDiv(r2) + safeDiv(imp);
-
-        if (reciprocalSum === 0) {
-          return 0;
-        }
-
-        const numerator = 1 / reciprocalSum;
-        const denominator = r1 + (1 / reciprocalSum);
-        const ratio = numerator / denominator;
-
-        return Math.log10(ratio) * -20;
-      });
-    }
-
-    if (this.circuit === 'reversed-l-pad') {
-      return impedance.map(imp => {
-        if (imp === 0 && r2 === 0) {
-          return 0;
-        }
-
-        const denominator = r2 + imp;
-
-        if (denominator === 0) {
-          return 0;
-        }
-
-        const ratio = imp / denominator;
-
-        return Math.log10(ratio) * -20;
-      });
-    }
-
-    if (this.circuit === 'three') {
-      return impedance.map(imp => {
-        if (r2 === 0 && r3 === 0 && imp === 0) {
-          return 0;
-        }
-
-        const safeDiv = (val) => val === 0 ? 0 : 1 / val;
-        const reciprocalSum = safeDiv(r3) + safeDiv(imp);
-
-        if (reciprocalSum === 0) {
-          return 0;
-        }
-
-        const numerator = 1 / reciprocalSum;
-        const denominator = r2 + (1 / reciprocalSum);
-        const ratio = numerator / denominator;
-
-        return Math.log10(ratio) * -20;
-      });
-    }
-  },
-  getDampingFactor(ampOutputImpedance, hpImpedance, r1, r2, r3) {
-    if (this.circuit === 'l-pad') {
-      return hpImpedance.map(imp => {
-        const safeDiv = (val) => val === 0 ? 0 : 1 / val;
-
-        if (ampOutputImpedance === 0 && r1 === 0 && r2 === 0) {
-          return 0;
-        }
-
-        const sumampOutputImpedance2 = ampOutputImpedance + r1;
-        const reciprocalSum = safeDiv(sumampOutputImpedance2) + safeDiv(r2);
-
-        if (reciprocalSum === 0) {
-          return 0;
-        }
-
-        return imp / (1 / reciprocalSum);
-      });
-    }
-
-    if (this.circuit === 'reversed-l-pad') {
-      return hpImpedance.map(imp => {
-        return imp / (
-          1 / (
-            (1 / ampOutputImpedance) + (1 / r1)
-          ) + r2
-        );
-      });
-    }
-
-    if (this.circuit === 'three') {
-      return hpImpedance.map(imp => {
-        const safeDiv = (val) => val === 0 ? 0 : 1 / val;
-
-        if (ampOutputImpedance === 0 && r1 === 0 && r2 === 0 && r3 === 0) {
-          return imp / 0;
-        }
-
-        const innerMost = safeDiv(ampOutputImpedance) + safeDiv(r1);
-        const wrapped1 = (ampOutputImpedance === 0 && r1 === 0) ? 0 : 1 / innerMost;
-        const wrapped2 = (ampOutputImpedance === 0 && r1 === 0 && r2 === 0) ? 0 : 1 / (wrapped1 + r2);
-        const denominatorPart = wrapped2 + safeDiv(r3);
-        const finalDenominator = (ampOutputImpedance === 0 && r1 === 0 && r2 === 0) ? 0 : 1 / denominatorPart;
-
-        return imp / finalDenominator;
-      });
-    }
-  },
-  getInRange(speakerLoad, attenuation, dampingFactor) {
-    return this.impedance.map((imp, i) => {
-      const inRange = {
-        speakerLoad: speakerLoad[i] >= this.minSpeakerLoad && speakerLoad[i] <= this.maxSpeakerLoad,
-        attenuation: attenuation[i] >= this.minAttenuation && attenuation[i] <= this.maxAttenuation,
-        dampingFactor: dampingFactor[i] >= this.minDampingFactor && dampingFactor[i] <= this.maxDampingFactor
-      };
-
-      if (this.include === 'all') {
-        let sum = 0;
-        [inRange.speakerLoad, inRange.attenuation, inRange.dampingFactor].forEach(inRange => sum += inRange ? 1 : 0);
-        return sum;
-      }
-
-      if (this.include === 'speakerLoad') {
-        return inRange.speakerLoad ? 3 : 0;
-      }
-
-      if (this.include === 'attenuation') {
-        return inRange.attenuation ? 3 : 0;
-      }
-
-      if (this.include === 'dampingFactor') {
-        return inRange.dampingFactor ? 3 : 0;
-      }
-    });
-  },
-  getBackground(inRange) {
-    let sum = 0;
-    inRange.forEach(val => sum += val);
-    const maxValue = inRange.length * 3;
-    const percentage = sum / maxValue;
-
-    return 80 * percentage;
-  }
-}">
-
+<div class="Calculator" x-data>
   <h1>Calculate Resistors for an Amplifier-to-Headphone Adapter</h1>
 
   <p>Based on the <a href="https://robrobinette.com/HeadphoneResistorNetworkCalculator.htm">Headphone Resistor Network Calculator</a> by Rob Robinette.</p>
@@ -212,20 +16,20 @@
       <legend>Headphones</legend>
 
       <div class="FormElements">
-        <template x-for="(imp, i) in impedance" :key="i">
+        <template x-for="(imp, i) in $store.settings.impedance" :key="i">
           <div class="u-flex u-alignCenter u-gap-md">
             <label>
               <span x-text="`${i + 1}. Headphone Impedance`"></span>
-              <input type="text" inputmode="numeric" x-model.number="impedance[i]"> <span class="Unit">&ohm;</span>
+              <input type="text" inputmode="numeric" x-model.number="$store.settings.impedance[i]"> <span class="Unit">&ohm;</span>
             </label>
-            <button class="Button Button--negative Button--icon" @click.prevent="impedance.splice(i, 1)" aria-label="Remove" title="Remove">
+            <button class="Button Button--negative Button--icon" @click.prevent="$store.settings.impedance.splice(i, 1)" aria-label="Remove" title="Remove">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
                 <path fill-rule="evenodd" d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z" clip-rule="evenodd" />
               </svg>
             </button>
           </div>
         </template>
-        <button class="Button" @click.prevent="impedance.push(0)">Add Headphone</button>
+        <button class="Button" @click.prevent="$store.settings.impedance.push(0)">Add Headphone</button>
       </div>
 
     </fieldset>
@@ -236,7 +40,7 @@
       <div>
         <label>
           Amplifier Output Impedance
-          <input type="text" inputmode="numeric" x-model="ampOutputImpedance"> <span class="Unit">&ohm;</span>
+          <input type="text" inputmode="numeric" x-model="$store.settings.ampOutputImpedance"> <span class="Unit">&ohm;</span>
         </label>
       </div>
     </fieldset>
@@ -251,14 +55,14 @@
             <div>
               <label>
                 Minimum
-                <input type="text" inputmode="numeric" x-model.number="minSpeakerLoad"> <span class="Unit">&ohm;</span>
+                <input type="text" inputmode="numeric" x-model.number="$store.settings.minSpeakerLoad"> <span class="Unit">&ohm;</span>
               </label>
             </div>
 
             <div>
               <label>
                 Maximum
-                <input type="text" inputmode="numeric" x-model.number="maxSpeakerLoad"> <span class="Unit">&ohm;</span>
+                <input type="text" inputmode="numeric" x-model.number="$store.settings.maxSpeakerLoad"> <span class="Unit">&ohm;</span>
               </label>
             </div>
           </div>
@@ -270,14 +74,14 @@
             <div>
               <label>
                 Minimum
-                <input type="text" inputmode="numeric" x-model.number="minAttenuation"> <span class="Unit">dB</span>
+                <input type="text" inputmode="numeric" x-model.number="$store.settings.minAttenuation"> <span class="Unit">dB</span>
               </label>
             </div>
 
             <div>
               <label>
                 Maximum
-                <input type="text" inputmode="numeric" x-model.number="maxAttenuation"> <span class="Unit">dB</span>
+                <input type="text" inputmode="numeric" x-model.number="$store.settings.maxAttenuation"> <span class="Unit">dB</span>
               </label>
             </div>
           </div>
@@ -289,14 +93,14 @@
             <div>
               <label>
                 Minimum
-                <input type="text" inputmode="numeric" x-model.number="minDampingFactor">
+                <input type="text" inputmode="numeric" x-model.number="$store.settings.minDampingFactor">
               </label>
             </div>
 
             <div>
               <label>
                 Maximum
-                <input type="text" inputmode="numeric" x-model.number="maxDampingFactor">
+                <input type="text" inputmode="numeric" x-model.number="$store.settings.maxDampingFactor">
               </label>
             </div>
           </div>
@@ -309,15 +113,15 @@
       <div>
         <label>
           Circuit
-          <select x-model="circuit">
-            <option value="l-pad" :selected="circuit === 'l-pad'">L-Pad</option>
-            <option value="reversed-l-pad" :selected="circuit === 'reversed-l-pad'">Reversed L-Pad</option>
-            <option value="three" :selected="circuit === 'three'">Three resistor network</option>
+          <select x-model="$store.settings.circuit">
+            <option value="l-pad" :selected="$store.settings.circuit === 'l-pad'">L-Pad</option>
+            <option value="reversed-l-pad" :selected="$store.settings.circuit === 'reversed-l-pad'">Reversed L-Pad</option>
+            <option value="three" :selected="$store.settings.circuit === 'three'">Three resistor network</option>
           </select>
         </label>
       </div>
 
-      <template x-if="circuit === 'l-pad'">
+      <template x-if="$store.settings.circuit === 'l-pad'">
         <pre>
 ┌──R1──┬─────┐
 │      │     │
@@ -328,7 +132,7 @@ Amp     R2    HP
 └──────┴─────┘</pre>
       </template>
 
-      <template x-if="circuit === 'reversed-l-pad'">
+      <template x-if="$store.settings.circuit === 'reversed-l-pad'">
         <pre>
 ┌─────┬──R2──┐
 │     │      │
@@ -339,7 +143,7 @@ Amp    R1     HP
 └─────┴──────┘</pre>
       </template>
 
-      <template x-if="circuit === 'three'">
+      <template x-if="$store.settings.circuit === 'three'">
         <div>
           <pre>
 ┌─────┬──R2──┬─────┐
@@ -352,9 +156,9 @@ Amp   R1     R3     HP
           <div class="u-mt-sm">
             <label>
               R3
-              <select x-model="r3">
-                <template x-for="option in resistances" :key="option">
-                  <option :value="option" x-text="option" :selected="option == r3"></option>
+              <select x-model="$store.settings.r3">
+                <template x-for="option in $store.settings.resistances" :key="option">
+                  <option :value="option" x-text="option" :selected="option == $store.settings.r3"></option>
                 </template>
               </select> <span class="Unit">&ohm;</span>
             </label>
@@ -369,28 +173,28 @@ Amp   R1     R3     HP
     <div class="FormElements">
       <div>
         <label>
-          <input type="radio" name="include" value="all" x-model="include">
+          <input type="radio" name="include" value="all" x-model="$store.settings.include">
           All
         </label>
       </div>
 
       <div>
         <label>
-          <input type="radio" name="include" value="speakerLoad" x-model="include">
+          <input type="radio" name="include" value="speakerLoad" x-model="$store.settings.include">
           Speaker Load
         </label>
       </div>
 
       <div>
         <label>
-          <input type="radio" name="include" value="attenuation" x-model="include">
+          <input type="radio" name="include" value="attenuation" x-model="$store.settings.include">
           Attenuation
         </label>
       </div>
 
       <div>
         <label>
-          <input type="radio" name="include" value="dampingFactor" x-model="include">
+          <input type="radio" name="include" value="dampingFactor" x-model="$store.settings.include">
           Damping Factor
         </label>
       </div>
@@ -402,56 +206,49 @@ Amp   R1     R3     HP
       <thead>
         <tr>
           <th colspan="2" rowspan="2" style="text-align: center;">&ohm;</th>
-          <th :colspan="resistances.length" style="text-align: start">R1</th>
+          <th :colspan="$store.settings.resistances.length" style="text-align: start">R1</th>
         </tr>
         <tr>
-          <template x-for="(r1, indexColumn) in resistances">
+          <template x-for="(r1, indexColumn) in $store.settings.resistances">
             <th x-text="r1" :data-in-range="hoveredColumn === indexColumn ? hoveredInRange : false"></th>
           </template>
         </tr>
       </thead>
       <tbody>
-        <template x-for="(r2, indexRow) in resistances">
+        <template x-for="(r2, indexRow) in $store.settings.resistances">
           <tr>
             <template x-if="indexRow === 0">
-              <th :rowspan="resistances.length" style="vertical-align: top; text-align: center;">R2</th>
+              <th :rowspan="$store.settings.resistances.length" style="vertical-align: top; text-align: center;">R2</th>
             </template>
             <th :data-in-range="hoveredRow === indexRow ? hoveredInRange : false" x-text="r2"></th>
-            <template x-for="(r1, indexColumn) in resistances" :key="r1">
+            <template x-for="(r1, indexColumn) in $store.settings.resistances" :key="r1">
               <td
-                x-data="{ speakerLoad: 0, attenuation: 0, dampingFactor: 0, inRange: false, background: '', match: false }"
-                x-effect="
-                  speakerLoad = getSpeakerLoad(impedance, r1, r2, r3);
-                  attenuation = getAttenuation(impedance, r1, r2, r3);
-                  dampingFactor = getDampingFactor(ampOutputImpedance, impedance, r1, r2, r3);
-                  inRange = getInRange(speakerLoad, attenuation, dampingFactor);
-                  match = inRange.every(val => val === 3) ? 'true' : 'false';
-                  background = getBackground(inRange);
-                "
-                :data-in-range="inRange"
-                @mouseenter="hoveredInRange = inRange; hoveredRow = indexRow; hoveredColumn = indexColumn"
+                x-data="{ result: {} }"
+                x-effect="result = $store.settings.getResult(r1, r2)"
+                :data-in-range="result.inRange"
+                @mouseenter="hoveredInRange = result.inRange; hoveredRow = indexRow; hoveredColumn = indexColumn"
                 @mouseleave="hoveredInRange = false; hoveredRow = null; hoveredColumn = null"
-                :style="`--hue: ${background};`"
-                :data-match="match"
+                :style="`--hue: ${result.background};`"
+                :data-match="result.match"
               >
                 <button @click="document.getElementById(`dialog-${indexRow}-${indexColumn}`).showModal()">
-                  <template x-for="(imp, i) in impedance">
+                  <template x-for="(imp, i) in $store.settings.filteredImpedances">
                     <span>
-                      <template x-if="include === 'all'">
+                      <template x-if="$store.settings.include === 'all'">
                         <span>
-                          <span x-text="`${speakerLoad[i].toFixed(1)} &ohm;`"></span>
-                          <span x-text="`${attenuation[i].toFixed(1)} dB`"></span>
-                          <span x-text="`${dampingFactor[i].toFixed(1)} DF`"></span>
+                          <span x-text="`${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
+                          <span x-text="`${result.attenuation[i].toFixed(1)} dB`"></span>
+                          <span x-text="`${result.dampingFactor[i].toFixed(1)} DF`"></span>
                         </span>
                       </template>
-                      <template x-if="include === 'speakerLoad'">
-                        <span x-text="`${speakerLoad[i].toFixed(1)} &ohm;`"></span>
+                      <template x-if="$store.settings.include === 'speakerLoad'">
+                        <span x-text="`${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
                       </template>
-                      <template x-if="include === 'attenuation'">
-                        <span x-text="`${attenuation[i].toFixed(1)} dB`"></span>
+                      <template x-if="$store.settings.include === 'attenuation'">
+                        <span x-text="`${result.attenuation[i].toFixed(1)} dB`"></span>
                       </template>
-                      <template x-if="include === 'dampingFactor'">
-                        <span x-text="`${dampingFactor[i].toFixed(1)} DF`"></span>
+                      <template x-if="$store.settings.include === 'dampingFactor'">
+                        <span x-text="`${result.dampingFactor[i].toFixed(1)} DF`"></span>
                       </template>
                     </span>
                   </template>
@@ -460,7 +257,7 @@ Amp   R1     R3     HP
                   <dl class="Data">
                     <div>
                       <dt>Amplifier Output Impedance</dt>
-                      <dd x-text="`${ampOutputImpedance} &ohm;`"></dd>
+                      <dd x-text="`${$store.settings.ampOutputImpedance} &ohm;`"></dd>
                     </div>
                     <div>
                       <dt>R1</dt>
@@ -470,32 +267,32 @@ Amp   R1     R3     HP
                       <dt>R2</dt>
                       <dd x-text="`${r2} &ohm;`"></dd>
                     </div>
-                    <template x-if="circuit === 'three'">
+                    <template x-if="$store.settings.circuit === 'three'">
                       <div>
                         <dt>R3</dt>
-                        <dd x-text="`${r3} &ohm;`"></dd>
+                        <dd x-text="`${$store.settings.r3} &ohm;`"></dd>
                       </div>
                     </template>
                   </dl>
-                  <template x-for="(imp, i) in impedance">
+                  <template x-for="(imp, i) in $store.settings.filteredImpedances">
                     <div class="Dialog-divider">
                       <b x-text="`${i + 1}. Headphone`"></b>
                       <dl class="Data">
                         <div>
                           <dt>Impedance</dt>
-                          <dd x-text="`${impedance[i]} &ohm;`"></dd>
+                          <dd x-text="`${$store.settings.filteredImpedances[i]} &ohm;`"></dd>
                         </div>
                         <div class="u-mt-sm">
                           <dt>Speaker Load</dt>
-                          <dd x-text="`${speakerLoad[i].toFixed(1)} &ohm; ${ (speakerLoad[i] >= minSpeakerLoad && speakerLoad[i] <= maxSpeakerLoad) ? '✅' : '❌' }`"></dd>
+                          <dd x-text="`${result.speakerLoad[i].toFixed(1)} &ohm; ${ (result.speakerLoad[i] >= $store.settings.minSpeakerLoad && result.speakerLoad[i] <= $store.settings.maxSpeakerLoad) ? '✅' : '❌' }`"></dd>
                         </div>
                         <div>
                           <dt>Attenuation</dt>
-                          <dd x-text="`${attenuation[i].toFixed(1)} &ohm; ${ (attenuation[i] >= minAttenuation && attenuation[i] <= maxAttenuation) ? '✅' : '❌' }`"></dd>
+                          <dd x-text="`${result.attenuation[i].toFixed(1)} &ohm; ${ (result.attenuation[i] >= $store.settings.minAttenuation && result.attenuation[i] <= $store.settings.maxAttenuation) ? '✅' : '❌' }`"></dd>
                         </div>
                         <div>
                           <dt>Damping Factor</dt>
-                          <dd x-text="`${dampingFactor[i].toFixed(1)} &ohm; ${ (dampingFactor[i] >= minDampingFactor && dampingFactor[i] <= maxDampingFactor) ? '✅' : '❌' }`"></dd>
+                          <dd x-text="`${result.dampingFactor[i].toFixed(1)} &ohm; ${ (result.dampingFactor[i] >= $store.settings.minDampingFactor && result.dampingFactor[i] <= $store.settings.maxDampingFactor) ? '✅' : '❌' }`"></dd>
                         </div>
                       </dl>
                     </div>
