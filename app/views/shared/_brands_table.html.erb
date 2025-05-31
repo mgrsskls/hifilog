@@ -24,7 +24,7 @@
           <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
         </td>
         <td class="Table-products Table-sm">
-          <%= link_to product_counts.present? ? (product_counts[brand.id] || 0) : brand.products.count, brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
+          <%= link_to (product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0)), brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
         </td>
         <td class="Table-sm">
           <%= brand.country_name.present? ? brand.country_name : "-" %>
@@ -56,7 +56,7 @@
 
           <dt><%= Product.model_name.human(count: 2) %></dt>
           <dd>
-            <%= link_to product_counts.present? ? (product_counts[brand.id] || 0) : brand.products.count, brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
+            <%= link_to (product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0)), brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
           </dd>
 
           <% if brand.country_name.present? %>

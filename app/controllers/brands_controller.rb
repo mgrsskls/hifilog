@@ -18,8 +18,6 @@ class BrandsController < ApplicationController
                     .includes(sub_categories: [:category])
                     .page(params[:page])
 
-    @brands = @brands.includes([:products]) if active_index_filters.any?
-
     @product_counts = if active_index_filters.keys.map(&:to_s).any? do |el|
       allowed_index_product_filter_params.to_h.keys.include?(el)
     end
