@@ -41,6 +41,7 @@ class SubCategory < ApplicationRecord
 
   def invalidate_cache
     Rails.cache.delete('/menu_categories')
+    Rails.cache.delete('/categories_count')
 
     # recommended to return true, as Rails.cache.delete will return false
     # if no cache is found and break the callback chain.
