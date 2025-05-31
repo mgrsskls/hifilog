@@ -236,19 +236,19 @@ Amp   R1     R3     HP
                     <span>
                       <template x-if="$store.settings.include === 'all'">
                         <span>
-                          <span x-text="`${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
-                          <span x-text="`${result.attenuation[i].toFixed(1)} dB`"></span>
-                          <span x-text="`${result.dampingFactor[i].toFixed(1)} DF`"></span>
+                          <span x-text="`~${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
+                          <span x-text="`~${result.attenuation[i].toFixed(1)} dB`"></span>
+                          <span x-text="`~${result.dampingFactor[i].toFixed(1)} DF`"></span>
                         </span>
                       </template>
                       <template x-if="$store.settings.include === 'speakerLoad'">
-                        <span x-text="`${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
+                        <span x-text="`~${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
                       </template>
                       <template x-if="$store.settings.include === 'attenuation'">
-                        <span x-text="`${result.attenuation[i].toFixed(1)} dB`"></span>
+                        <span x-text="`~${result.attenuation[i].toFixed(1)} dB`"></span>
                       </template>
                       <template x-if="$store.settings.include === 'dampingFactor'">
-                        <span x-text="`${result.dampingFactor[i].toFixed(1)} DF`"></span>
+                        <span x-text="`~${result.dampingFactor[i].toFixed(1)} DF`"></span>
                       </template>
                     </span>
                   </template>
@@ -284,15 +284,15 @@ Amp   R1     R3     HP
                         </div>
                         <div class="u-mt-sm">
                           <dt>Speaker Load</dt>
-                          <dd x-text="`${result.speakerLoad[i].toFixed(1)} &ohm; ${ (result.speakerLoad[i] >= $store.settings.minSpeakerLoad && result.speakerLoad[i] <= $store.settings.maxSpeakerLoad) ? '✅' : '❌' }`"></dd>
+                          <dd x-text="`${result.speakerLoad[i]} &ohm; ${ (result.speakerLoad[i] >= $store.settings.minSpeakerLoad && result.speakerLoad[i] <= $store.settings.maxSpeakerLoad) ? '✅' : '❌' }`"></dd>
                         </div>
                         <div>
                           <dt>Attenuation</dt>
-                          <dd x-text="`${result.attenuation[i].toFixed(1)} &ohm; ${ (result.attenuation[i] >= $store.settings.minAttenuation && result.attenuation[i] <= $store.settings.maxAttenuation) ? '✅' : '❌' }`"></dd>
+                          <dd x-text="`${result.attenuation[i]} dB ${ (result.attenuation[i] >= $store.settings.minAttenuation && result.attenuation[i] <= $store.settings.maxAttenuation) ? '✅' : '❌' }`"></dd>
                         </div>
                         <div>
                           <dt>Damping Factor</dt>
-                          <dd x-text="`${result.dampingFactor[i].toFixed(1)} DF ${ (result.dampingFactor[i] >= $store.settings.minDampingFactor && result.dampingFactor[i] <= $store.settings.maxDampingFactor) ? '✅' : '❌' }`"></dd>
+                          <dd x-text="`${result.dampingFactor[i]} DF ${ (result.dampingFactor[i] >= $store.settings.minDampingFactor && result.dampingFactor[i] <= $store.settings.maxDampingFactor) ? '✅' : '❌' }`"></dd>
                         </div>
                       </dl>
                     </div>
