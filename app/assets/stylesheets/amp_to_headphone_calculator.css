@@ -59,6 +59,12 @@
 
 	.Table {
 		overflow-x: auto;
+		inline-size: 100vi;
+		position: relative;
+		inset-inline-start: 50%;
+		transform: translateX(-50%);
+		padding-inline: var(--page-spacing);
+		box-sizing: border-box;
 	}
 
 	table {
@@ -88,6 +94,10 @@
 	td[data-match="true"] {
 		--hue: 120 !important;
 		--lightness: 50%;
+	}
+
+	td[data-match="none"] {
+		background: var(--color-bg2);
 	}
 
 	td:has(button:hover) {
@@ -179,9 +189,16 @@
 	}
 
 	.Include {
-		margin-block: 2rem 0.5rem;
-		display: flex;
-		align-items: center;
+		margin-block: 2rem;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 1rem;
+	}
+
+	.Include > div {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / -1;
 		gap: 2rem;
 	}
 }

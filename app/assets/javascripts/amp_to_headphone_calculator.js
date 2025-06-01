@@ -1,15 +1,18 @@
 document.addEventListener("alpine:init", () => {
 	Alpine.store("settings", {
-		impedance: [300],
+		impedance: [null],
 		get filteredImpedances() {
 			return this.impedance.filter((imp) => imp !== null && imp > 0);
 		},
-		ampOutputImpedance: 3,
-		r3: 12,
+		ampOutputImpedance: 0.1,
+		r3: null,
 		resistances: [
 			1, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2, 10, 12, 15, 18, 22,
 			27, 33, 39, 47, 68, 82, 100,
-		],
+		].map((r) => ({ value: r, selected: true })),
+		get selectedResistances() {
+			return this.resistances.filter((r) => r.selected);
+		},
 		minSpeakerLoad: 8,
 		maxSpeakerLoad: 10,
 		minAttenuation: 12,
@@ -18,6 +21,46 @@ document.addEventListener("alpine:init", () => {
 		maxDampingFactor: 50,
 		circuit: "l-pad",
 		include: "all",
+		get calculationComplete() {
+			const valid = [];
+
+			if (this.circuit === "three") {
+				valid.push(
+					this.selectedResistances
+						.map((v) => v.value)
+						.includes(parseFloat(this.r3)),
+				);
+			}
+
+			valid.push(
+				this.filteredImpedances.length > 0 &&
+					this.filteredImpedances.every((val) => !Number.isNaN(val) && val > 0),
+			);
+
+			valid.push(
+				!Number.isNaN(this.ampOutputImpedance) && this.ampOutputImpedance > 0,
+			);
+
+			valid.push(
+				this.selectedResistances.length > 0 &&
+					this.selectedResistances.every(
+						({ value }) => !Number.isNaN(value) && value > 0,
+					),
+			);
+
+			[
+				this.minSpeakerLoad,
+				this.maxSpeakerLoad,
+				this.minAttenuation,
+				this.maxAttenuation,
+				this.minDampingFactor,
+				this.maxDampingFactor,
+			].forEach((val) => valid.push(!Number.isNaN(val) && val > 0));
+
+			valid.push(["l-pad", "reversed-l-pad", "three"].includes(this.circuit));
+
+			return valid.every((val) => val === true);
+		},
 		cellCache: new Map(),
 		calculationsCache: new Map(),
 		getSpeakerLoad(r1, r2) {
@@ -243,6 +286,8 @@ document.addEventListener("alpine:init", () => {
 			});
 		},
 		getBackground(inRange) {
+			if (!this.calculationComplete) return null;
+
 			let sum = 0;
 			inRange.forEach((val) => (sum += val));
 			const maxValue = inRange.length * 3;
@@ -268,12 +313,25 @@ document.addEventListener("alpine:init", () => {
 			return `${this.circuit}-${this.include}-${r1}-${r2}-${this.r3}-${this.filteredImpedances.join(",")}-${this.ampOutputImpedance}-${this.minSpeakerLoad}-${this.maxSpeakerLoad}-${this.minAttenuation}-${this.maxAttenuation}-${this.minDampingFactor}-${this.maxDampingFactor}`;
 		},
 		calculateCell(r1, r2) {
+			if (!this.calculationComplete) {
+				return {
+					match: "none",
+					background: null,
+					inRange: 0,
+				};
+			}
+
 			const speakerLoad = this.getSpeakerLoad(r1, r2);
 			const attenuation = this.getAttenuation(r1, r2);
 			const dampingFactor = this.getDampingFactor(r1, r2);
 			const inRange = this.getInRange(speakerLoad, attenuation, dampingFactor);
 			const background = this.getBackground(inRange);
-			const match = inRange.every((val) => val === 3) ? "true" : "false";
+			const match =
+				inRange.length === 0
+					? "none"
+					: inRange.every((val) => val === 3)
+						? "true"
+						: "false";
 
 			return {
 				speakerLoad,
