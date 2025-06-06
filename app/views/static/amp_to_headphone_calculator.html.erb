@@ -263,19 +263,19 @@ Amp   R1     R3     HP
                       <span>
                         <template x-if="$store.settings.include === 'all'">
                           <span>
-                            <span x-text="`~${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
-                            <span x-text="`~${result.attenuation[i].toFixed(1)} dB`"></span>
-                            <span x-text="`~${result.dampingFactor[i].toFixed(1)} DF`"></span>
+                            <span x-text="`~${result.speakerLoad[i]?.toFixed(1)} &ohm;`"></span>
+                            <span x-text="`~${result.attenuation[i]?.toFixed(1)} dB`"></span>
+                            <span x-text="`~${result.dampingFactor[i]?.toFixed(1)} DF`"></span>
                           </span>
                         </template>
                         <template x-if="$store.settings.include === 'speakerLoad'">
-                          <span x-text="`~${result.speakerLoad[i].toFixed(1)} &ohm;`"></span>
+                          <span x-text="`~${result.speakerLoad[i]?.toFixed(1)} &ohm;`"></span>
                         </template>
                         <template x-if="$store.settings.include === 'attenuation'">
-                          <span x-text="`~${result.attenuation[i].toFixed(1)} dB`"></span>
+                          <span x-text="`~${result.attenuation[i]?.toFixed(1)} dB`"></span>
                         </template>
                         <template x-if="$store.settings.include === 'dampingFactor'">
-                          <span x-text="`~${result.dampingFactor[i].toFixed(1)} DF`"></span>
+                          <span x-text="`~${result.dampingFactor[i]?.toFixed(1)} DF`"></span>
                         </template>
                       </span>
                     </template>

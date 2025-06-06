@@ -315,6 +315,9 @@ document.addEventListener("alpine:init", () => {
 		calculateCell(r1, r2) {
 			if (!this.calculationComplete) {
 				return {
+					speakerLoad: [],
+					attenuation: [],
+					dampingFactor: [],
 					match: "none",
 					background: null,
 					inRange: 0,
