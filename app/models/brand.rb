@@ -115,7 +115,9 @@ class Brand < ApplicationRecord
 
   private
 
+  # rubocop:disable Naming/PredicateMethod
   def invalidate_cache
+    # rubocop:enable Naming/PredicateMethod
     Rails.cache.delete('/newest_brands')
 
     # recommended to return true, as Rails.cache.delete will return false
@@ -125,7 +127,9 @@ class Brand < ApplicationRecord
     # rubocop:enable Style/RedundantReturn
   end
 
+  # rubocop:disable Naming/PredicateMethod
   def invalidate_count_cache
+    # rubocop:enable Naming/PredicateMethod
     Rails.cache.delete('/brands_count')
 
     # recommended to return true, as Rails.cache.delete will return false

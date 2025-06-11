@@ -92,12 +92,8 @@ class CustomProductPresenter
     nil
   end
 
-  def prev_owned
-    false
-  end
-
   def setup
-    false
+    nil
   end
 
   def product_option

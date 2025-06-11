@@ -39,7 +39,9 @@ class SubCategory < ApplicationRecord
 
   private
 
+  # rubocop:disable Naming/PredicateMethod
   def invalidate_cache
+    # rubocop:enable Naming/PredicateMethod
     Rails.cache.delete('/menu_categories')
     Rails.cache.delete('/categories_count')
 
