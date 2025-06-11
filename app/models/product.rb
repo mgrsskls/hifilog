@@ -138,7 +138,9 @@ class Product < ApplicationRecord
 
   private
 
+  # rubocop:disable Naming/PredicateMethod
   def invalidate_cache
+    # rubocop:enable Naming/PredicateMethod
     Rails.cache.delete('/newest_products')
     Rails.cache.delete('/products_count')
 
