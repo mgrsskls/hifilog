@@ -339,10 +339,10 @@
                   <%= link_to "Calculators", calculators_root_path, "aria-current": @active_menu == :calculators ? (params[:action] == "calculators" ? "page" : "true") : "false" %>
                 </li>
                 <li>
-                  <%= link_to "Imprint", imprint_path, "aria-current": params[:controller] == "static" && params[:action] == "imprint" ? "page" : "false" %>
+                  <%= link_to "Imprint", imprint_path, "aria-current": params[:controller] == "static" && params[:action] == "imprint" ? "page" : "false", rel: "nofollow" %>
                 </li>
                 <li>
-                  <%= link_to "Privacy Policy", privacy_policy_path, "aria-current": params[:controller] == "static" && params[:action] == "privacy_policy" ? "page" : "false" %>
+                  <%= link_to "Privacy Policy", privacy_policy_path, "aria-current": params[:controller] == "static" && params[:action] == "privacy_policy" ? "page" : "false", rel: "nofollow" %>
                 </li>
               </ul>
             </nav>
