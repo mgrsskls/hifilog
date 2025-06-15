@@ -2,6 +2,7 @@ class ProductsController < ApplicationController
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
   include ApplicationHelper
+  include CanonicalUrl
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
@@ -15,6 +16,7 @@ class ProductsController < ApplicationController
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
     @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
+    @canonical_url = canonical_url
     filter = ProductFilterService.new(active_index_filters, [], @category, @sub_category).filter
     @products = filter.products
                       .includes(:brand, :product_variants, sub_categories: [:custom_attributes])

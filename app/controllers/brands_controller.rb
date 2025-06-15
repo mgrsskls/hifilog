@@ -1,5 +1,6 @@
 class BrandsController < ApplicationController
   include ApplicationHelper
+  include CanonicalUrl
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
@@ -13,6 +14,7 @@ class BrandsController < ApplicationController
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
     @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
+    @canonical_url = canonical_url
     filter = BrandFilterService.new(active_index_filters, @category, @sub_category).filter
     @brands = filter.brands
                     .includes(sub_categories: [:category])
@@ -66,6 +68,8 @@ class BrandsController < ApplicationController
     @brand = Brand.includes(sub_categories: [:category], products: [:product_variants]).friendly.find(params[:brand_id])
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_show_product_filter_params)
     @filter_applied = active_show_product_filters.any?
+
+    @canonical_url = canonical_url
     filter = ProductFilterService.new(active_show_product_filters, [@brand], @category, @sub_category).filter
     @products = filter.products
                       .includes([:sub_categories, :product_variants])
