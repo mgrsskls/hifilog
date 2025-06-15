@@ -76,14 +76,14 @@
     <% if @no_index %>
       <meta name="robots" content="noindex,nofollow">
     <% end %>
-    <meta name="og:title" content="<%= page_title %>">
-    <meta name="og:type" content="website">
-    <meta name="og:image" content="https://www.hifilog.com/og.png?v=1">
+    <meta property="og:title" content="<%= page_title %>">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://www.hifilog.com/og.png?v=1">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta name="og:url" content="https://www.hifilog.com<%= request.fullpath %>">
-    <meta name="og:og:site_name" content="<%= APP_NAME %>">
-    <meta name="og:description" content="<%= @meta_desc.present? ? @meta_desc : (strip_tags t('meta_description')) %>">
+    <meta property="og:url" content="https://www.hifilog.com<%= request.fullpath %>">
+    <meta property="og:og:site_name" content="<%= APP_NAME %>">
+    <meta property="og:description" content="<%= @meta_desc.present? ? @meta_desc : (strip_tags t('meta_description')) %>">
   </head>
 
   <body>
