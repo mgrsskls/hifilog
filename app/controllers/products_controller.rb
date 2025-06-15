@@ -13,6 +13,15 @@ class ProductsController < ApplicationController
   before_action :find_product, only: [:show]
 
   def index
+    if params[:sub_category].present?
+      sub_category = SubCategory.friendly.find(params[:sub_category])
+      category = sub_category.category
+      request.query_parameters.delete(:sub_category)
+      redirect_to products_path(
+        request.query_parameters.merge!(category: "#{category.slug}[#{sub_category.slug}]")
+      ), status: :moved_permanently
+    end
+
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
     @filter_applied = active_index_filters.except(:category, :sub_category).any?
 

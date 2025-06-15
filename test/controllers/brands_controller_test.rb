@@ -160,8 +160,8 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'filter by sub_category returns only brands in that sub_category' do
-    get brands_url(sub_category: sub_categories(:one).slug)
+  test 'filter by category[sub_category] returns only brands in that sub_category' do
+    get brands_url(category: "#{sub_categories(:one).category.slug}[#{sub_categories(:one).slug}]")
     assert_response :success
     expected_names = Brand.joins(:sub_categories)
                           .where(sub_categories: { id: sub_categories(:one).id })
@@ -170,6 +170,12 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     expected_names.each do |name|
       assert_match name, @response.body
     end
+  end
+
+  test 'filter by sub_category redirects to category[sub_category]' do
+    get brands_url(sub_category: sub_categories(:one).slug)
+    assert_response :redirect
+    assert_redirected_to brands_url(category: "#{sub_categories(:one).category.slug}[#{sub_categories(:one).slug}]")
   end
 
   test 'filter by status returns only discontinued brands' do
