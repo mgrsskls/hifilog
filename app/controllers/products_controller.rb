@@ -25,12 +25,20 @@ class ProductsController < ApplicationController
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
     @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
-    @canonical_url = canonical_url
     filter = ProductFilterService.new(active_index_filters, [], @category, @sub_category).filter
     @products = filter.products
                       .includes(:brand, :product_variants, sub_categories: [:custom_attributes])
                       .page(params[:page])
     @products_query = params[:query].strip if params[:query].present?
+
+    if @products.out_of_range?
+      @products = filter.products
+                        .includes(:brand, :product_variants, sub_categories: [:custom_attributes])
+                        .page(1)
+      @canonical_url = canonical_url(page_out_of_range: true)
+    else
+      @canonical_url = canonical_url
+    end
 
     @page_title = Product.model_name.human(count: 2)
   end

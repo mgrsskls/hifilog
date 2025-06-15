@@ -23,11 +23,19 @@ class BrandsController < ApplicationController
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
     @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
-    @canonical_url = canonical_url
     filter = BrandFilterService.new(active_index_filters, @category, @sub_category).filter
     @brands = filter.brands
                     .includes(sub_categories: [:category])
                     .page(params[:page])
+
+    if @brands.out_of_range?
+      @brands = filter.brands
+                      .includes(sub_categories: [:category])
+                      .page(1)
+      @canonical_url = canonical_url(page_out_of_range: true)
+    else
+      @canonical_url = canonical_url
+    end
 
     @product_counts = if active_index_filters.keys.map(&:to_s).any? do |el|
       allowed_index_product_filter_params.to_h.keys.include?(el)
@@ -78,11 +86,18 @@ class BrandsController < ApplicationController
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_show_product_filter_params)
     @filter_applied = active_show_product_filters.any?
 
-    @canonical_url = canonical_url
     filter = ProductFilterService.new(active_show_product_filters, [@brand], @category, @sub_category).filter
     @products = filter.products
                       .includes([:sub_categories, :product_variants])
                       .page(params[:page])
+    if @products.out_of_range?
+      @products = filter.products
+                        .includes([:sub_categories, :product_variants])
+                        .page(1)
+      @canonical_url = canonical_url(page_out_of_range: true)
+    else
+      @canonical_url = canonical_url
+    end
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |c| c[0].order }
     @products_query = params[:query].strip if params[:query].present?
