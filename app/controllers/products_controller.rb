@@ -40,7 +40,13 @@ class ProductsController < ApplicationController
       @canonical_url = canonical_url
     end
 
-    @page_title = Product.model_name.human(count: 2)
+    @page_title = if @sub_category.present?
+                    @sub_category.name
+                  elsif @category.present?
+                    @category.name
+                  else
+                    Product.model_name.human(count: 2)
+                  end
   end
 
   def show
