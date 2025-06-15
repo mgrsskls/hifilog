@@ -1,4 +1,4 @@
-<%- page_title = "#{"#{@page_title} — " if @page_title.present?}#{APP_NAME}" %>
+<%- page_title = @page_title.present? ? "#{@page_title} — #{APP_NAME}" : "#{APP_NAME} — A user-driven HiFi database" %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
