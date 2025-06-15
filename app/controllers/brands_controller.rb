@@ -57,13 +57,18 @@ class BrandsController < ApplicationController
 
     @brands_query = params[:query].strip if params[:query].present?
 
-    @page_title = if @sub_category.present?
-                    "#{Brand.model_name.human(count: 2)}: #{@sub_category.name}"
-                  elsif @category.present?
-                    "#{Brand.model_name.human(count: 2)}: #{@category.name}"
-                  else
-                    Brand.model_name.human(count: 2)
-                  end
+    if @sub_category.present?
+      @page_title = "#{Brand.model_name.human(count: 2)}: #{@sub_category.name}"
+      @meta_desc = "Search through all brands with products in the category “#{@sub_category.name}” on HiFi Log,\
+ a user-driven database for HiFi products and brands."
+    elsif @category.present?
+      @page_title = "#{Brand.model_name.human(count: 2)}: #{@category.name}"
+      @meta_desc = "Search through all brands with products in the category “#{@category.name}” on HiFi Log,\
+ a user-driven database for HiFi products and brands."
+    else
+      @page_title = Brand.model_name.human(count: 2)
+      @meta_desc = 'Search through all brands on HiFi Log, a user-driven database for HiFi products and brands.'
+    end
   end
 
   def all

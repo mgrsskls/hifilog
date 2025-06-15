@@ -40,13 +40,18 @@ class ProductsController < ApplicationController
       @canonical_url = canonical_url
     end
 
-    @page_title = if @sub_category.present?
-                    @sub_category.name
-                  elsif @category.present?
-                    @category.name
-                  else
-                    Product.model_name.human(count: 2)
-                  end
+    if @sub_category.present?
+      @page_title = @sub_category.name
+      @meta_desc = "Search through all products in the category “#{@sub_category.name}” on HiFi Log,\
+ a user-driven database for HiFi products and brands."
+    elsif @category.present?
+      @page_title = @category.name
+      @meta_desc = "Search through all products in the category “#{@category.name}” on HiFi Log,\
+ a user-driven database for HiFi products and brands."
+    else
+      @page_title = Product.model_name.human(count: 2)
+      @meta_desc = 'Search through all products on HiFi Log, a user-driven database for HiFi products and brands.'
+    end
   end
 
   def show
