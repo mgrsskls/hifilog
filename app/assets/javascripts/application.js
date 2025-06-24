@@ -15,6 +15,19 @@ import "./_search.js";
 		".Button--loadingIcon, .CheckboxButton",
 	);
 	const filterCheckboxes = document.querySelectorAll(".Filter .Pagination");
+	const signUpCall = document.querySelector(".SignUpCall");
+
+	if (signUpCall) {
+		const button = signUpCall.querySelector("button");
+
+		if (button) {
+			button.addEventListener("click", () => {
+				document.cookie =
+					"hide_sign_up_call=1; path=/; SameSite=Strict; Secure";
+				signUpCall.remove();
+			});
+		}
+	}
 
 	filterCheckboxes.forEach((el) => {
 		if (el.querySelectorAll('[type="checkbox"]').length == 2) {

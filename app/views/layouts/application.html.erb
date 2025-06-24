@@ -266,9 +266,20 @@
       %>
         <%= yield %>
       <% else %>
-        <div class="u-container">
-          <%= render "shared/flash_messages", messages: flash if flash.any? %>
-          <%= yield %>
+        <% unless user_signed_in? %>
+          <% unless cookies[:hide_sign_up_call] == "1" %>
+            <% if ["brands", "products"].include?(params[:controller]) %>
+              <div class="SignUpCall">
+                <p>HiFi Log is a user-driven database and needs you! <a href="<%= new_user_session_path %>">Sign up</a> to add new products and brands, fill out missing information and help making this become the biggest database for hifi brands and products. <button>Hide this message.</button></p>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+        <div class="Main">
+          <div class="u-container">
+            <%= render "shared/flash_messages", messages: flash if flash.any? %>
+            <%= yield %>
+          </div>
         </div>
       <% end %>
     </main>

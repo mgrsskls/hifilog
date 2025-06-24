@@ -87,9 +87,9 @@
 		z-index: 9999;
 	}
 
-	main:not(:has(.Home)):not(:has(.Profile)):not(:has(.IndexPage--fullPage)):not(
-			:has(.Dashboard)
-		) {
+	.Main:not(:has(.Home)):not(:has(.Profile)):not(
+			:has(.IndexPage--fullPage)
+		):not(:has(.Dashboard)) {
 		padding-block: clamp(1.5rem, 5vw, 3rem);
 	}
 
@@ -392,5 +392,23 @@
 
 	[hidden] {
 		display: none !important;
+	}
+
+	.SignUpCall {
+		font-size: 0.875em;
+		text-align: center;
+		padding: 1em;
+		background: var(--color-secondary);
+		color: #fff;
+
+		p {
+			margin: 0;
+		}
+
+		a,
+		button {
+			color: inherit;
+			text-decoration: underline;
+		}
 	}
 }
