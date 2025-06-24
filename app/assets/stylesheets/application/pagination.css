@@ -10,7 +10,7 @@
 .Pagination :is(a, label, span) {
 	border-radius: var(--border-radius);
 	color: var(--color-copy);
-	background: var(--color-bg);
+	background: var(--color-bg-main);
 	display: block;
 	padding-block: 0.15em;
 	padding-inline: 0.5em;

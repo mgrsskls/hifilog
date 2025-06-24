@@ -181,7 +181,7 @@
 		position: relative;
 		max-inline-size: 95rem;
 		margin-inline: auto;
-		background: var(--color-bg);
+		background: var(--color-bg-main);
 	}
 
 	.Home-content {

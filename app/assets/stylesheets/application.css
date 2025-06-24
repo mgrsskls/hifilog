@@ -398,7 +398,7 @@
 		font-size: 0.875em;
 		text-align: center;
 		padding: 1em;
-		background: var(--color-secondary);
+		background: var(--color-secondary-on-light);
 		color: #fff;
 
 		p {
