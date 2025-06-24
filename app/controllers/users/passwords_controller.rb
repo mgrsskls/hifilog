@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
+  skip_after_action :record_page_view
+
   # GET /resource/password/new
   def new
     @page_title = I18n.t('user_form.forgot_password.heading')

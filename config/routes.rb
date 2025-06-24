@@ -10,6 +10,12 @@ Rails.application.routes.draw do
 
   ActiveAdmin.routes(self)
 
+  authenticate :admin_user do
+    scope "admin" do
+      mount ActiveAnalytics::Engine, at: "analytics"
+    end
+  end
+
   direct :cdn_image do |model, options|
     expires_in = options.delete(:expires_in) { ActiveStorage.urls_expire_in }
 

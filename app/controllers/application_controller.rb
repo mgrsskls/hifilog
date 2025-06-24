@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   # before_action :block_bots
   before_action :configure_permitted_parameters, if: :devise_controller?
+  after_action :record_page_view
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::RoutingError, with: :not_found
@@ -18,6 +19,14 @@ class ApplicationController < ActionController::Base
   end
 
   attr_writer :current_user
+
+  def record_page_view
+    return unless response&.content_type&.start_with?('text/html')
+    return if request.is_crawler?
+    return if request.path.start_with?('/admin')
+
+    ActiveAnalytics.record_request(request)
+  end
 
   def menu_categories
     Rails.cache.fetch('/menu_categories') do

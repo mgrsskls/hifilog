@@ -2,6 +2,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
+  skip_after_action :record_page_view
 
   # GET /resource/sign_in
   def new

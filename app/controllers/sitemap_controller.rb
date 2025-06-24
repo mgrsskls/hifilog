@@ -1,4 +1,6 @@
 class SitemapController < ApplicationController
+  skip_after_action :record_page_view
+
   def xml
     map = XmlSitemap::Map.new('www.hifilog.com', secure: true) do |m|
       m.add users_path

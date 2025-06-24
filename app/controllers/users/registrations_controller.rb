@@ -2,6 +2,7 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
+  skip_after_action :record_page_view
 
   # GET /resource/sign_up
   def new

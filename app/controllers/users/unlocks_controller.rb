@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::UnlocksController < Devise::UnlocksController
+  skip_after_action :record_page_view
+
   # GET /resource/unlock/new
   # def new
   #   super
