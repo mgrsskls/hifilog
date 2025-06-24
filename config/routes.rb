@@ -11,9 +11,7 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
 
   authenticate :admin_user do
-    scope "admin" do
-      mount ActiveAnalytics::Engine, at: "analytics"
-    end
+    mount ActiveAnalytics::Engine, at: "analytics"
   end
 
   direct :cdn_image do |model, options|
