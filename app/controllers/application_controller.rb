@@ -22,7 +22,9 @@ class ApplicationController < ActionController::Base
 
   def record_page_view
     return unless response&.content_type&.start_with?('text/html')
-    return if request.is_crawler? || request.user_agent&.include?('Ahrefs')
+    return if request.user_agent.nil? || request.user_agent&.empty?
+    return if request.is_crawler?
+    return if request.user_agent.downcase.include?('ahrefs') || request.user_agent.downcase.include?('bot')
     return if request.path.start_with?('/admin')
 
     ActiveAnalytics.record_request(request)
