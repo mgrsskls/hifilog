@@ -1,3 +1,7 @@
+.MenuMain-link {
+	white-space: nowrap;
+}
+
 .MenuMain-link svg {
 	aspect-ratio: 13 / 8;
 	transition: transform 0.25s ease;
