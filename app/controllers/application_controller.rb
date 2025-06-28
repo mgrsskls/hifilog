@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include ApplicationHelper
+
   # before_action :block_bots
   before_action :configure_permitted_parameters, if: :devise_controller?
   after_action :record_page_view
@@ -16,6 +18,19 @@ class ApplicationController < ActionController::Base
 
   def index
     redirect_to dashboard_root_path if user_signed_in?
+
+    @brand_countries = Brand
+                       .group(:country_code)
+                       .order('COUNT(country_code) DESC')
+                       .limit(5)
+                       .count
+                       .map do |country|
+      {
+        label: country_name_from_country_code(country[0]),
+        brands_path: brands_path(country: country[0]),
+        products_path: products_path(country: country[0])
+      }
+    end
   end
 
   attr_writer :current_user

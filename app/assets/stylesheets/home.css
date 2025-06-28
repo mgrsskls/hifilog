@@ -1,76 +1,38 @@
-.Home-register {
-	--color-form-hint: var(--color-accent-on-dark);
-
-	background: var(--color-accent-on-light);
-	padding: 2rem;
-	color: #fff;
-	padding-inline: 2rem;
-	padding-block: clamp(1rem, 8vi, 4rem);
-}
-
-.Home-register label {
-	display: block;
-	margin-block-end: 0.25em;
-	white-space: nowrap;
-}
-
-.Home-register form {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 1rem;
-}
-
-.Home-register h2 {
-	margin-block: 0 2rem;
-	color: inherit;
-}
-
-.Home-register label small {
-	opacity: 0.8;
-}
-
-.Home-register input {
-	background: var(--color-blue-975);
-}
-
-.Home-submit {
-	margin-block-start: 1rem;
+.Home {
+	background: var(--color-bg2);
 }
 
 .Home-content {
-	padding-block: clamp(1rem, 5vi, 5rem);
+	padding-block: clamp(3rem, 5vi, 6rem);
 	grid-area: copy;
-	font-size: 1.2rem;
 }
 
-.Home-content b {
-	color: var(--color-highlight);
-}
-
-.Home-content .AppName {
+.Home-intro .AppName {
 	color: var(--color-copy);
 	font-weight: bold;
 }
 
-.Home-content .AppName span {
+.Home-intro .AppName span {
 	color: var(--color-accent);
 	font-weight: inherit;
 }
 
-.Home-intro {
+.Home-intro h1 {
 	margin-block: 0;
-	font-size: 1.5em;
+	font-size: clamp(1.6rem, 4vi, 2rem);
 	line-height: 1.4;
 	font-weight: normal;
 }
 
-.Home-content a {
-	font-weight: 700;
-	white-space: nowrap;
+.Home-intro h1 em {
+	display: block;
+	font-style: normal;
+	margin-block-start: 1em;
 }
 
-.Home-content p {
-	margin-block: 2em 0;
+.Home-intro a {
+	font-weight: 700;
+	white-space: nowrap;
 }
 
 .Home-picture {
@@ -90,20 +52,86 @@
 	mix-blend-mode: screen;
 }
 
+.Home h2 {
+	font-size: clamp(1.6rem, 4vi, 2rem);
+	margin-block-start: 0;
+}
+
+.Home h2 + p {
+	font-size: 1.4rem;
+}
+
+.Home-browse {
+	background: var(--color-bg-main);
+	padding-inline: 2rem;
+	padding-block: clamp(3rem, 5vi, 6rem);
+}
+
+.Home-browse :is(ul, ol) {
+	padding-inline-start: 0;
+	list-style: "";
+}
+
+.Home-browse ul li + li {
+	margin-block-start: 1em;
+}
+
+.Home-browse a {
+	font-weight: 600;
+}
+
+.Home-browse h3 {
+	margin-block-start: 2em;
+}
+
 .Home-features {
-	background: var(--color-blue-150);
-	grid-column: 1 / -1;
-	display: grid;
-	grid-template-columns: subgrid;
+	background: var(--color-bg2);
+	padding-block: clamp(3rem, 5vi, 6rem);
+}
+
+.Home-featuresHeader {
+	text-align: center;
+	margin-block-end: 3rem;
+}
+
+.Home-featuresHeader :is(a, strong) {
+	font-weight: 600;
 }
 
 .Home-feature h3 {
-	color: var(--color-white);
+	color: var(--color-accent);
 }
 
 .Home-feature p {
-	color: var(--color-secondary);
 	max-inline-size: 30em;
+}
+
+.Home-feature img {
+	block-size: auto;
+	aspect-ratio: 2754 / 2112;
+}
+
+.Home-signUp {
+	background: var(--color-accent-on-light);
+	color: #fff;
+	padding-block: clamp(3rem, 5vi, 6rem);
+	padding-inline: 2rem;
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+
+	.Rte {
+		grid-column: 3 / -3;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	a {
+		color: inherit;
+		font-weight: 600;
+	}
 }
 
 @media (width < 48rem) {
@@ -111,19 +139,21 @@
 		padding-inline: 2rem;
 	}
 
-	.Home-feature {
-		padding-block: clamp(1rem, 6vi, 4rem);
+	.Home-picture {
+		aspect-ratio: 2;
+	}
+
+	.Home-features {
 		padding-inline: 2rem;
 	}
 
-	.Home-feature:is(:nth-child(odd)) {
-		background: var(--color-blue-125);
+	.Home-feature + .Home-feature {
+		margin-block-start: 2rem;
 	}
-}
 
-@media (width < 62rem) {
-	.Home-picture {
-		aspect-ratio: 2;
+	.Home-feature picture {
+		display: block;
+		margin-block-end: 1rem;
 	}
 }
 
@@ -134,82 +164,124 @@
 		grid-template-rows: auto auto;
 	}
 
+	.Home-intro {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		align-items: center;
+	}
+
 	.Home-content {
 		grid-column: 2 / 12;
 		grid-row: 1;
 	}
 
-	.Home-register {
-		grid-column: 13 / -1;
-		grid-row: 1;
-	}
-
 	.Home-picture {
-		grid-column: 1 / -1;
-		grid-row: 2;
+		grid-column: 13 / -1;
+		block-size: 100%;
 	}
 
-	.Home-feature {
-		padding: 4rem;
+	.Home-browse {
+		grid-column: 1 / -1;
+	}
+
+	.Home-features {
+		background: var(--color-bg2);
+		grid-column: 1 / -1;
 		display: grid;
 		grid-template-columns: subgrid;
 	}
 
-	.Home-feature:is(:nth-child(4n + 1), :nth-child(4n + 4)) {
-		background: var(--color-blue-125);
+	.Home-featuresContainer {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		gap: 2rem 0;
 	}
 
-	.Home-feature:nth-child(odd) {
-		grid-column: 1 / 13;
+	.Home-featuresHeader {
+		grid-column: 3 / -3;
+		text-align: center;
+		margin-block-end: 4rem;
+		display: flex;
+		justify-content: center;
+	}
+
+	.Home-feature {
+		display: grid;
+		grid-column: 2 / -2;
+		gap: 2rem;
+		display: flex;
+		align-items: center;
 	}
 
 	.Home-feature:nth-child(even) {
-		grid-column: 13 / -1;
+		flex-direction: row-reverse;
 	}
 
-	.Home-feature .Rte {
-		grid-column: 2 / 12;
+	.Home-feature picture {
+		inline-size: 50%;
+	}
+}
+
+@media (width < 62rem) {
+	.Home-browseSection + .Home-browseSection {
+		margin-block-start: 3rem;
+		border-block-start: 0.0625rem solid var(--color-transparency-15);
+		padding-block-start: 3rem;
 	}
 }
 
 @media (width >= 62rem) {
-	main:has(.Home) {
-		background: var(--color-bg2);
-	}
-
 	.Home {
 		position: relative;
 		max-inline-size: 95rem;
 		margin-inline: auto;
-		background: var(--color-bg-main);
+	}
+
+	.Home-main {
+		grid-column: 1 / -1;
 	}
 
 	.Home-content {
 		grid-column: 3 / 11;
-		grid-row: 1;
 	}
 
-	.Home-register {
-		grid-column: 1 / 13;
-		grid-row: 2;
+	.Home-browse {
 		display: grid;
 		grid-template-columns: subgrid;
+		position: relative;
 	}
 
-	.Home-form {
+	.Home-browse::after {
+		content: "";
+		display: block;
+		inline-size: 0.0625rem;
+		background: var(--color-transparency-15);
+		position: absolute;
+		inset-inline-start: 50%;
+		inset-block: 6rem;
+	}
+
+	.Home-browse h2 {
+		margin-block-start: 0;
+		grid-column: 3 / -3;
+	}
+
+	.Home-browseSection:nth-child(1) {
 		grid-column: 3 / 11;
 	}
 
-	.Home-picture {
-		grid-column: 13 / -1;
-		grid-row: 1 / -1;
+	.Home-browseSection:nth-child(2) {
+		grid-column: 15 / -3;
+	}
+
+	.Home-features {
+		padding-block: 6rem;
 	}
 
 	.Home-feature {
-		padding: 4rem;
-	}
-
-	.Home-feature .Rte {
-		grid-column: 3 / 11;
+		grid-column: 3 / -3;
+		gap: 4rem;
 	}
 }
