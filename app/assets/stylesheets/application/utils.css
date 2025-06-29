@@ -102,6 +102,10 @@
 
 .u-textCenter {
 	text-align: center;
+
+	img {
+		margin-inline: auto;
+	}
 }
 
 .u-textEnd {

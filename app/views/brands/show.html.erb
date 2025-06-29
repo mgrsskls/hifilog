@@ -18,7 +18,16 @@
             <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
           <% end %>
           <dt><%= Brand.human_attribute_name(:country_code) %></dt>
-          <dd><%= @brand.country_name.present? ? @brand.country_name : "-" %></dd>
+          <dd>
+            <div class="u-flex u-alignCenter u-gap-md">
+              <% if @brand.country_name.present? %>
+                <img src="/flags/<%= @brand.country_code.downcase %>.svg" alt="Flag of <%= @brand.country_name %>" title="<%= @brand.country_name %>" loading="lazy" width="25" height="15">
+                <%= @brand.country_name %>
+              <% else %>
+                -
+              <% end %>
+            </div>
+          </dd>
           <dt><%= Brand.human_attribute_name(:website) %></dt>
           <dd><%= @brand.website.present? ? (link_to @brand.website, @brand.website, rel: "noreferrer noopener") : "-" %></dd>
           <dt><%= t('brand.founded') %></dt>

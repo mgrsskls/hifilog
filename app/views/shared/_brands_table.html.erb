@@ -5,8 +5,8 @@
     <tr>
       <th><%= Brand.human_attribute_name(:name) %></th>
       <th><%= Category.model_name.human(count: 2) %></th>
-      <th class="Table-products u-alignCenter"><%= Product.model_name.human(count: 2) %></th>
-      <th><%= t('activerecord.attributes.brand.country_code') %></th>
+      <th class="Table-products u-textCenter"><%= Product.model_name.human(count: 2) %></th>
+      <th class="u-textCenter"><%= t('activerecord.attributes.brand.country_code') %></th>
       <% if user_signed_in? %>
         <th class="Table-symbols">
           <span class="u-hiddenVisually">Status</span>
@@ -26,8 +26,12 @@
         <td class="Table-products Table-sm">
           <%= link_to (product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0)), brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
         </td>
-        <td class="Table-sm">
-          <%= brand.country_name.present? ? brand.country_name : "-" %>
+        <td class="Table-sm u-textCenter">
+          <% if brand.country_name.present? %>
+            <img src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25" height="15">
+          <% else %>
+            -
+          <% end %>
         </td>
         <% if user_signed_in? %>
           <td class="Table-symbols">
@@ -61,7 +65,10 @@
 
           <% if brand.country_name.present? %>
             <dt><%= t('activerecord.attributes.brand.country_code') %></dt>
-            <dd><%= brand.country_name %></dd>
+            <dd class="u-flex u-alignCenter u-gap-md">
+              <img src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25" height="15">
+              <%= brand.country_name %>
+            </dd>
           <% end %>
         </dl>
         <%= render "shared/symbols", brand: brand %>
