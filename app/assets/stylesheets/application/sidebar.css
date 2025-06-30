@@ -141,7 +141,9 @@
 	}
 
 	.Sidebar-userName .Avatar {
-		--size: 254 !important;
+		--size: 272 !important;
+
+		inline-size: 100%;
 	}
 
 	.Sidebar-userName figcaption {
