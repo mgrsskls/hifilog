@@ -48,7 +48,17 @@
           <% attr_list = product.custom_attributes_list %>
           <%= attr_list ? attr_list : "-" %>
         </td>
-        <td class="Table-sm"><%= product.release_date.present? ? sanitize(product.formatted_release_date) : "-" %></td>
+        <td class="Table-sm">
+          <% if product.release_date.present? && product.discontinued_year.present? %>
+            <%= sanitize(product.formatted_release_date) %> &ndash; <%= sanitize(product.formatted_discontinued_date) %>
+          <% elsif product.discontinued_year.present? %>
+            n/a &ndash; <%= sanitize(product.formatted_discontinued_date) %>
+          <% elsif product.release_date.present? %>
+            <%= sanitize(product.formatted_release_date) %>
+          <% else %>
+            -
+          <% end %>
+        </td>
         <td class="Table-sm u-noWrap"><%= product.price.present? ? display_price(product.price, product.price_currency) : "-" %></td>
         <% if user_signed_in? %>
           <td class="Table-symbols">
@@ -136,10 +146,19 @@
             <dd><%= product.custom_attributes_list %></dd>
           <% end %>
 
-          <% if product.release_date.present? %>
+          <% if product.release_date.present? || product.discontinued_year.present? %>
             <dt><%= t('activerecord.attributes.product.release_date') %></dt>
-            <dd><%= sanitize product.formatted_release_date %></dd>
+            <dd>
+              <% if product.release_date.present? && product.discontinued_year.present? %>
+                <%= sanitize(product.formatted_release_date) %> &ndash; <%= sanitize(product.formatted_discontinued_date) %>
+              <% elsif product.discontinued_year.present? %>
+                n/a &ndash; <%= sanitize(product.formatted_discontinued_date) %>
+              <% elsif product.release_date.present? %>
+                <%= sanitize(product.formatted_release_date) %>
+              <% end %>
+            </dd>
           <% end %>
+
 
           <% if product.price.present? %>
             <dt><%= t('activerecord.attributes.product.price') %></dt>
