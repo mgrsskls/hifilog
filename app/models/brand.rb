@@ -5,9 +5,9 @@ class Brand < ApplicationRecord
   include Format
   include Description
 
-  multisearchable against: [:name, :description]
+  multisearchable against: [:name, :full_name, :description]
   pg_search_scope :search_by_name,
-                  against: [:name],
+                  against: [:name, :full_name],
                   ignoring: :accents,
                   using: {
                     tsearch: {

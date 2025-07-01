@@ -24,6 +24,11 @@
 	font-weight: 600;
 }
 
+.SearchResult-entityFullName {
+	font-size: 0.825em;
+	display: block;
+}
+
 .SearchResult small {
 	color: var(--color-secondary);
 }

@@ -17,9 +17,13 @@
         <%= result.searchable.product.brand.name %> <%= link_to name, path %>
       <%  elsif result.searchable_type == "Brand"
           name = result.searchable.name
+          full_name = result.searchable.full_name.present? ? result.searchable.full_name : nil
           path = brand_path(result.searchable.friendly_id)
       %>
         <%= link_to name, path %>
+        <% if full_name %>
+          <span class="SearchResult-entityFullName"><%= full_name %></span>
+        <% end %>
       <% end %>
     </div>
     <% if result.searchable_type == "Product" or result.searchable_type == "ProductVariant" %>
