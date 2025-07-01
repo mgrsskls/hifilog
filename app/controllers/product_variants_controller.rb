@@ -51,6 +51,7 @@ class ProductVariantsController < ApplicationController
     ")
 
     @page_title = "#{@product.display_name} #{@product_variant.short_name}"
+    set_meta_desc
   end
 
   def new
@@ -143,6 +144,15 @@ class ProductVariantsController < ApplicationController
   end
 
   private
+
+  def set_meta_desc
+    return if @product.description.blank?
+
+    @meta_desc = ActionController::Base.helpers.truncate(
+      ActionController::Base.helpers.strip_tags(@product.formatted_description),
+      length: 155
+    )
+  end
 
   def set_active_menu
     @active_menu = :products

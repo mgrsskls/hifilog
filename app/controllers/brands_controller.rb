@@ -90,6 +90,7 @@ class BrandsController < ApplicationController
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
 
     @page_title = @brand.name
+    set_meta_desc
   end
 
   def products
@@ -114,6 +115,7 @@ class BrandsController < ApplicationController
     @products_query = params[:query].strip if params[:query].present?
 
     @page_title = @brand.name
+    set_meta_desc
   end
 
   def new
@@ -172,6 +174,15 @@ class BrandsController < ApplicationController
   end
 
   private
+
+  def set_meta_desc
+    return if @brand.description.blank?
+
+    @meta_desc = ActionController::Base.helpers.truncate(
+      ActionController::Base.helpers.strip_tags(@brand.formatted_description),
+      length: 155
+    )
+  end
 
   def find_brand
     @brand = find_resource(Brand, :id, path_helper: ->(b) { brand_path(b) })

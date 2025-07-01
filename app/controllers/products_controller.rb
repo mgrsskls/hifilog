@@ -87,6 +87,7 @@ class ProductsController < ApplicationController
     ")
 
     @page_title = [@product.brand&.name, @product.name].compact.join(' ')
+    set_meta_desc
   end
 
   def new
@@ -175,6 +176,15 @@ class ProductsController < ApplicationController
   end
 
   private
+
+  def set_meta_desc
+    return if @product.description.blank?
+
+    @meta_desc = ActionController::Base.helpers.truncate(
+      ActionController::Base.helpers.strip_tags(@product.formatted_description),
+      length: 155
+    )
+  end
 
   def find_product
     @product = find_resource(Product, :id, path_helper: ->(p) { product_path(p) })
