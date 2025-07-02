@@ -1,21 +1,8 @@
-.FlashMessages {
-	margin-block-end: 3rem;
-}
-
-.FlashMessages:has(+ .Form-field) {
-	margin-block-end: 1rem;
-}
-
 .FlashMessage {
 	margin-block: 0;
-	border-radius: var(--border-radius);
-	border: var(--border);
+	border-block-end: var(--border);
 	padding: 1rem;
 	text-align: center;
-}
-
-.FlashMessage + .FlashMessage {
-	margin-block-start: 1rem;
 }
 
 .FlashMessage--notice {

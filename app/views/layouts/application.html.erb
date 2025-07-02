@@ -255,6 +255,7 @@
       </div>
     </header>
     <main id="content">
+      <%= render "shared/flash_messages", messages: flash if flash.any? %>
       <% if (params[:controller] == "application" && params[:action] == "index") ||
         (
           @user.present? &&
@@ -277,7 +278,6 @@
         <% end %>
         <div class="Main">
           <div class="u-container">
-            <%= render "shared/flash_messages", messages: flash if flash.any? %>
             <%= yield %>
           </div>
         </div>
