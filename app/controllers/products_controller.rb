@@ -272,7 +272,30 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def allowed_index_filter_params
-    params.permit(:category, :status, :diy_kit, :country, :query, :sort, attr: {})
+    custom_attributes = SubCategory.find(11).custom_attributes
+    custom_attributes_hash = custom_attributes.map do |custom_attribute|
+      if custom_attribute[:inputs].present?
+        {
+          custom_attribute[:label] => [
+            :unit,
+            custom_attribute[:inputs].map do |input|
+              { input => [:min, :max] }
+            end
+          ]
+        }
+      elsif custom_attribute[:input_type] == 'number'
+        {
+          custom_attribute[:label] => [:min, :max, :unit]
+        }
+      else
+        {
+          custom_attribute[:label] => []
+        }
+      end
+    end
+
+    allowed = [:category, :status, :diy_kit, :country, :query, :sort, *custom_attributes_hash]
+    params.permit(allowed)
   end
 
   def active_index_filters

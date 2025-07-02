@@ -119,29 +119,45 @@ en:
     comment: Comment
   continued: In Production
   custom_attributes:
+    2_5_way: 2.5-way
+    2_way: 2-way
+    3_way: 3-way
+    4_way: 4-way (and above)
     active: Active
     automatic: Automatic
     belt-drive: Belt Drive
+    coaxial: Coaxial
     direct-drive: Direct Drive
     dual-mono: Dual-Mono
     dynamic: Dynamic
     electrostatic: Electrostatic
+    full_range: Full-Range
+    horn_loaded: Horn-loaded
     hybrid: Hybrid
     manual: Manual
     mc: MC
-    mm: MM
     mm-mc: MM / MC
+    mm: MM
     mono: Mono
+    open_baffle: Open Baffle
     optical: Optical
+    passive_radiator: Passive Radiator
     passive: Passive
+    planar_magnetic: Planar Magnetic
     planar: Planar Magnetic
+    ported: Ported
     rca: RCA
+    ribbon_tweeter: Ribbon Tweeter
+    sealed: Sealed
     solid_state: Solid State
     stereo: Stereo
+    transmission_line: Transmission Line
     tube: Tube
     wired: Wired
     wireless: Wireless
     xlr: XLR
+    "yes": "Yes"
+    "no": "No"
   custom_attribute_labels:
     amplifier_channel_type: Channel type
     amplifier_type: Amplifier type
@@ -150,10 +166,39 @@ en:
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
     loudspeaker_amplification_type: Amplification
+    loudspeaker_bi_amping: Bi-Amping
+    loudspeaker_bi_wiring: Bi-Wiring
+    loudspeaker_driver_configuration: Diver configuration
+    loudspeaker_driver_types: Driver types
+    loudspeaker_enclosure_type: Enclosure type
+    loudspeaker_frequency_response_range: Frequency Response Range
+    loudspeaker_minimum_impedance: Minimum Impedance
+    loudspeaker_nominal_impedance: Nominal Impedance
+    loudspeaker_peak_power: Peak Power
+    loudspeaker_recommended_amplifier_power: Recommended Amplifier Power
+    loudspeaker_rms_power: RMS Power
+    loudspeaker_sensitivity: Sensitivity
     power_amplifier_channel_type: Channel type
     turntable_cartridge_type: Cartridge type
     turntable_drive_type: Drive type
     turntable_operation_type: Operation type
+  custom_attribute_inputs:
+    w: Width
+    l: Length
+    h: Height
+    min: Minimum
+    max: Maximum
+  custom_attribute_units:
+    cm: cm
+    db: dB
+    db_1w_1m: dB @ 1W/1m
+    db_283v_1m: dB @ 2.83V/1m
+    hz: Hz
+    in: in
+    kg: kg
+    lb: lb
+    ohm: Ohm
+    w: W
   custom_product:
     new:
       heading: Add new Custom Product
