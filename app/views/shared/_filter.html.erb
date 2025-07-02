@@ -40,27 +40,101 @@
 
 <% custom_attributes = capture do %>
   <% if custom_attributes&.any? && (sub_category || ['loudspeakers', 'headphones'].include?(category&.slug)) %>
-    <div class="Filter-section Filter-section--attributes">
-      <div class="Filter-values">
+
+
         <% custom_attributes.each do |custom_attribute| %>
-          <fieldset>
+          <fieldset class="Filter-fieldset">
             <% if custom_attribute.label.present? %>
-              <legend class="Filter-option"><%= t("custom_attribute_labels.#{custom_attribute.label}") %></legend>
+              <legend class="Filter-option Filter-option--large">
+                <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+                <% if custom_attribute.units.present? && custom_attribute.units.length == 1 %>
+                  <span class="Filter-unit">
+                    (<%= t("custom_attribute_units.#{custom_attribute.units.first}") %>)
+                  </span>
+                <% end %>
+              </legend>
             <% end %>
-            <ul class="Pagination">
-              <% custom_attribute.options.each do |option| %>
-                <li class="Pagination-item">
-                  <label>
-                    <input type="checkbox" name="attr[<%= custom_attribute.id %>][]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[:attr] && params[:attr][custom_attribute.id.to_s]&.include?(option[0].to_s) %>>
-                    <%= t("custom_attributes.#{option[1]}") %>
-                  </label>
-                </li>
+            <% if custom_attribute.options.present? %>
+              <ul class="Pagination">
+                <% custom_attribute.options.each do |option| %>
+                  <li class="Pagination-item">
+                    <label>
+                      <input type="checkbox" name="<%= custom_attribute.label %>[]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[custom_attribute.label]&.include?(option[0].to_s) %>>
+                      <%= t("custom_attributes.#{option[1]}") %>
+                    </label>
+                  </li>
+                <% end %>
+              </ul>
+            <% elsif custom_attribute.input_type.present? %>
+              <% if custom_attribute.units.present? && custom_attribute.units.length > 1 %>
+                <div class="u-flex u-alignCenter u-gap-md">
+                  <% custom_attribute.units.each do |unit| %>
+                    <div class="u-flex u-alignCenter u-gap-sm">
+                      <input type="radio" name="<%= custom_attribute.label %>[unit]" value="<%= unit %>" id="<%= "#{custom_attribute.label}-#{unit}" %>"<%= " checked" if params[custom_attribute.label].present? && params[custom_attribute.label]['unit'] == unit %>>
+                      <label for="<%= "#{custom_attribute.label}-#{unit}" %>"><%= t("custom_attribute_units.#{unit}") %></label>
+                    </div>
+                  <% end %>
+                </div>
               <% end %>
-            </ul>
+
+              <% if custom_attribute.input_type == "number" %>
+                <% if custom_attribute.inputs.present? %>
+
+                    <% custom_attribute.inputs.each do |input| %>
+
+                        <span class="Filter-option"><%= t("custom_attribute_inputs.#{input}") %></span>
+                        <div class="u-flex u-gap-md u-alignCenter">
+                          <div class="u-flex u-gap-sm u-alignCenter">
+                            <label for="<%= "#{custom_attribute.label}-#{input}-min" %>">Min.</label>
+                            <input
+                              name="<%= custom_attribute.label %>[<%= input %>][min]"
+                              value="<%= params[custom_attribute.label][input][:min] if params[custom_attribute.label].present? %>"
+                              type="text" inputmode="number" class="Filter-input"
+                              id="<%= "#{custom_attribute.label}-#{input}-min" %>"
+                            >
+                          </div>
+                          <div class="u-flex u-gap-sm u-alignCenter">
+                            <label for="<%= "#{custom_attribute.label}-#{input}-max" %>">Max.</label>
+                            <input
+                              name="<%= custom_attribute.label %>[<%= input %>][max]"
+                              value="<%= params[custom_attribute.label][input][:max] if params[custom_attribute.label].present? %>"
+                              type="text" inputmode="number" class="Filter-input"
+                              id="<%= "#{custom_attribute.label}-#{input}-max" %>"
+                            >
+                          </div>
+                        </div>
+
+                    <% end %>
+
+                <% else %>
+                  <div class="u-flex u-gap-md u-alignCenter">
+                    <div class="u-flex u-gap-sm u-alignCenter">
+                      <label for="<%= "#{custom_attribute.label}-min" %>">Min.</label>
+                      <input
+                        id="<%= "#{custom_attribute.label}-min" %>"
+                        name="<%= custom_attribute.label %>[min]"
+                        value="<%= params[custom_attribute.label][:min] if params[custom_attribute.label].present? %>"
+                        type="text" inputmode="number" class="Filter-input"
+                      >
+                    </div>
+                    <div class="u-flex u-gap-sm u-alignCenter">
+                      <label for="<%= "#{custom_attribute.label}-max" %>">Max.</label>
+                      <input
+                        id="<%= "#{custom_attribute.label}-max" %>"
+                        name="<%= custom_attribute.label %>[max]"
+                        value="<%= params[custom_attribute.label][:max] if params[custom_attribute.label].present? %>"
+                        type="text" inputmode="number" class="Filter-input"
+                      >
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+
+            <% end %>
           </fieldset>
         <% end %>
-      </div>
-    </div>
+
+
   <% end %>
 <% end %>
 
@@ -72,64 +146,85 @@
   <div class="Filter">
     <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>
     <div class="Filter-form">
-      <div class="Filter-options">
-        <div class="Filter-section">
-          <label class="Filter-option" for="entity-search"><%= t('search') %></label>
-          <input id="entity-search" class="Filter-input" type="text" name="query" placeholder="Name" value="<%= query %>">
-        </div>
+      <div class="Filter-grid">
 
-        <div class="Filter-section">
-          <label for="filter-status" class="Filter-option"><%= t('status') %></label>
-          <select class="Filter-input" name="status" id="filter-status">
-            <option value=""<%= ' selected'.html_safe if params[:status].blank? %>>
-              <%= t("filter.all") %>
-            </option>
-            <option value="continued"<%= ' selected'.html_safe if params[:status] == "continued" %>>
-              <%= filter_active_label %>
-            </option>
-            <option value="discontinued"<%= ' selected'.html_safe if params[:status] == "discontinued" %>>
-              <%= t('discontinued') %>
-            </option>
-          </select>
-        </div>
-
-        <% if categories.any? %>
+        <div class="Filter-fieldset">
           <div class="Filter-section">
-            <label class="Filter-option" for="filter-sub-categories" class="Filter-option"><%= Category.model_name.human %></label>
-            <select class="Filter-input" name="category" id="filter-sub-categories">
-              <option value=""<%= ' selected'.html_safe unless sub_category.present? %>>
+            <label class="Filter-option" for="entity-search"><%= t('search') %></label>
+            <input id="entity-search" class="Filter-input" type="text" name="query" placeholder="Name" value="<%= query %>">
+          </div>
+
+          <div class="Filter-section">
+            <label for="filter-letter" class="Filter-option">Name</label>
+            <select class="Filter-input" name="letter" id="filter-letter">
+              <option value=""<%= ' selected'.html_safe if params[:letter].blank? %>>
                 <%= t('filter.all') %>
               </option>
-              <% categories.each do |group| %>
-                <option value="<%= group[0].slug %>"<%= ' selected'.html_safe if category.present? && category.slug == group[0].slug %>>
-                  <%= group[0].name %>
+              <% abc.each do |letter| %>
+                <option value="<%= letter %>"<%= ' selected'.html_safe if params[:letter] == letter %>>
+                  <%= letter.upcase %>
                 </option>
-                <optgroup label="<%= group[0].name %> categories">
-                  <% group[1].each do |sub| %>
-                    <option value="<%= group[0].slug %>[<%= sub.slug %>]"<%= ' selected'.html_safe if sub_category.present? && sub_category.slug == sub.slug %>>
-                      <%= sub.name %>
-                    </option>
-                  <% end %>
-                </optgroup>
               <% end %>
             </select>
           </div>
-        <% end %>
+
+          <div class="Filter-section">
+            <label for="filter-status" class="Filter-option"><%= t('status') %></label>
+            <select class="Filter-input" name="status" id="filter-status">
+              <option value=""<%= ' selected'.html_safe if params[:status].blank? %>>
+                <%= t("filter.all") %>
+              </option>
+              <option value="continued"<%= ' selected'.html_safe if params[:status] == "continued" %>>
+                <%= filter_active_label %>
+              </option>
+              <option value="discontinued"<%= ' selected'.html_safe if params[:status] == "discontinued" %>>
+                <%= t('discontinued') %>
+              </option>
+            </select>
+          </div>
+
+          <% if categories.any? %>
+            <div class="Filter-section">
+              <label class="Filter-option" for="filter-sub-categories" class="Filter-option"><%= Category.model_name.human %></label>
+              <select class="Filter-input" name="category" id="filter-sub-categories">
+                <option value=""<%= ' selected'.html_safe unless sub_category.present? %>>
+                  <%= t('filter.all') %>
+                </option>
+                <% categories.each do |group| %>
+                  <option value="<%= group[0].slug %>"<%= ' selected'.html_safe if category.present? && category.slug == group[0].slug %>>
+                    <%= group[0].name %>
+                  </option>
+                  <optgroup label="<%= group[0].name %> categories">
+                    <% group[1].each do |sub| %>
+                      <option value="<%= group[0].slug %>[<%= sub.slug %>]"<%= ' selected'.html_safe if sub_category.present? && sub_category.slug == sub.slug %>>
+                        <%= sub.name %>
+                      </option>
+                    <% end %>
+                  </optgroup>
+                <% end %>
+              </select>
+            </div>
+          <% end %>
+          <% if type == :products %>
+            <%= diy_kit %>
+          <% end %>
+        </div>
 
         <% if type == :products %>
-          <%= diy_kit %>
           <%= custom_attributes %>
 
-          <div class="Filter-section Filter-section--divider Filter-options">
-            <span class="Filter-legend">Brands</span>
-            <%= country_filter %>
+          <div class="Filter-fieldset">
+            <div class="Filter-section">
+              <span class="Filter-legend">Brands</span>
+              <%= country_filter %>
+            </div>
           </div>
         <% end %>
 
         <% if type == :brands %>
           <%= country_filter %>
 
-          <div class="Filter-section Filter-section--divider Filter-options">
+          <div class="Filter-section">
             <span class="Filter-legend">Products</span>
             <%= diy_kit %>
             <%= custom_attributes %>
@@ -144,7 +239,7 @@
         <div class="Filter-actions u-flex u-gap-md">
           <button class="Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
           <div class="Filter-submit u-flex u-gap-md u-alignCenter">
-            <button class="Button Button--sm" type="submit">Filter</button>
+            <button class="Button" type="submit">Filter</button>
             <%= link_to "Reset", reset_path, class: "Filter-reset" %>
           </div>
         </div>

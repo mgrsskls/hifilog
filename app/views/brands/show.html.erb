@@ -21,7 +21,7 @@
           <dd>
             <div class="u-flex u-alignCenter u-gap-md">
               <% if @brand.country_name.present? %>
-                <img src="/flags/<%= @brand.country_code.downcase %>.svg" alt="Flag of <%= @brand.country_name %>" title="<%= @brand.country_name %>" loading="lazy" width="25" height="15">
+                <img class="Flag" src="/flags/<%= @brand.country_code.downcase %>.svg" alt="Flag of <%= @brand.country_name %>" title="<%= @brand.country_name %>" loading="lazy" width="25">
                 <%= @brand.country_name %>
               <% else %>
                 -

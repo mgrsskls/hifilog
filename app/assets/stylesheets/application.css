@@ -460,4 +460,8 @@
 			inline-size: 45rem;
 		}
 	}
+
+	.Flag {
+		border: 0.0625rem solid var(--color-transparency-25);
+	}
 }
