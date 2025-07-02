@@ -413,4 +413,8 @@
 			text-decoration: underline;
 		}
 	}
+
+	.Flag {
+		border: 0.0625rem solid var(--color-transparency-25);
+	}
 }
