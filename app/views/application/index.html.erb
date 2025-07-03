@@ -15,7 +15,7 @@
       <% else %>
         <%= t('home.intro_up', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
       <% end %>
-      <em>From music lovers &amp; audiophiles — for music lovers &amp; audiophiles.</em>
+      <em>By music lovers &amp; audiophiles.<br>For music lovers &amp; audiophiles.</em>
     </h1>
     <picture class="Home-picture">
       <source srcset="<%= asset_url "/home/01.avif" %>" type="image/avif">
@@ -23,64 +23,72 @@
     </picture>
   </div>
 
-  <div class="Home-browse">
-    <div class="Home-browseSection">
-      <h2>Browse through HiFi Products</h2>
-      <ul>
-        <li>
-          … from specific categories, e.g. <%= link_to "Over-Ear Headphones", products_path(category: "headphones[over-ear-headphones]") %>, <%= link_to "Vacuum Tubes", products_path(category: "vacuum-tubes") %> or <%= link_to "MC Cartridges", products_path(category: "analog[cartridges]", "attr[6][]": 2) %>.
-        </li>
-        <li>
-          … that are <%= link_to "pre-assembled", products_path(diy_kit: 0) %> or <%= link_to "DIY kits", products_path(diy_kit: 1) %>.
-        </li>
-        <li>
-          … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:products_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:products_path] %>.
-        </li>
-        <li>
-          … that are <%= link_to "still in production", products_path(status: :continued) %> or <%= link_to "discontinued", products_path(status: :discontinued) %>.
-        </li>
-      </ul>
-      <h3>Recently added</h3>
-      <p>
-        <%= newest_products.map { |product| link_to product.display_name, product.path }.join(", ").html_safe %>, …
-      </p>
+  <div class="Home-section Home-browse">
+    <div class="Home-sectionHeader">
+      <h2 class="LargeHeadline">Discover.</h2>
+      <p>Browse through hi-fi products and brands &amp; discover whatever you are looking for.</p>
     </div>
-    <div class="Home-browseSection">
-      <h2>Browse through HiFi Brands</h2>
-      <ul>
-        <li>
-          … with specific products, e.g. <%= link_to "Floorstanding Loudspeakers", brands_path(category: "loudspeakers[floorstanding-loudspeakers]") %>, <%= link_to "Integrated Tube Amplifiers", brands_path(category: "amplifiers[integrated-amplifiers]", "attr[4][]": 2) %> or <%= link_to "Cables", brands_path(category: "cables") %>.
-        </li>
-        <li>
-          … that produce <%= link_to "pre-assembled products", brands_path(diy_kit: 0) %> or <%= link_to "DIY kits", brands_path(diy_kit: 1) %>.
-        </li>
-        <li>
-          … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:brands_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:brands_path] %>.
-        </li>
-        <li>
-          … that are <%= link_to "still in business", brands_path(status: :continued) %> or <%= link_to "out of business", brands_path(status: :discontinued) %>.
-        </li>
-      </ul>
-      <h3>Recently added</h3>
-      <p>
-        <%= newest_brands.map { |brand| link_to brand.name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
-      </p>
-    </div>
-  </div>
-
-  <div class="Home-signUp">
-    <div class="Rte">
-      <h2>HiFi Log is a user-driven database and needs you!</h2>
-      <p><a href="<%= new_user_session_path %>">Sign up</a> to add new products and brands, fill out missing information and help making this become the biggest database for hi-fi brands and products.</p>
-    </div>
-  </div>
-
-  <div class="Home-features">
-    <div class="Home-featuresHeader">
-      <div class="Rte">
-        <h2>Your HiFi Journey</h2>
-        <p><a href="<%= new_user_registration_path %>">Sign up</a> and keep track of your personal hi-fi journey. <strong>No tracking, no ads, no costs.</strong></p>
+    <div class="Home-browseSections">
+      <div class="Home-browseSection">
+        <h3>Products</h3>
+        <ul>
+          <li>
+            … from specific categories, e.g. <%= link_to "Over-Ear Headphones", products_path(category: "headphones[over-ear-headphones]") %>, <%= link_to "Vacuum Tubes", products_path(category: "vacuum-tubes") %> or <%= link_to "MC Cartridges", products_path(category: "analog[cartridges]", "attr[6][]": 2) %>.
+          </li>
+          <li>
+            … that are <%= link_to "pre-assembled", products_path(diy_kit: 0) %> or <%= link_to "DIY kits", products_path(diy_kit: 1) %>.
+          </li>
+          <li>
+            … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:products_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:products_path] %>.
+          </li>
+          <li>
+            … that are <%= link_to "still in production", products_path(status: :continued) %> or <%= link_to "discontinued", products_path(status: :discontinued) %>.
+          </li>
+        </ul>
+        <h4>Recently added</h4>
+        <p>
+          <%= newest_products.map { |product| link_to product.display_name, product.path }.join(", ").html_safe %>, …
+        </p>
       </div>
+      <div class="Home-browseSection">
+        <h3>Brands</h3>
+        <ul>
+          <li>
+            … with specific products, e.g. <%= link_to "Floorstanding Loudspeakers", brands_path(category: "loudspeakers[floorstanding-loudspeakers]") %>, <%= link_to "Integrated Tube Amplifiers", brands_path(category: "amplifiers[integrated-amplifiers]", "attr[4][]": 2) %> or <%= link_to "Cables", brands_path(category: "cables") %>.
+          </li>
+          <li>
+            … that produce <%= link_to "pre-assembled products", brands_path(diy_kit: 0) %> or <%= link_to "DIY kits", brands_path(diy_kit: 1) %>.
+          </li>
+          <li>
+            … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:brands_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:brands_path] %>.
+          </li>
+          <li>
+            … that are <%= link_to "still in business", brands_path(status: :continued) %> or <%= link_to "out of business", brands_path(status: :discontinued) %>.
+          </li>
+        </ul>
+        <h4>Recently added</h4>
+        <p>
+          <%= newest_brands.map { |brand| link_to brand.name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="Home-section Home-signUp is-dark">
+    <div class="Home-sectionHeader">
+      <h2 class="LargeHeadline">Contribute.</h2>
+      <p>Be part of a community &amp; contribute to build the largest database for hi-fi products and brands.</p>
+    </div>
+    <div class="Rte">
+      <p>There are already plenty of places for brands to promote themselves and their products — but what's been missing is a place by users. A place where anyone can find unbiased information about all Hi-Fi gear, not just the most popular or most marketed. That is why we created hifilog.com: a platform that is 100% user-driven, where all content comes from the community.</p>
+      <p>Become a part of it, <a href="<%= new_user_registration_path %>">sign up</a> and help build the world's most complete Hi-Fi database. You can add new products and brands, or improve existing entries to make sure the information stays accurate and useful for everyone.</p>
+    </div>
+  </div>
+
+  <div class="Home-section Home-features">
+    <div class="Home-sectionHeader">
+      <h2 class="LargeHeadline">Collect.</h2>
+      <p>Create your own profile &amp; collect all your gear &mdash; previous, current and future.</p>
     </div>
     <div class="Home-featuresContainer">
       <div class="Home-feature">
@@ -89,7 +97,7 @@
           <img src="/home/screenshot-04.png" width="2754" height="2112" alt="Screenshot showing the collection of a logged in hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Build your personal collection</h3>
+          <h3>Personal Collection</h3>
           <p>You can add existing or your own custom built products to your collection, assign them to different listening setups, keep track of products you used to own or bookmark what you are interested in.</p>
         </div>
       </div>
@@ -99,7 +107,7 @@
           <img src="/home/screenshot-01.png" width="2754" height="2112" alt="Screenshot showing statistics of a logged in hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Get statistics about your products and brands</h3>
+          <h3>Private Statistics</h3>
           <p>If you add the date of ownership and the price you paid and received for your products, you will get a history and statistics about your hi-fi devices.</p>
         </div>
       </div>
@@ -109,7 +117,7 @@
           <img src="/home/screenshot-02.png" width="2754" height="2112" alt="Screenshot showing the profile page of a hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Showcase your setup to others</h3>
+          <h3>Public Profile</h3>
           <p>You can either keep your profile private or make it public and showcase your products, your setups and your previous gear to others.</p>
         </div>
       </div>
@@ -119,7 +127,7 @@
           <img src="/home/screenshot-03.png" width="2754" height="2112" alt="Screenshot showing the product history of a logged in hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Take a look in the past</h3>
+          <h3>Product History</h3>
           <p>Your hi-fi journey is going for a while and you keep buying and selling gear? Get a visual timeline of your personal hi-fi history.</p>
         </div>
       </div>

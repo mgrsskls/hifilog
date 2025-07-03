@@ -284,7 +284,7 @@
       <% end %>
     </main>
     <footer class="is-dark">
-      <% if (newest_products.length > 0 or newest_brands.length > 0) && !@reduced_layout && !(params[:controller] == "application" && params[:action] == "index") %>
+      <% if (newest_products.length > 0 or newest_brands.length > 0) && !@reduced_layout %>
         <div class="Newest">
           <div class="u-container">
             <div class="Heading">
