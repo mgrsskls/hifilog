@@ -304,7 +304,7 @@
                     <% newest_products.each do |product| %>
                       <li>
                         <time datetime="<%= format_iso_date product.created_at %>"><%= format_date(product.created_at).html_safe %></time>:
-                        <%= link_to product.display_name, product.path %>
+                        <%= link_to product.model_no.present? ? "#{product.display_name} (#{product.model_no})" : product.display_name, product.path %>
                       </li>
                     <% end %>
                   </ol>

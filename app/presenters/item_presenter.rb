@@ -23,6 +23,12 @@ class ItemPresenter
     end
   end
 
+  def model_no
+    return @product_variant.model_no if @product_variant&.model_no.present?
+
+    @product.model_no if @product&.model_no.present?
+  end
+
   def price_purchase
     nil
   end

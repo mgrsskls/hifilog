@@ -1,5 +1,5 @@
 ActiveAdmin.register ProductOption do
-  permit_params :product_id, :product_variant_id, :option
+  permit_params :product_id, :product_variant_id, :option, :model_no
 
   menu parent: 'Settings'
 
@@ -14,6 +14,7 @@ ActiveAdmin.register ProductOption do
       end
     end
     column :option
+    column :model_no
     column "Created", sortable: :created_at do |entity|
       "#{entity.created_at&.strftime("%m.%d.%Y")}<br><small>#{entity.created_at&.strftime("%H:%M")}</small>".html_safe
     end

@@ -146,7 +146,8 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
     old_name = @product.name
-    @product.slug = nil if old_name != product_update_params[:name]
+    old_model_no = @product.model_no
+    @product.slug = nil if old_name != product_update_params[:name] || old_model_no != product_update_params[:model_no]
 
     if product_update_params[:custom_attributes].present?
       convert_custom_attributes_to_integer!(product_update_params[:custom_attributes])
@@ -208,6 +209,7 @@ class ProductsController < ApplicationController
     params
       .expect(
         product: [:name,
+                  :model_no,
                   :brand_id,
                   :discontinued,
                   :diy_kit,
@@ -244,6 +246,7 @@ class ProductsController < ApplicationController
     params
       .expect(
         product: [:name,
+                  :model_no,
                   :discontinued,
                   :diy_kit,
                   :release_day,
@@ -287,12 +290,12 @@ class ProductsController < ApplicationController
 
   def process_product_options(product, options_attributes)
     options_attributes.each_value do |option|
-      if option[:id].present? && option[:option].present?
-        product.product_options.find(option[:id]).update(option: option[:option])
+      if option[:id].present? && (option[:option].present? || option[:model_no].present?)
+        product.product_options.find(option[:id]).update(option: option[:option], model_no: option[:model_no])
       elsif option[:id].present?
         product.product_options.find(option[:id]).delete
       elsif option[:option].present?
-        product.product_options << ProductOption.new(option: option[:option])
+        product.product_options << ProductOption.new(option: option[:option], model_no: option[:model_no])
       end
     end
   end

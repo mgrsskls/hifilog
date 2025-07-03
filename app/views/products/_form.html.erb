@@ -33,10 +33,16 @@
 
 <%= render "shared/product_form", f: f, entity: product, include_comment: include_comment, prefix: "product", brand: brand do %>
   <div class="Form-field">
-    <h2 class="h3 Form-label">
-      <%= f.label :name %>
-    </h2>
+    <%= f.label :name, class: "Form-label" %>
     <%= f.text_field :name, required: true %>
+  </div>
+
+  <div class="Form-field">
+    <%= f.label :model_no, class: "Form-label" do %>
+      Model no. / Alternative name
+      <small><i>(optional)</i></small>
+    <% end %>
+    <%= f.text_field :model_no %>
   </div>
 
   <% unless brand && brand.id %>

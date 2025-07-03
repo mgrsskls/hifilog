@@ -178,6 +178,7 @@
 	font-size: 0.875rem;
 	line-height: 1.5;
 	margin-block-start: 0.5rem;
+	font-weight: normal;
 }
 
 .EntityList-name::before {

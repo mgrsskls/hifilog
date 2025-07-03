@@ -50,6 +50,7 @@ en:
         discontinued: Discontinued
         discontinued_date: Discontinued date
         diy_kit: DIY kit
+        model_no: Model no.
         name: Name
         price: Price
         price_currency: Currency

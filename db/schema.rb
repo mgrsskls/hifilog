@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_24_065215) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_02_201053) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -180,6 +180,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_065215) do
   create_table "custom_attributes", force: :cascade do |t|
     t.jsonb "options"
     t.string "label"
+    t.string "input_type"
+    t.string "inputs", default: [], array: true
+    t.string "units", default: [], array: true
+    t.index ["label"], name: "index_custom_attributes_on_label", unique: true
   end
 
   create_table "custom_attributes_sub_categories", id: false, force: :cascade do |t|
@@ -270,6 +274,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_065215) do
     t.bigint "product_variant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "model_no"
+    t.index ["model_no", "product_id"], name: "index_product_options_on_model_no_and_product_id", unique: true, where: "(model_no IS NOT NULL)"
+    t.index ["model_no", "product_variant_id"], name: "index_product_options_on_model_no_and_product_variant_id", unique: true, where: "(model_no IS NOT NULL)"
     t.index ["option", "product_id"], name: "index_product_options_on_option_and_product_id", unique: true
     t.index ["option", "product_variant_id"], name: "index_product_options_on_option_and_product_variant_id", unique: true
     t.index ["product_id"], name: "index_product_options_product_id"
@@ -293,7 +300,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_065215) do
     t.integer "discontinued_month"
     t.integer "discontinued_year"
     t.boolean "diy_kit", default: false, null: false
-    t.index ["product_id", "name", "release_year"], name: "index_product_variants_on_product_id_and_name_and_release_year", unique: true
+    t.string "model_no"
+    t.index ["name", "product_id", "model_no", "release_day", "release_month", "release_year"], name: "idx_on_name_product_id_model_no_release_day_release_7d3b57d931", unique: true
   end
 
   create_table "products", force: :cascade do |t|
@@ -314,12 +322,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_065215) do
     t.integer "discontinued_month"
     t.integer "discontinued_day"
     t.boolean "diy_kit", default: false, null: false
+    t.string "model_no"
     t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
     t.index ["brand_id"], name: "index_products_on_brand_id"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
     t.index ["discontinued"], name: "index_products_on_discontinued"
     t.index ["diy_kit"], name: "index_products_on_diy_kit"
-    t.index ["name", "brand_id"], name: "index_products_on_name_and_brand_id", unique: true
+    t.index ["model_no", "brand_id"], name: "index_products_on_model_no_and_brand_id", unique: true
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_products_on_name"
     t.index ["release_day"], name: "index_products_on_release_day"

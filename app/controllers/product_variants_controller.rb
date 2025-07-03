@@ -109,13 +109,15 @@ class ProductVariantsController < ApplicationController
     if params[:product_options_attributes].present?
       params[:product_options_attributes].each do |option|
         if option[1][:id].present?
-          if option[1][:option].present?
-            @product_variant.product_options.find(option[1][:id]).update(option: option[1][:option])
+          if option[1][:option].present? || option[1][:model_no].present?
+            @product_variant.product_options.find(option[1][:id]).update(option: option[1][:option],
+                                                                         model_no: option[1][:model_no])
           else
             @product_variant.product_options.find(option[1][:id]).delete
           end
         elsif option[1][:option].present?
-          @product_variant.product_options << ProductOption.new(option: option[1][:option])
+          @product_variant.product_options << ProductOption.new(option: option[1][:option],
+                                                                model_no: option[1][:model_no])
         end
       end
     end
@@ -175,6 +177,7 @@ class ProductVariantsController < ApplicationController
   def product_variant_params
     params.expect(
       product_variant: [:name,
+                        :model_no,
                         :release_day,
                         :release_month,
                         :release_year,
@@ -194,6 +197,7 @@ class ProductVariantsController < ApplicationController
   def product_variant_update_params
     params.expect(
       product_variant: [:name,
+                        :model_no,
                         :release_day,
                         :release_month,
                         :release_year,

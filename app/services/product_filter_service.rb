@@ -68,8 +68,13 @@ class ProductFilterService
   def apply_search_filter(scope, value)
     query = "%#{value.strip}%"
 
-    scope = scope.left_joins(:product_variants)
-    scope.where('product_variants.name ILIKE ?', query).or(scope.where('products.name ILIKE ?', query))
+    scope = scope.left_joins({ product_variants: [:product_options] }, :product_options)
+    scope.where('product_variants.name ILIKE ?', query)
+         .or(scope.where('products.name ILIKE ?', query))
+         .or(scope.where('product_variants.model_no ILIKE ?', query))
+         .or(scope.where('products.model_no ILIKE ?', query))
+         .or(scope.where('product_options.option ILIKE ?', query))
+         .or(scope.where('product_options.model_no ILIKE ?', query))
   end
 
   def apply_ordering(scope, value)

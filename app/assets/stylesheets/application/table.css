@@ -15,6 +15,10 @@ tr[aria-current="true"] {
 	font-weight: 600;
 }
 
+.is-continued th small {
+	font-weight: normal;
+}
+
 tr:is(.is-continued, .is-discontinued) > :first-child {
 	background-image: linear-gradient(
 		to right,

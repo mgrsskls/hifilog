@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-07-02">2025-07-02</time>
+
+- Products can now have a model number. This can be helpful for example when companies name multiple products of different categories the same, when they belong to one product range. Model numbers can also be added to product options.
+
 ## <time datetime="2025-04-08">2025-04-08</time>
 
 - Users can now add the price of a purchase to their products, as well as the price they sold them for. The total spend and revenue are displayed on the statistics page.

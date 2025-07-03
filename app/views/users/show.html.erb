@@ -10,9 +10,13 @@
             <a href="<%= possession.show_path %>">
               <b><%= possession.display_name %></b>
             </a>
-            <% if possession.product_option %>
+            <% if possession.product_option.present? || possession.model_no.present? %>
               <div>
-                <small><%= possession.product_option.option %></small>
+                <small class="Table-productOption">
+                  <%= possession.model_no if possession.model_no.present? %>
+                  <% if possession.product_option.present? && possession.model_no.present? %>&middot;<% end %>
+                  <%= possession.product_option.option if possession.product_option.present? %>
+                </small>
               </div>
             <% end %>
           </h3>

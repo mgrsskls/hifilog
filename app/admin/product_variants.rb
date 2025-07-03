@@ -1,5 +1,5 @@
 ActiveAdmin.register ProductVariant do
-  permit_params :product_id, :name, :description, :release_year, :release_month, :release_day, :price, :price_currency, :discontinued, :discontinued_year, :discontinued_month, :discontinued_day, :diy_kit
+  permit_params :product_id, :model_no, :name, :description, :release_year, :release_month, :release_day, :price, :price_currency, :discontinued, :discontinued_year, :discontinued_month, :discontinued_day, :diy_kit
 
   menu parent: "Products"
 

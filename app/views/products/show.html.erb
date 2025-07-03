@@ -11,6 +11,9 @@
       <div class="Heading">
         <h1>
           <% if @product.brand.present? %><span><%= @product.brand.name %></span><% end %> <%= @product.name %>
+          <% if @product.model_no.present? %>
+            <small><%= @product.model_no %></small>
+          <% end %>
         </h1>
       </div>
 
@@ -104,8 +107,13 @@
             <div class="Product-section">
               <h2><%= Product.human_attribute_name(:product_options) %></h2>
               <ul>
-                <% @product.product_options.each do |option| %>
-                  <li><%= option[:option] %></li>
+                <% @product.product_options.order(:option).each do |option| %>
+                  <li>
+                    <%= option[:option] %>
+                    <% if option[:model_no].present? %>
+                      <br><small><%= option[:model_no] %></small>
+                    <% end %>
+                  </li>
                 <% end %>
               </ul>
             </div>

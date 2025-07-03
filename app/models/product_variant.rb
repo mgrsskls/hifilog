@@ -15,6 +15,7 @@ class ProductVariant < ApplicationRecord
 
   multisearchable against: [
     :name,
+    :model_no,
     :description,
     :release_year
   ]
@@ -34,7 +35,7 @@ class ProductVariant < ApplicationRecord
   validates_associated :product_options
 
   validates :name,
-            uniqueness: { scope: [:product, :release_year] }
+            uniqueness: { scope: [:product, :model_no, :release_day, :release_month, :release_year] }
   validates :name,
             presence: true,
             allow_blank: true
@@ -105,13 +106,10 @@ class ProductVariant < ApplicationRecord
 
   def slug_candidates
     [
-      [:name],
-      [:release_year, :name],
-      [:release_year, :release_month, :name],
-      [:release_year, :release_month, :release_day, :name],
-      [:release_year],
-      [:release_year, :release_month],
-      [:release_year, :release_month, :release_day]
+      [:name, :model_no],
+      [:name, :model_no, :release_year],
+      [:name, :model_no, :release_year, :release_month],
+      [:name, :model_no, :release_year, :release_month, :release_day]
     ]
   end
 
@@ -126,6 +124,7 @@ class ProductVariant < ApplicationRecord
       discontinued
       discontinued_eq
       diy_kit
+      model_no
       name
       name_cont
       name_end

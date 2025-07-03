@@ -105,8 +105,8 @@
 
 .ProductOptionsForm-list li {
 	counter-increment: options;
-	display: flex;
-	align-items: center;
+	display: grid;
+	grid-template-columns: auto 1fr;
 	gap: 0.5em;
 }
 
@@ -116,6 +116,18 @@
 
 .ProductOptionsForm-list li::before {
 	content: counter(options) ".";
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.ProductOptionsForm-list li div:nth-child(1) {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.ProductOptionsForm-list li div:nth-child(2) {
+	grid-column: 2;
+	grid-row: 2;
 }
 
 .ProductOptionsForm button {

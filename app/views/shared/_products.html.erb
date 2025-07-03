@@ -60,8 +60,12 @@
                     <%= item.product.present? ? item.brand_name : "<i>#{item.brand_name}</i>".html_safe %><br>
                   <% end %>
                   <b><%= item.show_path.present? ? (link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.show_path) : item.name %></b>
-                  <% if item.product_option %>
-                    <small class="Table-productOption"><%= item.product_option.option %></small>
+                  <% if item.product_option.present? || item.model_no.present? %>
+                    <small class="Table-productOption">
+                      <%= item.model_no if item.model_no.present? %>
+                      <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
+                      <%= item.product_option.option if item.product_option.present? %>
+                    </small>
                   <% end %>
                 </div>
                 <% if item.diy_kit? %>
@@ -174,8 +178,12 @@
               <a href="<%= item.show_path %>">
                 <b><%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %></b>
               </a>
-              <% if item.product_option %>
-                <br><small><%= item.product_option.option %></small>
+              <% if item.product_option.present? || item.model_no.present? %>
+                <small class="Table-productOption">
+                  <%= item.model_no if item.model_no.present? %>
+                  <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
+                  <%= item.product_option.option if item.product_option.present? %>
+                </small>
               <% end %>
             </div>
             <dl class="EntityList-data Data">

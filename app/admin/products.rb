@@ -1,5 +1,5 @@
 ActiveAdmin.register Product do
-  permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :price_currency, :price, :release_day, :release_month, :release_year, sub_category_ids: []
+  permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :model_no, :price_currency, :price, :release_day, :release_month, :release_year, sub_category_ids: []
 
   menu priority: 3
 
@@ -31,6 +31,7 @@ ActiveAdmin.register Product do
   form do |f|
     f.inputs do
       f.input :name
+      f.input :model_no
       f.input :brand
       f.input :release_day
       f.input :release_month
@@ -58,6 +59,7 @@ ActiveAdmin.register Product do
   show do
     attributes_table do
       row :name
+      row :model_no
       row :created_at
       row :updated_at
       row :brand
@@ -77,6 +79,7 @@ ActiveAdmin.register Product do
     selectable_column
     id_column
     column :name
+    column :model_no
     column :brand
     column "Price", sortable: :price do |entity|
       "#{entity.price} #{entity.price_currency}"

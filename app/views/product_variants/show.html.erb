@@ -12,6 +12,9 @@
         <h1>
           <span><%= @product.brand.name %></span> <%= @product.name %>
           <span class="Product-variantName">&mdash; <%= @product_variant.name_with_fallback %></span>
+          <% if @product_variant.model_no.present? %>
+            <small><%= @product_variant.model_no %></small>
+          <% end %>
         </h1>
       </div>
 
@@ -105,8 +108,13 @@
             <div class="Product-section">
               <h2><%= Product.human_attribute_name(:product_options) %></h2>
               <ul>
-                <% @product_variant.product_options.each do |option| %>
-                  <li><%= option[:option] %></li>
+                <% @product_variant.product_options.order(:option).each do |option| %>
+                  <li>
+                    <%= option[:option] %>
+                    <% if option[:model_no].present? %>
+                      <br><small><%= option[:model_no] %></small>
+                    <% end %>
+                  </li>
                 <% end %>
               </ul>
             </div>
