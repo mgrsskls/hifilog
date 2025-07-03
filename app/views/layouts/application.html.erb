@@ -84,6 +84,7 @@
     <meta property="og:url" content="https://www.hifilog.com<%= request.fullpath %>">
     <meta property="og:og:site_name" content="<%= APP_NAME %>">
     <meta property="og:description" content="<%= @meta_desc.present? ? @meta_desc : (strip_tags t('meta_description')) %>">
+    <meta name="fediverse:creator" content="@hifilog@mastodon.social">
   </head>
 
   <body>
