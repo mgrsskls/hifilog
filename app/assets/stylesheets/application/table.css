@@ -38,16 +38,8 @@ tr.is-discontinued {
 	--color: var(--color-discontinued-marker);
 }
 
-table:has(tbody + tbody) :is(thead, tbody) {
-	border-block-end: var(--border-light);
-}
-
 table:has(tbody + tbody) tbody:nth-child(even) {
 	background: var(--color-bg2);
-}
-
-table:not(:has(tbody + tbody)) tr {
-	border-block-end: var(--border-light);
 }
 
 table:not(:has(tbody + tbody)) tbody tr:nth-child(odd) {

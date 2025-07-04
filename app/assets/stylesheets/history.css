@@ -158,7 +158,6 @@
 	background: var(--color-bg2);
 	padding: 0.75rem;
 	border-radius: var(--border-radius);
-	border: var(--border-light);
 	line-height: 1.5;
 	position: relative;
 }

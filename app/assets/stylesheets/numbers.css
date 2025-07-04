@@ -41,7 +41,6 @@ h2 + .DashboardNumbers {
 .DashboardNumber {
 	display: flex;
 	justify-content: space-between;
-	border: var(--border-light);
 	border-radius: var(--border-radius);
 	text-decoration: none;
 	padding: 7.5%;

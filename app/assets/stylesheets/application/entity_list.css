@@ -22,7 +22,6 @@
 .EntityList-item {
 	display: grid;
 	grid-column: 1 / -1;
-	border-block-end: var(--border-light);
 	padding: var(--spacing-inline);
 	gap: 1.5rem;
 }
@@ -103,10 +102,6 @@
 	.EntityList:has(.EntityList-image) .EntityList-name {
 		grid-column: 2 / span 1;
 	}
-}
-
-.EntityList-item:first-child {
-	border-block-start: var(--border-light);
 }
 
 .EntityList-productVariants {
