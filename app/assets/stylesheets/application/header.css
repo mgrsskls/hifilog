@@ -141,6 +141,10 @@
 		justify-content: center;
 	}
 
+	.Header-account {
+		flex-shrink: 0;
+	}
+
 	.Header-search {
 		align-self: center;
 		inline-size: 14em;
