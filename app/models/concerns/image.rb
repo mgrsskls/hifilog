@@ -22,9 +22,9 @@ module Image
     return unless images.attached?
 
     images.each do |img|
-      next if img.blob.byte_size < 5_000_000
+      next if img.blob.byte_size < 10_000_000
 
-      errors.add(:image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
+      errors.add(:image_file_size, 'is too big. Please use a file with a maximum of 10 MB.')
     end
   end
 end
