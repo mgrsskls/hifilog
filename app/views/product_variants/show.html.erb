@@ -140,7 +140,7 @@
             <time datetime="<%= format_iso_datetime @note.updated_at %>"><%= format_datetime(@note.updated_at).html_safe %></time>
           <% end %>
         <% else %>
-          <%= link_to "Add notes", user_signed_in? ? product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)) %>
+          <%= link_to "Add notes", user_signed_in? ? product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_new_variant_notes_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)), rel: "nofollow" %>
         <% end %>
       </dd>
       <dt><%= t('product.meta.owned_by') %></dt>
@@ -150,10 +150,10 @@
     <div class="Entity-meta">
       <ul class="Entity-metaLinks MetaLinks">
         <li>
-          <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)) %>
+          <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)), rel: "nofollow" %>
         </li>
         <li>
-          <%= link_to t('headings.changelog'), user_signed_in? ? product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)) %>
+          <%= link_to t('headings.changelog'), user_signed_in? ? product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)), rel: "nofollow" %>
         </li>
       </ul>
       <dl>
