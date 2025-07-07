@@ -75,7 +75,7 @@
           <dl class="EntityList-data Data">
             <% if product.release_date.present? %>
               <dt><%= t('activerecord.attributes.product.release_date') %></dt>
-              <dd><%= format_date product.release_date %></dd>
+              <dd><%= format_date(product.release_date).html_safe %></dd>
             <% end %>
 
             <% if product.price.present? %>
@@ -111,7 +111,7 @@
             <dl class="EntityList-data Data">
               <% if product_variant.release_date.present? %>
                 <dt><%= t('activerecord.attributes.product.release_date') %></dt>
-                <dd><%= format_date product_variant.release_date %></dd>
+                <dd><%= format_date(product_variant.release_date).html_safe %></dd>
               <% end %>
 
               <% if product_variant.price.present? %>
