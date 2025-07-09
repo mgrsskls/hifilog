@@ -100,16 +100,16 @@ class BrandsController < ApplicationController
 
     filter = ProductFilterService.new(active_show_product_filters, [@brand], @category, @sub_category).filter
     @products = filter.products
-                      .includes([:sub_categories, :product_variants])
                       .page(params[:page])
     if @products.out_of_range?
       @products = filter.products
-                        .includes([:sub_categories, :product_variants])
                         .page(1)
       @canonical_url = canonical_url(page_out_of_range: true)
     else
       @canonical_url = canonical_url
     end
+    @custom_attributes_for_products = CustomAttribute.all
+    @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |c| c[0].order }
     @products_query = params[:query].strip if params[:query].present?
@@ -213,7 +213,7 @@ class BrandsController < ApplicationController
 
   def allowed_index_filter_params
     params.permit(
-      :category, :letter, :status, :country, :diy_kit, :query, :sort,
+      :category, :status, :country, :diy_kit, :query, :sort,
       attr: {}
     )
   end
@@ -226,7 +226,7 @@ class BrandsController < ApplicationController
 
   def allowed_show_product_filter_params
     params.permit(
-      :category, :letter, :status, :diy_kit, :query, :sort, attr: {}
+      :category, :status, :diy_kit, :query, :sort, attr: {}
     )
   end
 

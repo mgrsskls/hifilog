@@ -1,0 +1,48 @@
+SELECT
+products.id,
+products.name,
+products.description,
+products.discontinued,
+products.slug,
+products.release_day,
+products.release_month,
+products.release_year,
+products.price,
+products.price_currency,
+products.discontinued_year,
+products.discontinued_month,
+products.discontinued_day,
+products.diy_kit,
+products.model_no,
+products.custom_attributes,
+products.brand_id,
+'Product' AS item_type,
+products.id AS product_id,
+NULL AS variant_name,
+NULL AS variant_description
+FROM products
+UNION ALL
+SELECT
+product_variants.id,
+products.name,
+products.description,
+product_variants.discontinued,
+product_variants.slug,
+product_variants.release_day,
+product_variants.release_month,
+product_variants.release_year,
+product_variants.price,
+product_variants.price_currency,
+product_variants.discontinued_year,
+product_variants.discontinued_month,
+product_variants.discontinued_day,
+product_variants.diy_kit,
+product_variants.model_no,
+products.custom_attributes,
+products.brand_id,
+'ProductVariant' AS item_type,
+product_variants.product_id,
+product_variants.name AS variant_name,
+product_variants.description AS variant_description
+FROM product_variants
+JOIN products ON product_variants.product_id = products.id

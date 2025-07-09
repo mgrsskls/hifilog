@@ -79,20 +79,6 @@
         </div>
 
         <div class="Filter-section">
-          <label for="filter-letter" class="Filter-option">Name</label>
-          <select class="Filter-input" name="letter" id="filter-letter">
-            <option value=""<%= ' selected'.html_safe if params[:letter].blank? %>>
-              <%= t('filter.all') %>
-            </option>
-            <% abc.each do |letter| %>
-              <option value="<%= letter %>"<%= ' selected'.html_safe if params[:letter] == letter %>>
-                <%= letter.upcase %>
-              </option>
-            <% end %>
-          </select>
-        </div>
-
-        <div class="Filter-section">
           <label for="filter-status" class="Filter-option"><%= t('status') %></label>
           <select class="Filter-input" name="status" id="filter-status">
             <option value=""<%= ' selected'.html_safe if params[:status].blank? %>>

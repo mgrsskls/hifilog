@@ -24,11 +24,6 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
     assert result.brands.all?(&:discontinued)
   end
 
-  test 'filter by letter returns only brands starting with that letter' do
-    result = BrandFilterService.new({ letter: 'f' }).filter
-    assert_equal [brands(:one)], result.brands.to_a
-  end
-
   test 'filter by query returns only matching brands' do
     brand = brands(:one)
     result = BrandFilterService.new({ query: brand.name }).filter

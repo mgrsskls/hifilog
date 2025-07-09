@@ -2,10 +2,6 @@ module FilterableService
   extend ActiveSupport::Concern
   include FilterConstants
 
-  def apply_letter_filter(scope, value, column)
-    scope.where("left(lower(#{column}),1) = ?", value.downcase)
-  end
-
   def extract_filter_context(params)
     return [nil, nil, CustomAttribute.none] if params[:category].blank?
 

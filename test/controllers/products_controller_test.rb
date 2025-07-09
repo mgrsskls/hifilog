@@ -4,7 +4,6 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   parameter_combinations = [
     { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
     { sort: ['name_asc'] },
-    { letter: ['a'] },
     { status: ['discontinued'] },
     { country: ['DE'] },
     { diy_kit: ['1'] },

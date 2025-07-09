@@ -10,26 +10,30 @@ class ProductFilterService
     @filters = filters
     @category = category
     @sub_category = sub_category
-    @products = brands.any? ? Product.where(brand_id: brands.map(&:id)) : Product.all
+    @products = brands.any? ? ProductItem.where(brand_id: brands.map(&:id)) : ProductItem.all
   end
 
   def filter
     products = @products
 
     if @sub_category
-      products = products.joins(:sub_categories).where(sub_categories: { id: @sub_category.id })
+      products = products.joins(
+        'LEFT JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
+      ).where(products_sub_categories: { sub_category_id: @sub_category.id })
     elsif @category
-      products = products.joins(:sub_categories).where(sub_categories: { category_id: @category.id })
+      products = products.joins(
+        'LEFT JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
+      ).joins(
+        'LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id'
+      ).where(sub_categories: { category_id: @category.id })
     end
 
     products = apply_ordering(products, @filters[:sort])
-    products = apply_letter_filter(products, @filters[:letter], 'products.name') if @filters[:letter].present?
     products = apply_status_filter(products, @filters[:status]) if @filters[:status].present?
     products = apply_country_filter(products, @filters[:country]) if @filters[:country].present?
     products = apply_diy_kit_filter(products, @filters[:diy_kit]) if @filters[:diy_kit].present?
     products = apply_custom_attributes_filter(products, @filters[:attr]) if @filters[:attr].present?
     products = apply_search_filter(products, @filters[:query]) if @filters[:query].present?
-    products = products.select('products.*, LOWER(products.name)').distinct
     Result.new(products:)
   end
 
@@ -38,9 +42,7 @@ class ProductFilterService
   def apply_status_filter(scope, value)
     discontinued = value == 'discontinued'
 
-    scope.left_joins(:product_variants)
-         .where(product_variants: { discontinued: })
-         .or(scope.where(discontinued:))
+    scope.where(discontinued:)
   end
 
   def apply_country_filter(scope, value)
@@ -50,8 +52,7 @@ class ProductFilterService
   def apply_diy_kit_filter(scope, value)
     diy_kit = value == '1'
 
-    scope = scope.left_joins(:product_variants)
-    scope.where(product_variants: { diy_kit: diy_kit }).or(scope.where(diy_kit: diy_kit))
+    scope.where(diy_kit: diy_kit)
   end
 
   def apply_custom_attributes_filter(scope, value)
@@ -68,29 +69,31 @@ class ProductFilterService
   def apply_search_filter(scope, value)
     query = "%#{value.strip}%"
 
-    scope = scope.left_joins({ product_variants: [:product_options] }, :product_options)
-    scope.where('product_variants.name ILIKE ?', query)
-         .or(scope.where('products.name ILIKE ?', query))
-         .or(scope.where('product_variants.model_no ILIKE ?', query))
-         .or(scope.where('products.model_no ILIKE ?', query))
-         .or(scope.where('product_options.option ILIKE ?', query))
-         .or(scope.where('product_options.model_no ILIKE ?', query))
+    scope.where('product_items.name ILIKE ?', query)
+         .or(scope.where('model_no ILIKE ?', query))
   end
 
   def apply_ordering(scope, value)
     order = case value&.downcase
-            when 'name_desc' then 'LOWER(products.name) DESC'
+            when 'name_desc'
+              'LOWER(product_items.name) DESC,
+               release_year ASC NULLS FIRST,
+               release_month ASC NULLS FIRST,
+               release_day ASC NULLS FIRST'
             when 'release_date_asc'
-              'products.release_year ASC NULLS LAST,
-               products.release_month ASC NULLS LAST,
-               products.release_day ASC NULLS LAST,
-               LOWER(products.name)'
+              'release_year ASC NULLS LAST,
+               release_month ASC NULLS LAST,
+               release_day ASC NULLS LAST,
+               LOWER(product_items.name)'
             when 'release_date_desc'
-              'products.release_year DESC NULLS LAST,
-               products.release_month DESC NULLS LAST,
-               products.release_day DESC NULLS LAST,
-               LOWER(products.name)'
-            else 'LOWER(products.name) ASC'
+              'release_year DESC NULLS LAST,
+               release_month DESC NULLS LAST,
+               release_day DESC NULLS LAST,
+               LOWER(product_items.name)'
+            else 'LOWER(product_items.name) ASC,
+                  release_year ASC NULLS FIRST,
+                  release_month ASC NULLS FIRST,
+                  release_day ASC NULLS FIRST'
             end
     scope.order(order)
   end

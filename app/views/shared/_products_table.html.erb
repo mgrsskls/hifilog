@@ -16,9 +16,11 @@
               <a href="<%= product.path %>">
                 <%= mark ? highlight(product.name, mark) : product.name %>
               </a>
-              <% if product.model_no.present? %>
+              <% if product.model_no.present? || product.variant_name.present? %>
                 <span class="EntityList-modelName">
-                  <%= product.model_no %>
+                  <%= product.variant_name if product.variant_name.present? %>
+                  <% if product.variant_name.present? && product.model_no.present? %>&middot;<% end %>
+                  <%= product.model_no if product.model_no.present? %>
                 </span>
               <% end %>
             </div>
@@ -26,42 +28,46 @@
           </div>
         </div>
 
-        <% if product.diy_kit? || (product.custom_attributes_labels.present? && product.custom_attributes_labels.any?) %>
+        <% if product.diy_kit? || (product.custom_attributes.present? && product.custom_attributes.any?) %>
           <ul class="EntityList-tags">
             <% if product.diy_kit? %>
               <li class="Tag">
                 <%= t('activerecord.attributes.product.diy_kit') %>
               </li>
             <% end %>
-            <% product.custom_attributes_labels.each do |attr| %>
-              <li class="Tag"><%= attr %></li>
+            <% product.custom_attributes&.each do |custom_attribute| %>
+              <% attr = @custom_attributes_for_products.find { |ca| ca.id == custom_attribute[0].to_i } %>
+              <% option_value = attr&.options[custom_attribute[1].to_s] %>
+              <% if option_value.present? %>
+                <li class="Tag"><%= I18n.t("custom_attributes.#{option_value}") %></li>
+              <% end %>
             <% end %>
           </ul>
         <% end %>
 
-        <% if !hide_category || product.earliest_release_date.present? || product.latest_discontinued_date.present? || product.lowest_price.present? %>
+        <% if !hide_category || product.formatted_release_date.present? || product.formatted_discontinued_date.present? || product.price.present? %>
         <dl class="EntityList-data Data">
           <% unless hide_category %>
             <dt><%= Category.model_name.human %></dt>
-            <dd><%= product.sub_categories.map{ |sub_category| sub_category.name }.join(", ") %></dd>
+            <dd><%= product.sub_category_names.join(", ") %></dd>
           <% end %>
 
-          <% if product.earliest_release_date.present? || product.latest_discontinued_date.present? %>
+          <% if product.formatted_release_date.present? || product.formatted_discontinued_date.present? %>
             <dt><%= t('activerecord.attributes.product.release_date') %></dt>
             <dd>
-              <% if product.earliest_release_date.present? && product.latest_discontinued_date.present? %>
-                <%= sanitize(format_partial_date(*product.earliest_release_date)) %> &ndash; <%= sanitize(format_partial_date(*product.latest_discontinued_date)) %>
-              <% elsif product.latest_discontinued_date.present? %>
-                n/a &ndash; <%= sanitize(format_partial_date(*product.latest_discontinued_date)) %>
-              <% elsif product.earliest_release_date.present? %>
-                <%= sanitize(format_partial_date(*product.earliest_release_date)) %>
+              <% if product.formatted_release_date.present? && product.formatted_discontinued_date.present? %>
+                <%= sanitize(product.formatted_release_date) %> &ndash; <%= sanitize(product.formatted_discontinued_date) %>
+              <% elsif product.formatted_discontinued_date.present? %>
+                n/a &ndash; <%= sanitize(product.formatted_discontinued_date) %>
+              <% elsif product.formatted_release_date.present? %>
+                <%= sanitize(product.formatted_release_date) %>
               <% end %>
             </dd>
           <% end %>
 
-          <% if product.lowest_price.present? %>
+          <% if product.price.present? %>
             <dt><%= t('activerecord.attributes.product.price') %></dt>
-            <dd><%= "From " if product.prices.size > 1 %><%= display_price(product.lowest_price[0], product.lowest_price[1]) %></dd>
+            <dd><%= display_price(product.price, product.price_currency) %></dd>
           <% end %>
         </dl>
       <% end %>

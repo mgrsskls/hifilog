@@ -12,10 +12,6 @@ module ApplicationHelper
     " aria-current=#{active_menu == page ? 'true' : 'false'}"
   end
 
-  def abc
-    ABC
-  end
-
   def statuses
     STATUSES
   end

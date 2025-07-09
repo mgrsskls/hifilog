@@ -4,7 +4,6 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
   index_params = [
     { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
     { sort: ['name_asc'] },
-    { letter: ['a'] },
     { status: ['discontinued'] },
     { country: ['DE'] },
     { diy_kit: ['1'] },
@@ -15,7 +14,6 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
   show_products_params = [
     { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
     { sort: ['name_asc'] },
-    { letter: ['a'] },
     { status: ['discontinued'] },
     { diy_kit: ['1'] },
     { attr: [{ '1': ['1'] }] },
@@ -182,14 +180,6 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     get brands_url(status: 'discontinued')
     assert_response :success
     Brand.where(discontinued: true).pluck(:name).each do |name|
-      assert_match name, @response.body
-    end
-  end
-
-  test 'filter by letter returns only brands starting with that letter' do
-    get brands_url(letter: 'a')
-    assert_response :success
-    Brand.where('LOWER(name) LIKE ?', 'a%').pluck(:name).each do |name|
       assert_match name, @response.body
     end
   end

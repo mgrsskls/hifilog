@@ -22,11 +22,12 @@
   <% end %>
 
   <% content_for :table do %>
-    <%= render "shared/products_table", products: @products, hide_brand: true, filter_applied: @filter_applied %>
+    <%= render "shared/products_table", products: @product_presenters, hide_brand: true, filter_applied: @filter_applied %>
   <% end %>
 
   <%= render "shared/index_page",
     records: @products,
+    presenters: @product_presenters,
     empty_state_message: t('empty_state.cta', name: h(@brand.name), path: user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id))),
     category: @category,
     sub_category: @sub_category

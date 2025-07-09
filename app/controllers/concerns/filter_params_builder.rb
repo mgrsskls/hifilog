@@ -7,8 +7,6 @@ module FilterParamsBuilder
     filters[:category] = @category if @category.present?
     filters[:sub_category] = @sub_category if @sub_category.present?
 
-    filters[:letter] = params_hash[:letter] if params_hash[:letter].present? && ABC.include?(params_hash[:letter])
-
     filters[:status] = params_hash[:status] if params_hash[:status].present? && STATUSES.include?(params_hash[:status])
 
     if params_hash[:diy_kit].present? && %w[0 1].include?(params_hash[:diy_kit])

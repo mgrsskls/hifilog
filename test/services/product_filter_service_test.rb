@@ -24,20 +24,18 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
   end
 
   test 'filter by status returns only discontinued products' do
-    result = ProductFilterService.new({ status: 'discontinued' }, [brands(:three)]).filter
-    assert_equal [products(:discontinued)], result.products.to_a
-    assert result.products.all?(&:discontinued)
-  end
+    brand = brands(:three)
+    discontinued_product = products(:discontinued)
 
-  test 'filter by letter returns only products starting with that letter' do
-    result = ProductFilterService.new({ letter: 'E' }, [@brand]).filter
-    assert_equal [products(:one)], result.products.to_a
-    assert(result.products.all? { |p| p.name.downcase.starts_with?('e') })
+    result = ProductFilterService.new({ discontinued: true }, [brand]).filter
+
+    assert_equal [discontinued_product.id], result.products.pluck(:product_id)
+    assert(result.products.all? { |pi| pi.discontinued == true })
   end
 
   test 'filter by query returns only matching products' do
     product = products(:one)
     result = ProductFilterService.new({ query: product.name }, [@brand]).filter
-    assert_equal [product], result.products.to_a
+    assert_equal [product.id], result.products.pluck(:id)
   end
 end

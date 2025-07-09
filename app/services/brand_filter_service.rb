@@ -23,7 +23,6 @@ class BrandFilterService
     end
 
     brands = apply_ordering(brands, @filters[:sort])
-    brands = apply_letter_filter(brands, @filters[:letter], 'brands.name') if @filters[:letter].present?
     brands = apply_status_filter(brands, @filters[:status]) if @filters[:status].present?
     brands = apply_country_filter(brands, @filters[:country]) if @filters[:country].present?
     brands = apply_diy_kit_filter(brands, @filters[:diy_kit]) if @filters[:diy_kit].present?

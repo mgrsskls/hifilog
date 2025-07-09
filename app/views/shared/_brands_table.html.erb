@@ -5,7 +5,14 @@
     <li class="EntityList-item is-<%= brand.discontinued? ? "discontinued" : "continued" %>">
         <div class="EntityList-name">
           <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
-            <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
+            <div>
+              <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
+              <% if brand.full_name.present? %>
+                <span class="EntityList-modelName">
+                  <%= brand.full_name %>
+                </span>
+              <% end %>
+            </div>
             <%= render "shared/symbols", brand: brand %>
           </div>
         </div>

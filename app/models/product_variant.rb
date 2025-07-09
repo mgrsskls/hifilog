@@ -8,6 +8,8 @@ class ProductVariant < ApplicationRecord
 
   extend FriendlyId
 
+  delegate_missing_to :product
+
   nilify_blanks
 
   auto_strip_attributes :name, squish: true
@@ -111,6 +113,22 @@ class ProductVariant < ApplicationRecord
       [:name, :model_no, :release_year, :release_month],
       [:name, :model_no, :release_year, :release_month, :release_day]
     ]
+  end
+
+  def custom_attributes_labels
+    return unless custom_attributes.present? && custom_attributes.any?
+
+    attributes = []
+    custom_attributes.each do |custom_attribute|
+      custom_attribute_resource = sub_categories.flat_map(&:custom_attributes).find do |sub_custom_attribute|
+        sub_custom_attribute.id == custom_attribute[0].to_i
+      end
+      if custom_attribute_resource
+        attributes.push I18n.t("custom_attributes.#{custom_attribute_resource.options[custom_attribute[1].to_s]}")
+      end
+    end
+
+    attributes
   end
 
   # :nocov:

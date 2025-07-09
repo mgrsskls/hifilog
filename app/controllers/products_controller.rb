@@ -27,20 +27,21 @@ class ProductsController < ApplicationController
 
     filter = ProductFilterService.new(active_index_filters, [], @category, @sub_category).filter
     @products = filter.products
-                      .includes(:brand, :product_variants, sub_categories: [:custom_attributes])
+                      .includes(:brand)
                       .page(params[:page])
     @products_query = params[:query].strip if params[:query].present?
+    @custom_attributes_for_products = CustomAttribute.all
 
     if @products.out_of_range?
       @products = filter.products
-                        .includes(:brand, :product_variants, sub_categories: [:custom_attributes])
+                        .includes(:brand)
                         .page(1)
       @canonical_url = canonical_url(page_out_of_range: true)
     else
       @canonical_url = canonical_url
     end
 
-    @product_presenters = @products.map { |p| ProductGroupPresenter.new(p) }
+    @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
 
     if @sub_category.present?
       @page_title = @sub_category.name
@@ -267,7 +268,7 @@ class ProductsController < ApplicationController
   end
 
   def allowed_index_filter_params
-    params.permit(:category, :letter, :status, :diy_kit, :country, :query, :sort, attr: {})
+    params.permit(:category, :status, :diy_kit, :country, :query, :sort, attr: {})
   end
 
   def active_index_filters

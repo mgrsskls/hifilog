@@ -75,34 +75,32 @@
                 <br><span class="Data-secondary"><%= @product.custom_attributes_list %></span>
               <% end %>
             </dd>
-            <% if @product.product_variants.none? %>
-              <dt><%= Product.human_attribute_name(:release_date) %></dt>
-              <dd>
-                <% if @product.release_date.present? %>
-                  <time datetime="<%= @product.release_date %>"><%= sanitize @product.formatted_release_date %></time>
-                <% else %>
-                  -
-                <% end %>
-              </dd>
-              <% if @product.discontinued? %>
-                <dt><%= t('discontinued') %></dt>
-                <dd>
-                  <% if @product.discontinued_date.present? %>
-                    <time datetime="<%= @product.discontinued_date %>"><%= sanitize @product.formatted_discontinued_date %></time>
-                  <% else %>
-                    -
-                  <% end %>
-                </dd>
+            <dt><%= Product.human_attribute_name(:release_date) %></dt>
+            <dd>
+              <% if @product.release_date.present? %>
+                <time datetime="<%= @product.release_date %>"><%= sanitize @product.formatted_release_date %></time>
+              <% else %>
+                -
               <% end %>
-              <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
+            </dd>
+            <% if @product.discontinued? %>
+              <dt><%= t('discontinued') %></dt>
               <dd>
-                <% if @product.price.present? %>
-                  <%= display_price(@product.price, @product.price_currency) %>
+                <% if @product.discontinued_date.present? %>
+                  <time datetime="<%= @product.discontinued_date %>"><%= sanitize @product.formatted_discontinued_date %></time>
                 <% else %>
                   -
                 <% end %>
               </dd>
             <% end %>
+            <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
+            <dd>
+              <% if @product.price.present? %>
+                <%= display_price(@product.price, @product.price_currency) %>
+              <% else %>
+                -
+              <% end %>
+            </dd>
           </dl>
 
           <% if @product.product_options.any? %>
