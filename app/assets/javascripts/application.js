@@ -224,23 +224,4 @@ import "./_search.js";
 			});
 		});
 	}
-
-	document
-		.querySelectorAll(".EntityList-productVariantsButton button")
-		.forEach((button) => {
-			button.addEventListener("click", ({ target }) => {
-				const button = target.closest("button");
-				const id = button.getAttribute("aria-controls");
-				const isActive = button.getAttribute("aria-expanded") == "true";
-				const el = document.getElementById(id);
-
-				if (isActive) {
-					el.hidden = true;
-					button.setAttribute("aria-expanded", "false");
-				} else {
-					el.hidden = false;
-					button.setAttribute("aria-expanded", "true");
-				}
-			});
-		});
 }

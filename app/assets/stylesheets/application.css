@@ -259,6 +259,7 @@
 		padding-block: 0.1em;
 		padding-inline: 0.6em;
 		border: var(--border-light);
+		border-width: 0.09375rem;
 		text-decoration: none;
 		text-align: center;
 		border-radius: 1.5em;

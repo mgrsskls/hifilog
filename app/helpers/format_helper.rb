@@ -1,5 +1,5 @@
 module FormatHelper
-  def format_partial_date(day, month, year)
+  def format_partial_date(year, month, day)
     return nil if year.nil?
     return year.to_s if month.nil?
 

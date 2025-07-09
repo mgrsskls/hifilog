@@ -4,7 +4,7 @@
 
 <h1><%= t('headings.changelog') %> <span><%= model.name %></span></h1>
 <% if versions.any? %>
-  <ol reversed class="Changelog">
+<ol reversed class="Changelog">
     <% versions.reverse.each_with_index do |version, i| %>
       <%
         if version.whodunnit.nil?
@@ -35,81 +35,16 @@
           &mdash;
           <time datetime="<%= format_iso_datetime version.created_at %>"><%= format_datetime(version.created_at).html_safe %></time>
         </p>
-        <div class="u-breakpoint u-breakpoint--s">
+
           <% changelog = get_changelog(version.object_changes) %>
-          <table class="Changelog-data u-breakpoint-item-l">
-            <thead>
-              <tr>
-                <th><%= t('changelog.attribute') %></th>
-                <th><%= t('changelog.before') %></th>
-                <th><%= t('changelog.after') %></th>
-              </tr>
-            </thead>
-            <tbody>
+          <ul>
             <% changelog.each do |change| %>
               <% unless change[0] == "slug" %>
-                <tr>
-                  <th><b><%= t('brand.' + change[0]) %></b></th>
-                  <td>
-                    <span class="Changelog-old">
-                      <% if change[0] == "custom_attributes" %>
-                        <%= sanitize JSON.parse(change[1][0]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][0].nil? %>
-                      <% elsif change[0] == "brand_id" && change[1][0].present? %>
-                        <%= Brand.find(change[1][0]).name %>
-                      <% elsif change[0] == "country_code" && change[1][0].present? %>
-                        <%= country_name_from_country_code(change[1][0]) %>
-                      <% elsif !change[1][0].nil? %>
-                        <% if change[1][0] == false %>
-                          No
-                        <% elsif change[1][0] == true %>
-                          Yes
-                        <% else %>
-                          <%= change[1][0] %>
-                        <% end %>
-                      <% else %>
-                        -
-                      <% end %>
-                    </span>
-                  </td>
-                  <td>
-                    <span class="Changelog-new">
-                      <% if change[0] == "custom_attributes" %>
-                        <%= sanitize JSON.parse(change[1][1]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][1].nil? %>
-                      <% elsif change[0] == "brand_id" && change[1][1].present? %>
-                        <%= Brand.find(change[1][1]).name %>
-                      <% elsif change[0] == "country_code" && change[1][1].present? %>
-                        <%= country_name_from_country_code(change[1][1]) %>
-                      <% elsif !change[1][1].nil? %>
-                        <% if change[1][1] == false %>
-                          No
-                        <% elsif change[1][1] == true %>
-                          Yes
-                        <% else %>
-                          <%= change[1][1] %>
-                        <% end %>
-                      <% else %>
-                        -
-                      <% end %>
-                    </span>
-                  </td>
-                </tr>
-              <% end %>
-            <% end %>
-            </tbody>
-          </table>
-          <ol class="EntityList EntityList--products u-breakpoint-item-s">
-            <% changelog.each do |change| %>
-              <% unless change[0] == "slug" %>
-                <li class="EntityList-item">
-                  <div class="EntityList-content">
-                    <div class="EntityList-name">
-                      <b><%= t('brand.' + change[0]) %></b>
-                    </div>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <th><%= t('changelog.before') %></th>
-                          <td class="Changelog-old">
+                <li>
+                    <b><%= t('brand.' + change[0]) %></b>
+                    <dl>
+                          <dt><%= t('changelog.before') %></dt>
+                          <dd class="Changelog-old">
                             <% if change[0] == "custom_attributes" %>
                               <%= JSON.parse(change[1][0]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][0].nil? %>
                             <% elsif change[0] == "brand_id" && change[1][0].present? %>
@@ -127,11 +62,10 @@
                             <% else %>
                               -
                             <% end %>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th><%= t('changelog.after') %></th>
-                          <td class="Changelog-new">
+                          </dd>
+
+                          <dt><%= t('changelog.after') %></dt>
+                          <dd class="Changelog-new">
                             <% if change[0] == "custom_attributes" %>
                               <%= JSON.parse(change[1][1]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][1].nil? %>
                             <% elsif change[0] == "brand_id" && change[1][1].present? %>
@@ -149,16 +83,14 @@
                             <% else %>
                               -
                             <% end %>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                          </dd>
+
+                    </dl>
                 </li>
               <% end %>
             <% end %>
-          </ol>
-        </div>
+          </ul>
+
         <% if version.comment.present? %>
           <div class="Changelog-itemComment Rte">
             <p><b><%= t('changelog.comment') %>:</b></p>

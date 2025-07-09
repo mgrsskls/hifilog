@@ -82,6 +82,22 @@ class Product < ApplicationRecord
     product_url(id: friendly_id)
   end
 
+  def custom_attributes_labels
+    return unless custom_attributes.present? && custom_attributes.any?
+
+    attributes = []
+    custom_attributes.each do |custom_attribute|
+      custom_attribute_resource = sub_categories.flat_map(&:custom_attributes).find do |sub_custom_attribute|
+        sub_custom_attribute.id == custom_attribute[0].to_i
+      end
+      if custom_attribute_resource
+        attributes.push I18n.t("custom_attributes.#{custom_attribute_resource.options[custom_attribute[1].to_s]}")
+      end
+    end
+
+    attributes
+  end
+
   def custom_attributes_list
     return unless custom_attributes.present? && custom_attributes.any?
 

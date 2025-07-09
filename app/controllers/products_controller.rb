@@ -40,6 +40,8 @@ class ProductsController < ApplicationController
       @canonical_url = canonical_url
     end
 
+    @product_presenters = @products.map { |p| ProductGroupPresenter.new(p) }
+
     if @sub_category.present?
       @page_title = @sub_category.name
       @meta_desc = "Search through all products in the category “#{@sub_category.name}” on HiFi Log,\

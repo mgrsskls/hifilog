@@ -6,10 +6,15 @@
 .Changelog-item {
 	padding: 1rem;
 	list-style: "";
-}
 
-.Changelog-item + .Changelog-item {
-	margin-block-start: 1rem;
+	ul {
+		padding-inline-start: 1em;
+		margin-block-start: 1rem;
+	}
+
+	li + li {
+		margin-block-start: 1rem;
+	}
 }
 
 .Changelog-item:nth-child(odd) {

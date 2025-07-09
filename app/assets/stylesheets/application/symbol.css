@@ -93,6 +93,20 @@
 	display: flex;
 	align-items: center;
 	gap: 0.75em;
+
+	&.is-continued,
+	&.is-discontinued {
+		padding-inline-end: 0.75em;
+	}
+
+	&.is-continued {
+		background: var(--color-bg2);
+		border: 0.0625rem solid transparent;
+	}
+
+	&.is-discontinued {
+		border: 0.0625rem dashed var(--color-transparency-15);
+	}
 }
 
 @container legends (width < 46em) {

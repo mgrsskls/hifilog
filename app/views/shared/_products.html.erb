@@ -159,33 +159,38 @@
     <ol class="EntityList EntityList--products u-breakpoint-item-s">
       <% items.each do |item| %>
         <li class="EntityList-item">
-          <% if include_images %>
-            <div class="EntityList-image">
-              <% if include_image_upload %>
-                <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
-              <% else %>
-                <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
-              <% end %>
-            </div>
-          <% end %>
-          <div class="EntityList-content">
+          <div class="u-flex u-gap-md">
+
+            <% if include_images %>
+              <div class="EntityList-image">
+                <% if include_image_upload %>
+                  <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
+                <% else %>
+                  <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
+                <% end %>
+              </div>
+            <% end %>
+
             <div class="EntityList-name">
               <% unless hide_brand %>
-                <span>
+                <span class="EntityList-brandName">
                   <%= item.brand_name %>
                 </span>
               <% end %>
               <a href="<%= item.show_path %>">
-                <b><%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %></b>
+                <%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %>
               </a>
               <% if item.product_option.present? || item.model_no.present? %>
-                <small class="Table-productOption">
+                <small class="EntityList-modelName">
                   <%= item.model_no if item.model_no.present? %>
                   <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
                   <%= item.product_option.option if item.product_option.present? %>
                 </small>
               <% end %>
             </div>
+
+          </div>
+
             <dl class="EntityList-data Data">
               <dt><%= Category.model_name.human %></dt>
               <dd>
@@ -253,7 +258,7 @@
                   <% end %>
                 </li>
               </ul>
-            </div>
+
           </div>
         </li>
       <% end %>

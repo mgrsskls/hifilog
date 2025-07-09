@@ -5,178 +5,57 @@
 	padding: 0;
 	margin: 0;
 	display: grid;
-}
-
-.EntityList:not(:has(.EntityList-image)) {
-	grid-template-columns: 1fr 1fr auto;
-}
-
-.EntityList:has(.EntityList-image) {
-	grid-template-columns: auto 1fr 1fr auto;
-}
-
-.EntityList:not(.EntityList .EntityList) {
-	container: list / inline-size;
-}
-
-.EntityList-item {
-	display: grid;
-	grid-column: 1 / -1;
-	padding: var(--spacing-inline);
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
 	gap: 1.5rem;
 }
 
-.EntityList-item .EntityList-item {
-	padding-inline: 0;
+.EntityList-item {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: var(--spacing-inline);
+	background: var(--color-bg2);
+	border-radius: var(--border-radius);
+	border: 0.0625rem solid transparent;
+}
+
+.EntityList--brands .EntityList-item > :last-child {
+	margin-block-start: auto;
+}
+
+.EntityList-item.is-discontinued {
+	background: none;
+	border-style: dashed;
+	border-color: var(--color-transparency-15);
 }
 
 .EntityList-item[aria-current="true"] {
 	font-weight: 600;
 }
 
-.EntityList--products > .EntityList-item:nth-child(odd) {
-	background: var(--color-bg2);
-}
-
-.EntityList-image {
-	grid-column: 1 / span 1;
-}
-
-.EntityList-content {
-	display: grid;
-	gap: 0.75rem 1.5rem;
-	grid-column-end: -1;
-	align-items: start;
-}
-
-@container list (width < 36rem) {
-	.EntityList:has(.EntityList-image) .EntityList-item {
-		grid-template-columns: auto 1fr;
-	}
-
-	.EntityList-content {
-		grid-column-start: 2;
-	}
-
-	.EntityList:has(.Symbols, .EntityList-metaLinks) .EntityList-content {
-		grid-template:
-			"name symbol"
-			"data data" / 1fr auto;
-	}
-
-	.EntityList:not(:has(.Symbols, .EntityList-metaLinks)) .EntityList-content {
-		grid-template:
-			"name"
-			"data";
-	}
-
-	.EntityList-name {
-		grid-area: name;
-	}
-
-	.EntityList-data {
-		grid-area: data;
-	}
-
-	.EntityList-content :is(.Symbols, .EntityList-metaLinks) {
-		grid-area: symbol;
-	}
-}
-
-@container list (width >= 36rem) {
-	.EntityList-item {
-		grid-template-columns: subgrid;
-	}
-
-	.EntityList-image {
-		grid-row: 1;
-	}
-
-	.EntityList-content {
-		align-items: start;
-		grid-row: 1;
-		grid-column-start: 1;
-		grid-template-columns: subgrid;
-	}
-
-	.EntityList:has(.EntityList-image) .EntityList-name {
-		grid-column: 2 / span 1;
-	}
-}
-
-.EntityList-productVariants {
-	grid-column: 1 / -1;
-	display: grid;
-	grid-template-columns: subgrid;
-}
-
-.EntityList-productVariantsButton {
-	grid-column: 1 / -1;
-}
-
-.EntityList-productVariantsButton button {
-	display: flex;
-	gap: 0.5em;
-	align-items: center;
-	padding-block: 0.25em;
-	font-size: 0.875em;
-	font-weight: 600;
-}
-
-.EntityList-productVariantsButton svg {
-	transition: 0.15s all ease;
-	inline-size: 1em;
-}
-
-.EntityList-productVariantsButton button[aria-expanded="false"] svg {
-	rotate: -90deg;
-}
-
-.EntityList--productVariants {
-	border-block-start: var(--border-light);
-	grid-template-columns: subgrid !important;
-	grid-column: 1 / -1;
-}
-
-.EntityList--productVariants .EntityList-content {
-	padding-inline-start: 1.25rem;
-}
-
-.EntityList--productVariants .EntityList-item:first-child {
-	border-block-start: none;
-}
-
-.EntityList--productVariants .EntityList-item:last-child {
-	border-block-end: none;
-	padding-block-end: 0;
+.EntityList-item .Symbols {
+	inline-size: 5.5rem;
+	align-self: start;
 }
 
 .EntityList-name {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 	line-height: 1.5;
 	position: relative;
-}
-
-.is-continued > .EntityList-name {
 	font-weight: 700;
+
+	a {
+		font-size: 1.2em;
+	}
 }
 
-.EntityList--productVariants .EntityList-name {
-	font-size: 0.875em;
-}
-
-.EntityList-name span {
-	display: block;
-}
-
-.EntityList-name small {
-	display: block;
-	font-size: 0.875rem;
-	line-height: 1.5;
-	margin-block-start: 0.5rem;
+.is-discontinued > .EntityList-name {
 	font-weight: normal;
 }
 
-.EntityList-name::before {
+:is(.EntityList--products, .EntityList--brands) .EntityList-name::before {
 	--size: 0.1875rem;
 
 	content: "";
@@ -196,14 +75,41 @@
 	--color: var(--color-discontinued-marker);
 }
 
+.EntityList-brandName {
+	display: block;
+}
+
+.EntityList-modelName {
+	display: block;
+	font-size: 0.875rem;
+	margin-block-start: 0.25rem;
+	font-weight: normal;
+}
+
 .EntityList-data {
 	font-size: 0.875em;
 }
 
-.EntityList-metaLinks {
-	font-size: 0.875em;
+.EntityList-tags {
+	padding-inline-start: 0;
 	display: flex;
-	justify-content: end;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+
+	.Tag {
+		margin: 0;
+	}
+}
+
+.EntityList-productsCount,
+.EntityList-country {
+	font-size: 0.875rem;
+}
+
+.EntityList-country {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
 }
 
 .EntityList-item summary {
@@ -220,4 +126,10 @@
 
 .EntityList-item [open] > summary {
 	padding-block-end: 0.75rem;
+}
+
+.EntityList-metaLinks {
+	font-size: 0.875em;
+	display: flex;
+	justify-content: end;
 }

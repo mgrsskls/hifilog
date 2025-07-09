@@ -1,78 +1,37 @@
 <% mark ||= nil %>
 
-<table class="u-breakpoint-item-l">
-  <thead>
-    <tr>
-      <th><%= Brand.human_attribute_name(:name) %></th>
-      <th><%= Category.model_name.human(count: 2) %></th>
-      <th class="Table-products u-textCenter"><%= Product.model_name.human(count: 2) %></th>
-      <th class="u-textCenter"><%= t('activerecord.attributes.brand.country_code') %></th>
-      <% if user_signed_in? %>
-        <th class="Table-symbols">
-          <span class="u-hiddenVisually">Status</span>
-        </th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% brands.each do |brand| %>
-      <tr class="is-<%= brand.discontinued? ? "discontinued" : "continued" %>">
-        <th scope="row">
-          <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
-        </th>
-        <td class="Table-sm">
-          <%= brand.categories.any? ? brand.categories.map{ |category| category.name }.join(", ").html_safe : "-" %>
-        </td>
-        <td class="Table-products Table-sm">
-          <%= link_to (product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0)), brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
-        </td>
-        <td class="Table-sm u-textCenter">
-          <% if brand.country_name.present? %>
-            <img src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25" height="15">
-          <% else %>
-            -
-          <% end %>
-        </td>
-        <% if user_signed_in? %>
-          <td class="Table-symbols">
-            <%= render "shared/symbols", brand: brand %>
-          </td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<ol class="EntityList EntityList--products u-breakpoint-item-s">
+<ol class="EntityList EntityList--brands">
   <% brands.each do |brand| %>
-    <li class="EntityList-item">
-      <div class="EntityList-content is-<%= brand.discontinued? ? "discontinued" : "continued" %>">
+    <li class="EntityList-item is-<%= brand.discontinued? ? "discontinued" : "continued" %>">
         <div class="EntityList-name">
-          <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
+          <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
+            <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
+            <%= render "shared/symbols", brand: brand %>
+          </div>
         </div>
-        <dl class="EntityList-data Data">
-          <% if brand.categories.any? %>
-            <dt><%= Category.model_name.human %></dt>
-            <dd>
-              <%= brand.categories.map{ |category| category.name }.join(", ").html_safe %>
-            </dd>
-          <% end %>
 
-          <dt><%= Product.model_name.human(count: 2) %></dt>
-          <dd>
-            <%= link_to (product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0)), brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
-          </dd>
+        <% if brand.categories.any? %>
+          <ul class="EntityList-tags">
+            <% brand.categories.each do |category| %>
+            <li class="Tag"><%= category.name %></li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <div class="u-flex u-spaceBetween u-gap-lg">
+          <div class="EntityList-productsCount">
+            <% count = product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0) %>
+            <%= link_to "#{count} #{t('activerecord.models.product', count: count)}", brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
+          </div>
 
           <% if brand.country_name.present? %>
-            <dt><%= t('activerecord.attributes.brand.country_code') %></dt>
-            <dd class="u-flex u-alignCenter u-gap-md">
-              <img src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25" height="15">
+            <div class="EntityList-country">
               <%= brand.country_name %>
-            </dd>
+              <img src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25" height="15">
+            </div>
           <% end %>
-        </dl>
-        <%= render "shared/symbols", brand: brand %>
-      </div>
+        </div>
+
     </li>
   <% end %>
 </ol>

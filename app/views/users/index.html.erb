@@ -42,10 +42,10 @@
           <% end %>
         </tbody>
       </table>
-      <ol class="EntityList EntityList--products u-breakpoint-item-s">
+      <ol class="EntityList EntityList--users u-breakpoint-item-s">
         <% @users_by_products.each_with_index do |user, i| %>
           <li class="EntityList-item">
-            <div class="EntityList-content">
+
               <div class="EntityList-name">
                 <div class="u-flex u-gap-md">
                   <div>
@@ -73,7 +73,7 @@
                   <time datetime="<%= user["created_at"] %>"><%= format_date(user["created_at"]).html_safe %></time>
                 </dd>
               </dl>
-            </div>
+
           </li>
         <% end %>
       </ol>
