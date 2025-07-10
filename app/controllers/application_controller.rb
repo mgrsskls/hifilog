@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
 
   def products_count
     Rails.cache.fetch('/product_count') do
-      Product.count
+      Product.count + ProductVariant.count
     end
   end
 
