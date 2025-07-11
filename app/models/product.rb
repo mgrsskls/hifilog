@@ -138,6 +138,7 @@ class Product < ApplicationRecord
       discontinued
       discontinued_eq
       diy_kit
+      model_no
       name
       name_cont
       name_end
