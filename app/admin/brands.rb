@@ -72,7 +72,7 @@ ActiveAdmin.register Brand do
           f.input :founded_day
         end
       end
-      f.input :discontinued
+      f.input :discontinued, as: :radio
       f.li do
         f.ol class: "flex gap-4" do
           f.input :discontinued_year
