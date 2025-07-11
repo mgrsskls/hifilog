@@ -2,7 +2,7 @@
 
 <ol class="EntityList EntityList--brands">
   <% brands.each do |brand| %>
-    <li class="EntityList-item is-<%= brand.discontinued? ? "discontinued" : "continued" %>">
+    <li class="EntityList-item<% if brand.discontinued? %> is-discontinued <% elsif brand.continued? %> is-continued<% end %>">
         <div class="EntityList-name">
           <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
             <div>
