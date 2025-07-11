@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_09_165014) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_084935) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -137,7 +137,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_165014) do
     t.citext "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "discontinued", default: false, null: false
+    t.boolean "discontinued"
     t.citext "slug", null: false
     t.integer "products_count"
     t.string "website"

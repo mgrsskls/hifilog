@@ -111,7 +111,7 @@
     <div class="Form-field Form-field--inline Entity-discontinued">
       <span class="Form-label"><%= Brand.human_attribute_name(:discontinued) %></span>
       <div class="Form-options">
-        <%= f.radio_button :discontinued, 0, checked: @brand.discontinued.nil? || @brand.discontinued == false %>
+        <%= f.radio_button :discontinued, 0, checked: @brand.discontinued == false %>
         <%= f.label :discontinued, "No", value: 0 %>
         <%= f.radio_button :discontinued, 1, checked: @brand.discontinued == true %>
         <%= f.label :discontinued, "Yes", value: 1  %>
