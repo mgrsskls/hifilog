@@ -7,7 +7,7 @@ ActiveAdmin.register_page "Dashboard" do
       all_brands_count = Brand.all.count
       all_products_count = Product.all.count
       div do
-        discontinued_brands_count = Brand.where(discontinued: true).count
+        dis_continued_brands_count = Brand.where.not(discontinued: nil).count
         brands_with_products_count = Brand.joins(:products).distinct.count
         brands_with_sub_categories_count = Brand.left_outer_joins(:sub_categories).where.not(sub_categories: { id: nil }).distinct.count
         brands_with_country_count = Brand.where.not(country_code: nil).count
@@ -44,10 +44,10 @@ ActiveAdmin.register_page "Dashboard" do
         dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4 mt-4" do
           div do
             dt class: "font-bold text-gray-700" do
-              "Discontinued"
+              "(Dis)continued"
             end
-            dd "#{number_to_rounded(discontinued_brands_count / all_brands_count.to_f * 100, precision: 2)}%" do
-              small "(#{discontinued_brands_count})"
+            dd "#{number_to_rounded(dis_continued_brands_count / all_brands_count.to_f * 100, precision: 2)}%" do
+              small "(#{dis_continued_brands_count})"
             end
           end
           div do
