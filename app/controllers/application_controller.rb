@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
     return unless response&.content_type&.start_with?('text/html')
     return if request.user_agent.nil? || request.user_agent&.empty?
     return if request.is_crawler?
-    return if request.user_agent.downcase.include?('ahrefs') || request.user_agent.downcase.include?('bot')
+    return if current_user&.id == 1
     return if request.path.start_with?('/admin')
 
     ActiveAnalytics.record_request(request)
