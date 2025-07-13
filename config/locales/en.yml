@@ -60,7 +60,7 @@ en:
         name: Name
         private: Visibility
       sub_category:
-        custom_attribute_ids: Attributes
+        custom_attribute_ids: Properties
       user:
         email: Email
         user_name: Username
@@ -120,12 +120,14 @@ en:
   continued: In Production
   custom_attributes:
     active: Active
+    automatic: Automatic
     belt-drive: Belt Drive
     direct-drive: Direct Drive
     dual-mono: Dual-Mono
     dynamic: Dynamic
     electrostatic: Electrostatic
     hybrid: Hybrid
+    manual: Manual
     mc: MC
     mm: MM
     mm-mc: MM / MC
@@ -150,6 +152,7 @@ en:
     loudspeaker_amplification_type: Amplification
     turntable_cartridge_type: Cartridge type
     turntable_drive_type: Drive type
+    turntable_operation_type: Operation type
   custom_product:
     new:
       heading: Add new Custom Product
