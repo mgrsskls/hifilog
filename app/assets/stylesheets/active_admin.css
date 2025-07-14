@@ -41,3 +41,25 @@ a {
 .active-menu-item:not(:has(+ ul .active-menu-item)) {
 	@apply bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white;
 }
+
+.AdminDashboardStat dd {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block-start: 0.25rem;
+}
+
+.AdminDashboardStat dd::before {
+	--perc: calc(var(--val) * 1%);
+
+	content: "";
+	display: block;
+	aspect-ratio: 1;
+	flex-shrink: 0;
+	block-size: 1.5em;
+	border-radius: 50%;
+	background: conic-gradient(
+		hsl(165, 50%, 45%) var(--perc),
+		hsl(330, 50%, 45%) var(--perc)
+	);
+}
