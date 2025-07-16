@@ -6,11 +6,12 @@ class ProductFilterService
 
   Result = Struct.new(:products, keyword_init: true)
 
-  def initialize(filters, brands, category = nil, sub_category = nil)
+  def initialize(filters: {}, brand_filters: {}, brands: [], category: nil, sub_category: nil)
     @filters = filters
     @category = category
     @sub_category = sub_category
     @products = brands.any? ? ProductItem.where(brand_id: brands.map(&:id)) : ProductItem.all
+    @brand_filters = brand_filters
   end
 
   def filter
@@ -35,6 +36,15 @@ class ProductFilterService
     products = apply_search_filter(products, @filters[:query]) if @filters[:query].present?
     products = apply_custom_filters(products, @filters[:custom])
     # products = products.select('products.*, LOWER(products.name)').distinct
+
+    if @brand_filters.present?
+      brand_ids_from_brand_filter = BrandFilterService.new(
+        filters: @brand_filters[:custom][:brands],
+        brands: Brand.where(id: products.pluck(:brand_id).uniq)
+      ).filter.brands.map(&:id)
+      products = products.where(brand_id: brand_ids_from_brand_filter)
+    end
+
     Result.new(products:)
   end
 
