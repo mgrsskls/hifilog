@@ -40,7 +40,7 @@
 	margin-block: 0;
 }
 
-@media (width < 32rem) {
+@media (width < 46rem) {
 	.Footer-wrapper {
 		align-items: start;
 	}
@@ -54,7 +54,7 @@
 	}
 }
 
-@media (width >= 32rem) {
+@media (width >= 46rem) {
 	.Footer-wrapper,
 	.Footer-nav {
 		align-items: center;
