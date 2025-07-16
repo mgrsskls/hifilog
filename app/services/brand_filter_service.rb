@@ -6,11 +6,12 @@ class BrandFilterService
 
   Result = Struct.new(:brands)
 
-  def initialize(filters, category = nil, sub_category = nil)
+  def initialize(brands: [], filters: {}, product_filters: {}, category: nil, sub_category: nil)
     @filters = filters
     @category = category
     @sub_category = sub_category
-    @brands = Brand.all
+    @brands = brands.any? ? brands : Brand.all
+    @product_filters = product_filters
   end
 
   def filter
@@ -25,10 +26,18 @@ class BrandFilterService
     brands = apply_ordering(brands, @filters[:sort])
     brands = apply_status_filter(brands, @filters[:status]) if @filters[:status].present?
     brands = apply_country_filter(brands, @filters[:country]) if @filters[:country].present?
-    brands = apply_diy_kit_filter(brands, @filters[:diy_kit]) if @filters[:diy_kit].present?
-    brands = apply_custom_attributes_filter(brands, @filters[:attr]) if @filters[:attr].present?
     brands = apply_search_filter(brands, @filters[:query]) if @filters[:query].present?
     brands = brands.select('brands.*, LOWER(brands.name)').distinct
+
+    if @product_filters.present? && @product_filters[:custom].present? && @product_filters[:custom][:products].present?
+      brand_ids_from_product_filter = ProductFilterService.new(
+        filters: {
+          custom: @product_filters[:custom][:products]
+        },
+        brands:,
+      ).filter.products.map(&:brand_id).uniq
+      brands = brands.where(id: brand_ids_from_product_filter)
+    end
 
     Result.new(brands:)
   end
@@ -37,27 +46,6 @@ class BrandFilterService
 
   def apply_country_filter(scope, value)
     scope.where(country_code: value.strip.upcase)
-  end
-
-  def apply_diy_kit_filter(scope, value)
-    diy_kit = value == '1'
-    scope = scope.left_joins(products: [:product_variants])
-    scope.where(products: { product_variants: { diy_kit: } })
-         .or(scope.where(products: { diy_kit: }))
-         .distinct
-  end
-
-  def apply_custom_attributes_filter(scope, value)
-    relevant_ids = value.keys.map(&:to_i)
-    CustomAttribute.where(id: relevant_ids).find_each do |custom_attribute|
-      id_s = custom_attribute.id.to_s
-      next if value[id_s].blank?
-
-      scope = scope.joins(:products)
-                   .where('custom_attributes ->> ? IN (?)', id_s, value[id_s])
-                   .distinct
-    end
-    scope
   end
 
   def apply_search_filter(scope, value)
