@@ -24,7 +24,7 @@ class ProductsController < ApplicationController
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
     @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
-    filter = ProductFilterService.new(active_index_filters, [], @category, @sub_category).filter
+    filter = ProductFilterService.new(filters: active_index_filters, category: @category, sub_category: @sub_category, brand_filters: active_index_brand_filters).filter
     @products = filter.products
                       .includes(:brand)
                       .page(params[:page])
@@ -300,6 +300,14 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
 
   def active_index_filters
     build_filters(allowed_index_filter_params)
+  end
+
+  def allowed_index_brand_filter_params
+    params.permit({ brands: [:status, :country] })
+  end
+
+  def active_index_brand_filters
+    build_filters(allowed_index_brand_filter_params)
   end
 
   def map_possession_to_presenter(possession)

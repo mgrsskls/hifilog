@@ -22,7 +22,7 @@ class BrandsController < ApplicationController
     @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
     @filter_applied = active_index_filters.except(:category, :sub_category).any?
 
-    filter = BrandFilterService.new(active_index_filters, @category, @sub_category).filter
+    filter = BrandFilterService.new(filters: active_index_filters, category: @category, sub_category: @sub_category, product_filters:  active_index_product_filters).filter
     @brands = filter.brands
                     .includes(sub_categories: [:category])
                     .page(params[:page])
@@ -38,10 +38,10 @@ class BrandsController < ApplicationController
       allowed_index_product_filter_params.to_h.keys.include?(el)
     end
                         ProductFilterService.new(
-                          active_index_product_filters,
-                          @brands,
-                          @category,
-                          @sub_category
+                          filters: active_index_product_filters,
+                          brands: @brands,
+                          category: @category,
+                          sub_category: @sub_category
                         ).filter.products.group_by(&:brand_id).transform_values(&:length)
                       else
                         @brands.to_h do |brand|
@@ -207,16 +207,19 @@ class BrandsController < ApplicationController
   end
 
   def allowed_index_filter_params
-    params.permit(
-      :category, :status, :country, :diy_kit, :query, :sort,
-      attr: {}
-    )
+    params.permit(:category, :status, :country, :diy_kit, :query, :sort)
   end
 
   def allowed_index_product_filter_params
-    params.permit(
-      :category, :diy_kit, attr: {}
-    )
+    custom_attributes = SubCategory.find(11).custom_attributes
+    custom_attributes_hash = custom_attributes.map do |custom_attribute|
+      {
+        custom_attribute[:label] => []
+      }
+    end
+
+    allowed = [:diy_kit, *custom_attributes_hash]
+    params.permit({ products: allowed })
   end
 
   def allowed_show_product_filter_params

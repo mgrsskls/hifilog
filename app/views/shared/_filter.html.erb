@@ -7,11 +7,11 @@
       <%= Brand.human_attribute_name(:country_code) %>
     </label>
     <%= country_select(nil,
-      "country",
+      type == :products ? "brands[country]" : "country",
       {
         include_blank: "All",
         priority_countries: Brand.where.not(country_code: nil).map { |b| b.country_code.upcase }.uniq,
-        selected: params[:country]&.upcase
+        selected: type == :products ? params[:brands][:country]&.upcase : params[:country]&.upcase
       },
       {
         class: "Filter-input",
@@ -24,7 +24,7 @@
 <% diy_kit = capture do %>
   <div class="Filter-section">
     <label for="filter-diy-kit" class="Filter-option">Assembly</label>
-    <select class="Filter-input" name="diy_kit" id="filter-diy-kit">
+    <select class="Filter-input" name="<%= type == :brands ? "products[diy_kit]" : "diy_kit" %>" id="filter-diy-kit">
       <option value=""<%= ' selected'.html_safe if params[:diy_kit].blank? %>>
         <%= t("filter.all") %>
       </option>
@@ -38,9 +38,9 @@
   </div>
 <% end %>
 
-<% custom_attributes = capture do %>
+<% custom_attributes_html = capture do %>
   <% if custom_attributes&.any? && (sub_category || ['loudspeakers', 'headphones'].include?(category&.slug)) %>
-
+    <% custom_attributes = custom_attributes.where.not(options: nil) if type == :brands %>
 
         <% custom_attributes.each do |custom_attribute| %>
           <fieldset class="Filter-fieldset">
@@ -67,7 +67,7 @@
                 <% custom_attribute.options.each do |option| %>
                   <li class="Pagination-item">
                     <label>
-                      <input type="checkbox" name="<%= custom_attribute.label %>[]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if params[custom_attribute.label]&.include?(option[0].to_s) %>>
+                      <input type="checkbox" name="<%= type == :brands ? "products[#{custom_attribute.label}]" : custom_attribute.label %>[]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if (type == :brands ? params[:products][custom_attribute.label] : params[custom_attribute.label])&.include?(option[0].to_s) %>>
                       <%= t("custom_attributes.#{option[1]}") %>
                     </label>
                   </li>
@@ -205,11 +205,11 @@
         </div>
 
         <% if type == :products %>
-          <%= custom_attributes %>
+          <%= custom_attributes_html %>
 
           <div class="Filter-fieldset">
             <div class="Filter-section">
-              <span class="Filter-legend">Brands</span>
+              <span class="Filter-option Filter-option--large">Brands</span>
               <%= country_filter %>
             </div>
           </div>
@@ -219,15 +219,15 @@
           <%= country_filter %>
 
           <div class="Filter-section">
-            <span class="Filter-legend">Products</span>
+            <span class="Filter-option Filter-option--large">Products</span>
             <%= diy_kit %>
-            <%= custom_attributes %>
+            <%= custom_attributes_html %>
           </div>
         <% end %>
 
         <% if type == :brand_products %>
           <%= diy_kit %>
-          <%= custom_attributes %>
+          <%= custom_attributes_html %>
         <% end %>
 
         <div class="Filter-actions u-flex u-gap-md">
