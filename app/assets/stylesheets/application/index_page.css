@@ -95,6 +95,8 @@
 
 	.IndexPage--fullPage .IndexPage-header {
 		block-size: calc(100dvb - var(--top));
+		padding-inline-start: var(--page-spacing);
+		margin-inline-start: calc(-1 * var(--page-spacing));
 	}
 
 	.IndexPage-content {

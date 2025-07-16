@@ -1,6 +1,4 @@
 .Filter {
-	position: relative;
-	z-index: 1;
 	font-size: 0.875em;
 }
 
@@ -25,6 +23,10 @@
 	gap: 0.5rem;
 	padding-block-end: 2rem;
 	border-block-end: 0.0625rem solid var(--color-transparency-15);
+
+	> :is(div, ul) {
+		grid-column: 1 / -1;
+	}
 }
 
 .Filter-section {
@@ -40,6 +42,10 @@
 .Filter-option {
 	font-weight: 600;
 	grid-column: 1;
+}
+
+legend.Filter-option {
+	grid-column: 1 / -1;
 }
 
 .Filter-option--large {
@@ -107,6 +113,8 @@ html:where([data-theme="dark"]) .Filter-input {
 		border-radius: var(--border-radius);
 		background: var(--color-bg2);
 		padding: 0.75rem;
+		position: relative;
+		z-index: 1;
 	}
 
 	.Filter-form {

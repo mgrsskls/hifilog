@@ -35,13 +35,19 @@
                 <%= t('activerecord.attributes.product.diy_kit') %>
               </li>
             <% end %>
-            <% product.custom_attributes&.each do |custom_attribute| %>
-              <% attr = @custom_attributes_for_products.find { |ca| ca.id == custom_attribute[0].to_i } %>
-              <% option_value = attr&.options[custom_attribute[1].to_s] %>
-              <% if option_value.present? %>
+            <%
+              product.custom_attributes&.each do |custom_attribute|
+                attr = @custom_attributes_for_products.find { |ca| ca.label == custom_attribute[0] }
+                if attr&.options
+                  option_value = attr.options[custom_attribute[1].to_s]
+                  if option_value.present?
+            %>
                 <li class="Tag"><%= I18n.t("custom_attributes.#{option_value}") %></li>
-              <% end %>
-            <% end %>
+            <%
+                  end
+                end
+              end
+            %>
           </ul>
         <% end %>
 
