@@ -150,6 +150,7 @@ en:
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
     loudspeaker_amplification_type: Amplification
+    power_amplifier_channel_type: Channel type
     turntable_cartridge_type: Cartridge type
     turntable_drive_type: Drive type
     turntable_operation_type: Operation type
