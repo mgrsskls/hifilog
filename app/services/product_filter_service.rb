@@ -66,28 +66,18 @@ class ProductFilterService
   def apply_custom_filters(scope, custom_attributes)
     custom_attributes.each do |param|
       custom_attribute = CustomAttribute.find_by(label: param.first)
-      if custom_attribute.present?
-        if custom_attribute[:input_type] == 'number'
-          if custom_attribute[:inputs].present?
-            custom_attribute[:inputs].each do |input|
-              min = Float(param[1][input][:min], exception: false)
-              max = Float(param[1][input][:max], exception: false)
-              scope = scope.where('(custom_attributes -> ? -> ? ->> ?)::numeric >= ?', custom_attribute[:label], 'value', input, min) if min.present?
-              scope = scope.where('(custom_attributes -> ? -> ? ->> ?)::numeric <= ?', custom_attribute[:label], 'value', input, max) if max.present?
-            end
-          else
-            min = Float(param[1][:min], exception: false)
-            max = Float(param[1][:max], exception: false)
-            scope = scope.where('(custom_attributes -> ? ->> ?)::numeric >= ?', custom_attribute[:label], 'value', min) if min.present?
-            scope = scope.where('(custom_attributes -> ? ->> ?)::numeric <= ?', custom_attribute[:label], 'value', max) if max.present?
-          end
 
-          if custom_attribute[:units].present?
-            scope = scope.where('custom_attributes -> ? ->> ? = ?', custom_attribute[:label], 'unit', param[1][:unit]) if param[1][:unit].present?
-          end
-        else
-          scope = scope.where('(custom_attributes -> ?) @> ?::jsonb', custom_attribute[:label], param[1].to_json) if param[1].present?
-        end
+      next if custom_attribute.blank?
+      next if param[1].blank?
+
+      label = custom_attribute[:label]
+
+      case custom_attribute[:input_type]
+      when 'number'
+        scope = filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param[1])
+      else
+        scope = scope.where('(custom_attributes ->> :label IN (:values))', label: label, values: param[1])
+        # scope = scope.where('(custom_attributes ->> :label IN (:values) OR NOT (custom_attributes ? :label))', label: label, values: param[1])
       end
     end
 
@@ -117,5 +107,74 @@ class ProductFilterService
                   release_day ASC NULLS FIRST'
             end
     scope.order(order)
+  end
+
+  def convert_values(unit, min, max)
+    min = Float(min, exception: false)
+    max = Float(max, exception: false)
+
+    case unit
+    when 'in'
+      min *= 2.54 if min.present?
+      max *= 2.54 if max.present?
+    when 'lb'
+      min *= 0.453592 if min.present?
+      max *= 0.453592 if max.present?
+    end
+
+    [min, max]
+  end
+
+  def convert_unit(unit)
+    case unit
+    when 'in' then unit = 'cm'
+    when 'lb' then unit = 'kg'
+    end
+
+    unit
+  end
+
+  def filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param)
+    if custom_attribute[:inputs].present?
+      custom_attribute[:inputs].each do |input|
+        min, max = convert_values(param[:unit], param[input][:min], param[input][:max])
+
+        if min.present?
+          scope = scope.where(
+            '(custom_attributes -> ? -> ? ->> ?)::numeric >= ?',
+            custom_attribute[:label],
+            'value',
+            input,
+            min
+          )
+        end
+
+        next if max.blank?
+
+        scope = scope.where(
+          '(custom_attributes -> ? -> ? ->> ?)::numeric <= ?',
+          custom_attribute[:label],
+          'value',
+          input,
+          max
+        )
+      end
+    else
+      min, max = convert_values(param[:unit], param[:min], param[:max])
+
+      if min.present?
+        scope = scope.where('(custom_attributes -> ? ->> ?)::numeric >= ?', custom_attribute[:label], 'value', min)
+      end
+      if max.present?
+        scope = scope.where('(custom_attributes -> ? ->> ?)::numeric <= ?', custom_attribute[:label], 'value', max)
+      end
+    end
+
+    if custom_attribute[:units].present? && param[:unit].present?
+      unit = convert_unit(param[:unit])
+      scope = scope.where('custom_attributes -> ? ->> ? = ?', custom_attribute[:label], 'unit', unit)
+    end
+
+    scope
   end
 end

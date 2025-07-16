@@ -45,7 +45,7 @@
         <% custom_attributes.each do |custom_attribute| %>
           <fieldset class="Filter-fieldset">
             <% if custom_attribute.label.present? %>
-              <legend class="Filter-option Filter-option--large">
+              <legend class="u-hiddenVisually">
                 <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
                 <% if custom_attribute.units.present? && custom_attribute.units.length == 1 %>
                   <span class="Filter-unit">
@@ -53,6 +53,14 @@
                   </span>
                 <% end %>
               </legend>
+              <div class="Filter-option Filter-option--large" aria-hidden="true">
+                <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+                <% if custom_attribute.units.present? && custom_attribute.units.length == 1 %>
+                  <span class="Filter-unit">
+                    (<%= t("custom_attribute_units.#{custom_attribute.units.first}") %>)
+                  </span>
+                <% end %>
+              </div>
             <% end %>
             <% if custom_attribute.options.present? %>
               <ul class="Pagination">
@@ -152,20 +160,6 @@
           <div class="Filter-section">
             <label class="Filter-option" for="entity-search"><%= t('search') %></label>
             <input id="entity-search" class="Filter-input" type="text" name="query" placeholder="Name" value="<%= query %>">
-          </div>
-
-          <div class="Filter-section">
-            <label for="filter-letter" class="Filter-option">Name</label>
-            <select class="Filter-input" name="letter" id="filter-letter">
-              <option value=""<%= ' selected'.html_safe if params[:letter].blank? %>>
-                <%= t('filter.all') %>
-              </option>
-              <% abc.each do |letter| %>
-                <option value="<%= letter %>"<%= ' selected'.html_safe if params[:letter] == letter %>>
-                  <%= letter.upcase %>
-                </option>
-              <% end %>
-            </select>
           </div>
 
           <div class="Filter-section">
