@@ -86,7 +86,8 @@
 		inset-block-start: var(--top);
 		overflow-y: auto;
 		padding-block: 2rem;
-		padding-inline-end: var(--page-spacing);
+		padding-inline: var(--page-spacing);
+		margin-inline-start: calc(-1 * var(--page-spacing));
 		box-sizing: border-box;
 		border-inline-end: var(--border-light);
 		display: flex;
@@ -95,8 +96,6 @@
 
 	.IndexPage--fullPage .IndexPage-header {
 		block-size: calc(100dvb - var(--top));
-		padding-inline-start: var(--page-spacing);
-		margin-inline-start: calc(-1 * var(--page-spacing));
 	}
 
 	.IndexPage-content {

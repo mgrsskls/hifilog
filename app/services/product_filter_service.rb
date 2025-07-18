@@ -34,12 +34,11 @@ class ProductFilterService
     products = apply_country_filter(products, @filters[:country]) if @filters[:country].present?
     products = apply_diy_kit_filter(products, @filters[:diy_kit]) if @filters[:diy_kit].present?
     products = apply_search_filter(products, @filters[:query]) if @filters[:query].present?
-    products = apply_custom_filters(products, @filters[:custom])
-    # products = products.select('products.*, LOWER(products.name)').distinct
+    products = apply_custom_filters(products, @filters[:custom]) if @filters[:custom].present?
 
     if @brand_filters.present?
       brand_ids_from_brand_filter = BrandFilterService.new(
-        filters: @brand_filters[:custom][:brands],
+        filters: @brand_filters,
         brands: Brand.where(id: products.pluck(:brand_id).uniq)
       ).filter.brands.map(&:id)
       products = products.where(brand_id: brand_ids_from_brand_filter)
@@ -82,13 +81,12 @@ class ProductFilterService
 
       label = custom_attribute[:label]
 
-      case custom_attribute[:input_type]
-      when 'number'
-        scope = filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param[1])
-      else
-        scope = scope.where('(custom_attributes ->> :label IN (:values))', label: label, values: param[1])
-        # scope = scope.where('(custom_attributes ->> :label IN (:values) OR NOT (custom_attributes ? :label))', label: label, values: param[1])
-      end
+      scope = case custom_attribute[:input_type]
+              when 'number'
+                filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param[1])
+              else
+                scope.where('(custom_attributes ->> :label IN (:values))', label: label, values: param[1])
+              end
     end
 
     scope
