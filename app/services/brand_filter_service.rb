@@ -27,13 +27,11 @@ class BrandFilterService
     brands = apply_status_filter(brands, @filters[:status]) if @filters[:status].present?
     brands = apply_country_filter(brands, @filters[:country]) if @filters[:country].present?
     brands = apply_search_filter(brands, @filters[:query]) if @filters[:query].present?
-    brands = brands.select('brands.*, LOWER(brands.name)').distinct
+    # brands = brands.select('brands.*, LOWER(brands.name)').distinct
 
-    if @product_filters.present? && @product_filters[:custom].present? && @product_filters[:custom][:products].present?
+    if @product_filters.present?
       brand_ids_from_product_filter = ProductFilterService.new(
-        filters: {
-          custom: @product_filters[:custom][:products]
-        },
+        filters: @product_filters,
         brands:,
       ).filter.products.map(&:brand_id).uniq
       brands = brands.where(id: brand_ids_from_product_filter)

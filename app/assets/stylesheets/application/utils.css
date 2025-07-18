@@ -16,6 +16,10 @@
 	display: flex;
 }
 
+.u-flexColumn {
+	flex-direction: column;
+}
+
 .u-flexWrap {
 	flex-wrap: wrap;
 }

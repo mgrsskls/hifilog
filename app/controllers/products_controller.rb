@@ -21,10 +21,16 @@ class ProductsController < ApplicationController
       ), status: :moved_permanently
     end
 
-    @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
-    @filter_applied = active_index_filters.except(:category, :sub_category).any?
+    @category, @sub_category = extract_category(params[:category])
+    @custom_attributes = extract_custom_attributes(@category, @sub_category)
+    @filter_applied = active_index_filters.except(:category, :sub_category).merge(active_index_brand_filters)
 
-    filter = ProductFilterService.new(filters: active_index_filters, category: @category, sub_category: @sub_category, brand_filters: active_index_brand_filters).filter
+    filter = ProductFilterService.new(
+      filters: active_index_filters,
+      category: @category,
+      sub_category: @sub_category,
+      brand_filters: active_index_brand_filters
+    ).filter
     @products = filter.products
                       .includes(:brand)
                       .page(params[:page])
@@ -272,34 +278,14 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def allowed_index_filter_params
-    custom_attributes = SubCategory.find(11).custom_attributes
-    custom_attributes_hash = custom_attributes.map do |custom_attribute|
-      if custom_attribute[:inputs].present?
-        {
-          custom_attribute[:label] => [
-            :unit,
-            custom_attribute[:inputs].map do |input|
-              { input => [:min, :max] }
-            end
-          ]
-        }
-      elsif custom_attribute[:input_type] == 'number'
-        {
-          custom_attribute[:label] => [:min, :max, :unit]
-        }
-      else
-        {
-          custom_attribute[:label] => []
-        }
-      end
-    end
-
-    allowed = [:category, :status, :diy_kit, :country, :query, :sort, *custom_attributes_hash]
+    allowed = [:category, :status, :diy_kit, :query, :sort, *build_custom_attributes_hash(@custom_attributes)]
     params.permit(allowed)
   end
 
   def active_index_filters
-    build_filters(allowed_index_filter_params)
+    build_filters(allowed_index_filter_params).merge(
+      build_product_filters(allowed_index_filter_params.except(:category, :status, :query, :sort))
+    )
   end
 
   def allowed_index_brand_filter_params
@@ -307,7 +293,7 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def active_index_brand_filters
-    build_filters(allowed_index_brand_filter_params)
+    build_brand_filters(allowed_index_brand_filter_params, nested: true)
   end
 
   def map_possession_to_presenter(possession)

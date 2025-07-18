@@ -19,10 +19,18 @@ class BrandsController < ApplicationController
       ), status: :moved_permanently
     end
 
-    @category, @sub_category, @custom_attributes = extract_filter_context(allowed_index_filter_params)
-    @filter_applied = active_index_filters.except(:category, :sub_category).any?
+    @category, @sub_category = extract_category(params[:category])
+    @custom_attributes = extract_custom_attributes(@category, @sub_category)
+    @filter_applied = active_index_filters.except(:category, :sub_category).merge(
+      active_index_product_filters
+    )
 
-    filter = BrandFilterService.new(filters: active_index_filters, category: @category, sub_category: @sub_category, product_filters:  active_index_product_filters).filter
+    filter = BrandFilterService.new(
+      filters: active_index_filters,
+      category: @category,
+      sub_category: @sub_category,
+      product_filters: active_index_product_filters
+    ).filter
     @brands = filter.brands
                     .includes(sub_categories: [:category])
                     .page(params[:page])
@@ -92,10 +100,16 @@ class BrandsController < ApplicationController
 
   def products
     @brand = Brand.includes(sub_categories: [:category], products: [:product_variants]).friendly.find(params[:brand_id])
-    @category, @sub_category, @custom_attributes = extract_filter_context(allowed_show_product_filter_params)
-    @filter_applied = active_show_product_filters.any?
+    @category, @sub_category = extract_category(params[:category])
+    @custom_attributes = extract_custom_attributes(@category, @sub_category)
+    @filter_applied = active_show_product_filters
 
-    filter = ProductFilterService.new(active_show_product_filters, [@brand], @category, @sub_category).filter
+    filter = ProductFilterService.new(
+      filters: active_show_product_filters,
+      brands: [@brand],
+      category: @category,
+      sub_category: @sub_category
+    ).filter
     @products = filter.products
                       .page(params[:page])
     if @products.out_of_range?
@@ -207,36 +221,32 @@ class BrandsController < ApplicationController
   end
 
   def allowed_index_filter_params
-    params.permit(:category, :status, :country, :diy_kit, :query, :sort)
-  end
-
-  def allowed_index_product_filter_params
-    custom_attributes = SubCategory.find(11).custom_attributes
-    custom_attributes_hash = custom_attributes.map do |custom_attribute|
-      {
-        custom_attribute[:label] => []
-      }
-    end
-
-    allowed = [:diy_kit, *custom_attributes_hash]
-    params.permit({ products: allowed })
-  end
-
-  def allowed_show_product_filter_params
-    params.permit(
-      :category, :status, :diy_kit, :query, :sort, attr: {}
-    )
+    params.permit(:category, :status, :country, :query, :sort)
   end
 
   def active_index_filters
-    build_filters(allowed_index_filter_params)
+    build_filters(allowed_index_filter_params).merge(
+      build_brand_filters(allowed_index_filter_params.except(:category))
+    )
+  end
+
+  def allowed_index_product_filter_params(nested: false)
+    custom_attributes_hash = *build_custom_attributes_hash(@custom_attributes)
+    allowed = nested ? [{ products: [:diy_kit, *custom_attributes_hash] }] : [:diy_kit, *custom_attributes_hash]
+    params.permit(allowed)
   end
 
   def active_index_product_filters
-    build_filters(allowed_index_product_filter_params)
+    build_product_filters(allowed_index_product_filter_params(nested: true), nested: true)
+  end
+
+  def allowed_show_product_filter_params
+    params.permit(:category, :status, :query, :sort)
   end
 
   def active_show_product_filters
-    build_filters(allowed_show_product_filter_params)
+    build_filters(allowed_show_product_filter_params).merge(
+      build_product_filters(allowed_index_product_filter_params)
+    )
   end
 end

@@ -168,13 +168,14 @@ en:
     loudspeaker_amplification_type: Amplification
     loudspeaker_bi_amping: Bi-Amping
     loudspeaker_bi_wiring: Bi-Wiring
-    loudspeaker_driver_configuration: Diver configuration
+    loudspeaker_driver_configuration: Driver configuration
     loudspeaker_driver_types: Driver types
     loudspeaker_enclosure_type: Enclosure type
     loudspeaker_frequency_response_range: Frequency Response Range
     loudspeaker_minimum_impedance: Minimum Impedance
     loudspeaker_nominal_impedance: Nominal Impedance
     loudspeaker_peak_power: Peak Power
+    loudspeaker_peak_spl: Peak SPL
     loudspeaker_recommended_amplifier_power: Recommended Amplifier Power
     loudspeaker_rms_power: RMS Power
     loudspeaker_sensitivity: Sensitivity
@@ -197,7 +198,7 @@ en:
     in: in
     kg: kg
     lb: lb
-    ohm: Ohm
+    ohm: "&ohm;"
     w: W
   custom_product:
     new:
