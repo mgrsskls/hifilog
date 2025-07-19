@@ -45,6 +45,14 @@ class ApplicationController < ActionController::Base
     return if request.path.start_with?('/admin')
 
     ActiveAnalytics.record_request(request)
+    ActiveRecord::Base.connection.execute(
+      ActiveRecord::Base.sanitize_sql(
+        [
+          'INSERT INTO user_agents (user_agent, created_at, updated_at) VALUES (?, NOW(), NOW())',
+          request.user_agent
+        ]
+      )
+    )
   end
 
   def menu_categories
