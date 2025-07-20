@@ -37,6 +37,7 @@ class UsersController < ApplicationController
                      all
                    end
     @categories = get_grouped_sub_categories(possessions: all)
+    @empty_state = 'public_profile'
 
     @render_since = true
     @render_period = false
@@ -62,6 +63,7 @@ class UsersController < ApplicationController
                      all
                    end
     @categories = get_grouped_sub_categories(possessions: all)
+    @empty_state = 'public_profile_previous'
 
     @render_since = false
     @render_period = true

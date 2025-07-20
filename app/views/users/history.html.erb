@@ -4,6 +4,6 @@
       possessions: @possessions
     %>
   <% else %>
-    <%= render "shared/empty_state", message: t('empty_state.public_profile', name: h(@user.user_name)) %>
+    <%= render "shared/empty_state", message: t('empty_state.public_profile_history', name: h(@user.user_name)) %>
   <% end %>
 <% end %>

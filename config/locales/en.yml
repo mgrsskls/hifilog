@@ -182,6 +182,8 @@ en:
     products: "<p><b>No products found.</b></p>"
     products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}" rel="nofollow">add a product here</a>.</p>
     public_profile: "<p><i>%{name}</i> has not added any products to their collection yet.</p>"
+    public_profile_previous: "<p><i>%{name}</i> has not added any products to list of previous products yet.</p>"
+    public_profile_history: "<p><i>%{name}</i> has not added enough information about their products yet.</p>"
     setup_products: <p><b>You have not added any products to this setup yet.</b></p><p>You can either do it by clicking on "Add / Remove Product" or directly on a product product page.</p>
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
     statistics:

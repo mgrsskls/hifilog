@@ -2,85 +2,89 @@
   <%= javascript_include_tag "gallery", type: "module", nonce: true, crossorigin: true, integrity: true %>
 <% end %>
 <%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category } do %>
-  <ul class="ProfilePossessions">
-    <% @possessions.each do |possession| %>
-      <li class="ProfilePossessions-item">
-        <div class="ProfilePossessions-header">
-          <h3 class="h4">
-            <a href="<%= possession.show_path %>">
-              <b><%= possession.display_name %></b>
-            </a>
-            <% if possession.product_option.present? || possession.model_no.present? %>
-              <div>
-                <small class="Table-productOption">
-                  <%= possession.model_no if possession.model_no.present? %>
-                  <% if possession.product_option.present? && possession.model_no.present? %>&middot;<% end %>
-                  <%= possession.product_option.option if possession.product_option.present? %>
-                </small>
-              </div>
-            <% end %>
-          </h3>
+  <% if @possessions.any? %>
+    <ul class="ProfilePossessions">
+      <% @possessions.each do |possession| %>
+        <li class="ProfilePossessions-item">
+          <div class="ProfilePossessions-header">
+            <h3 class="h4">
+              <a href="<%= possession.show_path %>">
+                <b><%= possession.display_name %></b>
+              </a>
+              <% if possession.product_option.present? || possession.model_no.present? %>
+                <div>
+                  <small class="Table-productOption">
+                    <%= possession.model_no if possession.model_no.present? %>
+                    <% if possession.product_option.present? && possession.model_no.present? %>&middot;<% end %>
+                    <%= possession.product_option.option if possession.product_option.present? %>
+                  </small>
+                </div>
+              <% end %>
+            </h3>
 
-          <% if possession.prev_owned %>
+            <% if possession.prev_owned %>
+              <small>
+                <% if possession.period_from && possession.period_to %>
+                  Owned from <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time> &ndash; <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
+                <% elsif possession.period_from %>
+                  Owned since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
+                <% elsif possession.period_to %>
+                  Owned until <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
+                <% end %>
+              </small>
+            <% else %>
+              <% if possession.period_from %>
+                <small>
+                  Since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
+                </small>
+              <% end %>
+            <% end %>
+          </div>
+          <ul class="ProfilePossessions-images ImageLightbox ImageGallery">
+            <% if possession.images.attached? %>
+              <% possession.sorted_images.each_with_index do |image, i| %>
+                <li class="ImageLightbox-item">
+                  <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
+                    <picture>
+                      <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                    </picture>
+                  </button>
+                  <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
+                    <picture>
+                      <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                    </picture>
+                    <% if possession.sorted_images.size > 1 %>
+                      <div class="ImageGallery-info is-dark">
+                        <% if i < possession.sorted_images.size - 1 %>
+                          <button type="button" rel="next" aria-label="Next">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
+                          </button>
+                        <% end %>
+                        <% if i > 0 %>
+                          <button type="button" rel="prev" aria-label="Previous">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
+                          </button>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </dialog>
+                </li>
+              <% end %>
+            <% end %>
+          </ul>
+          <p>
             <small>
-              <% if possession.period_from && possession.period_to %>
-                Owned from <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time> &ndash; <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
-              <% elsif possession.period_from %>
-                Owned since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
-              <% elsif possession.period_to %>
-                Owned until <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
+              <% if possession.sub_categories.any? %>
+                <%= possession.sub_categories.map{ |sub_category| sub_category.name }.join(", ").html_safe %>
+              <% else %>
+                <%= possession.categories.map{ |category| category.name }.join(", ").html_safe %>
               <% end %>
             </small>
-          <% else %>
-            <% if possession.period_from %>
-              <small>
-                Since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
-              </small>
-            <% end %>
-          <% end %>
-        </div>
-        <ul class="ProfilePossessions-images ImageLightbox ImageGallery">
-          <% if possession.images.attached? %>
-            <% possession.sorted_images.each_with_index do |image, i| %>
-              <li class="ImageLightbox-item">
-                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
-                  <picture>
-                    <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
-                  </picture>
-                </button>
-                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
-                  <picture>
-                    <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
-                  </picture>
-                  <% if possession.sorted_images.size > 1 %>
-                    <div class="ImageGallery-info is-dark">
-                      <% if i < possession.sorted_images.size - 1 %>
-                        <button type="button" rel="next" aria-label="Next">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
-                        </button>
-                      <% end %>
-                      <% if i > 0 %>
-                        <button type="button" rel="prev" aria-label="Previous">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
-                        </button>
-                      <% end %>
-                    </div>
-                  <% end %>
-                </dialog>
-              </li>
-            <% end %>
-          <% end %>
-        </ul>
-        <p>
-          <small>
-            <% if possession.sub_categories.any? %>
-              <%= possession.sub_categories.map{ |sub_category| sub_category.name }.join(", ").html_safe %>
-            <% else %>
-              <%= possession.categories.map{ |category| category.name }.join(", ").html_safe %>
-            <% end %>
-          </small>
-        </p>
-      </li>
-    <% end %>
-  </ul>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <%= render "shared/empty_state", message: t("empty_state.#{@empty_state}", name: h(@user.user_name)) %>
+  <% end %>
 <% end %>
