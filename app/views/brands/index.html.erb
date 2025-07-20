@@ -1,19 +1,22 @@
 <% content_for :header do %>
-  <% if @sub_category %>
-    <h1 class="h1-sm">
-      <span class="IndexPage-category"><%= @category.name %></span><span class="u-hiddenVisually">:</span> <%= @sub_category.name %>
-    </h1>
-  <% else %>
-    <h1><%= @category ? @category.name : Brand.model_name.human(count: 2) %></h1>
+  <h1>
+    <% if @sub_category.present? or @category.present? %>
+      <%= (@sub_category.present? ? @sub_category : @category).name %>
+    <% else %>
+      <%= Brand.model_name.human(count: 2) %>
+    <% end %>
+  </h1>
+<% end %>
+
+<% content_for :actions do %>
+  <b><%= Brand.model_name.human(count: 2) %></b>
+  <%= link_to user_signed_in? ? new_brand_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_brand_path(sub_category: @sub_category&.slug)), rel: "nofollow", class: "IndexPage-addLink" do %>
+    <span><%= t('brand.new.link') %></span>
   <% end %>
 <% end %>
 
 <% content_for :filter do %>
   <%= render "shared/filter", reset_path: brands_path(category: params[:category]), collection: @brands, query: @brands_query, type: :brands, custom_attributes: @custom_attributes, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
-<% end %>
-
-<% content_for :add_link do %>
-  <%= link_to t('brand.new.link'), user_signed_in? ? new_brand_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_brand_path(sub_category: @sub_category&.slug)), class: "Button Button--secondary", rel: "nofollow" %>
 <% end %>
 
 <% content_for :sort do %>
@@ -40,6 +43,5 @@
   empty_state_message: t('empty_state.brands_filter', path: new_brand_path),
   category: @category,
   sub_category: @sub_category,
-  full_page: true,
   filter_applied: @filter_applied
 %>

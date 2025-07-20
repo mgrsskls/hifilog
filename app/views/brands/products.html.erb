@@ -1,35 +1,42 @@
-<%= render layout: "layout", locals: { active: :products, brand: @brand } do %>
-  <% content_for :header do %>
-    <h2><%= Product.model_name.human(count: 2) %></h2>
-  <% end %>
-
-  <% content_for :filter do %>
-    <%= render "shared/filter", reset_path: brand_products_path(brand_id: @brand.friendly_id), collection: @products, query: @products_query, categories: @all_sub_categories_grouped, type: :brand_products, custom_attributes: @custom_attributes, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
-  <% end %>
-
-  <% content_for :add_link do %>
-    <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug)), class: "Button Button--secondary", rel: "nofollow" %>
-  <% end %>
-
-  <% content_for :sort do %>
-    <label for="sort">Sort</label>
-    <select name="sort" id="sort">
-      <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
-      <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
-      <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
-      <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('sort_by.release_date_asc') %></option>
-    </select>
-  <% end %>
-
-  <% content_for :table do %>
-    <%= render "shared/products_table", products: @product_presenters, hide_brand: true, filter_applied: @filter_applied %>
-  <% end %>
-
-  <%= render "shared/index_page",
-    records: @products,
-    presenters: @product_presenters,
-    empty_state_message: t('empty_state.cta', name: h(@brand.name), path: user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id))),
-    category: @category,
-    sub_category: @sub_category
-  %>
+<% content_for :header do %>
+  <h1>
+    <%= @brand.name %> <span class="IndexPage-category"><%= Product.model_name.human(count: 2) %></span>
+  </h1>
 <% end %>
+
+<% content_for :actions do %>
+    <b>
+      <a href="<%= brand_path(id: @brand.friendly_id) %>">
+        &larr; <span>Back</span>
+      </a>
+    </b>
+    <%= link_to user_signed_in? ? new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug)), rel: "nofollow" do %>
+      <span><%= t('product.new.link') %></span>
+    <% end %>
+<% end %>
+
+<% content_for :filter do %>
+  <%= render "shared/filter", reset_path: brand_products_path(brand_id: @brand.friendly_id), collection: @products, query: @products_query, categories: @all_sub_categories_grouped, type: :brand_products, custom_attributes: @custom_attributes, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
+<% end %>
+
+<% content_for :sort do %>
+  <label for="sort">Sort</label>
+  <select name="sort" id="sort">
+    <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
+    <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
+    <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
+    <option value="release_date_asc"<%= " selected" if params[:sort] == "release_date_asc" %>><%= t('sort_by.release_date_asc') %></option>
+  </select>
+<% end %>
+
+<% content_for :table do %>
+  <%= render "shared/products_table", products: @product_presenters, hide_brand: true, filter_applied: @filter_applied %>
+<% end %>
+
+<%= render "shared/index_page",
+  records: @products,
+  presenters: @product_presenters,
+  empty_state_message: t('empty_state.cta', name: h(@brand.name), path: user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id))),
+  category: @category,
+  sub_category: @sub_category
+%>

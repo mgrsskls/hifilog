@@ -2,17 +2,6 @@
 	padding-block-end: 4rem;
 }
 
-.Profile-hiddenNotice {
-	background: var(--color-invalid-light);
-	color: var(--color-invalid-dark);
-	padding-block: 1rem;
-	text-align: center;
-}
-
-.Profile-hiddenNotice p {
-	margin-block: 0;
-}
-
 .Profile-header {
 	background: var(--color-blue-175);
 }
