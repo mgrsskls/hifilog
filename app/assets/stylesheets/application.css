@@ -87,9 +87,11 @@
 		z-index: 9999;
 	}
 
-	.Main:not(:has(.Home)):not(:has(.Profile)):not(
-			:has(.IndexPage--fullPage)
-		):not(:has(.Dashboard)) {
+	.Main:where(
+			:not(:has(.Home)):not(:has(.Profile)):not(:has(.IndexPage)):not(
+					:has(.Dashboard)
+				)
+		) {
 		padding-block: clamp(1.5rem, 5vw, 3rem);
 	}
 
@@ -117,7 +119,12 @@
 		line-height: 1.5;
 		display: block;
 		color: var(--color-secondary);
-		margin-block-start: 0.25rem;
+	}
+
+	h1:has(small, span) {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
 	}
 
 	.IndexPage-category {

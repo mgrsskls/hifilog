@@ -14,7 +14,9 @@
 }
 
 .Filter-fieldset {
-	border-block-end: 0.0625rem solid var(--color-transparency-15);
+	&:not(:has(+ .Filter-actions)) {
+		border-block-end: 0.0625rem solid var(--color-transparency-15);
+	}
 
 	&[open] {
 		padding-block-end: 1rem;
@@ -84,7 +86,13 @@ html:where([data-theme="light"]) .Filter-input {
 
 .Filter-actions {
 	font-size: 1rem;
-	padding-block-start: 2rem;
+	position: sticky;
+	inset-block-end: 0;
+	inset-inline: 0;
+	padding-block: 1.5rem;
+	margin-block-start: 1rem;
+	background: var(--color-bg-main);
+	border-block-start: var(--border-light);
 }
 
 .Filter-fieldsetContent {
@@ -130,6 +138,7 @@ html:where([data-theme="dark"]) .Filter-input {
 	.Filter-form {
 		background: var(--color-bg2);
 		padding: 1rem;
+		padding-block-end: 0;
 		border-radius: var(--border-radius);
 		position: fixed;
 		inset-inline: 1rem;
@@ -142,6 +151,12 @@ html:where([data-theme="dark"]) .Filter-input {
 		overscroll-behavior: contain;
 		box-sizing: border-box;
 		font-size: 1rem;
+	}
+
+	.Filter-actions {
+		background: var(--color-bg2);
+		margin-inline: -1rem;
+		padding-inline: 1rem;
 	}
 
 	.Filter:has([aria-expanded="true"])::before {

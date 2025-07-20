@@ -2,15 +2,22 @@
   <%= stylesheet_link_tag "entity", crossorigin: true, integrity: true %>
 <% end %>
 
-<%= render layout: "layout", locals: { active: :main, brand: @brand } do %>
   <div class="Entity">
     <div class="Entity-main">
       <div class="Product-details">
-        <% if @brand.formatted_description.present? %>
-          <div class="Entity-section Rte">
-            <%= @brand.formatted_description %>
+
+        <div class="Entity-section Rte">
+          <div class="u-flex u-gap-lg u-spaceBetween u-alignCenter">
+            <h1>
+              <%= @brand.name %>
+              <% if @brand.full_name %><span class="IndexPage-category"><%= @brand.full_name %></span><% end %>
+            </h1>
+            <a class="Button" href="<%= brand_products_path(brand_id: @brand.friendly_id) %>">
+              Show Products
+            </a>
           </div>
-        <% end %>
+          <%= @brand.formatted_description %>
+        </div>
 
         <dl class="Data">
           <% if @brand.discontinued %>
@@ -102,4 +109,3 @@
       </div>
     </div>
   </div>
-<% end %>

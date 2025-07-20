@@ -1,20 +1,16 @@
-<% full_page ||= false %>
-<div class="IndexPage<%= " IndexPage--fullPage" if full_page %>" id="list">
+<div class="IndexPage" id="list">
   <div class="IndexPage-header">
     <div class="IndexPage-headerFilter">
+      <% if yield(:actions).present? %>
+        <div class="IndexPage-actions">
+          <%= yield :actions %>
+        </div>
+      <% end %>
       <%= yield :header %>
-
-      <div class="IndexPage-addLink IndexPage-addLink--s">
-        <%= yield :add_link %>
-      </div>
     </div>
 
     <div class="IndexPage-filter">
       <%= yield :filter %>
-    </div>
-
-    <div class="IndexPage-addLink IndexPage-addLink--l">
-      <%= yield :add_link %>
     </div>
   </div>
   <div class="IndexPage-content">

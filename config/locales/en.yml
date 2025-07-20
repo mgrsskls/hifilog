@@ -106,8 +106,8 @@ en:
       label: Edit
   brand:
     new:
-      heading: Add new Brand
-      link: Add new Brand
+      heading: Add Brand
+      link: Add Brand
       submit: Submit
     founded: Founded
   changelog:
@@ -289,8 +289,8 @@ en:
       removed_from_prev: Your <b>%{name}</b> has been removed from your list of previous products.
   product:
     new:
-      heading: Add new Product
-      link: Add new Product
+      heading: Add Product
+      link: Add Product
       submit: Submit
     remove:
       confirm: Are you sure you want to remove %{name} from your collection?
