@@ -43,6 +43,7 @@ class ApplicationController < ActionController::Base
     return if request.is_crawler?
     return if current_user&.id == 1
     return if request.path.start_with?('/admin')
+    return if IPS_BLOCKED_FOR_ANALYTICS.include?(request.ip)
 
     ActiveAnalytics.record_request(request)
     ActiveRecord::Base.connection.execute(
