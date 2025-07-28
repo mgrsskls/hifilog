@@ -1,6 +1,7 @@
 class ProductItemPresenter
   include Rails.application.routes.url_helpers
   include FormatHelper
+
   delegate_missing_to :@object
 
   def initialize(object)

@@ -1,5 +1,6 @@
 class NotesController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
+
   before_action :authenticate_user!
 
   def index

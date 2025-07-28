@@ -1,5 +1,6 @@
 class StaticController < ApplicationController
   include FormatHelper
+
   content_security_policy false, only: [:amp_to_headphone_calculator]
 
   def changelog
