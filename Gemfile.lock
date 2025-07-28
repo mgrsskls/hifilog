@@ -47,11 +47,11 @@ GEM
     active_analytics (0.4.1)
       browser (>= 1.0.0)
       rails (>= 5.2.0)
-    activeadmin (4.0.0.beta15)
+    activeadmin (4.0.0.beta16)
       arbre (~> 2.0)
       csv
-      formtastic (>= 3.1)
-      formtastic_i18n (>= 0.4)
+      formtastic (>= 5.0)
+      formtastic_i18n (>= 0.7)
       inherited_resources (~> 2.0)
       kaminari (>= 1.2.1)
       railties (>= 7.0)
@@ -330,7 +330,7 @@ GEM
       erb
       psych (>= 4.0.0)
     regexp_parser (2.10.0)
-    reline (0.6.1)
+    reline (0.6.2)
       io-console (~> 0.5)
     request_store (1.7.0)
       rack (>= 1.4)
@@ -439,7 +439,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_analytics
-  activeadmin (~> 4.0.0.beta15)
+  activeadmin (~> 4.0.0.beta16)
   auto_strip_attributes (~> 2.6)
   aws-sdk-rails (~> 5)
   aws-sdk-s3 (~> 1)
