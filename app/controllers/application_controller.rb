@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
 
-  # before_action :block_bots
   before_action :configure_permitted_parameters, if: :devise_controller?
   after_action :record_page_view
 
@@ -43,7 +42,7 @@ class ApplicationController < ActionController::Base
     return if request.is_crawler?
     return if current_user&.id == 1
     return if request.path.start_with?('/admin')
-    return if IPS_BLOCKED_FOR_ANALYTICS.include?(request.ip)
+    return if IPS_BLOCKED_FOR_ANALYTICS.any? { |ip| request.ip.start_with?(ip) }
 
     ActiveAnalytics.record_request(request)
     ActiveRecord::Base.connection.execute(
@@ -114,12 +113,6 @@ class ApplicationController < ActionController::Base
   end
 
   private
-
-  def block_bots
-    head :forbidden if BOTS.any? do |user_agent|
-      request.user_agent.downcase.include?(user_agent.downcase) if request.user_agent.present?
-    end
-  end
 
   def redirect_back_to_product(product: nil, product_variant: nil, custom_product: nil)
     if custom_product.present?
