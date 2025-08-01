@@ -67,7 +67,7 @@
     <%= yield :css %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <meta name="description" content="<%= @meta_desc.present? ? @meta_desc : (strip_tags t('meta_description')) %>">
+    <meta name="description" content="<%= @meta_desc.present? ? @meta_desc.squish : (strip_tags t('meta_description')) %>">
     <link rel="icon" href="/favicon.ico?v=6" sizes="32x32">
     <link rel="icon" href="/icon.svg?v=8" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8">
@@ -83,7 +83,7 @@
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://www.hifilog.com<%= request.fullpath %>">
     <meta property="og:og:site_name" content="<%= APP_NAME %>">
-    <meta property="og:description" content="<%= @meta_desc.present? ? @meta_desc : (strip_tags t('meta_description')) %>">
+    <meta property="og:description" content="<%= @meta_desc.present? ? @meta_desc.squish : (strip_tags t('meta_description')) %>">
     <meta name="fediverse:creator" content="@hifilog@mastodon.social">
   </head>
 

@@ -182,12 +182,18 @@ class ProductsController < ApplicationController
   private
 
   def set_meta_desc
-    return if @product.description.blank?
+    if @product.description.present?
+      @meta_desc = ActionController::Base.helpers.truncate(
+        ActionController::Base.helpers.strip_tags(@product.formatted_description),
+        length: 155
+      )
+      return
+    end
 
-    @meta_desc = ActionController::Base.helpers.truncate(
-      ActionController::Base.helpers.strip_tags(@product.formatted_description),
-      length: 155
-    )
+    @meta_desc = "The #{@product.name}
+#{@product.discontinued? && @product.product_variants.all?(&:discontinued) ? 'were' : 'are'}
+#{@product.sub_categories.map(&:name).join(' / ')}
+by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @brand.country_code.present?}."
   end
 
   def find_product
