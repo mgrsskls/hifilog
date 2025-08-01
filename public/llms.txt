@@ -1,0 +1,16 @@
+# HiFi Log
+
+> HiFi Log is a database for hi-fi brands and their products. The database is curated by their users. Additionally, users can add products to their collection, upload pictures, create a public profile and more.
+
+HiFi Log is built on three main aspects: discover, contribute and collect.
+
+Discovering is all about finding products or brands, either to buy new gear or simply find information. As audiophiles often look for very specific things, HiFi Log tries to provide a search and filter functionality which is very sophisticated.
+
+Contributing is all about creating the largest database for hi-fi products and brands in the world. We do not want a database curated by brands or other people with a financial interest. Instead we want it to be truly neutral place. HiFi Log is and will be free, but therefore needs the contribution by its users.
+
+Collecting is all about supporting the users on their hi-fi journey. They can add their current products to their collection, assign them to setups (like "Living Room" or "Office"), adding previously owned products to create a history of all their gear, add purchase information, so they get statistics about all their gear, upload pictures, show them on a profile, bookmark products and make notes.
+
+## Discovering products and brands
+
+- [Products](https://www.hifilog.com/products/): Users can filter products not all by category, but also by their properties (for example "discontinued" or "in production", "passive" or "active" loudspeakers or "tube" or "solid-state" amplifiers) and by properties of their brand (for example products from brands that are produced in Germany).
+- [Brands](https://www.hifilog.com/brands/): Users can filter brands by not only by the type of products they offer, but also by their properties (for example "discontinued" or "active") and by properties of their products (for example brands with loudspeakers that are "active" or "passive").
