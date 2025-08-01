@@ -20,7 +20,7 @@ class StaticController < ApplicationController
 
   def imprint
     @html = markdown_to_html Rails.root.join('static/imprint.md').read
-    @page_title = 'imprint'
+    @page_title = 'Imprint'
     @no_index = true
 
     render 'static'
@@ -35,6 +35,7 @@ class StaticController < ApplicationController
   end
 
   def calculators
+    @page_title = 'Calculators'
     @active_menu = :calculators
   end
 
