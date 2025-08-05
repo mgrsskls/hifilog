@@ -93,7 +93,7 @@ class NotesController < ApplicationController
       @note.errors.each do |error|
         flash.now[:alert] = error.full_message
       end
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

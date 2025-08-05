@@ -68,7 +68,7 @@ class BookmarkListsController < InheritedResources::Base
     else
       @active_dashboard_menu = :bookmarks
       @bookmark_lists = current_user.bookmark_lists.order('LOWER(name)')
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -83,7 +83,7 @@ class BookmarkListsController < InheritedResources::Base
       )
       redirect_to dashboard_bookmark_list_path(@bookmark_list)
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

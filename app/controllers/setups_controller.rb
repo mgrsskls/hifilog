@@ -70,7 +70,7 @@ class SetupsController < ApplicationController
     else
       @active_dashboard_menu = :setups
       @setups = current_user.setups.order('LOWER(name)')
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -89,7 +89,7 @@ class SetupsController < ApplicationController
       )
       redirect_to dashboard_setups_path
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

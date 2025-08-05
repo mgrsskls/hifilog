@@ -63,7 +63,7 @@ class CustomProductsController < ApplicationController
     else
       @active_dashboard_menu = :custom_products
       @categories = Category.includes([:sub_categories])
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -90,7 +90,7 @@ class CustomProductsController < ApplicationController
         id: @custom_product.id
       )
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

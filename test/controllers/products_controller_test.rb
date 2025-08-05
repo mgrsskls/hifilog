@@ -141,7 +141,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     )
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
   test 'edit' do

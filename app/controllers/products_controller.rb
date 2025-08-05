@@ -126,7 +126,7 @@ class ProductsController < ApplicationController
       end
       @categories = Category.includes([:sub_categories])
       @brand = brand
-      render :new, status: :unprocessable_entity and return
+      render :new, status: :unprocessable_content and return
     end
 
     @product.brand_id = brand.id
@@ -142,7 +142,7 @@ class ProductsController < ApplicationController
     else
       @categories = Category.includes([:sub_categories])
       @brand = brand
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -166,7 +166,7 @@ class ProductsController < ApplicationController
     else
       @categories = Category.includes([:sub_categories])
       @brand = Brand.find(@product.brand_id)
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

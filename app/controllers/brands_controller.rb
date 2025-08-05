@@ -140,7 +140,7 @@ class BrandsController < ApplicationController
       redirect_to brand_path(@brand)
     else
       @categories = Category.includes([:sub_categories])
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -161,7 +161,7 @@ class BrandsController < ApplicationController
       redirect_to brand_path(@brand)
     else
       @categories = Category.includes([:sub_categories])
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

@@ -96,7 +96,7 @@ class ProductVariantsController < ApplicationController
         id: @product_variant.friendly_id
       )
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -131,7 +131,7 @@ class ProductVariantsController < ApplicationController
       ).path
     else
       @product = Product.find(@product_variant.product_id)
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
