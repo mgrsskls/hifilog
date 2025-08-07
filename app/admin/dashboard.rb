@@ -185,7 +185,12 @@ ActiveAdmin.register_page "Dashboard" do
           end
           column :event
           column ("User") do |v|
-            v.whodunnit ? User.find(v.whodunnit) : "-"
+            if v.whodunnit
+              user = User.find_by(id: v.whodunnit)
+              user.present? ? user : "-"
+            else
+              "-"
+            end
           end
           column :created_at
         end
