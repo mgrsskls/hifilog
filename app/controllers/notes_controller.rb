@@ -6,7 +6,7 @@ class NotesController < ApplicationController
   def index
     @active_menu = :dashboard
     @active_dashboard_menu = :notes
-    @notes = current_user.notes.order('updated_at DESC, created_at DESC')
+    @notes = current_user.notes.order(updated_at: :desc, created_at: :desc)
     @page_title = Note.model_name.human(count: 2)
   end
 
