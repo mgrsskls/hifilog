@@ -57,6 +57,10 @@
 	gap: 0.25rem;
 }
 
+.u-gap-smd {
+	gap: 0.5rem;
+}
+
 .u-gap-md {
 	gap: 1rem;
 }
