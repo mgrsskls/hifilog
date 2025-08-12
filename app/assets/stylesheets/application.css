@@ -90,7 +90,7 @@
 	.Main:where(
 			:not(:has(.Home)):not(:has(.Profile)):not(:has(.IndexPage)):not(
 					:has(.Dashboard)
-				)
+				):not(:has(.Entity))
 		) {
 		padding-block: clamp(1.5rem, 5vw, 3rem);
 	}
@@ -102,6 +102,9 @@
 
 	h1,
 	.h1 {
+		--underline-offset: 0.15em;
+		--underline-width: 0.125rem;
+
 		font-size: 2.6rem;
 		font-weight: 600;
 		line-height: 1.1;
@@ -121,7 +124,7 @@
 		color: var(--color-secondary);
 	}
 
-	h1:has(small, span) {
+	h1:has(small, span[class]) {
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;

@@ -21,6 +21,7 @@ html {
 	--color-blue-925: hsl(var(--hue), 40%, 92.5%);
 	--color-blue-750: hsl(var(--hue), 40%, 75%);
 	--color-blue-500: hsl(var(--hue), 40%, 50%);
+	--color-blue-250: hsl(var(--hue), 40%, 25%);
 	--color-blue-175: hsl(var(--hue), 40%, 17.5%);
 	--color-blue-150: hsl(var(--hue), 40%, 15%);
 	--color-blue-125: hsl(var(--hue), 40%, 12.5%);

@@ -14,9 +14,7 @@
 }
 
 .Filter-fieldset {
-	&:not(:has(+ .Filter-actions)) {
-		border-block-end: 0.0625rem solid var(--color-transparency-15);
-	}
+	border-block-end: 0.0625rem solid var(--color-transparency-15);
 
 	&[open] {
 		padding-block-end: 1rem;
@@ -92,7 +90,6 @@ html:where([data-theme="light"]) .Filter-input {
 	padding-block: 1.5rem;
 	margin-block-start: 1rem;
 	background: var(--color-bg-main);
-	border-block-start: var(--border-light);
 }
 
 .Filter-fieldsetContent {

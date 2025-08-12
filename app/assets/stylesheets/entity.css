@@ -1,17 +1,59 @@
 .Entity {
+	--spacing: clamp(2rem, 4vi, 3rem);
+
 	display: flex;
-	gap: 2rem;
+
+	.Rte > :is(p, ul, ol, blockquote, hr) {
+		max-inline-size: none;
+	}
 }
 
-.Entity:last-child {
-	padding-block-end: 2rem;
+.Entity-main,
+.Entity-sub {
+	padding-block: var(--spacing);
+}
+
+.Entity-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	gap: 1rem;
+
+	h1,
+	h2 {
+		margin-block-start: 0;
+		margin-block-end: 1em;
+	}
+}
+
+.Entity-section:has(.Entity-data) {
+	container: section / inline-size;
+}
+
+.Entity-data {
+	padding: 1rem 1.25rem;
+	background: var(--color-bg2);
+	max-inline-size: 24rem;
+
+	a {
+		word-break: break-word;
+	}
+
+	&:not(:only-child) {
+		margin-block-end: 2rem;
+
+		@container section (width > 48rem) {
+			float: left;
+			margin-inline-end: var(--page-spacing);
+		}
+	}
 }
 
 .Entity-content {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: start;
-	gap: 2rem 3rem;
+	gap: var(--spacing) var(--page-spacing);
 }
 
 .Entity-image {
@@ -28,13 +70,8 @@
 }
 
 .Entity-text {
-	flex: 1 1 calc(100% - 20rem - 3rem);
+	flex: 1 1 calc(100% - 20rem - var(--page-spacing));
 	min-inline-size: 16rem;
-}
-
-.Entity-sub {
-	background: var(--color-bg2);
-	border-radius: var(--border-radius);
 }
 
 .Entity-sub dl {
@@ -58,33 +95,42 @@
 
 .Entity-section:not(:last-child) {
 	border-block-end: var(--border) var(--color-transparency-15);
-	padding-block-end: 2rem;
-	margin-block-end: 2rem;
+	padding-block-end: var(--spacing);
+	margin-block-end: var(--spacing);
+}
+
+.Entity-section::after {
+	content: "";
+	display: block;
+	clear: both;
 }
 
 @media (width < 48rem) {
 	.Entity {
 		flex-direction: column;
+		gap: 2rem;
 	}
 
 	.Entity-sub {
-		padding: 1rem var(--page-spacing);
+		border-block-start: var(--border-light);
+		padding-block: var(--spacing);
 	}
 }
 
 @media (width >= 48rem) {
-	.Entity {
-		display: flex;
-		gap: 2rem;
-	}
-
 	.Entity-main {
 		flex: 1;
+		border-inline-end: var(--border-light);
+		padding-inline-end: var(--page-spacing);
+		padding-block-end: calc(2 * var(--spacing));
 	}
 
 	.Entity-sub {
-		flex: 0 0 17.5rem;
-		padding: 1rem;
+		padding-inline-start: var(--page-spacing);
+		border-inline-start: var(--border-light);
+		flex: 0 0 22rem;
+		box-sizing: border-box;
+		margin-inline-start: -0.0625rem;
 	}
 }
 
@@ -101,8 +147,8 @@
 .Footnotes {
 	font-size: 0.875em;
 	padding-inline: 1.2rem;
-	padding-block-start: 3rem;
-	margin-block-start: 3rem;
+	padding-block-start: var(--spacing);
+	margin-block-start: var(--spacing);
 	border-block-start: var(--border-light);
 }
 
