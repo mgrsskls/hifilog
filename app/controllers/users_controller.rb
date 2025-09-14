@@ -4,6 +4,8 @@ class UsersController < ApplicationController
 
   def index
     @page_title = User.model_name.human(count: 2)
+    @meta_desc = 'See all users of hifilog.com with public profiles and how much they contributed. ' \
+                 'HiFi Log is a user-driven database for hi-fi products and brands.'
     @users_by_products = User.find_by_sql('
       SELECT t2.id, t2.user_name, t2.profile_visibility, t2.created_at, COUNT(t2.id) as count FROM (
         SELECT
@@ -113,6 +115,8 @@ class UsersController < ApplicationController
     end
 
     @page_title = user.user_name
+    @meta_desc = "The public profile of #{user.user_name} on hifilog.com — check out their hi-fi gear! " \
+                 'HiFi Log is a user-driven database for hi-fi products and brands.'
 
     @active_dashboard_menu = :profile if current_user == user
 

@@ -14,6 +14,8 @@ class StaticController < ApplicationController
   def about
     @html = markdown_to_html Rails.root.join('static/about.md').read
     @page_title = 'About'
+    @meta_desc = 'HiFi Log is a user-driven database for hi-fi products and brands. ' \
+                 'Read more about its founder and how to support hifilog.com.'
 
     render 'static'
   end
@@ -37,6 +39,8 @@ class StaticController < ApplicationController
   def calculators
     @page_title = 'Calculators'
     @active_menu = :calculators
+    @meta_desc = 'HiFi Log provides some calculators that can be useful for your DIY hi-fi projects. ' \
+                 'HiFi Log is a user-driven database for hi-fi products and brands.'
   end
 
   def amp_to_headphone_calculator
