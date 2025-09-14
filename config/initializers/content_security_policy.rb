@@ -20,7 +20,8 @@ unless ENV['DISABLE_CSP']
     end
     #
     #   # Generate session nonces for permitted importmap and inline scripts
-    config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
+    # See https://github.com/rails/rails/issues/48463 and https://github.com/rails/rails/pull/48510
+    config.content_security_policy_nonce_generator = ->(request) { request.session[:nonce] ||= SecureRandom.hex }
     config.content_security_policy_nonce_directives = %w(script-src)
     #
     #   # Report violations without enforcing the policy.
