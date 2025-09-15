@@ -184,10 +184,13 @@ class BrandsController < ApplicationController
       return
     end
 
-    @meta_desc = "#{@brand.name} #{@brand.discontinued? ? 'was' : 'is'} an audio brand
-#{" from #{@brand.country_name}" if @brand.country_code.present?}
-#{" that #{@brand.discontinued? ? 'offered' : 'offers'}" if @brand.sub_categories.any?}
-#{@brand.sub_categories.map(&:name).join(', ')} : '' }."
+    @meta_desc = "#{@brand.name} #{@brand.discontinued? ? 'was' : 'is'} an audio brand"
+    @meta_desc += " from #{@brand.country_name}" if @brand.country_code.present?
+    if @brand.sub_categories.any?
+      @meta_desc += " that #{@brand.discontinued? ? 'offered' : 'offers'}
+#{@brand.sub_categories.map { |cat| cat.name.downcase }.join(', ')}"
+    end
+    @meta_desc += '.'
   end
 
   def find_brand
