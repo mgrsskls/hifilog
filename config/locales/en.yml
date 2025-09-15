@@ -221,7 +221,7 @@ en:
     intro_eq: <span class="AppName">HiFi <span>Log</span></span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     intro_up: <span class="AppName">HiFi <span>Log</span></span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     recently_added: Recently added to HiFi Log
-  meta_description: <em>HiFi Log</em> is a user-driven database for HiFi products and brands. Users can create their own collection and keep track of their past gear.
+  meta_description: <em>HiFi Log</em> is a user-driven database for hi-fi products and brands. Users can create their own collection and keep track of their past gear.
   newsletter:
     subject: hifilog.com Newsletter
     messages:

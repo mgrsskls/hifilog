@@ -1,6 +1,6 @@
 # HiFi Log
 
-_HiFi Log_ is a user-driven platform for hifi products and brands.
+_HiFi Log_ is a user-driven platform for hi-fi products and brands.
 
 ## Features
 
