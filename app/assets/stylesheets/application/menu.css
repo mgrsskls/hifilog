@@ -118,9 +118,9 @@
 @media (width >= 54rem) {
 	.Menu-subList {
 		position: absolute;
-		inset-block-start: var(--header-height);
+		inset-block-start: var(--header-menu-height);
 		background: var(--color-menu-bg);
-		max-block-size: calc(100dvb - var(--header-height));
+		max-block-size: calc(100dvb - var(--header-menu-height));
 		overflow-y: auto;
 		box-sizing: border-box;
 		overscroll-behavior: contain;

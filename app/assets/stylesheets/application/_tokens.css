@@ -8,7 +8,8 @@ html {
 	--border-radius: 0.25rem;
 	--line-height: 1.75;
 	--input-padding: 0.325em 1em;
-	--header-height: 3.75rem;
+	--header-height: calc(3.75rem + 3.125rem + 1rem);
+	--header-menu-height: 3.75rem;
 	--sidebar-size: clamp(17rem, 26vi, 20rem);
 
 	--hue: 204;

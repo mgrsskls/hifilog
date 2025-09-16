@@ -34,7 +34,7 @@
 	.MenuMain-link {
 		display: flex;
 		align-items: center;
-		block-size: var(--header-height);
+		block-size: var(--header-menu-height);
 		gap: 0.5rem;
 		border-radius: 0;
 	}

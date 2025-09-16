@@ -4,11 +4,11 @@ Last updated: 2024/01/26
 
 ## 1. Cookies
 
-We do not use third-party cookies on our website. The only cookies we use
-are session cookies, which are essential for security and enabling user
-registration, and — in case you select "Remember me" during log in — a
-cookie to keep you logged in. Session cookies are temporary and are
-automatically deleted when you close your browser.
+We do not use third-party cookies on our website. The only cookies we use are the following:
+
+- Session cookies, which are essential for security and enabling user registration. Session cookies are temporary and are automatically deleted when you close your browser.
+- A cookie to keep you logged in, in case you select "Remember me" during log in.
+- A cookie for rendering ads. These are not used for personalized tracking.
 
 ## 2. User Data Tracking
 
