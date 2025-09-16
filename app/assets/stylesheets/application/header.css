@@ -1,11 +1,15 @@
 .Header {
 	--gap: 2rem;
 	--divider-color: var(--color-transparency-25);
+}
 
+.Header-wrapper {
 	display: flex;
 	gap: var(--gap);
 	align-items: center;
-	block-size: var(--header-height);
+	block-size: 3.75rem;
+	position: relative;
+	z-index: 1;
 }
 
 .Header-menu {
@@ -148,7 +152,7 @@
 	.Header-search {
 		align-self: center;
 		inline-size: 14em;
-		block-size: var(--header-height);
+		block-size: var(--header-menu-height);
 		display: flex;
 	}
 

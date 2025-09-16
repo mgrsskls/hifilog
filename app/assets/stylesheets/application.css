@@ -413,4 +413,51 @@
 			text-decoration: underline;
 		}
 	}
+
+	.Header-ad {
+		container: ad / inline-size;
+		background: var(--color-blue-150);
+		padding-block: 0.5rem;
+		block-size: 3.125rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.Header-adWrapper {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.Header-adWrapper p {
+		margin-block: 0;
+		line-height: 1.2;
+	}
+
+	.adsbygoogle {
+		display: block;
+		text-decoration: none;
+		block-size: 3.125rem;
+		flex-shrink: 0;
+	}
+
+	@container ad (width < 32rem) {
+		.Header-adWrapper p {
+			display: none;
+		}
+	}
+
+	@container ad (width < 64rem) {
+		.adsbygoogle {
+			inline-size: 20rem;
+		}
+	}
+
+	@container ad (width >= 64rem) {
+		.adsbygoogle {
+			inline-size: 45rem;
+		}
+	}
 }

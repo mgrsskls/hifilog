@@ -63,6 +63,12 @@
       <%= javascript_include_tag "signed_in", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
       <%= javascript_include_tag "delete_form", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
     <% end %>
+    <%= javascript_tag nonce: true do %>
+      function renderAdMessage() {
+        ad.closest(".Header-adWrapper").innerHTML = "<p><small>Ads help keeping HiFi Log free. Please consider allowing ads for hifilog.com. We only use ads that do not track you.</small></p>"
+      }
+    <% end %>
+    <%= javascript_include_tag "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9594630322589087", nonce: true, crossorigin: "anonymous", async: true unless user_signed_in? %>
     <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
     <%= yield :css %>
     <%= csrf_meta_tags %>
@@ -89,170 +95,189 @@
 
   <body>
     <header>
-      <div class="Header is-dark u-container">
+      <div class="Header is-dark">
         <a class="Skip" href="#content"><%= t('skip_to_main_content') %></a>
-        <% if user_signed_in? %>
-          <a class="Menu-home" href="<%= dashboard_root_path %>"<% if current_page?(dashboard_root_path) %> aria-current="page"<% end %>>
-        <% else %>
-          <a class="Menu-home" href="<%= root_url %>"<% if current_page?(root_path) %> aria-current="page"<% end %>>
-        <% end %>
-          <svg aria-label="<%= APP_NAME %>" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2684 384" width="156" height="23"><path fill="#ecc5e3" d="M1978 364.55h-243.96c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18V36.71c0-6.07 1.35-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v237.25h65.66v-77.65c0-6.07 1.35-10.46 4.07-13.18s7.11-4.07 13.18-4.07h69.5c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v150.98c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07ZM2342.26 273.96c0 14.7-2.16 28.04-6.47 40.02-4.31 11.98-11.98 22.21-23.01 30.67-11.02 8.47-26.2 15.1-45.53 19.89-19.34 4.79-43.86 7.19-73.57 7.19s-54.33-2.4-73.81-7.19c-19.49-4.79-34.75-11.42-45.77-19.89-11.02-8.46-18.69-18.69-23.01-30.67-4.31-11.98-6.47-25.32-6.47-40.02V110.52c0-14.69 2.16-28.04 6.47-40.02 4.31-11.98 11.98-22.29 23.01-30.91 11.02-8.63 26.28-15.34 45.77-20.13 19.49-4.79 44.09-7.19 73.81-7.19s54.24 2.4 73.57 7.19c19.33 4.79 34.51 11.5 45.53 20.13 11.02 8.63 18.69 18.93 23.01 30.91 4.31 11.98 6.47 25.33 6.47 40.02v163.44Zm-188.84-17.25c0 6.4 2.4 11.74 7.19 16.06 4.79 4.31 15.82 6.47 33.07 6.47s28.28-2.16 33.07-6.47a20.73 20.73 0 0 0 7.19-16.06V127.77c0-6.07-2.4-11.26-7.19-15.58-4.79-4.31-15.82-6.47-33.07-6.47s-28.28 2.16-33.07 6.47c-4.79 4.31-7.19 9.51-7.19 15.58V256.7ZM2666.74 364.55h-150.98c-39.95 0-69.58-7.98-88.91-23.96-19.34-15.97-29-40.58-29-73.81V117.23c0-33.23 9.66-57.83 29-73.81 19.33-15.97 48.96-23.96 88.91-23.96h119.82c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v58c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07h-99.69c-9.91 0-17.25 2-22.05 5.99-4.79 4-7.19 9.99-7.19 17.97v114.55c0 7.99 1.83 13.9 5.51 17.73 3.67 3.83 9.18 5.75 16.53 5.75h46.49v-74.77c0-6.07 1.35-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v148.1c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07Z"/><path fill="#fff" d="M91.55 364.55h-74.3c-6.07 0-10.47-1.36-13.18-4.07C1.35 357.77 0 353.37 0 347.3V36.71c0-6.07 1.36-10.46 4.07-13.18s7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v104.01h80.04V36.71c0-6.07 1.36-10.46 4.07-13.18s7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18V347.3c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07h-74.29c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18V240.9h-80.04v106.4c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07ZM373.37 364.55c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-57.04c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h47.45V111.96h-47.45c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-58c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h204.18c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v58c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07h-46.49V273h46.49c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.04c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07H373.37ZM745.3 364.55h-74.29c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18V36.71c0-6.07 1.36-10.46 4.07-13.18s7.11-4.07 13.18-4.07h213.77c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.04c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07H762.56v49.85h83.4c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.52c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07h-83.4v94.42c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07ZM959.54 364.55c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-57.04c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h47.45V111.96h-47.45c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-58c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h204.18c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v58c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07h-46.49V273h46.49c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.04c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07H959.54Z"/><path fill="#7a9bb8" d="M1445.27 0c-68.04 0-127.81 35.39-161.91 88.76l70.96 40.97a9.86 9.86 0 0 1 3.61 13.47l-1.45 2.52a9.86 9.86 0 0 1-13.47 3.61l-70.69-40.81a191.21 191.21 0 0 0-19.05 83.49c0 106.04 85.96 192 192 192s192-85.96 192-192S1551.31 0 1445.27 0Z"/></svg>
-          <span>A user-driven HiFi database</span>
-        </a>
-        <% unless @reduced_layout %>
-          <div class="u-flex u-flexGrow u-gap-pageSpacing u-justifyEnd">
-            <search class="Header-search Header-search--sm u-hide-lg">
-              <%= form_tag search_path, method: :get, class: "Search" do %>
-                <% if params[:filter].present? %>
-                  <input type="hidden" name="filter" value="<%= params[:filter] %>">
-                <% end %>
-                <%= text_field_tag :query, @query, id: "search-sm", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 2, required: true, autocomplete: 'off' %>
-                <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                  </svg>
-                <% end %>
+        <% unless user_signed_in? %>
+          <div class="Header-ad u-container">
+            <div class="Header-adWrapper">
+              <p><small>Ads help keeping HiFi Log free. <a href="<%= new_user_registration_path %>">Sign up</a> for no ads.</small></p>
+              <ins class="adsbygoogle" data-ad-client="ca-pub-9594630322589087" data-ad-slot="1622364274"></ins>
+              <%= javascript_tag nonce: true do %>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+
+                const ad = document.querySelector(".adsbygoogle");
+
+                if (ad && !ad.checkVisibility()) {
+                  renderAdMessage();
+                }
               <% end %>
-            </search>
-            <button type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false" class="Header-toggle">
-              <svg class="Header-toggleIcon Header-toggleIcon--open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-              <svg class="Header-toggleIcon Header-toggleIcon--close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div class="Header-menuContainer is-dark" id="menu">
-              <div class="Header-menu">
-                <nav aria-label="Main" class="Menu">
-                  <ul class="MenuMain MenuList">
-                    <li class="MenuMain-item">
-                      <%= render "layouts/mega_menu", entity: 'products', symbol: :products, cta_label: t('product.new.link'), cta_path: new_product_path, active_menu: @active_menu, category: @category, sub_category: @sub_category %>
-                    </li>
-                    <li class="MenuMain-item">
-                      <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('brand.new.link'), cta_path: new_brand_path, active_menu: @active_menu, category: @category, sub_category: @sub_category %>
-                    </li>
-                  </ul>
-                </nav>
-                <search class="Header-search u-hide-sm">
-                  <%= form_tag search_path, method: :get, class: "Search" do %>
-                    <% if params[:filter].present? %>
-                      <input type="hidden" name="filter" value="<%= params[:filter] %>">
-                    <% end %>
-                    <%= text_field_tag :query, @query, id: "search-lg", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 2, required: true, autocomplete: 'off' %>
-                    <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                      </svg>
-                    <% end %>
-                  <% end %>
-                  <div aria-live="polite" class="Search-xhrResults"></div>
-                </search>
-              </div>
-              <nav class="Header-account" aria-label="Account">
-                <ul class="MenuAccount MenuList">
-                  <% if user_signed_in? %>
-                    <li class="MenuMain-item MenuMain-item--account">
-                      <button class="MenuMain-link MenuMain-link--account u-hide-sm" aria-controls="menu-account" aria-expanded="false" <%= active_menu_state(@active_menu, :dashboard) %>>
-                        <%= render "shared/avatar", user: current_user, size: 38 %>
-                        <span><%= current_user.user_name %></span>
-                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
-                      </button>
-                      <span class="Menu-link--lvl1 Menu-link--lvl1--account u-hide-lg">
-                        <%= render "shared/avatar", user: current_user, size: 38 %>
-                        <span><%= current_user.user_name %></span>
-                      </span>
-                      <ul class="MenuAccount-list Menu-subList" id="menu-account">
-                        <li>
-                          <a href="<%= dashboard_root_path %>"<%= active_menu_state(@active_dashboard_menu, :dashboard) %>>
-                            <span><%= t('dashboard') %></span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_statistics_root_path %>"<%= active_menu_state(@active_dashboard_menu, :statistics) %>>
-                            <span><%= t('headings.statistics') %></span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_history_path %>"<%= active_menu_state(@active_dashboard_menu, :history) %>>
-                            <span><%= t('headings.history') %></span>
-                          </a>
-                        </li>
-                        <li class="Menu-subList-separator">
-                          <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
-                            <span><%= t('headings.collection') %></span>
-                            <small data-user-count="products"></small>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_custom_products_path %>"<%= active_menu_state(@active_dashboard_menu, :custom_products) %>>
-                            <span><%= CustomProduct.model_name.human(count: 2) %></span>
-                            <small data-user-count="custom_products"></small>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
-                            <span><%= t('headings.prev_owneds') %></span>
-                            <small data-user-count="previous_products"></small>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_setups_path %>"<%= active_menu_state(@active_dashboard_menu, :setups) %>>
-                            <span><%= Setup.model_name.human(count: 2) %></span>
-                            <small data-user-count="setups"></small>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(@active_dashboard_menu, :bookmarks) %>>
-                            <span><%= Bookmark.model_name.human(count: 2) %></span>
-                            <small data-user-count="bookmarks"></small>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_notes_path %>"<%= active_menu_state(@active_dashboard_menu, :notes) %>>
-                            <span><%= Note.model_name.human(count: 2) %></span>
-                            <small data-user-count="notes"></small>
-                          </a>
-                        </li>
-                        <li class="Menu-subList-separator">
-                          <a href="<%= current_user.profile_path %>"<%= active_menu_state(@active_dashboard_menu, :profile) %>>
-                            <span><%= t('headings.profile') %></span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= dashboard_contributions_path %>"<%= active_menu_state(@active_dashboard_menu, :contributions) %>>
-                            <span><%= t('headings.contributions') %></span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="<%= edit_user_registration_path %>"<%= active_menu_state(@active_dashboard_menu, :account) %>>
-                            <span><%= t('headings.account') %></span>
-                          </a>
-                        </li>
-                        <li>
-                          <%= button_to destroy_user_session_path, method: :delete do %>
-                            <span><%= t('user_form.logout') %></span>
-                          <% end %>
-                        </li>
-                      </ul>
-                    </li>
-                  <% else %>
-                    <li class="MenuMain-item">
-                      <a class="MenuMain-link" href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
-                        <span><%= t('user_form.signup') %></span>
-                      </a>
-                    </li>
-                    <li class="MenuMain-item">
-                      <a class="MenuMain-link" href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
-                        <span><%= t('user_form.login') %></span>
-                      </a>
-                    </li>
-                  <% end %>
-                </ul>
-              </nav>
             </div>
           </div>
         <% end %>
+        <div class="Header-wrapper u-container">
+          <% if user_signed_in? %>
+            <a class="Menu-home" href="<%= dashboard_root_path %>"<% if current_page?(dashboard_root_path) %> aria-current="page"<% end %>>
+          <% else %>
+            <a class="Menu-home" href="<%= root_url %>"<% if current_page?(root_path) %> aria-current="page"<% end %>>
+          <% end %>
+            <svg aria-label="<%= APP_NAME %>" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2684 384" width="156" height="23"><path fill="#ecc5e3" d="M1978 364.55h-243.96c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18V36.71c0-6.07 1.35-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v237.25h65.66v-77.65c0-6.07 1.35-10.46 4.07-13.18s7.11-4.07 13.18-4.07h69.5c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v150.98c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07ZM2342.26 273.96c0 14.7-2.16 28.04-6.47 40.02-4.31 11.98-11.98 22.21-23.01 30.67-11.02 8.47-26.2 15.1-45.53 19.89-19.34 4.79-43.86 7.19-73.57 7.19s-54.33-2.4-73.81-7.19c-19.49-4.79-34.75-11.42-45.77-19.89-11.02-8.46-18.69-18.69-23.01-30.67-4.31-11.98-6.47-25.32-6.47-40.02V110.52c0-14.69 2.16-28.04 6.47-40.02 4.31-11.98 11.98-22.29 23.01-30.91 11.02-8.63 26.28-15.34 45.77-20.13 19.49-4.79 44.09-7.19 73.81-7.19s54.24 2.4 73.57 7.19c19.33 4.79 34.51 11.5 45.53 20.13 11.02 8.63 18.69 18.93 23.01 30.91 4.31 11.98 6.47 25.33 6.47 40.02v163.44Zm-188.84-17.25c0 6.4 2.4 11.74 7.19 16.06 4.79 4.31 15.82 6.47 33.07 6.47s28.28-2.16 33.07-6.47a20.73 20.73 0 0 0 7.19-16.06V127.77c0-6.07-2.4-11.26-7.19-15.58-4.79-4.31-15.82-6.47-33.07-6.47s-28.28 2.16-33.07 6.47c-4.79 4.31-7.19 9.51-7.19 15.58V256.7ZM2666.74 364.55h-150.98c-39.95 0-69.58-7.98-88.91-23.96-19.34-15.97-29-40.58-29-73.81V117.23c0-33.23 9.66-57.83 29-73.81 19.33-15.97 48.96-23.96 88.91-23.96h119.82c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v58c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07h-99.69c-9.91 0-17.25 2-22.05 5.99-4.79 4-7.19 9.99-7.19 17.97v114.55c0 7.99 1.83 13.9 5.51 17.73 3.67 3.83 9.18 5.75 16.53 5.75h46.49v-74.77c0-6.07 1.35-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v148.1c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07Z"/><path fill="#fff" d="M91.55 364.55h-74.3c-6.07 0-10.47-1.36-13.18-4.07C1.35 357.77 0 353.37 0 347.3V36.71c0-6.07 1.36-10.46 4.07-13.18s7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v104.01h80.04V36.71c0-6.07 1.36-10.46 4.07-13.18s7.11-4.07 13.18-4.07h74.29c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18V347.3c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07h-74.29c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18V240.9h-80.04v106.4c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07ZM373.37 364.55c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-57.04c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h47.45V111.96h-47.45c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-58c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h204.18c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v58c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07h-46.49V273h46.49c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.04c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07H373.37ZM745.3 364.55h-74.29c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18V36.71c0-6.07 1.36-10.46 4.07-13.18s7.11-4.07 13.18-4.07h213.77c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.04c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07H762.56v49.85h83.4c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.52c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07h-83.4v94.42c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07ZM959.54 364.55c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-57.04c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h47.45V111.96h-47.45c-6.07 0-10.47-1.36-13.18-4.07-2.72-2.71-4.07-7.11-4.07-13.18v-58c0-6.07 1.36-10.46 4.07-13.18 2.71-2.71 7.11-4.07 13.18-4.07h204.18c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v58c0 6.07-1.36 10.47-4.07 13.18-2.72 2.72-7.11 4.07-13.18 4.07h-46.49V273h46.49c6.07 0 10.46 1.36 13.18 4.07 2.71 2.72 4.07 7.11 4.07 13.18v57.04c0 6.07-1.36 10.47-4.07 13.18s-7.11 4.07-13.18 4.07H959.54Z"/><path fill="#7a9bb8" d="M1445.27 0c-68.04 0-127.81 35.39-161.91 88.76l70.96 40.97a9.86 9.86 0 0 1 3.61 13.47l-1.45 2.52a9.86 9.86 0 0 1-13.47 3.61l-70.69-40.81a191.21 191.21 0 0 0-19.05 83.49c0 106.04 85.96 192 192 192s192-85.96 192-192S1551.31 0 1445.27 0Z"/></svg>
+            <span>A user-driven HiFi database</span>
+          </a>
+          <% unless @reduced_layout %>
+            <div class="u-flex u-flexGrow u-gap-pageSpacing u-justifyEnd">
+              <search class="Header-search Header-search--sm u-hide-lg">
+                <%= form_tag search_path, method: :get, class: "Search" do %>
+                  <% if params[:filter].present? %>
+                    <input type="hidden" name="filter" value="<%= params[:filter] %>">
+                  <% end %>
+                  <%= text_field_tag :query, @query, id: "search-sm", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 2, required: true, autocomplete: 'off' %>
+                  <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                  <% end %>
+                <% end %>
+              </search>
+              <button type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false" class="Header-toggle">
+                <svg class="Header-toggleIcon Header-toggleIcon--open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+                <svg class="Header-toggleIcon Header-toggleIcon--close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div class="Header-menuContainer is-dark" id="menu">
+                <div class="Header-menu">
+                  <nav aria-label="Main" class="Menu">
+                    <ul class="MenuMain MenuList">
+                      <li class="MenuMain-item">
+                        <%= render "layouts/mega_menu", entity: 'products', symbol: :products, cta_label: t('product.new.link'), cta_path: new_product_path, active_menu: @active_menu, category: @category, sub_category: @sub_category %>
+                      </li>
+                      <li class="MenuMain-item">
+                        <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('brand.new.link'), cta_path: new_brand_path, active_menu: @active_menu, category: @category, sub_category: @sub_category %>
+                      </li>
+                    </ul>
+                  </nav>
+                  <search class="Header-search u-hide-sm">
+                    <%= form_tag search_path, method: :get, class: "Search" do %>
+                      <% if params[:filter].present? %>
+                        <input type="hidden" name="filter" value="<%= params[:filter] %>">
+                      <% end %>
+                      <%= text_field_tag :query, @query, id: "search-lg", type: 'search', class: 'Search-input', placeholder: t('search') + " …", minlength: 2, required: true, autocomplete: 'off' %>
+                      <%= button_tag 'Search', class: 'Search-button', name: nil, "aria-label": t('search') do %>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="20" height="20" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                      <% end %>
+                    <% end %>
+                    <div aria-live="polite" class="Search-xhrResults"></div>
+                  </search>
+                </div>
+                <nav class="Header-account" aria-label="Account">
+                  <ul class="MenuAccount MenuList">
+                    <% if user_signed_in? %>
+                      <li class="MenuMain-item MenuMain-item--account">
+                        <button class="MenuMain-link MenuMain-link--account u-hide-sm" aria-controls="menu-account" aria-expanded="false" <%= active_menu_state(@active_menu, :dashboard) %>>
+                          <%= render "shared/avatar", user: current_user, size: 38 %>
+                          <span><%= current_user.user_name %></span>
+                          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
+                        </button>
+                        <span class="Menu-link--lvl1 Menu-link--lvl1--account u-hide-lg">
+                          <%= render "shared/avatar", user: current_user, size: 38 %>
+                          <span><%= current_user.user_name %></span>
+                        </span>
+                        <ul class="MenuAccount-list Menu-subList" id="menu-account">
+                          <li>
+                            <a href="<%= dashboard_root_path %>"<%= active_menu_state(@active_dashboard_menu, :dashboard) %>>
+                              <span><%= t('dashboard') %></span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_statistics_root_path %>"<%= active_menu_state(@active_dashboard_menu, :statistics) %>>
+                              <span><%= t('headings.statistics') %></span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_history_path %>"<%= active_menu_state(@active_dashboard_menu, :history) %>>
+                              <span><%= t('headings.history') %></span>
+                            </a>
+                          </li>
+                          <li class="Menu-subList-separator">
+                            <a href="<%= dashboard_products_path %>"<%= active_menu_state(@active_dashboard_menu, :products) %>>
+                              <span><%= t('headings.collection') %></span>
+                              <small data-user-count="products"></small>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_custom_products_path %>"<%= active_menu_state(@active_dashboard_menu, :custom_products) %>>
+                              <span><%= CustomProduct.model_name.human(count: 2) %></span>
+                              <small data-user-count="custom_products"></small>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(@active_dashboard_menu, :prev_owneds) %>>
+                              <span><%= t('headings.prev_owneds') %></span>
+                              <small data-user-count="previous_products"></small>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_setups_path %>"<%= active_menu_state(@active_dashboard_menu, :setups) %>>
+                              <span><%= Setup.model_name.human(count: 2) %></span>
+                              <small data-user-count="setups"></small>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(@active_dashboard_menu, :bookmarks) %>>
+                              <span><%= Bookmark.model_name.human(count: 2) %></span>
+                              <small data-user-count="bookmarks"></small>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_notes_path %>"<%= active_menu_state(@active_dashboard_menu, :notes) %>>
+                              <span><%= Note.model_name.human(count: 2) %></span>
+                              <small data-user-count="notes"></small>
+                            </a>
+                          </li>
+                          <li class="Menu-subList-separator">
+                            <a href="<%= current_user.profile_path %>"<%= active_menu_state(@active_dashboard_menu, :profile) %>>
+                              <span><%= t('headings.profile') %></span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= dashboard_contributions_path %>"<%= active_menu_state(@active_dashboard_menu, :contributions) %>>
+                              <span><%= t('headings.contributions') %></span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="<%= edit_user_registration_path %>"<%= active_menu_state(@active_dashboard_menu, :account) %>>
+                              <span><%= t('headings.account') %></span>
+                            </a>
+                          </li>
+                          <li>
+                            <%= button_to destroy_user_session_path, method: :delete do %>
+                              <span><%= t('user_form.logout') %></span>
+                            <% end %>
+                          </li>
+                        </ul>
+                      </li>
+                    <% else %>
+                      <li class="MenuMain-item">
+                        <a class="MenuMain-link" href="<%= new_user_registration_path %>"<%= active_menu_state(@active_menu, :signup) %>>
+                          <span><%= t('user_form.signup') %></span>
+                        </a>
+                      </li>
+                      <li class="MenuMain-item">
+                        <a class="MenuMain-link" href="<%= new_user_session_path %>"<%= active_menu_state(@active_menu, :login) %>>
+                          <span><%= t('user_form.login') %></span>
+                        </a>
+                      </li>
+                    <% end %>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          <% end %>
+        </div>
       </div>
     </header>
     <main id="content">
@@ -268,15 +293,6 @@
       %>
         <%= yield %>
       <% else %>
-        <% unless user_signed_in? %>
-          <% unless cookies[:hide_sign_up_call] == "1" %>
-            <% if ["brands", "products"].include?(params[:controller]) %>
-              <div class="SignUpCall">
-                <p>HiFi Log is a user-driven database and needs you! <a href="<%= new_user_session_path %>">Sign up</a> to add new products and brands, fill out missing information and help making this become the biggest database for hifi brands and products. <button>Hide this message.</button></p>
-              </div>
-            <% end %>
-          <% end %>
-        <% end %>
         <div class="Main">
           <div class="u-container">
             <%= yield %>
