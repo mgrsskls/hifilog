@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_19_113502) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_19_184202) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -180,10 +180,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_19_113502) do
   create_table "custom_attributes", force: :cascade do |t|
     t.jsonb "options"
     t.string "label"
-    t.string "input_type"
-    t.string "inputs", default: [], array: true
-    t.string "units", default: [], array: true
-    t.index ["label"], name: "index_custom_attributes_on_label", unique: true
   end
 
   create_table "custom_attributes_sub_categories", id: false, force: :cascade do |t|
@@ -371,12 +367,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_19_113502) do
     t.integer "order"
     t.index ["category_id", "name"], name: "index_sub_categories_category_id_name", unique: true
     t.index ["category_id", "slug"], name: "index_sub_categories_category_id_slug", unique: true
-  end
-
-  create_table "user_agents", force: :cascade do |t|
-    t.string "user_agent"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

@@ -48,14 +48,6 @@ class ApplicationController < ActionController::Base
     return if IPS_BLOCKED_FOR_ANALYTICS.any? { |ip| request.ip.start_with?(ip) }
 
     ActiveAnalytics.record_request(request)
-    ActiveRecord::Base.connection.execute(
-      ActiveRecord::Base.sanitize_sql(
-        [
-          'INSERT INTO user_agents (user_agent, created_at, updated_at) VALUES (?, NOW(), NOW())',
-          request.user_agent
-        ]
-      )
-    )
   end
 
   def menu_categories
