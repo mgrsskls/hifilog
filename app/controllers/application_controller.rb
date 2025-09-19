@@ -39,6 +39,9 @@ class ApplicationController < ActionController::Base
     return if request.user_agent.nil? || request.user_agent&.empty?
     return if request.user_agent.include?('InternetMeasurement')
     return if request.user_agent.include?('Odin')
+    return if request.user_agent.include?('brid.gy')
+    return if request.user_agent.include?('Friendica')
+    return if request.user_agent.include?('procial.tchncs.de')
     return if request.is_crawler?
     return if current_user&.id == 1
     return if request.path.start_with?('/admin')
