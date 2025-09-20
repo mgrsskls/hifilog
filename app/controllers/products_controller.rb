@@ -185,7 +185,7 @@ class ProductsController < ApplicationController
     if @product.description.present?
       @meta_desc = ActionController::Base.helpers.truncate(
         ActionController::Base.helpers.strip_tags(@product.formatted_description),
-        length: 155
+        length: 200
       )
       return
     end

@@ -176,21 +176,12 @@ class BrandsController < ApplicationController
   private
 
   def set_meta_desc
-    if @brand.description.present?
-      @meta_desc = ActionController::Base.helpers.truncate(
-        ActionController::Base.helpers.strip_tags(@brand.formatted_description),
-        length: 155, escape: false
-      )
-      return
-    end
+    return if @brand.formatted_description.blank?
 
-    @meta_desc = "#{@brand.name} #{@brand.discontinued? ? 'was' : 'is'} an audio brand"
-    @meta_desc += " from #{@brand.country_name}" if @brand.country_code.present?
-    if @brand.sub_categories.any?
-      @meta_desc += " that #{@brand.discontinued? ? 'offered' : 'offers'}
-#{@brand.sub_categories.map { |cat| cat.name.downcase }.join(', ')}"
-    end
-    @meta_desc += '.'
+    @meta_desc = ActionController::Base.helpers.truncate(
+      ActionController::Base.helpers.strip_tags(@brand.formatted_description),
+      length: 200, escape: false
+    )
   end
 
   def find_brand

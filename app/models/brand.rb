@@ -91,6 +91,70 @@ class Brand < ApplicationRecord
     errors.add(:country_code, 'is not a correct country code')
   end
 
+  def formatted_description
+    if description.present?
+      return sanitize(
+        Commonmarker.to_html(
+          description,
+          options: {
+            extension: {
+              strikethrough: false,
+              tagfilter: false,
+              table: false,
+              autolink: false,
+              tasklist: false,
+            }
+          }
+        ),
+        tags: %w[p b i strong em br ul ol li del blockquote]
+      )
+    end
+
+    # rubocop:disable Layout/LineLength
+    # rubocop:disable Metrics/BlockNesting
+    if country_name.present? || founded_year.present? || discontinued_year.present? || self.sub_categories.any?
+      sub_categories = self.sub_categories.sort_by(&:category).map { |cat| cat.name.downcase }
+
+      str = "<i>#{name}</i> #{discontinued? ? 'was' : 'is'} an audio brand"
+
+      str += " from#{' the' if %w[BS KY CF KM CK CZ DO LA MV MH NL PH RU SC SB SY TC AE GB US UM].include?(country_code)} #{country_name}" if country_name.present?
+
+      if founded_year.present? || discontinued_year.present?
+        str += ', which was'
+        str += " founded in #{founded_year}" if founded_year.present?
+        str += ' and' if founded_year.present? && discontinued_year.present?
+        str += " discontinued in #{discontinued_year}" if discontinued_year.present?
+        str += '.'
+
+        if sub_categories.any?
+          str += " It #{discontinued? ? 'offered' : 'offers'}"
+          str += if sub_categories.size > 1
+                   " #{sub_categories[0...-1].join(', ')} and #{sub_categories[-1]}"
+                 else
+                   " #{sub_categories.first}"
+                 end
+          str += '.'
+        end
+      elsif sub_categories.any?
+        str += ", which #{discontinued? ? 'offered' : 'offers'}"
+        str += if sub_categories.size > 1
+                 " #{sub_categories[0...-1].join(', ')} and #{sub_categories[-1]}"
+               else
+                 " #{sub_categories.first}"
+               end
+        str += '.'
+      else
+        str += '.'
+      end
+
+      return sanitize("<p>#{str}</p>", tags: %w[p i])
+    end
+
+    nil
+  end
+  # rubocop:enable Layout/LineLength
+  # rubocop:enable Metrics/BlockNesting
+
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[

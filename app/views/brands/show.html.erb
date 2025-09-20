@@ -6,7 +6,7 @@
   <div class="Entity">
     <div class="Entity-main">
       <div class="Product-details">
-        <% if @brand.description.present? %>
+        <% if @brand.formatted_description.present? %>
           <div class="Entity-section Rte">
             <%= @brand.formatted_description %>
           </div>

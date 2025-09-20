@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   include HistoryHelper
   include Possessions
+  include ActionView::Helpers::SanitizeHelper
 
   def index
     @page_title = User.model_name.human(count: 2)
@@ -114,8 +115,9 @@ class UsersController < ApplicationController
       return nil
     end
 
-    @page_title = user.user_name
-    @meta_desc = "The public profile of #{user.user_name} on hifilog.com — check out their hi-fi gear! " \
+    user_name = sanitize(user.user_name)
+    @page_title = user_name
+    @meta_desc = "The public profile of #{user_name} on hifilog.com — check out their hi-fi gear! " \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
 
     @active_dashboard_menu = :profile if current_user == user
