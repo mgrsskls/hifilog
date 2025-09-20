@@ -15,7 +15,7 @@ unless ENV['DISABLE_CSP']
       policy.object_src  :none
       policy.script_src  :self, ENV['CDN_HOST'], 'https://pagead2.googlesyndication.com'
       policy.style_src   :self, :unsafe_inline, ENV['CDN_HOST'], 'https://fonts.googleapis.com'
-      policy.frame_src   :self, 'https://pagead2.googlesyndication.com', 'https://*.adtrafficquality.google'
+      policy.frame_src   :self, 'https://pagead2.googlesyndication.com', 'https://*.adtrafficquality.google', 'https://googleads.g.doubleclick.net', 'https://www.google.com'
       policy.connect_src :self, 'https://pagead2.googlesyndication.com', 'https://*.adtrafficquality.google', 'https://csi.gstatic.com'
       # Specify URI for violation reports
       policy.report_uri ENV['SENTRY_CSP_REPORT_URI'] if ENV['SENTRY_CSP_REPORT_URI'].present?
