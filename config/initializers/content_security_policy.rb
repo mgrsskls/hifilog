@@ -13,8 +13,8 @@ unless ENV['DISABLE_CSP']
       policy.font_src    :none
       policy.img_src     :self, :data, ENV['CDN_HOST'], 'https://*.adtrafficquality.google'
       policy.object_src  :none
-      policy.script_src  :self, ENV['CDN_HOST'], 'https://pagead2.googlesyndication.com', :strict_dynamic
-      policy.style_src   :self, :unsafe_inline, ENV['CDN_HOST']
+      policy.script_src  :self, ENV['CDN_HOST'], 'https://pagead2.googlesyndication.com'
+      policy.style_src   :self, :unsafe_inline, ENV['CDN_HOST'], 'https://fonts.googleapis.com'
       policy.frame_src   :self, 'https://pagead2.googlesyndication.com', 'https://*.adtrafficquality.google'
       policy.connect_src :self, 'https://pagead2.googlesyndication.com', 'https://*.adtrafficquality.google', 'https://csi.gstatic.com'
       # Specify URI for violation reports
