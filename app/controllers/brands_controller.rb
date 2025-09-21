@@ -1,6 +1,5 @@
 class BrandsController < ApplicationController
   include ApplicationHelper
-  include CanonicalUrl
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
@@ -32,10 +31,8 @@ class BrandsController < ApplicationController
       @brands = filter.brands
                       .includes(sub_categories: [:category])
                       .page(1)
-      @canonical_url = canonical_url(page_out_of_range: true)
-    else
-      @canonical_url = canonical_url
     end
+    @canonical_url = brands_url
 
     @product_counts = if active_index_filters.keys.map(&:to_s).any? do |el|
       allowed_index_product_filter_params.to_h.keys.include?(el)
@@ -104,10 +101,8 @@ class BrandsController < ApplicationController
     if @products.out_of_range?
       @products = filter.products
                         .page(1)
-      @canonical_url = canonical_url(page_out_of_range: true)
-    else
-      @canonical_url = canonical_url
     end
+    @canonical_url = brand_products_url(brand_id: @brand.friendly_id)
     @custom_attributes_for_products = CustomAttribute.all
     @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
     @total_products_count = @brand.products.length

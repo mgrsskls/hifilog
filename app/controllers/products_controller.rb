@@ -2,7 +2,6 @@ class ProductsController < ApplicationController
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
   include ApplicationHelper
-  include CanonicalUrl
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
@@ -36,10 +35,9 @@ class ProductsController < ApplicationController
       @products = filter.products
                         .includes(:brand)
                         .page(1)
-      @canonical_url = canonical_url(page_out_of_range: true)
-    else
-      @canonical_url = canonical_url
     end
+
+    @canonical_url = products_url
 
     @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
 
