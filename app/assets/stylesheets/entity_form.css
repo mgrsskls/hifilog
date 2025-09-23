@@ -5,14 +5,25 @@
 	border-radius: var(--border-radius);
 	background: var(--color-input-bg);
 	box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
+
+	input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(
+			[type="file"]
+		),
+	select,
+	textarea {
+		background: var(--color-bg-main);
+	}
 }
 
 .Options-item {
 	position: relative;
 	display: grid;
 	grid-template-columns: auto 1fr;
-	align-items: center;
 	gap: 0 0.5rem;
+
+	input {
+		transform: translateY(0.5rem);
+	}
 }
 
 .Options-item[hidden] {
@@ -32,6 +43,10 @@
 	display: none;
 }
 
+.EntityForm {
+	container: form / inline-size;
+}
+
 .EntityForm details:not(:last-child) {
 	border-block-end: var(--border) var(--color-transparency-25);
 }
@@ -49,6 +64,26 @@
 	font-weight: 600;
 }
 
+.EntityForm-subCategories {
+	ul {
+		padding-inline-start: 0;
+	}
+}
+
+@container form (width <= 48rem) {
+	.EntityForm-subCategories div {
+		display: contents;
+	}
+}
+
+@container form (width > 48rem) {
+	.EntityForm-subCategories {
+		display: grid;
+		gap: 2rem;
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
 .EntityForm-date {
 	display: flex;
 	gap: 0.5rem;
@@ -57,18 +92,74 @@
 
 .EntityForm-attributes {
 	display: none;
+	container: attributes / inline-size;
 }
 
 .EntityForm-attributes:has([data-sub-category-ids]:not([hidden])) {
 	display: block;
 }
 
+.EntityFormAttributes {
+	display: grid;
+}
+
 .EntityForm-attribute {
-	padding-block: 0.5rem;
+	padding-block: 1rem;
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+	gap: 0.5rem 2rem;
+}
+
+.EntityFormAttribute-label {
+	font-weight: bold;
+	font-size: 1em;
+	margin-block: 0;
+}
+
+.EntityFormAttribute-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+	gap: 0.5rem 1rem;
+}
+
+.EntityFormAttribute-grid--single > *:last-child:not(:only-child) {
+	grid-column: 2 / -1;
+}
+
+.EntityFormAttribute-inputs {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.EntityFormAttribute-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+}
+
+.EntityFormAttributes-units {
+	grid-column: 1 / -1;
 }
 
 .EntityForm-attribute:not([hidden]) ~ .EntityForm-attribute {
 	border-block-start: var(--border-light);
+}
+
+@container attributes (width > 36rem) {
+	.EntityFormAttributes {
+		grid-template-columns: auto 1fr;
+	}
+
+	.EntityFormAttribute-label {
+		font-weight: bold;
+		font-size: 1em;
+		margin-block: 0;
+		display: flex;
+		align-items: center;
+		min-block-size: 2.5rem;
+		align-self: start;
+	}
 }
 
 .EntityForm-note {

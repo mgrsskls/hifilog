@@ -1,136 +1,144 @@
-.Form--centered {
-	inline-size: 100%;
-	max-inline-size: 28rem;
-	margin-inline: auto;
-}
+@layer {
+	.Form--centered {
+		inline-size: 100%;
+		max-inline-size: 28rem;
+		margin-inline: auto;
+	}
 
-.Form small {
-	display: inline-block;
-	line-height: 1.4;
-}
+	.Form-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+		gap: var(--spacing-top, 1rem);
+	}
 
-.Form h1 {
-	font-size: 2.2rem;
-}
+	.Form small {
+		display: inline-block;
+		line-height: 1.4;
+	}
 
-.Form + .Form {
-	margin-block-start: 3rem;
-}
+	.Form h1 {
+		font-size: 2.2rem;
+	}
 
-.Form-field {
-	padding: 0;
-	border: none;
-}
+	.Form + .Form {
+		margin-block-start: 3rem;
+	}
 
-.Form:not(.Form--wide) .Form-field {
-	max-inline-size: 28rem;
-}
+	.Form-field {
+		padding: 0;
+		border: none;
+	}
 
-.Form-field + .Form-field {
-	margin-block-start: var(--spacing-top, 1rem);
-}
+	.Form:not(.Form--wide) .Form-field {
+		max-inline-size: 28rem;
+	}
 
-.Form-field--inline {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-}
+	*:not(.Form-grid) > .Form-field + .Form-field {
+		margin-block-start: var(--spacing-top, 1rem);
+	}
 
-.Form-field--inline .Form-label {
-	padding-block-end: 0;
-}
+	.Form-field--inline {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
 
-.Form-field--divider {
-	--spacing-top: 2rem;
+	.Form-field--inline .Form-label {
+		padding-block-end: 0;
+	}
 
-	padding-block-start: 2rem;
-	border-block-start: var(--border-light);
-}
+	.Form-field--divider {
+		--spacing-top: 3rem;
 
-.Form-field + h3 {
-	margin-block-start: 2rem;
-}
+		margin-block-start: 3rem;
+		border-block-start: var(--border-light);
+	}
 
-h3:has(+ .Form-field) {
-	margin-block-end: 1rem;
-}
+	.Form-field + h3 {
+		margin-block-start: 2rem;
+	}
 
-.Form-field .FlashMessage {
-	font-size: 0.875em;
-	margin-block-end: 1rem;
-}
+	h3:has(+ .Form-field) {
+		margin-block-end: 1rem;
+	}
 
-.Form-fieldHeader {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
+	.Form-field .FlashMessage {
+		font-size: 0.875em;
+		margin-block-end: 1rem;
+	}
 
-.Form-fieldHeader .Form-label {
-	margin-block: 0;
-}
+	.Form-fieldHeader {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
 
-.Form-submit {
-	margin-block-start: 2rem;
-}
+	.Form-fieldHeader .Form-label {
+		margin-block: 0;
+	}
 
-.Form-label {
-	display: inline-block;
-	margin-block-end: 0.25em;
-}
+	.Form-submit {
+		margin-block-start: 2rem;
+	}
 
-.Form-fieldHeader:has(.Form-label.h3),
-:not(.Form-fieldHeader) > .Form-label.h3 {
-	margin-block-start: 1.5rem;
-	margin-block-end: 0.75rem;
-}
+	.Form-label {
+		display: inline-block;
+		margin-block-end: 0.25em;
+	}
 
-:not(.Form-fieldHeader) > .Form-label.h3 {
-	display: block;
-}
+	.Form-fieldHeader:has(.Form-label.h3),
+	:not(.Form-fieldHeader) > .Form-label.h3 {
+		margin-block-start: 1.5rem;
+		margin-block-end: 0.75rem;
+	}
 
-.Form-label small {
-	color: var(--color-secondary);
-	font-size: 0.875rem;
-	font-weight: normal;
-}
+	:not(.Form-fieldHeader) > .Form-label.h3 {
+		display: block;
+	}
 
-.Form-options {
-	display: flex;
-	align-items: center;
-	gap: 0.5em;
-}
+	.Form-label small {
+		color: var(--color-secondary);
+		font-size: 0.875rem;
+		font-weight: normal;
+	}
 
-.Form-options label + input {
-	margin-inline-start: 1em;
-}
+	.Form-options {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+	}
 
-.Form-hint {
-	color: var(--color-form-hint, var(--color-secondary));
-	line-height: 1.2;
-	display: block;
-	margin-block-start: 0.75em;
-}
+	.Form-options label + input {
+		margin-inline-start: 1em;
+	}
 
-.Form-links {
-	list-style: "";
-	padding: 0;
-	margin: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 0.5em;
-	font-size: 0.875em;
-	margin-block-start: 2rem;
-}
+	.Form-hint {
+		color: var(--color-form-hint, var(--color-secondary));
+		line-height: 1.2;
+		display: block;
+		margin-block-start: 0.75em;
+	}
 
-.Form legend {
-	float: left;
-	font-weight: 600;
-	margin-block-end: 1rem;
-}
+	.Form-links {
+		list-style: "";
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+		font-size: 0.875em;
+		margin-block-start: 2rem;
+	}
 
-.Form legend + * {
-	clear: both;
+	.Form legend {
+		float: left;
+		font-weight: 600;
+		margin-block-end: 1rem;
+	}
+
+	.Form legend + * {
+		clear: both;
+	}
 }
 
 .ProductFormAddBrand p {
