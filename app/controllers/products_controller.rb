@@ -326,7 +326,21 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
 
   def convert_custom_attributes_to_integer!(custom_attributes)
     custom_attributes.each do |key, value|
-      custom_attributes[key] = value.to_i
+      case value
+      when ActionController::Parameters, Hash
+        case value['value']
+        when ActionController::Parameters, Hash
+          value['value'].to_hash.each do |v|
+            custom_attributes[key]['value'][v[0]] = v[1].to_i
+          end
+        else
+          custom_attributes[key]['value'] = value['value'].to_i
+        end
+      when Array
+        custom_attributes[key] = value.map(&:to_i)
+      else
+        custom_attributes[key] = value.to_i
+      end
     end
   end
 end

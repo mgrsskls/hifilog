@@ -93,8 +93,35 @@
             </dd>
           </dl>
 
+          <% if @product.custom_attributes.any? %>
+            <h2>Characteristics</h2>
+            <dl class="Entity-section Data">
+              <% @product.custom_attributes.each do |ca| %>
+                <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
+                <dd>
+                  <% if ca[1].is_a?(Hash) %>
+                    <% unit = t("custom_attribute_units.#{ca[1]['unit'].present? ? ca[1]['unit'] : CustomAttribute.find_by(label: ca[0]).units.first}").html_safe %>
+                    <% if ca[1]['value'].is_a?(Hash) %>
+                      <% ca[1]['value'].each do |v| %>
+                        <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= v[1] %> <%= unit %><br>
+                      <% end %>
+                    <% elsif ca[1]['value'].present? %>
+                      <%= ca[1]['value'] %> <%= unit %>
+                    <% else %>
+                      n/a
+                    <% end %>
+                  <% elsif ca[1].is_a?(Array) %>
+                    <%= ca[1].map { |id| t("custom_attributes.#{CustomAttribute.find_by(label: ca[0]).options[id.to_s]}") }.join(", ") %>
+                  <% else %>
+                    <%= t("custom_attributes.#{CustomAttribute.find_by(label: ca[0]).options[ca[1].to_s]}") %>
+                  <% end %>
+                </dd>
+              <% end %>
+            </dl>
+          <% end %>
+
           <% if @product.product_options.any? %>
-            <div class="Product-section">
+            <div class="Entity-section Product-section">
               <h2><%= Product.human_attribute_name(:product_options) %></h2>
               <ul>
                 <% @product.product_options.order(:option).each do |option| %>
@@ -112,7 +139,7 @@
       </div>
     </div>
 
-    <div class="Product-section">
+    <div class="Product-section Product-section--variants">
       <%= render "shared/product_variants", product: @product, current: @product %>
     </div>
 

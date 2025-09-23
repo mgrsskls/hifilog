@@ -180,6 +180,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_19_184202) do
   create_table "custom_attributes", force: :cascade do |t|
     t.jsonb "options"
     t.string "label"
+    t.string "input_type"
+    t.string "inputs", default: [], array: true
+    t.string "units", default: [], array: true
+    t.index ["label"], name: "index_custom_attributes_on_label", unique: true
   end
 
   create_table "custom_attributes_sub_categories", id: false, force: :cascade do |t|

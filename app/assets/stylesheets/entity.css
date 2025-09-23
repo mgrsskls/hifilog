@@ -94,8 +94,6 @@
 }
 
 .Entity-section:not(:last-child) {
-	border-block-end: var(--border) var(--color-transparency-15);
-	padding-block-end: var(--spacing);
 	margin-block-end: var(--spacing);
 }
 
