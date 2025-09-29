@@ -63,12 +63,14 @@
       <%= javascript_include_tag "signed_in", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
       <%= javascript_include_tag "delete_form", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
     <% end %>
-    <%= javascript_tag nonce: true do %>
-      function renderAdMessage() {
-        ad.closest(".Header-adWrapper").innerHTML = "<p><small>Ads help keeping HiFi Log free. Please consider allowing ads for hifilog.com. We only use ads that do not track you.</small></p>"
-      }
+    <% if ENV['ENABLE_GOOGLE_ADSENSE'] %>
+      <%= javascript_tag nonce: true do %>
+        function renderAdMessage() {
+          ad.closest(".Header-adWrapper").innerHTML = "<p><small>Ads help keeping HiFi Log free. Please consider allowing ads for hifilog.com. We only use ads that do not track you.</small></p>"
+        }
+      <% end %>
+      <%= javascript_include_tag "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9594630322589087", nonce: true, crossorigin: "anonymous", async: true unless user_signed_in? %>
     <% end %>
-    <%= javascript_include_tag "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9594630322589087", nonce: true, crossorigin: "anonymous", async: true unless user_signed_in? %>
     <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
     <%= yield :css %>
     <%= csrf_meta_tags %>
@@ -97,7 +99,7 @@
     <header>
       <div class="Header is-dark">
         <a class="Skip" href="#content"><%= t('skip_to_main_content') %></a>
-        <% unless user_signed_in? %>
+        <% if ENV['ENABLE_GOOGLE_ADSENSE'] && !user_signed_in? %>
           <div class="Header-ad u-container">
             <div class="Header-adWrapper">
               <p><small>Ads help keeping HiFi Log free. <a href="<%= new_user_registration_path %>">Sign up</a> for no ads.</small></p>
