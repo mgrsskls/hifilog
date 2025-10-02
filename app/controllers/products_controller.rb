@@ -291,14 +291,14 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
               permitted[:custom_attributes][key]['value'].delete(v[0])
               permitted[:custom_attributes].delete(key) if permitted[:custom_attributes][key]['value'].empty?
             else
-              permitted[:custom_attributes][key]['value'][v[0]] = v[1].to_i
+              permitted[:custom_attributes][key]['value'][v[0]] = v[1].to_f
             end
           end
         else
           if value['value'] == ''
             permitted[:custom_attributes].delete(key)
           else
-            permitted[:custom_attributes][key]['value'] = value['value'].to_i
+            permitted[:custom_attributes][key]['value'] = value['value'].to_f
           end
         end
       end
@@ -366,10 +366,10 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
         case value['value']
         when ActionController::Parameters, Hash
           value['value'].to_hash.each do |v|
-            custom_attributes[key]['value'][v[0]] = v[1].to_i
+            custom_attributes[key]['value'][v[0]] = v[1].to_f
           end
         else
-          custom_attributes[key]['value'] = value['value'].to_i
+          custom_attributes[key]['value'] = value['value'].to_f
         end
       end
     end
