@@ -284,6 +284,22 @@
           <div class="Filter-fieldsetContent">
             <div class="Filter-grid">
               <%= country_filter %>
+
+              <div class="Filter-section">
+                <% status_param = params.dig(:brands, :status) %>
+                <label for="filter-status" class="Filter-label"><%= t('status') %></label>
+                <select class="Filter-input" name="<%= "brands[status]" %>" id="filter-status">
+                  <option value=""<%= ' selected'.html_safe if status_param.blank? %>>
+                    <%= t("filter.all") %>
+                  </option>
+                  <option value="continued"<%= ' selected'.html_safe if status_param == "continued" %>>
+                    <%= t('active') %>
+                  </option>
+                  <option value="discontinued"<%= ' selected'.html_safe if status_param == "discontinued" %>>
+                    <%= t('discontinued') %>
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
         </details>
