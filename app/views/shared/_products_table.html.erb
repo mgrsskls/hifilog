@@ -58,7 +58,7 @@
                     <% end %>
                   <% else %>
                     <li class="Tag">
-                      <%= t("custom_attributes.#{active_record.options[custom_attribute[1].first]}") %>
+                      <%= t("custom_attributes.#{active_record.options[custom_attribute[1].to_s]}") %>
                     </li>
                   <% end %>
                 <% end %>
