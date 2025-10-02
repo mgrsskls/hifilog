@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_19_184202) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_02_090908) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -179,10 +179,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_19_184202) do
 
   create_table "custom_attributes", force: :cascade do |t|
     t.jsonb "options"
-    t.string "label"
+    t.string "label", null: false
     t.string "input_type"
     t.string "inputs", default: [], array: true
     t.string "units", default: [], array: true
+    t.boolean "highlighted", null: false
     t.index ["label"], name: "index_custom_attributes_on_label", unique: true
   end
 

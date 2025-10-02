@@ -48,6 +48,8 @@ module FilterableService
           {
             custom_attribute[:label] => [:min, :max, :unit]
           }
+        elsif custom_attribute[:input_type] == 'boolean'
+          custom_attribute[:label]
         else
           {
             custom_attribute[:label] => []

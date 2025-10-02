@@ -73,8 +73,10 @@ class ProductFilterService
   end
 
   def apply_custom_filters(scope, custom_attributes)
+    custom_attribute_records = CustomAttribute.where(label: custom_attributes.deep_dup.to_hash.pluck(0))
+
     custom_attributes.each do |param|
-      custom_attribute = CustomAttribute.find_by(label: param.first)
+      custom_attribute = custom_attribute_records.select { |record| record.label == param.first }.first
 
       next if custom_attribute.blank?
       next if param[1].blank?
@@ -84,8 +86,13 @@ class ProductFilterService
       scope = case custom_attribute[:input_type]
               when 'number'
                 filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param[1])
-              else
+              when 'boolean'
+                scope.where('(custom_attributes ->> :label) = (:value)', label: label,
+                                                                         value: param[1] == '1' ? 'true' : 'false')
+              when 'option'
                 scope.where('(custom_attributes ->> :label IN (:values))', label: label, values: param[1])
+              when 'options'
+                scope.where('(custom_attributes -> :label ?| array[:values])', label: label, values: param[1])
               end
     end
 

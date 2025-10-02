@@ -60,7 +60,7 @@ class BrandsController < ApplicationController
                         end
                       end
 
-    @brands_query = params[:query].strip if params[:query].present?
+    @brands_query = params.dig(:brands, :query)&.strip
 
     if @sub_category.present?
       @page_title = "#{Brand.model_name.human(count: 2)}: #{@sub_category.name}"
@@ -221,7 +221,7 @@ class BrandsController < ApplicationController
   end
 
   def allowed_index_filter_params
-    params.permit(:category, :status, :country, :query, :sort)
+    params.permit(:category, :sort, brands: [:status, :country, :query])
   end
 
   def active_index_filters
@@ -230,14 +230,14 @@ class BrandsController < ApplicationController
     )
   end
 
-  def allowed_index_product_filter_params(nested: false)
+  def allowed_index_product_filter_params
     custom_attributes_hash = *build_custom_attributes_hash(@custom_attributes)
-    allowed = nested ? [{ products: [:diy_kit, *custom_attributes_hash] }] : [:diy_kit, *custom_attributes_hash]
+    allowed = [{ products: [:diy_kit, *custom_attributes_hash] }]
     params.permit(allowed)
   end
 
   def active_index_product_filters
-    build_product_filters(allowed_index_product_filter_params(nested: true), nested: true)
+    build_product_filters(allowed_index_product_filter_params)
   end
 
   def allowed_show_product_filter_params

@@ -29,8 +29,16 @@ with_custom_attributes:
   sub_categories:
     - one
   custom_attributes:
-    1: 1
-    2: 2
+    amplifier_channel_type: "1"
+    turntable_drive_type: "2"
+    multiple_options: ["1", "2"]
+    number: 1
+    boolean: true
+    complex_number:
+      values:
+        w: 1
+        h: 2
+      unit: unit1
 
 without_custom_attributes:
   name: without_custom_attributes

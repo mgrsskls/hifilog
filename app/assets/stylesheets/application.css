@@ -88,10 +88,10 @@
 	}
 
 	.Main:where(
-			:not(:has(.Home)):not(:has(.Profile)):not(:has(.IndexPage)):not(
-					:has(.Dashboard)
-				):not(:has(.Entity))
-		) {
+		:not(:has(.Home)):not(:has(.Profile)):not(:has(.IndexPage)):not(
+				:has(.Dashboard)
+			):not(:has(.Entity))
+	) {
 		padding-block: clamp(1.5rem, 5vw, 3rem);
 	}
 

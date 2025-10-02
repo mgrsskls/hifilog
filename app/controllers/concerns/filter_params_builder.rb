@@ -14,37 +14,26 @@ module FilterParamsBuilder
     filters
   end
 
-  def build_product_filters(params_hash, nested: false)
+  def build_product_filters(params_hash)
     filters = {}
 
-    if nested
-      if params_hash[:products].present? && params_hash[:products][:diy_kit].present? && %w[0 1].include?(params_hash[:products][:diy_kit])
-        filters[:diy_kit] = params_hash[:products][:diy_kit]
+    if params_hash[:products].present?
+      if params_hash.dig(:products, :diy_kit).present? && %w[0 1].include?(params_hash.dig(:products, :diy_kit))
+        filters[:diy_kit] = params_hash.dig(:products, :diy_kit)
       end
-      active_custom_filters = extract_active_keys(deep_except(params_hash, [:products, :diy_kit]))
-      filters[:custom] = active_custom_filters[:products] if active_custom_filters.present?
-    else
-      if params_hash[:diy_kit].present? && %w[0 1].include?(params_hash[:diy_kit])
-        filters[:diy_kit] = params_hash[:diy_kit]
-      end
-      active_custom_filters = extract_active_keys(params_hash.except(:diy_kit))
-      filters[:custom] = active_custom_filters if active_custom_filters.present?
+
+      active_custom_filters = params_hash[:products].except({ products: [:diy_kit] })
+      filters[:custom] = params_hash[:products].except if flatten_query_values(active_custom_filters).any?
     end
 
     filters
   end
 
-  def build_brand_filters(params_hash, nested: false)
+  def build_brand_filters(params_hash)
     filters = {}
 
-    if nested
-      if params_hash[:brands].present? && params_hash[:brands][:country].present? && COUNTRY_CODES.include?(params_hash[:brands][:country].upcase)
-        filters[:country] = params_hash[:brands][:country]
-      end
-    else
-      if params_hash[:country].present? && COUNTRY_CODES.include?(params_hash[:country].upcase)
-        filters[:country] = params_hash[:country]
-      end
+    if params_hash.dig(:brands, :country) && COUNTRY_CODES.include?(params_hash.dig(:brands, :country).upcase)
+      filters[:country] = params_hash[:brands][:country]
     end
 
     filters
@@ -52,17 +41,23 @@ module FilterParamsBuilder
 
   private
 
-  def extract_active_keys(param)
-    case param
-    when Hash
-      result = param.each_with_object({}) do |(k, v), h|
-        nested = extract_active_keys(v)
-        h[k] = nested unless nested.blank?
+  def flatten_query_values(params)
+    result = []
+
+    case params
+    when ActionController::Parameters, Hash
+      params.each_value do |value|
+        result += flatten_query_values(value)
       end
-      result.presence
+    when Array
+      params.each do |value|
+        result += flatten_query_values(value)
+      end
     else
-      param.present? ? param : nil
+      result << params.to_s unless params.nil? || params.to_s.blank?
     end
+
+    result
   end
 
   def deep_except(params, *paths)
@@ -71,7 +66,9 @@ module FilterParamsBuilder
     paths.each do |keys|
       current = filtered
       keys[0..-2].each do |k|
-        current = current[k] if current.respond_to?(:[]) && current[k].is_a?(ActionController::Parameters) || current[k].is_a?(Hash)
+        if (current.respond_to?(:[]) && current[k].is_a?(ActionController::Parameters)) || current[k].is_a?(Hash)
+          current = current[k]
+        end
       end
 
       current.delete(keys.last) if current.respond_to?(:delete)

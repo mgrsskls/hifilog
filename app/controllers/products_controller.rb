@@ -157,7 +157,7 @@ class ProductsController < ApplicationController
     @product.slug = nil if old_name != product_update_params[:name] || old_model_no != product_update_params[:model_no]
 
     if product_update_params[:custom_attributes].present?
-      convert_custom_attributes_to_integer!(product_update_params[:custom_attributes])
+      convert_custom_attributes!(product_update_params[:custom_attributes])
     end
 
     if params[:product_options_attributes].present?
@@ -256,29 +256,60 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def product_update_params
-    params
-      .expect(
-        product: [:name,
-                  :model_no,
-                  :discontinued,
-                  :diy_kit,
-                  :release_day,
-                  :release_month,
-                  :release_year,
-                  :discontinued_day,
-                  :discontinued_month,
-                  :discontinued_year,
-                  :description,
-                  :price,
-                  :price_currency,
-                  :comment,
-                  { custom_attributes: {},
-                    sub_category_ids: [] }],
-      )
+    permitted = params.expect(
+      product: [:name,
+                :model_no,
+                :discontinued,
+                :diy_kit,
+                :release_day,
+                :release_month,
+                :release_year,
+                :discontinued_day,
+                :discontinued_month,
+                :discontinued_year,
+                :description,
+                :price,
+                :price_currency,
+                :comment,
+                {
+                  custom_attributes: {},
+                  sub_category_ids: []
+                }],
+    )
+
+    permitted[:custom_attributes]&.each do |key, value|
+      active_record = CustomAttribute.find_by(label: key)
+
+      case active_record.input_type
+      when 'boolean'
+        permitted[:custom_attributes][key] = ActiveModel::Type::Boolean.new.cast(value)
+      when 'number'
+        case value['value']
+        when ActionController::Parameters, Hash
+          value['value'].to_hash.each do |v|
+            if v[1] == ''
+              permitted[:custom_attributes][key]['value'].delete(v[0])
+              permitted[:custom_attributes].delete(key) if permitted[:custom_attributes][key]['value'].empty?
+            else
+              permitted[:custom_attributes][key]['value'][v[0]] = v[1].to_i
+            end
+          end
+        else
+          if value['value'] == ''
+            permitted[:custom_attributes].delete(key)
+          else
+            permitted[:custom_attributes][key]['value'] = value['value'].to_i
+          end
+        end
+      end
+    end
+
+    permitted
   end
 
   def allowed_index_filter_params
-    allowed = [:category, :status, :diy_kit, :query, :sort, *build_custom_attributes_hash(@custom_attributes)]
+    allowed = [:category, :status, :query, :sort,
+               { products: [:diy_kit, *build_custom_attributes_hash(@custom_attributes)] }]
     params.permit(allowed)
   end
 
@@ -293,7 +324,7 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def active_index_brand_filters
-    build_brand_filters(allowed_index_brand_filter_params, nested: true)
+    build_brand_filters(allowed_index_brand_filter_params)
   end
 
   def map_possession_to_presenter(possession)
@@ -324,10 +355,14 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
     end
   end
 
-  def convert_custom_attributes_to_integer!(custom_attributes)
+  def convert_custom_attributes!(custom_attributes)
     custom_attributes.each do |key, value|
-      case value
-      when ActionController::Parameters, Hash
+      active_record = CustomAttribute.find_by(label: key)
+
+      case active_record.input_type
+      when 'boolean'
+        custom_attributes[key] = ActiveModel::Type::Boolean.new.cast(value)
+      when 'number'
         case value['value']
         when ActionController::Parameters, Hash
           value['value'].to_hash.each do |v|
@@ -336,10 +371,6 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
         else
           custom_attributes[key]['value'] = value['value'].to_i
         end
-      when Array
-        custom_attributes[key] = value.map(&:to_i)
-      else
-        custom_attributes[key] = value.to_i
       end
     end
   end

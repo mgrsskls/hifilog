@@ -28,7 +28,7 @@
         <div class="u-flex u-spaceBetween u-gap-lg">
           <div class="EntityList-productsCount">
             <% count = product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0) %>
-            <%= link_to "#{count} #{t('activerecord.models.product', count: count)}", brand_products_path_with_filter(brand, category, sub_category, params[:diy_kit], params[:attr]) %>
+            <%= link_to "#{count} #{t('activerecord.models.product', count: count)}", brand_products_path_with_filter(brand, category, sub_category, params.permit(products: {})) %>
           </div>
 
           <% if brand.country_name.present? %>

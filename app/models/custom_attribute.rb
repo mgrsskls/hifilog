@@ -7,6 +7,7 @@ class CustomAttribute < ApplicationRecord
     number: 'number',
     option: 'option',
     options: 'options',
+    boolean: 'boolean',
   }, suffix: true
 
   validates :label, presence: true, uniqueness: true

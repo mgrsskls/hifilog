@@ -1,5 +1,5 @@
 ActiveAdmin.register CustomAttribute do
-  permit_params :options, :label, :input_type, units: [], inputs: [], sub_category_ids: []
+  permit_params :options, :label, :highlighted, :input_type, units: [], inputs: [], sub_category_ids: []
 
   config.filters = false
 
@@ -8,6 +8,7 @@ ActiveAdmin.register CustomAttribute do
   form do |f|
     f.inputs do
       f.input :label
+      f.input :highlighted
       f.inputs do
         f.input :input_type, as: :radio, collection: CustomAttribute.input_types.keys
       end

@@ -6,8 +6,8 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     { sort: ['name_asc'] },
     { status: ['discontinued'] },
     { country: ['DE'] },
-    { diy_kit: ['1'] },
-    { attr: [{ '1': ['1'] }] },
+    { 'products[diy_kit]': ['1'], },
+    { 'products[custom_attributes]': [{ amplifier_channel_type: ['1'] }] },
     { query: ['atrium'] }
   ]
 
@@ -15,8 +15,8 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
     { sort: ['name_asc'] },
     { status: ['discontinued'] },
-    { diy_kit: ['1'] },
-    { attr: [{ '1': ['1'] }] },
+    { 'products[diy_kit]': ['1'], },
+    { 'products[custom_attributes]': [{ amplifier_channel_type: ['1'] }] },
     { query: ['atrium'] }
   ]
 

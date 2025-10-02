@@ -7,11 +7,11 @@
       <%= Brand.human_attribute_name(:country_code) %>
     </label>
     <%= country_select(nil,
-      type == :products ? "brands[country]" : "country",
+      "brands[country]",
       {
         include_blank: "All",
         priority_countries: Brand.where.not(country_code: nil).map { |b| b.country_code.upcase }.uniq,
-        selected: type == :products ? (params[:brands].present? && params[:brands][:country]&.upcase) : params[:country]&.upcase
+        selected: params[:brands].present? && params[:brands][:country]&.upcase
       },
       {
         class: "Filter-input",
@@ -22,7 +22,7 @@
 <% end %>
 
 <% diy_kit = capture do %>
-  <% is_filtered = (type == :brands ? params.dig(:products, :diy_kit) : params[:diy_kit]).present? %>
+  <% is_filtered = params.dig(:products, :diy_kit).present? %>
   <details class="Filter-fieldset"<% if is_filtered %> open<% end %>>
     <summary class="Filter-label Filter-label--large">
       Assembly
@@ -33,13 +33,13 @@
     <ul class="Pagination">
       <li class="Pagination-item">
         <label>
-          <input type="checkbox" name="<%= type == :brands ? "products[diy_kit]" : "diy_kit" %>" value="0"<%= ' checked aria-current="true"'.html_safe if (type == :brands ? params.dig(:products, :diy_kit) : params[:diy_kit]) == "0" %>>
+          <input type="checkbox" name="<%= "products[diy_kit]" %>" value="0"<%= ' checked aria-current="true"'.html_safe if params.dig(:products, :diy_kit) == "0" %>>
           Pre-assembled
         </label>
       </li>
       <li class="Pagination-item">
         <label>
-          <input type="checkbox" name="<%= type == :brands ? "products[diy_kit]" : "diy_kit" %>" value="1"<%= ' checked aria-current="true"'.html_safe if (type == :brands ? params.dig(:products, :diy_kit) : params[:diy_kit]) == "1" %>>
+          <input type="checkbox" name="<%= "products[diy_kit]" %>" value="1"<%= ' checked aria-current="true"'.html_safe if params.dig(:products, :diy_kit) == "1" %>>
           DIY Kit
         </label>
       </li>
@@ -49,18 +49,19 @@
 
 <% custom_attributes_html = capture do %>
   <% if custom_attributes&.any? %>
-    <% custom_attributes = custom_attributes.where.not(options: nil) if type == :brands %>
-    <% custom_attributes.order(Arel.sql("label IN ('dimensions', 'weight')"), Arel.sql("options IS NULL"), :label).each do |custom_attribute| %>
+    <% custom_attributes.order(:label).each do |custom_attribute| %>
       <%
-        param = (type == :brands ? params.dig(:products, custom_attribute.label) : params[custom_attribute.label])
+        param = params.dig(:products, custom_attribute.label)
 
         if param.present?
-          if custom_attribute.options.present?
-            is_filtered = param.present?
-          elsif custom_attribute.inputs.present?
-            is_filtered = param.values.flat_map { |g| g.values }.any? { |v| v.present? }
-          else
+          if custom_attribute.inputs.any?
+            is_filtered = param.except(:unit).values.flat_map { |g| g.values }.any? { |v| v.present? }
+          elsif custom_attribute.input_type == 'number'
             is_filtered = param.values.any? { |v| v.present? }
+          elsif custom_attribute.input_type == 'boolean'
+            is_filtered = param.present?
+          else
+            is_filtered = param.any? { |v| v.present? }
           end
         end
       %>
@@ -73,13 +74,35 @@
             <% end %>
           </summary>
         <% end %>
+
         <% if custom_attribute.options.present? %>
           <ul class="Pagination">
             <% custom_attribute.options.each do |option| %>
               <li class="Pagination-item">
                 <label>
-                  <input type="checkbox" name="<%= type == :brands ? "products[#{custom_attribute.label}]" : custom_attribute.label %>[]" value="<%= option[0] %>"<%= ' checked aria-current="true"'.html_safe if (type == :brands ? params.dig(:products, custom_attribute.label) : params[custom_attribute.label])&.include?(option[0].to_s) %>>
+                  <input
+                    type="checkbox"
+                    name="products[<%= custom_attribute.label %>][]"
+                    value="<%= option[0] %>"
+                    <%= ' checked aria-current="true"'.html_safe if params.dig(:products, custom_attribute.label)&.include?(option[0].to_s) %>
+                  >
                   <%= t("custom_attributes.#{option[1]}") %>
+                </label>
+              </li>
+            <% end %>
+          </ul>
+        <% elsif custom_attribute.input_type == 'boolean' %>
+          <ul class="Pagination">
+            <% [1, 0].each do |option| %>
+              <li class="Pagination-item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="products[<%= custom_attribute.label %>]"
+                    value="<%= option %>"
+                    <%= ' checked aria-current="true"'.html_safe if params.dig(:products, custom_attribute.label)&.include?(option[0].to_s) %>
+                  >
+                  <%= t("custom_attributes.#{option == 1 ? 'yes' : 'no'}") %>
                 </label>
               </li>
             <% end %>
@@ -89,7 +112,13 @@
             <div class="Filter-units u-flex u-alignCenter u-gap-md u-mb-sm">
               <% custom_attribute.units.each do |unit| %>
                 <div class="u-flex u-alignCenter u-gap-sm">
-                  <input type="radio" name="<%= custom_attribute.label %>[unit]" value="<%= unit %>" id="<%= "#{custom_attribute.label}-#{unit}" %>"<%= " checked" if params[custom_attribute.label].present? && params[custom_attribute.label]['unit'] == unit %>>
+                  <input
+                    type="radio"
+                    name="products[<%= custom_attribute.label %>][unit]"
+                    value="<%= unit %>"
+                    id="<%= "#{custom_attribute.label}-#{unit}" %>"
+                    <%= " checked" if params.dig(:products, custom_attribute.label, :unit) == unit %>
+                  >
                   <label for="<%= "#{custom_attribute.label}-#{unit}" %>"><%= t("custom_attribute_units.#{unit}").html_safe %></label>
                 </div>
               <% end %>
@@ -106,9 +135,9 @@
                     <div class="u-flex u-gap-sm u-alignCenter">
                       <label for="<%= "#{custom_attribute.label}-#{input}-min" %>">Min.</label>
                       <input
-                        name="<%= custom_attribute.label %>[<%= input %>][min]"
-                        value="<%= params[custom_attribute.label][input][:min] if params[custom_attribute.label].present? %>"
                         type="text" inputmode="number" class="Filter-input"
+                        name="products[<%= custom_attribute.label %>][<%= input %>][min]"
+                        value="<%= params.dig(:products, custom_attribute.label, input, :min) %>"
                         id="<%= "#{custom_attribute.label}-#{input}-min" %>"
                       >
                       <% if custom_attribute.units.present? && custom_attribute.units.length == 1 %>
@@ -120,9 +149,9 @@
                     <div class="u-flex u-gap-sm u-alignCenter">
                       <label for="<%= "#{custom_attribute.label}-#{input}-max" %>">Max.</label>
                       <input
-                        name="<%= custom_attribute.label %>[<%= input %>][max]"
-                        value="<%= params[custom_attribute.label][input][:max] if params[custom_attribute.label].present? %>"
                         type="text" inputmode="number" class="Filter-input"
+                        name="products[<%= custom_attribute.label %>][<%= input %>][max]"
+                        value="<%= params.dig(:products, custom_attribute.label, input, :max) %>"
                         id="<%= "#{custom_attribute.label}-#{input}-max" %>"
                       >
                       <% if custom_attribute.units.present? && custom_attribute.units.length == 1 %>
@@ -140,10 +169,10 @@
                 <div class="u-flex u-gap-sm u-alignCenter">
                   <label for="<%= "#{custom_attribute.label}-min" %>">Min.</label>
                   <input
-                    id="<%= "#{custom_attribute.label}-min" %>"
-                    name="<%= custom_attribute.label %>[min]"
-                    value="<%= params[custom_attribute.label][:min] if params[custom_attribute.label].present? %>"
                     type="text" inputmode="number" class="Filter-input"
+                    id="<%= "#{custom_attribute.label}-min" %>"
+                    name="products[<%= custom_attribute.label %>][min]"
+                    value="<%= params.dig(:products, custom_attribute.label, :min) %>"
                   >
                   <% if custom_attribute.units.present? && custom_attribute.units.length == 1 %>
                     <span class="Filter-unit">
@@ -154,10 +183,10 @@
                 <div class="u-flex u-gap-sm u-alignCenter">
                   <label for="<%= "#{custom_attribute.label}-max" %>">Max.</label>
                   <input
-                    id="<%= "#{custom_attribute.label}-max" %>"
-                    name="<%= custom_attribute.label %>[max]"
-                    value="<%= params[custom_attribute.label][:max] if params[custom_attribute.label].present? %>"
                     type="text" inputmode="number" class="Filter-input"
+                    id="<%= "#{custom_attribute.label}-max" %>"
+                    name="products[<%= custom_attribute.label %>][max]"
+                    value="<%= params.dig(:products, custom_attribute.label, :max) %>"
                   >
                   <% if custom_attribute.units.present? && custom_attribute.units.length == 1 %>
                     <span class="Filter-unit">
@@ -185,19 +214,20 @@
       <div class="Filter-grid Filter-inputs">
         <div class="Filter-section">
           <label class="Filter-label" for="entity-search"><%= t('search') %></label>
-          <input id="entity-search" class="Filter-input" type="text" name="query" placeholder="Name" value="<%= query %>">
+          <input id="entity-search" class="Filter-input" type="text" name="<%= type == :brands ? "brands[query]" : "products[query]" %>" placeholder="Name" value="<%= query %>">
         </div>
 
         <div class="Filter-section">
+          <% status_param = type == :brands ? params.dig(:brands, :status) : params.dig(:products, :status) %>
           <label for="filter-status" class="Filter-label"><%= t('status') %></label>
-          <select class="Filter-input" name="status" id="filter-status">
-            <option value=""<%= ' selected'.html_safe if params[:status].blank? %>>
+          <select class="Filter-input" name="<%= type == :brands ? "brands[status]" : "products[status]" %>" id="filter-status">
+            <option value=""<%= ' selected'.html_safe if status_param.blank? %>>
               <%= t("filter.all") %>
             </option>
-            <option value="continued"<%= ' selected'.html_safe if params[:status] == "continued" %>>
+            <option value="continued"<%= ' selected'.html_safe if status_param == "continued" %>>
               <%= filter_active_label %>
             </option>
-            <option value="discontinued"<%= ' selected'.html_safe if params[:status] == "discontinued" %>>
+            <option value="discontinued"<%= ' selected'.html_safe if status_param == "discontinued" %>>
               <%= t('discontinued') %>
             </option>
           </select>

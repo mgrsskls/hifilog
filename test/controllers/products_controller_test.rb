@@ -7,7 +7,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     { status: ['discontinued'] },
     { country: ['DE'] },
     { diy_kit: ['1'] },
-    { attr: [{ '1': ['1'] }] },
+    { custom_attributes: [{ amplifier_channel_type: ['1'] }] },
     { query: ['atrium'] }
   ]
 
