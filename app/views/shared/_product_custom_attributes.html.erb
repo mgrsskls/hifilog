@@ -2,28 +2,30 @@
 <dl class="Entity-section Data">
   <% Array(attributes).sort.each do |ca| %>
     <% active_record = CustomAttribute.find_by(label: ca[0]) %>
-    <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
-    <dd>
-      <% if ca[1].is_a?(Hash) %>
-        <% unit = t("custom_attribute_units.#{ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first}").html_safe %>
-        <% if ca[1]['value'].is_a?(Hash) %>
-          <% ca[1]['value'].each do |v| %>
-            <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= v[1] %> <%= unit %><br>
+    <% if active_record.present? %>
+      <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
+      <dd>
+        <% if ca[1].is_a?(Hash) %>
+          <% unit = t("custom_attribute_units.#{ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first}").html_safe %>
+          <% if ca[1]['value'].is_a?(Hash) %>
+            <% ca[1]['value'].each do |v| %>
+              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= v[1] %> <%= unit %><br>
+            <% end %>
+          <% elsif ca[1]['value'].present? %>
+            <%= ca[1]['value'] %> <%= unit %>
+          <% else %>
+            n/a
           <% end %>
-        <% elsif ca[1]['value'].present? %>
-          <%= ca[1]['value'] %> <%= unit %>
+        <% elsif ca[1].is_a?(Array) %>
+          <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
         <% else %>
-          n/a
+          <% if active_record[:input_type] == 'boolean' %>
+            <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
+          <% else %>
+            <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
+          <% end %>
         <% end %>
-      <% elsif ca[1].is_a?(Array) %>
-        <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
-      <% else %>
-        <% if active_record[:input_type] == 'boolean' %>
-          <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
-        <% else %>
-          <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
-        <% end %>
-      <% end %>
-    </dd>
+      </dd>
+    <% end %>
   <% end %>
 </dl>
