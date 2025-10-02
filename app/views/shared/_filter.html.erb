@@ -1,5 +1,9 @@
-<% filter_active_label = (type == :products or type == :brand_products) ? t('continued') : t('active') %>
-<% categories ||= [] %>
+<%
+  filter_active_label = (type == :products or type == :brand_products) ? t('continued') : t('active')
+  categories ||= []
+  diy_kit_is_filtered = false
+  custom_attributes_filtered = []
+%>
 
 <% country_filter = capture do %>
   <div class="Filter-section">
@@ -22,11 +26,11 @@
 <% end %>
 
 <% diy_kit = capture do %>
-  <% is_filtered = params.dig(:products, :diy_kit).present? %>
-  <details class="Filter-fieldset"<% if is_filtered %> open<% end %>>
+  <% diy_kit_is_filtered = params.dig(:products, :diy_kit).present? %>
+  <details class="Filter-fieldset"<% if diy_kit_is_filtered %> open<% end %>>
     <summary class="Filter-label Filter-label--large">
       Assembly
-      <% if is_filtered %>
+      <% if diy_kit_is_filtered %>
         <svg aria-label="Filter applied" class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
       <% end %>
     </summary>
@@ -63,6 +67,8 @@
           else
             is_filtered = param.any? { |v| v.present? }
           end
+
+          custom_attributes_filtered << is_filtered
         end
       %>
       <details class="Filter-fieldset"<% if is_filtered %> open<% end %>>
@@ -267,11 +273,11 @@
         <%= diy_kit %>
         <%= custom_attributes_html %>
 
-        <% is_filtered = params[:brands].present? && params[:brands][:country].present? %>
-        <details class="Filter-fieldset"<% if is_filtered %> open<% end %>>
+        <% brands_country_is_filtered = params.dig(:brands, :country).present? %>
+        <details class="Filter-fieldset"<% if brands_country_is_filtered %> open<% end %>>
           <summary class="Filter-label Filter-label--large">
             Brands
-            <% if is_filtered %>
+            <% if brands_country_is_filtered %>
               <svg aria-label="Filter applied" class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
             <% end %>
           </summary>
@@ -284,18 +290,7 @@
       <% end %>
 
       <% if type == :brands %>
-        <%
-          is_filtered = false
-          if params[:products].present?
-            params[:products].each do |key, val|
-              if val.is_a?(Array)
-                is_filtered = val.any? { |v| v.present? }
-                break
-              end
-            end
-          end
-        %>
-        <details class="Filter-fieldset"<% if is_filtered %> open<% end %>>
+        <details class="Filter-fieldset"<% if custom_attributes_filtered.include?(true) || diy_kit_is_filtered %> open<% end %>>
           <summary class="Filter-label Filter-label--large">Products</summary>
           <div class="Filter-fieldsetContent">
             <%= diy_kit %>

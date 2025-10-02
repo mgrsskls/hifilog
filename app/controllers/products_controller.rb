@@ -308,14 +308,14 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def allowed_index_filter_params
-    allowed = [:category, :status, :query, :sort,
-               { products: [:diy_kit, *build_custom_attributes_hash(@custom_attributes)] }]
+    allowed = [:category, :query, :sort,
+               { products: [:status, :diy_kit, *build_custom_attributes_hash(@custom_attributes)] }]
     params.permit(allowed)
   end
 
   def active_index_filters
     build_filters(allowed_index_filter_params).merge(
-      build_product_filters(allowed_index_filter_params.except(:category, :status, :query, :sort))
+      build_product_filters(allowed_index_filter_params.except(:category, :query, :sort))
     )
   end
 
