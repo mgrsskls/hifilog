@@ -198,7 +198,7 @@
                 <div class="EntityFormAttributes-units u-flex u-gap-md u-alignCenter">
                   <% custom_attribute.units.each do |unit| %>
                     <div class="u-flex u-gap-sm u-alignCenter">
-                      <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= product.custom_attributes&.dig(custom_attribute.label, 'unit') %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
+                      <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= unit %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
                       <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>">
                         <%= t("custom_attribute_units.#{unit}").html_safe %>
                       </label>
@@ -240,7 +240,7 @@
                 <div class="u-flex u-gap-md u-alignCenter">
                   <% custom_attribute.units.each do |unit| %>
                     <div class="u-flex u-gap-sm u-alignCenter">
-                      <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= product.custom_attributes&.dig(custom_attribute.label, 'unit') %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
+                      <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= unit %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
                       <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>">
                         <%= t("custom_attribute_units.#{unit}").html_safe %>
                       </label>
