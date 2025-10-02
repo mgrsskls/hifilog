@@ -1,19 +1,25 @@
 <% content_for :header do %>
-  <% if @sub_category %>
-    <h1 class="h1-sm">
-      <span class="IndexPage-category"><%= @category.name %></span><span class="u-hiddenVisually">:</span> <%= @sub_category.name %>
-    </h1>
-  <% else %>
-    <h1><%= @category ? @category.name : Product.model_name.human(count: 2) %></h1>
+  <h1>
+    <% if @sub_category.present? or @category.present? %>
+      <%= (@sub_category.present? ? @sub_category : @category).name %>
+    <% else %>
+      <%= Product.model_name.human(count: 2) %>
+    <% end %>
+  </h1>
+<% end %>
+
+<% content_for :actions do %>
+  <b>
+    <%= Product.model_name.human(count: 2) %>
+  </b>
+
+  <%= link_to user_signed_in? ? new_product_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), rel: "nofollow", class: "IndexPage-addLink" do %>
+    <span><%= t('product.new.link') %></span>
   <% end %>
 <% end %>
 
 <% content_for :filter do %>
   <%= render "shared/filter", reset_path: products_path(category: params[:category]), collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
-<% end %>
-
-<% content_for :add_link do %>
-  <%= link_to t('product.new.link'), user_signed_in? ? new_product_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "Button Button--secondary", rel: "nofollow" %>
 <% end %>
 
 <% content_for :sort do %>
@@ -32,7 +38,7 @@
 <% end %>
 
 <% content_for :table do %>
-  <%= render "shared/products_table", products: @product_presenters, hide_category: @sub_category.present?, filter_applied: @filter_applied %>
+  <%= render "shared/products_table", products: @product_presenters, hide_category: @sub_category.present? %>
 <% end %>
 
 <%= render "shared/index_page",
@@ -40,6 +46,5 @@
   presenters: @product_presenters,
   empty_state_message: t('empty_state.products_filter', path: new_product_path),
   category: @category,
-  sub_category: @sub_category,
-  full_page: true
+  sub_category: @sub_category
 %>

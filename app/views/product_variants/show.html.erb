@@ -10,12 +10,16 @@
     <div class="Product-details">
       <div class="Heading">
         <h1>
-          <span><%= @product.brand.name %></span> <%= @product.name %>
-          <span class="Product-variantName">&mdash; <%= @product_variant.name_with_fallback %></span>
+          <a href="<%= brand_path(id: @product.brand.friendly_id) %>"><span><%= @product.brand.name %></span></a>
+          <%= @product.name %>
+          <span>&mdash; <%= @product_variant.name_with_fallback %></span>
           <% if @product_variant.model_no.present? %>
             <small><%= @product_variant.model_no %></small>
           <% end %>
         </h1>
+        <% if @product_variant.discontinued? %>
+          <span class="Symbol"><%= t('symbols.discontinued') %></span>
+        <% end %>
       </div>
 
       <div class="Entity-content">
@@ -61,20 +65,9 @@
           <% end %>
 
           <dl class="Entity-section Data">
-            <% if @product_variant.discontinued? %>
-              <dt><%= t('status') %></dt>
-              <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
-            <% end %>
-            <% if @product.brand.present? %>
-              <dt><%= Brand.model_name.human %></dt>
-              <dd><%= link_to @product.brand.name, brand_path(id: @product.brand.friendly_id) %></dd>
-            <% end %>
             <dt><%= Category.model_name.human %></dt>
             <dd>
               <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
-              <% if @product.custom_attributes.present? %>
-                <br><span class="Data-secondary"><%= @product.custom_attributes_list %></span>
-              <% end %>
             </dd>
             <dt><%= Product.human_attribute_name(:release_date) %></dt>
             <dd>
@@ -104,6 +97,8 @@
             </dd>
           </dl>
 
+          <%= render "shared/product_custom_attributes", attributes: @product.custom_attributes if @product.custom_attributes&.any? %>
+
           <% if @product_variant.product_options.any? %>
             <div class="Product-section">
               <h2><%= Product.human_attribute_name(:product_options) %></h2>
@@ -126,6 +121,10 @@
         <%= render "shared/product_variants", product: @product_variant.product, current: @product_variant %>
       </div>
     </div>
+
+    <ol class="Footnotes">
+      <li>The provided price is the retail price given by the manufacturer. If the product has multiple versions, this is the lowest price, i.e. the price for the basic / stock version. Please note that this information might be outdated and that it most likely is different from country to country.</li>
+    </ol>
   </div>
   <div class="Entity-sub Product-sub">
     <%= render "products/actions", possessions: @possessions, product: @product, product_variant: @product_variant, bookmark: @bookmark, setups: @setups %>
@@ -166,7 +165,3 @@
     </div>
   </div>
 </div>
-
-<ol class="Footnotes">
-  <li>The provided price is the retail price given by the manufacturer. If the product has multiple versions, this is the lowest price, i.e. the price for the basic / stock version. Please note that this information might be outdated and that it most likely is different from country to country.</li>
-</ol>

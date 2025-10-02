@@ -6,6 +6,10 @@ input:not([type="checkbox"], [type="radio"], [type="hidden"]) {
 	all: unset;
 }
 
+:is([type="checkbox"], [type="radio"]) {
+	margin: 0;
+}
+
 textarea {
 	form-sizing: normal;
 	min-block-size: 10em;

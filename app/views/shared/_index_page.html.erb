@@ -1,20 +1,16 @@
-<% full_page ||= false %>
-<div class="IndexPage<%= " IndexPage--fullPage" if full_page %>" id="list">
+<div class="IndexPage" id="list">
   <div class="IndexPage-header">
     <div class="IndexPage-headerFilter">
+      <% if yield(:actions).present? %>
+        <div class="IndexPage-actions">
+          <%= yield :actions %>
+        </div>
+      <% end %>
       <%= yield :header %>
-
-      <div class="IndexPage-addLink IndexPage-addLink--s">
-        <%= yield :add_link %>
-      </div>
     </div>
 
     <div class="IndexPage-filter">
       <%= yield :filter %>
-    </div>
-
-    <div class="IndexPage-addLink IndexPage-addLink--l">
-      <%= yield :add_link %>
     </div>
   </div>
   <div class="IndexPage-content">
@@ -26,7 +22,6 @@
           </p>
           <form class="u-flex u-alignCenter u-gap-md">
             <input type="hidden" name="query" value="<%= params[:query] %>">
-            <input type="hidden" name="letter" value="<%= params[:letter] %>">
             <input type="hidden" name="status" value="<%= params[:status] %>">
             <input type="hidden" name="category" value="<%= params[:category] %>">
             <input type="hidden" name="diy_kit" value="<%= params[:diy_kit] %>">

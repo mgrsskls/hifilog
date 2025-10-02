@@ -17,6 +17,15 @@
 	background: var(--color-bg2);
 	border-radius: var(--border-radius);
 	border: 0.0625rem solid transparent;
+
+	&:has(.EntityList-name:focus-within) {
+		outline: 0.125rem solid var(--color-focus-outline);
+		outline-offset: 0.1875rem;
+
+		a:focus-within {
+			outline: none;
+		}
+	}
 }
 
 .EntityList--brands .EntityList-item > :last-child {
@@ -109,7 +118,7 @@
 .EntityList-country {
 	display: flex;
 	align-items: center;
-	gap: 0.5em;
+	gap: 0.5rem;
 }
 
 .EntityList-item summary {

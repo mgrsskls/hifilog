@@ -6,11 +6,12 @@ class ProductFilterService
 
   Result = Struct.new(:products, keyword_init: true)
 
-  def initialize(filters, brands, category = nil, sub_category = nil)
+  def initialize(filters: {}, brand_filters: {}, brands: [], category: nil, sub_category: nil)
     @filters = filters
     @category = category
     @sub_category = sub_category
     @products = brands.any? ? ProductItem.where(brand_id: brands.map(&:id)) : ProductItem.all
+    @brand_filters = brand_filters
   end
 
   def filter
@@ -32,8 +33,17 @@ class ProductFilterService
     products = apply_status_filter(products, @filters[:status]) if @filters[:status].present?
     products = apply_country_filter(products, @filters[:country]) if @filters[:country].present?
     products = apply_diy_kit_filter(products, @filters[:diy_kit]) if @filters[:diy_kit].present?
-    products = apply_custom_attributes_filter(products, @filters[:attr]) if @filters[:attr].present?
     products = apply_search_filter(products, @filters[:query]) if @filters[:query].present?
+    products = apply_custom_filters(products, @filters[:custom]) if @filters[:custom].present?
+
+    if @brand_filters.present?
+      brand_ids_from_brand_filter = BrandFilterService.new(
+        filters: @brand_filters,
+        brands: Brand.where(id: products.pluck(:brand_id).uniq)
+      ).filter.brands.map(&:id)
+      products = products.where(brand_id: brand_ids_from_brand_filter)
+    end
+
     Result.new(products:)
   end
 
@@ -55,22 +65,38 @@ class ProductFilterService
     scope.where(diy_kit: diy_kit)
   end
 
-  def apply_custom_attributes_filter(scope, value)
-    relevant_ids = value.keys.map(&:to_i)
-    CustomAttribute.where(id: relevant_ids).find_each do |custom_attribute|
-      id_s = custom_attribute.id.to_s
-      next if value[id_s].blank?
-
-      scope = scope.where('custom_attributes ->> ? IN (?)', id_s, value[id_s])
-    end
-    scope
-  end
-
   def apply_search_filter(scope, value)
     query = "%#{value.strip}%"
 
     scope.where('product_items.name ILIKE ?', query)
          .or(scope.where('model_no ILIKE ?', query))
+  end
+
+  def apply_custom_filters(scope, custom_attributes)
+    custom_attribute_records = CustomAttribute.where(label: custom_attributes.deep_dup.to_hash.pluck(0))
+
+    custom_attributes.each do |param|
+      custom_attribute = custom_attribute_records.select { |record| record.label == param.first }.first
+
+      next if custom_attribute.blank?
+      next if param[1].blank?
+
+      label = custom_attribute[:label]
+
+      scope = case custom_attribute[:input_type]
+              when 'number'
+                filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param[1])
+              when 'boolean'
+                scope.where('(custom_attributes ->> :label) = (:value)', label: label,
+                                                                         value: param[1] == '1' ? 'true' : 'false')
+              when 'option'
+                scope.where('(custom_attributes ->> :label IN (:values))', label: label, values: param[1])
+              when 'options'
+                scope.where('(custom_attributes -> :label ?| array[:values])', label: label, values: param[1])
+              end
+    end
+
+    scope
   end
 
   def apply_ordering(scope, value)
@@ -96,5 +122,74 @@ class ProductFilterService
                   release_day ASC NULLS FIRST'
             end
     scope.order(order)
+  end
+
+  def convert_values(unit, min, max)
+    min = Float(min, exception: false)
+    max = Float(max, exception: false)
+
+    case unit
+    when 'in'
+      min *= 2.54 if min.present?
+      max *= 2.54 if max.present?
+    when 'lb'
+      min *= 0.453592 if min.present?
+      max *= 0.453592 if max.present?
+    end
+
+    [min, max]
+  end
+
+  def convert_unit(unit)
+    case unit
+    when 'in' then unit = 'cm'
+    when 'lb' then unit = 'kg'
+    end
+
+    unit
+  end
+
+  def filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param)
+    if custom_attribute[:inputs].present?
+      custom_attribute[:inputs].each do |input|
+        min, max = convert_values(param[:unit], param[input][:min], param[input][:max])
+
+        if min.present?
+          scope = scope.where(
+            '(custom_attributes -> ? -> ? ->> ?)::numeric >= ?',
+            custom_attribute[:label],
+            'value',
+            input,
+            min
+          )
+        end
+
+        next if max.blank?
+
+        scope = scope.where(
+          '(custom_attributes -> ? -> ? ->> ?)::numeric <= ?',
+          custom_attribute[:label],
+          'value',
+          input,
+          max
+        )
+      end
+    else
+      min, max = convert_values(param[:unit], param[:min], param[:max])
+
+      if min.present?
+        scope = scope.where('(custom_attributes -> ? ->> ?)::numeric >= ?', custom_attribute[:label], 'value', min)
+      end
+      if max.present?
+        scope = scope.where('(custom_attributes -> ? ->> ?)::numeric <= ?', custom_attribute[:label], 'value', max)
+      end
+    end
+
+    if custom_attribute[:units].present? && param[:unit].present?
+      unit = convert_unit(param[:unit])
+      scope = scope.where('custom_attributes -> ? ->> ? = ?', custom_attribute[:label], 'unit', unit)
+    end
+
+    scope
   end
 end

@@ -1,31 +1,7 @@
 ---
 en:
+  active: Active
   activerecord:
-    models:
-      bookmark:
-        one: Bookmark
-        other: Bookmarks
-      brand:
-        one: Brand
-        other: Brands
-      category:
-        one: Category
-        other: Categories
-      custom_product:
-        one: Custom product
-        other: Custom products
-      note:
-        one: Note
-        other: Notes
-      product:
-        one: Product
-        other: Products
-      setup:
-        one: Setup
-        other: Setups
-      user:
-        one: User
-        other: Users
     attributes:
       brand:
         country_code: Country
@@ -63,12 +39,36 @@ en:
         custom_attribute_ids: Properties
       user:
         email: Email
-        user_name: Username
         password: Password
         password_confirmation: Password confirmation
+        user_name: Username
       version:
         comment: Comment
-  active: Active
+    models:
+      bookmark:
+        one: Bookmark
+        other: Bookmarks
+      brand:
+        one: Brand
+        other: Brands
+      category:
+        one: Category
+        other: Categories
+      custom_product:
+        one: Custom product
+        other: Custom products
+      note:
+        one: Note
+        other: Notes
+      product:
+        one: Product
+        other: Products
+      setup:
+        one: Setup
+        other: Setups
+      user:
+        one: User
+        other: Users
   add_product: Add Product
   add_to_bookmarks: Add to <b>Bookmarks</b>
   add_to_collection: Add to <b>Collection</b>
@@ -82,34 +82,34 @@ en:
     mark_as_read: Mark as read
   back: Back
   bookmark:
+    messages:
+      removed: "<b>%{name}</b> has been removed from your bookmarks."
     remove:
       confirm: Are you sure you want to remove %{name} from your bookmarks?
       label: Remove
-    messages:
-      removed: <b>%{name}</b> has been removed from your bookmarks.
   bookmark_list:
     delete:
       confirm: Are you sure you want to delete your bookmark list %{name}? Please note that the bookmarks in this list will remain in your bookmarks.
       label: Delete
-    new:
-      heading: Add new bookmark list
-      submit: Save
     messages:
       created: Your bookmark list %{link} has been created.
       deleted: Your bookmark list <b>%{name}</b> has been deleted.
       updated: Your bookmark list <b>%{name}</b> has been updated.
     name_placeholder: e.g. "Portable HP Amps with DAC" or "New office setup"
+    new:
+      heading: Add new bookmark list
+      submit: Save
     remove_bookmark:
       confirm: Do you want remove <b>%{name}</b> from your bookmarks?
       label: Remove
     update:
       label: Edit
   brand:
-    new:
-      heading: Add new Brand
-      link: Add new Brand
-      submit: Submit
     founded: Founded
+    new:
+      heading: Add Brand
+      link: Add Brand
+      submit: Submit
   changelog:
     after: To
     attribute: Attribute
@@ -118,30 +118,12 @@ en:
     change: Edited
     comment: Comment
   continued: In Production
-  custom_attributes:
-    active: Active
-    automatic: Automatic
-    belt-drive: Belt Drive
-    direct-drive: Direct Drive
-    dual-mono: Dual-Mono
-    dynamic: Dynamic
-    electrostatic: Electrostatic
-    hybrid: Hybrid
-    manual: Manual
-    mc: MC
-    mm: MM
-    mm-mc: MM / MC
-    mono: Mono
-    optical: Optical
-    passive: Passive
-    planar: Planar Magnetic
-    rca: RCA
-    solid_state: Solid State
-    stereo: Stereo
-    tube: Tube
-    wired: Wired
-    wireless: Wireless
-    xlr: XLR
+  custom_attribute_inputs:
+    h: Height
+    l: Length
+    max: Maximum
+    min: Minimum
+    w: Width
   custom_attribute_labels:
     amplifier_channel_type: Channel type
     amplifier_type: Amplifier type
@@ -150,14 +132,75 @@ en:
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
     loudspeaker_amplification_type: Amplification
+    loudspeaker_bi_amping: Bi-Amping
+    loudspeaker_bi_wiring: Bi-Wiring
+    loudspeaker_driver_configuration: Driver configuration
+    loudspeaker_driver_types: Driver types
+    loudspeaker_enclosure_type: Enclosure type
+    loudspeaker_frequency_response_range: Frequency Response Range
+    loudspeaker_minimum_impedance: Minimum Impedance
+    loudspeaker_nominal_impedance: Nominal Impedance
+    loudspeaker_peak_power: Peak Power
+    loudspeaker_peak_spl: Peak SPL
+    loudspeaker_recommended_amplifier_power: Recommended Amplifier Power
+    loudspeaker_rms_power: RMS Power
+    loudspeaker_sensitivity: Sensitivity
     power_amplifier_channel_type: Channel type
     turntable_cartridge_type: Cartridge type
     turntable_drive_type: Drive type
     turntable_operation_type: Operation type
+  custom_attribute_units:
+    cm: cm
+    db: dB
+    db_1w_1m: dB @ 1W/1m
+    db_283v_1m: dB @ 2.83V/1m
+    hz: Hz
+    in: in
+    kg: kg
+    lb: lb
+    ohm: "&ohm;"
+    w: W
+  custom_attributes:
+    2_5_way: 2.5-way
+    2_way: 2-way
+    3_way: 3-way
+    4_way: 4-way (and above)
+    active: Active
+    automatic: Automatic
+    belt-drive: Belt Drive
+    coaxial: Coaxial
+    direct-drive: Direct Drive
+    dual-mono: Dual-Mono
+    dynamic: Dynamic
+    electrostatic: Electrostatic
+    full_range: Full-Range
+    horn_loaded: Horn-loaded
+    hybrid: Hybrid
+    manual: Manual
+    mc: MC
+    mm: MM
+    mm-mc: MM / MC
+    mono: Mono
+    "no": "No"
+    open_baffle: Open Baffle
+    optical: Optical
+    passive: Passive
+    passive_radiator: Passive Radiator
+    planar: Planar Magnetic
+    planar_magnetic: Planar Magnetic
+    ported: Ported
+    rca: RCA
+    ribbon_tweeter: Ribbon Tweeter
+    sealed: Sealed
+    solid_state: Solid State
+    stereo: Stereo
+    transmission_line: Transmission Line
+    tube: Tube
+    wired: Wired
+    wireless: Wireless
+    xlr: XLR
+    "yes": "Yes"
   custom_product:
-    new:
-      heading: Add new Custom Product
-      link: Add Custom Product
     delete:
       confirm: Are you sure you want to delete your custom product %{name}?
       label: Delete
@@ -165,6 +208,9 @@ en:
       created: Your custom product <b>%{name}</b> has been created.
       deleted: Your custom product <b>%{name}</b> has been deleted.
       updated: Your custom product %{link} has been updated.
+    new:
+      heading: Add new Custom Product
+      link: Add Custom Product
   dashboard: Dashboard
   discontinued: Discontinued
   edit: Edit
@@ -182,19 +228,19 @@ en:
     products: "<p><b>No products found.</b></p>"
     products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}" rel="nofollow">add a product here</a>.</p>
     public_profile: "<p><i>%{name}</i> has not added any products to their collection yet.</p>"
-    public_profile_previous: "<p><i>%{name}</i> has not added any products to list of previous products yet.</p>"
     public_profile_history: "<p><i>%{name}</i> has not added enough information about their products yet.</p>"
+    public_profile_previous: "<p><i>%{name}</i> has not added any products to list of previous products yet.</p>"
     setup_products: <p><b>You have not added any products to this setup yet.</b></p><p>You can either do it by clicking on "Add / Remove Product" or directly on a product product page.</p>
     setups: "<p><b>You haven't created any setups yet.</b></p><p>You can create setups below, for example &quot;Living Room&quot; or &quot;Office&quot;.<br>Afterwards you can assign each of your products to one or multiple setups on its product page.</p>"
     statistics:
-      products_added_removed: "<p><b>You have not added any dates of purchase to your products yet.</b></p><p>You can do that directly on the product page. Afterwards you will see here in which year you got and sold the most products.</p>"
-      total_products_per_brand: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you will see here from which brand you owned the most products.</p>"
-      current_products_per_brand: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection, you will see here from which brands you own the most products.</p>"
-      current_costs: "<p><b>You have not added any prices to your products yet.</b></p><p>After adding products to your collection, you can add how much you spend on them. You will then see here which your currently most expensive products are.</p>"
-      yearly_costs: "<p><b>You have not added any prices to your products yet.</b></p><p>After adding products to your collection, you can add how much you spend on them. You will then see here how much money you spent every year.</p>"
       costs: "<p><b>You have not added any prices to your products yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add how much you spend on them and how much you got for them after selling them.</p>"
+      current_costs: "<p><b>You have not added any prices to your products yet.</b></p><p>After adding products to your collection, you can add how much you spend on them. You will then see here which your currently most expensive products are.</p>"
       current_duration: "<p><b>You have not added any dates of purchase to your products yet.</b></p><p>After adding products to your collection, you can add when you got them. You will then see which products you own the longest.</p>"
+      current_products_per_brand: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection, you will see here from which brands you own the most products.</p>"
+      products_added_removed: "<p><b>You have not added any dates of purchase to your products yet.</b></p><p>You can do that directly on the product page. Afterwards you will see here in which year you got and sold the most products.</p>"
       total_duration: "<p><b>You have not added any dates of purchase to your products yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add when you got them or sold them. You will then see which products you owned the longest.</p>"
+      total_products_per_brand: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you will see here from which brand you owned the most products.</p>"
+      yearly_costs: "<p><b>You have not added any prices to your products yet.</b></p><p>After adding products to your collection, you can add how much you spend on them. You will then see here how much money you spent every year.</p>"
     user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
     user_products: <p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>
   filter:
@@ -221,20 +267,20 @@ en:
     intro_eq: <span class="AppName">HiFi <span>Log</span></span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     intro_up: <span class="AppName">HiFi <span>Log</span></span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     recently_added: Recently added to HiFi Log
-  meta_description: <em>HiFi Log</em> is a user-driven database for hi-fi products and brands. Users can create their own collection and keep track of their past gear.
+  meta_description: "<em>HiFi Log</em> is a user-driven database for hi-fi products and brands. Users can create their own collection and keep track of their past gear."
   newsletter:
-    subject: hifilog.com Newsletter
     messages:
-      unsubscribed: You have been unsubscribed.
       invalid_unsubscribe_link: Invalid unsubscribe link.
+      unsubscribed: You have been unsubscribed.
+    subject: hifilog.com Newsletter
   not_found: We could not find what you were looking for.
   note:
     delete:
       confirm: Are you sure you want these notes?
       label: Delete
     messages:
-      saved: The note has been saved.
       delete_failed: The note could not be deleted.
+      saved: The note has been saved.
   optional: optional
   possession:
     messages:
@@ -242,10 +288,13 @@ en:
       removed: Your <b>%{name}</b> has been removed from your collection.
       removed_from_prev: Your <b>%{name}</b> has been removed from your list of previous products.
   product:
+    meta:
+      owned_by: Owned by
     new:
-      heading: Add new Product
-      link: Add new Product
+      heading: Add Product
+      link: Add Product
       submit: Submit
+    options: Options
     remove:
       confirm: Are you sure you want to remove %{name} from your collection?
       label: Remove
@@ -255,9 +304,6 @@ en:
     remove_from_setup:
       confirm: Are you sure you want to remove %{name} from this setup?
       label: Remove
-    meta:
-      owned_by: Owned by
-    options: Options
   product_variant:
     new:
       heading: Add new version / update
@@ -268,62 +314,61 @@ en:
       minimum_chars: Please enter at least %{min} characters.
     heading: "<span>Search results for</span> “%{query}”"
     none:
-      all: <p><b>No result found for &ldquo;<i>%{query}</i>&rdquo;.</b></p>
+      all: "<p><b>No result found for &ldquo;<i>%{query}</i>&rdquo;.</b></p>"
       brands: <p><b>No brands found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a brand here</a>.</p>
       products: <p><b>No products found for &ldquo;<i>%{query}</i>&rdquo;.</b></p><p>You can <a href="%{path}">add a product here</a>.</p>
   setup:
     delete:
       confirm: Are you sure you want to delete your setup %{name}? Please note that the products in this setup will remain in your collection.
       label: Delete
-    new:
-      heading: Add new setup
-      link: Add new setup
-      submit: Save
     messages:
       created: Your setup %{link} has been created.
       deleted: Your setup <b>%{name}</b> has been deleted.
       updated: Your setup <b>%{name}</b> has been updated.
+    name_placeholder: e.g. Living room or Office
+    new:
+      heading: Add new setup
+      link: Add new setup
+      submit: Save
+    private_hint: Please note that marking a setup as private only hides the setup from your public profile. Products that have been added to a private setup will still be shown in your main collection on your profile.
+    private_values:
+      "no": Public
+      "yes": Private
     validation:
       private:
         selected: must be selected.
-    name_placeholder: e.g. Living room or Office
-    private_values:
-      "yes": Private
-      "no": Public
-    private_hint: Please note that marking a setup as private only hides the setup from your public profile. Products that have been added to a private setup will still be shown in your main collection on your profile.
   skip_to_main_content: Skip to main content
   sort_by:
-    label: Sort
     added_asc: "Added: Oldest first"
     added_desc: "Added: Newest first"
-    brands_products_release_date_desc: "Products: Newest first"
     brands_products_release_date_asc: "Products: Oldest first"
+    brands_products_release_date_desc: "Products: Newest first"
+    label: Sort
     name_asc: "Name: A first"
     name_desc: "Name: Z first"
     products_asc: "Products: Least first"
     products_desc: "Products: Most first"
-    release_date_desc: "Released: Newest first"
     release_date_asc: "Released: Oldest first"
+    release_date_desc: "Released: Newest first"
     updated_asc: "Updated: Least recent first"
     updated_desc: "Updated: Most recent first"
-  status: Status
   statistics:
-    headings:
-      products_added_removed_per_year: Products added & removed
-      products_per_brand: Products per brand
-      costs: Spendings & Earnings
     all_products_per_brand: Current & previous
     current_products_per_brand: Current
+    headings:
+      costs: Spendings & Earnings
+      products_added_removed_per_year: Products added & removed
+      products_per_brand: Products per brand
+    products_added_per_year: Added
     products_added_removed_per_year: Added & removed
     products_removed_per_year: Removed
-    products_added_per_year: Added
+  status: Status
   symbols:
     discontinued: Discontinued
     in_your_bookmarks: Bookmarked
     in_your_collection: In my collection
     prev_owned: Previously owned
   user:
-    password_hint: 12 characters minimum
     edit:
       delete:
         confirm: Are you sure you want to delete your account? All data will be deleted immediately.
@@ -340,20 +385,21 @@ en:
         heading: Update your account
         leave_blank: leave blank if you don't want to change it
         minimum_password_length: "%{minimum} characters minimum"
-        receives_newsletter:
-          true: I want to receive newsletters.
-          false: I do not want to receive newsletters.
         optional: optional
         profile_url: "Your profile is visible at the following URL:"
         profile_visibility:
           hidden: No one but me can see my profile and my product photos.
           logged_in_only: Only logged in users can see my profile and my product photos.
           visible: Logged in and logged out users can see my profile and my product photos.
+        receives_newsletter:
+          "false": I do not want to receive newsletters.
+          "true": I want to receive newsletters.
         required: required
         save:
           confirm_with_password: We need your current password to confirm your changes.
           heading: Save your changes
           submit: Save
+    password_hint: 12 characters minimum
   user_form:
     forgot_password:
       heading: Forgot your password?

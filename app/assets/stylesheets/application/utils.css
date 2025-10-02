@@ -16,6 +16,10 @@
 	display: flex;
 }
 
+.u-flexColumn {
+	flex-direction: column;
+}
+
 .u-flexWrap {
 	flex-wrap: wrap;
 }
@@ -51,6 +55,10 @@
 
 .u-gap-sm {
 	gap: 0.25rem;
+}
+
+.u-gap-smd {
+	gap: 0.5rem;
 }
 
 .u-gap-md {

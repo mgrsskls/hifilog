@@ -63,6 +63,7 @@
 	font-size: clamp(1.6rem, 4vi, 2rem);
 	line-height: 1.4;
 	font-weight: normal;
+	display: block;
 }
 
 .Home-intro h1 em {

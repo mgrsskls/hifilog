@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <% if product.diy_kit? || (product.custom_attributes.present? && product.custom_attributes.any?) %>
+        <% if product.diy_kit? || @custom_attributes_for_products.any? %>
           <ul class="EntityList-tags">
             <% if product.diy_kit? %>
               <li class="Tag">
@@ -36,10 +36,32 @@
               </li>
             <% end %>
             <% product.custom_attributes&.each do |custom_attribute| %>
-              <% attr = @custom_attributes_for_products.find { |ca| ca.id == custom_attribute[0].to_i } %>
-              <% option_value = attr&.options[custom_attribute[1].to_s] %>
-              <% if option_value.present? %>
-                <li class="Tag"><%= I18n.t("custom_attributes.#{option_value}") %></li>
+              <% active_record = @custom_attributes_for_products.find { |ca| ca.label == custom_attribute[0] } %>
+              <% if active_record&.highlighted? %>
+                <% if active_record.inputs.size < 2 %>
+                  <% if active_record.input_type == 'boolean' %>
+                    <% if custom_attribute[1] %>
+                      <li class="Tag">
+                        <%= t("custom_attribute_labels.#{active_record.label}") %>
+                      </li>
+                    <% end %>
+                  <% elsif active_record.input_type == 'number' %>
+                    <li class="Tag">
+                      <% unit = t("custom_attribute_units.#{custom_attribute[1]['unit'].present? ? custom_attribute[1]['unit'] : active_record.units.first}") %>
+                      <%= custom_attribute[1]['value'] %> <%= unit.html_safe if unit.present? %>
+                    </li>
+                  <% elsif active_record.input_type == 'options' %>
+                    <% custom_attribute[1].each do |id| %>
+                      <li class="Tag">
+                        <%= t("custom_attributes.#{active_record.options[id]}") %>
+                      </li>
+                    <% end %>
+                  <% else %>
+                    <li class="Tag">
+                      <%= t("custom_attributes.#{active_record.options[custom_attribute[1].first]}") %>
+                    </li>
+                  <% end %>
+                <% end %>
               <% end %>
             <% end %>
           </ul>

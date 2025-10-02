@@ -1,15 +1,63 @@
 one:
   id: 1
+  label: amplifier_channel_type
+  highlighted: true
+  input_type: option
   options:
-    1: stereo
-    2: dual-mono
+    "1": stereo
+    "2": dual-monow
   sub_categories:
     - one
 two:
   id: 2
+  label: turntable_drive_type
+  highlighted: false
+  input_type: option
   options:
-    1: belt-drive
-    2: direct-drive
+    "1": belt-drive
+    "2": direct-drive
+  sub_categories:
+    - one
+    - two
+three:
+  id: 3
+  label: multiple_options
+  highlighted: false
+  input_type: options
+  options:
+    "1": belt-drive
+    "2": direct-drive
+  sub_categories:
+    - one
+    - two
+four:
+  id: 4
+  label: number
+  highlighted: false
+  input_type: number
+  sub_categories:
+    - one
+    - two
+five:
+  id: 5
+  label: boolean
+  highlighted: false
+  input_type: boolean
+  sub_categories:
+    - one
+    - two
+six:
+  id: 6
+  label: complex_number
+  highlighted: false
+  input_type: number
+  inputs:
+    - w
+    - h
+    - l
+  units:
+    - unit1
+    - unit2
   sub_categories:
     - one
     - two

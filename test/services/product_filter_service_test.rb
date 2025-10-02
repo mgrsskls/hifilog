@@ -9,7 +9,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
   end
 
   test 'filter by category returns correct products' do
-    result = ProductFilterService.new({}, [@brand], categories(:two)).filter
+    result = ProductFilterService.new(filters: {}, brands: [@brand], category: categories(:two)).filter
     assert_equal @brand.products
                        .joins(:sub_categories)
                        .where(sub_categories: { category_id: categories(:two).id })
@@ -18,7 +18,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
   end
 
   test 'filter by sub_category returns correct products' do
-    result = ProductFilterService.new({}, [@brand], nil, sub_categories(:two)).filter
+    result = ProductFilterService.new(filters: {}, brands: [@brand], sub_category: sub_categories(:two)).filter
     assert_equal @brand.products.joins(:sub_categories).where(sub_categories: { id: sub_categories(:two).id }).to_a,
                  result.products.to_a
   end
@@ -27,7 +27,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     brand = brands(:three)
     discontinued_product = products(:discontinued)
 
-    result = ProductFilterService.new({ discontinued: true }, [brand]).filter
+    result = ProductFilterService.new(filters: { discontinued: true }, brands: [brand]).filter
 
     assert_equal [discontinued_product.id], result.products.pluck(:product_id)
     assert(result.products.all? { |pi| pi.discontinued == true })
@@ -35,7 +35,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
 
   test 'filter by query returns only matching products' do
     product = products(:one)
-    result = ProductFilterService.new({ query: product.name }, [@brand]).filter
+    result = ProductFilterService.new(filters: { query: product.name }, brands: [@brand]).filter
     assert_equal [product.id], result.products.pluck(:id)
   end
 end

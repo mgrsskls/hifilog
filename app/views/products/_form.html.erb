@@ -32,17 +32,19 @@
 <% end %>
 
 <%= render "shared/product_form", f: f, entity: product, include_comment: include_comment, prefix: "product", brand: brand do %>
-  <div class="Form-field">
-    <%= f.label :name, class: "Form-label" %>
-    <%= f.text_field :name, required: true %>
-  </div>
+  <div class="Form-grid">
+    <div class="Form-field">
+      <%= f.label :name, class: "Form-label" %>
+      <%= f.text_field :name, required: true %>
+    </div>
 
-  <div class="Form-field">
-    <%= f.label :model_no, class: "Form-label" do %>
-      Model no. / Alternative name
-      <small><i>(optional)</i></small>
-    <% end %>
-    <%= f.text_field :model_no %>
+    <div class="Form-field">
+      <%= f.label :model_no, class: "Form-label" do %>
+        Model no. / Alternative name
+        <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_field :model_no %>
+    </div>
   </div>
 
   <% unless brand && brand.id %>
@@ -131,29 +133,121 @@
   <div class="Form-field">
     <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
     <div class="Options is-light EntityForm-subCategories">
-      <% categories.each do |category| %>
-        <details <% if (category.sub_category_ids & product.sub_category_ids).any? %>open<% end %>>
-          <summary><%= category.name %></summary>
-          <% category.sub_categories.each do |sub_category| %>
-            <div class="Options-item">
-              <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, product.sub_category_ids.include?(sub_category.id), name: "product[sub_category_ids][]" %>
-              <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
-            </div>
+      <% menu_categories.each do |columns| %>
+        <div>
+          <% columns[1].each do |category| %>
+            <h3 class="h4"><%= category.name %></h3>
+            <ul class="u-flex u-flexColumn u-gap-sm">
+              <% category.sub_categories.each do |sub_category| %>
+                <li class="Options-item">
+                  <%= check_box_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.id, product.sub_category_ids.include?(sub_category.id), name: "product[sub_category_ids][]" %>
+                  <%= label_tag "product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
+                </li>
+              <% end %>
+            </ul>
           <% end %>
-        </details>
+        </div>
       <% end %>
     </div>
   </div>
 
   <div class="Form-field EntityForm-attributes">
-    <div class="h3 Form-label"><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></div>
-    <div class="Options is-light">
+    <h2 class="h3 Form-label"><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h2>
+    <div class="Options EntityFormAttributes is-light">
       <% CustomAttribute.all.each do |custom_attribute| %>
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
-          <% custom_attribute.options.each do |option| %>
-            <div class="Form-options">
-              <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.id}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes["#{custom_attribute.id}"] == option[0] %><%#= " disabled" if !product.sub_category_ids.include?(sub_category.id) %>>
-              <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"><%= t("custom_attributes.#{option[1]}") %></label>
+          <% if custom_attribute.options&.any? %>
+            <h3 class="EntityFormAttribute-label">
+              <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+            </h3>
+            <div class="EntityFormAttribute-options">
+              <% custom_attribute.options.each do |option| %>
+                <div class="u-flex u-gap-sm u-alignCenter">
+                  <% if custom_attribute.input_type == 'options' %>
+                    <input type="checkbox" name="<%= "product[custom_attributes][#{custom_attribute.label}][]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes[custom_attribute.label]&.include?(option[0]) %>>
+                  <% else %>
+                    <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes[custom_attribute.label] == option[0] %>>
+                  <% end %>
+                  <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"><%= t("custom_attributes.#{option[1]}") %></label>
+                </div>
+              <% end %>
+            </div>
+          <% elsif custom_attribute.inputs.any? %>
+            <h3 class="EntityFormAttribute-label">
+              <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+            </h3>
+            <div class="EntityFormAttribute-inputs">
+              <div class="EntityFormAttribute-grid">
+                <% custom_attribute.inputs.each do |input| %>
+                  <div>
+                    <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-value-#{input}" %>" class="Form-label">
+                      <%= t("custom_attribute_inputs.#{input}") %>
+                    </label>
+                    <div class="u-flex u-gap-sm u-alignCenter">
+                      <input class="Form-input" type="text" inputmode="number" name="<%= "product[custom_attributes][#{custom_attribute.label}][value][#{input}]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-value-#{input}" %>" value="<%= product.custom_attributes&.dig(custom_attribute.label, 'value').present? ? product.custom_attributes.dig(custom_attribute.label, 'value', input) : "" %>">
+                      <% if custom_attribute.units.size == 1 %>
+                        <span class="Unit">
+                          <%= t("custom_attribute_units.#{custom_attribute.units.first}").html_safe %>
+                        </span>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <% if custom_attribute.units.size > 1 %>
+                <div class="EntityFormAttributes-units u-flex u-gap-md u-alignCenter">
+                  <% custom_attribute.units.each do |unit| %>
+                    <div class="u-flex u-gap-sm u-alignCenter">
+                      <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= product.custom_attributes&.dig(custom_attribute.label, 'unit') %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
+                      <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>">
+                        <%= t("custom_attribute_units.#{unit}").html_safe %>
+                      </label>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% elsif custom_attribute.input_type == 'boolean' %>
+          <div class="EntityFormAttribute-label">
+            <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+          </div>
+          <div class="EntityFormAttribute-options">
+            <div class="u-flex u-gap-sm u-alignCenter">
+              <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" value="1" id="<%= "product[custom_attributes][#{custom_attribute.id}]-1" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes[custom_attribute.label] == true %>>
+              <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-1" %>">Yes</label>
+            </div>
+            <div class="u-flex u-gap-sm u-alignCenter">
+              <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" value="0" id="<%= "product[custom_attributes][#{custom_attribute.id}]-0" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes[custom_attribute.label] == false %>>
+              <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-0" %>">No</label>
+            </div>
+          </div>
+          <% else %>
+            <label for="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" class="EntityFormAttribute-label">
+              <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+            </label>
+            <div class="EntityFormAttribute-inputs">
+              <div class="EntityFormAttribute-grid">
+                <div class="u-flex u-gap-sm u-alignCenter">
+                  <input class="Form-input" type="text" inputmode="number" name="<%= "product[custom_attributes][#{custom_attribute.label}][value]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" value="<%= product.custom_attributes.present? && product.custom_attributes[custom_attribute.label] ? product.custom_attributes[custom_attribute.label]['value'] : '' %>">
+                  <% if custom_attribute.units.size == 1 %>
+                    <span class="Unit">
+                      <%= t("custom_attribute_units.#{custom_attribute.units.first}").html_safe %>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+              <% if custom_attribute.units.size > 1 %>
+                <div class="u-flex u-gap-md u-alignCenter">
+                  <% custom_attribute.units.each do |unit| %>
+                    <div class="u-flex u-gap-sm u-alignCenter">
+                      <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= product.custom_attributes&.dig(custom_attribute.label, 'unit') %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
+                      <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>">
+                        <%= t("custom_attribute_units.#{unit}").html_safe %>
+                      </label>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
             </div>
           <% end %>
         </div>

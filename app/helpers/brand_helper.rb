@@ -37,21 +37,19 @@ module BrandHelper
     products.distinct.size
   end
 
-  def brand_products_path_with_filter(brand, category, sub_category, diy_kit, attrs)
-    if sub_category.present?
-      brand_products_path(
-        brand_id: brand.friendly_id,
-        category: sub_category.present? ? "#{category.friendly_id}[#{sub_category.friendly_id}]" : nil,
-        diy_kit: diy_kit.presence,
-        attr: attrs.present? ? attrs&.to_unsafe_h : nil
-      )
-    else
-      brand_products_path(
-        brand_id: brand.friendly_id,
-        category: category&.friendly_id,
-        diy_kit: diy_kit.presence,
-        attr: attrs.present? ? attrs&.to_unsafe_h : nil
-      )
-    end
+  def brand_products_path_with_filter(brand, category, sub_category, products = {})
+    params = if sub_category.present?
+               {
+                 brand_id: brand.friendly_id,
+                 category: sub_category.present? ? "#{category.friendly_id}[#{sub_category.friendly_id}]" : nil,
+               }.merge(products)
+             else
+               {
+                 brand_id: brand.friendly_id,
+                 category: category&.friendly_id,
+               }.merge(products)
+             end
+
+    brand_products_path(**params)
   end
 end
