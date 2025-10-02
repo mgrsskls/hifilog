@@ -1,3 +1,23 @@
+<%
+  def convert(unit)
+    case unit
+    when 'kg' then
+      multi = 1 / 0.454
+      other_unit = 'lb'
+    when 'lb' then
+      multi = 0.454
+      other_unit = 'kg'
+    when 'cm' then
+      multi = 1 / 2.54
+      other_unit = 'in'
+    when 'in' then
+      multi = 1 * 2.54
+      other_unit = 'cm'
+    end
+
+    [multi, other_unit]
+  end
+%>
 <h2>Characteristics</h2>
 <dl class="Entity-section Data">
   <% Array(attributes).sort.each do |ca| %>
@@ -9,10 +29,21 @@
           <% unit = t("custom_attribute_units.#{ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first}").html_safe %>
           <% if ca[1]['value'].is_a?(Hash) %>
             <% ca[1]['value'].each do |v| %>
-              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= v[1] %> <%= unit %><br>
+              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 1, strip_insignificant_zeros: true) %> <%= unit %>
+              <% if active_record.units.size == 2 %>
+                <% multi, other_unit = convert(unit) %>
+                / <%= number_with_precision(v[1] * multi, precision: 1, strip_insignificant_zeros: true) %> <%= other_unit %>
+              <% end %>
+              <br>
             <% end %>
           <% elsif ca[1]['value'].present? %>
-            <%= ca[1]['value'] %> <%= unit %>
+            <%= number_with_precision(ca[1]['value'], precision: 1, strip_insignificant_zeros: true) %> <%= unit %>
+            <% if active_record.units.size == 2 %>
+              <% multi, other_unit = convert(unit) %>
+              <% if other_unit %>
+                / <%= number_with_precision(ca[1]['value'] * multi, precision: 1, strip_insignificant_zeros: true) %> <%= other_unit %>
+              <% end %>
+            <% end %>
           <% else %>
             n/a
           <% end %>
