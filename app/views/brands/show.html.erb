@@ -113,10 +113,10 @@
 
         <ul class="Entity-metaLinks MetaLinks">
           <li>
-            <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)), rel: "nofollow" %>
+            <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)) %>
           </li>
           <li>
-            <%= link_to t('headings.changelog'), user_signed_in? ? brand_changelog_path(@brand) : new_user_session_path(redirect: brand_changelog_path(@brand)), rel: "nofollow" %>
+            <%= link_to t('headings.changelog'), user_signed_in? ? brand_changelog_path(@brand) : new_user_session_path(redirect: brand_changelog_path(@brand)) %>
           </li>
         </ul>
       </div>

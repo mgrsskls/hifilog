@@ -13,7 +13,7 @@
           <span>Show all</span>
         <% end %>
       </div>
-      <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button", rel: "nofollow" %>
+      <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button" %>
     </div>
     <div class="MenuMega-container">
       <% menu_categories.each do |columns| %>

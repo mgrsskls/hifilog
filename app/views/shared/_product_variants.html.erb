@@ -1,6 +1,6 @@
 <div class="Heading">
   <h2>All versions / updates</h2>
-  <%= link_to t('product_variant.new.link'), user_signed_in? ? product_variants_new_path(product_id: product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: product.friendly_id)), rel: "nofollow" %>
+  <%= link_to t('product_variant.new.link'), user_signed_in? ? product_variants_new_path(product_id: product.friendly_id) : new_user_session_path(redirect: product_variants_new_path(product_id: product.friendly_id)) %>
 </div>
 <% if product.product_variants.any? %>
   <div class="u-breakpoint u-breakpoint--s">

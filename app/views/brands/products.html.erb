@@ -10,7 +10,7 @@
         &larr; <span>Back</span>
       </a>
     </b>
-    <%= link_to user_signed_in? ? new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug)), rel: "nofollow" do %>
+    <%= link_to user_signed_in? ? new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug)) do %>
       <span><%= t('product.new.link') %></span>
     <% end %>
 <% end %>

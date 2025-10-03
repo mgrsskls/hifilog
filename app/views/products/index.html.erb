@@ -13,7 +13,7 @@
     <%= Product.model_name.human(count: 2) %>
   </b>
 
-  <%= link_to user_signed_in? ? new_product_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), rel: "nofollow", class: "IndexPage-addLink" do %>
+  <%= link_to user_signed_in? ? new_product_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "IndexPage-addLink" do %>
     <span><%= t('product.new.link') %></span>
   <% end %>
 <% end %>

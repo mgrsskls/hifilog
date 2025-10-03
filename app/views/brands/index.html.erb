@@ -10,7 +10,7 @@
 
 <% content_for :actions do %>
   <b><%= Brand.model_name.human(count: 2) %></b>
-  <%= link_to user_signed_in? ? new_brand_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_brand_path(sub_category: @sub_category&.slug)), rel: "nofollow", class: "IndexPage-addLink" do %>
+  <%= link_to user_signed_in? ? new_brand_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_brand_path(sub_category: @sub_category&.slug)), class: "IndexPage-addLink" do %>
     <span><%= t('brand.new.link') %></span>
   <% end %>
 <% end %>
