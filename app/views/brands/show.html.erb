@@ -58,20 +58,27 @@
           <% end %>
         </div>
 
-        <% if @all_sub_categories_grouped.any? %>
-          <div class="Entity-heading">
-            <h2>
-              <%= Product.model_name.human(count: 2) %>
-            </h2>
-            <a class="Button" href="<%= brand_products_path(brand_id: @brand.friendly_id) %>">Show all</a>
-          </div>
 
+        <div class="Entity-heading">
+          <h2>
+            <%= Product.model_name.human(count: 2) %>
+          </h2>
+          <a href="<%= brand_products_path(brand_id: @brand.friendly_id) %>"><b>Show all products</b></a>
+        </div>
+
+
+        <% if @all_sub_categories_grouped.any? %>
           <dl class="Data">
             <% @all_sub_categories_grouped.each do |section| %>
               <dt><%= section[0].name %></dt>
               <dd><%= section[1].map { |c| link_to c.name, brand_products_path(@brand, category:  "#{section[0].slug}[#{c.slug}]") }.join(", ").html_safe %></dd>
             <% end %>
           </dl>
+        <% else %>
+          <div class="EmptyState">
+            <p><b>No categories or products have been added to <i><%= @brand.name %></i> yet.</b></p>
+            <p>You can <a href="<%= edit_brand_path(id: @brand.friendly_id) %>">edit information</a> about <i><%= @brand.name %></i> or <a href="<%= new_product_path(brand_id: @brand.id) %>">add products</a>.</p>
+          </div>
         <% end %>
       </div>
     </div>
