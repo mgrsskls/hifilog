@@ -7,7 +7,7 @@
   <%= javascript_include_tag "entity_form", type: "module", nonce: true, crossorigin: true, integrity: true %>
 <% end %>
 
-<div class="Form">
+<div class="Form Form--wide">
   <div class="Heading">
     <h1><%= yield :heading %></h1>
   </div>
@@ -26,16 +26,20 @@
   <div class="Form-field">
     <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
     <div class="Options is-light EntityForm-subCategories">
-      <% categories.each do |category| %>
-        <details <% if (category.sub_category_ids & custom_product.sub_category_ids).any? %>open<% end %>>
-          <summary><%= category.name %></summary>
-          <% category.sub_categories.each do |sub_category| %>
-            <div class="Options-item">
-              <%= check_box_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.id, custom_product.sub_category_ids.include?(sub_category.id), name: "custom_product[sub_category_ids][]" %>
-              <%= label_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
-            </div>
+      <% menu_categories.each do |columns| %>
+        <div>
+          <% columns[1].each do |category| %>
+            <h3 class="h4"><%= category.name %></h3>
+            <ul class="u-flex u-flexColumn u-gap-sm">
+              <% category.sub_categories.each do |sub_category| %>
+                <li class="Options-item">
+                  <%= check_box_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.id, custom_product.sub_category_ids.include?(sub_category.id), name: "custom_product[sub_category_ids][]" %>
+                  <%= label_tag "custom_product[sub_category_ids][#{sub_category.id}]", sub_category.name %>
+                </li>
+              <% end %>
+            </ul>
           <% end %>
-        </details>
+        </div>
       <% end %>
     </div>
   </div>
