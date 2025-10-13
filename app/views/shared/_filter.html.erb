@@ -83,7 +83,7 @@
 
         <% if custom_attribute.options.present? %>
           <ul class="Pagination">
-            <% custom_attribute.options.each do |option| %>
+            <% custom_attribute.options.sort_by { |a| a[1] }.each do |option| %>
               <li class="Pagination-item">
                 <label>
                   <input
