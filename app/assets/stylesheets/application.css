@@ -198,6 +198,12 @@
 		box-shadow: 0.05rem 0.1rem 0.5rem var(--color-input-box-shadow) inset;
 		inline-size: 100%;
 		box-sizing: border-box;
+
+		&[disabled] {
+			border-color: var(--color-border-light);
+			color: var(--color-input--disabled);
+			cursor: not-allowed;
+		}
 	}
 
 	::file-selector-button {

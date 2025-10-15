@@ -32,29 +32,12 @@
 <% end %>
 
 <%= render "shared/product_form", f: f, entity: product, include_comment: include_comment, prefix: "product", brand: brand do %>
-  <div class="Form-grid">
-    <div class="Form-field">
-      <%= f.label :name, class: "Form-label" %>
-      <%= f.text_field :name, required: true %>
-    </div>
-
-    <div class="Form-field">
-      <%= f.label :model_no, class: "Form-label" do %>
-        Model no. / Alternative name
-        <small><i>(optional)</i></small>
-      <% end %>
-      <%= f.text_field :model_no %>
-    </div>
+  <div class="Form-field">
+    <h2><%= f.label :brand %></h2>
+    <input type="text" id="brand-filter" autocomplete="off" value="<%= brand.name %>"<%= " disabled" if brand.id.present? %> placeholder="Search for brand name…" aria-label="Brand name">
   </div>
-
   <% unless brand && brand.id %>
     <% unless brand && brand.errors.any? %>
-      <div class="Form-field">
-        <h2 class="h3 Form-label">
-          <%= f.label :brand %>
-        </h2>
-        <input type="text" id="brand-filter" autocomplete="off" value="" placeholder="Search for brand name…">
-      </div>
       <div class="Form-field Options Options--brands"></div>
       <template id="brand-template">
         <div class="Options-item" data-brand="" hidden>
@@ -73,7 +56,7 @@
           <%= render "shared/flash_messages", messages: brand.errors.map { |error| ["alert", error.full_message] } if brand && brand.errors.any? %>
           <div class="Form-field">
             <%= brand_form.label :name, class: "Form-label" %>
-            <%= brand_form.text_field :name %>
+            <%= brand_form.text_field :name, placeholder: "Foo" %>
           </div>
 
           <div class="Form-field">
@@ -130,13 +113,30 @@
     </div>
   <% end %>
 
+  <h2>Product</h2>
+
+  <div class="Form-grid">
+    <div class="Form-field">
+      <%= f.label :name, class: "Form-label" %>
+      <%= f.text_field :name, required: true, placeholder: "e.g. #{['Heresy IV', 'HE-1', 'Ongaku'].sample}" %>
+    </div>
+
+    <div class="Form-field">
+      <%= f.label :model_no, class: "Form-label" do %>
+        Model no. / Alternative name
+        <small><i>(optional)</i></small>
+      <% end %>
+      <%= f.text_field :model_no %>
+    </div>
+  </div>
+
   <div class="Form-field">
-    <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
+    <h3 class="Form-label"><%= Category.model_name.human(count: 2) %></h3>
     <div class="Options is-light EntityForm-subCategories">
       <% menu_categories.each do |columns| %>
         <div>
           <% columns[1].each do |category| %>
-            <h3 class="h4"><%= category.name %></h3>
+            <h4><%= category.name %></h4>
             <ul class="u-flex u-flexColumn u-gap-sm">
               <% category.sub_categories.each do |sub_category| %>
                 <li class="Options-item">
@@ -152,7 +152,7 @@
   </div>
 
   <div class="Form-field EntityForm-attributes">
-    <h2 class="h3 Form-label"><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h2>
+    <h4><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h4>
     <div class="Options EntityFormAttributes is-light">
       <% CustomAttribute.all.each do |custom_attribute| %>
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>

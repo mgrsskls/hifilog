@@ -57,6 +57,7 @@ html {
 	--color-input-bg: var(--color-blue-975);
 	--color-input-placeholder: var(--color-copy-on-light);
 	--color-input: var(--color-copy-on-light);
+	--color-input--disabled: hsl(var(--hue), 0%, 50%);
 
 	--color-transparency-10-dark: rgba(255, 255, 255, 0.1);
 	--color-transparency-15-dark: rgba(255, 255, 255, 0.15);

@@ -21,17 +21,17 @@
   <div class="Form-grid u-gap-lg">
     <div>
       <div class="Form-field">
-        <h2 class="h3 Form-label">
-          <%= f.label :description, class: "Form-label" do %>
+        <h3 class="Form-label">
+          <%= f.label :description do %>
             <%= Product.human_attribute_name(:description) %> <small><i>(optional)</i></small>
           <% end %>
-        </h2>
+        </h3>
         <%= f.text_area :description, hidden: true, "data-note-textarea": true %>
         <%= render "shared/markdown_editor" %>
       </div>
 
       <div class="Form-field">
-        <h2 class="h3 Form-label">Price</h2>
+        <h3 class="Form-label">Price</h3>
         <div class="u-flex u-gap-md">
           <div>
             <%= f.label :price, class: "Form-label" do %>
@@ -58,7 +58,7 @@
       </div>
 
       <div class="Form-field">
-        <h2 class="h3 Form-label">Production</h2>
+        <h3 class="Form-label">Production</h3>
         <%= f.label :release_date, class: "Form-label" do %>
           <%= Product.human_attribute_name(:release_date) %> <small><i>(optional)</i></small>
         <% end %>
@@ -126,9 +126,9 @@
 
     <div class="Form-field ProductOptionsForm js-ProductOptionsForm">
       <div class="Form-fieldHeader">
-        <h2 class="h3 Form-label">
+        <h3 class="Form-label">
           <%= t('product.options') %> <small><i>(optional)</i></small>
-        </h2>
+        </h3>
         <small><button data-dialog="options-dialog" type="button">What are options?</button></small>
       </div>
       <ol class="ProductOptionsForm-list">
@@ -197,9 +197,9 @@
 
   <% if include_comment %>
     <div class="Form-field Form-field--divider">
-      <h2 class="h3 Form-label">
+      <h3>
         <%= PaperTrail::Version.human_attribute_name(:comment) %> <small><i>(optional)</i></small>
-      </h2>
+      </h3>
       <%= f.text_area :comment %>
     </div>
   <% end %>

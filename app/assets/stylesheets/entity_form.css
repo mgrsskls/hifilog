@@ -13,6 +13,12 @@
 	textarea {
 		background: var(--color-bg-main);
 	}
+
+	h3,
+	h4,
+	ul {
+		margin-block: 1rem;
+	}
 }
 
 .Options-item {
