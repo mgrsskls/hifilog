@@ -13,14 +13,7 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 		gap: var(--spacing-top, 1rem);
-
-		&:not(:is(h2 + .Form-grid)) {
-			margin-block-start: var(--form-spacing);
-		}
-
-		> * > :first-child :is(h3, h4) {
-			margin-block-start: 0;
-		}
+		margin-block-start: var(--form-spacing);
 	}
 
 	.Form small {
@@ -34,6 +27,16 @@
 
 	.Form :is(h3, h4) {
 		margin-block-start: var(--form-spacing);
+	}
+
+	:is(h3, h4).Form-label {
+		margin-block-end: 0.75rem;
+	}
+
+	.Form-fieldHeader:has(.Form-label.h3),
+	:not(.Form-fieldHeader) > .Form-label.h3 {
+		margin-block-start: 1.5rem;
+		margin-block-end: 0.75rem;
 	}
 
 	.Form + .Form {
@@ -51,6 +54,10 @@
 
 	*:not(.Form-grid) > .Form-field + .Form-field {
 		margin-block-start: var(--spacing-top, 1rem);
+	}
+
+	.Form-grid > * > :first-child :is(h3, .h3, h4, .h4) {
+		margin-block-start: 0;
 	}
 
 	.Form-field--inline {
@@ -100,16 +107,6 @@
 	.Form-label {
 		display: inline-block;
 		margin-block-end: 0.25em;
-	}
-
-	:is(h3, h4).Form-label {
-		margin-block-end: 0.75rem;
-	}
-
-	.Form-fieldHeader:has(.Form-label.h3),
-	:not(.Form-fieldHeader) > .Form-label.h3 {
-		margin-block-start: 1.5rem;
-		margin-block-end: 0.75rem;
 	}
 
 	:not(.Form-fieldHeader) > .Form-label.h3 {

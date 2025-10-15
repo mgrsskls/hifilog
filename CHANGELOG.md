@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-10-02">2025-07-02</time>
+
+- Improved filtering for products and brands. Products can now be filtered in more detail by more characteristics of products. Also, products can be filtered by characteristics of brands and brands can be filtered by characteristics of their products.
+
 ## <time datetime="2025-07-02">2025-07-02</time>
 
 - Products can now have a model number. This can be helpful for example when companies name multiple products of different categories the same, when they belong to one product range. Model numbers can also be added to product options.

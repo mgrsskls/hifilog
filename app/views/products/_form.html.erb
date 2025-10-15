@@ -115,18 +115,22 @@
 
   <h2>Product</h2>
 
-  <div class="Form-grid">
-    <div class="Form-field">
-      <%= f.label :name, class: "Form-label" %>
-      <%= f.text_field :name, required: true, placeholder: "e.g. #{['Heresy IV', 'HE-1', 'Ongaku'].sample}" %>
+  <div class="Form-grid u-gap-lg">
+    <div>
+      <div class="Form-field">
+        <%= f.label :name, class: "Form-label h3" %>
+        <%= f.text_field :name, required: true, placeholder: "e.g. #{['Heresy IV', 'HE-1', 'Ongaku'].sample}" %>
+      </div>
     </div>
 
-    <div class="Form-field">
-      <%= f.label :model_no, class: "Form-label" do %>
-        Model no. / Alternative name
-        <small><i>(optional)</i></small>
-      <% end %>
-      <%= f.text_field :model_no %>
+    <div>
+      <div class="Form-field">
+        <%= f.label :model_no, class: "Form-label h3" do %>
+          Model no. / Alternative name
+          <small><i>(optional)</i></small>
+        <% end %>
+        <%= f.text_field :model_no %>
+      </div>
     </div>
   </div>
 
@@ -152,14 +156,14 @@
   </div>
 
   <div class="Form-field EntityForm-attributes">
-    <h4><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h4>
+    <h3><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h3>
     <div class="Options EntityFormAttributes is-light">
       <% CustomAttribute.all.each do |custom_attribute| %>
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
           <% if custom_attribute.options&.any? %>
-            <h3 class="EntityFormAttribute-label">
+            <div class="EntityFormAttribute-label">
               <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
-            </h3>
+            </div>
             <div class="EntityFormAttribute-options">
               <% custom_attribute.options.each do |option| %>
                 <div class="u-flex u-gap-sm u-alignCenter">
@@ -173,9 +177,9 @@
               <% end %>
             </div>
           <% elsif custom_attribute.inputs.any? %>
-            <h3 class="EntityFormAttribute-label">
+            <div class="EntityFormAttribute-label">
               <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
-            </h3>
+            </div>
             <div class="EntityFormAttribute-inputs">
               <div class="EntityFormAttribute-grid">
                 <% custom_attribute.inputs.each do |input| %>
