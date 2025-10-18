@@ -132,6 +132,7 @@ en:
     frequency_response_range: Frequency Response Range
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
+    headphone_sensitivity: Sensitivity
     loudspeaker_amplification_type: Amplification
     loudspeaker_bi_amping: Bi-Amping
     loudspeaker_bi_wiring: Bi-Wiring
@@ -156,6 +157,7 @@ en:
     db: dB
     db_1w_1m: dB @ 1W/1m
     db_283v_1m: dB @ 2.83V/1m
+    db_mw: dB/mW
     hz: Hz
     in: in
     kg: kg

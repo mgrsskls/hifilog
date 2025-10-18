@@ -1,5 +1,5 @@
 class CustomAttribute < ApplicationRecord
-  VALID_UNITS = %w[in cm lb kg db w ohm hz db_1w_1m db_283v_1m].freeze
+  VALID_UNITS = %w[in cm lb kg db w ohm hz db_1w_1m db_283v_1m db_mw].freeze
   VALID_INPUTS = %w[w h l min max].freeze
 
   has_and_belongs_to_many :sub_categories
