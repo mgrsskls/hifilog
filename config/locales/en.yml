@@ -129,6 +129,7 @@ en:
     amplifier_type: Amplifier type
     cable_interconnect_type: Type
     cartridge_type: Type
+    frequency_response_range: Frequency Response Range
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
     loudspeaker_amplification_type: Amplification
@@ -145,6 +146,7 @@ en:
     loudspeaker_recommended_amplifier_power: Recommended Amplifier Power
     loudspeaker_rms_power: RMS Power
     loudspeaker_sensitivity: Sensitivity
+    nominal_impedance: Nominal Impedance
     power_amplifier_channel_type: Channel type
     turntable_cartridge_type: Cartridge type
     turntable_drive_type: Drive type
