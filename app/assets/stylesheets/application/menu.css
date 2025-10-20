@@ -15,6 +15,7 @@
 	text-decoration: none;
 	line-height: 1;
 	white-space: nowrap;
+	flex-basis: 9.75rem;
 
 	span {
 		color: var(--color-secondary);
@@ -78,7 +79,7 @@
 		text-decoration-thickness: var(--underline-width);
 	}
 
-	.MenuList [aria-current="page"] span {
+	.Menu-subList [aria-current="page"] span {
 		color: var(--color-accent);
 	}
 
@@ -94,7 +95,7 @@
 	}
 }
 
-@media (width < 54rem) {
+@media (width < 58.5rem) {
 	.MenuList {
 		flex-direction: column;
 		flex: 1;
@@ -115,7 +116,7 @@
 	}
 }
 
-@media (width >= 54rem) {
+@media (width >= 58.5rem) {
 	.Menu-subList {
 		position: absolute;
 		inset-block-start: var(--header-menu-height);

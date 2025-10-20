@@ -124,13 +124,13 @@
 	text-decoration: underline;
 }
 
-@media (width < 54rem) {
+@media (width < 58.5rem) {
 	.u-hide-sm {
 		display: none;
 	}
 }
 
-@media (width >= 54rem) {
+@media (width >= 58.5rem) {
 	.u-hide-lg {
 		display: none;
 	}

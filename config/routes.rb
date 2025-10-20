@@ -104,6 +104,8 @@ Rails.application.routes.draw do
     get '/v/:id/notes', to: 'notes#new', as: :new_variant_notes
   end
 
+  resources :events, only: [:index]
+
   get '/search', to: "search#results"
 
   root "application#index"

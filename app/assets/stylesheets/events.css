@@ -1,0 +1,106 @@
+.Events {
+	--height-year: 4rem;
+	--height-month: 3rem;
+	--top-spacing: 1rem;
+
+	container: events / inline-size;
+}
+
+@container events (inline-size < 30rem) {
+	.Heading {
+		flex-direction: column;
+	}
+}
+
+.Events :is(h2, h3) {
+	position: sticky;
+	padding-inline: 1rem;
+	color: var(--color-white);
+	margin-block: 0;
+}
+
+.Events :is(h2, h3) {
+	display: flex;
+	align-items: center;
+}
+
+.Events h2 {
+	inset-block-start: calc(var(--header-height));
+	block-size: var(--height-year);
+	background: var(--color-blue-200);
+	border-block-start: var(--top-spacing) solid var(--color-bg-main);
+	z-index: 2;
+}
+
+.Events h3 {
+	inset-block-start: calc(
+		var(--header-height) + var(--height-year) + var(--top-spacing)
+	);
+	block-size: var(--height-month);
+	background: var(--color-blue-250);
+	z-index: 1;
+	font-size: 1rem;
+}
+
+.Events-months {
+	margin-block-start: 1rem;
+}
+
+.Events-list {
+	padding-block: 2rem;
+	padding-inline: 0;
+	margin-block: 0;
+	list-style: "";
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+	gap: 2rem;
+}
+
+.Events-month:last-child .Events-list {
+	padding-block-end: calc(2rem - var(--top-spacing));
+}
+
+.Event {
+	padding: 1rem;
+	border: 1px solid transparent;
+	background: var(--color-bg2);
+	display: flex;
+	flex-direction: column;
+
+	h4 {
+		margin-block: 1rem;
+		font-size: 1.25rem;
+		line-height: 1.4;
+		margin-block-end: 0;
+	}
+
+	address {
+		font-style: normal;
+		font-size: 0.875em;
+	}
+
+	a {
+		font-weight: 500;
+		justify-self: end;
+	}
+
+	> :last-child {
+		margin-block-end: 0;
+	}
+}
+
+.Event-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 1.5rem;
+	align-items: start;
+
+	> div {
+		flex-shrink: 0;
+	}
+}
+
+.Event-days {
+	color: var(--color-secondary);
+	font-weight: 500;
+}

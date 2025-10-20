@@ -4,6 +4,7 @@ import "./_search.js";
 {
 	let scrollY = 0;
 
+	const eventsFilter = document.querySelector("#events-filter");
 	const headerToggle = document.querySelector(".Header-toggle");
 	const sidebarToggle = document.querySelector(".Sidebar-toggle");
 	const menuButtons = document.querySelectorAll("button.MenuMain-link");
@@ -44,6 +45,10 @@ import "./_search.js";
 			});
 		}
 	});
+
+	if (eventsFilter) {
+		eventsFilter.addEventListener("change", onEventsFilterChange);
+	}
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);
@@ -112,6 +117,10 @@ import "./_search.js";
 		});
 	});
 
+	function onEventsFilterChange(e) {
+		e.target.closest("form").submit();
+	}
+
 	function onSubMenuToggle({ currentTarget: button }) {
 		const shouldOpen = button.getAttribute("aria-expanded") === "false";
 		const onEscape = (e) => {
@@ -134,7 +143,7 @@ import "./_search.js";
 				if (shouldOpen) {
 					menuButton.setAttribute("aria-expanded", "true");
 
-					if (window.matchMedia("(width < 54rem)")) {
+					if (window.matchMedia("(width < 58.5rem)")) {
 						if (
 							menuButton.getBoundingClientRect().bottom > window.innerHeight
 						) {

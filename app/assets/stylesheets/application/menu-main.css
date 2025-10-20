@@ -17,7 +17,7 @@
 	flex-shrink: 0;
 }
 
-@media (width < 54rem) {
+@media (width < 58.5rem) {
 	.MenuMain .MenuMain-item + .MenuMain-item,
 	.MenuAccount {
 		border-block-start: var(--border) var(--divider-color);
@@ -30,7 +30,7 @@
 	}
 }
 
-@media (width >= 54rem) {
+@media (width >= 58.5rem) {
 	.MenuMain-link {
 		display: flex;
 		align-items: center;
@@ -48,7 +48,7 @@
 		padding-inline: 1.5rem;
 	}
 
-	.MenuMain-link[aria-current="true"] {
+	.MenuMain-link:is([aria-current="true"], [aria-current="page"]) {
 		background: var(--color-menu-main-active-bg);
 		color: var(--color-menu-main-active-copy);
 	}
@@ -63,7 +63,7 @@
 	}
 }
 
-@media (width >= 54rem) and (width < 64rem) {
+@media (width >= 58.5rem) and (width < 64rem) {
 	.MenuMain-link--mega {
 		padding-inline: 1rem;
 	}

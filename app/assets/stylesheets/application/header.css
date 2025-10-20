@@ -58,7 +58,7 @@
 	padding-inline: var(--padding);
 }
 
-@media (width < 54rem) {
+@media (width < 58.5rem) {
 	.Header {
 		justify-content: space-between;
 	}
@@ -118,7 +118,7 @@
 	}
 }
 
-@media (width >= 54rem) {
+@media (width >= 58.5rem) {
 	.Header:has(.MenuMain [aria-expanded="true"])::before {
 		content: "";
 		display: block;

@@ -1,6 +1,10 @@
 # Changelog
 
-## <time datetime="2025-10-02">2025-07-02</time>
+## <time datetime="2025-10-20">2025-07-20</time>
+
+- Added a list of upcoming hi-fi events.
+
+## <time datetime="2025-10-02">2025-10-02</time>
 
 - Improved filtering for products and brands. Products can now be filtered in more detail by more characteristics of products. Also, products can be filtered by characteristics of brands and brands can be filtered by characteristics of their products.
 

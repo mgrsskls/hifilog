@@ -9,6 +9,7 @@ class SitemapController < ApplicationController
       end
 
       m.add changelog_path
+      m.add events_path
       m.add about_path
       m.add calculators_root_path
       m.add calculators_resistors_for_amplifier_to_headphone_adapter_path

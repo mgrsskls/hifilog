@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_02_090908) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_20_153314) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -180,10 +180,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_090908) do
   create_table "custom_attributes", force: :cascade do |t|
     t.jsonb "options"
     t.string "label", null: false
-    t.boolean "highlighted", default: false, null: false
     t.string "input_type"
     t.string "inputs", default: [], array: true
     t.string "units", default: [], array: true
+    t.boolean "highlighted", null: false
     t.index ["label"], name: "index_custom_attributes_on_label", unique: true
   end
 
@@ -209,6 +209,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_090908) do
     t.bigint "custom_product_id", null: false
     t.bigint "sub_category_id", null: false
     t.index ["custom_product_id", "sub_category_id"], name: "idx_on_custom_product_id_sub_category_id_7b23a66fa1", unique: true
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "name"
+    t.string "url"
+    t.text "address"
+    t.string "country_code"
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
