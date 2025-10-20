@@ -9,5 +9,8 @@ class EventsController < ApplicationController
                       events_in_year.group_by { |e| e.start_date.month }
                     end
     @country_codes = all_events.map(&:country_code).uniq.sort
+    @page_title = 'Hi-Fi Events'
+    @meta_desc = 'Find all upcoming hi-fi events — worldwide — on HiFi Log,
+a user-driven database for hi-fi products, brands and more.'
   end
 end
