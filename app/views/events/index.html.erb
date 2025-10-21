@@ -1,6 +1,27 @@
 <% content_for :header do %>
   <div class="Heading">
     <h1>Hi-Fi Events &amp; Shows</h1>
+  </div>
+
+  <nav aria-label="<%= Event.model_name.human(count: 2) %>">
+    <ul class="Tabs">
+      <li>
+        <%= link_to "Upcoming <span>(#{@all_upcoming_events_count})</span>".html_safe, events_path, "aria-current": @active_events == :upcoming %>
+      </li>
+      <li>
+        <%= link_to "Past <span>(#{@all_past_events_count})</span>".html_safe, past_events_path, "aria-current": @active_events == :past %>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="u-flex u-spaceBetween u-gap-md u-flexWrap">
+    <% filtered_country_name = country_name_from_country_code(params[:country]) if params[:country].present? %>
+    <% temp = @active_events == :upcoming ? 'upcoming' : 'past' %>
+    <p class="u-mb-0">
+      <small>
+        <%= filtered_country_name.present? ? "#{@events.size} #{temp} events in #{filtered_country_name}." : "#{@events.size} #{temp} events worldwide." %>
+      </small>
+    </p>
 
     <form class="u-flex u-gap-md u-alignCenter">
       <label for="events-filter">Countries</label>
@@ -17,11 +38,6 @@
       %>
     </form>
   </div>
-
-  <% filtered_country_name = country_name_from_country_code(params[:country]) if params[:country].present? %>
-  <p class="u-textCenter">
-    <small><%= filtered_country_name.present? ? "#{@events.count} upcoming events in #{filtered_country_name}" : "#{@events.count} upcoming events worldwide." %></small>
-  </p>
 <% end %>
 
-<%= render "shared/events", events: @events, empty_state_message: t('event_attendee.empty_states.index') %>
+<%= render "shared/events", events: @events, empty_state_message: t('event_attendee.empty_states.index'), after_destroy_redirect: @after_destroy_redirect %>

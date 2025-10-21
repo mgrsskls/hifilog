@@ -1,6 +1,7 @@
 <% after_destroy_redirect ||= nil %>
 
 <% content_for :css do %>
+  <%= stylesheet_link_tag "tabs", crossorigin: true, integrity: true %>
   <%= stylesheet_link_tag "events", crossorigin: true, integrity: true %>
 <% end %>
 
@@ -54,12 +55,12 @@
                     <div class="Event-attend">
                       <%= event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: event.event_attendees.size) %>
                       <% if event.event_attendees.map(&:user).include?(current_user) %>
-                        <%= button_to event_attendee_path(id: event.event_attendees.find_by(user: current_user).id, redirect: after_destroy_redirect), method: :delete, class: "Button Button--sm Button--accent Button--secondary" do %>
-                          I don't attend anymore
+                        <%= button_to event_attendee_path(id: event.event_attendees.find_by(user: current_user).id, redirect: after_destroy_redirect, past: @active_events == :past), method: :delete, class: "Button Button--sm Button--accent Button--secondary" do %>
+                          <%= @active_events == :upcoming ? "I don't attend anymore" : "I did not attend" %>
                         <% end %>
                       <% else %>
-                        <%= button_to event_attendees_path(event_id: event.id), class: "Button Button--sm Button--accent" do %>
-                          Attend
+                        <%= button_to event_attendees_path(event_id: event.id, past: @active_events == :past), class: "Button Button--sm Button--accent" do %>
+                          <%= @active_events == :upcoming ? 'Attend' : 'Attended' %>
                         <% end %>
                       <% end %>
                     </div>

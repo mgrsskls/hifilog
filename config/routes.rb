@@ -46,6 +46,7 @@ Rails.application.routes.draw do
     get 'products', to: 'possessions#current', as: :products
     get 'previous-products', to: 'possessions#previous', as: :prev_owneds
     get 'events', to: 'user#events', as: :events
+    get 'events/past', to: 'user#past_events', as: :past_events
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
     get 'bookmarks/new', to: 'bookmark_lists#new', as: :new_bookmark_list
     get 'bookmarks/:id', to: 'bookmark_lists#show', as: :bookmark_list
@@ -106,6 +107,7 @@ Rails.application.routes.draw do
   end
 
   resources :events, only: [:index]
+  get '/events/past', to: 'events#past', as: :past_events
   resources :event_attendees, only: [:create, :destroy]
 
   get '/search', to: "search#results"

@@ -256,10 +256,14 @@ en:
     user_products: <p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>
   event_attendee:
     messages:
-      destroyed: "You no longer attend <i>%{name}</i>."
+      destroyed:
+        upcoming: "You no longer attend <i>%{name}</i>."
+        past: "You removed <i>%{name}</i> from your past events."
     empty_states:
       index: There are no upcoming events.
-      user: 'You don''t have any upcoming <a href="%{path}">events</a>.'
+      user:
+        upcoming: 'You don''t have any upcoming <a href="%{path}">events</a>.'
+        past: 'You haven''t visited any <a href="%{path}">events</a> yet.'
   filter:
     all: All
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.

@@ -60,16 +60,39 @@ class UserController < ApplicationController
   def events
     @page_title = Event.model_name.human(count: 2)
     @active_dashboard_menu = :events
+    @active_events = :upcoming
 
     all_events = current_user.events
-    @events = all_events
-    @events = all_events.where(country_code: params[:country]) if params[:country].present?
-    @years = @events.order(:start_date)
-                    .group_by { |e| e.start_date.year }
-                    .transform_values do |events_in_year|
-                      events_in_year.group_by { |e| e.start_date.month }
-                    end
-    @country_codes = all_events.map(&:country_code).uniq.sort
+                             .where(end_date: Time.zone.today..)
+                             .or(Event.where(start_date: Time.zone.today.., end_date: nil))
+    get_events(all_events)
+    @all_upcoming_events_count = all_events.count
+    @all_past_events_count = current_user.events
+                                         .where(end_date: ..Time.zone.today)
+                                         .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
+                                         .count
+    @empty_state_message = I18n.t('event_attendee.empty_states.user.upcoming', path: events_path)
+    @after_destroy_redirect = :dashboard_events
+  end
+
+  def past_events
+    @page_title = "Past #{Event.model_name.human(count: 2)}"
+    @active_dashboard_menu = :events
+    @active_events = :past
+
+    all_events = current_user.events
+                             .where(end_date: ..Time.zone.today)
+                             .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
+    get_events(all_events)
+    @all_upcoming_events_count = current_user.events
+                                             .where(end_date: Time.zone.today..)
+                                             .or(Event.where(start_date: Time.zone.today.., end_date: nil))
+                                             .count
+    @all_past_events_count = all_events.count
+    @empty_state_message = I18n.t('event_attendee.empty_states.user.past', path: past_events_path)
+    @after_destroy_redirect = :dashboard_past_events
+
+    render 'events'
   end
 
   def contributions
@@ -191,6 +214,17 @@ class UserController < ApplicationController
   end
 
   private
+
+  def get_events(all_events)
+    @events = all_events.includes(event_attendees: [:user])
+    @events = all_events.where(country_code: params[:country]) if params[:country].present?
+    @years = @events.order(:start_date)
+                    .group_by { |e| e.start_date.year }
+                    .transform_values do |events_in_year|
+                      events_in_year.group_by { |e| e.start_date.month }
+                    end
+    @country_codes = all_events.map(&:country_code).uniq.sort
+  end
 
   def get_data(data, model, event)
     data[[model, event]] || 0

@@ -124,6 +124,10 @@
 	text-decoration: underline;
 }
 
+.u-mb-0 {
+	margin-block: 0;
+}
+
 @media (width < 58.5rem) {
 	.u-hide-sm {
 		display: none;

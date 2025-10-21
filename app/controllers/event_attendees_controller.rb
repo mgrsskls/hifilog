@@ -10,7 +10,8 @@ class EventAttendeesController < ApplicationController
 
     flash[:alert] = I18n.t(:generic_error_message) unless @event_attendee.save
 
-    redirect_to events_path(anchor: "event-#{@event.id}")
+    anchor = "event-#{@event.id}"
+    redirect_to params[:past] == 'true' ? past_events_path(anchor:) : events_path(anchor:)
   end
 
   def destroy
@@ -19,11 +20,16 @@ class EventAttendeesController < ApplicationController
 
     if event_attendee&.destroy
       flash[:notice] = I18n.t(
-        'event_attendee.messages.destroyed',
+        "event_attendee.messages.destroyed.#{params[:past] == 'true' ? 'past' : 'upcoming'}",
         name: event.name
       )
     end
 
-    redirect_to params[:redirect] == 'dashboard_events' ? dashboard_events_path : events_path
+    case params[:redirect]
+    when 'dashboard_events' then redirect_to dashboard_events_path
+    when 'dashboard_past_events' then redirect_to dashboard_past_events_path
+    when 'past_events' then redirect_to past_events_path
+    else redirect_to events_path
+    end
   end
 end

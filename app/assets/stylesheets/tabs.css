@@ -29,3 +29,7 @@
 	font-weight: 600;
 	position: relative;
 }
+
+.Tabs span {
+	font-weight: normal;
+}
