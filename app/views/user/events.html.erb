@@ -1,0 +1,9 @@
+<% content_for :header do %>
+  <div class="Heading">
+    <h1><%= Event.model_name.human(count: 2) %></h1>
+  </div>
+<% end %>
+
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <%= render "shared/events", events: @events, after_destroy_redirect: :dashboard_events, empty_state_message: t('event_attendee.empty_states.user', path: events_path) %>
+<% end %>

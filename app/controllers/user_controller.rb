@@ -57,6 +57,21 @@ class UserController < ApplicationController
     @categories = get_grouped_sub_categories(bookmarks: all_bookmarks)
   end
 
+  def events
+    @page_title = Event.model_name.human(count: 2)
+    @active_dashboard_menu = :events
+
+    all_events = current_user.events
+    @events = all_events
+    @events = all_events.where(country_code: params[:country]) if params[:country].present?
+    @years = @events.order(:start_date)
+                    .group_by { |e| e.start_date.year }
+                    .transform_values do |events_in_year|
+                      events_in_year.group_by { |e| e.start_date.month }
+                    end
+    @country_codes = all_events.map(&:country_code).uniq.sort
+  end
+
   def contributions
     @page_title = I18n.t('headings.contributions')
     @active_dashboard_menu = :contributions
@@ -160,6 +175,7 @@ class UserController < ApplicationController
       previous_products: user_possessions_count(user: current_user, prev_owned: true),
       setups: user_setups_count(current_user),
       bookmarks: user_bookmarks_count(current_user),
+      events: user_events_count(current_user),
       notes: user_notes_count(current_user)
     }
   end

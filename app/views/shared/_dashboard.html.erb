@@ -72,6 +72,14 @@
             <small data-user-count="notes"></small>
           </span>
         </li>
+        <li>
+          <span>
+            <a class="Sidebar-link" href="<%= dashboard_events_path %>"<%= active_menu_state(active_dashboard_menu, :events) %>>
+              <%= Event.model_name.human(count: 2) %>
+            </a>
+            <small data-user-count="events"></small>
+          </span>
+        </li>
         <li class="Sidebar-separator">
           <a class="Sidebar-link" href="<%= current_user.profile_path %>"<%= active_menu_state(active_dashboard_menu, :profile) %>>
             <%= t('headings.profile') %>

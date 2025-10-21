@@ -57,9 +57,12 @@ en:
       custom_product:
         one: Custom product
         other: Custom products
+      event:
+        one: Event
+        other: Events
       event_attendee:
-        one: attendee
-        other: attendees
+        one: Attendee
+        other: Attendees
       note:
         one: Note
         other: Notes
@@ -254,6 +257,9 @@ en:
   event_attendee:
     messages:
       destroyed: "You no longer attend <i>%{name}</i>."
+    empty_states:
+      index: There are no upcoming events.
+      user: 'You don''t have any upcoming <a href="%{path}">events</a>.'
   filter:
     all: All
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.

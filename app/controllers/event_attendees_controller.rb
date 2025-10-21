@@ -24,6 +24,6 @@ class EventAttendeesController < ApplicationController
       )
     end
 
-    redirect_to events_path
+    redirect_to params[:redirect] == 'dashboard_events' ? dashboard_events_path : events_path
   end
 end

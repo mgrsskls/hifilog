@@ -32,6 +32,12 @@ module ApplicationHelper
     user.bookmarks.count
   end
 
+  def user_events_count(user)
+    return unless user
+
+    user.event_attendees.count
+  end
+
   def user_setups_count(user)
     return unless user
 

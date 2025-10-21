@@ -245,6 +245,12 @@
                               <small data-user-count="notes"></small>
                             </a>
                           </li>
+                          <li>
+                            <a href="<%= dashboard_events_path %>"<%= active_menu_state(@active_dashboard_menu, :events) %>>
+                              <span><%= Event.model_name.human(count: 2) %></span>
+                              <small data-user-count="events"></small>
+                            </a>
+                          </li>
                           <li class="Menu-subList-separator">
                             <a href="<%= current_user.profile_path %>"<%= active_menu_state(@active_dashboard_menu, :profile) %>>
                               <span><%= t('headings.profile') %></span>
