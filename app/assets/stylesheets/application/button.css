@@ -8,7 +8,9 @@
 	box-shadow: 0.15rem 0.15rem 0.25rem var(--color-button-box-shadow);
 	text-decoration: none;
 	border: var(--border) transparent;
-	display: inline-block;
+	display: inline-flex;
+	gap: 0.5rem;
+	align-items: center;
 	white-space: nowrap;
 }
 

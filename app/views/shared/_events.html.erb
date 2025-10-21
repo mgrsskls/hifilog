@@ -55,12 +55,13 @@
                     <div class="Event-attend">
                       <%= event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: event.event_attendees.size) %>
                       <% if event.event_attendees.map(&:user).include?(current_user) %>
-                        <%= button_to event_attendee_path(id: event.event_attendees.find_by(user: current_user).id, redirect: after_destroy_redirect, past: @active_events == :past), method: :delete, class: "Button Button--sm Button--accent Button--secondary" do %>
-                          <%= @active_events == :upcoming ? "I don't attend anymore" : "I did not attend" %>
+                        <%= button_to event_attendee_path(id: event.event_attendees.find_by(user: current_user).id, redirect: after_destroy_redirect, past: @active_events == :past), method: :delete, class: "Button Button--sm Button--accent Button--secondary Button--icon" do %>
+                          <%= @active_events == :upcoming ? "You attend" : "You attended" %>
+                          <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
                         <% end %>
                       <% else %>
                         <%= button_to event_attendees_path(event_id: event.id, past: @active_events == :past), class: "Button Button--sm Button--accent" do %>
-                          <%= @active_events == :upcoming ? 'Attend' : 'Attended' %>
+                          <%= @active_events == :upcoming ? 'I attend' : 'I attended' %>
                         <% end %>
                       <% end %>
                     </div>

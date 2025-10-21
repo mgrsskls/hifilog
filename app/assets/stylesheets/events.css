@@ -123,3 +123,11 @@
 	gap: 1rem;
 	justify-content: end;
 }
+
+.Event .IconSymbol {
+	--size: 1em;
+
+	block-size: var(--size);
+	inline-size: var(--size);
+	transform: scale(1.2);
+}
