@@ -82,6 +82,7 @@
 	a {
 		font-weight: 500;
 		justify-self: end;
+		word-break: break-word;
 	}
 
 	> :last-child {
