@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_20_153314) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_21_132624) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -209,6 +209,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_153314) do
     t.bigint "custom_product_id", null: false
     t.bigint "sub_category_id", null: false
     t.index ["custom_product_id", "sub_category_id"], name: "idx_on_custom_product_id_sub_category_id_7b23a66fa1", unique: true
+  end
+
+  create_table "event_attendees", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "event_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_event_attendees_on_event_id"
+    t.index ["user_id", "event_id"], name: "index_event_attendees_on_user_id_and_event_id", unique: true
+    t.index ["user_id"], name: "index_event_attendees_on_user_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -427,6 +437,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_153314) do
   add_foreign_key "bookmarks", "products"
   add_foreign_key "bookmarks", "users"
   add_foreign_key "custom_products", "users"
+  add_foreign_key "event_attendees", "events"
+  add_foreign_key "event_attendees", "users"
   add_foreign_key "notes", "product_variants"
   add_foreign_key "notes", "products"
   add_foreign_key "notes", "users"

@@ -28,6 +28,8 @@ class User < ApplicationRecord
     attachable.variant :thumb, resize_to_fill: [193, 40], format: :webp
     attachable.variant :large, resize_to_fill: [1512, 314], format: :webp
   end
+  has_many :event_attendees, dependent: :destroy
+  has_many :events, through: :event_attendees
 
   auto_strip_attributes :user_name, squish: true
 

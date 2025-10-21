@@ -30,6 +30,11 @@
 	transform: translate(0.0625rem, 0.0625rem);
 }
 
+.Button--accent {
+	background-color: var(--color-accent);
+	color: var(--color-copy-on-accent);
+}
+
 .Button--negative {
 	--color-button-bg: transparent;
 	--color-button-copy: var(--color-invalid-copy);

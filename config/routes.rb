@@ -105,6 +105,7 @@ Rails.application.routes.draw do
   end
 
   resources :events, only: [:index]
+  resources :event_attendees, only: [:create, :destroy]
 
   get '/search', to: "search#results"
 

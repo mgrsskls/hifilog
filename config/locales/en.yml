@@ -57,6 +57,9 @@ en:
       custom_product:
         one: Custom product
         other: Custom products
+      event_attendee:
+        one: attendee
+        other: attendees
       note:
         one: Note
         other: Notes
@@ -248,6 +251,9 @@ en:
       yearly_costs: "<p><b>You have not added any prices to your products yet.</b></p><p>After adding products to your collection, you can add how much you spend on them. You will then see here how much money you spent every year.</p>"
     user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
     user_products: <p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>
+  event_attendee:
+    messages:
+      destroyed: "You no longer attend <i>%{name}</i>."
   filter:
     all: All
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.

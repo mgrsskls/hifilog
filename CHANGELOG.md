@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-10-21">2025-07-21</time>
+
+- Users can now indicate that they will attend an event.
+
 ## <time datetime="2025-10-20">2025-07-20</time>
 
 - Added a list of upcoming hi-fi events.

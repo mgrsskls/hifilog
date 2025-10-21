@@ -40,7 +40,7 @@
               <ol class="Events-list" start="<%= i %>">
                 <% month[1].each do |event| %>
                   <% i += 1 %>
-                  <li class="Event">
+                  <li class="Event" id="event-<%= event.id %>">
                     <div class="Event-header">
                       <span class="Event-days">
                         <time datetime="<%= event.start_date %>">
@@ -57,18 +57,32 @@
                         <img class="Flag" src="/flags/<%= event.country_code.downcase %>.svg" alt="Flag of <%= country_name %>" title="<%= country_name %>" loading="lazy" width="25">
                       </div>
                     </div>
-                    <h4>
-                      <%= event.name %>
-                    </h4>
-                    <address>
-                      <p>
-                        <%= event.address.gsub("\n", "<br>").html_safe %><br>
-                        <%= country_name %>
-                      </p>
-                    </address>
-                    <% if event.url.present? %>
-                      <a href="<%= event.url %>"><%= event.url %></a>
-                    <% end %>
+                    <div class="Event-content">
+                      <h4>
+                        <%= event.name %>
+                      </h4>
+                      <address>
+                        <p>
+                          <%= event.address.gsub("\n", "<br>").html_safe %><br>
+                          <%= country_name %>
+                        </p>
+                      </address>
+                      <% if event.url.present? %>
+                        <a href="<%= event.url %>"><%= event.url %></a>
+                      <% end %>
+                    </div>
+                    <div class="Event-attend">
+                      <%= event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: event.event_attendees.size) %>
+                      <% if event.event_attendees.map(&:user).include?(current_user) %>
+                        <%= button_to event_attendee_path(id: event.id), method: :delete, class: "Button Button--sm Button--accent Button--secondary" do %>
+                          I don't attend anymore
+                        <% end %>
+                      <% else %>
+                        <%= button_to event_attendees_path(event_id: event.id), class: "Button Button--sm Button--accent" do %>
+                          Attend
+                        <% end %>
+                      <% end %>
+                    </div>
                   </li>
                 <% end %>
               </ol>

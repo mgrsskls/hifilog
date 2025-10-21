@@ -1,0 +1,21 @@
+one:
+  name: Event 1
+  address: Event 1 address
+  url: https://www.example.com
+  country_code: DE
+  start_date: 2000-01-01
+  end_date: 2000-01-02
+two:
+  name: Event 2
+  address: Event 2 address
+  url: https://www.example.com
+  country_code: US
+  start_date: 2030-01-01
+  end_date: 2030-01-02
+three:
+  name: Event 3
+  address: Event 3 address
+  url: https://www.example.com
+  country_code: DE
+  start_date: 2030-01-01
+  end_date: NULL
