@@ -44,7 +44,7 @@
                       </h4>
                       <address>
                         <p>
-                          <%= event.address.gsub("\n", "<br>").html_safe %><br>
+                          <%= event.address.gsub("\n", "<br>").html_safe if event.address.present? %><br>
                           <%= country_name %>
                         </p>
                       </address>
