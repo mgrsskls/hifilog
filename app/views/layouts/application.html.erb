@@ -6,7 +6,7 @@
     <% if params[:controller] == "application" && params[:action] == "index" %>
       <link rel="preload" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
     <% end %>
-    <title><%= page_title %></title>
+    <title><%= strip_tags(page_title).html_safe %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= javascript_tag nonce: true do %>
       {
@@ -84,7 +84,7 @@
     <% if @no_index %>
       <meta name="robots" content="noindex,nofollow">
     <% end %>
-    <meta property="og:title" content="<%= page_title %>">
+    <meta property="og:title" content="<%= strip_tags(page_title).html_safe %>">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://www.hifilog.com/og.png?v=1">
     <meta property="og:image:width" content="1200">
