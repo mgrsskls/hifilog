@@ -6,5 +6,9 @@ class Event < ApplicationRecord
   def self.ransackable_attributes(_auth_object = nil)
     %w[address country_code end_date name start_date url]
   end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[event_attendees users]
+  end
   # :nocov:
 end

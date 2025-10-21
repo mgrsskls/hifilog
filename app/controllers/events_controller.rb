@@ -1,7 +1,7 @@
 class EventsController < ApplicationController
   def index
     all_events = Event.where(end_date: Time.zone.today..).or(Event.where(start_date: Time.zone.today.., end_date: nil))
-    get_events(all_events)
+    get_events(all_events:, order: :asc)
     @all_upcoming_events_count = all_events.size
     @all_past_events_count = Event.where(end_date: ..Time.zone.today)
                                   .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
@@ -16,7 +16,7 @@ a user-driven database for hi-fi products, brands and more.'
 
   def past
     all_events = Event.where(end_date: ..Time.zone.today).or(Event.where(start_date: ..Time.zone.today, end_date: nil))
-    get_events(all_events)
+    get_events(all_events:, order: :desc)
     @all_upcoming_events_count = Event.where(end_date: Time.zone.today..)
                                       .or(Event.where(start_date: Time.zone.today.., end_date: nil))
                                       .size
@@ -33,10 +33,10 @@ a user-driven database for hi-fi products, brands and more.'
 
   private
 
-  def get_events(all_events)
+  def get_events(all_events: [], order: :asc)
     @events = all_events.includes(event_attendees: [:user])
     @events = all_events.where(country_code: params[:country]) if params[:country].present?
-    @years = @events.order(:start_date)
+    @years = @events.order(start_date: order)
                     .group_by { |e| e.start_date.year }
                     .transform_values do |events_in_year|
                       events_in_year.group_by { |e| e.start_date.month }
