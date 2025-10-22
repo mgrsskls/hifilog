@@ -159,7 +159,7 @@
                         <%= render "layouts/mega_menu", entity: 'brands', symbol: :brands, cta_label: t('brand.new.link'), cta_path: new_brand_path, active_menu: @active_menu, category: @category, sub_category: @sub_category %>
                       </li>
                       <li class="MenuMain-item">
-                        <%= link_to events_path, class: "MenuMain-link", "aria-current": params[:controller] == "events" ? "page" : "false" do %>
+                        <%= link_to events_path, class: "MenuMain-link MenuMain-link--lvl1", "aria-current": params[:controller] == "events" ? "page" : "false" do %>
                           <span>Events</span>
                         <% end %>
                       </li>
