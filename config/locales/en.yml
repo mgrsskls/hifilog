@@ -135,6 +135,7 @@ en:
     amplifier_type: Amplifier type
     cable_interconnect_type: Type
     cartridge_type: Type
+    enclosure_type: Enclosure type
     frequency_response_range: Frequency Response Range
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
@@ -179,6 +180,7 @@ en:
     amt_tweeter: AMT Tweeter
     automatic: Automatic
     belt-drive: Belt Drive
+    closed_back: Closed-back
     coaxial: Coaxial
     direct-drive: Direct Drive
     dual-mono: Dual-Mono
@@ -193,6 +195,7 @@ en:
     mm-mc: MM / MC
     mono: Mono
     "no": "No"
+    open_back: Open-back
     open_baffle: Open Baffle
     optical: Optical
     passive: Passive
@@ -203,6 +206,7 @@ en:
     rca: RCA
     ribbon_tweeter: Ribbon Tweeter
     sealed: Sealed
+    semi_open: Semi-open
     solid_state: Solid State
     stereo: Stereo
     transmission_line: Transmission Line
