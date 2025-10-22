@@ -1,0 +1,13 @@
+<%= form_for resource, url: send_test_admin_newsletter_path(resource), method: :post, html: { class: "formtastic" } do |f| %>
+  <div class="input">
+    <label class="label" for="test-user_name">Recipient Username</label>
+    <input type="text" name="test_user_name" id="test-user_name">
+  </div>
+  <div class="input">
+    <label class="label" for="test-email">Recipient Email</label>
+    <input type="text" name="test_email" id="test-email">
+  </div>
+  <div class="actions">
+    <button type="submit">Send Test</button>
+  </div>
+<% end %>
