@@ -26,22 +26,23 @@
       <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
       <dd>
         <% if ca[1].is_a?(Hash) %>
-          <% unit = t("custom_attribute_units.#{ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first}").html_safe %>
+          <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
+          <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
           <% if ca[1]['value'].is_a?(Hash) %>
             <% ca[1]['value'].each do |v| %>
-              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 1, strip_insignificant_zeros: true) %> <%= unit %>
+              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
               <% if active_record.units.size == 2 %>
                 <% multi, other_unit = convert(unit) %>
-                / <%= number_with_precision(v[1] * multi, precision: 1, strip_insignificant_zeros: true) %> <%= other_unit %>
+                / <%= number_with_precision(v[1] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
               <% end %>
               <br>
             <% end %>
           <% elsif ca[1]['value'].present? %>
-            <%= number_with_precision(ca[1]['value'], precision: 1, strip_insignificant_zeros: true) %> <%= unit %>
+            <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
             <% if active_record.units.size == 2 %>
               <% multi, other_unit = convert(unit) %>
               <% if other_unit %>
-                / <%= number_with_precision(ca[1]['value'] * multi, precision: 1, strip_insignificant_zeros: true) %> <%= other_unit %>
+                / <%= number_with_precision(ca[1]['value'] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
               <% end %>
             <% end %>
           <% else %>
