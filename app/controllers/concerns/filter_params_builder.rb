@@ -7,7 +7,6 @@ module FilterParamsBuilder
     filters[:category] = @category if @category.present?
     filters[:sub_category] = @sub_category if @sub_category.present?
 
-    filters[:query] = params_hash[:query] if params_hash[:query].present? && !params_hash[:query].strip.empty?
     filters[:sort] = params_hash[:sort] if params_hash[:sort].present?
 
     filters
@@ -21,12 +20,14 @@ module FilterParamsBuilder
         filters[:diy_kit] = params_hash.dig(:products, :diy_kit)
       end
 
+      filters[:query] = params_hash[:products][:query] if params_hash.dig(:products, :query).present?
+
       if params_hash.dig(:products, :status) && STATUSES.include?(params_hash[:products][:status])
         filters[:status] = params_hash[:products][:status]
       end
 
-      active_custom_filters = params_hash[:products].except({ products: [:diy_kit] })
-      filters[:custom] = params_hash[:products].except if flatten_query_values(active_custom_filters).any?
+      active_custom_filters = params_hash[:products].except(:diy_kit, :query, :status)
+      filters[:custom] = active_custom_filters if flatten_query_values(active_custom_filters).any?
     end
 
     filters
@@ -38,6 +39,8 @@ module FilterParamsBuilder
     if params_hash.dig(:brands, :country) && COUNTRY_CODES.include?(params_hash.dig(:brands, :country).upcase)
       filters[:country] = params_hash[:brands][:country]
     end
+
+    filters[:query] = params_hash[:brands][:query] if params_hash.dig(:brands, :query).present?
 
     if params_hash.dig(:brands, :status) && STATUSES.include?(params_hash[:brands][:status])
       filters[:status] = params_hash[:brands][:status]

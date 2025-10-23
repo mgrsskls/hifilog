@@ -121,7 +121,7 @@ class BrandsController < ApplicationController
     @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |c| c[0].order }
-    @products_query = params[:query].strip if params[:query].present?
+    @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
     @page_title = @brand.name
     set_meta_desc
@@ -236,7 +236,7 @@ class BrandsController < ApplicationController
 
   def allowed_index_product_filter_params
     custom_attributes_hash = *build_custom_attributes_hash(@custom_attributes)
-    allowed = [{ products: [:diy_kit, *custom_attributes_hash] }]
+    allowed = [{ products: [:diy_kit, :status, :query, *custom_attributes_hash] }]
     params.permit(allowed)
   end
 
@@ -245,7 +245,7 @@ class BrandsController < ApplicationController
   end
 
   def allowed_show_product_filter_params
-    params.permit(:category, :status, :query, :sort)
+    params.permit(:category, :sort)
   end
 
   def active_show_product_filters
