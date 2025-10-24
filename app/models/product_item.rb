@@ -1,6 +1,25 @@
 class ProductItem < ApplicationRecord
+  include PgSearch::Model
+
+  self.primary_key = :id # needed for pg_search
+
   belongs_to :brand
   has_many :product_options
+
+  pg_search_scope :search,
+                  against: {
+                    name: 'A',
+                    variant_name: 'B',
+                    model_no: 'B',
+                    brand_name: 'A'
+                  },
+                  ignoring: :accents,
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      any_word: false
+                    },
+                  }
 
   def readonly?
     true

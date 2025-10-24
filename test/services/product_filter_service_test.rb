@@ -36,6 +36,6 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
   test 'filter by query returns only matching products' do
     product = products(:one)
     result = ProductFilterService.new(filters: { query: product.name }, brands: [@brand]).filter
-    assert_equal [product.id], result.products.pluck(:id)
+    assert_equal ["Product-#{product.id}"], result.products.pluck(:id)
   end
 end

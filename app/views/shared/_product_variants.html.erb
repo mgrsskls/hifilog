@@ -31,7 +31,7 @@
           <td class="Table-sm">Initial / Stock version</td>
           <td class="Table-sm"><%= product.release_date.present? ? format_date(product.release_date).html_safe : "-" %></td>
           <td class="Table-sm"><%= product.price.present? ? display_price(product.price, product.price_currency) : "-" %></td>
-          <td class="Table-symbols"><%= render "shared/symbols", product: product %></td>
+          <td class="Table-symbols"><%= render "shared/symbols", item: product, type: 'Product' %></td>
         </tr>
         <% product.product_variants.order(:release_year, :release_month, :release_day).each do |product_variant| %>
           <tr<%= " aria-current=true" if current == product_variant %> class="is-<%= product_variant.discontinued? ? "discontinued" : "continued" %>">
@@ -48,7 +48,7 @@
             <td class="Table-sm"><%= product_variant.description.present? ? product_variant.description : "-" %></td>
             <td class="Table-sm"><%= product_variant.release_date.present? ? format_date(product_variant.release_date).html_safe : "-" %></td>
             <td class="Table-sm"><%= product_variant.price.present? ? display_price(product_variant.price, product_variant.price_currency) : "-" %></td>
-            <td class="Table-symbols"><%= render "shared/symbols", product_variant: product_variant %></td>
+            <td class="Table-symbols"><%= render "shared/symbols", item: product_variant, type: 'ProductVariant' %></td>
           </tr>
         <% end %>
       </tbody>
@@ -62,7 +62,7 @@
                 <%= link_to product.name, product_path(id: product.friendly_id) %>
                 <span class="EntityList-modelName">Initial / Stock version</span>
               </div>
-              <%= render "shared/symbols", product: product %>
+              <%= render "shared/symbols", item: product, type: 'Product' %>
             </div>
           </div>
 
@@ -123,7 +123,7 @@
                 <dd><%= display_price(product_variant.price, product_variant.price_currency) %></dd>
               <% end %>
             </dl>
-            <%= render "shared/symbols", product_variant: product_variant %>
+            <%= render "shared/symbols", item: product_variant, type: 'ProductVariant' %>
 
         </li>
       <% end %>

@@ -21,8 +21,8 @@
 
 <% content_for :sort do %>
   <input type="hidden" name="country" value="<%= params[:country] %>">
-  <label for="sort"><%= t('sort_by.label') %></label>
-  <select name="sort" id="sort">
+  <label for="sort-select"><%= t('sort_by.label') %></label>
+  <select name="sort" id="sort-select">
     <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
     <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
     <option value="products_desc"<%= " selected" if params[:sort] == "products_desc" %>><%= t('sort_by.products_desc') %></option>

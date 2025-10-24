@@ -225,8 +225,8 @@
 
         <div class="Filter-section">
           <% status_param = type == :brands ? params.dig(:brands, :status) : params.dig(:products, :status) %>
-          <label for="filter-status" class="Filter-label"><%= t('status') %></label>
-          <select class="Filter-input" name="<%= type == :brands ? "brands[status]" : "products[status]" %>" id="filter-status">
+          <label for="brand-filter-status" class="Filter-label"><%= t('status') %></label>
+          <select class="Filter-input" name="<%= type == :brands ? "brands[status]" : "products[status]" %>" id="brand-filter-status">
             <option value=""<%= ' selected'.html_safe if status_param.blank? %>>
               <%= t("filter.all") %>
             </option>

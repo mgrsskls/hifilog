@@ -68,8 +68,7 @@ class ProductFilterService
   def apply_search_filter(scope, value)
     query = "%#{value.strip}%"
 
-    scope.where('product_items.name ILIKE ?', query)
-         .or(scope.where('model_no ILIKE ?', query))
+    scope.search(query)
   end
 
   def apply_custom_filters(scope, custom_attributes)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_21_132624) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_24_180606) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -457,7 +457,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_132624) do
   add_foreign_key "sub_categories", "categories"
 
   create_view "product_items", sql_definition: <<-SQL
-      SELECT products.id,
+      SELECT ('Product-'::text || (products.id)::text) AS id,
       products.name,
       products.description,
       products.discontinued,
@@ -474,18 +474,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_132624) do
       products.model_no,
       products.custom_attributes,
       products.brand_id,
+      brands.name AS brand_name,
       'Product'::text AS item_type,
       products.id AS product_id,
       NULL::citext AS variant_name,
       NULL::text AS variant_description,
       NULL::character varying AS variant_slug,
       array_agg(DISTINCT sub_categories.name) AS sub_category_names
-     FROM ((products
+     FROM (((products
+       LEFT JOIN brands ON ((brands.id = products.brand_id)))
        LEFT JOIN products_sub_categories psc ON ((psc.product_id = products.id)))
        LEFT JOIN sub_categories ON ((sub_categories.id = psc.sub_category_id)))
-    GROUP BY products.id, products.name, products.description, products.discontinued, products.slug, products.release_day, products.release_month, products.release_year, products.price, products.price_currency, products.discontinued_year, products.discontinued_month, products.discontinued_day, products.diy_kit, products.model_no, products.custom_attributes, products.brand_id
+    GROUP BY products.id, products.name, products.description, products.discontinued, products.slug, products.release_day, products.release_month, products.release_year, products.price, products.price_currency, products.discontinued_year, products.discontinued_month, products.discontinued_day, products.diy_kit, products.model_no, products.custom_attributes, products.brand_id, brands.name
   UNION ALL
-   SELECT product_variants.id,
+   SELECT ('Variant-'::text || (product_variants.id)::text) AS id,
       products.name,
       products.description,
       product_variants.discontinued,
@@ -502,16 +504,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_132624) do
       product_variants.model_no,
       products.custom_attributes,
       products.brand_id,
+      brands.name AS brand_name,
       'ProductVariant'::text AS item_type,
       product_variants.product_id,
       product_variants.name AS variant_name,
       product_variants.description AS variant_description,
       product_variants.slug AS variant_slug,
       array_agg(DISTINCT sub_categories.name) AS sub_category_names
-     FROM (((product_variants
+     FROM ((((product_variants
        JOIN products ON ((product_variants.product_id = products.id)))
+       LEFT JOIN brands ON ((brands.id = products.brand_id)))
        LEFT JOIN products_sub_categories psc ON ((psc.product_id = products.id)))
        LEFT JOIN sub_categories ON ((sub_categories.id = psc.sub_category_id)))
-    GROUP BY product_variants.id, products.name, products.description, product_variants.discontinued, products.slug, product_variants.release_day, product_variants.release_month, product_variants.release_year, product_variants.price, product_variants.price_currency, product_variants.discontinued_year, product_variants.discontinued_month, product_variants.discontinued_day, product_variants.diy_kit, product_variants.model_no, products.custom_attributes, products.brand_id, product_variants.product_id, product_variants.name, product_variants.description, product_variants.slug;
+    GROUP BY product_variants.id, products.name, products.description, product_variants.discontinued, products.slug, product_variants.release_day, product_variants.release_month, product_variants.release_year, product_variants.price, product_variants.price_currency, product_variants.discontinued_year, product_variants.discontinued_month, product_variants.discontinued_day, product_variants.diy_kit, product_variants.model_no, products.custom_attributes, products.brand_id, brands.name, product_variants.product_id, product_variants.name, product_variants.description, product_variants.slug;
   SQL
 end

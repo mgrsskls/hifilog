@@ -142,5 +142,40 @@ module ApplicationHelper
       [-brand[1].size, brand[0].downcase]
     end
   end
+
+  def hidden_fields_for_params(params_hash, prefix: nil, skip_blank: true)
+    # If it's ActionController::Parameters, convert to a plain hash for iteration.
+    params_hash = params_hash.to_unsafe_h if params_hash.respond_to?(:to_unsafe_h)
+
+    tags = []
+
+    params_hash.each do |key, value|
+      next if key.in?([:controller, :action]) # safety
+
+      name = prefix ? "#{prefix}[#{key}]" : key.to_s
+
+      case value
+      when ActionController::Parameters, Hash
+        tags << hidden_fields_for_params(value, prefix: name, skip_blank: skip_blank)
+      when Array
+        value.each do |v|
+          if v.is_a?(ActionController::Parameters) || v.is_a?(Hash)
+            # array of hashes -> use name[] as prefix for each nested hash
+            tags << hidden_fields_for_params(v, prefix: "#{name}[]", skip_blank: skip_blank)
+          else
+            next if skip_blank && v.blank?
+
+            tags << hidden_field_tag("#{name}[]", v)
+          end
+        end
+      else
+        next if skip_blank && value.blank?
+
+        tags << hidden_field_tag(name, value)
+      end
+    end
+
+    safe_join(tags)
+  end
 end
 # rubocop:enable Metrics/ModuleLength

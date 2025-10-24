@@ -23,9 +23,8 @@
 <% end %>
 
 <% content_for :sort do %>
-  <input type="hidden" name="country" value="<%= params[:country] %>">
-  <label for="sort">Sort</label>
-  <select name="sort" id="sort">
+  <label for="sort-select">Sort</label>
+  <select name="sort" id="sort-select">
     <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
     <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
     <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
