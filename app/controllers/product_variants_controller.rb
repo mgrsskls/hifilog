@@ -27,7 +27,7 @@ class ProductVariantsController < ApplicationController
                                                                        :created_at
                                                                      ])
 
-      @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: @product_variant.id)
+      @bookmark = current_user.bookmarks.find_by(item_id: @product_variant.id, item_type: 'ProductVariant')
       @note = current_user.notes.find_by(product_variant_id: @product_variant.id)
       @setups = current_user.setups
     end

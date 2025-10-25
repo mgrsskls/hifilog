@@ -6,24 +6,6 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal active_menu_state('page1', 'page2'), ' aria-current=false'
   end
 
-  test 'user_has_product?' do
-    assert_not user_has_product?(nil, products(:one))
-    assert user_has_product?(users(:one), products(:one))
-    assert_not user_has_product?(users(:without_anything), products(:one))
-  end
-
-  test 'user_has_previously_owned?' do
-    assert_not user_has_previously_owned?(nil, products(:two))
-    assert user_has_previously_owned?(users(:one), products(:two))
-    assert_not user_has_previously_owned?(users(:without_anything), products(:two))
-  end
-
-  test 'user_has_bookmark?' do
-    assert_not user_has_bookmark?(nil, products(:one))
-    assert user_has_bookmark?(users(:one), products(:one))
-    assert_not user_has_bookmark?(users(:without_anything), products(:one))
-  end
-
   test 'user_has_brand?' do
     assert_not user_has_brand?(nil, brands(:one), false)
 

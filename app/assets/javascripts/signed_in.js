@@ -84,6 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
 								!item.in_collection;
 							el.querySelector('[data-symbol="previously_owned"]').hidden =
 								!item.previously_owned;
+							el.querySelector('[data-symbol="bookmarked"]').hidden =
+								!item.bookmarked;
 						});
 					}
 				}

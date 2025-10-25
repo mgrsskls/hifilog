@@ -26,3 +26,9 @@
 .BookmarksLists .Button {
 	margin-inline-start: auto;
 }
+
+.Bookmark-footer {
+	margin-block-start: auto;
+	border-block-start: var(--border-light);
+	padding-block-start: 1rem;
+}

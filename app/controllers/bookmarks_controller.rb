@@ -5,16 +5,19 @@ class BookmarksController < ApplicationController
     @product_variant = ProductVariant.find(params[:product_variant_id]) if params[:product_variant_id].present?
 
     if @product_variant.present?
-      @product = @product_variant.product
       @bookmark = current_user.bookmarks.new(
-        product_variant: @product_variant,
-        product: @product
+        item_id: @product_variant.id,
+        item_type: 'ProductVariant'
       )
     else
       @product = Product.find(params[:product_id])
-      @bookmark = current_user.bookmarks.new(
-        product: @product
-      )
+
+      if @product.present?
+        @bookmark = current_user.bookmarks.new(
+          item_id: @product.id,
+          item_type: 'Product'
+        )
+      end
     end
 
     flash[:alert] = I18n.t(:generic_error_message) unless @bookmark.save
@@ -40,8 +43,6 @@ class BookmarksController < ApplicationController
   def destroy
     bookmark = current_user.bookmarks.find(params[:id])
     presenter = BookmarkPresenter.new(bookmark)
-    product = bookmark.product
-    product_variant = bookmark.product_variant
 
     if bookmark&.destroy
       flash[:notice] = I18n.t(
@@ -50,9 +51,6 @@ class BookmarksController < ApplicationController
       )
     end
 
-    redirect_back_to_product(
-      product:,
-      product_variant:,
-    )
+    redirect_to params[:redirect_to] || dashboard_bookmarks_path
   end
 end

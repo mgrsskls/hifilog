@@ -77,24 +77,6 @@ module ApplicationHelper
     }
   end
 
-  def user_has_product?(user, product_id, product_variant_id = nil)
-    return false unless user
-
-    user.possessions.exists?(product_id:, product_variant_id:, prev_owned: false)
-  end
-
-  def user_has_bookmark?(user, product, variant_id = nil)
-    product && user&.bookmarks&.exists?(product_id: product.id, product_variant_id: variant_id)
-  end
-
-  def user_has_previously_owned?(user, product, variant_id = nil)
-    product && user&.possessions&.exists?(
-      product_id: product.id,
-      product_variant_id: variant_id,
-      prev_owned: true
-    )
-  end
-
   def user_has_brand?(user, brand, prev_owned)
     return false unless brand && user
 

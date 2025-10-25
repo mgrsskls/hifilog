@@ -181,7 +181,7 @@
 
 <div class="Product-action<%= " EntityPossession EntityPossession--bookmark" if bookmark && current_user.bookmark_lists.length > 0 %>">
   <% if bookmark %>
-    <%= button_to bookmark_path(bookmark), method: :delete, class: "Button Button--loadingIcon", "aria-pressed": "true" do %>
+    <%= button_to bookmark_path(bookmark, redirect_to: variant_id.present? ? product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : product_path(id: @product.friendly_id)), method: :delete, class: "Button Button--loadingIcon", "aria-pressed": "true" do %>
       <span class="u-flex u-alignCenter u-gap-sm">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.6 3.32c1.1.13 1.9 1.08 1.9 2.19V21L12 17.25 4.5 21V5.5c0-1.1.8-2.05 1.9-2.18a48.5 48.5 0 0 1 11.2 0Z"/></svg>
         <%= t('symbols.in_your_bookmarks') %>

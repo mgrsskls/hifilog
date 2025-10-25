@@ -48,7 +48,7 @@ class BookmarkListsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     get dashboard_bookmark_list_url(@bookmark_list), params: {
-      category: @bookmark_list.bookmarks.first.product.sub_categories.first.slug
+      category: products(:one).sub_categories.first.slug
     }
     assert_response :success
   end

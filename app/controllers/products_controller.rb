@@ -70,7 +70,7 @@ class ProductsController < ApplicationController
                                  .where(product_id: @product.id, product_variant_id: nil)
                                  .order([:prev_owned, :period_from, :period_to, :created_at])
                                  .map { |possession| map_possession_to_presenter(possession) }
-      @bookmark = current_user.bookmarks.find_by(product_id: @product.id, product_variant_id: nil)
+      @bookmark = current_user.bookmarks.find_by(item_id: @product.id, item_type: 'Product')
       @note = current_user.notes.find_by(product_id: @product.id, product_variant_id: nil)
       @setups = current_user.setups.includes(:possessions)
     end

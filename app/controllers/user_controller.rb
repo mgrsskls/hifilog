@@ -32,8 +32,8 @@ class UserController < ApplicationController
     @active_dashboard_menu = :bookmarks
 
     all_bookmarks = current_user.bookmarks
-                                .includes([product: [{ sub_categories: :category }, :brand]])
-                                .includes([:product_variant])
+                                .includes({ item: [{ sub_categories: [:category] }, :brand] })
+                                .order(:created_at).map { |bookmark| BookmarkPresenter.new(bookmark) }
 
     bookmarks = all_bookmarks
 
@@ -41,18 +41,17 @@ class UserController < ApplicationController
       sub_cat = SubCategory.friendly.find(params[:category])
 
       if sub_cat
-        bookmarks = bookmarks.where({ product: { products_sub_categories: { sub_category_id: sub_cat.id } } })
-                             .order(['brand.name', 'LOWER(product.name)'])
+        bookmarks =
+          bookmarks.select do |bookmark|
+            bookmark.product.sub_categories.include?(sub_cat)
+          end
         @sub_category = sub_cat
-      else
-        bookmarks = bookmarks.order(['brand.name', 'LOWER(products.name)'])
       end
-    else
-      bookmarks = bookmarks.order(['brand.name', 'LOWER(products.name)'])
     end
 
-    @bookmarks = bookmarks.map { |bookmark| BookmarkPresenter.new(bookmark) }
+    @bookmarks = bookmarks
     @bookmark_lists = current_user.bookmark_lists
+    @custom_attributes_for_products = CustomAttribute.all
 
     @categories = get_grouped_sub_categories(bookmarks: all_bookmarks)
   end
@@ -127,6 +126,9 @@ class UserController < ApplicationController
   end
 
   def has
+    bookmarks = current_user.bookmarks
+                            .includes({ item: [{ sub_categories: [:category] }, :brand] })
+
     if params[:brands].present?
       possessions = current_user.possessions
                                 .includes([product: [:brand]])
@@ -142,6 +144,7 @@ class UserController < ApplicationController
           previously_owned: possessions.any? do |possession|
             possession.product.brand.id == brand_id.to_i && possession.prev_owned == true
           end,
+          bookmarked: false
         }
       end
     end
@@ -160,6 +163,9 @@ class UserController < ApplicationController
           previously_owned: possessions.any? do |possession|
             possession.product.id == product_id.to_i && possession.prev_owned == true
           end,
+          bookmarked: bookmarks.any? do |bookmark|
+            bookmark.item_id == product_id.to_i && bookmark.item_type == 'Product'
+          end,
         }
       end
     end
@@ -177,6 +183,9 @@ class UserController < ApplicationController
           end,
           previously_owned: possessions.any? do |possession|
             possession.product_variant.id == product_variant_id.to_i && possession.prev_owned == true
+          end,
+          bookmarked: bookmarks.any? do |bookmark|
+            bookmark.item_id == product_variant_id.to_i && bookmark.item_type == 'ProductVariant'
           end,
         }
       end

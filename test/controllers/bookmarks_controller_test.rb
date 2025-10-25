@@ -21,7 +21,7 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
 
   test 'create with product variant' do
     user = users(:one)
-    product_variant = product_variants(:one)
+    product_variant = product_variants(:two)
     bookmarks_count = user.bookmarks.count
 
     post bookmarks_path(product_variant_id: product_variant.id)
@@ -43,7 +43,6 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
   test 'destroy with product' do
     user = users(:one)
     bookmark = user.bookmarks.first
-    product = bookmark.product
     bookmarks_count = user.bookmarks.count
 
     delete bookmark_path(bookmark)
@@ -56,14 +55,13 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal bookmarks_count - 1, user.bookmarks.count
     assert_response :redirect
-    assert_redirected_to product_url(id: product.friendly_id)
+    assert_redirected_to dashboard_bookmarks_path
   end
 
   test 'destroy with product variant' do
     user = users(:one)
-    product_variant = product_variants(:one)
-    product = product_variant.product
-    bookmark = Bookmark.new(product:, product_variant:)
+    product_variant = product_variants(:two)
+    bookmark = Bookmark.new(item_id: product_variant.id, item_type: 'ProductVariant')
     user.bookmarks << bookmark
     user.save!
 
@@ -79,9 +77,6 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal bookmarks_count - 1, user.bookmarks.count
     assert_response :redirect
-    assert_redirected_to product_variant_url(
-      id: bookmark.product_variant.friendly_id,
-      product_id: bookmark.product.friendly_id
-    )
+    assert_redirected_to dashboard_bookmarks_path
   end
 end

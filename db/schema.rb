@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_25_124916) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_25_181858) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -123,13 +123,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_25_124916) do
 
   create_table "bookmarks", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "product_variant_id"
     t.bigint "bookmark_list_id"
+    t.bigint "item_id"
+    t.string "item_type"
     t.index ["bookmark_list_id"], name: "index_bookmarks_on_bookmark_list_id"
-    t.index ["product_id", "user_id", "product_variant_id"], name: "idx_on_product_id_user_id_product_variant_id_24cc95bae4", unique: true
+    t.index ["user_id", "item_type", "item_id"], name: "index_bookmarks_on_user_item_type_and_item_id", unique: true
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
 
@@ -424,8 +424,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_25_124916) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bookmark_lists", "users"
-  add_foreign_key "bookmarks", "product_variants"
-  add_foreign_key "bookmarks", "products"
   add_foreign_key "bookmarks", "users"
   add_foreign_key "custom_products", "users"
   add_foreign_key "event_attendees", "events"
@@ -468,9 +466,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_25_124916) do
       brands.name AS brand_name,
       'Product'::text AS item_type,
       products.id AS product_id,
-      NULL::citext AS variant_name,
+      NULL::bigint AS product_variant_id,
+      NULL::text AS variant_name,
       NULL::text AS variant_description,
-      NULL::character varying AS variant_slug,
+      NULL::text AS variant_slug,
       array_agg(DISTINCT sub_categories.name) AS sub_category_names
      FROM (((products
        LEFT JOIN brands ON ((brands.id = products.brand_id)))
@@ -498,6 +497,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_25_124916) do
       brands.name AS brand_name,
       'ProductVariant'::text AS item_type,
       product_variants.product_id,
+      product_variants.id AS product_variant_id,
       product_variants.name AS variant_name,
       product_variants.description AS variant_description,
       product_variants.slug AS variant_slug,

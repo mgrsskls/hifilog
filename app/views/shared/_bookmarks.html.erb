@@ -36,16 +36,44 @@
     </div>
   <% end %>
 
-  <%= render "shared/products",
-    items: bookmarks,
-    empty_state: t('empty_state.bookmarks'),
-    delete_button_label: delete_button_label,
-    delete_confirm_msg: delete_confirm_msg,
-    delete_dialog: delete_dialog,
-    remove_entity_partial: "shared/remove_bookmark_from_bookmark_list",
-    hide_since: true,
-    hide_period: true
-  %>
+  <% if bookmarks.any? %>
+    <ol class="EntityList EntityList--products">
+      <% bookmarks.each do |bookmark| %>
+        <li class="EntityList-item is-<%= bookmark.product.discontinued? ? "discontinued" : "continued" %> Bookmark">
+          <%= render layout: "shared/product_item", locals: {
+            product: bookmark.product,
+            name: bookmark.product.name,
+            path: bookmark.product.path,
+            brand: bookmark.product.brand,
+            model_no: bookmark.product.model_no,
+            variant_name: bookmark.product_variant.present? ? bookmark.product_variant.name : nil,
+            item_type: bookmark.item_type,
+            diy_kit: bookmark.product.diy_kit?,
+            sub_category_names: bookmark.product.sub_category_names,
+            custom_attributes: bookmark.product.custom_attributes
+          } do %>
+            <div class="Bookmark-footer u-flex u-gap-lg u-spaceBetween u-alignCenter">
+              <small class="c-secondary"><%= Product.model_name.human(count: 1) %></small>
+
+              <ul class="MetaLinks">
+                <li>
+                  <% if delete_dialog %>
+                    <%= render "shared/remove_bookmark_from_bookmark_list", possession: bookmark, id: bookmark.id %>
+                  <% else %>
+                    <%= button_to bookmark_path(id: bookmark.id, redirect: dashboard_bookmarks_path), method: :delete, class: "DeleteButton", "data-msg": bookmark.delete_confirm_msg do %>
+                      <small><%= bookmark.delete_button_label %></small>
+                    <% end %>
+                  <% end %>
+                </li>
+              </ul>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.bookmarks') %>
+  <% end %>
 
   <% if bookmark_list %>
     <div class="PageActions">

@@ -10,37 +10,31 @@ class BookmarkListsController < InheritedResources::Base
     @page_title = Bookmark.model_name.human(count: 2)
     @active_dashboard_menu = :bookmarks
 
-    @all_bookmarks = current_user.bookmarks
-                                 .includes([product: [:brand]])
-                                 .includes([:product_variant])
-                                 .includes([:bookmark_list])
-                                 .order(['brand.name', 'LOWER(products.name)'])
-                                 .map { |bookmark| BookmarkPresenter.new(bookmark) }
+    all_bookmarks = current_user.bookmarks
+                                .includes({ item: [{ sub_categories: [:category] }, :brand] })
+                                .order(:created_at)
 
-    all_bookmarks_in_list = current_user.bookmarks
-                                        .where(bookmark_list_id: @bookmark_list.id)
-                                        .includes([product: [{ sub_categories: :category }, :brand]])
-                                        .includes([:product_variant])
-
-    bookmarks = all_bookmarks_in_list
+    bookmarks = all_bookmarks.select { |bookmark| bookmark.bookmark_list_id == @bookmark_list.id }
+                             .map { |bookmark| BookmarkPresenter.new(bookmark) }
 
     if params[:category].present?
       sub_cat = SubCategory.friendly.find(params[:category])
 
       if sub_cat
-        bookmarks = bookmarks.where({ product: { products_sub_categories: { sub_category_id: sub_cat.id } } })
-                             .order(['brand.name', 'LOWER(product.name)'])
+        bookmarks =
+          bookmarks.select do |bookmark|
+            bookmark.product.sub_categories.include?(sub_cat)
+          end
         @sub_category = sub_cat
-      else
-        bookmarks = bookmarks.order(['brand.name', 'LOWER(products.name)'])
       end
-    else
-      bookmarks = bookmarks.order(['brand.name', 'LOWER(products.name)'])
     end
 
-    @bookmarks = bookmarks.map { |bookmark| BookmarkPresenter.new(bookmark) }
+    @all_bookmarks = all_bookmarks.map { |bookmark| BookmarkPresenter.new(bookmark) }
+    @bookmarks = bookmarks
+    @bookmark_lists = current_user.bookmark_lists
+    @custom_attributes_for_products = CustomAttribute.all
 
-    @categories = get_grouped_sub_categories(bookmarks: all_bookmarks_in_list)
+    @categories = get_grouped_sub_categories(bookmarks: @all_bookmarks)
   end
 
   def new

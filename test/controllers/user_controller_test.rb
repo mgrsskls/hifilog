@@ -110,16 +110,17 @@ class UserControllerTest < ActionDispatch::IntegrationTest
 
     res = JSON.parse(@response.body)
     assert_equal [
-      { 'id' => brands(:one).id, 'in_collection' => true, 'previously_owned' => false },
-      { 'id' => brands(:two).id, 'in_collection' => false, 'previously_owned' => true }
+      { 'id' => brands(:one).id, 'in_collection' => true, 'previously_owned' => false, 'bookmarked' => false },
+      { 'id' => brands(:two).id, 'in_collection' => false, 'previously_owned' => true, 'bookmarked' => false }
     ], res['brands']
     assert_equal [
-      { 'id' => products(:one).id, 'in_collection' => true, 'previously_owned' => false },
-      { 'id' => products(:two).id, 'in_collection' => false, 'previously_owned' => true }
+      { 'id' => products(:one).id, 'in_collection' => true, 'previously_owned' => false, 'bookmarked' => true },
+      { 'id' => products(:two).id, 'in_collection' => false, 'previously_owned' => true, 'bookmarked' => false }
     ], res['products']
     assert_equal [
-      { 'id' => product_variants(:one).id, 'in_collection' => true, 'previously_owned' => false },
-      { 'id' => product_variants(:two).id, 'in_collection' => false, 'previously_owned' => true }
+      { 'id' => product_variants(:one).id, 'in_collection' => true, 'previously_owned' => false,
+        'bookmarked' => true },
+      { 'id' => product_variants(:two).id, 'in_collection' => false, 'previously_owned' => true, 'bookmarked' => false }
     ], res['product_variants']
     assert_response :success
   end

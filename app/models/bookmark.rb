@@ -1,10 +1,9 @@
 class Bookmark < ApplicationRecord
   belongs_to :user
-  belongs_to :product
-  belongs_to :product_variant, optional: true
+  belongs_to :item, polymorphic: true
   belongs_to :bookmark_list, optional: true
 
-  validates :product_id, uniqueness: { scope: [:user_id, :product_variant_id] }
+  validates :item_id, uniqueness: { scope: [:user_id, :item_type] }
 
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)

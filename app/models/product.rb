@@ -40,6 +40,7 @@ class Product < ApplicationRecord
   has_many :product_variants, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_many :product_options, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy, as: :item
 
   friendly_id :url_slug, use: [:slugged, :history]
 
@@ -142,6 +143,10 @@ class Product < ApplicationRecord
 
     Date.new(discontinued_year.to_i, discontinued_month.present? ? discontinued_month.to_i : 1,
              discontinued_day.present? ? discontinued_day.to_i : 1)
+  end
+
+  def sub_category_names
+    sub_categories.map(&:name)
   end
 
   # :nocov:

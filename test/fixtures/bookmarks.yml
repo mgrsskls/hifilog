@@ -2,10 +2,11 @@
 
 with_product:
   user: one
-  product: one
+  item_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  item_type: Product
   bookmark_list: one
 
 with_product_variant:
   user: one
-  product: two
-  product_variant: one
+  item_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  item_type: ProductVariant

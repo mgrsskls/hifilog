@@ -1,5 +1,7 @@
 <% redirect_to ||= nil %>
-<button class="u-textUnderline" data-dialog="dialog-<%= id %>"><%= t('bookmark_list.remove_bookmark.label') %></button>
+<button class="u-textUnderline" data-dialog="dialog-<%= id %>">
+  <small><%= t('bookmark_list.remove_bookmark.label') %></small>
+</button>
 
 <dialog id="dialog-<%= id %>">
   <%= sanitize t('bookmark_list.remove_bookmark.confirm', name: possession.display_name), tags: ['b'] %>
