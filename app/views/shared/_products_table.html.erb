@@ -5,7 +5,7 @@
   <% products.each do |product| %>
     <li class="EntityList-item is-<%= product.discontinued? ? "discontinued" : "continued" %>">
       <%= render "shared/product_item",
-        product: product,
+        item: product,
         name: product.name,
         path: product.path,
         brand: product.brand,

@@ -16,6 +16,18 @@ class BookmarkPresenter
     end
   end
 
+  def discontinued?
+    if @event.present?
+      return Time.zone.now > @event.end_date if @event.end_date.present?
+
+      return Time.zone.now > @event.start_date
+    end
+
+    return @product_variant.discontinued? if @product_variant.present?
+
+    @product.discontinued?
+  end
+
   def display_name
     return @product.display_name if @product.present?
     return @product_variant.display_name if @product_variant.present?

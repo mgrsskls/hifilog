@@ -20,7 +20,7 @@
         </span>
       <% end %>
     </div>
-    <%= render "shared/symbols", item: product, type: item_type %>
+    <%= render "shared/symbols", item:, type: item_type %>
   </div>
 </div>
 
@@ -31,7 +31,7 @@
         <%= t('activerecord.attributes.product.diy_kit') %>
       </li>
     <% end %>
-    <% product.custom_attributes&.each do |custom_attribute| %>
+    <% item.custom_attributes&.each do |custom_attribute| %>
       <% active_record = @custom_attributes_for_products.find { |ca| ca.label == custom_attribute[0] } %>
       <% if active_record&.highlighted? %>
         <% if active_record.inputs.size < 2 %>
@@ -63,29 +63,29 @@
   </ul>
 <% end %>
 
-<% if !hide_category || product.formatted_release_date.present? || product.formatted_discontinued_date.present? || product.price.present? %>
+<% if !hide_category || item.formatted_release_date.present? || item.formatted_discontinued_date.present? || item.price.present? %>
   <dl class="EntityList-data Data">
     <% unless hide_category %>
       <dt><%= Category.model_name.human %></dt>
       <dd><%= sub_category_names.join(", ") %></dd>
     <% end %>
 
-    <% if product.formatted_release_date.present? || product.formatted_discontinued_date.present? %>
+    <% if item.formatted_release_date.present? || item.formatted_discontinued_date.present? %>
       <dt><%= t('activerecord.attributes.product.release_date') %></dt>
       <dd>
-        <% if product.formatted_release_date.present? && product.formatted_discontinued_date.present? %>
-          <%= sanitize(product.formatted_release_date) %> &ndash; <%= sanitize(product.formatted_discontinued_date) %>
-        <% elsif product.formatted_discontinued_date.present? %>
-          n/a &ndash; <%= sanitize(product.formatted_discontinued_date) %>
-        <% elsif product.formatted_release_date.present? %>
-          <%= sanitize(product.formatted_release_date) %>
+        <% if item.formatted_release_date.present? && item.formatted_discontinued_date.present? %>
+          <%= sanitize(item.formatted_release_date) %> &ndash; <%= sanitize(item.formatted_discontinued_date) %>
+        <% elsif item.formatted_discontinued_date.present? %>
+          n/a &ndash; <%= sanitize(item.formatted_discontinued_date) %>
+        <% elsif item.formatted_release_date.present? %>
+          <%= sanitize(item.formatted_release_date) %>
         <% end %>
       </dd>
     <% end %>
 
-    <% if product.price.present? %>
+    <% if item.price.present? %>
       <dt><%= t('activerecord.attributes.product.price') %></dt>
-      <dd><%= display_price(product.price, product.price_currency) %></dd>
+      <dd><%= display_price(item.price, item.price_currency) %></dd>
     <% end %>
   </dl>
 <% end %>
