@@ -7,11 +7,11 @@ ActiveAdmin.register Bookmark do
     selectable_column
     id_column
     column :user
-    column "Product" do |note|
-      if note.product_variant.present?
-        note.product_variant
+    column "Product" do |bookmark|
+      if bookmark.item_type == 'ProductVariant'
+        ProductVariant.find(bookmark.item_id)
       else
-        note.product
+        Product.find(bookmark.item_id)
       end
     end
     column "Created", sortable: :created_at do |entity|

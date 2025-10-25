@@ -3,6 +3,7 @@ ActiveAdmin.register Product do
 
   menu priority: 3
 
+  remove_filter :bookmarks
   remove_filter :created_at
   remove_filter :updated_at
   remove_filter :description
