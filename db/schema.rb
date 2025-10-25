@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_24_180606) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_25_124916) do
   create_schema "_heroku"
   create_schema "heroku_ext"
 
@@ -261,15 +261,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_24_180606) do
     t.index ["user_id", "product_id", "product_variant_id"], name: "index_notes_on_user_id_and_product_id_and_product_variant_id", unique: true
   end
 
-  create_table "pg_search_documents", force: :cascade do |t|
-    t.text "content"
-    t.string "searchable_type"
-    t.bigint "searchable_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
-  end
-
   create_table "possessions", force: :cascade do |t|
     t.bigint "product_id"
     t.bigint "user_id", null: false
@@ -517,5 +508,79 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_24_180606) do
        LEFT JOIN products_sub_categories psc ON ((psc.product_id = products.id)))
        LEFT JOIN sub_categories ON ((sub_categories.id = psc.sub_category_id)))
     GROUP BY product_variants.id, products.name, products.description, product_variants.discontinued, products.slug, product_variants.release_day, product_variants.release_month, product_variants.release_year, product_variants.price, product_variants.price_currency, product_variants.discontinued_year, product_variants.discontinued_month, product_variants.discontinued_day, product_variants.diy_kit, product_variants.model_no, products.custom_attributes, products.brand_id, brands.name, product_variants.product_id, product_variants.name, product_variants.description, product_variants.slug;
+  SQL
+  create_view "product_items_view", sql_definition: <<-SQL
+      SELECT p.id AS item_id,
+      'Product'::text AS item_type,
+      p.name AS product_name,
+      NULL::text AS product_variant_name,
+      b.name AS brand_name,
+      p.model_no,
+      p.price
+     FROM (products p
+       JOIN brands b ON ((b.id = p.brand_id)))
+  UNION ALL
+   SELECT pv.id AS item_id,
+      'ProductVariant'::text AS item_type,
+      p.name AS product_name,
+      pv.name AS product_variant_name,
+      b.name AS brand_name,
+      pv.model_no,
+      pv.price
+     FROM ((product_variants pv
+       JOIN products p ON ((pv.product_id = p.id)))
+       JOIN brands b ON ((b.id = p.brand_id)))
+  UNION ALL
+   SELECT b.id AS item_id,
+      'Brand'::text AS item_type,
+      NULL::text AS product_name,
+      NULL::text AS product_variant_name,
+      b.name AS brand_name,
+      NULL::text AS model_no,
+      NULL::numeric AS price
+     FROM brands b;
+  SQL
+  create_view "search_results", sql_definition: <<-SQL
+      SELECT ('Product-'::text || (p.id)::text) AS id,
+      p.id AS item_id,
+      'Product'::text AS item_type,
+      p.name AS product_name,
+      NULL::text AS product_variant_name,
+      b.name AS brand_name,
+      b.full_name AS brand_full_name,
+      p.model_no,
+      p.slug AS product_slug,
+      NULL::text AS product_variant_slug,
+      b.slug AS brand_slug
+     FROM (products p
+       JOIN brands b ON ((b.id = p.brand_id)))
+  UNION ALL
+   SELECT ('Variant-'::text || (pv.id)::text) AS id,
+      pv.id AS item_id,
+      'ProductVariant'::text AS item_type,
+      p.name AS product_name,
+      pv.name AS product_variant_name,
+      b.name AS brand_name,
+      b.full_name AS brand_full_name,
+      pv.model_no,
+      p.slug AS product_slug,
+      pv.slug AS product_variant_slug,
+      b.slug AS brand_slug
+     FROM ((product_variants pv
+       JOIN products p ON ((pv.product_id = p.id)))
+       JOIN brands b ON ((b.id = p.brand_id)))
+  UNION ALL
+   SELECT ('Brand-'::text || (b.id)::text) AS id,
+      b.id AS item_id,
+      'Brand'::text AS item_type,
+      NULL::text AS product_name,
+      NULL::text AS product_variant_name,
+      b.name AS brand_name,
+      b.full_name AS brand_full_name,
+      NULL::text AS model_no,
+      NULL::text AS product_slug,
+      NULL::text AS product_variant_slug,
+      b.slug AS brand_slug
+     FROM brands b;
   SQL
 end

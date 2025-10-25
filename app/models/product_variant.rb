@@ -15,12 +15,19 @@ class ProductVariant < ApplicationRecord
   auto_strip_attributes :name, squish: true
   auto_strip_attributes :description
 
-  multisearchable against: [
-    :name,
-    :model_no,
-    :description,
-    :release_year
-  ]
+  pg_search_scope :search_by_name,
+                  against: { name: 'A', model_no: 'B' },
+                  ignoring: :accents,
+                  using: {
+                    tsearch: {
+                      any_word: false,
+                      prefix: true,
+                    },
+                    trigram: {
+                      threshold: 0.2
+                    },
+                  },
+                  ranked_by: ':trigram'
 
   has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
