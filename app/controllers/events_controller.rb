@@ -3,8 +3,8 @@ class EventsController < ApplicationController
     all_events = Event.where(end_date: Time.zone.today..).or(Event.where(start_date: Time.zone.today.., end_date: nil))
     get_events(all_events:, order: :asc)
     @all_upcoming_events_count = all_events.size
-    @all_past_events_count = Event.where(end_date: ..Time.zone.today)
-                                  .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
+    @all_past_events_count = Event.where(end_date: ..Time.zone.yesterday)
+                                  .or(Event.where(start_date: ..Time.zone.yesterday, end_date: nil))
                                   .size
     @page_title = 'Hi-Fi Events &amp; Shows'
     @meta_desc = 'Find all upcoming hi-fi events and shows on HiFi Log,
@@ -15,7 +15,8 @@ a user-driven database for hi-fi products, brands and more.'
   end
 
   def past
-    all_events = Event.where(end_date: ..Time.zone.today).or(Event.where(start_date: ..Time.zone.today, end_date: nil))
+    all_events = Event.where(end_date: ..Time.zone.yesterday).or(Event.where(start_date: ..Time.zone.yesterday,
+                                                                             end_date: nil))
     get_events(all_events:, order: :desc)
     @all_upcoming_events_count = Event.where(end_date: Time.zone.today..)
                                       .or(Event.where(start_date: Time.zone.today.., end_date: nil))
