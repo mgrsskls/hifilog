@@ -3,24 +3,27 @@ class BookmarkPresenter
 
   delegate_missing_to :@object
 
-  attr_reader :product, :product_variant
+  attr_reader :product, :product_variant, :event
 
   def initialize(object)
     @object = object
 
-    if object.item_type == 'ProductVariant'
+    case object.item_type
+    when 'ProductVariant'
       @product_variant = object.item
       @product = object.item.product
-    elsif object.item_type == 'Product'
+    when 'Product'
       @product = object.item
+    when 'Event'
+      @event = object.item
     end
   end
 
   def discontinued?
     if @event.present?
-      return Time.zone.now > @event.end_date if @event.end_date.present?
+      return Time.zone.today > @event.end_date if @event.end_date.present?
 
-      return Time.zone.now > @event.start_date
+      return Time.zone.today > @event.start_date
     end
 
     return @product_variant.discontinued? if @product_variant.present?

@@ -2,29 +2,27 @@
 
 <ol class="EntityList EntityList--brands">
   <% brands.each do |brand| %>
-    <li class="EntityList-item<% if brand.discontinued? %> is-discontinued <% elsif brand.continued? %> is-continued<% end %>">
-        <div class="EntityList-name">
-          <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
-            <div>
-              <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id) %>
-              <% if brand.full_name.present? %>
-                <span class="EntityList-modelName">
-                  <%= brand.full_name %>
-                </span>
-              <% end %>
-            </div>
-            <%= render "shared/symbols", item: brand, type: 'Brand' %>
-          </div>
-        </div>
+    <li class="EntityList-item">
+      <% main = capture do %>
+        <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id), class: "EntityListItem-name" %>
+        <% if brand.full_name.present? %>
+          <span class="EntityListItem-modelName">
+            <%= brand.full_name %>
+          </span>
+        <% end %>
+      <% end %>
 
+      <% content = capture do %>
         <% if brand.categories.any? %>
-          <ul class="EntityList-tags">
+          <ul class="EntityListItem-tags">
             <% brand.categories.each do |category| %>
             <li class="Tag"><%= category.name %></li>
             <% end %>
           </ul>
         <% end %>
+      <% end %>
 
+      <% actions = capture do %>
         <div class="u-flex u-spaceBetween u-gap-lg">
           <div class="EntityList-productsCount">
             <% count = product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0) %>
@@ -38,7 +36,16 @@
             </div>
           <% end %>
         </div>
+      <% end %>
 
+      <%= render "shared/entity_list_item",
+        item: brand,
+        item_type: 'Brand',
+        is_discontinued: brand.discontinued?,
+        main:,
+        content:,
+        actions:
+      %>
     </li>
   <% end %>
 </ol>

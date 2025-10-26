@@ -11,7 +11,14 @@ class EventAttendeesController < ApplicationController
     flash[:alert] = I18n.t(:generic_error_message) unless @event_attendee.save
 
     anchor = "event-#{@event.id}"
-    redirect_to params[:past] == 'true' ? past_events_path(anchor:) : events_path(anchor:)
+
+    case params[:redirect]
+    when 'dashboard_bookmarks' then redirect_to dashboard_bookmarks_path(anchor:)
+    when 'dashboard_events' then redirect_to dashboard_events_path(anchor:)
+    when 'dashboard_past_events' then redirect_to dashboard_past_events_path(anchor:)
+    when 'past_events' then redirect_to past_events_path(anchor:)
+    else redirect_to events_path(anchor:)
+    end
   end
 
   def destroy
@@ -26,6 +33,7 @@ class EventAttendeesController < ApplicationController
     end
 
     case params[:redirect]
+    when 'dashboard_bookmarks' then redirect_to dashboard_bookmarks_path
     when 'dashboard_events' then redirect_to dashboard_events_path
     when 'dashboard_past_events' then redirect_to dashboard_past_events_path
     when 'past_events' then redirect_to past_events_path

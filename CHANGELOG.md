@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-10-26">2025-07-26</time>
+
+- Users can now bookmark events.
+
 ## <time datetime="2025-10-21">2025-07-21</time>
 
 - Users can now indicate that they will attend an event.

@@ -159,39 +159,40 @@
     <ol class="EntityList EntityList--products u-breakpoint-item-s">
       <% items.each do |item| %>
         <li class="EntityList-item">
-          <div class="u-flex u-gap-md">
+          <div class="EntityListItem">
+            <div class="u-flex u-gap-md">
 
-            <% if include_images %>
-              <div class="EntityList-image">
-                <% if include_image_upload %>
-                  <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
-                <% else %>
-                  <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
+              <% if include_images %>
+                <div class="EntityList-image">
+                  <% if include_image_upload %>
+                    <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
+                  <% else %>
+                    <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <div class="EntityListItem-main">
+                <% unless hide_brand %>
+                  <span class="EntityListItem-brandName">
+                    <%= item.brand_name %>
+                  </span>
+                <% end %>
+                <a href="<%= item.show_path %>" class="EntityListItem-name">
+                  <%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %>
+                </a>
+                <% if item.product_option.present? || item.model_no.present? %>
+                  <small class="EntityListItem-modelName">
+                    <%= item.model_no if item.model_no.present? %>
+                    <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
+                    <%= item.product_option.option if item.product_option.present? %>
+                  </small>
                 <% end %>
               </div>
-            <% end %>
 
-            <div class="EntityList-name">
-              <% unless hide_brand %>
-                <span class="EntityList-brandName">
-                  <%= item.brand_name %>
-                </span>
-              <% end %>
-              <a href="<%= item.show_path %>">
-                <%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %>
-              </a>
-              <% if item.product_option.present? || item.model_no.present? %>
-                <small class="EntityList-modelName">
-                  <%= item.model_no if item.model_no.present? %>
-                  <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
-                  <%= item.product_option.option if item.product_option.present? %>
-                </small>
-              <% end %>
             </div>
 
-          </div>
-
-            <dl class="EntityList-data Data">
+            <dl class="EntityListItem-data Data">
               <dt><%= Category.model_name.human %></dt>
               <dd>
                 <% if item.sub_categories.any? %>
@@ -240,7 +241,7 @@
                 <dd><%= item.setup.name %></dd>
               <% end %>
             </dl>
-            <div class="EntityList-metaLinks">
+            <div class="EntityListItem-footer EntityListItem-metaLinks">
               <ul class="MetaLinks">
                 <% if include_edit_link %>
                   <li><%= link_to "Edit", item.edit_path %></li>
@@ -259,6 +260,7 @@
                 </li>
               </ul>
 
+            </div>
           </div>
         </li>
       <% end %>

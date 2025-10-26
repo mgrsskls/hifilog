@@ -33,7 +33,7 @@ class UserController < ApplicationController
 
     all_bookmarks = current_user.bookmarks
                                 .includes({ item: [{ sub_categories: [:category] }, :brand] })
-                                .order(:created_at).map { |bookmark| BookmarkPresenter.new(bookmark) }
+                                .order(created_at: :desc).map { |bookmark| BookmarkPresenter.new(bookmark) }
 
     bookmarks = all_bookmarks
 
@@ -52,8 +52,12 @@ class UserController < ApplicationController
     @bookmarks = bookmarks
     @bookmark_lists = current_user.bookmark_lists
     @custom_attributes_for_products = CustomAttribute.all
+    @bookmarks_after_create_redirect = :dashboard_bookmarks
+    @bookmarks_after_destroy_redirect = :dashboard_bookmarks
 
-    @categories = get_grouped_sub_categories(bookmarks: all_bookmarks)
+    @categories = get_grouped_sub_categories(bookmarks: all_bookmarks.reject do |bookmark|
+      bookmark.item_type == 'Event'
+    end)
   end
 
   def events
@@ -71,6 +75,7 @@ class UserController < ApplicationController
                                          .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
                                          .size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.upcoming', path: events_path)
+    @after_create_redirect = :dashboard_events
     @after_destroy_redirect = :dashboard_events
   end
 
@@ -191,10 +196,30 @@ class UserController < ApplicationController
       end
     end
 
+    if params[:events].present?
+      attendedances = current_user.event_attendees.where(event: params[:events])
+
+      events = params[:events].map do |event_id|
+        {
+          id: event_id.to_i,
+          in_collection: attendedances.any? do |attendance|
+            attendance.event.id == event_id.to_i && attendance.event.discontinued? == false
+          end,
+          previously_owned: attendedances.any? do |attendance|
+            attendance.event.id == event_id.to_i && attendance.event.discontinued? == true
+          end,
+          bookmarked: bookmarks.any? do |bookmark|
+            bookmark.item_type == 'Event' && bookmark.item_id == event_id.to_i
+          end,
+        }
+      end
+    end
+
     render json: {
       brands:,
       products:,
       product_variants:,
+      events:
     }
   end
 

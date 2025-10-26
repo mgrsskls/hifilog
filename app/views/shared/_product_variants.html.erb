@@ -54,27 +54,22 @@
       </tbody>
     </table>
     <ol class="EntityList EntityList--products u-breakpoint-item-s">
-      <li class="EntityList-item is-<%= product.discontinued? ? "discontinued" : "continued" %>"<%= " aria-current=true" if current == product %>>
+      <li class="EntityList-item">
+        <% main = capture do %>
+          <%= link_to product.name, product_path(id: product.friendly_id), class: "EntityListItem-name" %>
+          <span class="EntityListItem-modelName">Initial / Stock version</span>
+        <% end %>
 
-          <div class="EntityList-name">
-            <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
-              <div>
-                <%= link_to product.name, product_path(id: product.friendly_id) %>
-                <span class="EntityList-modelName">Initial / Stock version</span>
-              </div>
-              <%= render "shared/symbols", item: product, type: 'Product' %>
-            </div>
-          </div>
-
+        <% content = capture do %>
           <% if product.diy_kit? %>
-            <ul class="EntityList-tags">
+            <ul class="EntityListItem-tags">
               <li class="Tag">
                 <%= t('activerecord.attributes.product.diy_kit') %>
               </li>
             </ul>
           <% end %>
 
-          <dl class="EntityList-data Data">
+          <dl class="EntityListItem-data Data">
             <% if product.release_date.present? %>
               <dt><%= t('activerecord.attributes.product.release_date') %></dt>
               <dd><%= format_date(product.release_date).html_safe %></dd>
@@ -85,34 +80,39 @@
               <dd><%= display_price(product.price, product.price_currency) %></dd>
             <% end %>
           </dl>
+        <% end %>
 
+        <%= render "shared/entity_list_item",
+          item: product,
+          item_type: 'Product',
+          is_discontinued: product.discontinued?,
+          is_current: current == product,
+          main:,
+          content:
+        %>
       </li>
       <% product.product_variants.order(:release_year, :release_month, :release_day).each do |product_variant| %>
-        <li class="EntityList-item is-<%= product_variant.discontinued? ? "discontinued" : "continued" %>"<%= " aria-current=true" if current == product_variant %>>
+        <li class="EntityList-item">
+          <% main = capture do %>
+            <%= link_to product_variant.name_with_fallback, product_variant.path, class: "EntityListItem-name" %>
 
-            <div class="EntityList-name">
-              <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
-                <div>
-                  <%= link_to product_variant.name_with_fallback, product_variant.path %>
-                  <% if product_variant.description.present? %>
-                    <span class="EntityList-modelName">
-                      <%= product_variant.description %>
-                    </span>
-                  <% end %>
-                </div>
-
-              </div>
-            </div>
-
-          <% if product_variant.diy_kit? %>
-            <ul class="EntityList-tags">
-              <li class="Tag">
-                <%= t('activerecord.attributes.product.diy_kit') %>
-              </li>
-            </ul>
+            <% if product_variant.description.present? %>
+              <span class="EntityListItem-modelName">
+                <%= product_variant.description %>
+              </span>
+            <% end %>
           <% end %>
 
-            <dl class="EntityList-data Data">
+          <% content = capture do %>
+            <% if product_variant.diy_kit? %>
+              <ul class="EntityListItem-tags">
+                <li class="Tag">
+                  <%= t('activerecord.attributes.product.diy_kit') %>
+                </li>
+              </ul>
+            <% end %>
+
+            <dl class="EntityListItem-data Data">
               <% if product_variant.release_date.present? %>
                 <dt><%= t('activerecord.attributes.product.release_date') %></dt>
                 <dd><%= format_date(product_variant.release_date).html_safe %></dd>
@@ -123,8 +123,16 @@
                 <dd><%= display_price(product_variant.price, product_variant.price_currency) %></dd>
               <% end %>
             </dl>
-            <%= render "shared/symbols", item: product_variant, type: 'ProductVariant' %>
+          <% end %>
 
+          <%= render "shared/entity_list_item",
+            item: product_variant,
+            item_type: 'ProductVariant',
+            is_discontinued: product_variant.discontinued?,
+            is_current: current == product_variant,
+            main:,
+            content:
+          %>
         </li>
       <% end %>
     </ol>

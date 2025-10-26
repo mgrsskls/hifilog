@@ -1,0 +1,70 @@
+<% date_format ||= :short %>
+
+<% main = capture do %>
+  <span class="Event-days">
+    <% if date_format == :full %>
+      <%= humanize_date_range(event.start_date, event.end_date) %>
+    <% else %>
+      <time datetime="<%= event.start_date %>">
+        <%= event.start_date.strftime("%A") %> <%= event.start_date.strftime("%-d").to_i.ordinalize %>
+      </time>
+      <% if event.end_date.present? %> –
+        <time datetime="<%= event.end_date %>">
+          <%= event.end_date.strftime("%A") %> <%= event.end_date.strftime("%-d").to_i.ordinalize %>
+        </time>
+      <% end %>
+    <% end %>
+  </span>
+  <span class="EntityListItem-name">
+    <%= event.name %>
+  </span>
+<% end %>
+
+<% content = capture do %>
+  <div class="Event-content">
+    <address>
+      <p>
+        <%= event.address.gsub("\n", "<br>").html_safe if event.address.present? %><br><br>
+        <span class="u-flex u-gap-smd u-alignCenter">
+          <% country_name = country_name_from_country_code(event.country_code) %>
+          <img class="Flag" src="/flags/<%= event.country_code.downcase %>.svg" alt="Flag of <%= country_name %>" title="<%= country_name %>" loading="lazy" width="25">
+          <%= country_name %>
+        </span>
+      </p>
+    </address>
+    <% if event.url.present? %>
+      <p>
+        <a href="<%= event.url %>"><%= event.url %></a>
+      </p>
+    <% end %>
+  </div>
+<% end %>
+
+<% actions = capture do %>
+  <div class="Event-attend">
+    <div class="u-flex u-gap-md u-alignCenter">
+      <% if event.event_attendees.map(&:user).include?(current_user) %>
+        <%= button_to event_attendee_path(id: event.event_attendees.find_by(user: current_user).id, redirect: after_destroy_redirect, past: @active_events == :past), method: :delete, class: "Button Button--sm Button--accent Button--secondary Button--icon" do %>
+          <%= event.discontinued? ? "You attended" : "You attend" %>
+          <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+        <% end %>
+      <% else %>
+        <%= button_to event_attendees_path(event_id: event.id, past: @active_events == :past, redirect: after_create_redirect), class: "Button Button--sm Button--accent" do %>
+          <%= event.discontinued? ? 'I attended' : 'I attend' %>
+        <% end %>
+      <% end %>
+      <%= event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: event.event_attendees.size) %>
+    </div>
+
+    <%= yield %>
+  </div>
+<% end %>
+
+<%= render "shared/entity_list_item",
+  is_discontinued: event.discontinued?,
+  item: event,
+  item_type: 'Event',
+  main:,
+  content:,
+  actions:
+%>

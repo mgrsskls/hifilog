@@ -2,30 +2,41 @@ class BookmarksController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    @product_variant = ProductVariant.find(params[:product_variant_id]) if params[:product_variant_id].present?
+    if params[:product_variant_id].present?
+      @product_variant = ProductVariant.find(params[:product_variant_id])
+    elsif params[:product_id].present?
+      @product = Product.find(params[:product_id])
+    elsif params[:event_id].present?
+      @event = Event.find(params[:event_id])
+    end
 
     if @product_variant.present?
       @bookmark = current_user.bookmarks.new(
         item_id: @product_variant.id,
         item_type: 'ProductVariant'
       )
-    else
-      @product = Product.find(params[:product_id])
-
-      if @product.present?
-        @bookmark = current_user.bookmarks.new(
-          item_id: @product.id,
-          item_type: 'Product'
-        )
-      end
+    elsif @product.present?
+      @bookmark = current_user.bookmarks.new(
+        item_id: @product.id,
+        item_type: 'Product'
+      )
+    elsif @event.present?
+      @bookmark = current_user.bookmarks.new(
+        item_id: @event.id,
+        item_type: 'Event'
+      )
     end
 
     flash[:alert] = I18n.t(:generic_error_message) unless @bookmark.save
 
-    redirect_back_to_product(
-      product: @product,
-      product_variant: @product_variant,
-    )
+    if @event.present?
+      redirect_to events_path
+    else
+      redirect_back_to_product(
+        product: @product,
+        product_variant: @product_variant,
+      )
+    end
   end
 
   def update

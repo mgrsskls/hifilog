@@ -1,12 +1,12 @@
 .Symbols {
 	display: flex;
-	gap: 0.5rem;
-	min-inline-size: 1.5rem;
+	gap: 0.625em;
+	min-inline-size: 1.5em;
 	justify-content: flex-end;
+	font-size: 0.8125rem;
 }
 
 .Symbols-item {
-	flex: 0 0 var(--size);
 	display: flex;
 	align-items: center;
 	gap: 0.5em;
@@ -30,9 +30,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	block-size: 1.5rem;
-	inline-size: 1.5rem;
-	font-size: 0.8125rem;
+	block-size: 1.85em;
+	inline-size: 1.85em;
 	box-sizing: border-box;
 	line-height: 1;
 	cursor: default;

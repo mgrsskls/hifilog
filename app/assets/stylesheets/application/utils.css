@@ -128,6 +128,32 @@
 	margin-block: 0;
 }
 
+.u-status {
+	position: relative;
+}
+
+.u-status::before {
+	--size: 0.1875rem;
+
+	content: "";
+	display: block;
+	inline-size: 0;
+	block-size: 100%;
+	border-inline-start: var(--size) solid var(--color);
+	position: absolute;
+	inset-inline-end: calc(
+		100% + var(--spacing-inline) - var(--size) + 0.0625rem
+	);
+}
+
+.is-continued .u-status::before {
+	--color: var(--color-continued-marker);
+}
+
+.is-discontinued .u-status::before {
+	--color: var(--color-discontinued-marker);
+}
+
 @media (width < 58.5rem) {
 	.u-hide-sm {
 		display: none;

@@ -48,12 +48,6 @@
 
 .Events-list {
 	padding-block: 2rem;
-	padding-inline: 0;
-	margin-block: 0;
-	list-style: "";
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
-	gap: 2rem;
 }
 
 .Events-month:last-child .Events-list {
@@ -61,24 +55,13 @@
 }
 
 .Event {
-	padding: 1rem;
-	border: 1px solid transparent;
-	background: var(--color-bg2);
 	display: flex;
 	flex-direction: column;
 	scroll-margin-block-start: calc(
 		var(--height-year) + var(--height-month) + var(--top-spacing)
 	);
 
-	h4 {
-		margin-block: 1rem;
-		font-size: 1.25rem;
-		line-height: 1.4;
-		margin-block-end: 0;
-	}
-
 	address {
-		font-style: normal;
 		font-size: 0.875em;
 	}
 
@@ -86,10 +69,6 @@
 		font-weight: 500;
 		justify-self: end;
 		word-break: break-word;
-	}
-
-	> :last-child {
-		margin-block-end: 0;
 	}
 }
 
@@ -105,7 +84,13 @@
 }
 
 .Event-content {
-	margin-block-end: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+
+	p {
+		margin-block: 0;
+	}
 }
 
 .Event-days {
@@ -114,17 +99,14 @@
 }
 
 .Event-attend {
-	margin-block-start: auto;
-	padding-block-start: 1rem;
-	border-block-start: var(--border-light);
 	font-size: 0.875rem;
 	display: flex;
 	align-items: center;
 	gap: 1rem;
-	justify-content: end;
+	justify-content: space-between;
 }
 
-.Event .IconSymbol {
+.Event .Button .IconSymbol {
 	--size: 1em;
 
 	block-size: var(--size);

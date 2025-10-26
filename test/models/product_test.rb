@@ -2,8 +2,8 @@ require 'test_helper'
 
 class ProductTest < ActiveSupport::TestCase
   test 'release_date' do
-    assert_equal '2020&thinsp;/&thinsp;06&thinsp;/&thinsp;01', products(:release_date_ymd).formatted_release_date
-    assert_equal '2020&thinsp;/&thinsp;06', products(:release_date_ym).formatted_release_date
+    assert_equal '2020/06/01', products(:release_date_ymd).formatted_release_date
+    assert_equal '2020/06', products(:release_date_ym).formatted_release_date
     assert_equal '2020', products(:release_date_yd).formatted_release_date
     assert_nil products(:release_date_md).formatted_release_date
     assert_equal '2020', products(:release_date_y).formatted_release_date

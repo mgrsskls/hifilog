@@ -45,7 +45,7 @@
       <ol class="EntityList EntityList--users u-breakpoint-item-s">
         <% @users_by_products.each_with_index do |user, i| %>
           <li class="EntityList-item">
-
+            <div class="EntityListItem">
               <div class="EntityList-name">
                 <div class="u-flex u-gap-md">
                   <div>
@@ -64,7 +64,7 @@
                   <% end %>
                 </div>
               </div>
-              <dl class="EntityList-data Data">
+              <dl class="EntityListItem-data Data">
                 <dt>Score:</dt>
                 <dd><%= user["count"] %></dd>
 
@@ -73,7 +73,7 @@
                   <time datetime="<%= user["created_at"] %>"><%= format_date(user["created_at"]).html_safe %></time>
                 </dd>
               </dl>
-
+            </div>
           </li>
         <% end %>
       </ol>

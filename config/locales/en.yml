@@ -76,7 +76,7 @@ en:
         one: User
         other: Users
   add_product: Add Product
-  add_to_bookmarks: Add to <b>Bookmarks</b>
+  add_to_bookmarks: Bookmark
   add_to_collection: Add to <b>Collection</b>
   add_to_prev_owned: Add to <b>Previous Products</b>
   amount_users:
@@ -389,10 +389,20 @@ en:
     products_removed_per_year: Removed
   status: Status
   symbols:
-    discontinued: Discontinued
-    in_your_bookmarks: Bookmarked
-    in_your_collection: In my collection
-    prev_owned: Previously owned
+    brand:
+      discontinued: Out of business
+      in_your_bookmarks: Bookmarked
+      in_your_collection: In my collection
+      prev_owned: Previously owned
+    event:
+      in_your_bookmarks: Bookmarked
+      in_your_collection: You attend
+      prev_owned: You attended
+    product:
+      discontinued: Discontinued
+      in_your_bookmarks: Bookmarked
+      in_your_collection: In my collection
+      prev_owned: Previously owned
   user:
     edit:
       delete:

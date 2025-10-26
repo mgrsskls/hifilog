@@ -1,5 +1,17 @@
 <% content_for :css do %>
+  <%= stylesheet_link_tag "events", crossorigin: true, integrity: true %>
   <%= stylesheet_link_tag "bookmarks", crossorigin: true, integrity: true %>
 <% end %>
 
-<%= render "shared/bookmarks", heading: Bookmark.model_name.human(count: 2), categories: @categories, bookmark_lists: @bookmark_lists, bookmarks: @bookmarks, all_bookmarks: @all_bookmarks, render_lists: true, active_dashboard_menu: @active_dashboard_menu, sub_category: @sub_category %>
+<%= render "shared/bookmarks",
+  heading: Bookmark.model_name.human(count: 2),
+  categories: @categories,
+  bookmark_lists: @bookmark_lists,
+  bookmarks: @bookmarks,
+  all_bookmarks: @all_bookmarks,
+  render_lists: true,
+  active_dashboard_menu: @active_dashboard_menu,
+  sub_category: @sub_category,
+  after_create_redirect: @bookmarks_after_create_redirect,
+  after_destroy_redirect: @bookmarks_after_destroy_redirect
+%>

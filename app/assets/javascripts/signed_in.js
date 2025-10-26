@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	const productIds = [];
 	const productVariantIds = [];
 	const brandIds = [];
+	const eventIds = [];
 
 	document.querySelectorAll(".Symbols").forEach((symbol) => {
 		if (symbol.dataset.productVariant) {
@@ -37,10 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (!brandIds.includes(id)) {
 				brandIds.push(id);
 			}
+		} else if (symbol.dataset.event) {
+			const id = parseInt(symbol.dataset.event, 10);
+
+			if (!eventIds.includes(id)) {
+				eventIds.push(id);
+			}
 		}
 	});
 
-	if (productIds.length || productVariantIds.length || brandIds.length) {
+	if (
+		productIds.length ||
+		productVariantIds.length ||
+		brandIds.length ||
+		eventIds.length
+	) {
 		let params = new URLSearchParams();
 
 		for (const productId of productIds) {
@@ -55,6 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
 			params.append("brands[]", brandId);
 		}
 
+		for (const eventId of eventIds) {
+			params.append("events[]", eventId);
+		}
+
 		let url = new URL(
 			`/user/has?${params.toString()}`,
 			document.location.origin,
@@ -66,11 +82,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			},
 		})
 			.then((res) => res.json())
-			.then(({ brands, products, product_variants }) => {
+			.then(({ brands, products, product_variants, events }) => {
 				for (const [array, alias] of [
 					[brands, "brand"],
 					[products, "product"],
 					[product_variants, "product-variant"],
+					[events, "event"],
 				]) {
 					if (!array) continue;
 

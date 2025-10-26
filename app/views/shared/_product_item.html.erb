@@ -1,93 +1,101 @@
 <% hide_brand ||= false %>
 <% hide_category ||= false %>
 
-<div class="EntityList-name">
-  <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
-    <div>
-      <% unless hide_brand %>
-        <span class="EntityList-brandName">
-          <%= brand.name %>
-        </span>
-      <% end %>
-      <a href="<%= path %>">
-        <%= name %>
-      </a>
-      <% if model_no.present? || variant_name.present? %>
-        <span class="EntityList-modelName">
-          <%= variant_name if variant_name.present? %>
-          <% if variant_name.present? && model_no.present? %>&middot;<% end %>
-          <%= model_no if model_no.present? %>
-        </span>
-      <% end %>
-    </div>
-    <%= render "shared/symbols", item:, type: item_type %>
-  </div>
-</div>
+<% main = capture do %>
+  <% unless hide_brand %>
+    <span class="EntityListItem-brandName">
+      <%= brand.name %>
+    </span>
+  <% end %>
+  <a href="<%= path %>" class="EntityListItem-name">
+    <%= name %>
+  </a>
+  <% if model_no.present? || variant_name.present? %>
+    <span class="EntityListItem-modelName">
+      <%= variant_name if variant_name.present? %>
+      <% if variant_name.present? && model_no.present? %>&middot;<% end %>
+      <%= model_no if model_no.present? %>
+    </span>
+  <% end %>
+<% end %>
 
-<% if diy_kit || @custom_attributes_for_products.any? %>
-  <ul class="EntityList-tags">
-    <% if diy_kit %>
-      <li class="Tag">
-        <%= t('activerecord.attributes.product.diy_kit') %>
-      </li>
-    <% end %>
-    <% item.custom_attributes&.each do |custom_attribute| %>
-      <% active_record = @custom_attributes_for_products.find { |ca| ca.label == custom_attribute[0] } %>
-      <% if active_record&.highlighted? %>
-        <% if active_record.inputs.size < 2 %>
-          <% if active_record.input_type == 'boolean' %>
-            <% if custom_attribute[1] %>
+<% content = capture do %>
+  <% if diy_kit || @custom_attributes_for_products.any? %>
+    <ul class="EntityListItem-tags">
+      <% if diy_kit %>
+        <li class="Tag">
+          <%= t('activerecord.attributes.product.diy_kit') %>
+        </li>
+      <% end %>
+      <% item.custom_attributes&.each do |custom_attribute| %>
+        <% active_record = @custom_attributes_for_products.find { |ca| ca.label == custom_attribute[0] } %>
+        <% if active_record&.highlighted? %>
+          <% if active_record.inputs.size < 2 %>
+            <% if active_record.input_type == 'boolean' %>
+              <% if custom_attribute[1] %>
+                <li class="Tag">
+                  <%= t("custom_attribute_labels.#{active_record.label}") %>
+                </li>
+              <% end %>
+            <% elsif active_record.input_type == 'number' %>
               <li class="Tag">
-                <%= t("custom_attribute_labels.#{active_record.label}") %>
+                <% unit = t("custom_attribute_units.#{custom_attribute[1]['unit'].present? ? custom_attribute[1]['unit'] : active_record.units.first}") %>
+                <%= custom_attribute[1]['value'] %> <%= unit.html_safe if unit.present? %>
+              </li>
+            <% elsif active_record.input_type == 'options' %>
+              <% custom_attribute[1].each do |id| %>
+                <li class="Tag">
+                  <%= t("custom_attributes.#{active_record.options[id]}") %>
+                </li>
+              <% end %>
+            <% else %>
+              <li class="Tag">
+                <%= t("custom_attributes.#{active_record.options[custom_attribute[1].to_s]}") %>
               </li>
             <% end %>
-          <% elsif active_record.input_type == 'number' %>
-            <li class="Tag">
-              <% unit = t("custom_attribute_units.#{custom_attribute[1]['unit'].present? ? custom_attribute[1]['unit'] : active_record.units.first}") %>
-              <%= custom_attribute[1]['value'] %> <%= unit.html_safe if unit.present? %>
-            </li>
-          <% elsif active_record.input_type == 'options' %>
-            <% custom_attribute[1].each do |id| %>
-              <li class="Tag">
-                <%= t("custom_attributes.#{active_record.options[id]}") %>
-              </li>
-            <% end %>
-          <% else %>
-            <li class="Tag">
-              <%= t("custom_attributes.#{active_record.options[custom_attribute[1].to_s]}") %>
-            </li>
           <% end %>
         <% end %>
       <% end %>
-    <% end %>
-  </ul>
+    </ul>
+  <% end %>
+
+  <% if !hide_category || item.formatted_release_date.present? || item.formatted_discontinued_date.present? || item.price.present? %>
+    <dl class="EntityListItem-data Data">
+      <% unless hide_category %>
+        <dt><%= Category.model_name.human %></dt>
+        <dd><%= sub_category_names.join(", ") %></dd>
+      <% end %>
+
+      <% if item.formatted_release_date.present? || item.formatted_discontinued_date.present? %>
+        <dt><%= t('activerecord.attributes.product.release_date') %></dt>
+        <dd>
+          <% if item.formatted_release_date.present? && item.formatted_discontinued_date.present? %>
+            <%= sanitize(item.formatted_release_date) %> &ndash; <%= sanitize(item.formatted_discontinued_date) %>
+          <% elsif item.formatted_discontinued_date.present? %>
+            n/a &ndash; <%= sanitize(item.formatted_discontinued_date) %>
+          <% elsif item.formatted_release_date.present? %>
+            <%= sanitize(item.formatted_release_date) %>
+          <% end %>
+        </dd>
+      <% end %>
+
+      <% if item.price.present? %>
+        <dt><%= t('activerecord.attributes.product.price') %></dt>
+        <dd><%= display_price(item.price, item.price_currency) %></dd>
+      <% end %>
+    </dl>
+  <% end %>
 <% end %>
 
-<% if !hide_category || item.formatted_release_date.present? || item.formatted_discontinued_date.present? || item.price.present? %>
-  <dl class="EntityList-data Data">
-    <% unless hide_category %>
-      <dt><%= Category.model_name.human %></dt>
-      <dd><%= sub_category_names.join(", ") %></dd>
-    <% end %>
-
-    <% if item.formatted_release_date.present? || item.formatted_discontinued_date.present? %>
-      <dt><%= t('activerecord.attributes.product.release_date') %></dt>
-      <dd>
-        <% if item.formatted_release_date.present? && item.formatted_discontinued_date.present? %>
-          <%= sanitize(item.formatted_release_date) %> &ndash; <%= sanitize(item.formatted_discontinued_date) %>
-        <% elsif item.formatted_discontinued_date.present? %>
-          n/a &ndash; <%= sanitize(item.formatted_discontinued_date) %>
-        <% elsif item.formatted_release_date.present? %>
-          <%= sanitize(item.formatted_release_date) %>
-        <% end %>
-      </dd>
-    <% end %>
-
-    <% if item.price.present? %>
-      <dt><%= t('activerecord.attributes.product.price') %></dt>
-      <dd><%= display_price(item.price, item.price_currency) %></dd>
-    <% end %>
-  </dl>
+<% actions = capture do %>
+  <%= yield %>
 <% end %>
 
-<%= yield %>
+<%= render "shared/entity_list_item",
+  is_discontinued:,
+  item:,
+  item_type:,
+  main:,
+  content:,
+  actions:
+%>

@@ -10,6 +10,7 @@ class EventsController < ApplicationController
     @meta_desc = 'Find all upcoming hi-fi events and shows on HiFi Log,
 a user-driven database for hi-fi products, brands and more.'
     @active_events = :upcoming
+    @after_create_redirect = :events
     @after_destroy_redirect = :events
     @canonical_url = events_url
   end
@@ -26,6 +27,7 @@ a user-driven database for hi-fi products, brands and more.'
     @meta_desc = 'Find all previous hi-fi events and shows on HiFi Log,
 a user-driven database for hi-fi products, brands and more.'
     @active_events = :past
+    @after_create_redirect = :past_events
     @after_destroy_redirect = :past_events
     @canonical_url = past_events_url
 

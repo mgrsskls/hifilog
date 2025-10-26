@@ -5,15 +5,15 @@ module FormatHelper
 
     formatted_month = month.to_s.rjust(2, '0')
 
-    return "#{year}&thinsp;/&thinsp;#{formatted_month}" if day.nil?
+    return "#{year}/#{formatted_month}" if day.nil?
 
     formatted_day = day.to_s.rjust(2, '0')
 
-    "#{year}&thinsp;/&thinsp;#{formatted_month}&thinsp;/&thinsp;#{formatted_day}"
+    "#{year}/#{formatted_month}/#{formatted_day}"
   end
 
   def format_date(date)
-    date.strftime('%Y&thinsp;/&thinsp;%m&thinsp;/&thinsp;%d')
+    date.strftime('%Y/%m/%d')
   end
 
   def format_iso_date(date)
@@ -21,7 +21,7 @@ module FormatHelper
   end
 
   def format_datetime(date)
-    date.strftime('%Y&thinsp;/&thinsp;%m&thinsp;/&thinsp;%d - %H:%M')
+    date.strftime('%Y/%m/%d - %H:%M')
   end
 
   def format_iso_datetime(datetime)

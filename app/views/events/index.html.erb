@@ -40,4 +40,9 @@
   </div>
 <% end %>
 
-<%= render "shared/events", events: @events, empty_state_message: t('event_attendee.empty_states.index'), after_destroy_redirect: @after_destroy_redirect %>
+<%= render "shared/events",
+  events: @events,
+  empty_state_message: t('event_attendee.empty_states.index'),
+  after_create_redirect: @after_create_redirect,
+  after_destroy_redirect: @after_destroy_redirect
+%>
