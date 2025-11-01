@@ -38,10 +38,11 @@
 	ul {
 		padding-block-start: 0.5rem;
 		padding-inline-start: 0.75rem;
+		font-size: 0.875em;
 	}
 
 	li li + li {
-		margin-block-start: 0.5em;
+		margin-block-start: 0.25em;
 	}
 }
 

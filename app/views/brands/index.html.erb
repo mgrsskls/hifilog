@@ -35,7 +35,12 @@
 <% end %>
 
 <% content_for :table do %>
-  <%= render "shared/brands_table", brands: @brands, category: @category, sub_category: @sub_category, product_counts: @product_counts %>
+  <%= render "shared/brands_table",
+    brands: @brands,
+    category: @category,
+    sub_category: @sub_category,
+    product_counts: @product_counts
+  %>
 <% end %>
 
 <%= render "shared/index_page",

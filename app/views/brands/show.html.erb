@@ -88,13 +88,18 @@
         <div class="EntityPossession u-textCenter" data-current="true">
           You own <b><%= @brand.name %></b> products.
         </div>
-        <hr>
       <% elsif user_has_brand?(current_user, @brand, true) %>
         <div class="EntityPossession u-textCenter" data-current="false">
           You used to own <b><%= @brand.name %></b> products.
         </div>
-        <hr>
       <% end %>
+
+      <div class="Entity-action<%= " EntityPossession EntityPossession--bookmark" if @bookmark && current_user.bookmark_lists.length > 0 %>">
+        <%= render "shared/bookmark_button", bookmark: @bookmark, delete_redirect_to: brand_path(id: @brand.friendly_id), create_bookmarks_path: bookmarks_path(brand_id: @brand.id), include_lists: true %>
+      </div>
+
+      <hr>
+
       <dl>
         <dt><%= t('product.meta.owned_by') %></dt>
         <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>

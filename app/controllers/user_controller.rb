@@ -29,11 +29,47 @@ class UserController < ApplicationController
 
   def bookmarks
     @page_title = Bookmark.model_name.human(count: 2)
-    @active_dashboard_menu = :bookmarks
 
     all_bookmarks = current_user.bookmarks
                                 .includes({ item: [{ sub_categories: [:category] }, :brand] })
-                                .order(created_at: :desc).map { |bookmark| BookmarkPresenter.new(bookmark) }
+
+    if params[:id].present?
+      @bookmark_list = current_user.bookmark_lists.find(params[:id])
+      all_bookmarks = all_bookmarks.where(bookmark_list_id: @bookmark_list.id) if @bookmark_list.present?
+      @active_dashboard_menu = "bookmark_list_#{@bookmark_list.id}"
+    else
+      @active_dashboard_menu = :bookmarks
+    end
+
+    @active_bookmarks = :all
+
+    @all_bookmarks_count = all_bookmarks.size
+    @products_bookmarks_count = all_bookmarks.where(item_type: %w[Product ProductVariant]).size
+    @brands_bookmarks_count = all_bookmarks.where(item_type: 'Brand').size
+    @events_bookmarks_count = all_bookmarks.where(item_type: 'Event').size
+
+    if params[:type].present? && %w[products brands events].include?(params[:type])
+      case params[:type]
+      when 'products'
+        all_bookmarks = all_bookmarks.where(item_type: %w[Product ProductVariant])
+        @active_bookmarks = :products
+      when 'brands'
+        all_bookmarks = all_bookmarks.where(item_type: 'Brand')
+        @active_bookmarks = :brands
+      when 'events'
+        all_bookmarks = all_bookmarks.where(item_type: 'Event')
+        @active_bookmarks = :events
+      end
+    end
+
+    sort = case params[:sort]
+           when 'added_asc' then 'created_at ASC'
+           else 'created_at DESC'
+           end
+
+    all_bookmarks = all_bookmarks
+                    .order(sort)
+                    .map { |bookmark| BookmarkPresenter.new(bookmark) }
 
     bookmarks = all_bookmarks
 
@@ -43,20 +79,19 @@ class UserController < ApplicationController
       if sub_cat
         bookmarks =
           bookmarks.select do |bookmark|
-            bookmark.product.sub_categories.include?(sub_cat)
+            %w[Product ProductVariant].include?(bookmark.item_type) && bookmark.product.sub_categories.include?(sub_cat)
           end
         @sub_category = sub_cat
       end
     end
 
     @bookmarks = bookmarks
-    @bookmark_lists = current_user.bookmark_lists
     @custom_attributes_for_products = CustomAttribute.all
     @bookmarks_after_create_redirect = :dashboard_bookmarks
     @bookmarks_after_destroy_redirect = :dashboard_bookmarks
 
     @categories = get_grouped_sub_categories(bookmarks: all_bookmarks.reject do |bookmark|
-      bookmark.item_type == 'Event'
+      %w[Event Brand].include? bookmark.item_type
     end)
   end
 
@@ -149,7 +184,9 @@ class UserController < ApplicationController
           previously_owned: possessions.any? do |possession|
             possession.product.brand.id == brand_id.to_i && possession.prev_owned == true
           end,
-          bookmarked: false
+          bookmarked: bookmarks.any? do |bookmark|
+            bookmark.item_id == brand_id.to_i && bookmark.item_type == 'Brand'
+          end,
         }
       end
     end

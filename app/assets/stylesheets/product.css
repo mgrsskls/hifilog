@@ -1,11 +1,3 @@
-.Product-action:not(:first-child) {
-	margin-block-start: 1rem;
-}
-
-.Product-action button {
-	inline-size: 100%;
-}
-
 .Product-section {
 	margin-block-start: 2.5rem;
 }

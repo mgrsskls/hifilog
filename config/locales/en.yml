@@ -48,6 +48,9 @@ en:
       bookmark:
         one: Bookmark
         other: Bookmarks
+      bookmark_list:
+        one: Bookmark list
+        other: Bookmark lists
       brand:
         one: Brand
         other: Brands

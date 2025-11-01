@@ -161,7 +161,7 @@
   <% end %>
 <% end %>
 
-<div class="Product-action">
+<div class="Entity-action">
   <%= button_to possessions_path(id: product.id, product_variant_id: variant_id), class: "Button Button--loadingIcon" do %>
     <span class="u-flex u-alignCenter u-gap-sm">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
@@ -170,7 +170,7 @@
   <% end %>
 </div>
 
-<div class="Product-action">
+<div class="Entity-action">
   <%= button_to possessions_path(id: product.id, product_variant_id: variant_id, prev_owned: true), class: "Button Button--secondary Button--loadingIcon" do %>
     <span class="u-flex u-alignCenter u-gap-sm">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
@@ -179,6 +179,6 @@
   <% end %>
 </div>
 
-<div class="Product-action<%= " EntityPossession EntityPossession--bookmark" if bookmark && current_user.bookmark_lists.length > 0 %>">
+<div class="Entity-action<%= " EntityPossession EntityPossession--bookmark" if bookmark && current_user.bookmark_lists.length > 0 %>">
   <%= render "shared/bookmark_button", bookmark: bookmark, delete_redirect_to: (variant_id.present? ? product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : product_path(id: @product.friendly_id)), create_bookmarks_path: bookmarks_path(product_id: product.id, product_variant_id: variant_id), include_lists: true %>
 </div>

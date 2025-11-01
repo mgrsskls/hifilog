@@ -22,9 +22,8 @@
 }
 
 .EntityListItem {
-	display: flex;
-	flex-direction: column;
-	gap: 1.5rem;
+	display: grid;
+	grid-template-rows: 1fr auto;
 	padding: var(--spacing-inline);
 	background: var(--color-bg2);
 	border-radius: var(--border-radius);
@@ -40,8 +39,15 @@
 	}
 }
 
-.EntityList--brands .EntityListItem > :last-child {
-	margin-block-start: auto;
+.EntityListItem-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	inline-size: 100%;
+
+	&:not(:last-child) {
+		padding-block-end: 1rem;
+	}
 }
 
 .EntityListItem.is-discontinued {
@@ -118,10 +124,8 @@
 	font-size: 0.875rem;
 }
 
-.EntityList-country {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
+.EntityList-productsCount {
+	margin-inline-start: auto;
 }
 
 .EntityListItem-footer {

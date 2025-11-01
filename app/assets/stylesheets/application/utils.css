@@ -124,6 +124,18 @@
 	text-decoration: underline;
 }
 
+.u-mt-auto {
+	margin-block-start: auto;
+}
+
+.u-ml-auto {
+	margin-inline-start: auto;
+}
+
+.u-mt-lg {
+	margin-block-start: 2rem;
+}
+
 .u-mb-0 {
 	margin-block: 0;
 }

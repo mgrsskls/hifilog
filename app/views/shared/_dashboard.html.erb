@@ -63,6 +63,15 @@
             </a>
             <small data-user-count="bookmarks"></small>
           </span>
+          <% if current_user.bookmark_lists.any? %>
+            <ul>
+              <% current_user.bookmark_lists.each do |list| %>
+                <li>
+                  <%= link_to list.name, dashboard_bookmark_list_path(list), "aria-current": @active_dashboard_menu == "bookmark_list_#{list.id}" ? "page" : "false", class: "Sidebar-link" %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
         </li>
         <li>
           <span>

@@ -1,0 +1,44 @@
+<% main = capture do %>
+  <%= link_to brand.name, brand_path(id: brand.friendly_id), class: "EntityListItem-name" %>
+  <% if brand.full_name.present? %>
+    <span class="EntityListItem-modelName">
+      <%= brand.full_name %>
+    </span>
+  <% end %>
+<% end %>
+
+<% content = capture do %>
+  <% if brand.categories.any? %>
+    <ul class="EntityListItem-tags">
+      <% brand.categories.each do |category| %>
+      <li class="Tag"><%= category.name %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="u-flex u-spaceBetween u-gap-lg u-mt-auto">
+    <% if brand.country_name.present? %>
+      <div class="EntityList-country u-flex u-gap-smd u-alignCenter">
+        <img class="Flag" src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25">
+        <%= brand.country_name %>
+      </div>
+    <% end %>
+
+    <div class="EntityList-productsCount">
+      <%= link_to "#{count} #{t('activerecord.models.product', count: count)}", path_to_brand %>
+    </div>
+  </div>
+<% end %>
+
+<% actions = capture do %>
+  <%= yield %>
+<% end %>
+
+<%= render "shared/entity_list_item",
+  item: brand,
+  item_type: 'Brand',
+  is_discontinued: brand.discontinued?,
+  main:,
+  content:,
+  actions:
+%>

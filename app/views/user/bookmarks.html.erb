@@ -1,17 +1,146 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "events", crossorigin: true, integrity: true %>
   <%= stylesheet_link_tag "bookmarks", crossorigin: true, integrity: true %>
+  <%= stylesheet_link_tag "tabs", crossorigin: true, integrity: true %>
+  <%= stylesheet_link_tag "add_entity_dialog", crossorigin: true, integrity: true if @bookmark_list.present? %>
 <% end %>
 
-<%= render "shared/bookmarks",
-  heading: Bookmark.model_name.human(count: 2),
-  categories: @categories,
-  bookmark_lists: @bookmark_lists,
-  bookmarks: @bookmarks,
-  all_bookmarks: @all_bookmarks,
-  render_lists: true,
-  active_dashboard_menu: @active_dashboard_menu,
-  sub_category: @sub_category,
-  after_create_redirect: @bookmarks_after_create_redirect,
-  after_destroy_redirect: @bookmarks_after_destroy_redirect
-%>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <div class="Heading">
+    <h1><%= @bookmark_list.present? ? @bookmark_list.name : Bookmark.model_name.human(count: 2) %></h1>
+
+    <% if @bookmark_list.present? %>
+      <div class="u-flex u-gap-smd">
+        <button type="button" data-dialog="add-products" class="Button">
+          Add / remove bookmarks
+        </button>
+        <%= link_to link_to t('bookmark_list.update.label'), dashboard_edit_bookmark_list_path(id: @bookmark_list.id), class: "Button Button--secondary" %>
+      </div>
+    <% else %>
+      <%= link_to "New list", dashboard_new_bookmark_list_path, class: "Button Button--secondary" %>
+    <% end %>
+  </div>
+
+  <nav aria-label="<%= Bookmark.model_name.human(count: 2) %>">
+    <ul class="Tabs">
+      <li>
+        <%= link_to "All <span>(#{@all_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path, "aria-current": @active_bookmarks == :all %>
+      </li>
+      <li>
+        <%= link_to "#{Product.model_name.human(count: 2)} <span>(#{@products_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'products'), "aria-current": @active_bookmarks == :products %>
+      </li>
+      <li>
+        <%= link_to "#{Brand.model_name.human(count: 2)} <span>(#{@brands_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'brands'), "aria-current": @active_bookmarks == :brands %>
+      </li>
+      <li>
+        <%= link_to "#{Event.model_name.human(count: 2)} <span>(#{@events_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'events'), "aria-current": @active_bookmarks == :events %>
+      </li>
+    </ul>
+  </nav>
+
+
+  <% if @bookmarks.any? %>
+    <div class="u-flex u-spaceBetween u-gap-lg">
+      <%= render "shared/category_filter", categories: @categories, sub_category: @sub_category %>
+      <form class="u-flex u-alignCenter u-gap-md u-ml-auto">
+        <%= hidden_fields_for_params(params.except(:order, :controller, :action)) %>
+        <label for="sort-select">Sort</label>
+        <select name="sort" id="sort-select">
+          <option value="added_desc"<%= " selected" %>><%= t('sort_by.added_desc') %></option>
+          <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>><%= t('sort_by.added_asc') %></option>
+        </select>
+        <%= javascript_tag nonce: true do %>
+          document.querySelector("#sort-select").addEventListener("change", ({ target }) => {
+            target.closest("form").submit();
+          });
+        <% end %>
+      </form>
+    </div>
+
+    <ol class="EntityList EntityList--products u-mt-lg">
+      <% @bookmarks.each do |bookmark| %>
+        <% actions = capture do %>
+          <ul class="MetaLinks">
+            <li>
+              <%= button_to bookmark_path(id: bookmark.id, redirect_to: dashboard_bookmarks_path(type: params[:type])), method: :delete, class: "DeleteButton", "data-msg": bookmark.delete_confirm_msg do %>
+                <small><%= bookmark.delete_button_label %></small>
+              <% end %>
+            </li>
+          </ul>
+        <% end %>
+        <li class="EntityList-item Bookmark">
+          <% if bookmark.item_type == 'Event' %>
+            <%= render layout: "shared/event_item", locals: {
+              event: bookmark.event,
+              after_create_redirect: @bookmarks_after_create_redirect,
+              after_destroy_redirect: @bookmarks_after_destroy_redirect,
+              date_format: :full
+            } do %>
+              <%= actions %>
+            <% end %>
+          <% elsif bookmark.item_type == 'Brand' %>
+            <%= render layout: "shared/brand_item", locals: {
+              brand: bookmark.brand,
+              count: bookmark.brand.products.size,
+              path_to_brand: brand_products_path(brand_id: bookmark.brand.friendly_id)
+            } do %>
+              <%= actions %>
+            <% end %>
+          <% else %>
+            <%= render layout: "shared/product_item", locals: {
+              item: bookmark.product_variant || bookmark.product,
+              name: bookmark.product.name,
+              path: bookmark.product_variant.present? ? product_variant_path(id: bookmark.product_variant.slug, product_id: bookmark.product.slug) : product_path(id: bookmark.product.slug),
+              brand: bookmark.product.brand,
+              model_no: bookmark.product_variant.present? ? bookmark.product_variant.model_no : bookmark.product.model_no,
+              variant_name: bookmark.product_variant.present? ? bookmark.product_variant.name : nil,
+              item_type: bookmark.item_type,
+              diy_kit: bookmark.product.diy_kit?,
+              sub_category_names: bookmark.product.sub_category_names,
+              custom_attributes: bookmark.product.custom_attributes,
+              is_discontinued: bookmark.discontinued?
+            } do %>
+              <%= actions %>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.bookmarks') %>
+  <% end %>
+
+  <% if @bookmark_list %>
+    <dialog class="AddEntityDialog" id="add-products">
+      <%= form_for @bookmark_list, method: :put do |f| %>
+        <input type="hidden" name="bookmark_list[bookmark_ids][]">
+        <h2>Add bookmarks <small>to <%= @bookmark_list.name %></small></h2>
+        <div class="AddEntityDialog-list">
+          <% current_user.bookmarks.map { |bm| BookmarkPresenter.new(bm) }.each do |presenter| %>
+            <div class="AddEntityDialog-option">
+              <%= check_box_tag "bookmark_list[bookmark_ids][]", presenter.id, { id: "bookmark_list_bookmark_ids_#{presenter.id}", checked: @bookmark_list.bookmark_ids.include?(presenter.id) } %>
+              <%= f.label :bookmark_ids, value: presenter.id do %>
+                <span>
+                  <small><%= presenter.type %></small>
+                  <b><%= presenter.display_name %></b>
+                  <% if presenter.bookmark_list %>
+                    <small>
+                      <%= presenter.bookmark_list.name %>
+                    </small>
+                  <% end %>
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="AddEntityDialog-checkmark"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.8 6 6 9-13.6"/></svg>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <div class="Form-submit">
+          <div class="u-flex u-spaceBetween">
+            <%= f.button "Save", type: "submit", class: "Button" %>
+            <button formmethod="dialog">Close</button>
+          </div>
+        </div>
+      <% end %>
+    </dialog>
+  <% end %>
+<% end %>

@@ -3,7 +3,7 @@ class BookmarkPresenter
 
   delegate_missing_to :@object
 
-  attr_reader :product, :product_variant, :event
+  attr_reader :product, :product_variant, :event, :brand
 
   def initialize(object)
     @object = object
@@ -16,7 +16,17 @@ class BookmarkPresenter
       @product = object.item
     when 'Event'
       @event = object.item
+    when 'Brand'
+      @brand = object.item
     end
+  end
+
+  def type
+    return Product.model_name.human(count: 1) if @product.present?
+    return Brand.model_name.human(count: 1) if @brand.present?
+    return Event.model_name.human(count: 1) if @event.present?
+
+    nil
   end
 
   def discontinued?
@@ -27,13 +37,16 @@ class BookmarkPresenter
     end
 
     return @product_variant.discontinued? if @product_variant.present?
+    return @product.discontinued? if @product.present?
 
-    @product.discontinued?
+    @brand.discontinued? if @brand.present?
   end
 
   def display_name
-    return @product.display_name if @product.present?
     return @product_variant.display_name if @product_variant.present?
+    return @product.display_name if @product.present?
+    return @brand.name if @brand.present?
+    return @event.name if @event.present?
 
     nil
   end

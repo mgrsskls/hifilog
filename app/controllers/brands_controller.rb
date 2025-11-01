@@ -93,6 +93,7 @@ class BrandsController < ApplicationController
       WHERE versions.item_id = ? AND versions.item_type = 'Brand'
     ", @brand.id])
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
+    @bookmark = current_user.bookmarks.find_by(item_id: @brand.id, item_type: 'Brand') if user_signed_in?
 
     @page_title = @brand.name
     set_meta_desc

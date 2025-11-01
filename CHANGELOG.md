@@ -1,8 +1,8 @@
 # Changelog
 
-## <time datetime="2025-10-26">2025-07-26</time>
+## <time datetime="2025-11-01">2025-11-01</time>
 
-- Users can now bookmark events.
+- Users can now bookmark and brands events.
 
 ## <time datetime="2025-10-21">2025-07-21</time>
 

@@ -103,6 +103,14 @@
 	clear: both;
 }
 
+.Entity-action:not(:first-child) {
+	margin-block-start: 1rem;
+}
+
+.Entity-action button {
+	inline-size: 100%;
+}
+
 @media (width < 48rem) {
 	.Entity {
 		flex-direction: column;

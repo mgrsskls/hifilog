@@ -3,13 +3,6 @@
 <% end %>
 
 <div class="Form">
-  <div class="Heading">
-    <h1><%= yield :heading %></h1>
-    <button class="Heading-infoButton" data-dialog="content-explanation" type="button">
-      <span>About bookmark lists</span>
-    </button>
-  </div>
-
   <% if bookmark_list.errors.any? %>
     <%= render "shared/flash_messages", messages: bookmark_list.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>

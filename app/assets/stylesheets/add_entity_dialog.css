@@ -39,14 +39,14 @@
 .AddEntityDialog-option label {
 	display: grid;
 	grid-template-columns: 1fr auto;
-	align-items: center;
 	gap: 0.5rem;
 	block-size: 100%;
 	line-height: 1.4;
-	padding-block: 0.25rem;
-	padding-inline: 0.75rem;
+	padding: 0.5rem;
 	border-radius: var(--border-radius);
+	border: var(--border-light);
 	cursor: pointer;
+	box-sizing: border-box;
 }
 
 .AddEntityDialog-option label:has(img, .OpenImageDialog-placeholder) {

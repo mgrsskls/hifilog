@@ -48,9 +48,9 @@ Rails.application.routes.draw do
     get 'events', to: 'user#events', as: :events
     get 'events/past', to: 'user#past_events', as: :past_events
     get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
-    get 'bookmarks/new', to: 'bookmark_lists#new', as: :new_bookmark_list
-    get 'bookmarks/:id', to: 'bookmark_lists#show', as: :bookmark_list
-    get 'bookmarks/:id/edit', to: 'bookmark_lists#edit', as: :edit_bookmark_list
+    get 'bookmarks/:id', to: 'user#bookmarks', as: :bookmark_list
+    get 'bookmarks/lists/new', to: 'bookmark_lists#new', as: :new_bookmark_list
+    get 'bookmarks/lists/:id/edit', to: 'bookmark_lists#edit', as: :edit_bookmark_list
     get 'contributions', to: 'user#contributions', as: :contributions
     get 'custom-products', to: 'custom_products#index', as: :custom_products
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product

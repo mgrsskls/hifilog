@@ -8,6 +8,8 @@ class BookmarksController < ApplicationController
       @product = Product.find(params[:product_id])
     elsif params[:event_id].present?
       @event = Event.find(params[:event_id])
+    elsif params[:brand_id].present?
+      @brand = Brand.find(params[:brand_id])
     end
 
     if @product_variant.present?
@@ -25,11 +27,18 @@ class BookmarksController < ApplicationController
         item_id: @event.id,
         item_type: 'Event'
       )
+    elsif @brand.present?
+      @bookmark = current_user.bookmarks.new(
+        item_id: @brand.id,
+        item_type: 'Brand'
+      )
     end
 
     flash[:alert] = I18n.t(:generic_error_message) unless @bookmark.save
 
-    if @event.present?
+    if @brand.present?
+      redirect_to brand_path(id: @brand.friendly_id)
+    elsif @event.present?
       redirect_to events_path
     else
       redirect_back_to_product(

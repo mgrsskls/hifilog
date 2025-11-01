@@ -3,48 +3,11 @@
 <ol class="EntityList EntityList--brands">
   <% brands.each do |brand| %>
     <li class="EntityList-item">
-      <% main = capture do %>
-        <%= link_to (mark ? highlight(brand.name, mark) : brand.name), brand_path(id: brand.friendly_id), class: "EntityListItem-name" %>
-        <% if brand.full_name.present? %>
-          <span class="EntityListItem-modelName">
-            <%= brand.full_name %>
-          </span>
-        <% end %>
-      <% end %>
-
-      <% content = capture do %>
-        <% if brand.categories.any? %>
-          <ul class="EntityListItem-tags">
-            <% brand.categories.each do |category| %>
-            <li class="Tag"><%= category.name %></li>
-            <% end %>
-          </ul>
-        <% end %>
-      <% end %>
-
-      <% actions = capture do %>
-        <div class="u-flex u-spaceBetween u-gap-lg">
-          <div class="EntityList-productsCount">
-            <% count = product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0) %>
-            <%= link_to "#{count} #{t('activerecord.models.product', count: count)}", brand_products_path_with_filter(brand, category, sub_category, params.permit(products: {})) %>
-          </div>
-
-          <% if brand.country_name.present? %>
-            <div class="EntityList-country">
-              <%= brand.country_name %>
-              <img class="Flag" src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25">
-            </div>
-          <% end %>
-        </div>
-      <% end %>
-
-      <%= render "shared/entity_list_item",
-        item: brand,
-        item_type: 'Brand',
-        is_discontinued: brand.discontinued?,
-        main:,
-        content:,
-        actions:
+      <%= render "shared/brand_item",
+        brand:,
+        category:,
+        count: product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0),
+        path_to_brand: brand_products_path_with_filter(brand, category, sub_category, params.permit(products: {}))
       %>
     </li>
   <% end %>
