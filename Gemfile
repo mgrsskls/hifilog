@@ -13,7 +13,7 @@ gem "sprockets-rails"
 gem "puma", "~> 7.1"
 
 gem "devise"
-gem "activeadmin", "~> 4.0.0.beta17"
+gem "activeadmin", "~> 4.0.0.beta18"
 gem "kaminari"
 gem "friendly_id"
 gem "pg"
