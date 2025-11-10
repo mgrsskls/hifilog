@@ -22,6 +22,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /resource
   def create
     @active_menu = :signup
+
+    return head :forbidden if request.is_crawler?
+
     super
   end
 
