@@ -2,7 +2,7 @@ class SearchController < ApplicationController
   MIN_CHARS = 2
 
   def results
-    @query = params[:query].present? ? params[:query].strip : nil
+    @query = params[:query].presence&.strip
 
     if request.xhr?
       if @query.nil? || @query.length < MIN_CHARS

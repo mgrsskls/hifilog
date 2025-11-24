@@ -43,7 +43,7 @@ class NotesController < ApplicationController
 
     @note = current_user.notes.find_by(
       product_id: @product.id,
-      product_variant_id: (@product_variant.id if @product_variant.present?)
+      product_variant_id: @product_variant.presence&.id
     )
 
     display_name = @product_variant.present? ? @product_variant.display_name : @product.display_name
@@ -82,12 +82,12 @@ class NotesController < ApplicationController
       flash[:notice] = I18n.t('note.messages.saved')
 
       if @product_variant.present?
-        redirect_back fallback_location: product_new_variant_notes_url(
+        redirect_back_or_to product_new_variant_notes_url(
           product_id: @product.friendly_id,
           id: @product_variant.friendly_id
         )
       else
-        redirect_back fallback_location: product_new_notes_url(product_id: @product.friendly_id)
+        redirect_back_or_to product_new_notes_url(product_id: @product.friendly_id)
       end
     else
       @note.errors.each do |error|

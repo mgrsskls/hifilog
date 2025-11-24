@@ -111,20 +111,20 @@ class ApplicationController < ActionController::Base
 
   def redirect_back_to_product(product: nil, product_variant: nil, custom_product: nil)
     if custom_product.present?
-      return redirect_back fallback_location: user_custom_product_url(
+      return redirect_back_or_to user_custom_product_url(
         user_id: current_user.user_name.downcase,
         id: custom_product.id
       )
     end
 
     if product_variant.present?
-      return redirect_back fallback_location: product_variant_url(
+      return redirect_back_or_to product_variant_url(
         id: product_variant.friendly_id,
         product_id: product_variant.product.friendly_id
       )
     end
 
-    redirect_back fallback_location: product_url(id: product.friendly_id)
+    redirect_back_or_to product_url(id: product.friendly_id)
   end
 
   def map_possessions_to_presenter(possessions)

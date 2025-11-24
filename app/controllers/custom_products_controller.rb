@@ -85,7 +85,7 @@ class CustomProductsController < ApplicationController
         image.purge
       end
 
-      redirect_back fallback_location: user_custom_product_url(
+      redirect_back_or_to user_custom_product_url(
         user_id: @custom_product.user.user_name.downcase,
         id: @custom_product.id
       )

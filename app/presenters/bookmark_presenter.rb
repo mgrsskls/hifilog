@@ -39,7 +39,7 @@ class BookmarkPresenter
     return @product_variant.discontinued? if @product_variant.present?
     return @product.discontinued? if @product.present?
 
-    @brand.discontinued? if @brand.present?
+    @brand.presence&.discontinued?
   end
 
   def display_name

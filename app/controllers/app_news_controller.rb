@@ -10,6 +10,6 @@ class AppNewsController < ApplicationController
 
     flash[:notice] = I18n.t(:generic_error_message) unless current_user.save
 
-    redirect_back fallback_location: dashboard_root_path
+    redirect_back_or_to dashboard_root_path
   end
 end
