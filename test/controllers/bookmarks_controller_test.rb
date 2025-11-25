@@ -4,7 +4,7 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
   test 'create with product' do
     user = users(:one)
     bookmarks_count = user.bookmarks.count
-    product = Product.create!(name: 'name', sub_categories: [sub_categories(:one)], brand: brands(:one))
+    product = products(:two)
 
     post bookmarks_path(product_id: product.id)
     assert_response :redirect

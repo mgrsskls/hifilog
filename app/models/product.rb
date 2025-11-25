@@ -51,6 +51,9 @@ class Product < ApplicationRecord
 
   validates :name, presence: true
   validates :slug, presence: true
+  validates :model_no,
+            uniqueness: { scope: :brand_id },
+            allow_nil: true
   validates :sub_categories, presence: true
   validates :price,
             numericality: true,

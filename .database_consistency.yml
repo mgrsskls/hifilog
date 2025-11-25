@@ -2,3 +2,6 @@ AdminUser:
   enabled: false
 PaperTrail::Version:
   enabled: false
+DatabaseConsistencyCheckers:
+  ThreeStateBooleanChecker:
+    enabled: false
