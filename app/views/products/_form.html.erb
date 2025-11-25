@@ -100,7 +100,7 @@
           </div>
 
           <div class="Form-field Form-field--inline">
-            <span class="Form-label"><%= t('symbols.discontinued') %></span>
+            <span class="Form-label"><%= t('symbols.product.discontinued') %></span>
             <div class="Form-options">
               <%= brand_form.radio_button :discontinued, 0, checked: brand.nil? || (brand.discontinued.nil? || brand.discontinued) == false %>
               <%= brand_form.label :discontinued, "No", value: 0 %>

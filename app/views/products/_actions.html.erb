@@ -11,7 +11,7 @@
           <%= render "shared/image_upload", item: ItemPresenter.new(possession), image_update_item: possession, size: "5.2rem", prefix: "possessions" %>
         </div>
         <div>
-          <b class="EntityPossession-headingName"><%= possession.prev_owned ? t('symbols.prev_owned') : t('symbols.in_your_collection') %></b>
+          <b class="EntityPossession-headingName"><%= possession.prev_owned ? t('symbols.product.prev_owned') : t('symbols.product.in_your_collection') %></b>
           <% if possession.period_from || possession.period_to || possession.setup || possession.product_option || possession.price_purchase || possession.price_sale %>
             <div class="EntityPossession-period">
               <% if possession.prev_owned %>

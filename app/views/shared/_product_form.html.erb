@@ -78,7 +78,7 @@
         </p>
       <% else %>
         <div class="Form-field Form-field--inline Entity-discontinued">
-          <span class="Form-label"><%= t('symbols.discontinued') %></span>
+          <span class="Form-label"><%= t('symbols.product.discontinued') %></span>
           <div class="Form-options">
             <%= f.radio_button :discontinued, 0, checked: (entity.discontinued.nil? || entity.discontinued == false) %>
             <%= f.label :discontinued, "No", value: 0 %>

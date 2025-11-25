@@ -126,7 +126,6 @@ en:
     by: by
     change: Edited
     comment: Comment
-  continued: In Production
   custom_attribute_inputs:
     h: Height
     l: Length
@@ -392,18 +391,18 @@ en:
     products_removed_per_year: Removed
   status: Status
   symbols:
+    in_your_bookmarks: Bookmarked
     brand:
+      continued: In business
       discontinued: Out of business
-      in_your_bookmarks: Bookmarked
       in_your_collection: In my collection
       prev_owned: Previously owned
     event:
-      in_your_bookmarks: Bookmarked
       in_your_collection: You attend
       prev_owned: You attended
     product:
+      continued: In production
       discontinued: Discontinued
-      in_your_bookmarks: Bookmarked
       in_your_collection: In my collection
       prev_owned: Previously owned
   user:

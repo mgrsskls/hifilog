@@ -17,7 +17,7 @@
           <dl class="Data Entity-data">
             <% if @brand.discontinued %>
               <dt><%= t('status') %></dt>
-              <dd><span class="Symbol"><%= t('symbols.discontinued') %></span></dd>
+              <dd><span class="Symbol"><%= t('symbols.brand.discontinued') %></span></dd>
             <% end %>
             <dt><%= Brand.human_attribute_name(:country_code) %></dt>
             <dd>

@@ -1,5 +1,5 @@
 <%
-  filter_active_label = (type == :products or type == :brand_products) ? t('continued') : t('active')
+  filter_active_label = t("symbols.#{(type == :products or type == :brand_products) ? 'product' : 'brand'}.continued")
   categories ||= []
   diy_kit_is_filtered = false
   custom_attributes_filtered = []
