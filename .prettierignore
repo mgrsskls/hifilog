@@ -7,3 +7,4 @@ public/*.html
 storage/
 tmp/
 vendor/
+*.yml

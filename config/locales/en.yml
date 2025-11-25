@@ -78,7 +78,6 @@ en:
       user:
         one: User
         other: Users
-  add_product: Add Product
   add_to_bookmarks: Bookmark
   add_to_collection: Add to <b>Collection</b>
   add_to_prev_owned: Add to <b>Previous Products</b>
@@ -121,7 +120,6 @@ en:
       submit: Submit
   changelog:
     after: To
-    attribute: Attribute
     before: From
     by: by
     change: Edited
@@ -196,7 +194,7 @@ en:
     mm: MM
     mm-mc: MM / MC
     mono: Mono
-    "no": "No"
+    'no': 'No'
     open_back: Open-back
     open_baffle: Open Baffle
     optical: Optical
@@ -216,7 +214,7 @@ en:
     wired: Wired
     wireless: Wireless
     xlr: XLR
-    "yes": "Yes"
+    'yes': 'Yes'
   custom_product:
     delete:
       confirm: Are you sure you want to delete your custom product %{name}?
@@ -261,21 +259,20 @@ en:
     user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
     user_products: <p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>
   event_attendee:
-    messages:
-      destroyed:
-        upcoming: "You no longer attend <i>%{name}</i>."
-        past: "You removed <i>%{name}</i> from your past events."
     empty_states:
       index: There are no upcoming events.
       user:
-        upcoming: 'You don''t have any upcoming <a href="%{path}">events</a>.'
-        past: 'You haven''t visited any <a href="%{path}">events</a> yet.'
+        past: You haven't visited any <a href="%{path}">events</a> yet.
+        upcoming: You don't have any upcoming <a href="%{path}">events</a>.
+    messages:
+      destroyed:
+        past: You removed <i>%{name}</i> from your past events.
+        upcoming: You no longer attend <i>%{name}</i>.
   filter:
     all: All
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
   headings:
     account: Account
-    brands: Brands
     changelog: Changelog
     collection: Collection
     contributions: Contributions
@@ -286,7 +283,6 @@ en:
     edited: Edited
     history: History
     prev_owneds: Previous products
-    products: Products
     profile: Profile
     statistics: Statistics
   home:
@@ -359,39 +355,26 @@ en:
       submit: Save
     private_hint: Please note that marking a setup as private only hides the setup from your public profile. Products that have been added to a private setup will still be shown in your main collection on your profile.
     private_values:
-      "no": Public
-      "yes": Private
+      'no': Public
+      'yes': Private
     validation:
       private:
         selected: must be selected.
   skip_to_main_content: Skip to main content
   sort_by:
-    added_asc: "Added: Oldest first"
-    added_desc: "Added: Newest first"
-    brands_products_release_date_asc: "Products: Oldest first"
-    brands_products_release_date_desc: "Products: Newest first"
+    added_asc: 'Added: Oldest first'
+    added_desc: 'Added: Newest first'
     label: Sort
-    name_asc: "Name: A first"
-    name_desc: "Name: Z first"
-    products_asc: "Products: Least first"
-    products_desc: "Products: Most first"
-    release_date_asc: "Released: Oldest first"
-    release_date_desc: "Released: Newest first"
-    updated_asc: "Updated: Least recent first"
-    updated_desc: "Updated: Most recent first"
-  statistics:
-    all_products_per_brand: Current & previous
-    current_products_per_brand: Current
-    headings:
-      costs: Spendings & Earnings
-      products_added_removed_per_year: Products added & removed
-      products_per_brand: Products per brand
-    products_added_per_year: Added
-    products_added_removed_per_year: Added & removed
-    products_removed_per_year: Removed
+    name_asc: 'Name: A first'
+    name_desc: 'Name: Z first'
+    products_asc: 'Products: Least first'
+    products_desc: 'Products: Most first'
+    release_date_asc: 'Released: Oldest first'
+    release_date_desc: 'Released: Newest first'
+    updated_asc: 'Updated: Least recent first'
+    updated_desc: 'Updated: Most recent first'
   status: Status
   symbols:
-    in_your_bookmarks: Bookmarked
     brand:
       continued: In business
       discontinued: Out of business
@@ -400,6 +383,7 @@ en:
     event:
       in_your_collection: You attend
       prev_owned: You attended
+    in_your_bookmarks: Bookmarked
     product:
       continued: In production
       discontinued: Discontinued
@@ -423,14 +407,14 @@ en:
         leave_blank: leave blank if you don't want to change it
         minimum_password_length: "%{minimum} characters minimum"
         optional: optional
-        profile_url: "Your profile is visible at the following URL:"
+        profile_url: 'Your profile is visible at the following URL:'
         profile_visibility:
           hidden: No one but me can see my profile and my product photos.
           logged_in_only: Only logged in users can see my profile and my product photos.
           visible: Logged in and logged out users can see my profile and my product photos.
         receives_newsletter:
-          "false": I do not want to receive newsletters.
-          "true": I want to receive newsletters.
+          'false': I do not want to receive newsletters.
+          'true': I want to receive newsletters.
         required: required
         save:
           confirm_with_password: We need your current password to confirm your changes.
