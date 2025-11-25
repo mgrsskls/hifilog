@@ -3,7 +3,7 @@
   is_current ||= false
 %>
 
-<div class="EntityListItem EntityListItem--<%= item_type.parameterize %> <%= item_type %> is-<%= is_discontinued ? "discontinued" : "continued" %>" id="<%= "#{item_type.parameterize}-#{item.id}" %>"<%= " aria-current=true" if is_current %>>
+<div class="EntityListItem EntityListItem--<%= item_type.parameterize %> <%= item_type %> <%= is_discontinued ? "is-discontinued" : "is-continued" unless is_discontinued.nil? %>" id="<%= "#{item_type.parameterize}-#{item.id}" %>"<%= " aria-current=true" if is_current %>>
   <div class="EntityListItem-wrapper">
     <div class="EntityListItem-header u-status">
       <div class="EntityListItem-main">
