@@ -157,7 +157,7 @@ GEM
       responders
       warden (~> 1.2.3)
     docile (1.4.1)
-    dotenv (3.1.8)
+    dotenv (3.2.0)
     drb (2.2.3)
     erb (6.0.0)
     erubi (1.13.1)
