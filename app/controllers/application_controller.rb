@@ -24,11 +24,11 @@ class ApplicationController < ActionController::Base
                        .limit(5)
                        .count
                        .map do |country|
-      {
-        label: country_name_from_country_code(country[0]),
-        brands_path: brands_path({ brands: { country: country[0] } }),
-        products_path: products_path({ brands: { country: country[0] } })
-      }
+                         {
+                           label: country_name_from_country_code(country[0]),
+                           brands_path: brands_path({ brands: { country: country[0] } }),
+                           products_path: products_path({ brands: { country: country[0] } })
+                         }
     end
   end
 
