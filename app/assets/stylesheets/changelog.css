@@ -7,13 +7,13 @@
 	padding: 1rem;
 	list-style: "";
 
-	ul {
+	> ul {
 		padding-inline-start: 1em;
 		margin-block-start: 1rem;
-	}
 
-	li + li {
-		margin-block-start: 1rem;
+		> li + li {
+			margin-block-start: 1rem;
+		}
 	}
 }
 

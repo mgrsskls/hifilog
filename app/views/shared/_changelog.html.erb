@@ -1,3 +1,23 @@
+<%
+  def convert(unit)
+    case unit
+    when 'kg' then
+      multi = 1 / 0.454
+      other_unit = 'lb'
+    when 'lb' then
+      multi = 0.454
+      other_unit = 'kg'
+    when 'cm' then
+      multi = 1 / 2.54
+      other_unit = 'in'
+    when 'in' then
+      multi = 1 * 2.54
+      other_unit = 'cm'
+    end
+
+    [multi, other_unit]
+  end
+%>
 <% content_for :css do %>
   <%= stylesheet_link_tag "changelog", crossorigin: true, integrity: true %>
 <% end %>
@@ -46,7 +66,52 @@
                           <dt><%= t('changelog.before') %></dt>
                           <dd class="Changelog-old">
                             <% if change[0] == "custom_attributes" %>
-                              <%= JSON.parse(change[1][0]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][0].nil? %>
+                              <% if change[1][0].present? %>
+                                <ul>
+                                  <% JSON.parse(change[1][0]).sort.each do |ca| %>
+                                    <% active_record = CustomAttribute.find_by(label: ca[0]) %>
+                                    <% if active_record.present? %>
+                                      <li>
+                                        <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
+                                        <% if ca[1].is_a?(Hash) %>
+                                          <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
+                                          <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
+                                          <% if ca[1]['value'].is_a?(Hash) %>
+                                            <% ca[1]['value'].each do |v| %>
+                                              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
+                                              <% if active_record.units.size == 2 %>
+                                                <% multi, other_unit = convert(unit) %>
+                                                / <%= number_with_precision(v[1] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
+                                              <% end %>
+                                              <br>
+                                            <% end %>
+                                          <% elsif ca[1]['value'].present? %>
+                                            <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
+                                            <% if active_record.units.size == 2 %>
+                                              <% multi, other_unit = convert(unit) %>
+                                              <% if other_unit %>
+                                                / <%= number_with_precision(ca[1]['value'] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
+                                              <% end %>
+                                            <% end %>
+                                          <% else %>
+                                            n/a
+                                          <% end %>
+                                        <% elsif ca[1].is_a?(Array) %>
+                                          <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
+                                        <% else %>
+                                          <% if active_record[:input_type] == 'boolean' %>
+                                            <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
+                                          <% else %>
+                                            <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
+                                          <% end %>
+                                        <% end %>
+                                      </li>
+                                    <% end %>
+                                  <% end unless change[1][0].nil? %>
+                                </ul>
+                              <% else %>
+                                -
+                              <% end %>
                             <% elsif change[0] == "brand_id" && change[1][0].present? %>
                               <%= Brand.find(change[1][0]).name %>
                             <% elsif change[0] == "country_code" && change[1][0].present? %>
@@ -67,7 +132,52 @@
                           <dt><%= t('changelog.after') %></dt>
                           <dd class="Changelog-new">
                             <% if change[0] == "custom_attributes" %>
-                              <%= JSON.parse(change[1][1]).map { |attribute| t("custom_attributes.#{CustomAttribute.find(attribute[0]).options[attribute[1]]}") }.join(", ") unless change[1][1].nil? %>
+                              <% if change[1][1].present? %>
+                                <ul>
+                                  <% JSON.parse(change[1][1]).sort.each do |ca| %>
+                                    <% active_record = CustomAttribute.find_by(label: ca[0]) %>
+                                    <% if active_record.present? %>
+                                    <li>
+                                        <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
+                                        <% if ca[1].is_a?(Hash) %>
+                                          <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
+                                          <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
+                                          <% if ca[1]['value'].is_a?(Hash) %>
+                                            <% ca[1]['value'].each do |v| %>
+                                              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
+                                              <% if active_record.units.size == 2 %>
+                                                <% multi, other_unit = convert(unit) %>
+                                                / <%= number_with_precision(v[1] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
+                                              <% end %>
+                                              <br>
+                                            <% end %>
+                                          <% elsif ca[1]['value'].present? %>
+                                            <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
+                                            <% if active_record.units.size == 2 %>
+                                              <% multi, other_unit = convert(unit) %>
+                                              <% if other_unit %>
+                                                / <%= number_with_precision(ca[1]['value'] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
+                                              <% end %>
+                                            <% end %>
+                                          <% else %>
+                                            n/a
+                                          <% end %>
+                                        <% elsif ca[1].is_a?(Array) %>
+                                          <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
+                                        <% else %>
+                                          <% if active_record[:input_type] == 'boolean' %>
+                                            <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
+                                          <% else %>
+                                            <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
+                                          <% end %>
+                                        <% end %>
+                                      </li>
+                                    <% end %>
+                                  <% end unless change[1][1].nil? %>
+                                </ul>
+                              <% else %>
+                                -
+                              <% end %>
                             <% elsif change[0] == "brand_id" && change[1][1].present? %>
                               <%= Brand.find(change[1][1]).name %>
                             <% elsif change[0] == "country_code" && change[1][1].present? %>
