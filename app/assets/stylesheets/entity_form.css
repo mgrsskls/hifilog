@@ -74,6 +74,10 @@
 	ul {
 		padding-inline-start: 0;
 	}
+
+	input {
+		transform: none;
+	}
 }
 
 @container form (width <= 48rem) {
