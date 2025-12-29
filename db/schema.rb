@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_085300) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_29_160132) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -462,6 +462,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_085300) do
       products.brand_id,
       brands.name AS brand_name,
       'Product'::text AS item_type,
+      products.created_at,
+      products.updated_at,
       products.id AS product_id,
       NULL::bigint AS product_variant_id,
       NULL::text AS variant_name,
@@ -493,6 +495,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_085300) do
       products.brand_id,
       brands.name AS brand_name,
       'ProductVariant'::text AS item_type,
+      product_variants.created_at,
+      product_variants.updated_at,
       product_variants.product_id,
       product_variants.id AS product_variant_id,
       product_variants.name AS variant_name,
@@ -505,37 +509,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_085300) do
        LEFT JOIN products_sub_categories psc ON ((psc.product_id = products.id)))
        LEFT JOIN sub_categories ON ((sub_categories.id = psc.sub_category_id)))
     GROUP BY product_variants.id, products.name, products.description, product_variants.discontinued, products.slug, product_variants.release_day, product_variants.release_month, product_variants.release_year, product_variants.price, product_variants.price_currency, product_variants.discontinued_year, product_variants.discontinued_month, product_variants.discontinued_day, product_variants.diy_kit, product_variants.model_no, products.custom_attributes, products.brand_id, brands.name, product_variants.product_id, product_variants.name, product_variants.description, product_variants.slug;
-  SQL
-  create_view "product_items_view", sql_definition: <<-SQL
-      SELECT p.id AS item_id,
-      'Product'::text AS item_type,
-      p.name AS product_name,
-      NULL::text AS product_variant_name,
-      b.name AS brand_name,
-      p.model_no,
-      p.price
-     FROM (products p
-       JOIN brands b ON ((b.id = p.brand_id)))
-  UNION ALL
-   SELECT pv.id AS item_id,
-      'ProductVariant'::text AS item_type,
-      p.name AS product_name,
-      pv.name AS product_variant_name,
-      b.name AS brand_name,
-      pv.model_no,
-      pv.price
-     FROM ((product_variants pv
-       JOIN products p ON ((pv.product_id = p.id)))
-       JOIN brands b ON ((b.id = p.brand_id)))
-  UNION ALL
-   SELECT b.id AS item_id,
-      'Brand'::text AS item_type,
-      NULL::text AS product_name,
-      NULL::text AS product_variant_name,
-      b.name AS brand_name,
-      NULL::text AS model_no,
-      NULL::numeric AS price
-     FROM brands b;
   SQL
   create_view "search_results", sql_definition: <<-SQL
       SELECT ('Product-'::text || (p.id)::text) AS id,

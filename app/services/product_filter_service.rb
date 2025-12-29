@@ -115,6 +115,10 @@ class ProductFilterService
                release_month DESC NULLS LAST,
                release_day DESC NULLS LAST,
                LOWER(product_items.name)'
+            when 'added_asc' then 'created_at ASC'
+            when 'added_desc' then 'created_at DESC'
+            when 'updated_asc' then 'updated_at ASC'
+            when 'updated_desc' then 'updated_at DESC'
             else 'LOWER(product_items.name) ASC,
                   release_year ASC NULLS FIRST,
                   release_month ASC NULLS FIRST,
