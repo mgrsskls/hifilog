@@ -66,10 +66,10 @@ class StatisticsController < ApplicationController
     total_spendings = if purchase_possessions.any?
                         purchase_possessions
                           .map do |possession|
-                            {
-                              currency: possession[0],
-                              spendings: possession[1].map(&:price_purchase).sum
-                            }
+                          {
+                            currency: possession[0],
+                            spendings: possession[1].map(&:price_purchase).sum
+                          }
                         end
                       else
                         []
