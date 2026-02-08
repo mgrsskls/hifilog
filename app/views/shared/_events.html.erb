@@ -29,7 +29,7 @@
                       after_destroy_redirect: after_destroy_redirect
                     } do
                     %>
-                      <% bookmark = user_signed_in? ? current_user.bookmarks.find_by(item_id: event.id, item_type: 'Event') : nil %>
+                      <% bookmark = @event_bookmarks[event.id] %>
                       <%= render "shared/bookmark_button",
                         bookmark: bookmark,
                         delete_redirect_to: events_path,

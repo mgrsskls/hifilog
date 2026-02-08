@@ -45,5 +45,11 @@ a user-driven database for hi-fi products, brands and more.'
                       events_in_year.group_by { |e| e.start_date.month }
                     end
     @country_codes = all_events.map(&:country_code).uniq.sort
+    if user_signed_in?
+      event_ids = @years.flat_map { |year| year[1].flat_map { |month| month[1].map(&:id) } }
+      @event_bookmarks = current_user.bookmarks.where(item_type: 'Event', item_id: event_ids).index_by(&:item_id)
+    else
+      @event_bookmarks = {}
+    end
   end
 end
