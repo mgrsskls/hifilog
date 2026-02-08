@@ -112,6 +112,7 @@ class BrandsController < ApplicationController
       sub_category: @sub_category
     ).filter
     @products = filter.products
+                      .includes(:brand)
                       .page(params[:page])
     if @products.out_of_range?
       @products = filter.products
