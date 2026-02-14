@@ -52,6 +52,6 @@ module HistoryHelper
     end
 
     (from + to).sort_by { |possession| possession[:date] }
-               .group_by { |possession| possession[:date].year }
+      .group_by { |possession| possession[:date].year }
   end
 end
