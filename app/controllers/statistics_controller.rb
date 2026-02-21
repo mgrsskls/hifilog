@@ -9,7 +9,7 @@ class StatisticsController < ApplicationController
                                       .where.not(prev_owned: true)
                                       .includes([:product_variant])
                                       .includes([:custom_product])
-                                      .includes([product: [:brand]])
+                                      .includes([{ product: [:brand] }])
 
     @current_products_per_brand = get_products_per_brand(possessions: current_possessions)
 
@@ -47,7 +47,7 @@ class StatisticsController < ApplicationController
     possessions = current_user.possessions
                               .includes([:product_variant])
                               .includes([:custom_product])
-                              .includes([product: [:brand]])
+                              .includes([{ product: [:brand] }])
     @total_products_per_brand = get_products_per_brand(possessions: possessions)
 
     @total_amount_of_products = possessions.size
@@ -107,7 +107,7 @@ class StatisticsController < ApplicationController
     possessions = current_user.possessions
                               .includes([:product_variant])
                               .includes([:custom_product])
-                              .includes([product: [:brand]])
+                              .includes([{ product: [:brand] }])
     products_added = possessions.where.not(period_from: nil)
     products_added_removed = products_added.or(
       possessions.where.not(period_to: nil)
