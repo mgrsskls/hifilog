@@ -16,9 +16,9 @@ class SetupsController < ApplicationController
 
     @all_possessions = map_possessions_to_presenter current_user
                        .possessions.where(prev_owned: false)
-                       .includes([product: [:brand]])
-                       .includes([product_variant: [product: [:brand]]])
-                       .includes([custom_product: [{ images_attachments: :blob }]])
+                       .includes([{ product: [:brand] }])
+                       .includes([{ product_variant: [{ product: [:brand] }] }])
+                       .includes([{ custom_product: [{ images_attachments: :blob }] }])
                        .includes([{ images_attachments: :blob }])
                        .order(
                          [

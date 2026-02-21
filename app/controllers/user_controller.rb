@@ -145,7 +145,7 @@ class UserController < ApplicationController
                       .where(versions: { item_type: 'Product', whodunnit: current_user.id })
     product_variants = ProductVariant.joins(:versions)
                                      .distinct
-                                     .includes([product: [:brand]])
+                                     .includes([{ product: [:brand] }])
                                      .select('product_variants.*, versions.event')
                                      .where(versions: { item_type: 'ProductVariant', whodunnit: current_user.id })
     @items = (products + product_variants)
@@ -171,8 +171,8 @@ class UserController < ApplicationController
 
     if params[:brands].present?
       possessions = current_user.possessions
-                                .includes([product: [:brand]])
-                                .includes([product_variant: [product: [:brand]]])
+                                .includes([{ product: [:brand] }])
+                                .includes([{ product_variant: [{ product: [:brand] }] }])
                                 .where(products: { brand_id: params[:brands] })
 
       brands = params[:brands].map do |brand_id|

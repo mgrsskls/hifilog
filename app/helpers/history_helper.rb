@@ -2,22 +2,22 @@ module HistoryHelper
   def get_history_possessions(possessions)
     all = possessions.where.not(period_from: nil)
                      .or(possessions.where.not(period_to: nil))
-                     .includes([product: [:brand]])
+                     .includes([{ product: [:brand] }])
                      .includes(
                        [
-                         product_variant: [
-                           product: [
+                         { product_variant: [
+                           { product: [
                              :brand
-                           ]
-                         ]
+                           ] }
+                         ] }
                        ]
                      )
                      .includes(
                        [
-                         custom_product:
+                         { custom_product:
                            [
                              { images_attachments: :blob }
-                           ]
+                           ] }
                        ]
                      )
                      .includes([{ images_attachments: :blob }])
@@ -52,6 +52,6 @@ module HistoryHelper
     end
 
     (from + to).sort_by { |possession| possession[:date] }
-      .group_by { |possession| possession[:date].year }
+               .group_by { |possession| possession[:date].year }
   end
 end

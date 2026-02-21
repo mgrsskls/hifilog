@@ -3,25 +3,25 @@ module Possessions
 
   def get_possessions_for_user(possessions: [])
     possessions
-      .includes([product: [{ sub_categories: :category }, :brand]])
+      .includes([{ product: [{ sub_categories: :category }, :brand] }])
       .includes(
         [
-          product_variant: [
-            product: [
+          { product_variant: [
+            { product: [
               { sub_categories: :category },
               :brand
-            ]
-          ]
+            ] }
+          ] }
         ]
       )
       .includes(
         [
-          custom_product:
+          { custom_product:
             [
               { sub_categories: :category, },
               :user,
               { images_attachments: :blob }
-            ]
+            ] }
         ]
       )
       .includes([{ images_attachments: :blob }])

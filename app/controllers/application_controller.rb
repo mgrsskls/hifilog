@@ -77,7 +77,7 @@ class ApplicationController < ActionController::Base
   def newest_products
     Rails.cache.fetch('/newest_products') do
       products = Product.includes([:brand]).order(created_at: :desc).limit(10)
-      product_variants = ProductVariant.includes([product: [:brand]]).order(created_at: :desc).limit(10)
+      product_variants = ProductVariant.includes([{ product: [:brand] }]).order(created_at: :desc).limit(10)
 
       (products + product_variants).sort_by(&:created_at).reverse.take(10)
     end
