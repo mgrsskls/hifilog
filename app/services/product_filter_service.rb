@@ -4,7 +4,7 @@ class ProductFilterService
   include FilterConstants
   include FilterableService
 
-  Result = Struct.new(:products, keyword_init: true)
+  Result = Struct.new(:products)
 
   def initialize(filters: {}, brand_filters: {}, brands: [], category: nil, sub_category: nil)
     @filters = filters
