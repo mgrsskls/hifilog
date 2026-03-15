@@ -117,15 +117,15 @@ Rails.application.routes.draw do
   get '/sitemap.xml', to: 'sitemap#xml', as: :sitemap
   get '/feed.rss', to: 'feed#rss', as: :rss
 
-  get '/changelog', to: 'static#changelog'
-  get '/about', to: 'static#about'
-  get '/privacy-policy', to: 'static#privacy_policy'
-  get '/imprint', to: 'static#imprint'
+  get '/changelog', to: 'static#changelog', constraints: lambda { |req| req.format == :html }
+  get '/about', to: 'static#about', constraints: lambda { |req| req.format == :html }
+  get '/privacy-policy', to: 'static#privacy_policy', constraints: lambda { |req| req.format == :html }
+  get '/imprint', to: 'static#imprint', constraints: lambda { |req| req.format == :html }
   scope '/calculators', as: :calculators do
-    root 'static#calculators'
-    get '/resistors-for-amplifier-to-headphone-adapter', to: 'static#amp_to_headphone_calculator'
+    root 'static#calculators', constraints: lambda { |req| req.format == :html }
+    get '/resistors-for-amplifier-to-headphone-adapter', to: 'static#amp_to_headphone_calculator', constraints: lambda { |req| req.format == :html }
   end
 
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
-  get '*url', to: 'application#not_found', via: :all, constraints: lambda { |req| req.format == :html }
+  get '*url', to: 'application#not_found', via: :all
 end

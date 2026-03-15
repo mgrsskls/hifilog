@@ -103,7 +103,9 @@ class ApplicationController < ActionController::Base
     if action_name == 'changelog' || controller_path.split('/').first == 'admin'
       render
     else
-      render 'not_found', status: :not_found
+      respond_to do |format|
+        format.all  { render 'application/not_found', status: :not_found, formats: [:html] }
+      end
     end
   end
 
