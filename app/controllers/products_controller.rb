@@ -84,6 +84,8 @@ class ProductsController < ApplicationController
                       .flat_map(&:sorted_images)
                       .map { |image| ImagePresenter.new(image) }
 
+    @custom_attributes = CustomAttribute.where(label: @product.custom_attributes&.keys).index_by(&:label)
+
     @contributors = ActiveRecord::Base.connection.execute("
       SELECT DISTINCT
         users.id, users.user_name, users.profile_visibility,

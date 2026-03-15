@@ -6,6 +6,7 @@ one:
   slug: feliks-audio-elise
   sub_categories:
     - one
+  custom_attributes:
 
 two:
   name: Atrium Open
@@ -13,6 +14,7 @@ two:
   slug: zmf-atrium-open
   sub_categories:
     - two
+  custom_attributes:
 
 diy_kit:
   name: DIY Amp
@@ -21,6 +23,7 @@ diy_kit:
   sub_categories:
     - two
   diy_kit: true
+  custom_attributes:
 
 with_custom_attributes:
   name: with_custom_attributes
@@ -54,6 +57,7 @@ with_variants:
   slug: zmf-atrium-closed
   sub_categories:
     - two
+  custom_attributes:
 
 release_date_ymd:
   name: release_date_ymd
@@ -64,6 +68,7 @@ release_date_ymd:
   release_year: 2020
   release_month: 6
   release_day: 1
+  custom_attributes:
 
 release_date_ym:
   name: release_date_ym
@@ -73,6 +78,7 @@ release_date_ym:
     - one
   release_year: 2020
   release_month: 6
+  custom_attributes:
 
 release_date_yd:
   name: release_date_yd
@@ -82,6 +88,7 @@ release_date_yd:
     - one
   release_year: 2020
   release_day: 1
+  custom_attributes:
 
 release_date_md:
   name: release_date_md
@@ -91,6 +98,7 @@ release_date_md:
     - one
   release_month: 6
   release_day: 1
+  custom_attributes:
 
 release_date_y:
   name: release_date_y
@@ -99,6 +107,7 @@ release_date_y:
   sub_categories:
     - one
   release_year: 2020
+  custom_attributes:
 
 release_date_m:
   name: release_date_m
@@ -107,6 +116,7 @@ release_date_m:
   sub_categories:
     - one
   release_month: 6
+  custom_attributes:
 
 release_date_d:
   name: release_date_d
@@ -115,6 +125,7 @@ release_date_d:
   sub_categories:
     - one
   release_day: 1
+  custom_attributes:
 
 discontinued:
   name: discontinued
@@ -123,3 +134,4 @@ discontinued:
   sub_categories:
     - one
   discontinued: true
+  custom_attributes:
