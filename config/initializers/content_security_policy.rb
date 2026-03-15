@@ -10,7 +10,7 @@ unless ENV['DISABLE_CSP']
     config.content_security_policy do |policy|
       policy.base_uri    :self
       policy.default_src :self
-      policy.font_src    :none, 'https://fonts.gstatic.com'
+      policy.font_src    'https://fonts.gstatic.com'
       policy.img_src     :self, :data, ENV['CDN_HOST'], 'https://translate.google.com'
       policy.object_src  :none
       policy.script_src  :self, ENV['CDN_HOST'], 'https://translate.google.com'
