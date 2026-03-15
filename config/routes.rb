@@ -127,5 +127,5 @@ Rails.application.routes.draw do
   end
 
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
-  get '*url', to: 'application#not_found', via: :all, constraints: lambda { |req| req.format == :html }
+  get '*url', to: 'application#not_found', via: :all, constraints: lambda { |req| !req.path.start_with?('/rails/') }
 end
