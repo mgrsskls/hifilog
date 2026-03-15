@@ -16,7 +16,7 @@ unless ENV['DISABLE_CSP']
       policy.script_src  :self, ENV['CDN_HOST'], 'https://translate.google.com'
       policy.style_src   :self, :unsafe_inline, ENV['CDN_HOST']
       policy.frame_src   :self
-      policy.connect_src :self
+      policy.connect_src :self, 'https://*.ingest.de.sentry.io'
       # Specify URI for violation reports
       policy.report_uri ENV['SENTRY_CSP_REPORT_URI'] if ENV['SENTRY_CSP_REPORT_URI'].present?
     end

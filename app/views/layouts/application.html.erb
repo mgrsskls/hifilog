@@ -71,6 +71,7 @@
       <% end %>
       <%= javascript_include_tag "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9594630322589087", nonce: true, crossorigin: "anonymous", async: true unless user_signed_in? %>
     <% end %>
+    <%= javascript_include_tag "sentry", type: "module", nonce: true, crossorigin: true, integrity: true if Rails.env.production? %>
     <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
     <%= yield :css %>
     <%= csrf_meta_tags %>
