@@ -139,7 +139,7 @@
             <time datetime="<%= format_iso_datetime @note.updated_at %>"><%= format_datetime(@note.updated_at).html_safe %></time>
           <% end %>
         <% else %>
-          <%= link_to "Add notes", user_signed_in? ? product_new_notes_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_new_notes_path(product_id: @product.friendly_id)) %>
+          <%= link_to "Add notes", user_signed_in? ? product_new_notes_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_new_notes_path(product_id: @product.friendly_id)), rel: "nofollow" %>
         <% end %>
       </dd>
       <dt><%= t('product.meta.owned_by') %></dt>
@@ -149,10 +149,10 @@
     <div class="Entity-meta">
       <ul class="Entity-metaLinks MetaLinks">
         <li>
-          <%= link_to t('edit'), user_signed_in? ? edit_product_path(id: @product.friendly_id) : new_user_session_path(redirect: edit_product_path(id: @product.friendly_id)) %>
+          <%= link_to t('edit'), user_signed_in? ? edit_product_path(id: @product.friendly_id) : new_user_session_path(redirect: edit_product_path(id: @product.friendly_id)), rel: "nofollow" %>
         </li>
         <li>
-          <%= link_to t('headings.changelog'), user_signed_in? ? product_changelog_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_changelog_path(product_id: @product.friendly_id)) %>
+          <%= link_to t('headings.changelog'), user_signed_in? ? product_changelog_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_changelog_path(product_id: @product.friendly_id)), rel: "nofollow" %>
         </li>
       </ul>
 
