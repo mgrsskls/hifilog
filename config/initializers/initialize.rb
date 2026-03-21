@@ -1,5 +1,3 @@
-Rails.application.config.google_adsense_enabled = ENV['ENABLE_GOOGLE_ADSENSE'] == '1'
-
 APP_NAME = 'HiFi Log'
 IPS_BLOCKED_FOR_ANALYTICS = [
 	# START https://docs-cortex.paloaltonetworks.com/r/1/Cortex-Xpanse/Scanning-activity

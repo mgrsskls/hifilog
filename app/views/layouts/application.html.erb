@@ -63,14 +63,6 @@
       <%= javascript_include_tag "signed_in", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
       <%= javascript_include_tag "delete_form", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
     <% end %>
-    <% if Rails.application.config.google_adsense_enabled && !user_signed_in? %>
-      <%= javascript_tag nonce: true do %>
-        function renderAdMessage() {
-          ad.closest(".Header-adWrapper").innerHTML = "<p><small>Ads help keeping HiFi Log free. Please consider allowing ads for hifilog.com. We only use ads that do not track you.</small></p>"
-        }
-      <% end %>
-      <%= javascript_include_tag "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9594630322589087", nonce: true, crossorigin: "anonymous", async: true unless user_signed_in? %>
-    <% end %>
     <%= javascript_include_tag "sentry", type: "module", nonce: true, crossorigin: true, integrity: true if Rails.env.production? %>
     <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
     <%= yield :css %>
@@ -100,23 +92,6 @@
     <header>
       <div class="Header is-dark">
         <a class="Skip" href="#content"><%= t('skip_to_main_content') %></a>
-        <% if Rails.application.config.google_adsense_enabled && !user_signed_in? %>
-          <div class="Header-ad u-container">
-            <div class="Header-adWrapper">
-              <p><small>Ads help keeping HiFi Log free. <a href="<%= new_user_registration_path %>">Sign up</a> for no ads.</small></p>
-              <ins class="adsbygoogle" data-ad-client="ca-pub-9594630322589087" data-ad-slot="1622364274"></ins>
-              <%= javascript_tag nonce: true do %>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-
-                const ad = document.querySelector(".adsbygoogle");
-
-                if (ad && !ad.checkVisibility()) {
-                  renderAdMessage();
-                }
-              <% end %>
-            </div>
-          </div>
-        <% end %>
         <div class="Header-wrapper u-container">
           <% if user_signed_in? %>
             <a class="Menu-home" href="<%= dashboard_root_path %>"<% if current_page?(dashboard_root_path) %> aria-current="page"<% end %>>
