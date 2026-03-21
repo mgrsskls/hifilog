@@ -56,6 +56,8 @@
         <% end %>
       }
     <% end %>
+    <%= stylesheet_link_tag "application" %>
+    <%= yield :css %>
     <%= yield :js %>
     <%= javascript_include_tag "application", type: "module" %>
     <% unless @reduced_layout %>
@@ -63,8 +65,6 @@
       <%= javascript_include_tag "delete_form", type: "module" if user_signed_in? %>
     <% end %>
     <%= javascript_include_tag "sentry", type: "module" if Rails.env.production? %>
-    <%= stylesheet_link_tag "application" %>
-    <%= yield :css %>
     <meta name="description" content="<%= @meta_desc.present? ? @meta_desc.squish.html_safe : (strip_tags t('meta_description')) %>">
     <link rel="icon" href="/favicon.ico?v=6" sizes="32x32">
     <link rel="icon" href="/icon.svg?v=8" type="image/svg+xml">
