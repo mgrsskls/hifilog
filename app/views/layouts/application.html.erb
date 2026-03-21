@@ -66,7 +66,6 @@
     <%= javascript_include_tag "sentry", type: "module", nonce: true, crossorigin: true, integrity: true if Rails.env.production? %>
     <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
     <%= yield :css %>
-    <%= csp_meta_tag %>
     <meta name="description" content="<%= @meta_desc.present? ? @meta_desc.squish.html_safe : (strip_tags t('meta_description')) %>">
     <link rel="icon" href="/favicon.ico?v=6" sizes="32x32">
     <link rel="icon" href="/icon.svg?v=8" type="image/svg+xml">
