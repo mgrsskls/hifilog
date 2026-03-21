@@ -11,10 +11,13 @@ unless ENV['DISABLE_CSP']
       policy.base_uri    :self
       policy.default_src :self
       policy.font_src    'https://fonts.gstatic.com'
-      policy.img_src     :self, :data, ENV['CDN_HOST'], 'https://translate.google.com'
+      policy.img_src     :self, :data, 'https://translate.google.com'
       policy.object_src  :none
-      policy.script_src  :self, ENV['CDN_HOST'], 'https://translate.google.com', 'sha256-IFGn1NVcMcaShOkXxx97DFSvga/jpME0sMZb/CMQHVA='
-      policy.style_src   :self, :unsafe_inline, ENV['CDN_HOST']
+      policy.script_src  :self,
+        'https://translate.google.com',
+        'sha256-IFGn1NVcMcaShOkXxx97DFSvga/jpME0sMZb/CMQHVA=', # application.html.erb logged in
+        'sha256-kc8qPAgjdmXBOha1O8XJumFnV3dbSKuYfjpVkLJbfW4=' # application.html.erb logged out
+      policy.style_src   :self, :unsafe_inline
       policy.frame_src   :self
       policy.connect_src :self, 'https://*.ingest.de.sentry.io'
       # Specify URI for violation reports

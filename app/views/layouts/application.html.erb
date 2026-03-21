@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="preconnect" href="<%= ENV['CDN_HOST'] %>">
     <% if params[:controller] == "application" && params[:action] == "index" %>
       <link rel="preload" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
     <% end %>
@@ -58,13 +57,13 @@
       }
     <% end %>
     <%= yield :js %>
-    <%= javascript_include_tag "application", type: "module", nonce: true, crossorigin: true, integrity: true %>
+    <%= javascript_include_tag "application", type: "module" %>
     <% unless @reduced_layout %>
-      <%= javascript_include_tag "signed_in", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
-      <%= javascript_include_tag "delete_form", type: "module", nonce: true, crossorigin: true, integrity: true if user_signed_in? %>
+      <%= javascript_include_tag "signed_in", type: "module" if user_signed_in? %>
+      <%= javascript_include_tag "delete_form", type: "module" if user_signed_in? %>
     <% end %>
-    <%= javascript_include_tag "sentry", type: "module", nonce: true, crossorigin: true, integrity: true if Rails.env.production? %>
-    <%= stylesheet_link_tag "application", crossorigin: true, integrity: true %>
+    <%= javascript_include_tag "sentry", type: "module" if Rails.env.production? %>
+    <%= stylesheet_link_tag "application" %>
     <%= yield :css %>
     <meta name="description" content="<%= @meta_desc.present? ? @meta_desc.squish.html_safe : (strip_tags t('meta_description')) %>">
     <link rel="icon" href="/favicon.ico?v=6" sizes="32x32">

@@ -1,5 +1,5 @@
 <% content_for :js do %>
-  <%= javascript_include_tag "gallery", type: "module", nonce: true, crossorigin: true, integrity: true %>
+  <%= javascript_include_tag "gallery", type: "module" %>
 <% end %>
 <%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category } do %>
   <% if @possessions.any? %>

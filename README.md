@@ -21,11 +21,4 @@ _HiFi Log_ is a user-driven platform for hi-fi products and brands.
 
 1. `cp .pre-commit .git/hooks/pre-commit`
 2. `touch .env`
-3. Add the following to `.env`:
-
-```
-CDN_HOST=http://127.0.0.1
-CDN_PORT=3000
-```
-
-4. `rails db:setup`
+3. `rails db:setup`
