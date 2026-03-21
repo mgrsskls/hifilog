@@ -17,6 +17,35 @@ import "./_search.js";
 	);
 	const filterCheckboxes = document.querySelectorAll(".Filter .Pagination");
 	const signUpCall = document.querySelector(".SignUpCall");
+	const sortSelect = document.querySelector("#sort-select");
+	const selectCategory = document.querySelector(".SelectCategory");
+	const searchFilterForm = document.getElementById("search-filter");
+
+	if (searchFilterForm) {
+		const button = searchFilterForm.querySelector("button");
+
+		if (button) {
+			button.hidden = true;
+
+			searchFilterForm.querySelectorAll("input").forEach((input) => {
+				input.addEventListener("change", () => {
+					searchFilterForm.submit();
+				});
+			});
+		}
+	}
+
+	if (selectCategory) {
+		selectCategory.addEventListener("change", () =>
+			selectCategory.closest("form").submit(),
+		);
+	}
+
+	if (sortSelect) {
+		sortSelect.addEventListener("change", ({ target }) => {
+			target.closest("form").submit();
+		});
+	}
 
 	if (signUpCall) {
 		const button = signUpCall.querySelector("button");

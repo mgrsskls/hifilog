@@ -23,11 +23,6 @@
           <form class="u-flex u-alignCenter u-gap-md">
             <%= hidden_fields_for_params(params.except(:order, :controller, :action)) %>
             <%= yield :sort %>
-            <%= javascript_tag nonce: true do %>
-              document.querySelector("#sort-select").addEventListener("change", ({ target }) => {
-                target.closest("form").submit();
-              });
-            <% end %>
           </form>
         </div>
         <%= yield :table %>

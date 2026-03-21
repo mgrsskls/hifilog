@@ -108,4 +108,46 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 			});
 	}
+
+	const deleteAccountButton = document.querySelector(".DeleteAccount");
+
+	if (deleteAccountButton) {
+		deleteAccountButton.closest("form").addEventListener("submit", (event) => {
+			if (!window.confirm(deleteAccountButton.dataset.msg)) {
+				event.preventDefault();
+			}
+		});
+	}
+
+	const productOptionsForm = document.querySelector(".js-ProductOptionsForm");
+
+	if (productOptionsForm) {
+		const button = productOptionsForm.querySelector(
+			".js-ProductOptionsForm-button",
+		);
+		const list = productOptionsForm.querySelector("ol");
+
+		if (button && list) {
+			button.addEventListener("click", () => {
+				const clone = list.firstElementChild.cloneNode(true);
+				const inputs = clone.querySelectorAll("input");
+
+				inputs[0].id = `${inputs[0].id}-${Date.now()}`;
+				inputs[0].name = inputs[0].name.replace(
+					new RegExp(/[0-9]+/),
+					list.querySelectorAll("li").length,
+				);
+				inputs[0].value = "";
+
+				inputs[1].id = `${inputs[1].id}-${Date.now()}`;
+				inputs[1].name = inputs[1].name.replace(
+					new RegExp(/[0-9]+/),
+					list.querySelectorAll("li").length,
+				);
+				inputs[1].value = "";
+
+				list.appendChild(document.importNode(clone, true));
+			});
+		}
+	}
 });

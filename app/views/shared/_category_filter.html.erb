@@ -12,13 +12,4 @@
       <% end %>
     </select>
   </form>
-  <%= javascript_tag nonce: true do %>
-    {
-      const selectCategory = document.querySelector(".SelectCategory");
-
-      if (selectCategory) {
-        selectCategory.addEventListener("change", () => selectCategory.closest("form").submit());
-      }
-    }
-  <% end %>
 <% end %>

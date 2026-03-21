@@ -20,25 +20,6 @@
           <%= Brand.model_name.human(count: 2) %>
         </label>
         <button class="Button">Filter</button>
-        <%= javascript_tag nonce: true do %>
-          {
-            const form = document.getElementById("search-filter");
-
-            if (form) {
-              const button = form.querySelector("button");
-
-              if (button) {
-                button.hidden = true;
-
-                form.querySelectorAll("input").forEach(input => {
-                  input.addEventListener("change", () => {
-                    form.submit();
-                  })
-                });
-              }
-            }
-          }
-        <% end %>
       </div>
     </form>
 

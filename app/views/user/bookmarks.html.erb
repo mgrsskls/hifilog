@@ -49,11 +49,6 @@
           <option value="added_desc"<%= " selected" %>><%= t('sort_by.added_desc') %></option>
           <option value="added_asc"<%= " selected" if params[:sort] == "added_asc" %>><%= t('sort_by.added_asc') %></option>
         </select>
-        <%= javascript_tag nonce: true do %>
-          document.querySelector("#sort-select").addEventListener("change", ({ target }) => {
-            target.closest("form").submit();
-          });
-        <% end %>
       </form>
     </div>
 

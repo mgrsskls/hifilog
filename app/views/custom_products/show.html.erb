@@ -222,16 +222,6 @@
           <% end %>
         </div>
       <% end %>
-    <% end %>
-
-    <% if @possession %>
-      <%= javascript_tag nonce: true do %>
-        document.querySelectorAll(".SetupSelect").forEach(select => {
-          select.addEventListener("change", () => {
-            select.closest("form").submit();
-          });
-        });
-      <% end %>
     </div>
   <% end %>
 </div>

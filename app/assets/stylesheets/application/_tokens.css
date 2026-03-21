@@ -69,10 +69,6 @@ html {
 	background: var(--color-bg-main);
 	scroll-padding-block-start: calc(var(--header-height) + 2rem);
 	scroll-behavior: smooth;
-
-	&:has(.Header-ad) {
-		--header-height: calc(var(--header-menu-height) + 3.125rem + 1rem);
-	}
 }
 
 html,

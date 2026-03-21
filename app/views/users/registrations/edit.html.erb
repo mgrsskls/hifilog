@@ -149,20 +149,5 @@
     <p><%= t('user.edit.delete.intro') %></p>
 
     <%= button_to t('user.edit.delete.submit'), registration_path(current_user), method: :delete, class: "DeleteAccount Button Button--negative", "data-msg": t('user.edit.delete.confirm') %>
-
-    <%= javascript_tag nonce: true do %>
-      {
-        const button = document.querySelector(".DeleteAccount");
-
-        if (button) {
-
-          button.closest("form").addEventListener("submit", (event) => {
-            if (!window.confirm(button.dataset.msg)) {
-              event.preventDefault();
-            }
-          });
-        }
-      }
-    <% end %>
   </div>
 <% end %>
