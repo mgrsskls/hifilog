@@ -16,7 +16,8 @@ unless ENV['DISABLE_CSP']
       policy.script_src  :self,
         'https://translate.google.com',
         'sha256-IFGn1NVcMcaShOkXxx97DFSvga/jpME0sMZb/CMQHVA=', # application.html.erb logged in
-        'sha256-kc8qPAgjdmXBOha1O8XJumFnV3dbSKuYfjpVkLJbfW4=' # application.html.erb logged out
+        'sha256-kc8qPAgjdmXBOha1O8XJumFnV3dbSKuYfjpVkLJbfW4=', # application.html.erb logged out
+        'sha256-pbMT5G+LDCIWy/FBnicfz3TU8g8+7KAH5lbzSU/zeoE=' # application.html.erb speculationrules
       policy.style_src   :self, :unsafe_inline
       policy.frame_src   :self
       policy.connect_src :self, 'https://*.ingest.de.sentry.io'

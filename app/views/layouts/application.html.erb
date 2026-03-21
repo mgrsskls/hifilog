@@ -404,7 +404,7 @@
         </div>
       </div>
     </footer>
-    <%= content_tag(:script, nonce: content_security_policy_nonce, type: "speculationrules") do %>
+    <%= content_tag(:script, type: "speculationrules") do %>
       {
         "prefetch": [
           {
