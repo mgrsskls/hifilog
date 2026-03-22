@@ -1,5 +1,14 @@
 <% categories ||= [] %>
 
+<% content_for :preloading do %>
+  <% if user.decorative_image.attached? %>
+    <link rel="preload" href="<%= cdn_image_url(user.decorative_image.variant(:large)) %>" as="image" type="image/webp">
+  <% end %>
+  <% if user.avatar.attached? && current_user != user %>
+    <link rel="preload" href="<%= cdn_image_url(user.avatar.variant(:thumb)) %>" as="image" type="image/webp">
+  <% end %>
+<% end %>
+
 <% content_for :css do %>
   <%= stylesheet_link_tag "profile" %>
 <% end %>

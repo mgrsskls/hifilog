@@ -5,6 +5,10 @@
     <% if params[:controller] == "application" && params[:action] == "index" %>
       <link rel="preload" href="<%= asset_url "/home/01.avif" %> " as="image" type="image/avif">
     <% end %>
+    <% if current_user&.avatar&.attached? %>
+      <link rel="preload" href="<%= cdn_image_url(current_user.avatar.variant(:thumb)) %>" as="image" type="image/webp">
+    <% end %>
+    <%= yield :preloading %>
     <title><%= strip_tags(page_title).html_safe %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= javascript_tag do %>
