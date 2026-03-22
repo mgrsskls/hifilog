@@ -14,7 +14,7 @@
   <div class="Profile-header">
     <% if user.decorative_image.attached? %>
       <picture>
-        <%= image_tag cdn_image_url(user.decorative_image.variant(:large)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314 %>
+        <%= image_tag cdn_image_url(user.decorative_image.variant(:large)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314, "fetchpriority": "high" %>
       </picture>
     <% end %>
   </div>
