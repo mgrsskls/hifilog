@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_29_160132) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_22_084809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -150,7 +150,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_29_160132) do
     t.index "\"left\"((name)::text, 1)", name: "index_brands_name_prefix"
     t.index ["country_code"], name: "index_brands_on_country_code"
     t.index ["discontinued"], name: "index_brands_on_discontinued"
-    t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_brands_on_name", unique: true
     t.index ["slug"], name: "index_brands_on_slug", unique: true
   end
@@ -284,7 +283,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_29_160132) do
     t.bigint "product_id"
     t.bigint "product_variant_id"
     t.datetime "updated_at", null: false
+    t.index ["model_no", "product_id"], name: "index_product_options_model_no_product_id", unique: true
     t.index ["model_no", "product_id"], name: "index_product_options_on_model_no_and_product_id", unique: true, where: "(model_no IS NOT NULL)"
+    t.index ["model_no", "product_variant_id"], name: "index_product_options_model_no_product_variant_id", unique: true
     t.index ["model_no", "product_variant_id"], name: "index_product_options_on_model_no_and_product_variant_id", unique: true, where: "(model_no IS NOT NULL)"
     t.index ["option", "product_id"], name: "index_product_options_on_option_and_product_id", unique: true
     t.index ["option", "product_variant_id"], name: "index_product_options_on_option_and_product_variant_id", unique: true
@@ -334,12 +335,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_29_160132) do
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
+    t.index ["brand_id", "model_no"], name: "index_products_brand_id_model_no", unique: true
     t.index ["brand_id"], name: "index_products_on_brand_id"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
     t.index ["discontinued"], name: "index_products_on_discontinued"
     t.index ["diy_kit"], name: "index_products_on_diy_kit"
     t.index ["model_no", "brand_id"], name: "index_products_on_model_no_and_brand_id", unique: true, where: "(model_no IS NOT NULL)"
-    t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_products_on_name"
     t.index ["release_day"], name: "index_products_on_release_day"
     t.index ["release_month"], name: "index_products_on_release_month"

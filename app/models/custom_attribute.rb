@@ -11,6 +11,7 @@ class CustomAttribute < ApplicationRecord
   }, suffix: true
 
   validates :label, presence: true, uniqueness: true
+  validates :highlighted, presence: true
   validate :units_must_be_valid
   validate :inputs_must_be_valid
 
