@@ -7,22 +7,18 @@ class UsersController < ApplicationController
     @page_title = User.model_name.human(count: 2)
     @meta_desc = 'See all users of hifilog.com with public profiles and how much they contributed. ' \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
-    @users_by_products = User.find_by_sql('
-      SELECT t2.id, t2.user_name, t2.profile_visibility, t2.created_at, COUNT(t2.id) as count FROM (
-        SELECT
-          users.id,
-          users.user_name,
-          users.profile_visibility,
-          users.created_at,
-          versions.item_id
-        FROM "versions"
-        INNER JOIN users
-        ON users.id = CAST(versions.whodunnit as bigint)
-        GROUP BY users.id, versions.item_id
-      ) AS t2
-      GROUP BY id, user_name, profile_visibility, created_at
-      ORDER BY count DESC
-    ')
+    @users_by_products = User
+                         .joins('INNER JOIN "versions" ON "versions"."whodunnit" = CAST("users"."id" AS varchar)')
+                         .includes(:avatar_attachment)
+                         .select('
+                           users.id,
+                           users.user_name,
+                           users.profile_visibility,
+                           users.created_at,
+                           COUNT(DISTINCT versions.item_id) as count
+                         ')
+                         .group('users.id, users.user_name, users.profile_visibility, users.created_at')
+                         .order(count: :desc)
   end
 
   def show
