@@ -31,17 +31,17 @@ class ProductsController < ApplicationController
       sub_category: @sub_category,
       brand_filters: active_index_brand_filters
     ).filter
+
+    page_num = params[:page].presence || 1
     @products = filter.products
                       .includes(:brand)
-                      .page(params[:page])
+                      .page(page_num)
+
+    # Reset to page 1 if out of range
+    @products = filter.products.includes(:brand).page(1) if @products.out_of_range?
+
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
     @custom_attributes_for_products = CustomAttribute.all
-
-    if @products.out_of_range?
-      @products = filter.products
-                        .includes(:brand)
-                        .page(1)
-    end
 
     @canonical_url = products_url
 
@@ -341,7 +341,7 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def allowed_index_filter_params
-    allowed = [:category, :sort,
+    allowed = [:category, :sort, :page,
                { products: [:status, :query, :diy_kit, *build_custom_attributes_hash(@custom_attributes)] }]
     params.permit(allowed)
   end
