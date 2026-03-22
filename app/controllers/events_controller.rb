@@ -38,13 +38,16 @@ a user-driven database for hi-fi products, brands and more.'
 
   def get_events(all_events: [], order: :asc)
     @events = all_events.includes(event_attendees: [:user])
-    @events = all_events.where(country_code: params[:country]) if params[:country].present?
+    @events = @events.where(country_code: params[:country]) if params[:country].present?
     @years = @events.order(start_date: order)
-                    .group_by { |e| e.start_date.year }
-                    .transform_values do |events_in_year|
-                      events_in_year.group_by { |e| e.start_date.month }
+                    .each_with_object({}) do |event, hash|
+                      year = event.start_date.year
+                      month = event.start_date.month
+                      hash[year] ||= {}
+                      hash[year][month] ||= []
+                      hash[year][month] << event
                     end
-    @country_codes = all_events.map(&:country_code).uniq.sort
+    @country_codes = all_events.select(:country_code).distinct.pluck(:country_code).sort
     if user_signed_in?
       event_ids = @years.flat_map { |year| year[1].flat_map { |month| month[1].map(&:id) } }
       @event_bookmarks = current_user.bookmarks.where(item_type: 'Event', item_id: event_ids).index_by(&:item_id)
