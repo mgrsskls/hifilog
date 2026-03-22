@@ -1,11 +1,11 @@
 class EventsController < ApplicationController
   def index
-    all_events = Event.where(end_date: Time.zone.today..).or(Event.where(start_date: Time.zone.today.., end_date: nil))
-    get_events(all_events:, order: :asc)
-    @all_upcoming_events_count = all_events.size
-    @all_past_events_count = Event.where(end_date: ..Time.zone.yesterday)
-                                  .or(Event.where(start_date: ..Time.zone.yesterday, end_date: nil))
-                                  .size
+    @all_upcoming_events_count = Event.cached_upcoming_count
+    @all_past_events_count = Event.cached_past_count
+
+    all_upcoming_events = Event.upcoming
+    get_events(base_relation: all_upcoming_events, order: :asc)
+
     @page_title = 'Hi-Fi Events &amp; Shows'
     @meta_desc = 'Find all upcoming hi-fi events and shows on HiFi Log,
 a user-driven database for hi-fi products, brands and more.'
@@ -16,13 +16,10 @@ a user-driven database for hi-fi products, brands and more.'
   end
 
   def past
-    # Use scopes for readability
+    @all_upcoming_events_count = Event.cached_upcoming_count
+    @all_past_events_count = Event.cached_past_count
+
     all_past_events = Event.past
-
-    # Optimization: Cache the counts to avoid heavy SQL hits every pageload
-    @all_upcoming_events_count = Rails.cache.fetch('upcoming_events_count', expires_in: 1.hour) { Event.upcoming.size }
-    @all_past_events_count = Rails.cache.fetch('past_events_count', expires_in: 1.hour) { all_past_events.size }
-
     get_events(base_relation: all_past_events, order: :desc)
 
     @page_title = 'Past Hi-Fi Events &amp; Shows'
