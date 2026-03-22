@@ -158,7 +158,7 @@
   <div class="Form-field EntityForm-attributes">
     <h3><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h3>
     <div class="Options EntityFormAttributes is-light">
-      <% CustomAttribute.all.each do |custom_attribute| %>
+      <% CustomAttribute.all_cached.each do |custom_attribute| %>
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
           <% if custom_attribute.options&.any? %>
             <div class="EntityFormAttribute-label">

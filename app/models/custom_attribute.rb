@@ -2,6 +2,9 @@ class CustomAttribute < ApplicationRecord
   VALID_UNITS = %w[in cm lb kg db w ohm hz db_1w_1m db_283v_1m db_mw].freeze
   VALID_INPUTS = %w[w h l min max].freeze
 
+  # after_commit ensures the DB transaction is finished before we clear cache
+  after_commit :clear_cache
+
   has_and_belongs_to_many :sub_categories
   enum :input_type, {
     number: 'number',
@@ -25,6 +28,12 @@ class CustomAttribute < ApplicationRecord
       self.options = JSON.parse(options) if options.is_a?(String)
     else
       self.options = nil
+    end
+  end
+
+  def self.all_cached
+    Rails.cache.fetch('all_custom_attributes') do
+      all.to_a # .to_a executes the query and stores the array
     end
   end
 
@@ -59,4 +68,10 @@ class CustomAttribute < ApplicationRecord
     %w[]
   end
   # :nocov:
+
+  private
+
+  def clear_cache
+    Rails.cache.delete('all_custom_attributes')
+  end
 end

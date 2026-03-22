@@ -119,7 +119,7 @@ class BrandsController < ApplicationController
                         .page(1)
     end
     @canonical_url = brand_products_url(brand_id: @brand.friendly_id)
-    @custom_attributes_for_products = CustomAttribute.all
+    @custom_attributes_for_products = CustomAttribute.all_cached
     @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |c| c[0].order }

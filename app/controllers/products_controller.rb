@@ -41,7 +41,7 @@ class ProductsController < ApplicationController
     @products = filter.products.includes(:brand).page(1) if @products.out_of_range?
 
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
-    @custom_attributes_for_products = CustomAttribute.all
+    @custom_attributes_for_products = CustomAttribute.all_cached
 
     @canonical_url = products_url
 
