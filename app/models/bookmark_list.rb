@@ -1,9 +1,6 @@
 class BookmarkList < ApplicationRecord
   belongs_to :user
-  # rubocop:disable Rails/HasManyOrHasOneDependent
-  has_many :bookmarks
-  # rubocop:enable Rails/HasManyOrHasOneDependent
-
+  has_many :bookmarks, dependent: :nullify
   validates :name, presence: true, uniqueness: { scope: :user_id }
 
   # :nocov:
