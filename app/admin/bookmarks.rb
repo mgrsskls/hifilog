@@ -7,8 +7,10 @@ ActiveAdmin.register Bookmark do
     selectable_column
     id_column
     column :user
-    column "Product" do |bookmark|
-      if bookmark.item_type == 'ProductVariant'
+    column "Bookmark" do |bookmark|
+      if bookmark.item_type == 'Event'
+        Event.find(bookmark.item_id)
+      elsif bookmark.item_type == 'ProductVariant'
         ProductVariant.find(bookmark.item_id)
       else
         Product.find(bookmark.item_id)
