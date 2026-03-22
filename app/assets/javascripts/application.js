@@ -4,7 +4,7 @@ import "./_search.js";
 {
 	let scrollY = 0;
 
-	const eventsFilter = document.querySelector("#events-filter");
+	const eventsFilter = document.querySelectorAll(".events-filter");
 	const headerToggle = document.querySelector(".Header-toggle");
 	const sidebarToggle = document.querySelector(".Sidebar-toggle");
 	const menuButtons = document.querySelectorAll("button.MenuMain-link");
@@ -75,9 +75,9 @@ import "./_search.js";
 		}
 	});
 
-	if (eventsFilter) {
-		eventsFilter.addEventListener("change", onEventsFilterChange);
-	}
+	eventsFilter.forEach((filter) => {
+		filter.addEventListener("change", onEventsFilterChange);
+	});
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);

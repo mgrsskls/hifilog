@@ -5,6 +5,15 @@ class Event < ApplicationRecord
   scope :past, -> { where(end_date: ..Time.zone.yesterday).or(where(start_date: ..Time.zone.yesterday, end_date: nil)) }
   scope :upcoming, -> { where(end_date: Time.zone.today..).or(where(start_date: Time.zone.today.., end_date: nil)) }
 
+  scope :by_year, lambda { |year|
+    where(start_date: Date.new(year.to_i, 1, 1)..Date.new(year.to_i, 12, 31))
+  }
+
+  def self.available_past_years
+    # Pluck only years from past events for the filter menu
+    past.pluck(:start_date).compact.map(&:year).uniq.sort.reverse
+  end
+
   after_commit :flush_event_counts
 
   def self.cached_past_count

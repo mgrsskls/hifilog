@@ -17,25 +17,48 @@
   <div class="u-flex u-spaceBetween u-gap-md u-flexWrap">
     <% filtered_country_name = country_name_from_country_code(params[:country]) if params[:country].present? %>
     <% temp = @active_events == :upcoming ? 'upcoming' : 'past' %>
-    <p class="u-mb-0">
+    <p class="u-mb-0 u-flex u-alignCenter">
       <small>
-        <%= filtered_country_name.present? ? "#{@events.size} #{temp} events in #{filtered_country_name}." : "#{@events.size} #{temp} events worldwide." %>
+        <% if filtered_country_name.present? && @selected_year.present? %>
+          <%= "#{@events.size} #{temp} events in #{filtered_country_name} in #{@selected_year}." %>
+        <% elsif filtered_country_name.present? %>
+          <%= "#{@events.size} #{temp} events in #{filtered_country_name}." %>
+        <% elsif @selected_year.present? %>
+          <%= "#{@events.size} #{temp} events in #{@selected_year}." %>
+        <% else %>
+          <%= "#{@events.size} #{temp} events worldwide." %>
+        <% end %>
       </small>
     </p>
 
-    <form class="u-flex u-gap-md u-alignCenter">
-      <label for="events-filter">Countries</label>
-      <%= country_select(nil,
-        "country",
-        {
-        only: @country_codes,
-          include_blank: "All",
-          selected: params[:country]&.upcase
-        },
-        {
-          id: "events-filter"
-        })
-      %>
+    <form class="u-flex u-gap-md u-alignCenter u-flexWrap">
+      <% if @active_events == :past %>
+        <div class="u-flex u-gap-md u-alignCenter">
+          <label for="events-year-filter">Year</label>
+          <select name="year" id="events-year-filter" class="events-filter">
+            <% @available_years.each do |year| %>
+              <option value="<%= year %>"<%= " selected" if year.to_s == @selected_year.to_s %>>
+                <%= year %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+      <% end %>
+      <div class="u-flex u-gap-md u-alignCenter">
+        <label for="events-country-filter">Countries</label>
+        <%= country_select(nil,
+          "country",
+          {
+          only: @country_codes,
+            include_blank: "All",
+            selected: params[:country]&.upcase
+          },
+          {
+            id: "events-country-filter",
+            class: "events-filter"
+          })
+        %>
+      </div>
     </form>
   </div>
 <% end %>
