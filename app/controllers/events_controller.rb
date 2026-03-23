@@ -54,7 +54,7 @@ a user-driven database for hi-fi products, brands and more.'
     end
 
     # 4. Global list of country codes for the filter dropdown
-    @country_codes = Rails.cache.fetch('events/country_codes', expires_in: 24.hours) do
+    @country_codes = Rails.cache.fetch('events/country_codes') do
       Event.distinct.pluck(:country_code).compact.sort
     end
 

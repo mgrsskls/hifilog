@@ -14,7 +14,7 @@ class Event < ApplicationRecord
     past.pluck(:start_date).compact.map(&:year).uniq.sort.reverse
   end
 
-  after_commit :flush_event_counts
+  after_commit :flush_event_cache
 
   def self.cached_past_count
     Rails.cache.fetch('events/past_count', expires_in: time_until_midnight) do
@@ -48,8 +48,9 @@ class Event < ApplicationRecord
     (Date.tomorrow.beginning_of_day - Time.current).to_i.seconds
   end
 
-  def flush_event_counts
+  def flush_event_cache
     Rails.cache.delete('events/past_count')
     Rails.cache.delete('events/upcoming_count')
+    Rails.cache.delete('events/country_codes')
   end
 end
