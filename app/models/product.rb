@@ -88,6 +88,7 @@ class Product < ApplicationRecord
   end
 
   def url_slug
+    return if display_name.blank?
     return "#{display_name} #{model_no}".parameterize if model_no.present?
 
     display_name.parameterize

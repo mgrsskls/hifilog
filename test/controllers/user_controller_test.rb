@@ -151,7 +151,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     get dashboard_past_events_path
     assert_response :success
 
-    get dashboard_past_events_path(year: Date.today.year)
+    get dashboard_past_events_path(year: Time.zone.today.year)
     assert_response :success
   end
 
