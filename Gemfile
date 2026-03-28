@@ -55,6 +55,7 @@ group :development do
   gem "rails_best_practices"
   gem "reek"
   gem "fasterer"
+  gem "brakeman"
 end
 
 group :test do
