@@ -1,0 +1,10 @@
+exclude_paths:
+  - app/admin
+  - config
+  - db
+  - test
+detectors:
+  FeatureEnvy:
+    enabled: false
+  IrresponsibleModule:
+    enabled: false

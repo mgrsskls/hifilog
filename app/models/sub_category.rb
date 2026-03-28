@@ -33,7 +33,7 @@ class SubCategory < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[]
+    %w[brands category custom_attributes custom_products products]
   end
   # :nocov:
 

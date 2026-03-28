@@ -97,7 +97,7 @@
             </dd>
           </dl>
 
-          <%= render "shared/product_custom_attributes", attributes: @product.custom_attributes if @product.custom_attributes&.any? %>
+          <%= render "shared/product_custom_attributes", attributes: @product.custom_attributes, custom_attributes: @custom_attributes if @product.custom_attributes&.any? %>
 
           <% if @product.product_options.any? %>
             <div class="Entity-section Product-section">

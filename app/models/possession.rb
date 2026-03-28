@@ -27,12 +27,6 @@ class Possession < ApplicationRecord
     nil
   end
 
-  def year_of_purchase
-    return nil if period_from.nil?
-
-    period_from.year
-  end
-
   def duration
     return nil if period_from.nil?
 

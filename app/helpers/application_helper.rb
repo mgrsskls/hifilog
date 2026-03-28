@@ -12,10 +12,6 @@ module ApplicationHelper
     " aria-current=#{active_menu == page ? 'true' : 'false'}"
   end
 
-  def statuses
-    STATUSES
-  end
-
   def display_price(price, currency)
     "#{number_with_delimiter number_to_rounded(price, precision: 2)} #{currency}"
   end

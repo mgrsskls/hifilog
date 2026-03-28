@@ -75,10 +75,6 @@ class Brand < ApplicationRecord
              founded_day.present? ? founded_day.to_i : 1)
   end
 
-  def continued?
-    !discontinued && !discontinued.nil?
-  end
-
   def discontinued_date
     return unless discontinued?
     return if discontinued_year.blank?

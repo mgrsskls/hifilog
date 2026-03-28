@@ -62,17 +62,6 @@ class BrandTest < ActiveSupport::TestCase
     assert_equal Date.new(2023, 6, 15), brand.discontinued_date
   end
 
-  test 'continued?' do
-    brand = Brand.new(discontinued: false)
-    assert brand.continued?
-
-    brand.discontinued = true
-    assert_not brand.continued?
-
-    brand.discontinued = nil
-    assert_not brand.continued?
-  end
-
   test 'display_name' do
     brand = brands(:one)
     assert_equal brand.name, brand.display_name

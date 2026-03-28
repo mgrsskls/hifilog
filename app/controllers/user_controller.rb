@@ -86,7 +86,6 @@ class UserController < ApplicationController
     end
 
     @bookmarks = bookmarks
-    @custom_attributes_for_products = CustomAttribute.all_cached
     @bookmarks_after_create_redirect = :dashboard_bookmarks
     @bookmarks_after_destroy_redirect = :dashboard_bookmarks
 

@@ -21,7 +21,7 @@
 <h2>Characteristics</h2>
 <dl class="Entity-section Data">
   <% Array(attributes).sort.each do |ca| %>
-    <% active_record = @custom_attributes[ca[0]] %>
+    <% active_record = custom_attributes[ca[0]] %>
     <% if active_record.present? %>
       <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
       <dd>

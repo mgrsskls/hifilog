@@ -10,9 +10,9 @@
   <%= yield :header %>
 
   <% i = 1 %>
-  <% if @years.any? %>
+  <% if years.any? %>
     <div class="Events-years">
-      <% @years.each do |year| %>
+      <% years.each do |year| %>
         <div class="Events-year">
           <h2><%= year[0] %></h2>
           <div class="Events-months">
@@ -26,10 +26,11 @@
                     <%= render layout: "shared/event_item", locals: {
                       event: event,
                       after_create_redirect: after_create_redirect,
-                      after_destroy_redirect: after_destroy_redirect
+                      after_destroy_redirect: after_destroy_redirect,
+                      active_events: active_events
                     } do
                     %>
-                      <% bookmark = @event_bookmarks[event.id] %>
+                      <% bookmark = event_bookmarks[event.id] %>
                       <%= render "shared/bookmark_button",
                         bookmark: bookmark,
                         delete_redirect_to: events_path,

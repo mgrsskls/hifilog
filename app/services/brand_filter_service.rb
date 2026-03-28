@@ -23,9 +23,15 @@ class BrandFilterService
       brands = brands.joins(:sub_categories).where(sub_categories: { category_id: @category.id })
     end
     brands = apply_ordering(brands, @filters[:sort])
-    brands = apply_status_filter(brands, @filters[:status]) if @filters[:status].present?
-    brands = apply_country_filter(brands, @filters[:country]) if @filters[:country].present?
-    brands = apply_search_filter(brands, @filters[:query]) if @filters[:query].present?
+    if (status = @filters[:status].presence)
+      brands = apply_status_filter(brands, status)
+    end
+    if (country = @filters[:country].presence)
+      brands = apply_country_filter(brands, country)
+    end
+    if (query = @filters[:query].presence)
+      brands = apply_search_filter(brands, query)
+    end
 
     if @product_filters.present?
       brand_ids_from_product_filter = ProductFilterService.new(

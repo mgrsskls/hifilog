@@ -69,7 +69,8 @@
               event: bookmark.event,
               after_create_redirect: @bookmarks_after_create_redirect,
               after_destroy_redirect: @bookmarks_after_destroy_redirect,
-              date_format: :full
+              date_format: :full,
+              active_events: @active_events
             } do %>
               <%= actions %>
             <% end %>

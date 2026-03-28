@@ -52,6 +52,8 @@ group :development do
   gem "database_consistency", require: false
   gem "i18n-tasks", "~> 1.1.2", group: :development
   gem "rubycritic"
+  gem "rails_best_practices"
+  gem "reek"
 end
 
 group :test do

@@ -16,14 +16,6 @@ class PossessionTest < ActiveSupport::TestCase
     assert_nil possession.brand
   end
 
-  test 'year_of_purchase' do
-    possession = Possession.new(product: products(:one), user: users(:one))
-    assert_nil possession.year_of_purchase
-
-    possession.update!(period_from: Date.new(2020, 6, 15))
-    assert_equal 2020, possession.year_of_purchase
-  end
-
   test 'duration for current possession' do
     possession = possessions(:current_product)
     possession.update!(period_from: 30.days.ago)

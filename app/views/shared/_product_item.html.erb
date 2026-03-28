@@ -20,7 +20,8 @@
 <% end %>
 
 <% content = capture do %>
-  <% if diy_kit || @custom_attributes_for_products.any? %>
+  <% custom_attributes_for_products = CustomAttribute.all_cached %>
+  <% if diy_kit || custom_attributes_for_products.any? %>
     <ul class="EntityListItem-tags">
       <% if diy_kit %>
         <li class="Tag">
@@ -28,7 +29,7 @@
         </li>
       <% end %>
       <% item.custom_attributes&.each do |custom_attribute| %>
-        <% active_record = @custom_attributes_for_products.find { |ca| ca.label == custom_attribute[0] } %>
+        <% active_record = custom_attributes_for_products.find { |ca| ca.label == custom_attribute[0] } %>
         <% if active_record&.highlighted? %>
           <% if active_record.inputs.size < 2 %>
             <% if active_record.input_type == 'boolean' %>

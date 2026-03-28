@@ -18,6 +18,7 @@ class CustomProductsController < ApplicationController
 
     possession = @user.possessions.find_by(custom_product_id: params[:id])
     @possession = CustomProductPossessionPresenter.new(possession) if possession
+    @render_possession = @possession && (@possession.period_from || @possession.period_to || @possession.setup)
 
     @custom_product = CustomProductPresenter.new(@user.custom_products.find(params[:id]))
 

@@ -78,7 +78,7 @@
             </div>
             <div>
               <b class="EntityPossession-headingName"><%= @possession.prev_owned ? t('symbols.product.prev_owned') : t('symbols.product.in_your_collection') %></b>
-              <% if @possession.period_from || @possession.period_to || @possession.setup %>
+              <% if @render_possession_details %>
                 <div class="EntityPossession-period">
                   <% if @possession.prev_owned %>
                     <% if @possession.period_from && @possession.period_to %>

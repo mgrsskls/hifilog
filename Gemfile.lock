@@ -136,6 +136,8 @@ GEM
       uniform_notifier (~> 1.11)
     childprocess (5.1.0)
       logger (~> 1.5)
+    code_analyzer (0.5.5)
+      sexp_processor
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     commonmarker (2.7.0-aarch64-linux)
@@ -201,6 +203,7 @@ GEM
       zeitwerk (~> 2.6)
     erb (6.0.2)
     erubi (1.13.1)
+    erubis (2.7.0)
     ffi (1.17.3-aarch64-linux-gnu)
     ffi (1.17.3-arm64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
@@ -387,6 +390,14 @@ GEM
     rails-i18n (8.1.0)
       i18n (>= 0.7, < 2)
       railties (>= 8.0.0, < 9)
+    rails_best_practices (1.23.3)
+      activesupport
+      code_analyzer (~> 0.5.5)
+      erubis
+      i18n
+      json
+      require_all (~> 3.0)
+      ruby-progressbar
     railties (8.1.2.1)
       actionpack (= 8.1.2.1)
       activesupport (= 8.1.2.1)
@@ -417,6 +428,7 @@ GEM
       io-console (~> 0.5)
     request_store (1.7.0)
       rack (>= 1.4)
+    require_all (3.0.0)
     responders (3.2.0)
       actionpack (>= 7.0)
       railties (>= 7.0)
@@ -578,6 +590,8 @@ DEPENDENCIES
   rack-attack
   rack-timeout
   rails (~> 8.1.2)
+  rails_best_practices
+  reek
   rss
   rubocop
   rubocop-rails

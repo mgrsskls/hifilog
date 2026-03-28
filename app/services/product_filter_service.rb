@@ -30,11 +30,21 @@ class ProductFilterService
     end
 
     products = apply_ordering(products, @filters[:sort])
-    products = apply_status_filter(products, @filters[:status]) if @filters[:status].present?
-    products = apply_country_filter(products, @filters[:country]) if @filters[:country].present?
-    products = apply_diy_kit_filter(products, @filters[:diy_kit]) if @filters[:diy_kit].present?
-    products = apply_search_filter(products, @filters[:query]) if @filters[:query].present?
-    products = apply_custom_filters(products, @filters[:custom]) if @filters[:custom].present?
+    if (status = @filters[:status].presence)
+      products = apply_status_filter(products, status)
+    end
+    if (country = @filters[:country].presence)
+      products = apply_country_filter(products, country)
+    end
+    if (diy_kit = @filters[:diy_kit].presence)
+      products = apply_diy_kit_filter(products, diy_kit)
+    end
+    if (query = @filters[:query].presence)
+      products = apply_search_filter(products, query)
+    end
+    if (custom = @filters[:custom].presence)
+      products = apply_custom_filters(products, custom)
+    end
 
     if @brand_filters.present?
       brand_ids_from_brand_filter = BrandFilterService.new(
