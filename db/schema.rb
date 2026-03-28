@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -157,7 +157,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
     t.index ["full_name"], name: "index_brands_on_full_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_brands_on_name", unique: true
-    t.index ["name"], name: "index_brands_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["slug"], name: "index_brands_on_slug", unique: true
   end
 
@@ -165,9 +164,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
     t.bigint "brand_id", null: false
     t.bigint "sub_category_id", null: false
     t.index ["brand_id", "sub_category_id"], name: "index_brands_sub_categories_on_brand_id_and_sub_category_id", unique: true
-    t.index ["brand_id"], name: "index_brands_sub_categories_on_brand_id"
     t.index ["sub_category_id", "brand_id"], name: "idx_brands_sub_categories_reverse"
-    t.index ["sub_category_id"], name: "index_brands_sub_categories_on_sub_category_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -196,7 +193,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
     t.bigint "sub_category_id", null: false
     t.index ["custom_attribute_id"], name: "index_custom_attributes_sub_categories_on_custom_attribute_id"
     t.index ["sub_category_id", "custom_attribute_id"], name: "idx_on_sub_category_id_custom_attribute_id_b00c6955d4", unique: true
-    t.index ["sub_category_id"], name: "index_custom_attributes_sub_categories_on_sub_category_id"
   end
 
   create_table "custom_products", force: :cascade do |t|
@@ -244,7 +240,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
     t.bigint "sluggable_id", null: false
     t.string "sluggable_type", limit: 50
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
-    t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
@@ -373,7 +368,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
     t.index ["model_no"], name: "index_products_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_products_on_name"
-    t.index ["name"], name: "index_products_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["release_day"], name: "index_products_on_release_day"
     t.index ["release_month"], name: "index_products_on_release_month"
     t.index ["release_year"], name: "index_products_on_release_year"
@@ -384,7 +378,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
     t.bigint "product_id", null: false
     t.bigint "sub_category_id", null: false
     t.index ["product_id", "sub_category_id"], name: "idx_on_product_id_sub_category_id_b7601e15e2", unique: true
-    t.index ["product_id"], name: "index_products_sub_categories_on_product_id"
     t.index ["sub_category_id"], name: "index_products_sub_categories_on_sub_category_id"
   end
 
