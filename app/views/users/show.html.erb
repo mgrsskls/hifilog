@@ -44,14 +44,14 @@
             <% if possession.images.attached? %>
               <% possession.sorted_images.each_with_index do |image, i| %>
                 <li class="ImageLightbox-item">
-                  <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
+                  <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>" aria-label="Open larger image of the <%= possession.display_name %>">
                     <picture>
-                      <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                      <%= image_tag cdn_image_url(image.variant(:thumb)), alt: "Image of the #{possession.display_name}" %>
                     </picture>
                   </button>
                   <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
                     <picture>
-                      <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                      <%= image_tag cdn_image_url(image.variant(:large)), alt: "Image of the #{possession.display_name}", loading: "lazy" %>
                     </picture>
                     <% if possession.sorted_images.size > 1 %>
                       <div class="ImageGallery-info is-dark">
