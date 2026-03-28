@@ -1,15 +1,25 @@
 module NewsletterHelper
   def generate_unsubscribe_hash(email)
-    verifier = ActiveSupport::MessageVerifier.new(ENV.fetch('NEWSLETTER_UNSUBSCRIBE_SECRET',
-                                                            'NEWSLETTER_UNSUBSCRIBE_SECRET'))
+    return unless verifier
+
     verifier.generate(email)
   end
 
   def verify_unsubscribe_hash(token)
-    verifier = ActiveSupport::MessageVerifier.new(ENV.fetch('NEWSLETTER_UNSUBSCRIBE_SECRET',
-                                                            'NEWSLETTER_UNSUBSCRIBE_SECRET'))
+    return unless verifier
+
     verifier.verified(token)
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     nil
+  end
+
+  private
+
+  def verifier
+    secret = ENV.fetch('NEWSLETTER_UNSUBSCRIBE_SECRET', nil)
+
+    return unless secret
+
+    ActiveSupport::MessageVerifier.new(secret)
   end
 end

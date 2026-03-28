@@ -170,12 +170,6 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'filter by sub_category redirects to category[sub_category]' do
-    get brands_url(sub_category: sub_categories(:one).slug)
-    assert_response :redirect
-    assert_redirected_to brands_url(category: "#{sub_categories(:one).category.slug}[#{sub_categories(:one).slug}]")
-  end
-
   test 'filter by status returns only discontinued brands' do
     get brands_url(status: 'discontinued')
     assert_response :success

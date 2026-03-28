@@ -54,6 +54,7 @@ group :development do
   gem "rubycritic"
   gem "rails_best_practices"
   gem "reek"
+  gem "fasterer"
 end
 
 group :test do

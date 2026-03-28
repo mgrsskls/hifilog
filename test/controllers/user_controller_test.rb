@@ -177,6 +177,9 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'newsletter_unsubscribe' do
+    original_secret = ENV.fetch('NEWSLETTER_UNSUBSCRIBE_SECRET', nil)
+    ENV['NEWSLETTER_UNSUBSCRIBE_SECRET'] = 'NEWSLETTER_UNSUBSCRIBE_SECRET'
+
     user = users(:one)
     user.update(receives_newsletter: true)
     hash = generate_unsubscribe_hash(user.email)
@@ -193,5 +196,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to root_path
     assert_equal true, user.reload.receives_newsletter
+
+    ENV['NEWSLETTER_UNSUBSCRIBE_SECRET'] = original_secret
   end
 end

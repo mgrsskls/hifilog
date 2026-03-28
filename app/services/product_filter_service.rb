@@ -85,7 +85,7 @@ class ProductFilterService
     custom_attribute_records = CustomAttribute.where(label: custom_attributes.deep_dup.to_hash.pluck(0))
 
     custom_attributes.each do |param|
-      custom_attribute = custom_attribute_records.select { |record| record.label == param.first }.first
+      custom_attribute = custom_attribute_records.detect { |record| record.label == param.first }
 
       next if custom_attribute.blank?
       next if param[1].blank?
