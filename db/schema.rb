@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_22_181954) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_28_092650) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -159,6 +159,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_181954) do
     t.bigint "sub_category_id", null: false
     t.index ["brand_id", "sub_category_id"], name: "index_brands_sub_categories_on_brand_id_and_sub_category_id", unique: true
     t.index ["brand_id"], name: "index_brands_sub_categories_on_brand_id"
+    t.index ["sub_category_id", "brand_id"], name: "idx_brands_sub_categories_reverse"
     t.index ["sub_category_id"], name: "index_brands_sub_categories_on_sub_category_id"
   end
 
