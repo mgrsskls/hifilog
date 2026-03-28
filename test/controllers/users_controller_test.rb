@@ -57,6 +57,34 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'contributions' do
+    # profile hidden
+    get user_contributions_path(user_id: users(:hidden).user_name)
+    assert_response :not_found
+
+    # profile visible only for logged in users
+    get user_contributions_path(user_id: users(:logged_in_only).user_name)
+    assert_response :not_found
+
+    # profile visible for logged in and logged out users
+    get user_contributions_path(user_id: users(:one).user_name)
+    assert_response :success
+
+    sign_in users(:one)
+
+    # profile hidden
+    get user_contributions_path(user_id: users(:hidden).user_name)
+    assert_response :not_found
+
+    # profile visible only for logged in users
+    get user_contributions_path(user_id: users(:logged_in_only).user_name)
+    assert_response :success
+
+    # profile visible for logged in and logged out users
+    get user_contributions_path(user_id: users(:one).user_name)
+    assert_response :success
+  end
+
   test 'prev_owneds' do
     # profile hidden
     get user_previous_products_path(user_id: users(:hidden).user_name)

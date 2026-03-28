@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SetupsControllerTest < ActionDispatch::IntegrationTest
+class StaticControllerTest < ActionDispatch::IntegrationTest
   test 'changelog' do
     get changelog_path
     assert_response :success
@@ -18,6 +18,16 @@ class SetupsControllerTest < ActionDispatch::IntegrationTest
 
   test 'privacy_policy' do
     get privacy_policy_path
+    assert_response :success
+  end
+
+  test 'calculators' do
+    get calculators_root_path
+    assert_response :success
+  end
+
+  test 'amp_to_headphone_calculator' do
+    get calculators_resistors_for_amplifier_to_headphone_adapter_path
     assert_response :success
   end
 end

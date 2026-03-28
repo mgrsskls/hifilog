@@ -1,6 +1,20 @@
 require 'test_helper'
 
 class PossessionsControllerTest < ActionDispatch::IntegrationTest
+  test 'should get current' do
+    get dashboard_products_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_products_path
+    assert_response :success
+
+    get dashboard_products_path(category: sub_categories(:one).slug)
+    assert_response :success
+  end
+
   test 'should get previous' do
     get dashboard_prev_owneds_path
     assert_response :redirect

@@ -261,8 +261,6 @@ class UserController < ApplicationController
   end
 
   def counts
-    return unless user_signed_in?
-
     render json: {
       products: user_possessions_count(user: current_user, prev_owned: false),
       custom_products: user_custom_products_count(current_user),
