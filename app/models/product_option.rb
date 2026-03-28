@@ -14,6 +14,12 @@ class ProductOption < ApplicationRecord
   validates :model_no,
             uniqueness: { scope: :product },
             if: -> { model_no.present? && product.present? }
+  validates :model_no,
+            uniqueness: { scope: :product_id, allow_nil: true }
+  validates :model_no,
+            uniqueness: { scope: :product_variant_id, allow_nil: true }
+  validates :model_no, uniqueness: { scope: :product_id, allow_nil: true }
+  validates :model_no, uniqueness: { scope: :product_variant_id, allow_nil: true }
   validates :option,
             uniqueness: { scope: :product_variant },
             if: -> { product_variant.present? }

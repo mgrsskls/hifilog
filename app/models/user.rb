@@ -33,6 +33,9 @@ class User < ApplicationRecord
 
   auto_strip_attributes :user_name, squish: true
 
+  validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :confirmation_token, uniqueness: true, allow_nil: true
+  validates :reset_password_token, uniqueness: true, allow_nil: true
   validates :user_name, presence: true, uniqueness: { case_sensitive: false }
   validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
   validate :validate_decorative_image_content_type, :validate_decorative_image_file_size, on: :update

@@ -18,6 +18,8 @@ class Possession < ApplicationRecord
 
   attr_accessor :delete_image
 
+  validates :custom_product_id, uniqueness: true, allow_nil: true
+
   def brand
     return product_variant.product.brand if product_variant.present?
     return product.brand if product.present?
