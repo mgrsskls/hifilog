@@ -55,7 +55,7 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     sign_in user
 
     assert_difference('Possession.count') do
-      post possessions_url(custom_product_id: custom_products(:one).id)
+      post possessions_url(custom_product_id: custom_products(:three).id)
     end
     assert_equal user.possessions.count, possessions_count + 1
     assert_redirected_to user_custom_product_url(
