@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   authenticate :admin_user do
     mount ActiveAnalytics::Engine, at: "analytics"
+    mount PgHero::Engine, at: "pghero"
   end
 
   direct :cdn_image do |model, options|

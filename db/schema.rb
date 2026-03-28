@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_170301) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_28_195927) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -264,6 +264,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_170301) do
     t.index ["product_id", "user_id"], name: "index_notes_on_product_id_and_user_id"
     t.index ["product_variant_id"], name: "index_notes_product_variant_id"
     t.index ["user_id", "product_id", "product_variant_id"], name: "index_notes_on_user_id_and_product_id_and_product_variant_id", unique: true
+  end
+
+  create_table "pghero_query_stats", force: :cascade do |t|
+    t.bigint "calls"
+    t.datetime "captured_at", precision: nil
+    t.text "database"
+    t.text "query"
+    t.bigint "query_hash"
+    t.float "total_time"
+    t.text "user"
+    t.index ["database", "captured_at"], name: "index_pghero_query_stats_on_database_and_captured_at"
   end
 
   create_table "possessions", force: :cascade do |t|

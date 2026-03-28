@@ -344,6 +344,8 @@ GEM
     pg_search (2.3.7)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
+    pghero (3.7.0)
+      activerecord (>= 7.1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -589,6 +591,7 @@ DEPENDENCIES
   paper_trail
   pg
   pg_search
+  pghero
   puma (~> 7.2)
   rack-attack
   rack-timeout
