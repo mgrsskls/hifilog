@@ -8,6 +8,14 @@ class ProductItemPresenter
     @object = object
   end
 
+  def display_name
+    if @object.item_type == 'ProductVariant'
+      return "#{@object.product_name} #{ProductVariant.find_by(id: @object.item_id)&.name_with_fallback}"
+    end
+
+    @object.product_name
+  end
+
   def id
     return @object.product_variant_id if @object.item_type == 'ProductVariant'
 

@@ -10,7 +10,8 @@
       %>
         <%= result.brand_name %> <%= link_to name, path %>
       <% elsif result.item_type == 'ProductVariant'
-          name = result.product_variant_name
+          presenter = ProductItemPresenter.new(result)
+          name = presenter.display_name
           path = product_variant_path(id: result.product_variant_slug, product_id: result.product_slug)
       %>
         <%= result.brand_name %> <%= link_to name, path %>
