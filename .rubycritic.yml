@@ -1,0 +1,10 @@
+paths:
+  - 'app/controllers/'
+  - 'app/helpers/'
+  - 'app/jobs/'
+  - 'app/mailers/'
+  - 'app/models/'
+  - 'app/presenters/'
+  - 'app/serializers/'
+  - 'app/services/'
+  - 'app/views/'

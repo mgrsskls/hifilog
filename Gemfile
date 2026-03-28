@@ -51,6 +51,7 @@ group :development do
   gem "bullet"
   gem "database_consistency", require: false
   gem "i18n-tasks", "~> 1.1.2", group: :development
+  gem "rubycritic"
 end
 
 group :test do
