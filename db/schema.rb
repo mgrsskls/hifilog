@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_28_170301) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
   enable_extension "unaccent"
+  enable_extension "uuid-ossp"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.bigint "author_id"
@@ -150,8 +151,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
     t.string "website"
     t.index "\"left\"((name)::text, 1)", name: "index_brands_name_prefix"
     t.index "lower((name)::text)", name: "index_brands_on_lower_name"
+    t.index "uuid_generate_v5(uuid_ns_dns(), ('brand-'::text || (id)::text))", name: "index_brands_on_search_uuid"
     t.index ["country_code"], name: "index_brands_on_country_code"
+    t.index ["created_at"], name: "index_brands_on_created_at"
+    t.index ["full_name"], name: "index_brands_on_full_name_trgm", opclass: :gin_trgm_ops, using: :gin
+    t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_brands_on_name", unique: true
+    t.index ["name"], name: "index_brands_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["slug"], name: "index_brands_on_slug", unique: true
   end
 
@@ -317,7 +323,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
     t.integer "release_year"
     t.string "slug", null: false
     t.datetime "updated_at", null: false
+    t.index "uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (id)::text))", name: "index_variants_on_search_uuid"
+    t.index ["created_at"], name: "index_product_variants_on_created_at"
+    t.index ["model_no"], name: "index_product_variants_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name", "product_id", "model_no", "release_day", "release_month", "release_year"], name: "idx_on_name_product_id_model_no_release_day_release_7d3b57d931", unique: true
+    t.index ["name"], name: "index_product_variants_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["product_id", "discontinued"], name: "index_product_variants_on_product_id_and_discontinued"
     t.index ["product_id", "diy_kit"], name: "index_product_variants_on_product_id_and_diy_kit"
   end
@@ -342,12 +352,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
+    t.index "uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (id)::text))", name: "index_products_on_search_uuid"
     t.index ["brand_id", "discontinued"], name: "index_products_on_brand_id_and_discontinued"
     t.index ["brand_id", "diy_kit"], name: "index_products_on_brand_id_and_diy_kit"
     t.index ["brand_id", "model_no"], name: "index_products_brand_id_model_no", unique: true
+    t.index ["created_at"], name: "index_products_on_created_at"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
     t.index ["model_no", "brand_id"], name: "index_products_on_model_no_and_brand_id", unique: true, where: "(model_no IS NOT NULL)"
+    t.index ["model_no"], name: "index_products_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
+    t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_products_on_name"
+    t.index ["name"], name: "index_products_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["release_day"], name: "index_products_on_release_day"
     t.index ["release_month"], name: "index_products_on_release_month"
     t.index ["release_year"], name: "index_products_on_release_year"
@@ -445,13 +460,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
   add_foreign_key "product_options", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "brands"
-  add_foreign_key "setup_possessions", "possessions"
   add_foreign_key "setup_possessions", "setups"
   add_foreign_key "setups", "users"
   add_foreign_key "sub_categories", "categories"
 
   create_view "product_items", sql_definition: <<-SQL
-      SELECT ('Product-'::text || (products.id)::text) AS id,
+      SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,
       products.name,
       products.description,
       products.discontinued,
@@ -484,7 +498,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
        LEFT JOIN sub_categories ON ((sub_categories.id = psc.sub_category_id)))
     GROUP BY products.id, products.name, products.description, products.discontinued, products.slug, products.release_day, products.release_month, products.release_year, products.price, products.price_currency, products.discontinued_year, products.discontinued_month, products.discontinued_day, products.diy_kit, products.model_no, products.custom_attributes, products.brand_id, brands.name
   UNION ALL
-   SELECT ('Variant-'::text || (product_variants.id)::text) AS id,
+   SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (product_variants.id)::text)) AS id,
       products.name,
       products.description,
       product_variants.discontinued,
@@ -519,7 +533,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
     GROUP BY product_variants.id, products.name, products.description, product_variants.discontinued, products.slug, product_variants.release_day, product_variants.release_month, product_variants.release_year, product_variants.price, product_variants.price_currency, product_variants.discontinued_year, product_variants.discontinued_month, product_variants.discontinued_day, product_variants.diy_kit, product_variants.model_no, products.custom_attributes, products.brand_id, brands.name, product_variants.product_id, product_variants.name, product_variants.description, product_variants.slug;
   SQL
   create_view "search_results", sql_definition: <<-SQL
-      SELECT ('Product-'::text || (p.id)::text) AS id,
+      SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (p.id)::text)) AS id,
       p.id AS item_id,
       'Product'::text AS item_type,
       p.name AS product_name,
@@ -533,7 +547,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
      FROM (products p
        JOIN brands b ON ((b.id = p.brand_id)))
   UNION ALL
-   SELECT ('Variant-'::text || (pv.id)::text) AS id,
+   SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (pv.id)::text)) AS id,
       pv.id AS item_id,
       'ProductVariant'::text AS item_type,
       p.name AS product_name,
@@ -548,7 +562,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_114519) do
        JOIN products p ON ((pv.product_id = p.id)))
        JOIN brands b ON ((b.id = p.brand_id)))
   UNION ALL
-   SELECT ('Brand-'::text || (b.id)::text) AS id,
+   SELECT uuid_generate_v5(uuid_ns_dns(), ('brand-'::text || (b.id)::text)) AS id,
       b.id AS item_id,
       'Brand'::text AS item_type,
       NULL::text AS product_name,

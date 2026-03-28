@@ -2,6 +2,8 @@ class ProductItem < ApplicationRecord
   include PgSearch::Model
 
   self.primary_key = :id # needed for pg_search
+  # Tell Rails to use created_at for .first and .last instead of the UUID id
+  self.implicit_order_column = 'created_at'
 
   belongs_to :brand
   has_many :product_options
