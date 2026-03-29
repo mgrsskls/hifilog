@@ -191,10 +191,12 @@ class ProductFilterService
       min, max = convert_values(param[:unit], param[:min], param[:max])
 
       if min.present?
-        scope = scope.where('(custom_attributes -> ? ->> ?)::numeric >= ?', custom_attribute[:label], 'value', min)
+        scope = scope.where("NULLIF(custom_attributes -> ? ->> ?, '')::numeric >= ?", custom_attribute[:label], 'value',
+                            min)
       end
       if max.present?
-        scope = scope.where('(custom_attributes -> ? ->> ?)::numeric <= ?', custom_attribute[:label], 'value', max)
+        scope = scope.where("NULLIF(custom_attributes -> ? ->> ?, '')::numeric <= ?", custom_attribute[:label], 'value',
+                            max)
       end
     end
 
