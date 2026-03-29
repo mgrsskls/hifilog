@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PossessionsController < ApplicationController
   include ApplicationHelper
   include Possessions
@@ -6,15 +8,17 @@ class PossessionsController < ApplicationController
 
   def current
     @active_menu = :dashboard
-    @page_title = I18n.t('headings.collection')
+    page_title(I18n.t('headings.collection'))
     @active_dashboard_menu = :products
 
     all = map_possessions_to_presenter get_possessions_for_user(
       possessions: current_user.possessions.where(prev_owned: false)
     )
-    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+
+    category = params[:category]
+    @sub_category = SubCategory.friendly.find(category) if category.present?
     @possessions = if @sub_category
-                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                     all.select { |possession| possession.sub_categories.include?(@sub_category) }
                    else
                      all
                    end
@@ -23,15 +27,17 @@ class PossessionsController < ApplicationController
 
   def previous
     @active_menu = :dashboard
-    @page_title = I18n.t('headings.prev_owneds')
+    page_title(I18n.t('headings.prev_owneds'))
     @active_dashboard_menu = :prev_owneds
 
     all = map_possessions_to_presenter get_possessions_for_user(
       possessions: current_user.possessions.where(prev_owned: true)
     )
-    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+
+    category = params[:category]
+    @sub_category = SubCategory.friendly.find(category) if category.present?
     @possessions = if @sub_category
-                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                     all.select { |possession| possession.sub_categories.include?(@sub_category) }
                    else
                      all
                    end
@@ -39,9 +45,13 @@ class PossessionsController < ApplicationController
   end
 
   def create
-    @product = Product.find(params[:id]) if params[:id].present?
-    @product_variant = ProductVariant.find(params[:product_variant_id]) if params[:product_variant_id].present?
-    @custom_product = CustomProduct.find(params[:custom_product_id]) if params[:custom_product_id].present?
+    id = params[:id]
+    product_variant_id = params[:product_variant_id]
+    custom_product_id = params[:custom_product_id]
+
+    @product = Product.find(id) if id.present?
+    @product_variant = ProductVariant.find(product_variant_id) if product_variant_id.present?
+    @custom_product = CustomProduct.find(custom_product_id) if custom_product_id.present?
 
     @active_possession = Possession.new(
       user: current_user,
@@ -55,23 +65,20 @@ class PossessionsController < ApplicationController
     redirect_back_to_product(
       product: @product,
       product_variant: @product_variant,
-      custom_product: @custom_product,
+      custom_product: @custom_product
     )
   end
 
   def update
     @possession = current_user.possessions.find(params[:id])
 
-    if params[:setup_id]
-      setup = current_user.setups.find(params[:setup_id]) if params[:setup_id].present?
+    setup_id = params[:setup_id]
+    if setup_id
+      setup = current_user.setups.find(setup_id) if setup_id.present?
 
       @possession.setup = setup
 
-      unless @possession.save
-        @possession.errors.full_messages.each do |error|
-          flash.now[:alert] = error
-        end
-      end
+      show_errors unless @possession.save
     end
 
     if @possession.update(possession_params)
@@ -80,9 +87,7 @@ class PossessionsController < ApplicationController
         image.purge
       end
     else
-      @possession.errors.full_messages.each do |error|
-        flash[:alert] = error
-      end
+      show_errors
     end
 
     redirect_back_to_product(
@@ -103,10 +108,11 @@ class PossessionsController < ApplicationController
     presenter = possession_presenter.new(possession)
 
     if possession&.destroy
+      name = presenter.display_name
       flash[:notice] = if is_prev_owned
-                         I18n.t('possession.messages.removed_from_prev', name: presenter.display_name)
+                         I18n.t('possession.messages.removed_from_prev', name:)
                        else
-                         I18n.t('possession.messages.removed', name: presenter.display_name)
+                         I18n.t('possession.messages.removed', name:)
                        end
     else
       flash[:alert] = I18n.t(:generic_error_message)
@@ -115,7 +121,7 @@ class PossessionsController < ApplicationController
     redirect_back_to_product(
       product:,
       product_variant:,
-      custom_product:,
+      custom_product:
     )
   end
 
@@ -139,23 +145,30 @@ class PossessionsController < ApplicationController
       flash[:alert] = I18n.t(:generic_error_message)
     end
 
-    return redirect_to params[:redirect_to] if params[:redirect_to]
+    param_redirect_to = params[:redirect_to]
+    return redirect_to param_redirect_to if param_redirect_to
 
     redirect_back_to_product(
       product:,
       product_variant:,
-      custom_product:,
+      custom_product:
     )
   end
 
   private
 
   def possession_params
-    if params[:delete_image]&.include?(params[:possession][:highlighted_image_id])
-      params[:possession][:highlighted_image_id] = nil
-    end
+    possession = params[:possession]
+
+    possession[:highlighted_image_id] = nil if params[:delete_image]&.include?(possession[:highlighted_image_id])
 
     params.expect(possession: [:period_from, :period_to, :product_option_id, :highlighted_image_id, :price_purchase,
                                :price_purchase_currency, :price_sale, :price_sale_currency, { images: [] }])
+  end
+
+  def show_errors
+    @possession.errors.full_messages.each do |error|
+      flash.now[:alert] = error
+    end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BrandsController < ApplicationController
   include ApplicationHelper
   include FilterableService
@@ -22,15 +24,12 @@ class BrandsController < ApplicationController
       sub_category: @sub_category,
       product_filters: active_index_product_filters
     ).filter
-    @brands = filter.brands
-                    .includes(sub_categories: [:category])
-                    .page(params[:page])
 
-    if @brands.out_of_range?
-      @brands = filter.brands
-                      .includes(sub_categories: [:category])
-                      .page(1)
-    end
+    brands = filter.brands.includes(sub_categories: [:category])
+
+    @brands = brands.page(params[:page])
+    @brands = brands.page(1) if @brands.out_of_range?
+
     @canonical_url = brands_url
 
     @product_counts = if active_index_filters.keys.map(&:to_s).any? do |el|
@@ -53,16 +52,16 @@ class BrandsController < ApplicationController
 
     @brands_query = params.dig(:brands, :query)&.strip
 
-    if @sub_category.present?
-      @page_title = "#{Brand.model_name.human(count: 2)}: #{@sub_category.name}"
-      @meta_desc = "Search through all brands with products in the category “#{@sub_category.name}” on HiFi Log,\
- a user-driven database for hi-fi products and brands."
-    elsif @category.present?
-      @page_title = "#{Brand.model_name.human(count: 2)}: #{@category.name}"
-      @meta_desc = "Search through all brands with products in the category “#{@category.name}” on HiFi Log,\
- a user-driven database for hi-fi products and brands."
+    heading = Brand.model_name.human(count: 2)
+    cat = @sub_category.presence || @category.presence
+
+    if cat
+      name = cat.name
+      page_title("#{heading}: #{name}")
+      @meta_desc = "Search through all brands with products in the category “#{name}” on HiFi Log,\
+a user-driven database for hi-fi products and brands."
     else
-      @page_title = Brand.model_name.human(count: 2)
+      page_title(heading)
       @meta_desc = 'Search through all brands on HiFi Log, a user-driven database for hi-fi products and brands.'
     end
   end
@@ -75,6 +74,8 @@ class BrandsController < ApplicationController
 
   def show
     @brand = Brand.includes(sub_categories: [:category]).friendly.find(params[:id])
+    brand_id = @brand.id
+
     @contributors = User.find_by_sql(["
       SELECT DISTINCT
         users.id, users.user_name, users.profile_visibility,
@@ -82,11 +83,11 @@ class BrandsController < ApplicationController
       JOIN versions
       ON users.id = CAST(versions.whodunnit AS integer)
       WHERE versions.item_id = ? AND versions.item_type = 'Brand'
-    ", @brand.id])
+    ", brand_id])
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
-    @bookmark = current_user.bookmarks.find_by(item_id: @brand.id, item_type: 'Brand') if user_signed_in?
+    @bookmark = current_user.bookmarks.find_by(item_id: brand_id, item_type: 'Brand') if user_signed_in?
 
-    @page_title = @brand.name
+    page_title(@brand.name)
     set_meta_desc
   end
 
@@ -102,36 +103,36 @@ class BrandsController < ApplicationController
       category: @category,
       sub_category: @sub_category
     ).filter
-    @products = filter.products
-                      .includes(:brand)
-                      .page(params[:page])
-    if @products.out_of_range?
-      @products = filter.products
-                        .page(1)
-    end
+
+    products = filter.products.includes(:brand)
+
+    @products = products.page(params[:page])
+    @products = products.page(1) if @products.out_of_range?
+
     @canonical_url = brand_products_url(brand_id: @brand.friendly_id)
-    @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
+    @product_presenters = @products.map { |product| ProductItemPresenter.new(product) }
     @total_products_count = @brand.products.length
-    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |c| c[0].order }
+    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
-    @page_title = @brand.name
+    page_title(@brand.name)
     set_meta_desc
   end
 
   def new
-    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
+    sub_category = params[:sub_category]
+    @sub_category = SubCategory.friendly.find(sub_category) if sub_category.present?
     @brand = @sub_category ? Brand.new(sub_category_ids: [@sub_category.id]) : Brand.new
     @categories = Category.includes([:sub_categories])
 
-    @page_title = I18n.t('brand.new.heading')
+    page_title(I18n.t('brand.new.heading'))
   end
 
   def edit
     @brand = Brand.friendly.find(params[:id])
     @categories = Category.includes([:sub_categories])
 
-    @page_title = I18n.t('edit_record', name: @brand.name)
+    page_title(I18n.t('edit_record', name: @brand.name))
   end
 
   def create
@@ -168,18 +169,17 @@ class BrandsController < ApplicationController
 
   def changelog
     @brand = Brand.friendly.find(params[:brand_id])
-    @versions = @brand.versions.select do |v|
-      log = get_changelog(v.object_changes)
-      log.length > 1 || (log.length == 1 && log['slug'].nil?)
-    end
+    @versions = filter_versions(@brand.versions)
   end
 
   private
 
   def set_meta_desc
-    if @brand.formatted_description.present?
+    desc = @brand.formatted_description
+
+    if desc.present?
       @meta_desc = ActionController::Base.helpers.truncate(
-        ActionController::Base.helpers.strip_tags(@brand.formatted_description),
+        ActionController::Base.helpers.strip_tags(desc),
         length: 200, escape: false
       )
       return
@@ -190,7 +190,7 @@ class BrandsController < ApplicationController
   end
 
   def find_brand
-    @brand = find_resource(Brand, :id, path_helper: ->(b) { brand_path(b) })
+    @brand = find_resource(Brand, :id, path_helper: ->(brand) { brand_path(brand) })
   end
 
   def set_active_menu
@@ -212,7 +212,7 @@ class BrandsController < ApplicationController
               :discontinued_year,
               :description,
               :comment,
-              { sub_category_ids: [] }],
+              { sub_category_ids: [] }]
     )
   end
 

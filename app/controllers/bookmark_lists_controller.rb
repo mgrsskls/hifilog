@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BookmarkListsController < InheritedResources::Base
   include Bookmarks
 
@@ -7,13 +9,13 @@ class BookmarkListsController < InheritedResources::Base
   def new
     @bookmark_list = BookmarkList.new
 
-    @page_title = I18n.t('bookmark_list.new.heading')
+    page_title(I18n.t('bookmark_list.new.heading'))
   end
 
   def edit
     @bookmark_list = current_user.bookmark_lists.find(params[:id])
 
-    @page_title = "#{t('edit')} #{@bookmark_list.name}"
+    page_title("#{t('edit')} #{@bookmark_list.name}")
   end
 
   def create

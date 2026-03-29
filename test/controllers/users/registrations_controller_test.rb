@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class RegistrationsControllerTest < ActionDispatch::IntegrationTest
@@ -29,7 +31,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
         user_name: 'user_name',
         email: 'mail@example.com',
         password: 'passwordpassword',
-        password_confirmation: 'passwordpassword',
+        password_confirmation: 'passwordpassword'
       }
     }
     post user_registration_url, params: params
@@ -49,7 +51,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
       user: {
         user_name:,
         current_password: 'encrypted_password'
-      },
+      }
     }
     patch user_registration_url, params: params
     assert_response :redirect
@@ -64,7 +66,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     patch user_registration_url, params: params.merge(
       {
         delete_avatar: true,
-        delete_decorative_image: true,
+        delete_decorative_image: true
       }
     )
     assert_response :redirect

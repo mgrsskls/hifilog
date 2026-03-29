@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ProductVariantTest < ActiveSupport::TestCase
@@ -8,7 +10,7 @@ class ProductVariantTest < ActiveSupport::TestCase
     assert_nil product_variant.formatted_discontinued_date
 
     product_variant.update!(
-      discontinued: true,
+      discontinued: true
     )
     assert_nil product_variant.formatted_discontinued_date
 

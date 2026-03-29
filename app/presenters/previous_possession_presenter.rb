@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PreviousPossessionPresenter < PossessionPresenter
   def delete_button_label
     I18n.t('product.remove_from_prev_owneds.label')

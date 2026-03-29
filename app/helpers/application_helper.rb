@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Metrics/ModuleLength
 module ApplicationHelper
   include ActionView::Helpers::NumberHelper
@@ -69,7 +71,7 @@ module ApplicationHelper
 
     {
       value:,
-      dir:,
+      dir:
     }
   end
 
@@ -85,6 +87,14 @@ module ApplicationHelper
 
   def get_changelog(changes)
     PaperTrail::Serializers::YAML.load(changes)
+  end
+
+  def filter_versions(versions)
+    versions.select do |version|
+      log = get_changelog(version.object_changes)
+      log_length = log.length
+      log_length > 1 || (log_length == 1 && log['slug'].nil?)
+    end
   end
 
   def country_name_from_country_code(country_code)

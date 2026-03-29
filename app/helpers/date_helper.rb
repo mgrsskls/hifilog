@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DateHelper
   def humanize_date_range(start_date, end_date = nil)
     return start_date.strftime('%B %-d, %Y') unless end_date

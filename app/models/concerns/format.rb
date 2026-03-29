@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Format
   include FormatHelper
   extend ActiveSupport::Concern

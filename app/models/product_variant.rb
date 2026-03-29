@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProductVariant < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
@@ -5,6 +7,10 @@ class ProductVariant < ApplicationRecord
   include ActiveSupport::NumberHelper
   include Format
   include Description
+  include PgSearchByName
+  include DatePartsValidatable
+  include ReleaseDate
+  include DiscontinuedDate
 
   extend FriendlyId
 
@@ -15,19 +21,7 @@ class ProductVariant < ApplicationRecord
   auto_strip_attributes :name, squish: true
   auto_strip_attributes :description
 
-  pg_search_scope :search_by_name,
-                  against: { name: 'A', model_no: 'B' },
-                  ignoring: :accents,
-                  using: {
-                    tsearch: {
-                      any_word: false,
-                      prefix: true,
-                    },
-                    trigram: {
-                      threshold: 0.2
-                    },
-                  },
-                  ranked_by: ':trigram'
+  pg_search_by_name(against: { name: 'A', model_no: 'B' })
 
   has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
@@ -57,18 +51,7 @@ class ProductVariant < ApplicationRecord
   validates :price_currency,
             presence: true,
             if: -> { price.present? }
-  validates :release_day,
-            numericality: { only_integer: true },
-            comparison: { greater_than: 0, less_than: 32 },
-            if: -> { release_day.present? }
-  validates :release_month,
-            numericality: { only_integer: true },
-            comparison: { greater_than: 0, less_than: 13 },
-            if: -> { release_month.present? }
-  validates :release_year,
-            numericality: { only_integer: true },
-            comparison: { greater_than: 1899 },
-            if: -> { release_year.present? }
+  validates_release_date_parts
   validates :release_year,
             presence: true,
             if: -> { name.blank? }
@@ -98,21 +81,6 @@ class ProductVariant < ApplicationRecord
     product_variant_url(product_id: product.friendly_id, id: slug)
   end
 
-  def release_date
-    return if release_year.blank?
-
-    Date.new(release_year.to_i, release_month.present? ? release_month.to_i : 1,
-             release_day.present? ? release_day.to_i : 1)
-  end
-
-  def discontinued_date
-    return unless discontinued?
-    return if discontinued_year.blank?
-
-    Date.new(discontinued_year.to_i, discontinued_month.present? ? discontinued_month.to_i : 1,
-             discontinued_day.present? ? discontinued_day.to_i : 1)
-  end
-
   def slug_candidates
     [
       [:name, :model_no],
@@ -120,22 +88,6 @@ class ProductVariant < ApplicationRecord
       [:name, :model_no, :release_year, :release_month],
       [:name, :model_no, :release_year, :release_month, :release_day]
     ]
-  end
-
-  def custom_attributes_labels
-    return unless custom_attributes.present? && custom_attributes.any?
-
-    attributes = []
-    custom_attributes.each do |custom_attribute|
-      custom_attribute_resource = sub_categories.flat_map(&:custom_attributes).find do |sub_custom_attribute|
-        sub_custom_attribute.id == custom_attribute[0].to_i
-      end
-      if custom_attribute_resource
-        attributes.push I18n.t("custom_attributes.#{custom_attribute_resource.options[custom_attribute[1].to_s]}")
-      end
-    end
-
-    attributes
   end
 
   # :nocov:

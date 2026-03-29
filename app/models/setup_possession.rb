@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetupPossession < ApplicationRecord
   belongs_to :setup
   belongs_to :possession

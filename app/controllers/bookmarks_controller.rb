@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BookmarksController < ApplicationController
   before_action :authenticate_user!
 
@@ -43,7 +45,7 @@ class BookmarksController < ApplicationController
     else
       redirect_back_to_product(
         product: @product,
-        product_variant: @product_variant,
+        product_variant: @product_variant
       )
     end
   end

@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   include HistoryHelper
   include Possessions
   include ActionView::Helpers::SanitizeHelper
 
   def index
-    @page_title = User.model_name.human(count: 2)
+    page_title(User.model_name.human(count: 2))
     @meta_desc = 'See all users of hifilog.com with public profiles and how much they contributed. ' \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
     @users_by_products = User
@@ -112,7 +114,7 @@ class UsersController < ApplicationController
     end
 
     user_name = sanitize(user.user_name)
-    @page_title = user_name
+    page_title(user_name)
     @meta_desc = "The public profile of #{user_name} on hifilog.com — check out their hi-fi gear! " \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FormatHelper
   def format_partial_date(year, month, day)
     return nil if year.nil?

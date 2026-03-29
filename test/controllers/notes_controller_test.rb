@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class NotesControllerTest < ActionDispatch::IntegrationTest
@@ -67,7 +69,7 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
 
     post notes_url, params: { note: {
       text: 'text',
-      product_id: product.id,
+      product_id: product.id
     } }
     assert_response :redirect
     assert_redirected_to new_user_session_path
@@ -77,7 +79,7 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     assert_difference('Note.count') do
       post notes_url, params: { note: {
         text: 'text',
-        product_id: product.id,
+        product_id: product.id
       } }
     end
     assert_equal user.notes.count, notes_count + 1
@@ -93,7 +95,7 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     post notes_url, params: { note: {
       text: 'text',
       product_id: product.id,
-      product_variant_id: product_variant.id,
+      product_variant_id: product_variant.id
     } }
     assert_response :redirect
     assert_redirected_to new_user_session_path
@@ -104,7 +106,7 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
       post notes_url, params: { note: {
         text: 'text',
         product_id: product.id,
-        product_variant_id: product_variant.id,
+        product_variant_id: product_variant.id
       } }
     end
     assert_equal user.notes.count, notes_count + 1

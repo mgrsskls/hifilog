@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AppNewsController < ApplicationController
   before_action :authenticate_user!
   skip_after_action :record_page_view

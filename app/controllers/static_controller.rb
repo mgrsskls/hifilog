@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StaticController < ApplicationController
   include FormatHelper
 
@@ -5,7 +7,7 @@ class StaticController < ApplicationController
 
   def changelog
     @html = markdown_to_html Rails.root.join('CHANGELOG.md').read
-    @page_title = 'Changelog'
+    page_title('Changelog')
     @no_index = true
 
     render 'static'
@@ -13,7 +15,7 @@ class StaticController < ApplicationController
 
   def about
     @html = markdown_to_html Rails.root.join('static/about.md').read
-    @page_title = 'About'
+    page_title('About')
     @meta_desc = 'HiFi Log is a user-driven database for hi-fi products and brands. ' \
                  'Read more about its founder and how to support hifilog.com.'
 
@@ -22,7 +24,7 @@ class StaticController < ApplicationController
 
   def imprint
     @html = markdown_to_html Rails.root.join('static/imprint.md').read
-    @page_title = 'Imprint'
+    page_title('Imprint')
     @no_index = true
 
     render 'static'
@@ -30,14 +32,14 @@ class StaticController < ApplicationController
 
   def privacy_policy
     @html = markdown_to_html Rails.root.join('static/privacy_policy.md').read
-    @page_title = 'Privacy Policy'
+    page_title('Privacy Policy')
     @no_index = true
 
     render 'static'
   end
 
   def calculators
-    @page_title = 'Calculators'
+    page_title('Calculators')
     @active_menu = :calculators
     @meta_desc = 'HiFi Log provides some calculators that can be useful for your DIY hi-fi projects. ' \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
@@ -48,7 +50,7 @@ class StaticController < ApplicationController
     @reduced_layout = true
     @meta_desc = 'Calculate resistors for an amplifier-to-headphone adapter using an L-Pad, ' \
                  'a reversed L-Pad or a three resistor network.'
-    @page_title = 'Calculate Resistors for an Amplifier-to-Headphone Adapter'
+    page_title('Calculate Resistors for an Amplifier-to-Headphone Adapter')
     render 'amp_to_headphone_calculator'
   end
 end

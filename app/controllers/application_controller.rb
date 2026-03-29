@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   include ApplicationHelper
 
@@ -14,6 +16,11 @@ class ApplicationController < ActionController::Base
                 :newest_brands,
                 :newest_products,
                 :menu_categories
+
+  def page_title(title, meta_description = nil)
+    @page_title = title
+    @meta_desc = meta_description.presence
+  end
 
   def index
     redirect_to dashboard_root_path if user_signed_in?

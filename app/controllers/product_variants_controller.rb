@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProductVariantsController < ApplicationController
   include ApplicationHelper
 
@@ -8,6 +10,9 @@ class ProductVariantsController < ApplicationController
 
   def show
     @brand = @product.brand
+    product_id = @product.id
+
+    product_variant_id = @product_variant.id
 
     if user_signed_in?
       @possessions = map_possessions_to_presenter current_user.possessions
@@ -17,8 +22,8 @@ class ProductVariantsController < ApplicationController
                                                               .includes([:setup])
                                                               .includes([:product_option])
                                                               .where(
-                                                                product_id: @product.id,
-                                                                product_variant_id: @product_variant.id,
+                                                                product_id:,
+                                                                product_variant_id:
                                                               )
                                                               .order([
                                                                        :prev_owned,
@@ -27,8 +32,8 @@ class ProductVariantsController < ApplicationController
                                                                        :created_at
                                                                      ])
 
-      @bookmark = current_user.bookmarks.find_by(item_id: @product_variant.id, item_type: 'ProductVariant')
-      @note = current_user.notes.find_by(product_variant_id: @product_variant.id)
+      @bookmark = current_user.bookmarks.find_by(item_id: product_variant_id, item_type: 'ProductVariant')
+      @note = current_user.notes.find_by(product_variant_id:)
       @setups = current_user.setups
     end
 
@@ -49,10 +54,10 @@ class ProductVariantsController < ApplicationController
         versions.item_type, versions.item_id FROM users
       JOIN versions
       ON users.id = CAST(versions.whodunnit AS integer)
-      WHERE versions.item_id = #{@product.id} AND versions.item_type = 'Product'
+      WHERE versions.item_id = #{product_id} AND versions.item_type = 'Product'
     ")
 
-    @page_title = "#{@product.display_name} #{@product_variant.short_name}"
+    page_title("#{@product.display_name} #{@product_variant.short_name}")
     set_meta_desc
   end
 
@@ -61,14 +66,14 @@ class ProductVariantsController < ApplicationController
     @product_variant = ProductVariant.new(product: @product)
     @brand = @product.brand
 
-    @page_title = "#{I18n.t('product_variant.new.link')} — #{@product.display_name}"
+    page_title("#{I18n.t('product_variant.new.link')} — #{@product.display_name}")
   end
 
   def edit
     @product = Product.friendly.find(params[:product_id])
     @product_variant = @product.product_variants.friendly.find(params[:id])
     @brand = @product.brand
-    @page_title = I18n.t('edit_record', name: @product_variant.display_name)
+    page_title(I18n.t('edit_record', name: @product_variant.display_name))
   end
 
   def create
@@ -76,18 +81,26 @@ class ProductVariantsController < ApplicationController
     @product_variant = ProductVariant.new(product_variant_params)
     @product.product_variants << @product_variant
     @brand = @product.brand
-    @product_variant.discontinued = @product.brand.discontinued ? true : product_variant_params[:discontinued]
+    @product_variant.discontinued = @brand.discontinued ? true : product_variant_params[:discontinued]
 
-    if params[:product_options_attributes].present?
-      params[:product_options_attributes].each do |option|
-        if option[1][:id].present?
-          if option[1][:option].present?
-            @product_variant.product_options.find(option[1][:id]).update(option: option[1][:option])
+    product_variant_options = @product_variant.product_options
+    product_options_attributes = params[:product_options_attributes]
+
+    if product_options_attributes.present?
+      product_options_attributes.each do |attribute|
+        attr = attribute[1]
+        option = attr[:option]
+        id = attr[:id]
+
+        if id.present?
+          product_variant_option = product_variant_options.find(id)
+          if option.present?
+            product_variant_option.update(option:)
           else
-            @product_variant.product_options.find(option[1][:id]).delete
+            product_variant_option.delete
           end
-        elsif option[1][:option].present?
-          @product_variant.product_options << ProductOption.new(option: option[1][:option])
+        elsif option.present?
+          product_variant_options << ProductOption.new(option:)
         end
       end
     end
@@ -108,18 +121,28 @@ class ProductVariantsController < ApplicationController
     old_name = @product_variant.name
     @product_variant.slug = nil if old_name != product_variant_update_params[:name]
 
-    if params[:product_options_attributes].present?
-      params[:product_options_attributes].each do |option|
-        if option[1][:id].present?
-          if option[1][:option].present? || option[1][:model_no].present?
-            @product_variant.product_options.find(option[1][:id]).update(option: option[1][:option],
-                                                                         model_no: option[1][:model_no])
+    product_options_attributes = params[:product_options_attributes]
+
+    if product_options_attributes.present?
+      variant_product_options = @product_variant.product_options
+      product_options_attributes.each do |attribute|
+        attr = attribute[1]
+        model_no = attr[:model_no]
+        option = attr[:option]
+        id = attr[:id]
+
+        if id.present?
+          variant_product_option = variant_product_options.find(id)
+
+          if option.present? || model_no.present?
+            variant_product_option.update(option:,
+                                          model_no:)
           else
-            @product_variant.product_options.find(option[1][:id]).delete
+            variant_product_option.delete
           end
-        elsif option[1][:option].present?
-          @product_variant.product_options << ProductOption.new(option: option[1][:option],
-                                                                model_no: option[1][:model_no])
+        elsif option.present?
+          variant_product_options << ProductOption.new(option:,
+                                                       model_no:)
         end
       end
     end
@@ -141,10 +164,7 @@ class ProductVariantsController < ApplicationController
     @product = Product.friendly.find(params[:product_id])
     @product_variant = @product.product_variants.friendly.find(params[:id])
     @brand = @product.brand
-    @versions = @product_variant.versions.select do |v|
-      log = get_changelog(v.object_changes)
-      log.length > 1 || (log.length == 1 && log['slug'].nil?)
-    end
+    @versions = filter_versions(@product_variant.versions)
   end
 
   private
@@ -163,16 +183,21 @@ class ProductVariantsController < ApplicationController
   end
 
   def find_product_and_variant
-    @product = Product.friendly.find(params[:product_id])
-    @product_variant = @product.product_variants.friendly.find(params[:id])
+    variant_id = params[:id]
 
-    return unless request.path != product_variant_path(product_id: @product.friendly_id, id: params[:id])
+    @product = Product.friendly.find(params[:product_id])
+    @product_variant = @product.product_variants.friendly.find(variant_id)
+
+    product_friendly_id = @product.friendly_id
+    variant_path = product_variant_path(product_id: product_friendly_id, id: variant_id)
+
+    return unless request.path != variant_path
 
     # If an old id or a numeric id was used to find the record, then
     # the request path will not match the product_path, and we should do
     # a 301 redirect that uses the current friendly id.
     redirect_to URI.parse(
-      product_variant_path(product_id: @product.friendly_id, id: params[:id])
+      variant_path
     ).path, status: :moved_permanently
   end
 
@@ -192,7 +217,7 @@ class ProductVariantsController < ApplicationController
                         :price,
                         :price_currency,
                         :product_id,
-                        { product_options_attributes: {} }],
+                        { product_options_attributes: {} }]
     )
   end
 
@@ -212,7 +237,7 @@ class ProductVariantsController < ApplicationController
                         :price,
                         :price_currency,
                         :product_id,
-                        :comment],
+                        :comment]
     )
   end
 end

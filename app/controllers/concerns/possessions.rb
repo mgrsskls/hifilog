@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Possessions
   extend ActiveSupport::Concern
 
@@ -18,7 +20,7 @@ module Possessions
         [
           { custom_product:
             [
-              { sub_categories: :category, },
+              { sub_categories: :category },
               :user,
               { images_attachments: :blob }
             ] }

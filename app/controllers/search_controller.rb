@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SearchController < ApplicationController
   MIN_CHARS = 2
 
@@ -16,13 +18,13 @@ class SearchController < ApplicationController
           html: render_to_string(
             partial: 'xhr_list', locals: {
               query: @query,
-              results: query_results,
+              results: query_results
             }
           )
         }
       end
     else
-      @page_title = I18n.t('search')
+      page_title(I18n.t('search'))
       @no_index = true
 
       if @query.nil? || @query.length < MIN_CHARS
@@ -36,7 +38,7 @@ class SearchController < ApplicationController
   private
 
   def query_results
-    results = SearchResult.search(@query).page(params[:page])
+    results = SearchResult.search_by_name(@query).page(params[:page])
 
     return results unless params[:filter].present? && %w[products brands].include?(params[:filter])
 

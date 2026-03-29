@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BookmarkPresenter
   include Rails.application.routes.url_helpers
 
@@ -8,16 +10,18 @@ class BookmarkPresenter
   def initialize(object)
     @object = object
 
+    item = object.item
+
     case object.item_type
     when 'ProductVariant'
-      @product_variant = object.item
-      @product = object.item.product
+      @product_variant = item
+      @product = item.product
     when 'Product'
-      @product = object.item
+      @product = item
     when 'Event'
-      @event = object.item
+      @event = item
     when 'Brand'
-      @brand = object.item
+      @brand = item
     end
   end
 
@@ -31,9 +35,12 @@ class BookmarkPresenter
 
   def discontinued?
     if @event.present?
-      return Time.zone.today > @event.end_date if @event.end_date.present?
+      end_date = @event.end_date
+      time_zone_today = Time.zone.today
 
-      return Time.zone.today > @event.start_date
+      return time_zone_today > end_date if end_date.present?
+
+      return time_zone_today > @event.start_date
     end
 
     return @product_variant.discontinued? if @product_variant.present?

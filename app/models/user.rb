@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   require 'mini_magick'
 
@@ -8,7 +10,7 @@ class User < ApplicationRecord
   enum :profile_visibility, {
     hidden: 0,
     logged_in_only: 1,
-    visible: 2,
+    visible: 2
   }
 
   has_many :possessions, dependent: :destroy

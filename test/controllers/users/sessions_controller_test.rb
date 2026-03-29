@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
@@ -16,7 +18,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     params = {
       user: {
         email: 'user@example.com',
-        password: 'encrypted_password',
+        password: 'encrypted_password'
       }
     }
     post user_session_url, params: params

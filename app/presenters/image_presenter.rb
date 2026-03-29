@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImagePresenter
   delegate_missing_to :@image
 

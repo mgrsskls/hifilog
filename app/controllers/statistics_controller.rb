@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StatisticsController < ApplicationController
   include ApplicationHelper
 
@@ -115,7 +117,7 @@ class StatisticsController < ApplicationController
 
     @yearly_spendings = [{
       currency: 'EUR',
-      spendings: 5000,
+      spendings: 5000
     }]
 
     years_added_removed = []
@@ -142,7 +144,7 @@ class StatisticsController < ApplicationController
           end,
           to: products_added_removed.select do |possession|
             possession.period_to.present? && possession.period_to.year == year
-          end,
+          end
         }
       }
     end
@@ -153,7 +155,7 @@ class StatisticsController < ApplicationController
         possessions: {
           from: products_added_removed.select do |possession|
             possession.period_from.present? && possession.period_from.year == year
-          end,
+          end
         }
       }
     end
@@ -164,7 +166,7 @@ class StatisticsController < ApplicationController
         possessions: {
           to: products_added_removed.select do |possession|
             possession.period_to.present? && possession.period_to.year == year
-          end,
+          end
         }
       }
     end
@@ -174,8 +176,9 @@ class StatisticsController < ApplicationController
     if products_added_per_year.any?
       earliest_year = products_added_per_year.pluck(:year).min
       amount_of_years = Time.zone.today.year - earliest_year
-      @yearly_amount_of_products = if amount_of_years > 0
-                                     products_added.size / amount_of_years.to_f
+      amount_of_years_float = amount_of_years.to_f
+      @yearly_amount_of_products = if amount_of_years.positive?
+                                     products_added.size / amount_of_years_float
                                    else
                                      products_added.size
                                    end
@@ -196,9 +199,10 @@ class StatisticsController < ApplicationController
                                    end
 
       if total_spendings.any?
+        total_spending = total_spendings.first
         @yearly_amount_of_spendings = {
-          currency: total_spendings.first[:currency],
-          spendings: total_spendings.first[:spendings] / amount_of_years.to_f
+          currency: total_spending[:currency],
+          spendings: total_spending[:spendings] / amount_of_years_float
         }
       end
     else
@@ -245,7 +249,7 @@ class StatisticsController < ApplicationController
   private
 
   def set_menu
-    @page_title = I18n.t('headings.statistics')
+    page_title(I18n.t('headings.statistics'))
     @active_menu = :dashboard
     @active_dashboard_menu = :statistics
   end

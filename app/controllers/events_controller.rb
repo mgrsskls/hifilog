@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EventsController < ApplicationController
   def index
     @all_upcoming_events_count = Event.cached_upcoming_count
@@ -5,7 +7,7 @@ class EventsController < ApplicationController
 
     get_events(base_relation: Event.upcoming, order: :asc)
 
-    @page_title = 'Hi-Fi Events &amp; Shows'
+    page_title('Hi-Fi Events &amp; Shows')
     @meta_desc = 'Find all upcoming hi-fi events and shows on HiFi Log,
 a user-driven database for hi-fi products, brands and more.'
     @active_events = :upcoming
@@ -27,7 +29,7 @@ a user-driven database for hi-fi products, brands and more.'
 
     get_events(base_relation: yearly_relation, order: :desc)
 
-    @page_title = 'Past Hi-Fi Events &amp; Shows'
+    page_title('Past Hi-Fi Events &amp; Shows')
     @meta_desc = 'Find all previous hi-fi events and shows on HiFi Log,
 a user-driven database for hi-fi products, brands and more.'
     @active_events = :past

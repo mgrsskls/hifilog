@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module NewsletterHelper
   def generate_unsubscribe_hash(email)
     return unless verifier

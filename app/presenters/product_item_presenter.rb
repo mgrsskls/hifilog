@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProductItemPresenter
   include Rails.application.routes.url_helpers
   include FormatHelper

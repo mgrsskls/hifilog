@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
@@ -38,7 +40,7 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
         },
         1 => {
           option: 'option2'
-        },
+        }
       }
     }
 
@@ -89,7 +91,7 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
         product_variant: {
           name: 'name',
           discontinued: false
-        },
+        }
       }
     end
 
@@ -140,17 +142,17 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     product_variant = product_variants(:two)
     update_path = product_product_variant_url(
       id: product_variant.id,
-      product_id: product_variant.product.friendly_id,
+      product_id: product_variant.product.friendly_id
     )
     name = 'New name'
     update_params = {
       product_variant: {
-        name:,
+        name:
       }
     }
     update_params_with_options = {
       product_variant: {
-        name:,
+        name:
       },
       product_options_attributes: {
         0 => {

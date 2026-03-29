@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class CustomProductsController < ApplicationController
   before_action :authenticate_user!, except: [:show]
   before_action :set_menu, except: [:show]
 
   def index
-    @page_title = CustomProduct.model_name.human(count: 2)
+    page_title(CustomProduct.model_name.human(count: 2))
 
     @custom_products = current_user.custom_products
                                    .includes([:images_attachments])
@@ -16,11 +18,13 @@ class CustomProductsController < ApplicationController
   def show
     @user = User.find_by('lower(user_name) = ?', params[:user_id].downcase)
 
-    possession = @user.possessions.find_by(custom_product_id: params[:id])
+    id = params[:id]
+
+    possession = @user.possessions.find_by(custom_product_id: id)
     @possession = CustomProductPossessionPresenter.new(possession) if possession
     @render_possession = @possession && (@possession.period_from || @possession.period_to || @possession.setup)
 
-    @custom_product = CustomProductPresenter.new(@user.custom_products.find(params[:id]))
+    @custom_product = CustomProductPresenter.new(@user.custom_products.find(id))
 
     unless current_user == @user
       redirect_path = get_redirect_if_unauthorized(@user, @custom_product)
@@ -29,21 +33,21 @@ class CustomProductsController < ApplicationController
 
     @setups = current_user.setups if @user == current_user
 
-    @page_title = @custom_product.display_name
+    page_title(@custom_product.display_name)
   end
 
   def new
     @custom_product = CustomProduct.new
     @categories = Category.includes([:sub_categories])
 
-    @page_title = I18n.t('custom_product.new.heading')
+    page_title(I18n.t('custom_product.new.heading'))
   end
 
   def edit
     @custom_product = current_user.custom_products.find(params[:id])
     @categories = Category.includes([:sub_categories])
 
-    @page_title = "#{t('edit')} #{@custom_product.name}"
+    page_title("#{t('edit')} #{@custom_product.name}")
   end
 
   def create
@@ -52,7 +56,7 @@ class CustomProductsController < ApplicationController
     if @custom_product.save
       possession = Possession.new(
         user: current_user,
-        custom_product: @custom_product,
+        custom_product: @custom_product
       )
       possession.save
 
@@ -69,7 +73,9 @@ class CustomProductsController < ApplicationController
   end
 
   def update
-    @custom_product = current_user.custom_products.find(params[:id])
+    id = params[:id]
+
+    @custom_product = current_user.custom_products.find(id)
     @categories = Category.includes([:sub_categories])
 
     if @custom_product.update(custom_product_params)
@@ -77,7 +83,7 @@ class CustomProductsController < ApplicationController
         'custom_product.messages.updated',
         link: ActionController::Base.helpers.link_to(
           @custom_product.name,
-          user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
+          user_custom_product_path(id:, user_id: current_user.user_name.downcase)
         )
       )
 
@@ -88,7 +94,7 @@ class CustomProductsController < ApplicationController
 
       redirect_back_or_to user_custom_product_url(
         user_id: @custom_product.user.user_name.downcase,
-        id: @custom_product.id
+        id:
       )
     else
       render :edit, status: :unprocessable_content
@@ -110,8 +116,10 @@ class CustomProductsController < ApplicationController
   end
 
   def custom_product_params
-    if params[:delete_image]&.include?(params[:custom_product][:highlighted_image_id])
-      params[:custom_product][:highlighted_image_id] = nil
+    custom_product = params[:custom_product]
+
+    if params[:delete_image]&.include?(custom_product[:highlighted_image_id])
+      custom_product[:highlighted_image_id] = nil
     end
 
     params.expect(custom_product: [:name, :description, :highlighted_image_id, { sub_category_ids: [], images: [] }])

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class PossessionsControllerTest < ActionDispatch::IntegrationTest
@@ -86,7 +88,7 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     update_path = possession_url(possession)
     update_params = {
       possession: {
-        period_from:,
+        period_from:
       },
       setup_id: setup.id
     }

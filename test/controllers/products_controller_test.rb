@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ProductsControllerTest < ActionDispatch::IntegrationTest
@@ -163,7 +165,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     params = {
       product: {
         name:,
-        discontinued: !product.discontinued,
+        discontinued: !product.discontinued
       },
       product_options_attributes: {
         0 => {

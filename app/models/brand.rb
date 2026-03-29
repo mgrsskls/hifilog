@@ -1,23 +1,16 @@
+# frozen_string_literal: true
+
 class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
   include ApplicationHelper
   include Format
   include Description
+  include DiscontinuedDate
+  include DateFromComponents
+  include PgSearchByName
 
-  pg_search_scope :search_by_name,
-                  against: { name: 'A', full_name: 'B' },
-                  ignoring: :accents,
-                  using: {
-                    tsearch: {
-                      any_word: false,
-                      prefix: true,
-                    },
-                    trigram: {
-                      threshold: 0.3
-                    },
-                  },
-                  ranked_by: ':trigram'
+  pg_search_by_name(against: { name: 'A', full_name: 'B' })
 
   nilify_blanks
 
@@ -43,14 +36,14 @@ class Brand < ApplicationRecord
   validates :founded_year,
             numericality: { only_integer: true },
             if: -> { founded_year.present? }
-  validate :country_code_has_allowed_value
+  validates :country_code,
+            inclusion: { in: ->(_) { ISO3166::Country.all.map(&:alpha2) } },
+            allow_nil: true
 
   friendly_id :name, use: [:slugged, :history]
 
   after_destroy :invalidate_cache
-  after_destroy :invalidate_count_cache
   after_save :invalidate_cache
-  after_save :invalidate_count_cache
 
   def categories
     @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
@@ -69,89 +62,12 @@ class Brand < ApplicationRecord
   end
 
   def founded_date
-    return if founded_year.blank?
-
-    Date.new(founded_year.to_i, founded_month.present? ? founded_month.to_i : 1,
-             founded_day.present? ? founded_day.to_i : 1)
-  end
-
-  def discontinued_date
-    return unless discontinued?
-    return if discontinued_year.blank?
-
-    Date.new(discontinued_year.to_i, discontinued_month.present? ? discontinued_month.to_i : 1,
-             discontinued_day.present? ? discontinued_day.to_i : 1)
-  end
-
-  def country_code_has_allowed_value
-    return if country_code.nil? || ISO3166::Country.all.map(&:alpha2).include?(country_code)
-
-    errors.add(:country_code, 'is not a correct country code')
+    date_from_components(founded_year, founded_month, founded_day)
   end
 
   def formatted_description
-    if description.present?
-      return sanitize(
-        Commonmarker.to_html(
-          description,
-          options: {
-            extension: {
-              strikethrough: false,
-              tagfilter: false,
-              table: false,
-              autolink: false,
-              tasklist: false,
-            }
-          }
-        ),
-        tags: %w[p b i strong em br ul ol li del blockquote]
-      )
-    end
-
-    # rubocop:disable Layout/LineLength
-    # rubocop:disable Metrics/BlockNesting
-    if country_name.present? || founded_year.present? || discontinued_year.present? || self.sub_categories.any?
-      sub_categories = self.sub_categories.sort_by(&:category).map { |cat| cat.name.downcase }
-
-      str = "<i>#{name}</i> #{discontinued? ? 'was' : 'is'} an audio brand"
-
-      str += " from#{' the' if %w[BS KY CF KM CK CZ DO LA MV MH NL PH RU SC SB SY TC AE GB US UM].include?(country_code)} #{country_name}" if country_name.present?
-
-      if founded_year.present? || discontinued_year.present?
-        str += ', which was'
-        str += " founded in #{founded_year}" if founded_year.present?
-        str += ' and' if founded_year.present? && discontinued_year.present?
-        str += " discontinued in #{discontinued_year}" if discontinued_year.present?
-        str += '.'
-
-        if sub_categories.any?
-          str += " It #{discontinued? ? 'offered' : 'offers'}"
-          str += if sub_categories.size > 1
-                   " #{sub_categories[0...-1].join(', ')} and #{sub_categories[-1]}"
-                 else
-                   " #{sub_categories.first}"
-                 end
-          str += '.'
-        end
-      elsif sub_categories.any?
-        str += ", which #{discontinued? ? 'offered' : 'offers'}"
-        str += if sub_categories.size > 1
-                 " #{sub_categories[0...-1].join(', ')} and #{sub_categories[-1]}"
-               else
-                 " #{sub_categories.first}"
-               end
-        str += '.'
-      else
-        str += '.'
-      end
-
-      return sanitize("<p>#{str}</p>", tags: %w[p i])
-    end
-
-    nil
+    super || fallback_description
   end
-  # rubocop:enable Layout/LineLength
-  # rubocop:enable Metrics/BlockNesting
 
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
@@ -184,7 +100,7 @@ class Brand < ApplicationRecord
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache
     # rubocop:enable Naming/PredicateMethod
-    Rails.cache.delete('/newest_brands')
+    Rails.cache.delete_multi(['/newest_brands', '/brands_count'])
 
     # recommended to return true, as Rails.cache.delete will return false
     # if no cache is found and break the callback chain.
@@ -193,15 +109,46 @@ class Brand < ApplicationRecord
     # rubocop:enable Style/RedundantReturn
   end
 
-  # rubocop:disable Naming/PredicateMethod
-  def invalidate_count_cache
-    # rubocop:enable Naming/PredicateMethod
-    Rails.cache.delete('/brands_count')
+  def fallback_description
+    # rubocop:disable Layout/LineLength
+    is_country_name_present = country_name.present?
+    is_founded_year_present = founded_year.present?
+    is_discontinued_year_present = discontinued_year.present?
+    any_sub_categories_present = sub_categories.any?
 
-    # recommended to return true, as Rails.cache.delete will return false
-    # if no cache is found and break the callback chain.
-    # rubocop:disable Style/RedundantReturn
-    return true
-    # rubocop:enable Style/RedundantReturn
+    return nil unless is_country_name_present || is_founded_year_present || is_discontinued_year_present || any_sub_categories_present
+
+    sub_categories = self.sub_categories.sort_by(&:category).map { |cat| cat.name.downcase }
+
+    str = "<i>#{name}</i> #{discontinued? ? 'was' : 'is'} an audio brand"
+
+    str += " from#{' the' if %w[BS KY CF KM CK CZ DO LA MV MH NL PH RU SC SB SY TC AE GB US UM].include?(country_code)} #{country_name}" if is_country_name_present
+
+    if is_founded_year_present || is_discontinued_year_present
+      str += ', which was'
+      str += " founded in #{founded_year}" if is_founded_year_present
+      str += ' and' if is_founded_year_present && is_discontinued_year_present
+      str += " discontinued in #{discontinued_year}" if is_discontinued_year_present
+
+      if any_sub_categories_present
+        str += ". It #{discontinued? ? 'offered' : 'offers'}"
+      end
+    elsif any_sub_categories_present
+      str += ", which #{discontinued? ? 'offered' : 'offers'}"
+    end
+
+    str += concatenate_sub_category_names(sub_categories)
+
+    sanitize("<p>#{str}.</p>", tags: %w[p i])
+
+    # rubocop:enable Layout/LineLength
+  end
+
+  def concatenate_sub_category_names(sub_categories)
+    if sub_categories.size > 1
+      " #{sub_categories[0...-1].join(', ')} and #{sub_categories[-1]}"
+    else
+      " #{sub_categories.first}"
+    end
   end
 end

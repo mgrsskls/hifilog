@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BookmarkList < ApplicationRecord
   belongs_to :user
   has_many :bookmarks, dependent: :nullify

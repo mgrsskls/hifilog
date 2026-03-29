@@ -17,34 +17,36 @@ class ProductFilterService
   def filter
     products = @products
 
-    if @sub_category
+    if @sub_category || @category
       products = products.joins(
         'LEFT JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
-      ).where(products_sub_categories: { sub_category_id: @sub_category.id })
-    elsif @category
-      products = products.joins(
-        'LEFT JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
-      ).joins(
-        'LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id'
-      ).where(sub_categories: { category_id: @category.id })
+      )
+
+      if @sub_category
+        products = products.where(products_sub_categories: { sub_category_id: @sub_category.id })
+      elsif @category
+        products = products.joins(
+          'LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id'
+        ).where(sub_categories: { category_id: @category.id })
+      end
     end
 
-    products = apply_ordering(products, @filters[:sort])
-    if (status = @filters[:status].presence)
-      products = apply_status_filter(products, status)
-    end
-    if (country = @filters[:country].presence)
-      products = apply_country_filter(products, country)
-    end
-    if (diy_kit = @filters[:diy_kit].presence)
-      products = apply_diy_kit_filter(products, diy_kit)
-    end
-    if (query = @filters[:query].presence)
-      products = apply_search_filter(products, query)
-    end
-    if (custom = @filters[:custom].presence)
-      products = apply_custom_filters(products, custom)
-    end
+    data = {
+      scope: products,
+      sort: @filters[:sort],
+      status: @filters[:status],
+      country: @filters[:country],
+      diy_kit: @filters[:diy_kit],
+      query: @filters[:query],
+      custom_attributes: @filters[:custom]
+    }
+
+    products = apply_ordering(data)
+    products = apply_status_filter(data) if data[:status].present?
+    products = apply_country_filter(data) if data[:country].present?
+    products = apply_diy_kit_filter(data) if data[:diy_kit].present?
+    products = apply_search_filter(data) if data[:query].present?
+    products = apply_custom_filters(data) if data[:custom_attributes].present?
 
     if @brand_filters.present?
       brand_ids_from_brand_filter = BrandFilterService.new(
@@ -59,57 +61,56 @@ class ProductFilterService
 
   private
 
-  def apply_status_filter(scope, value)
-    discontinued = value == 'discontinued'
+  def apply_status_filter(options)
+    discontinued = options[:status] == 'discontinued'
 
-    scope.where(discontinued:)
+    options[:scope].where(discontinued:)
   end
 
-  def apply_country_filter(scope, value)
-    scope.joins(:brand).where(brand: { country_code: value.strip.upcase })
+  def apply_country_filter(options)
+    options[:scope].joins(:brand).where(brand: { country_code: options[:country].strip.upcase })
   end
 
-  def apply_diy_kit_filter(scope, value)
-    diy_kit = value == '1'
-
-    scope.where(diy_kit: diy_kit)
+  def apply_diy_kit_filter(options)
+    options[:scope].where(diy_kit: options[:diy_kit] == '1')
   end
 
-  def apply_search_filter(scope, value)
-    query = "%#{value.strip}%"
-
-    scope.search(query)
+  def apply_search_filter(options)
+    options[:scope].search_by_name("%#{options[:query].strip}%")
   end
 
-  def apply_custom_filters(scope, custom_attributes)
+  def apply_custom_filters(options)
+    custom_attributes = options[:custom_attributes]
+    scope = options[:scope]
     custom_attribute_records = CustomAttribute.where(label: custom_attributes.deep_dup.to_hash.pluck(0))
 
     custom_attributes.each do |param|
       custom_attribute = custom_attribute_records.detect { |record| record.label == param.first }
+      value = param[1]
 
       next if custom_attribute.blank?
-      next if param[1].blank?
+      next if value.blank?
 
       label = custom_attribute[:label]
 
       scope = case custom_attribute[:input_type]
               when 'number'
-                filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param[1])
+                filter_scope_by_numeric_custom_attribute(scope, custom_attribute, value)
               when 'boolean'
                 scope.where('(custom_attributes ->> :label) = (:value)', label: label,
-                                                                         value: param[1] == '1' ? 'true' : 'false')
+                                                                         value: value == '1' ? 'true' : 'false')
               when 'option'
-                scope.where('(custom_attributes ->> :label IN (:values))', label: label, values: param[1])
+                scope.where('(custom_attributes ->> :label IN (:values))', label: label, values: value)
               when 'options'
-                scope.where('(custom_attributes -> :label ?| array[:values])', label: label, values: param[1])
+                scope.where('(custom_attributes -> :label ?| array[:values])', label: label, values: value)
               end
     end
 
     scope
   end
 
-  def apply_ordering(scope, value)
-    order = case value&.downcase
+  def apply_ordering(options)
+    order = case options[:sort]&.downcase
             when 'name_desc'
               'LOWER(product_items.name) DESC,
                release_year ASC NULLS FIRST,
@@ -134,7 +135,7 @@ class ProductFilterService
                   release_month ASC NULLS FIRST,
                   release_day ASC NULLS FIRST'
             end
-    scope.order(order)
+    options[:scope].order(order)
   end
 
   def convert_values(unit, min, max)
@@ -163,14 +164,19 @@ class ProductFilterService
   end
 
   def filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param)
-    if custom_attribute[:inputs].present?
-      custom_attribute[:inputs].each do |input|
-        min, max = convert_values(param[:unit], param[input][:min], param[input][:max])
+    inputs = custom_attribute[:inputs]
+    label = custom_attribute[:label]
+    param_unit = param[:unit]
+
+    if inputs.present?
+      inputs.each do |input|
+        param_input = param[input]
+        min, max = convert_values(param_unit, param_input[:min], param_input[:max])
 
         if min.present?
           scope = scope.where(
             '(custom_attributes -> ? -> ? ->> ?)::numeric >= ?',
-            custom_attribute[:label],
+            label,
             'value',
             input,
             min
@@ -181,28 +187,29 @@ class ProductFilterService
 
         scope = scope.where(
           '(custom_attributes -> ? -> ? ->> ?)::numeric <= ?',
-          custom_attribute[:label],
+          label,
           'value',
           input,
           max
         )
       end
     else
-      min, max = convert_values(param[:unit], param[:min], param[:max])
+      min, max = convert_values(param_unit, param[:min], param[:max])
 
       if min.present?
-        scope = scope.where("NULLIF(custom_attributes -> ? ->> ?, '')::numeric >= ?", custom_attribute[:label], 'value',
+        scope = scope.where("NULLIF(custom_attributes -> ? ->> ?, '')::numeric >= ?", label, 'value',
                             min)
       end
+
       if max.present?
-        scope = scope.where("NULLIF(custom_attributes -> ? ->> ?, '')::numeric <= ?", custom_attribute[:label], 'value',
+        scope = scope.where("NULLIF(custom_attributes -> ? ->> ?, '')::numeric <= ?", label, 'value',
                             max)
       end
     end
 
-    if custom_attribute[:units].present? && param[:unit].present?
-      unit = convert_unit(param[:unit])
-      scope = scope.where('custom_attributes -> ? ->> ? = ?', custom_attribute[:label], 'unit', unit)
+    if custom_attribute[:units].present? && param_unit.present?
+      unit = convert_unit(param_unit)
+      scope = scope.where('custom_attributes -> ? ->> ? = ?', label, 'unit', unit)
     end
 
     scope

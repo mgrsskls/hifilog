@@ -21,20 +21,8 @@ Style/Documentation:
   Description: "Document classes and non-namespace modules."
   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Description: To help transition from Ruby 2.3.0 to Ruby 3.0.
-  Enabled: false
-
-Style/NumericPredicate:
-  Enabled: false
-
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact
-
-Style/HashSyntax:
-  Enabled: true
-  Exclude:
-    - test/**/*
 
 Metrics/BlockLength:
   Enabled: true
@@ -54,12 +42,6 @@ Metrics/PerceivedComplexity:
   Enabled: false
 
 Metrics/AbcSize:
-  Enabled: false
-
-Style/TrailingCommaInHashLiteral:
-  Enabled: false
-
-Style/TrailingCommaInArguments:
   Enabled: false
 
 Style/SymbolArray:

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FeedController < ApplicationController
   skip_after_action :record_page_view
 

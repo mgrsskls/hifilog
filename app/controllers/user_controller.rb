@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserController < ApplicationController
   include ApplicationHelper
   include HistoryHelper
@@ -8,7 +10,7 @@ class UserController < ApplicationController
   before_action :set_menu
 
   def dashboard
-    @page_title = I18n.t('dashboard')
+    page_title(I18n.t('dashboard'))
     @active_dashboard_menu = :dashboard
 
     data = PaperTrail::Version.where(whodunnit: current_user.id)
@@ -28,36 +30,42 @@ class UserController < ApplicationController
   end
 
   def bookmarks
-    @page_title = Bookmark.model_name.human(count: 2)
+    page_title(Bookmark.model_name.human(count: 2))
 
     all_bookmarks = current_user.bookmarks
                                 .includes({ item: [{ sub_categories: [:category] }, :brand] })
 
-    if params[:id].present?
-      @bookmark_list = current_user.bookmark_lists.find(params[:id])
-      all_bookmarks = all_bookmarks.where(bookmark_list_id: @bookmark_list.id) if @bookmark_list.present?
-      @active_dashboard_menu = "bookmark_list_#{@bookmark_list.id}"
+    id = params[:id]
+    if id.present?
+      @bookmark_list = current_user.bookmark_lists.find(id)
+      all_bookmarks = all_bookmarks.where(bookmark_list_id: id) if @bookmark_list.present?
+      @active_dashboard_menu = "bookmark_list_#{id}"
     else
       @active_dashboard_menu = :bookmarks
     end
 
+    all_product_bookmarks = all_bookmarks.where(item_type: %w[Product ProductVariant])
+    all_brand_bookmarks = all_bookmarks.where(item_type: 'Brand')
+    all_event_bookmarks = all_bookmarks.where(item_type: 'Event')
+
     @active_bookmarks = :all
 
     @all_bookmarks_count = all_bookmarks.size
-    @products_bookmarks_count = all_bookmarks.where(item_type: %w[Product ProductVariant]).size
-    @brands_bookmarks_count = all_bookmarks.where(item_type: 'Brand').size
-    @events_bookmarks_count = all_bookmarks.where(item_type: 'Event').size
+    @products_bookmarks_count = all_product_bookmarks.size
+    @brands_bookmarks_count = all_brand_bookmarks.size
+    @events_bookmarks_count = all_event_bookmarks.size
 
-    if params[:type].present? && %w[products brands events].include?(params[:type])
-      case params[:type]
+    type = params[:type]
+    if type.present? && %w[products brands events].include?(type)
+      case type
       when 'products'
-        all_bookmarks = all_bookmarks.where(item_type: %w[Product ProductVariant])
+        all_bookmarks = all_product_bookmarks
         @active_bookmarks = :products
       when 'brands'
-        all_bookmarks = all_bookmarks.where(item_type: 'Brand')
+        all_bookmarks = all_brand_bookmarks
         @active_bookmarks = :brands
       when 'events'
-        all_bookmarks = all_bookmarks.where(item_type: 'Event')
+        all_bookmarks = all_event_bookmarks
         @active_bookmarks = :events
       end
     end
@@ -73,8 +81,9 @@ class UserController < ApplicationController
 
     bookmarks = all_bookmarks
 
-    if params[:category].present?
-      sub_cat = SubCategory.friendly.find(params[:category])
+    category = params[:category]
+    if category.present?
+      sub_cat = SubCategory.friendly.find(category)
 
       if sub_cat
         bookmarks =
@@ -95,26 +104,28 @@ class UserController < ApplicationController
   end
 
   def events
-    @page_title = Event.model_name.human(count: 2)
+    page_title(Event.model_name.human(count: 2))
     @active_dashboard_menu = :events
     @active_events = :upcoming
 
-    all_events = current_user.events
-                             .where(end_date: Time.zone.today..)
-                             .or(Event.where(start_date: Time.zone.today.., end_date: nil))
+    user_events = current_user.events
+
+    all_events = user_events
+                 .where(end_date: Time.zone.today..)
+                 .or(Event.where(start_date: Time.zone.today.., end_date: nil))
     get_events(all_events:, order: :asc)
     @all_upcoming_events_count = all_events.size
-    @all_past_events_count = current_user.events
-                                         .where(end_date: ..Time.zone.today)
-                                         .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
-                                         .size
+    @all_past_events_count = user_events
+                             .where(end_date: ..Time.zone.today)
+                             .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
+                             .size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.upcoming', path: events_path)
     @after_create_redirect = :dashboard_events
     @after_destroy_redirect = :dashboard_events
   end
 
   def past_events
-    @page_title = "Past #{Event.model_name.human(count: 2)}"
+    page_title("Past #{Event.model_name.human(count: 2)}")
     @active_dashboard_menu = :events
     @active_events = :past
 
@@ -134,119 +145,136 @@ class UserController < ApplicationController
   end
 
   def contributions
-    @page_title = I18n.t('headings.contributions')
+    page_title(I18n.t('headings.contributions'))
     @active_dashboard_menu = :contributions
+
+    whodunnit = current_user.id
 
     products = Product.joins(:versions)
                       .distinct
                       .includes([:brand])
                       .select('products.*, versions.event')
-                      .where(versions: { item_type: 'Product', whodunnit: current_user.id })
+                      .where(versions: { item_type: 'Product', whodunnit: })
     product_variants = ProductVariant.joins(:versions)
                                      .distinct
                                      .includes([{ product: [:brand] }])
                                      .select('product_variants.*, versions.event')
-                                     .where(versions: { item_type: 'ProductVariant', whodunnit: current_user.id })
+                                     .where(versions: { item_type: 'ProductVariant', whodunnit: })
     @items = (products + product_variants)
              .sort_by { |possession| possession.display_name.downcase }
              .group_by(&:event)
     @brands = Brand.joins(:versions)
                    .distinct
                    .select('brands.*, versions.event')
-                   .where(versions: { item_type: 'Brand', whodunnit: current_user.id })
+                   .where(versions: { item_type: 'Brand', whodunnit: })
                    .order(:name)
                    .group_by(&:event)
   end
 
   def history
-    @page_title = I18n.t('headings.history')
+    page_title(I18n.t('headings.history'))
     @active_dashboard_menu = :history
     @possessions = get_history_possessions(current_user.possessions)
   end
 
   def has
-    bookmarks = current_user.bookmarks
-                            .includes({ item: [{ sub_categories: [:category] }, :brand] })
+    bookmarks = current_user.bookmarks.includes({ item: [{ sub_categories: [:category] }, :brand] })
+    all_possessions = current_user.possessions
 
-    if params[:brands].present?
-      possessions = current_user.possessions
-                                .includes([{ product: [:brand] }])
-                                .includes([{ product_variant: [{ product: [:brand] }] }])
-                                .where(products: { brand_id: params[:brands] })
+    param_brands = params[:brands]
+    param_products = params[:products]
+    params_product_variants = params[:product_variants]
+    param_events = params[:events]
 
-      brands = params[:brands].map do |brand_id|
+    if param_brands.present?
+      brand_possessions = all_possessions
+                          .includes([{ product: [:brand] }])
+                          .includes([{ product_variant: [{ product: [:brand] }] }])
+                          .where(products: { brand_id: param_brands })
+
+      brands = param_brands.map do |brand_id|
+        brand_id = brand_id.to_i
+
         {
-          id: brand_id.to_i,
-          in_collection: possessions.any? do |possession|
-            possession.product.brand.id == brand_id.to_i && possession.prev_owned == false
+          id: brand_id,
+          in_collection: brand_possessions.any? do |possession|
+            in_collection?(possession.product.brand.id, possession.prev_owned, brand_id)
           end,
-          previously_owned: possessions.any? do |possession|
-            possession.product.brand.id == brand_id.to_i && possession.prev_owned == true
+          previously_owned: brand_possessions.any? do |possession|
+            previously_owned?(possession.product.brand.id, possession.prev_owned, brand_id)
           end,
           bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_id == brand_id.to_i && bookmark.item_type == 'Brand'
-          end,
+            bookmark.item_id == brand_id && bookmark.item_type == 'Brand'
+          end
         }
       end
     end
 
-    if params[:products].present?
-      possessions = current_user.possessions
-                                .includes([:product])
-                                .where(product: params[:products], product_variant: nil)
+    if param_products.present?
+      product_possessions = all_possessions
+                            .includes([:product])
+                            .where(product: param_products, product_variant: nil)
 
-      products = params[:products].map do |product_id|
+      products = param_products.map do |product_id|
+        product_id = product_id.to_i
+
         {
-          id: product_id.to_i,
-          in_collection: possessions.any? do |possession|
-            possession.product.id == product_id.to_i && possession.prev_owned == false
+          id: product_id,
+          in_collection: product_possessions.any? do |possession|
+            in_collection?(possession.product.id, possession.prev_owned, product_id)
           end,
-          previously_owned: possessions.any? do |possession|
-            possession.product.id == product_id.to_i && possession.prev_owned == true
+          previously_owned: product_possessions.any? do |possession|
+            previously_owned?(possession.product.id, possession.prev_owned, product_id)
           end,
           bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_id == product_id.to_i && bookmark.item_type == 'Product'
-          end,
+            bookmark.item_id == product_id && bookmark.item_type == 'Product'
+          end
         }
       end
     end
 
-    if params[:product_variants].present?
-      possessions = current_user.possessions
-                                .includes([:product_variant])
-                                .where(product_variant: params[:product_variants])
+    if params_product_variants.present?
+      product_variant_possessions = all_possessions
+                                    .includes([:product_variant])
+                                    .where(product_variant: params_product_variants)
 
-      product_variants = params[:product_variants].map do |product_variant_id|
+      product_variants = params_product_variants.map do |id|
+        product_variant_id = id.to_i
+
         {
-          id: product_variant_id.to_i,
-          in_collection: possessions.any? do |possession|
-            possession.product_variant.id == product_variant_id.to_i && possession.prev_owned == false
+          id: product_variant_id,
+          in_collection: product_variant_possessions.any? do |possession|
+            in_collection?(possession.product_variant.id, possession.prev_owned, product_variant_id)
           end,
-          previously_owned: possessions.any? do |possession|
-            possession.product_variant.id == product_variant_id.to_i && possession.prev_owned == true
+          previously_owned: product_variant_possessions.any? do |possession|
+            previously_owned?(possession.product_variant.id, possession.prev_owned, product_variant_id)
           end,
           bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_id == product_variant_id.to_i && bookmark.item_type == 'ProductVariant'
-          end,
+            bookmark.item_id == product_variant_id && bookmark.item_type == 'ProductVariant'
+          end
         }
       end
     end
 
-    if params[:events].present?
-      attendedances = current_user.event_attendees.where(event: params[:events])
+    if param_events.present?
+      attendedances = current_user.event_attendees.where(event: param_events)
 
-      events = params[:events].map do |event_id|
+      events = param_events.map do |event_id|
+        event_id = event_id.to_i
+
         {
-          id: event_id.to_i,
+          id: event_id,
           in_collection: attendedances.any? do |attendance|
-            attendance.event.id == event_id.to_i && attendance.event.discontinued? == false
+            attendance_event = attendance.event
+            attendance_event.id == event_id && attendance_event.discontinued? == false
           end,
           previously_owned: attendedances.any? do |attendance|
-            attendance.event.id == event_id.to_i && attendance.event.discontinued? == true
+            attendance_event = attendance.event
+            attendance_event.id == event_id && attendance_event.discontinued? == true
           end,
           bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_type == 'Event' && bookmark.item_id == event_id.to_i
-          end,
+            bookmark.item_type == 'Event' && bookmark.item_id == event_id
+          end
         }
       end
     end
@@ -284,8 +312,9 @@ class UserController < ApplicationController
   private
 
   def get_events(all_events: [], order: :asc)
+    country_code = params[:country]
     @events = all_events.includes(event_attendees: [:user])
-    @events = all_events.where(country_code: params[:country]) if params[:country].present?
+    @events = all_events.where(country_code:) if country_code.present?
     @years = @events.order(start_date: order)
                     .group_by { |e| e.start_date.year }
                     .transform_values do |events_in_year|
@@ -306,5 +335,13 @@ class UserController < ApplicationController
 
   def set_menu
     @active_menu = :dashboard
+  end
+
+  def in_collection?(possession_id, prev_owned, id)
+    possession_id == id && prev_owned == false
+  end
+
+  def previously_owned?(possession_id, prev_owned, id)
+    possession_id == id && prev_owned == true
   end
 end

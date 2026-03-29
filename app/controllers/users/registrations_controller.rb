@@ -7,13 +7,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # GET /resource/sign_up
   def new
     @active_menu = :signup
-    @page_title = I18n.t('user_form.signup')
+    page_title(I18n.t('user_form.signup'))
     super
   end
 
   # GET /resource/edit
   def edit
-    @page_title = I18n.t('headings.account')
+    page_title(I18n.t('headings.account'))
     @active_dashboard_menu = :account
 
     super
@@ -30,7 +30,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # PUT /resource
   def update
-    @page_title = I18n.t('headings.account')
+    page_title(I18n.t('headings.account'))
     @active_dashboard_menu = :account
 
     current_user.avatar.purge if params[:delete_avatar]

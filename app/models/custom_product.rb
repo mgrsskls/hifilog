@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CustomProduct < ApplicationRecord
   include Description
   include Image

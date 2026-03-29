@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Newsletter < ApplicationRecord
   def send_test(email, user_name)
     UserMailer.newsletter_email(

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Style/ClassAndModuleChildren, Rails/ApplicationRecord
 module PaperTrail
   class Version < ActiveRecord::Base

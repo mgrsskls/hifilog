@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FilterParamsBuilder
   include FilterConstants
   extend ActiveSupport::Concern

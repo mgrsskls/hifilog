@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SitemapController < ApplicationController
   skip_after_action :record_page_view
 
@@ -22,7 +24,7 @@ class SitemapController < ApplicationController
       m.add products_path
       Product.includes([:brand]).find_each do |product|
         m.add product_path(
-          id: product.friendly_id,
+          id: product.friendly_id
         ), updated: product.updated_at
       end
       ProductVariant.includes([{ product: [:brand] }]).find_each do |product_variant|

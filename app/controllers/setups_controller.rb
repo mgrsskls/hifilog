@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetupsController < ApplicationController
   include Possessions
 
@@ -5,14 +7,13 @@ class SetupsController < ApplicationController
   before_action :set_menu
 
   def index
-    @page_title = Setup.model_name.human(count: 2)
+    page_title(Setup.model_name.human(count: 2))
     @setups = current_user.setups.includes([:possessions]).order('LOWER(name)')
   end
 
   def show
-    @setup = current_user.setups.find(params[:id])
-
-    @page_title = @setup.name
+    user_setup(params[:id])
+    page_title(@setup.name)
 
     @all_possessions = map_possessions_to_presenter current_user
                        .possessions.where(prev_owned: false)
@@ -36,9 +37,11 @@ class SetupsController < ApplicationController
         SetupPossessionPresenter.new(possession, @setup)
       end
     end
-    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+
+    category = params[:category]
+    @sub_category = SubCategory.friendly.find(category) if category.present?
     @possessions = if @sub_category
-                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                     all.select { |possession| possession.sub_categories.include?(@sub_category) }
                    else
                      all
                    end
@@ -48,13 +51,12 @@ class SetupsController < ApplicationController
   def new
     @setup = Setup.new(private: true)
 
-    @page_title = I18n.t('setup.new.heading')
+    page_title(I18n.t('setup.new.heading'))
   end
 
   def edit
-    @setup = current_user.setups.find(params[:id])
-
-    @page_title = "#{t('edit')} #{@setup.name}"
+    user_setup(params[:id])
+    page_title("#{t('edit')} #{@setup.name}")
   end
 
   def create
@@ -75,14 +77,15 @@ class SetupsController < ApplicationController
   end
 
   def update
-    @setup = current_user.setups.find(params[:id])
+    setup_id = params[:id]
+    user_setup(setup_id)
     @active_dashboard_menu = :setups
 
     possessions_in_other_setups = current_user.setup_possessions
-                                              .where.not(setup_id: @setup.id)
+                                              .where.not(setup_id:)
                                               .where(possession_id: setup_params[:possession_ids])
 
-    if possessions_in_other_setups.update(setup_id: @setup.id) && @setup.update(setup_params)
+    if possessions_in_other_setups.update(setup_id:) && @setup.update(setup_params)
       flash[:notice] = I18n.t(
         'setup.messages.updated',
         name: @setup.name
@@ -94,7 +97,7 @@ class SetupsController < ApplicationController
   end
 
   def destroy
-    @setup = current_user.setups.find(params[:id])
+    user_setup(params[:id])
     @setup.destroy
     flash[:notice] = I18n.t('setup.messages.deleted', name: @setup.name)
     redirect_to dashboard_setups_path
@@ -109,5 +112,9 @@ class SetupsController < ApplicationController
 
   def setup_params
     params.expect(setup: [:name, :private, { possession_ids: [] }])
+  end
+
+  def user_setup(id)
+    @setup = current_user.setups.find(id)
   end
 end

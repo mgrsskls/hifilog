@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Preview all emails at http://localhost:3000/rails/mailers/user_mailer
 class UserMailerPreview < ActionMailer::Preview
   # Preview this email at http://localhost:3000/rails/mailers/user_mailer/newsletter_email
@@ -37,7 +39,7 @@ Until now, you could already bookmark products that interest you. But now you ca
 By the way, this is the first time I have sent out a newsletter. I will probably do this from time to time with interesting updates, but definitely not too often. If you do not want to receive it, you can of course unsubscribe at any time. Just make sure to check [HiFi&thinsp;Log] (https://www.hifilog.com) regularly, as I am always working on improvements and new features.
 
 Happy listening,
-Michael from HiFi&thinsp;Log',
+Michael from HiFi&thinsp;Log'
       # rubocop:enable Layout/LineLength
     )
   end

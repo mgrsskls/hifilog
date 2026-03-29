@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HistoryHelper
   def get_history_possessions(possessions)
     all = possessions.where.not(period_from: nil)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
@@ -1032,94 +1034,94 @@ possessions = [
   # Audeze
   Possession.create!(
     user:,
-    product: Product.create!(name: 'LCD-2C', brand_id: 1, sub_category_ids: [8]),
+    product: Product.create!(name: 'LCD-2C', brand_id: 1, sub_category_ids: [8])
   ),
   # Bluesound
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Node', brand_id: 2, sub_category_ids: [19]),
+    product: Product.create!(name: 'Node', brand_id: 2, sub_category_ids: [19])
   ),
   # Canton
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Karat 720.2', brand_id: 3, sub_category_ids: [10], discontinued: true),
+    product: Product.create!(name: 'Karat 720.2', brand_id: 3, sub_category_ids: [10], discontinued: true)
   ),
   # Clearaudio
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Concept', brand_id: 4, sub_category_ids: [17]),
+    product: Product.create!(name: 'Concept', brand_id: 4, sub_category_ids: [17])
   ),
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Concept MC', brand_id: 4, sub_category_ids: [14]),
+    product: Product.create!(name: 'Concept MC', brand_id: 4, sub_category_ids: [14])
   ),
   # Denon
   Possession.create!(
     user:,
-    product: Product.create!(name: 'AH-D9200', brand_id: 5, sub_category_ids: [8]),
+    product: Product.create!(name: 'AH-D9200', brand_id: 5, sub_category_ids: [8])
   ),
   # Feliks Audio
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Elise', brand_id: 6, sub_category_ids: [5]),
+    product: Product.create!(name: 'Elise', brand_id: 6, sub_category_ids: [5])
   ),
   # Fiio
   Possession.create!(
     user:,
-    product: Product.create!(name: 'E10K', brand_id: 7, sub_category_ids: [5, 16]),
+    product: Product.create!(name: 'E10K', brand_id: 7, sub_category_ids: [5, 16])
   ),
   Possession.create!(
     user:,
-    product: Product.create!(name: 'K3', brand_id: 7, sub_category_ids: [5, 16]),
+    product: Product.create!(name: 'K3', brand_id: 7, sub_category_ids: [5, 16])
   ),
   # Focal
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Elear', brand_id: 8, sub_category_ids: [8]),
+    product: Product.create!(name: 'Elear', brand_id: 8, sub_category_ids: [8])
   ),
   # Graham Slee
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Ultra Linear II', brand_id: 9, sub_category_ids: [5]),
+    product: Product.create!(name: 'Ultra Linear II', brand_id: 9, sub_category_ids: [5])
   ),
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Reflex C', brand_id: 9, sub_category_ids: [2]),
+    product: Product.create!(name: 'Reflex C', brand_id: 9, sub_category_ids: [2])
   ),
   # Musical Fidelity
   Possession.create!(
     user:,
-    product: Product.create!(name: 'M5Si', brand_id: 10, sub_category_ids: [3]),
+    product: Product.create!(name: 'M5Si', brand_id: 10, sub_category_ids: [3])
   ),
   # Oppo
   Possession.create!(
     user:,
-    product: Product.create!(name: 'PM-3', brand_id: 11, sub_category_ids: [8]),
+    product: Product.create!(name: 'PM-3', brand_id: 11, sub_category_ids: [8])
   ),
   # Sennheiser
   Possession.create!(
     user:,
-    product: Product.create!(name: 'HD 650', brand_id: 17, sub_category_ids: [8]),
+    product: Product.create!(name: 'HD 650', brand_id: 17, sub_category_ids: [8])
   ),
   # Shure
   Possession.create!(
     user:,
-    product: Product.create!(name: 'SE215-CL', brand_id: 12, sub_category_ids: [6]),
+    product: Product.create!(name: 'SE215-CL', brand_id: 12, sub_category_ids: [6])
   ),
   # SMSL
   Possession.create!(
     user:,
-    product: Product.create!(name: 'SA-50', brand_id: 13, sub_category_ids: [3]),
+    product: Product.create!(name: 'SA-50', brand_id: 13, sub_category_ids: [3])
   ),
   # Sony
   Possession.create!(
     user:,
-    product: Product.create!(name: 'MDR-EX450', brand_id: 14, sub_category_ids: [6]),
+    product: Product.create!(name: 'MDR-EX450', brand_id: 14, sub_category_ids: [6])
   ),
   # Wharfedale
   Possession.create!(
     user:,
-    product: Product.create!(name: 'Linton 85th', brand_id: 15, sub_category_ids: [11]),
+    product: Product.create!(name: 'Linton 85th', brand_id: 15, sub_category_ids: [11])
   ),
   # Willsenton
   Possession.create!(

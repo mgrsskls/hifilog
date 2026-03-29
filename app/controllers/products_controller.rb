@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProductsController < ApplicationController
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
@@ -24,44 +26,44 @@ class ProductsController < ApplicationController
     ).filter
 
     page_num = params[:page].presence || 1
-    @products = filter.products
-                      .includes(:brand)
-                      .page(page_num)
+    products = filter.products.includes(:brand)
+    @products = products.page(page_num)
 
     # Reset to page 1 if out of range
-    @products = filter.products.includes(:brand).page(1) if @products.out_of_range?
+    @products = products.page(1) if @products.out_of_range?
 
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
     @canonical_url = products_url
 
-    @product_presenters = @products.map { |p| ProductItemPresenter.new(p) }
+    @product_presenters = @products.map { |product| ProductItemPresenter.new(product) }
 
     if @sub_category.present?
-      @page_title = @sub_category.name
-      @meta_desc = "Search through all products in the category “#{@sub_category.name}” on HiFi Log,\
- a user-driven database for hi-fi products and brands."
+      sub_category_name = @sub_category.name
+      page_title(sub_category_name, "Search through all products in the category “#{sub_category_name}” on HiFi Log,\
+ a user-driven database for hi-fi products and brands.")
     elsif @category.present?
-      @page_title = @category.name
-      @meta_desc = "Search through all products in the category “#{@category.name}” on HiFi Log,\
- a user-driven database for hi-fi products and brands."
+      category_name = @category.name
+      page_title(category_name, "Search through all products in the category “#{category_name}” on HiFi Log,\
+ a user-driven database for hi-fi products and brands.")
     else
-      @page_title = Product.model_name.human(count: 2)
-      @meta_desc = 'Search through all products on HiFi Log, a user-driven database for hi-fi products and brands.'
+      page_title(Product.model_name.human(count: 2),
+                 'Search through all products on HiFi Log, a user-driven database for hi-fi products and brands.')
     end
   end
 
   def show
     @brand = @product.brand
+    id = @product.id
 
     if user_signed_in?
       @possessions = current_user.possessions
                                  .includes(:product, :product_option, :setup_possession, :setup)
-                                 .where(product_id: @product.id, product_variant_id: nil)
+                                 .where(product_id: id, product_variant_id: nil)
                                  .order([:prev_owned, :period_from, :period_to, :created_at])
                                  .map { |possession| map_possession_to_presenter(possession) }
-      @bookmark = current_user.bookmarks.find_by(item_id: @product.id, item_type: 'Product')
-      @note = current_user.notes.find_by(product_id: @product.id, product_variant_id: nil)
+      @bookmark = current_user.bookmarks.find_by(item_id: id, item_type: 'Product')
+      @note = current_user.notes.find_by(product_id: id, product_variant_id: nil)
       @setups = current_user.setups.includes(:possessions)
     end
 
@@ -82,58 +84,54 @@ class ProductsController < ApplicationController
         versions.item_type, versions.item_id FROM users
       JOIN versions
       ON users.id = CAST(versions.whodunnit AS integer)
-      WHERE versions.item_id = #{@product.id} AND versions.item_type = 'Product'
+      WHERE versions.item_id = #{id} AND versions.item_type = 'Product'
     ")
 
-    @page_title = [@product.brand&.name, @product.name].compact.join(' ')
-    set_meta_desc
+    page_title([@brand&.name, @product.name].compact.join(' '), meta_desc)
   end
 
   def new
-    @page_title = I18n.t('product.new.heading')
+    page_title(I18n.t('product.new.heading'))
 
-    @sub_category = SubCategory.friendly.find(params[:sub_category]) if params[:sub_category].present?
+    sub_category = params[:sub_category]
+    @sub_category = SubCategory.friendly.find(sub_category) if sub_category.present?
     @product = @sub_category ? Product.new(sub_category_ids: [@sub_category.id]) : Product.new
     @brand = @product.build_brand
     @brands = Brand.order('LOWER(name)')
     @categories = Category.includes([:sub_categories])
 
-    return if params[:brand_id].blank?
+    brand_id = params[:brand_id]
 
-    @product.brand_id = params[:brand_id]
-    @brand = Brand.find(params[:brand_id])
+    return if brand_id.blank?
+
+    @product.brand_id = brand_id
+    @brand = Brand.find(brand_id)
   end
 
   def edit
     @product = Product.friendly.find(params[:id])
-    @page_title = I18n.t('edit_record', name: @product.name)
+    page_title(I18n.t('edit_record', name: @product.name))
     @brand = @product.brand
     @categories = Category.includes([:sub_categories])
   end
 
   def create
-    convert_custom_attributes!(product_params[:custom_attributes]) if product_params[:custom_attributes].present?
+    custom_attributes = product_params[:custom_attributes]
+    convert_custom_attributes!(custom_attributes) if custom_attributes.present?
 
     @product = Product.new(product_params)
     brand = assign_brand_from_params(product_params)
 
-    unless brand.save
+    product_options_attributes = params[:product_options_attributes]
 
-      if params[:product_options_attributes].present?
-        process_product_options(@product,
-                                params[:product_options_attributes])
-      end
-      @categories = Category.includes([:sub_categories])
-      @brand = brand
-      render :new, status: :unprocessable_content and return
-    end
+    return on_create_with_brand_error(product_options_attributes, brand) unless brand.save
 
     @product.brand_id = brand.id
     @product.discontinued = brand.discontinued ? true : product_params[:discontinued]
 
-    if params[:product_options_attributes].present?
+    if product_options_attributes.present?
       process_product_options(@product,
-                              params[:product_options_attributes])
+                              product_options_attributes)
     end
 
     if @product.save
@@ -151,13 +149,13 @@ class ProductsController < ApplicationController
     old_model_no = @product.model_no
     @product.slug = nil if old_name != product_update_params[:name] || old_model_no != product_update_params[:model_no]
 
-    if product_update_params[:custom_attributes].present?
-      convert_custom_attributes!(product_update_params[:custom_attributes])
-    end
+    custom_attributes = product_update_params[:custom_attributes]
+    convert_custom_attributes!(custom_attributes) if custom_attributes.present?
 
-    if params[:product_options_attributes].present?
+    product_options_attributes = params[:product_options_attributes]
+    if product_options_attributes.present?
       process_product_options(@product,
-                              params[:product_options_attributes])
+                              product_options_attributes)
     end
 
     if @product.update(product_update_params)
@@ -172,31 +170,37 @@ class ProductsController < ApplicationController
   def changelog
     @product = Product.friendly.find(params[:product_id])
     @brand = @product.brand
-    @versions = @product.versions.select do |v|
-      log = get_changelog(v.object_changes)
-      log.length > 1 || (log.length == 1 && log['slug'].nil?)
-    end
+    @versions = filter_versions(@product.versions)
   end
 
   private
 
-  def set_meta_desc
+  def on_create_with_brand_error(product_options_attributes, brand)
+    if product_options_attributes.present?
+      process_product_options(@product,
+                              product_options_attributes)
+    end
+    @categories = Category.includes([:sub_categories])
+    @brand = brand
+    render :new, status: :unprocessable_content
+  end
+
+  def meta_desc
     if @product.description.present?
-      @meta_desc = ActionController::Base.helpers.truncate(
+      return ActionController::Base.helpers.truncate(
         ActionController::Base.helpers.strip_tags(@product.formatted_description),
         length: 200
       )
-      return
     end
 
-    @meta_desc = "The #{@product.name}
+    "The #{@product.name}
 #{@product.discontinued? && @product.product_variants.all?(&:discontinued) ? 'were' : 'are'}
 #{@product.sub_categories.map(&:name).join(' / ')}
 by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @brand.country_code.present?}."
   end
 
   def find_product
-    @product = find_resource(Product, :id, path_helper: ->(p) { product_path(p) })
+    @product = find_resource(Product, :id, path_helper: ->(product) { product_path(product) })
   end
 
   def set_active_menu
@@ -204,11 +208,13 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def product_params
-    if params[:product][:product_options_attributes].present?
+    product_options_attributes = params[:product][:product_options_attributes]
+
+    if product_options_attributes.present?
       options = {}
 
-      params[:product][:product_options_attributes].each do |i, product_option|
-        options[i] = product_option if product_option[:option].present?
+      product_options_attributes.each do |index, product_option|
+        options[index] = product_option if product_option[:option].present?
       end
 
       params[:product][:product_options_attributes] = options
@@ -257,12 +263,12 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
       when 'number'
         case value['value']
         when ActionController::Parameters, Hash
-          value['value'].to_hash.each do |v|
-            if v[1] == ''
-              permitted[:custom_attributes][key]['value'].delete(v[0])
+          value['value'].to_hash.each do |val|
+            if val[1] == ''
+              permitted[:custom_attributes][key]['value'].delete(val[0])
               permitted[:custom_attributes].delete(key) if permitted[:custom_attributes][key]['value'].empty?
             else
-              permitted[:custom_attributes][key]['value'][v[0]] = v[1].to_f
+              permitted[:custom_attributes][key]['value'][val[0]] = val[1].to_f
             end
           end
         else
@@ -297,7 +303,7 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
                 {
                   custom_attributes: {},
                   sub_category_ids: []
-                }],
+                }]
     )
 
     permitted[:custom_attributes]&.each do |key, value|
@@ -367,13 +373,22 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def process_product_options(product, options_attributes)
-    options_attributes.each_value do |option|
-      if option[:id].present? && (option[:option].present? || option[:model_no].present?)
-        product.product_options.find(option[:id]).update(option: option[:option], model_no: option[:model_no])
-      elsif option[:id].present?
-        product.product_options.find(option[:id]).delete
-      elsif option[:option].present?
-        product.product_options << ProductOption.new(option: option[:option], model_no: option[:model_no])
+    options_attributes.each_value do |attribute|
+      model_no = attribute[:model_no]
+      option = attribute[:option]
+      id = attribute[:id]
+      product_options = product.product_options
+
+      if id.present?
+        product_option = product_options.find(id)
+
+        if option.present? || model_no.present?
+          product_option.update(option:, model_no:)
+        else
+          product_option.delete
+        end
+      elsif option.present?
+        product_options << ProductOption.new(option:, model_no:)
       end
     end
   end
@@ -388,8 +403,8 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
       when 'number'
         case value['value']
         when ActionController::Parameters, Hash
-          value['value'].to_hash.each do |v|
-            custom_attributes[key]['value'][v[0]] = v[1].to_f
+          value['value'].to_hash.each do |val|
+            custom_attributes[key]['value'][val[0]] = val[1].to_f
           end
         else
           custom_attributes[key]['value'] = value['value'].to_f

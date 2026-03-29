@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CustomAttribute < ApplicationRecord
   VALID_UNITS = %w[in cm lb kg db w ohm hz db_1w_1m db_283v_1m db_mw].freeze
   VALID_INPUTS = %w[w h l min max].freeze
@@ -10,7 +12,7 @@ class CustomAttribute < ApplicationRecord
     number: 'number',
     option: 'option',
     options: 'options',
-    boolean: 'boolean',
+    boolean: 'boolean'
   }, suffix: true
 
   validates :label, presence: true, uniqueness: true

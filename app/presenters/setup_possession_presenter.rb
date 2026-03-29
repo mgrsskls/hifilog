@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetupPossessionPresenter < PossessionPresenter
   def initialize(object, setup)
     super(object)

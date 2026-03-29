@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ItemPresenter
   include Rails.application.routes.url_helpers
 
@@ -10,16 +12,19 @@ class ItemPresenter
   def initialize(object, type = nil)
     @object = object
 
+    product = object.product
+    product_variant = object.product_variant
+
     if type.present?
       if type == :product
-        @product = object.product
+        @product = product
       elsif type == :product_variant
-        @product = object.product
-        @product_variant = object.product_variant
+        @product = product
+        @product_variant = product_variant
       end
     else
-      @product = object.product
-      @product_variant = object.product_variant
+      @product = product
+      @product_variant = product_variant
     end
   end
 
@@ -75,11 +80,13 @@ class ItemPresenter
   end
 
   def edit_path
+    product_friendly_id = @product.friendly_id
+
     if @product_variant.present?
-      return product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
+      return product_edit_variant_path(product_id: product_friendly_id, id: @product_variant.friendly_id)
     end
 
-    edit_product_path(id: @product.friendly_id)
+    edit_product_path(id: product_friendly_id)
   end
 
   def update_path
