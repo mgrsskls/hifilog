@@ -1,4 +1,5 @@
 APP_NAME = 'HiFi Log'
+BLOCKED_AGENTS = %w[InternetMeasurement Odin brid.gy Friendica procial.tchncs.de]
 IPS_BLOCKED_FOR_ANALYTICS = [
 	# START https://docs-cortex.paloaltonetworks.com/r/1/Cortex-Xpanse/Scanning-activity
 	"35.203.210.",

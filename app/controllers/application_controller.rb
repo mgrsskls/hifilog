@@ -32,28 +32,25 @@ class ApplicationController < ActionController::Base
                        .limit(5)
                        .count
                        .map do |country|
+      country_code = country[0]
       {
-        label: country_name_from_country_code(country[0]),
-        brands_path: brands_path({ brands: { country: country[0] } }),
-        products_path: products_path({ brands: { country: country[0] } })
+        label: country_name_from_country_code(country_code),
+        brands_path: brands_path({ brands: { country: country_code } }),
+        products_path: products_path({ brands: { country: country_code } })
       }
     end
   end
 
-  attr_writer :current_user
-
   def record_page_view
+    user_agent = request.user_agent
+
+    return if user_agent.blank?
+    return if BLOCKED_AGENTS.any? { |agent| user_agent.include?(agent) }
     return unless response&.content_type&.start_with?('text/html')
-    return if request.user_agent.nil? || request.user_agent&.empty?
-    return if request.user_agent.include?('InternetMeasurement')
-    return if request.user_agent.include?('Odin')
-    return if request.user_agent.include?('brid.gy')
-    return if request.user_agent.include?('Friendica')
-    return if request.user_agent.include?('procial.tchncs.de')
     return if request.is_crawler?
     return if current_user&.id == 1
     return if request.path.start_with?('/admin')
-    return if IPS_BLOCKED_FOR_ANALYTICS.any? { |ip| request.ip.start_with?(ip) }
+    return if request.ip.present? && IPS_BLOCKED_FOR_ANALYTICS.any? { |ip| request.ip.start_with?(ip) }
 
     ActiveAnalytics.record_request(request)
   end
@@ -98,10 +95,12 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(user)
+    redirect_param = request.parameters[:redirect]
+
     if user.instance_of?(AdminUser)
       admin_root_path
-    elsif request.parameters[:redirect]
-      request.parameters[:redirect]
+    elsif redirect_param
+      redirect_param
     else
       stored_location_for(user) || dashboard_root_path
     end
