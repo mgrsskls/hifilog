@@ -26,23 +26,19 @@ class StatisticsController < ApplicationController
         .sort_by(&:period_from)
       )
 
-    purchase_possessions = current_possessions.where.not(price_purchase: nil).group_by(&:price_purchase_currency)
-    total_spendings = purchase_possessions.map do |possession|
-      {
-        currency: possession[0],
-        spendings: possession[1].map(&:price_purchase).sum
-      }
-    end
+    purchase_possessions = StatisticsService.aggregate_possessions_by_price_category(
+      current_possessions, :price_purchase, :price_purchase_currency
+    )
+    total_spendings = StatisticsService.format_currency_aggregation(
+      purchase_possessions, :price_purchase, :spendings
+    )
     @current_spendings = total_spendings.group_by { |h| h[:currency] }.map do |_, hashes|
       hashes.reduce({}) { |merged_hash, h| merged_hash.merge(h) }
     end
 
-    @current_products_per_cost = purchase_possessions.map do |group|
-      {
-        currency: group[0],
-        possessions: map_possessions_to_presenter(group[1]).sort_by(&:price_purchase).reverse
-      }
-    end
+    @current_products_per_cost = StatisticsService.format_currency_with_presenters(
+      purchase_possessions, :price_purchase
+    )
   end
 
   def total
@@ -62,29 +58,22 @@ class StatisticsController < ApplicationController
         )
       ).sort_by(&:duration).reverse
 
-    purchase_possessions = possessions.where.not(price_purchase: nil)
-                                      .where.not(price_purchase_currency: nil)
-                                      .group_by(&:price_purchase_currency)
+    purchase_possessions = StatisticsService.aggregate_possessions_by_price_category(
+      possessions, :price_purchase, :price_purchase_currency
+    )
     total_spendings = if purchase_possessions.any?
-                        purchase_possessions
-                          .map do |possession|
-                          {
-                            currency: possession[0],
-                            spendings: possession[1].map(&:price_purchase).sum
-                          }
-                        end
+                        StatisticsService.format_currency_aggregation(
+                          purchase_possessions, :price_purchase, :spendings
+                        )
                       else
                         []
                       end
-    sale_possessions = possessions.where.not(price_sale: nil)
-                                  .where.not(price_sale_currency: nil)
-                                  .group_by(&:price_sale_currency)
-    total_earnings = sale_possessions.map do |possession|
-      {
-        currency: possession[0],
-        earnings: possession[1].map(&:price_sale).sum
-      }
-    end
+    sale_possessions = StatisticsService.aggregate_possessions_by_price_category(
+      possessions, :price_sale, :price_sale_currency
+    )
+    total_earnings = StatisticsService.format_currency_aggregation(
+      sale_possessions, :price_sale, :earnings
+    )
 
     @total_earnings_and_spendings =
       (total_spendings + total_earnings)
@@ -97,12 +86,9 @@ class StatisticsController < ApplicationController
       -(group[:spendings].presence || 0)
     end
 
-    @total_products_per_cost = purchase_possessions.map do |group|
-      {
-        currency: group[0],
-        possessions: map_possessions_to_presenter(group[1]).sort_by(&:price_purchase).reverse
-      }
-    end
+    @total_products_per_cost = StatisticsService.format_currency_with_presenters(
+      purchase_possessions, :price_purchase
+    )
   end
 
   def yearly
@@ -228,18 +214,22 @@ class StatisticsController < ApplicationController
     earnings_years = possessions_with_earnings.map(&:period_to).compact_blank.uniq
     years = (spendings_years + earnings_years).map(&:year).sort.uniq
 
+    # Pre-compute groupings for O(n) instead of O(n*m*c)
+    spendings_by_year_currency = possessions_with_spendings.group_by do |p|
+      [p.period_from.year, p.price_purchase_currency]
+    end
+    earnings_by_year_currency = possessions_with_earnings.group_by do |p|
+      [p.period_to.year, p.price_sale_currency]
+    end
+
     @yearly_costs = years.map do |year|
       {
         year:,
         currencies: currencies.map do |c|
           {
             currency: c,
-            spendings: possessions_with_spendings.select do |p|
-              p.period_from.year == year && p.price_purchase_currency == c && p.price_purchase.present?
-            end.map(&:price_purchase).compact.sum,
-            earnings: possessions_with_earnings.select do |p|
-              p.period_to.year == year && p.price_sale_currency == c && p.price_sale.present?
-            end.map(&:price_sale).compact.sum
+            spendings: (spendings_by_year_currency[[year, c]] || []).map(&:price_purchase).compact.sum,
+            earnings: (earnings_by_year_currency[[year, c]] || []).map(&:price_sale).compact.sum
           }
         end
       }

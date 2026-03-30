@@ -56,42 +56,27 @@ class ApplicationController < ActionController::Base
   end
 
   def menu_categories
-    Rails.cache.fetch('/menu_categories') do
-      Category.includes(:sub_categories).group_by(&:column)
-    end
+    CacheService.menu_categories
   end
 
   def products_count
-    Rails.cache.fetch('/product_count') do
-      Product.count + ProductVariant.count
-    end
+    CacheService.products_count
   end
 
   def brands_count
-    Rails.cache.fetch('/brands_count') do
-      Brand.count
-    end
+    CacheService.brands_count
   end
 
   def categories_count
-    Rails.cache.fetch('/categories_count') do
-      SubCategory.count
-    end
+    CacheService.categories_count
   end
 
   def newest_products
-    Rails.cache.fetch('/newest_products') do
-      products = Product.includes([:brand]).order(created_at: :desc).limit(10)
-      product_variants = ProductVariant.includes([{ product: [:brand] }]).order(created_at: :desc).limit(10)
-
-      (products + product_variants).sort_by(&:created_at).reverse.take(10)
-    end
+    CacheService.newest_products
   end
 
   def newest_brands
-    Rails.cache.fetch('/newest_brands') do
-      Brand.order(created_at: :desc).limit(10).to_a
-    end
+    CacheService.newest_brands
   end
 
   def after_sign_in_path_for(user)
