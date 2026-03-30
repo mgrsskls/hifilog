@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
 
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :set_footer_data
   after_action :record_page_view
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -117,6 +118,11 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def set_footer_data
+    @newest_products = newest_products
+    @newest_brands = newest_brands
+  end
 
   def redirect_back_to_product(product: nil, product_variant: nil, custom_product: nil)
     if custom_product.present?
