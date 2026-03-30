@@ -1,5 +1,5 @@
 <%= form_for @product, html: { class: "EntityForm", method: :post, "data-url": all_brands_path } do |f| %>
-  <%= f.hidden_field :brand_id, value: @brand.id if @brand && @brand.id %>
+  <%= f.hidden_field :brand_id, value: @brand.id if @brand&.id %>
 
   <% content_for :heading do %>
     <%= t('product.new.heading') %>

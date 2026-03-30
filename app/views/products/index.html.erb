@@ -1,7 +1,7 @@
 <% content_for :header do %>
   <h1>
-    <% if @sub_category.present? or @category.present? %>
-      <%= (@sub_category.present? ? @sub_category : @category).name %>
+    <% if current_sub_category.present? or current_category.present? %>
+      <%= (current_sub_category.present? ? current_sub_category : current_category).name %>
     <% else %>
       <%= Product.model_name.human(count: 2) %>
     <% end %>
@@ -13,13 +13,13 @@
     <%= Product.model_name.human(count: 2) %>
   </b>
 
-  <%= link_to user_signed_in? ? new_product_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "IndexPage-addLink", rel: "nofollow" do %>
+  <%= link_to user_signed_in? ? new_product_path(sub_category: current_sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "IndexPage-addLink", rel: "nofollow" do %>
     <span><%= t('product.new.link') %></span>
   <% end %>
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: products_path(category: params[:category]), collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
+  <%= render "shared/filter", reset_path: products_path(category: params[:category]), collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products, category: current_category, sub_category: current_sub_category, filter_applied: @filter_applied %>
 <% end %>
 
 <% content_for :sort do %>
@@ -37,14 +37,14 @@
 <% end %>
 
 <% content_for :table do %>
-  <%= render "shared/products_table", products: @product_presenters, hide_category: @sub_category.present? %>
+  <%= render "shared/products_table", products: @product_presenters, hide_category: current_sub_category.present? %>
 <% end %>
 
 <%= render "shared/index_page",
   records: @products,
   presenters: @product_presenters,
   empty_state_message: t('empty_state.products_filter', path: new_product_path),
-  category: @category,
-  sub_category: @sub_category,
+  category: current_category,
+  sub_category: current_sub_category,
   type: :product
 %>

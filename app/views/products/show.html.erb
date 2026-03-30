@@ -11,7 +11,7 @@
       <div class="Heading">
         <h1>
           <% if @product.brand.present? %>
-            <%= link_to brand_path(id: @brand.friendly_id) do %><span><%= @product.brand.name %></span><% end %>
+            <%= link_to brand_path(id: @product.brand.friendly_id) do %><span><%= @product.brand.name %></span><% end %>
           <% end %> <%= @product.name %>
           <% if @product.model_no.present? %>
             <small><%= @product.model_no %></small>
@@ -97,7 +97,7 @@
             </dd>
           </dl>
 
-          <%= render "shared/product_custom_attributes", attributes: @product.custom_attributes, custom_attributes: @custom_attributes if @product.custom_attributes&.any? %>
+          <%= render "shared/product_custom_attributes", attributes: @product.custom_attributes, custom_attributes: @product.custom_attributes_resources if @product.custom_attributes&.any? %>
 
           <% if @product.product_options.any? %>
             <div class="Entity-section Product-section">

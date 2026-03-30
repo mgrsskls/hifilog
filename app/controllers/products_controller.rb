@@ -13,15 +13,18 @@ class ProductsController < ApplicationController
   before_action :set_active_menu
   before_action :find_product, only: [:show]
 
+  helper_method :current_category, :current_sub_category
+
   def index
-    @category, @sub_category = extract_category(params[:category])
-    @custom_attributes = extract_custom_attributes(@category, @sub_category)
+    @category = current_category
+    @sub_category = current_sub_category
+    @custom_attributes = index_custom_attributes
     @filter_applied = active_index_filters.except(:category, :sub_category).merge(active_index_brand_filters)
 
     filter = ProductFilterService.new(
       filters: active_index_filters,
-      category: @category,
-      sub_category: @sub_category,
+      category: current_category,
+      sub_category: current_sub_category,
       brand_filters: active_index_brand_filters
     ).filter
 
@@ -38,12 +41,12 @@ class ProductsController < ApplicationController
 
     @product_presenters = @products.map { |product| ProductItemPresenter.new(product) }
 
-    if @sub_category.present?
-      sub_category_name = @sub_category.name
+    if current_sub_category.present?
+      sub_category_name = current_sub_category.name
       page_title(sub_category_name, "Search through all products in the category “#{sub_category_name}” on HiFi Log,\
  a user-driven database for hi-fi products and brands.")
-    elsif @category.present?
-      category_name = @category.name
+    elsif current_category.present?
+      category_name = current_category.name
       page_title(category_name, "Search through all products in the category “#{category_name}” on HiFi Log,\
  a user-driven database for hi-fi products and brands.")
     else
@@ -53,7 +56,6 @@ class ProductsController < ApplicationController
   end
 
   def show
-    @brand = @product.brand
     id = @product.id
 
     if user_signed_in?
@@ -67,16 +69,15 @@ class ProductsController < ApplicationController
       @setups = current_user.setups.includes(:possessions)
     end
 
+    profile_visibility = user_signed_in? ? [1, 2] : 2
     @images = @product.possessions
                       .includes(:images_attachments)
                       .joins(:user)
-                      .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
-                      .select { |possession| possession.images.attached? }
+                      .where(user: { profile_visibility: })
+                      .where(active_storage_attachments: { record_type: 'Possession', name: 'images' })
                       .map { |possession| PossessionPresenter.new possession }
                       .flat_map(&:sorted_images)
                       .map { |image| ImagePresenter.new(image) }
-
-    @custom_attributes = CustomAttribute.where(label: @product.custom_attributes&.keys).index_by(&:label)
 
     @contributors = ActiveRecord::Base.connection.execute("
       SELECT DISTINCT
@@ -87,7 +88,7 @@ class ProductsController < ApplicationController
       WHERE versions.item_id = #{id} AND versions.item_type = 'Product'
     ")
 
-    page_title([@brand&.name, @product.name].compact.join(' '), meta_desc)
+    page_title([@product.brand&.name, @product.name].compact.join(' '), @product.meta_desc)
   end
 
   def new
@@ -124,7 +125,15 @@ class ProductsController < ApplicationController
 
     product_options_attributes = params[:product_options_attributes]
 
-    return on_create_with_brand_error(product_options_attributes, brand) unless brand.save
+    unless brand.save
+      if product_options_attributes.present?
+        process_product_options(@product,
+                                product_options_attributes)
+      end
+      @categories = Category.includes([:sub_categories])
+      @brand = brand
+      render :new, status: :unprocessable_content and return
+    end
 
     @product.brand_id = brand.id
     @product.discontinued = brand.discontinued ? true : product_params[:discontinued]
@@ -169,34 +178,25 @@ class ProductsController < ApplicationController
 
   def changelog
     @product = Product.friendly.find(params[:product_id])
-    @brand = @product.brand
     @versions = filter_versions(@product.versions)
   end
 
   private
 
-  def on_create_with_brand_error(product_options_attributes, brand)
-    if product_options_attributes.present?
-      process_product_options(@product,
-                              product_options_attributes)
-    end
-    @categories = Category.includes([:sub_categories])
-    @brand = brand
-    render :new, status: :unprocessable_content
+  def category_data
+    @category_data ||= extract_category(params[:category])
   end
 
-  def meta_desc
-    if @product.description.present?
-      return ActionController::Base.helpers.truncate(
-        ActionController::Base.helpers.strip_tags(@product.formatted_description),
-        length: 200
-      )
-    end
+  def current_category
+    category_data.first
+  end
 
-    "The #{@product.name}
-#{@product.discontinued? && @product.product_variants.all?(&:discontinued) ? 'were' : 'are'}
-#{@product.sub_categories.map(&:name).join(' / ')}
-by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @brand.country_code.present?}."
+  def current_sub_category
+    category_data.last
+  end
+
+  def index_custom_attributes
+    @index_custom_attributes ||= extract_custom_attributes(current_category, current_sub_category)
   end
 
   def find_product
@@ -338,7 +338,7 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
 
   def allowed_index_filter_params
     allowed = [:category, :sort, :page,
-               { products: [:status, :query, :diy_kit, *build_custom_attributes_hash(@custom_attributes)] }]
+               { products: [:status, :query, :diy_kit, *build_custom_attributes_hash(index_custom_attributes)] }]
     params.permit(allowed)
   end
 
@@ -365,8 +365,10 @@ by the audio manufacturer #{@brand.name}#{" from #{@brand.country_name}" if @bra
   end
 
   def assign_brand_from_params(params)
-    if params[:brand_id].present?
-      Brand.find(params[:brand_id])
+    brand_id = params[:brand_id]
+
+    if brand_id.present?
+      Brand.find(brand_id)
     else
       Brand.new(params[:brand_attributes])
     end

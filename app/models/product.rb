@@ -85,6 +85,10 @@ class Product < ApplicationRecord
     product_url(id: friendly_id)
   end
 
+  def custom_attributes_resources
+    CustomAttribute.where(label: custom_attributes&.keys).index_by(&:label)
+  end
+
   def custom_attributes_list
     return unless custom_attributes.present? && custom_attributes.any?
 
@@ -103,6 +107,20 @@ class Product < ApplicationRecord
 
   def sub_category_names
     sub_categories.map(&:name)
+  end
+
+  def meta_desc
+    if description.present?
+      return ActionController::Base.helpers.truncate(
+        ActionController::Base.helpers.strip_tags(formatted_description),
+        length: 200
+      )
+    end
+
+    "The #{name}
+#{discontinued? && product_variants.all?(&:discontinued) ? 'were' : 'are'}
+#{sub_categories.map(&:name).join(' / ')}
+by the audio manufacturer #{brand.name}#{" from #{brand.country_name}" if brand.country_code.present?}."
   end
 
   # :nocov:
