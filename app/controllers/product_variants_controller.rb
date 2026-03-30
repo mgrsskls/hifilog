@@ -15,22 +15,24 @@ class ProductVariantsController < ApplicationController
     product_variant_id = @product_variant.id
 
     if user_signed_in?
-      @possessions = map_possessions_to_presenter current_user.possessions
-                                                              .includes([:product])
-                                                              .includes([:product_variant])
-                                                              .includes([:setup_possession])
-                                                              .includes([:setup])
-                                                              .includes([:product_option])
-                                                              .where(
-                                                                product_id:,
-                                                                product_variant_id:
-                                                              )
-                                                              .order([
-                                                                       :prev_owned,
-                                                                       :period_from,
-                                                                       :period_to,
-                                                                       :created_at
-                                                                     ])
+      @possessions = PossessionPresenterService.map_to_presenters(
+        current_user.possessions
+          .includes([:product])
+          .includes([:product_variant])
+          .includes([:setup_possession])
+          .includes([:setup])
+          .includes([:product_option])
+          .where(
+            product_id:,
+            product_variant_id:
+          )
+          .order([
+                   :prev_owned,
+                   :period_from,
+                   :period_to,
+                   :created_at
+                 ])
+      )
 
       @bookmark = current_user.bookmarks.find_by(item_id: product_variant_id, item_type: 'ProductVariant')
       @note = current_user.notes.find_by(product_variant_id:)

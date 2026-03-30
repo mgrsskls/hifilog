@@ -141,18 +141,6 @@ class ApplicationController < ActionController::Base
     redirect_back_or_to product_url(id: product.friendly_id)
   end
 
-  def map_possessions_to_presenter(possessions)
-    possessions.map do |possession|
-      if possession.custom_product_id
-        CustomProductPossessionPresenter.new(possession)
-      elsif possession.prev_owned
-        PreviousPossessionPresenter.new(possession)
-      else
-        CurrentPossessionPresenter.new(possession)
-      end
-    end
-  end
-
   protected
 
   def configure_permitted_parameters

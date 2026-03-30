@@ -15,20 +15,22 @@ class SetupsController < ApplicationController
     user_setup(params[:id])
     page_title(@setup.name)
 
-    @all_possessions = map_possessions_to_presenter current_user
-                       .possessions.where(prev_owned: false)
-                       .includes([{ product: [:brand] }])
-                       .includes([{ product_variant: [{ product: [:brand] }] }])
-                       .includes([{ custom_product: [{ images_attachments: :blob }] }])
-                       .includes([{ images_attachments: :blob }])
-                       .order(
-                         [
-                           'brand.name',
-                           'product.name',
-                           'product_variant.name',
-                           'custom_product.name'
-                         ]
-                       )
+    @all_possessions = PossessionPresenterService.map_to_presenters(
+      current_user
+        .possessions.where(prev_owned: false)
+        .includes([{ product: [:brand] }])
+        .includes([{ product_variant: [{ product: [:brand] }] }])
+        .includes([{ custom_product: [{ images_attachments: :blob }] }])
+        .includes([{ images_attachments: :blob }])
+        .order(
+          [
+            'brand.name',
+            'product.name',
+            'product_variant.name',
+            'custom_product.name'
+          ]
+        )
+    )
 
     all = get_possessions_for_user(possessions: @setup.possessions).map do |possession|
       if possession.custom_product

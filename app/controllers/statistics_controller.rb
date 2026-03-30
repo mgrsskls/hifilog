@@ -19,7 +19,7 @@ class StatisticsController < ApplicationController
     @current_amount_of_brands = @current_products_per_brand.size
 
     @current_longest_products =
-      map_possessions_to_presenter(
+      PossessionPresenterService.map_to_presenters(
         current_possessions
         .where.not(period_from: nil)
         .where(period_to: nil)
@@ -56,7 +56,7 @@ class StatisticsController < ApplicationController
     @total_amount_of_brands = possessions.map(&:brand).uniq.size
 
     @total_longest_products =
-      map_possessions_to_presenter(
+      PossessionPresenterService.map_to_presenters(
         possessions.where(prev_owned: true).where.not(period_from: nil).where.not(period_to: nil).or(
           possessions.where(prev_owned: false).where.not(period_from: nil)
         )

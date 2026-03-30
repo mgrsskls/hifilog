@@ -30,7 +30,7 @@ class UsersController < ApplicationController
     @setup = @user.setups.find(params[:setup]) if params[:setup]
     possessions = @setup ? @setup.possessions : @user.possessions.where(prev_owned: false)
 
-    all = map_possessions_to_presenter get_possessions_for_user(possessions:)
+    all = PossessionPresenterService.map_to_presenters(get_possessions_for_user(possessions:))
     @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
     @possessions = if @sub_category
                      all.select { |p| p.sub_categories.include?(@sub_category) }
@@ -56,7 +56,7 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    all = map_possessions_to_presenter get_possessions_for_user(possessions: @user.possessions.where(prev_owned: true))
+    all = PossessionPresenterService.map_to_presenters(get_possessions_for_user(possessions: @user.possessions.where(prev_owned: true)))
     @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
     @possessions = if @sub_category
                      all.select { |p| p.sub_categories.include?(@sub_category) }

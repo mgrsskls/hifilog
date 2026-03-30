@@ -11,8 +11,8 @@ class PossessionsController < ApplicationController
     page_title(I18n.t('headings.collection'))
     @active_dashboard_menu = :products
 
-    all = map_possessions_to_presenter get_possessions_for_user(
-      possessions: current_user.possessions.where(prev_owned: false)
+    all = PossessionPresenterService.map_to_presenters(
+      get_possessions_for_user(possessions: current_user.possessions.where(prev_owned: false))
     )
 
     category = params[:category]
@@ -30,8 +30,8 @@ class PossessionsController < ApplicationController
     page_title(I18n.t('headings.prev_owneds'))
     @active_dashboard_menu = :prev_owneds
 
-    all = map_possessions_to_presenter get_possessions_for_user(
-      possessions: current_user.possessions.where(prev_owned: true)
+    all = PossessionPresenterService.map_to_presenters(
+      get_possessions_for_user(possessions: current_user.possessions.where(prev_owned: true))
     )
 
     category = params[:category]
