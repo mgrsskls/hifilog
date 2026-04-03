@@ -14,25 +14,11 @@
         <% @notes.each do |note| %>
           <tr>
             <th>
-              <%
-                if note.product_variant_id.present?
-                  item = ProductVariant.find(note.product_variant_id)
-                else
-                  item = Product.find(note.product_id)
-                end
-
-                name = item.display_name
-                path = dashboard_note_path(note.id)
-              %>
-              <b><%= link_to name, path %></b>
+              <b><%= link_to note[:name], note[:path] %></b>
             </th>
-            <td><time datetime="<%= format_iso_datetime note.updated_at %>"><%= format_datetime(note.updated_at).html_safe %></time></td>
+            <td><time datetime="<%= format_iso_datetime note[:updated_at] %>"><%= format_datetime(note[:updated_at]).html_safe %></time></td>
             <td class="Table-actions u-textEnd">
-              <% if note.product_variant.present? %>
-                <%= link_to "Edit", product_new_variant_notes_path(product_id: note.product.friendly_id, id: note.product_variant.friendly_id) %>
-              <% else %>
-                <%= link_to "Edit", product_new_notes_path(product_id: note.product.friendly_id) %>
-              <% end %>
+              <%= link_to "Edit", note[:edit_path] %>
             </td>
           </tr>
         <% end %>
