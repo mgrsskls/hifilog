@@ -67,7 +67,7 @@
           <dl class="Entity-section Data">
             <dt><%= Category.model_name.human %></dt>
             <dd>
-              <%= @product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
+              <%= sub_category_links(@product) %>
             </dd>
             <dt><%= Product.human_attribute_name(:release_date) %></dt>
             <dd>
@@ -136,7 +136,7 @@
       <dd>
         <% if @note.present? %>
           Last updated: <%= link_to product_new_notes_path(product_id: @product.friendly_id) do %>
-            <time datetime="<%= format_iso_datetime @note.updated_at %>"><%= format_datetime(@note.updated_at).html_safe %></time>
+            <time datetime="<%= format_iso_datetime @note.updated_at %>"><%= format_datetime(@note.updated_at) %></time>
           <% end %>
         <% else %>
           <%= link_to "Add notes", user_signed_in? ? product_new_notes_path(product_id: @product.friendly_id) : new_user_session_path(redirect: product_new_notes_path(product_id: @product.friendly_id)), rel: "nofollow" %>

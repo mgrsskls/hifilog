@@ -56,7 +56,7 @@
           <dl class="Entity-section Data">
             <dt><%= Category.model_name.human %></dt>
             <dd>
-              <%= @custom_product.sub_categories.map { |sub_category| link_to sub_category.name, products_path(sub_category: sub_category.friendly_id) }.join(", ").html_safe %>
+              <%= sub_category_links(@custom_product) %>
             </dd>
           </dl>
         </div>
@@ -84,24 +84,24 @@
                     <% if @possession.period_from && @possession.period_to %>
                       <small>
                         <span class="u-block">Owned from:</span>
-                        <time datetime="<%= @possession.period_from %>"><%= format_date(@possession.period_from).html_safe %></time> &ndash; <time datetime="<%= @possession.period_to %>"><%= format_date(@possession.period_to).html_safe %></time>
+                        <time datetime="<%= @possession.period_from %>"><%= format_date(@possession.period_from) %></time> &ndash; <time datetime="<%= @possession.period_to %>"><%= format_date(@possession.period_to) %></time>
                       </small>
                     <% elsif @possession.period_from %>
                       <small>
                         <span>Owned since:</span>
-                        <time datetime="<%= @possession.period_from %>"><%= format_date(@possession.period_from).html_safe %></time>
+                        <time datetime="<%= @possession.period_from %>"><%= format_date(@possession.period_from) %></time>
                       </small>
                     <% elsif @possession.period_to %>
                       <small>
                         <span>Owned until:</span>
-                        <time datetime="<%= @possession.period_to %>"><%= format_date(@possession.period_to).html_safe %></time>
+                        <time datetime="<%= @possession.period_to %>"><%= format_date(@possession.period_to) %></time>
                       </small>
                     <% end %>
                   <% else %>
                     <% if @possession.period_from %>
                       <small>
                         <span>Since:</span>
-                        <time datetime="<%= @possession.period_from %>"><%= format_date(@possession.period_from).html_safe %></time>
+                        <time datetime="<%= @possession.period_from %>"><%= format_date(@possession.period_from) %></time>
                       </small>
                     <% end %>
                   <% end %>

@@ -165,5 +165,20 @@ module ApplicationHelper
 
     safe_join(tags)
   end
+
+  def safe_unit_entities(text)
+    escaped_text = h(text)
+    allowed_mappings = {
+      '&amp;ohm;' => '&ohm;'
+    }
+
+    allowed_mappings.each do |escaped, original|
+      escaped_text = escaped_text.gsub(escaped, original)
+    end
+
+    # rubocop:disable Rails/OutputSafety
+    escaped_text.html_safe
+    # rubocop:enable Rails/OutputSafety
+  end
 end
 # rubocop:enable Metrics/ModuleLength

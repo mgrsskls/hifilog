@@ -75,7 +75,7 @@
                                         <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
                                         <% if ca[1].is_a?(Hash) %>
                                           <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
-                                          <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
+                                          <% translated_unit = safe_unit_entities(t("custom_attribute_units.#{unit}")) if unit.present? %>
                                           <% if ca[1]['value'].is_a?(Hash) %>
                                             <% ca[1]['value'].each do |v| %>
                                               <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>

@@ -41,7 +41,7 @@
             <% elsif active_record.input_type == 'number' %>
               <li class="Tag">
                 <% unit = t("custom_attribute_units.#{custom_attribute[1]['unit'].present? ? custom_attribute[1]['unit'] : active_record.units.first}") %>
-                <%= custom_attribute[1]['value'] %> <%= unit.html_safe if unit.present? %>
+                <%= custom_attribute[1]['value'] %> <%= safe_unit_entities(unit) if unit.present? %>
               </li>
             <% elsif active_record.input_type == 'options' %>
               <% custom_attribute[1].each do |id| %>
