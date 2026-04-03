@@ -53,7 +53,6 @@ group :development do
   gem "i18n-tasks", "~> 1.1.2", group: :development
   gem "rubycritic"
   gem "rails_best_practices"
-  gem "reek"
   gem "fasterer"
   gem "brakeman"
 end
