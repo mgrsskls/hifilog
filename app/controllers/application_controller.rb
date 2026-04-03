@@ -101,6 +101,70 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def sitemap
+    pages = []
+
+    pages << {
+      url: users_url,
+      updated: User.maximum(:updated_at)
+    }
+    User.where(profile_visibility: 2).find_each do |user|
+      pages << {
+        url: user_url(user.user_name.downcase),
+        updated: user.updated_at
+      }
+    end
+
+    pages << {
+      url: events_url,
+      updated: Event.maximum(:updated_at)
+    }
+    pages << {
+      url: about_url
+    }
+    pages << {
+      url: calculators_root_url
+    }
+    pages << {
+      url: calculators_resistors_for_amplifier_to_headphone_adapter_url
+    }
+
+    pages << {
+      url: brands_url,
+      updated: Brand.maximum(:updated_at)
+    }
+    Brand.select(:id, :slug, :updated_at).each do |brand|
+      pages << {
+        url: brand_url(brand),
+        updated: brand.updated_at
+      }
+    end
+
+    pages << {
+      url: products_url,
+      updated: Product.maximum(:updated_at)
+    }
+    Product.select(:id, :slug, :updated_at).each do |product|
+      pages << {
+        url: product_url(
+          id: product.friendly_id
+        ),
+        updated: product.updated_at
+      }
+    end
+    ProductVariant.select(:id, :slug, :product_id, :updated_at).includes(:product).each do |product_variant|
+      pages << {
+        url: product_variant_url(
+          id: product_variant.friendly_id,
+          product_id: product_variant.product.friendly_id
+        ),
+        updated: product_variant.updated_at
+      }
+    end
+
+    @pages = pages.uniq
+  end
+
   private
 
   def set_footer_data

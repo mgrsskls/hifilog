@@ -14,4 +14,9 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to dashboard_root_path
   end
+
+  test 'sitemap' do
+    get sitemap_path
+    assert_response :success
+  end
 end

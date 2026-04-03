@@ -113,7 +113,7 @@ Rails.application.routes.draw do
 
   root "application#index"
 
-  get '/sitemap.xml', to: 'sitemap#xml', as: :sitemap
+  get '/sitemap.xml', to: 'application#sitemap', as: :sitemap, defaults: { format: 'xml' }
   get '/feed.rss', to: 'feed#rss', as: :rss
 
   get '/changelog', to: 'static#changelog', constraints: lambda { |req| req.format == :html }
