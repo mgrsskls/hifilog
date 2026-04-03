@@ -1,0 +1,8 @@
+<li class="EntityList-item">
+    <%= render "shared/brand_item",
+        brand:,
+        category:,
+        count: product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0),
+        path_to_brand: brand_products_path_with_filter(brand, category, sub_category, params.permit(products: {}))
+    %>
+</li>

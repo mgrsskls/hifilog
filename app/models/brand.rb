@@ -42,6 +42,7 @@ class Brand < ApplicationRecord
 
   friendly_id :name, use: [:slugged, :history]
 
+  after_update :touch_products
   after_destroy :invalidate_cache
   after_save :invalidate_cache
 
@@ -96,6 +97,12 @@ class Brand < ApplicationRecord
   # :nocov:
 
   private
+
+  def touch_products
+    # rubocop:disable Rails/SkipsModelValidations
+    products.touch_all
+    # rubocop:enable Rails/SkipsModelValidations
+  end
 
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache

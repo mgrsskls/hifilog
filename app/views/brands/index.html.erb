@@ -34,9 +34,11 @@
   </select>
 <% end %>
 
+<% brands = @brands.preload(sub_categories: [:category]) %>
+
 <% content_for :table do %>
   <%= render "shared/brands_table",
-    brands: @brands,
+    brands:,
     category: @category,
     sub_category: @sub_category,
     product_counts: @product_counts
@@ -44,7 +46,7 @@
 <% end %>
 
 <%= render "shared/index_page",
-  records: @brands,
+  records: brands,
   empty_state_message: t('empty_state.brands_filter', path: new_brand_path),
   category: @category,
   sub_category: @sub_category,

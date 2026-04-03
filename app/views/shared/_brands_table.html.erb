@@ -1,14 +1,13 @@
 <% mark ||= nil %>
 
 <ol class="EntityList EntityList--brands">
-  <% brands.each do |brand| %>
-    <li class="EntityList-item">
-      <%= render "shared/brand_item",
-        brand:,
+  <%= render partial: 'shared/brand',
+      collection: brands,
+      locals: {
         category:,
-        count: product_counts.present? ? (product_counts[brand.id] || 0) : (brand.products_count.present? ? brand.products_count : 0),
-        path_to_brand: brand_products_path_with_filter(brand, category, sub_category, params.permit(products: {}))
-      %>
-    </li>
-  <% end %>
+        product_counts:,
+        sub_category:
+    },
+    cached: ->(brand) { [brand, brand.sub_categories, category, product_counts, sub_category] }
+  %>
 </ol>

@@ -29,7 +29,7 @@ class ProductsController < ApplicationController
     ).filter
 
     page_num = params[:page].presence || 1
-    products = filter.products.includes(:brand)
+    products = filter.products
     @products = products.page(page_num)
 
     # Reset to page 1 if out of range
@@ -38,8 +38,6 @@ class ProductsController < ApplicationController
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
     @canonical_url = products_url
-
-    @product_presenters = @products.map { |product| ProductItemPresenter.new(product) }
 
     if current_sub_category.present?
       sub_category_name = current_sub_category.name

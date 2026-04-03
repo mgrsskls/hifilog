@@ -25,16 +25,14 @@ class BrandsController < ApplicationController
       product_filters: active_index_product_filters
     ).filter
 
-    brands = filter.brands.includes(sub_categories: [:category])
+    brands = filter.brands
 
     @brands = brands.page(params[:page])
     @brands = brands.page(1) if @brands.out_of_range?
 
     @canonical_url = brands_url
 
-    @product_counts = if active_index_filters.keys.map(&:to_s).any? do |el|
-      allowed_index_product_filter_params.to_h.keys.include?(el)
-    end
+    @product_counts = if active_index_filters.any?
                         ProductFilterService.new(
                           filters: active_index_product_filters,
                           brands: @brands,
@@ -104,13 +102,12 @@ a user-driven database for hi-fi products and brands."
       sub_category: @sub_category
     ).filter
 
-    products = filter.products.includes(:brand)
+    products = filter.products
 
     @products = products.page(params[:page])
     @products = products.page(1) if @products.out_of_range?
 
     @canonical_url = brand_products_url(brand_id: @brand.friendly_id)
-    @product_presenters = @products.map { |product| ProductItemPresenter.new(product) }
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?

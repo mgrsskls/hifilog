@@ -2,23 +2,12 @@
 <% hide_category ||= false %>
 
 <ol class="EntityList EntityList--products">
-  <% products.each do |product| %>
-    <li class="EntityList-item is-<%= product.discontinued? ? "discontinued" : "continued" %>">
-      <%= render "shared/product_item",
-        item: product,
-        name: product.name,
-        path: product.path,
-        brand: product.brand,
-        model_no: product.model_no,
-        variant_name: product.variant_name,
-        item_type: product.item_type,
-        diy_kit: product.diy_kit?,
-        custom_attributes: product.custom_attributes,
-        sub_category_names: product.sub_category_names,
-        hide_brand: hide_brand,
-        hide_category: hide_category,
-        is_discontinued: product.discontinued?
-      %>
-    </li>
-  <% end %>
+  <%= render partial: 'shared/product',
+      collection: products.preload(:brand),
+      locals: {
+        hide_brand:,
+        hide_category:
+      },
+      cached: ->(product) { [product, hide_brand, hide_category] }
+  %>
 </ol>
