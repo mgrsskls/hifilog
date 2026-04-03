@@ -110,14 +110,16 @@ class UserController < ApplicationController
 
     user_events = current_user.events
 
+    today = Time.zone.today
+
     all_events = user_events
-                 .where(end_date: Time.zone.today..)
-                 .or(Event.where(start_date: Time.zone.today.., end_date: nil))
+                 .where(end_date: today..)
+                 .or(Event.where(start_date: today.., end_date: nil))
     get_events(all_events:, order: :asc)
     @all_upcoming_events_count = all_events.size
     @all_past_events_count = user_events
-                             .where(end_date: ..Time.zone.today)
-                             .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
+                             .where(end_date: ..today)
+                             .or(Event.where(start_date: ..today, end_date: nil))
                              .size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.upcoming', path: events_path)
     @after_create_redirect = :dashboard_events
@@ -129,14 +131,16 @@ class UserController < ApplicationController
     @active_dashboard_menu = :events
     @active_events = :past
 
-    all_events = current_user.events
-                             .where(end_date: ..Time.zone.today)
-                             .or(Event.where(start_date: ..Time.zone.today, end_date: nil))
+    today = Time.zone.today
+
+    user_events = current_user.events
+
+    all_events = user_events.where(end_date: ..today)
+                            .or(Event.where(start_date: ..today, end_date: nil))
     get_events(all_events:, order: :desc)
-    @all_upcoming_events_count = current_user.events
-                                             .where(end_date: Time.zone.today..)
-                                             .or(Event.where(start_date: Time.zone.today.., end_date: nil))
-                                             .size
+    @all_upcoming_events_count = user_events.where(end_date: today..)
+                                            .or(Event.where(start_date: today.., end_date: nil))
+                                            .size
     @all_past_events_count = all_events.size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.past', path: past_events_path)
     @after_destroy_redirect = :dashboard_past_events
@@ -316,9 +320,9 @@ class UserController < ApplicationController
     @events = all_events.includes(event_attendees: [:user])
     @events = all_events.where(country_code:) if country_code.present?
     @years = @events.order(start_date: order)
-                    .group_by { |e| e.start_date.year }
+                    .group_by { |event| event.start_date.year }
                     .transform_values do |events_in_year|
-                      events_in_year.group_by { |e| e.start_date.month }
+                      events_in_year.group_by { |event| event.start_date.month }
                     end
     @country_codes = all_events.map(&:country_code).uniq.sort
     if user_signed_in?
@@ -338,10 +342,10 @@ class UserController < ApplicationController
   end
 
   def in_collection?(possession_id, prev_owned, id)
-    possession_id == id && prev_owned == false
+    possession_id == id && !prev_owned
   end
 
   def previously_owned?(possession_id, prev_owned, id)
-    possession_id == id && prev_owned == true
+    possession_id == id && prev_owned
   end
 end

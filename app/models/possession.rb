@@ -3,6 +3,10 @@
 class Possession < ApplicationRecord
   include Image
 
+  scope :for_stats, -> { includes(:product_variant, :custom_product, product: :brand) }
+  scope :current, -> { where.not(prev_owned: true) }
+  scope :with_period, -> { where.not(period_from: nil) }
+
   belongs_to :user
   belongs_to :product, optional: true
   belongs_to :product_variant, optional: true

@@ -7,236 +7,73 @@ class StatisticsController < ApplicationController
   before_action :set_menu
 
   def current
-    current_possessions = current_user.possessions
-                                      .where.not(prev_owned: true)
-                                      .includes([:product_variant])
-                                      .includes([:custom_product])
-                                      .includes([{ product: [:brand] }])
+    @possessions = current_user.possessions.current.for_stats
 
-    @current_products_per_brand = get_products_per_brand(possessions: current_possessions)
-
+    @current_products_per_brand = get_products_per_brand(possessions: @possessions)
     @current_amount_of_products = user_possessions_count(user: current_user)
-    @current_amount_of_brands = @current_products_per_brand.size
+    @current_amount_of_brands   = @current_products_per_brand.size
 
-    @current_longest_products =
-      PossessionPresenterService.map_to_presenters(
-        current_possessions
-        .where.not(period_from: nil)
-        .where(period_to: nil)
-        .sort_by(&:period_from)
-      )
+    @current_longest_products = PossessionPresenterService.map_to_presenters(
+      @possessions.with_period.where(period_to: nil).sort_by(&:period_from)
+    )
 
-    purchase_possessions = StatisticsService.aggregate_possessions_by_price_category(
-      current_possessions, :price_purchase, :price_purchase_currency
-    )
-    total_spendings = StatisticsService.format_currency_aggregation(
-      purchase_possessions, :price_purchase, :spendings
-    )
-    @current_spendings = total_spendings.group_by { |h| h[:currency] }.map do |_, hashes|
-      hashes.reduce({}) { |merged_hash, h| merged_hash.merge(h) }
-    end
-
-    @current_products_per_cost = StatisticsService.format_currency_with_presenters(
-      purchase_possessions, :price_purchase
-    )
+    set_current_financials
   end
 
   def total
-    possessions = current_user.possessions
-                              .includes([:product_variant])
-                              .includes([:custom_product])
-                              .includes([{ product: [:brand] }])
-    @total_products_per_brand = get_products_per_brand(possessions: possessions)
+    @possessions = current_user.possessions.for_stats
 
-    @total_amount_of_products = possessions.size
-    @total_amount_of_brands = possessions.map(&:brand).uniq.size
+    @total_amount_of_products = @possessions.size
+    @total_amount_of_brands   = @possessions.map(&:brand).uniq.size
+    @total_products_per_brand = get_products_per_brand(possessions: @possessions)
 
-    @total_longest_products =
-      PossessionPresenterService.map_to_presenters(
-        possessions.where(prev_owned: true).where.not(period_from: nil).where.not(period_to: nil).or(
-          possessions.where(prev_owned: false).where.not(period_from: nil)
-        )
-      ).sort_by(&:duration).reverse
+    @total_longest_products = PossessionPresenterService.map_to_presenters(
+      @possessions.where(prev_owned: true).with_period.where.not(period_to: nil)
+                  .or(@possessions.current.with_period)
+    ).sort_by(&:duration).reverse
 
-    purchase_possessions = StatisticsService.aggregate_possessions_by_price_category(
-      possessions, :price_purchase, :price_purchase_currency
-    )
-    total_spendings = if purchase_possessions.any?
-                        StatisticsService.format_currency_aggregation(
-                          purchase_possessions, :price_purchase, :spendings
-                        )
-                      else
-                        []
-                      end
-    sale_possessions = StatisticsService.aggregate_possessions_by_price_category(
-      possessions, :price_sale, :price_sale_currency
-    )
-    total_earnings = StatisticsService.format_currency_aggregation(
-      sale_possessions, :price_sale, :earnings
-    )
-
-    @total_earnings_and_spendings =
-      (total_spendings + total_earnings)
-      .group_by { |h| h[:currency] }
-      .map do |_, hashes|
-        hashes.reduce({}) { |merged_hash, h| merged_hash.merge(h) }
-      end
-
-    @total_earnings_and_spendings.sort_by do |group|
-      -(group[:spendings].presence || 0)
-    end
-
-    @total_products_per_cost = StatisticsService.format_currency_with_presenters(
-      purchase_possessions, :price_purchase
-    )
+    set_total_financials
   end
 
   def yearly
-    possessions = current_user.possessions
-                              .includes([:product_variant])
-                              .includes([:custom_product])
-                              .includes([{ product: [:brand] }])
-    products_added = possessions.where.not(period_from: nil)
-    products_added_removed = products_added.or(
-      possessions.where.not(period_to: nil)
-    )
+    @possessions = current_user.possessions.for_stats
 
-    @yearly_spendings = [{
-      currency: 'EUR',
-      spendings: 5000
-    }]
+    # Activity Stats
+    @products_added_removed_per_year = StatisticsService.yearly_activity_map(@possessions)
 
-    years_added_removed = []
-    years_added = []
-    years_removed = []
+    # Average Stats
+    averages = StatisticsService.calculate_yearly_averages(@possessions)
+    @yearly_amount_of_products  = averages[:products]
+    @yearly_amount_of_spendings = averages[:spendings]
 
-    products_added_removed.each do |product|
-      if product.period_from.present?
-        years_added_removed << product.period_from.year
-        years_added << product.period_from.year
-      end
-      if product.period_to.present?
-        years_added_removed << product.period_to.year
-        years_removed << product.period_to.year
-      end
-    end
-
-    products_added_removed_per_year = years_added_removed.uniq.sort.map do |year|
-      {
-        year:,
-        possessions: {
-          from: products_added_removed.select do |possession|
-            possession.period_from.present? && possession.period_from.year == year
-          end,
-          to: products_added_removed.select do |possession|
-            possession.period_to.present? && possession.period_to.year == year
-          end
-        }
-      }
-    end
-
-    products_added_per_year = years_added.uniq.sort.map do |year|
-      {
-        year:,
-        possessions: {
-          from: products_added_removed.select do |possession|
-            possession.period_from.present? && possession.period_from.year == year
-          end
-        }
-      }
-    end
-
-    years_removed.uniq.sort.map do |year|
-      {
-        year:,
-        possessions: {
-          to: products_added_removed.select do |possession|
-            possession.period_to.present? && possession.period_to.year == year
-          end
-        }
-      }
-    end
-
-    @products_added_removed_per_year = products_added_removed_per_year
-
-    if products_added_per_year.any?
-      earliest_year = products_added_per_year.pluck(:year).min
-      amount_of_years = Time.zone.today.year - earliest_year
-      amount_of_years_float = amount_of_years.to_f
-      @yearly_amount_of_products = if amount_of_years.positive?
-                                     products_added.size / amount_of_years_float
-                                   else
-                                     products_added.size
-                                   end
-
-      total_spendings = possessions.where.not(price_purchase: nil)
-                                   .where.not(price_purchase_currency: nil)
-                                   .group_by(&:price_purchase_currency)
-                                   .map do |possession|
-                                     {
-                                       currency: possession[0],
-                                       spendings: possession[1].map(&:price_purchase).sum
-                                     }
-                                     # rubocop:disable Style/MultilineBlockChain
-                                   end
-                                   # rubocop:enable Style/MultilineBlockChain
-                                   .sort_by do |group|
-                                     -group[:spendings]
-                                   end
-
-      if total_spendings.any?
-        total_spending = total_spendings.first
-        @yearly_amount_of_spendings = {
-          currency: total_spending[:currency],
-          spendings: total_spending[:spendings] / amount_of_years_float
-        }
-      end
-    else
-      @yearly_amount_of_products = []
-      @yearly_amount_of_spendings = {
-        currency: 'n/a',
-        spendings: 0
-      }
-    end
-
-    possessions_with_spendings = possessions.where.not(price_purchase: nil)
-                                            .where.not(price_purchase_currency: nil)
-                                            .where.not(period_from: nil)
-    possessions_with_earnings = possessions.where.not(price_sale: nil)
-                                           .where.not(price_sale_currency: nil)
-                                           .where.not(period_to: nil)
-
-    spendings_currencies = possessions_with_spendings.map(&:price_purchase_currency).compact_blank.uniq
-    earnings_currencies = possessions_with_earnings.map(&:price_sale_currency).compact_blank.uniq
-    currencies = (spendings_currencies + earnings_currencies).uniq
-
-    spendings_years = possessions_with_spendings.map(&:period_from).compact_blank.uniq
-    earnings_years = possessions_with_earnings.map(&:period_to).compact_blank.uniq
-    years = (spendings_years + earnings_years).map(&:year).sort.uniq
-
-    # Pre-compute groupings for O(n) instead of O(n*m*c)
-    spendings_by_year_currency = possessions_with_spendings.group_by do |p|
-      [p.period_from.year, p.price_purchase_currency]
-    end
-    earnings_by_year_currency = possessions_with_earnings.group_by do |p|
-      [p.period_to.year, p.price_sale_currency]
-    end
-
-    @yearly_costs = years.map do |year|
-      {
-        year:,
-        currencies: currencies.map do |c|
-          {
-            currency: c,
-            spendings: (spendings_by_year_currency[[year, c]] || []).map(&:price_purchase).compact.sum,
-            earnings: (earnings_by_year_currency[[year, c]] || []).map(&:price_sale).compact.sum
-          }
-        end
-      }
-    end
+    # Financial Matrix
+    @yearly_costs = StatisticsService.yearly_financial_matrix(@possessions)
   end
 
   private
+
+  def set_current_financials
+    raw_purchase = StatisticsService.aggregate_possessions_by_price_category(@possessions, :price_purchase,
+                                                                             :price_purchase_currency)
+
+    @current_spendings = StatisticsService.format_currency_aggregation(raw_purchase, :price_purchase, :spendings)
+    @current_products_per_cost = StatisticsService.format_currency_with_presenters(raw_purchase, :price_purchase)
+  end
+
+  def set_total_financials
+    purchase_data = StatisticsService.aggregate_possessions_by_price_category(@possessions, :price_purchase,
+                                                                              :price_purchase_currency)
+    sale_data     = StatisticsService.aggregate_possessions_by_price_category(@possessions, :price_sale,
+                                                                              :price_sale_currency)
+
+    spendings = StatisticsService.format_currency_aggregation(purchase_data, :price_purchase, :spendings)
+    earnings  = StatisticsService.format_currency_aggregation(sale_data, :price_sale, :earnings)
+
+    @total_earnings_and_spendings = StatisticsService.consolidate_currencies(spendings, earnings)
+                                                     .sort_by { |group| -(group[:spendings] || 0) }
+
+    @total_products_per_cost = StatisticsService.format_currency_with_presenters(purchase_data, :price_purchase)
+  end
 
   def set_menu
     page_title(I18n.t('headings.statistics'))
