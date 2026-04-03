@@ -5,6 +5,7 @@ class SearchResult < ApplicationRecord
   include PgSearchByName
 
   self.primary_key = :id # needed for pg_search
+  self.implicit_order_column = :id
 
   pg_search_by_name(against: {
                       product_name: 'A',

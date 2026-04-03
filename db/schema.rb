@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_03_074000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -299,6 +299,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
     t.string "model_no"
     t.citext "option", null: false
     t.bigint "product_id"
+    t.uuid "product_item_id"
     t.bigint "product_variant_id"
     t.datetime "updated_at", null: false
     t.index ["model_no", "product_id"], name: "index_product_options_model_no_product_id", unique: true
@@ -308,6 +309,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
     t.index ["option", "product_id"], name: "index_product_options_on_option_and_product_id", unique: true
     t.index ["option", "product_variant_id"], name: "index_product_options_on_option_and_product_variant_id", unique: true
     t.index ["product_id", "model_no"], name: "index_product_options_on_product_id_and_model_no"
+    t.index ["product_item_id"], name: "index_product_options_on_product_item_id"
     t.index ["product_variant_id"], name: "index_product_options_product_variant_id"
   end
 
@@ -330,7 +332,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index "uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (id)::text))", name: "index_variants_on_search_uuid"
-    t.index ["created_at"], name: "index_product_variants_on_created_at"
     t.index ["model_no"], name: "index_product_variants_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name", "product_id", "model_no", "release_day", "release_month", "release_year"], name: "idx_on_name_product_id_model_no_release_day_release_7d3b57d931", unique: true
     t.index ["name"], name: "index_product_variants_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
@@ -367,10 +368,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
     t.index ["model_no", "brand_id"], name: "index_products_on_model_no_and_brand_id", unique: true, where: "(model_no IS NOT NULL)"
     t.index ["model_no"], name: "index_products_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
-    t.index ["name"], name: "index_products_on_name"
-    t.index ["release_day"], name: "index_products_on_release_day"
-    t.index ["release_month"], name: "index_products_on_release_month"
-    t.index ["release_year"], name: "index_products_on_release_year"
     t.index ["slug"], name: "index_products_on_slug"
   end
 
@@ -429,7 +426,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["user_name"], name: "index_users_user_name", unique: true
   end
 
   create_table "versions", force: :cascade do |t|
@@ -464,6 +460,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_202457) do
   add_foreign_key "product_options", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "brands"
+  add_foreign_key "setup_possessions", "possessions"
   add_foreign_key "setup_possessions", "setups"
   add_foreign_key "setups", "users"
   add_foreign_key "sub_categories", "categories"
