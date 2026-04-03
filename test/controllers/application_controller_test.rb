@@ -19,4 +19,9 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     get sitemap_path
     assert_response :success
   end
+
+  test 'sitemap xml renders from cached response body' do
+    get sitemap_path(format: :xml)
+    assert_response :success
+  end
 end

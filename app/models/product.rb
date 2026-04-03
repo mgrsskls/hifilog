@@ -27,7 +27,7 @@ class Product < ApplicationRecord
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
 
-  belongs_to :brand, counter_cache: :products_count
+  belongs_to :brand, touch: true, counter_cache: :products_count
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions

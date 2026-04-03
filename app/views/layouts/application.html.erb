@@ -350,6 +350,9 @@
                     <%= link_to "About", about_path, "aria-current": params[:controller] == "static" && params[:action] == "about" ? "page" : "false" %>
                   </li>
                   <li>
+                    <%= link_to "Sitemap", sitemap_path, "aria-current": params[:controller] == "sitemap" && params[:action] == "show" ? "page" : "false" %>
+                  </li>
+                  <li>
                     <%= link_to "Changelog", changelog_path, "aria-current": params[:controller] == "static" && params[:action] == "changelog" ? "page" : "false" %>
                   </li>
                 <% end %>

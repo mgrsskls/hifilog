@@ -26,7 +26,7 @@ class ProductVariant < ApplicationRecord
   has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
 
-  belongs_to :product
+  belongs_to :product, touch: true
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
   has_many :notes, dependent: :destroy

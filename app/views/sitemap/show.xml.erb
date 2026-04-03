@@ -2,7 +2,9 @@
 <urlset xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc><%= root_url %></loc>
-    <lastmod><%= [Brand.last.updated_at, Product.last.updated_at].max.strftime("%Y-%m-%d") %></lastmod>
+    <% if @sitemap_root_lastmod.present? %>
+    <lastmod><%= @sitemap_root_lastmod.strftime("%Y-%m-%d") %></lastmod>
+    <% end %>
     <priority>1.0</priority>
   </url>
   <% @pages.each do |page| %>
