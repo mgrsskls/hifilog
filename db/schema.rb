@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_04_082432) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_04_101854) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -154,6 +154,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_04_082432) do
     t.index "uuid_generate_v5(uuid_ns_dns(), ('brand-'::text || (id)::text))", name: "index_brands_on_search_uuid"
     t.index ["country_code"], name: "index_brands_on_country_code"
     t.index ["created_at"], name: "index_brands_on_created_at"
+    t.index ["discontinued"], name: "index_brands_on_discontinued"
+    t.index ["founded_year", "founded_month", "founded_day"], name: "index_brands_on_founded_year_and_founded_month_and_founded_day"
     t.index ["full_name"], name: "index_brands_on_full_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_brands_on_name", unique: true
@@ -333,11 +335,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_04_082432) do
     t.datetime "updated_at", null: false
     t.index "uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (id)::text))", name: "index_variants_on_search_uuid"
     t.index ["created_at"], name: "index_product_variants_on_created_at"
+    t.index ["discontinued"], name: "index_product_variants_on_discontinued"
+    t.index ["diy_kit"], name: "index_product_variants_on_diy_kit"
     t.index ["model_no"], name: "index_product_variants_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name", "product_id", "model_no", "release_day", "release_month", "release_year"], name: "idx_on_name_product_id_model_no_release_day_release_7d3b57d931", unique: true
     t.index ["name"], name: "index_product_variants_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["product_id", "discontinued"], name: "index_product_variants_on_product_id_and_discontinued"
     t.index ["product_id", "diy_kit"], name: "index_product_variants_on_product_id_and_diy_kit"
+    t.index ["release_year", "release_month", "release_day"], name: "idx_on_release_year_release_month_release_day_92cc125ce6"
   end
 
   create_table "products", force: :cascade do |t|
@@ -366,9 +371,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_04_082432) do
     t.index ["brand_id", "model_no"], name: "index_products_brand_id_model_no", unique: true
     t.index ["created_at"], name: "index_products_on_created_at"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
+    t.index ["discontinued"], name: "index_products_on_discontinued"
+    t.index ["diy_kit"], name: "index_products_on_diy_kit"
     t.index ["model_no", "brand_id"], name: "index_products_on_model_no_and_brand_id", unique: true, where: "(model_no IS NOT NULL)"
     t.index ["model_no"], name: "index_products_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
+    t.index ["release_year", "release_month", "release_day"], name: "idx_on_release_year_release_month_release_day_0fc6f07e1b"
     t.index ["slug"], name: "index_products_on_slug"
   end
 
