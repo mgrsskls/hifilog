@@ -255,17 +255,22 @@ class UserController < ApplicationController
     if param_events.present?
       event_ids = param_events.map(&:to_i)
 
-      # Get tuples of [event_id, discontinued]
       attendee_data = current_user.event_attendees
                                   .joins(:event)
                                   .where(event_id: event_ids)
-                                  .pluck(:event_id, 'events.discontinued')
+                                  .pluck(:event_id, :end_date)
 
-      events = event_ids.map do |event_id|
+      events = param_events
+               .map do |event_id|
+        event_id = event_id.to_i
         {
           id: event_id,
-          in_collection: attendee_data.any? { |e_id, disc| e_id == event_id && !disc },
-          previously_owned: attendee_data.any? { |e_id, disc| e_id == event_id && disc },
+          in_collection: attendee_data.any? do |event|
+            event[0] == event_id && !event[1].past?
+          end,
+          previously_owned: attendee_data.any? do |event|
+            event[0] == event_id && event[1].past?
+          end,
           bookmarked: bookmark_keys.include?("Event:#{event_id}")
         }
       end
