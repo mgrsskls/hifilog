@@ -19,7 +19,8 @@ class BrandFilterService
 
     if @sub_category || @category
       filter = @sub_category ? { id: @sub_category.id } : { category_id: @category.id }
-      brands = brands.joins(:sub_categories).where(sub_categories: filter)
+      brand_ids = Brand.joins(:sub_categories).where(sub_categories: filter).select(:id)
+      brands = brands.where(id: brand_ids)
     end
 
     brands = apply_ordering(brands, @filters[:sort])
@@ -34,11 +35,12 @@ class BrandFilterService
     end
 
     if @product_filters.present?
-      brand_ids_from_product_filter = ProductFilterService.new(
+      filtered_products_relation = ProductFilterService.new(
         filters: @product_filters,
         brands:
-      ).filter.products.map(&:brand_id).uniq
-      brands = brands.where(id: brand_ids_from_product_filter)
+      ).filter.products
+
+      brands = brands.where(id: filtered_products_relation.select(:brand_id))
     end
 
     Result.new(brands:)

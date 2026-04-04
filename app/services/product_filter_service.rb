@@ -18,17 +18,25 @@ class ProductFilterService
     products = @products
 
     if @sub_category || @category
-      products = products.joins(
-        'LEFT JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
-      )
-
       if @sub_category
-        products = products.where(products_sub_categories: { sub_category_id: @sub_category.id })
-      elsif @category
-        products = products.joins(
-          'LEFT JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id'
-        ).where(sub_categories: { category_id: @category.id })
+        matching_sub_categories = products.where(
+          id: ProductItem.joins(
+            'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
+          )
+              .where(products_sub_categories: { sub_category_id: @sub_category.id })
+              .select(:id)
+        )
+      else
+        matching_sub_categories = products.where(
+          id: ProductItem.joins(
+            'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
+          )
+              .joins('INNER JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id')
+                         .where(sub_categories: { category_id: @category.id })
+                         .select(:id)
+        )
       end
+      products = matching_sub_categories
     end
 
     data = {
@@ -48,10 +56,13 @@ class ProductFilterService
     products = apply_custom_filters(products, data) if data[:custom_attributes].present?
 
     if @brand_filters.present?
+      brands_scope = Brand.where(id: products.select(:brand_id))
+
       brand_ids_from_brand_filter = BrandFilterService.new(
         filters: @brand_filters,
-        brands: Brand.where(id: products.pluck(:brand_id).uniq)
-      ).filter.brands.map(&:id)
+        brands: brands_scope
+      ).filter.brands.select(:id)
+
       products = products.where(brand_id: brand_ids_from_brand_filter)
     end
 
