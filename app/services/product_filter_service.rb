@@ -32,7 +32,6 @@ class ProductFilterService
     end
 
     data = {
-      scope: products,
       sort: @filters[:sort],
       status: @filters[:status],
       country: @filters[:country],
@@ -41,12 +40,12 @@ class ProductFilterService
       custom_attributes: @filters[:custom]
     }
 
-    products = apply_ordering(data)
-    products = apply_status_filter(data) if data[:status].present?
-    products = apply_country_filter(data) if data[:country].present?
-    products = apply_diy_kit_filter(data) if data[:diy_kit].present?
-    products = apply_search_filter(data) if data[:query].present?
-    products = apply_custom_filters(data) if data[:custom_attributes].present?
+    products = apply_ordering(products, data)
+    products = apply_status_filter(products, data) if data[:status].present?
+    products = apply_country_filter(products, data) if data[:country].present?
+    products = apply_diy_kit_filter(products, data) if data[:diy_kit].present?
+    products = apply_search_filter(products, data) if data[:query].present?
+    products = apply_custom_filters(products, data) if data[:custom_attributes].present?
 
     if @brand_filters.present?
       brand_ids_from_brand_filter = BrandFilterService.new(
@@ -61,27 +60,26 @@ class ProductFilterService
 
   private
 
-  def apply_status_filter(options)
+  def apply_status_filter(scope, options)
     discontinued = options[:status] == 'discontinued'
 
-    options[:scope].where(discontinued:)
+    scope.where(discontinued:)
   end
 
-  def apply_country_filter(options)
-    options[:scope].joins(:brand).where(brand: { country_code: options[:country].strip.upcase })
+  def apply_country_filter(scope, options)
+    scope.joins(:brand).where(brand: { country_code: options[:country].strip.upcase })
   end
 
-  def apply_diy_kit_filter(options)
-    options[:scope].where(diy_kit: options[:diy_kit] == '1')
+  def apply_diy_kit_filter(scope, options)
+    scope.where(diy_kit: options[:diy_kit] == '1')
   end
 
-  def apply_search_filter(options)
-    options[:scope].search_by_name("%#{options[:query].strip}%")
+  def apply_search_filter(scope, options)
+    scope.search_by_name("%#{options[:query].strip}%")
   end
 
-  def apply_custom_filters(options)
+  def apply_custom_filters(scope, options)
     custom_attributes = options[:custom_attributes]
-    scope = options[:scope]
     custom_attribute_records = CustomAttribute.where(label: custom_attributes.deep_dup.to_hash.pluck(0))
 
     custom_attributes.each do |param|
@@ -109,7 +107,7 @@ class ProductFilterService
     scope
   end
 
-  def apply_ordering(options)
+  def apply_ordering(scope, options)
     order = case options[:sort]&.downcase
             when 'name_desc'
               'LOWER(product_items.name) DESC,
@@ -135,7 +133,8 @@ class ProductFilterService
                   release_month ASC NULLS FIRST,
                   release_day ASC NULLS FIRST'
             end
-    options[:scope].order(order)
+
+    scope.order(order)
   end
 
   def convert_values(unit, min, max)
