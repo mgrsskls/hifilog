@@ -182,113 +182,96 @@ class UserController < ApplicationController
   end
 
   def has
-    bookmarks = current_user.bookmarks.includes({ item: [{ sub_categories: [:category] }, :brand] })
-    all_possessions = current_user.possessions
+    # 1. Load bookmarks into a Set of strings like "Brand:5" or "Product:12"
+    # This makes lookups O(1) instead of searching the array every time!
+    bookmark_keys = current_user.bookmarks.pluck(:item_type, :item_id).to_set { |type, id| "#{type}:#{id}" }
 
     param_brands = params[:brands]
     param_products = params[:products]
     params_product_variants = params[:product_variants]
     param_events = params[:events]
 
+    # Initialize empty arrays so the render doesn't break if params are missing
+    brands = products = product_variants = events = []
+
+    # --- BRANDS ---
     if param_brands.present?
-      brand_possessions = all_possessions
-                          .includes([{ product: [:brand] }])
-                          .includes([{ product_variant: [{ product: [:brand] }] }])
-                          .where(products: { brand_id: param_brands })
+      brand_ids = param_brands.map(&:to_i)
 
-      brands = param_brands.map do |brand_id|
-        brand_id = brand_id.to_i
+      # Pluck only the IDs we need to know ownership state!
+      # Returns an array of tuples: [[brand_id, prev_owned_boolean], ...]
+      poss_data = current_user.possessions
+                              .joins(:product)
+                              .where(products: { brand_id: brand_ids })
+                              .pluck('products.brand_id', :prev_owned)
 
+      brands = brand_ids.map do |brand_id|
         {
           id: brand_id,
-          in_collection: brand_possessions.any? do |possession|
-            in_collection?(possession.product.brand.id, possession.prev_owned, brand_id)
-          end,
-          previously_owned: brand_possessions.any? do |possession|
-            previously_owned?(possession.product.brand.id, possession.prev_owned, brand_id)
-          end,
-          bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_id == brand_id && bookmark.item_type == 'Brand'
-          end
+          in_collection: poss_data.any? { |b_id, prev| b_id == brand_id && !prev },
+          previously_owned: poss_data.any? { |b_id, prev| b_id == brand_id && prev },
+          bookmarked: bookmark_keys.include?("Brand:#{brand_id}")
         }
       end
     end
 
+    # --- PRODUCTS ---
     if param_products.present?
-      product_possessions = all_possessions
-                            .includes([:product])
-                            .where(product: param_products, product_variant: nil)
+      product_ids = param_products.map(&:to_i)
 
-      products = param_products.map do |product_id|
-        product_id = product_id.to_i
+      poss_data = current_user.possessions
+                              .where(product_id: product_ids, product_variant_id: nil)
+                              .pluck(:product_id, :prev_owned)
 
+      products = product_ids.map do |product_id|
         {
           id: product_id,
-          in_collection: product_possessions.any? do |possession|
-            in_collection?(possession.product.id, possession.prev_owned, product_id)
-          end,
-          previously_owned: product_possessions.any? do |possession|
-            previously_owned?(possession.product.id, possession.prev_owned, product_id)
-          end,
-          bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_id == product_id && bookmark.item_type == 'Product'
-          end
+          in_collection: poss_data.any? { |p_id, prev| p_id == product_id && !prev },
+          previously_owned: poss_data.any? { |p_id, prev| p_id == product_id && prev },
+          bookmarked: bookmark_keys.include?("Product:#{product_id}")
         }
       end
     end
 
+    # --- PRODUCT VARIANTS ---
     if params_product_variants.present?
-      product_variant_possessions = all_possessions
-                                    .includes([:product_variant])
-                                    .where(product_variant: params_product_variants)
+      variant_ids = params_product_variants.map(&:to_i)
 
-      product_variants = params_product_variants.map do |id|
-        product_variant_id = id.to_i
+      poss_data = current_user.possessions
+                              .where(product_variant_id: variant_ids)
+                              .pluck(:product_variant_id, :prev_owned)
 
+      product_variants = variant_ids.map do |variant_id|
         {
-          id: product_variant_id,
-          in_collection: product_variant_possessions.any? do |possession|
-            in_collection?(possession.product_variant.id, possession.prev_owned, product_variant_id)
-          end,
-          previously_owned: product_variant_possessions.any? do |possession|
-            previously_owned?(possession.product_variant.id, possession.prev_owned, product_variant_id)
-          end,
-          bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_id == product_variant_id && bookmark.item_type == 'ProductVariant'
-          end
+          id: variant_id,
+          in_collection: poss_data.any? { |pv_id, prev| pv_id == variant_id && !prev },
+          previously_owned: poss_data.any? { |pv_id, prev| pv_id == variant_id && prev },
+          bookmarked: bookmark_keys.include?("ProductVariant:#{variant_id}")
         }
       end
     end
 
+    # --- EVENTS ---
     if param_events.present?
-      attendedances = current_user.event_attendees.where(event: param_events)
+      event_ids = param_events.map(&:to_i)
 
-      events = param_events.map do |event_id|
-        event_id = event_id.to_i
+      # Get tuples of [event_id, discontinued]
+      attendee_data = current_user.event_attendees
+                                  .joins(:event)
+                                  .where(event_id: event_ids)
+                                  .pluck(:event_id, 'events.discontinued')
 
+      events = event_ids.map do |event_id|
         {
           id: event_id,
-          in_collection: attendedances.any? do |attendance|
-            attendance_event = attendance.event
-            attendance_event.id == event_id && attendance_event.discontinued? == false
-          end,
-          previously_owned: attendedances.any? do |attendance|
-            attendance_event = attendance.event
-            attendance_event.id == event_id && attendance_event.discontinued? == true
-          end,
-          bookmarked: bookmarks.any? do |bookmark|
-            bookmark.item_type == 'Event' && bookmark.item_id == event_id
-          end
+          in_collection: attendee_data.any? { |e_id, disc| e_id == event_id && !disc },
+          previously_owned: attendee_data.any? { |e_id, disc| e_id == event_id && disc },
+          bookmarked: bookmark_keys.include?("Event:#{event_id}")
         }
       end
     end
 
-    render json: {
-      brands:,
-      products:,
-      product_variants:,
-      events:
-    }
+    render json: { brands:, products:, product_variants:, events: }
   end
 
   def counts

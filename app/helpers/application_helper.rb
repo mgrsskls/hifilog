@@ -21,7 +21,7 @@ module ApplicationHelper
   def user_possessions_count(user:, prev_owned: false)
     return unless user
 
-    user.possessions.select { |p| p.prev_owned == prev_owned }.length
+    user.possessions.where(prev_owned:).count
   end
 
   def user_bookmarks_count(user)
@@ -79,10 +79,8 @@ module ApplicationHelper
     return false unless brand && user
 
     user.possessions
-        .where(prev_owned:)
         .joins(:product)
-        .where({ product: { brand_id: brand.id } })
-        .any?
+        .exists?(prev_owned: prev_owned, products: { brand_id: brand })
   end
 
   def get_changelog(changes)
