@@ -45,6 +45,7 @@ class Brand < ApplicationRecord
   after_update :touch_products
   after_destroy :invalidate_cache
   after_save :invalidate_cache
+  after_commit :clear_country_cache
 
   def categories
     @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
@@ -68,6 +69,15 @@ class Brand < ApplicationRecord
 
   def formatted_description
     super || fallback_description
+  end
+
+  def self.active_country_codes
+    Rails.cache.fetch('brands/active_country_codes') do
+      where.not(country_code: nil)
+           .distinct
+           .pluck(:country_code)
+           .map(&:upcase)
+    end
   end
 
   # :nocov:
@@ -97,6 +107,18 @@ class Brand < ApplicationRecord
   # :nocov:
 
   private
+
+  # rubocop:disable Naming/PredicateMethod
+  def clear_country_cache
+    # rubocop:enable Naming/PredicateMethod
+    Rails.cache.delete('brands/active_country_codes')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
 
   def touch_products
     # rubocop:disable Rails/SkipsModelValidations

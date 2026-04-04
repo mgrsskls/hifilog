@@ -14,7 +14,7 @@
       "brands[country]",
       {
         include_blank: "All",
-        priority_countries: Brand.where.not(country_code: nil).map { |b| b.country_code.upcase }.uniq,
+        priority_countries: Brand.active_country_codes,
         selected: params[:brands].present? && params[:brands][:country]&.upcase
       },
       {
