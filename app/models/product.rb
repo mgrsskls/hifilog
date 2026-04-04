@@ -60,9 +60,8 @@ class Product < ApplicationRecord
 
   store_accessor :custom_attributes
 
-  after_destroy :invalidate_cache
-  after_save :invalidate_cache
-  after_save :update_brand_sub_categories
+  after_commit :invalidate_cache
+  after_commit :update_brand_sub_categories
 
   def display_name
     return "#{brand.name} #{name}" if brand

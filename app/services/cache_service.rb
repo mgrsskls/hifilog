@@ -27,10 +27,29 @@ class CacheService
 
   def self.newest_products
     Rails.cache.fetch('/newest_products') do
-      products = Product.includes([:brand]).order(created_at: :desc).limit(10)
-      product_variants = ProductVariant.includes([{ product: [:brand] }]).order(created_at: :desc).limit(10)
+      p_sql = Product.select("id, created_at, 'Product' as item_type").order(created_at: :desc).limit(10).to_sql
+      v_sql = ProductVariant
+              .select("id, created_at, 'ProductVariant' as item_type")
+              .order(created_at: :desc).limit(10)
+              .to_sql
 
-      (products + product_variants).sort_by(&:created_at).reverse.take(10)
+      combined_sql = "(#{p_sql}) UNION (#{v_sql}) ORDER BY created_at DESC LIMIT 10"
+      results = ActiveRecord::Base.connection.execute(combined_sql)
+
+      results.group_by { |result| result['item_type'] }.flat_map do |type, rows|
+        ids = rows.map { |result| result['id'] }
+        if type == 'Product'
+          Product
+            .select(:created_at, :name, :slug, :model_no, :brand_id)
+            .includes(:brand)
+            .where(id: ids)
+        else
+          ProductVariant
+            .select(:created_at, :name, :slug, :model_no, :product_id)
+            .includes(product: :brand)
+            .where(id: ids)
+        end
+      end.sort_by(&:created_at).reverse
     end
   end
 

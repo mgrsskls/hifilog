@@ -59,6 +59,8 @@ class ProductVariant < ApplicationRecord
             numericality: { only_integer: true }
   validates :discontinued, inclusion: { in: [true, false] }
 
+  after_commit :invalidate_cache
+
   def name_with_fallback
     return 'Update' if name.blank?
 
@@ -112,4 +114,19 @@ class ProductVariant < ApplicationRecord
     ]
   end
   # :nocov:
+
+  private
+
+  # rubocop:disable Naming/PredicateMethod
+  def invalidate_cache
+    # rubocop:enable Naming/PredicateMethod
+    Rails.cache.delete('/newest_products')
+    Rails.cache.delete('/products_count')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
 end
