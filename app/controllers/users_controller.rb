@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
 
   def index
-    page_title(User.model_name.human(count: 2))
+    page_title(User.model_name.human.pluralize)
     @meta_desc = 'See all users of hifilog.com with public profiles and how much they contributed. ' \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
     @users_by_products = User

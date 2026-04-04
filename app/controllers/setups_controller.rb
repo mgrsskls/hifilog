@@ -7,7 +7,7 @@ class SetupsController < ApplicationController
   before_action :set_menu
 
   def index
-    page_title(Setup.model_name.human(count: 2))
+    page_title(Setup.model_name.human.pluralize)
     @setups = current_user.setups.includes([:possessions]).order('LOWER(name)')
   end
 

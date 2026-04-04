@@ -50,7 +50,7 @@ class BrandsController < ApplicationController
 
     @brands_query = params.dig(:brands, :query)&.strip
 
-    heading = Brand.model_name.human(count: 2)
+    heading = Brand.model_name.human.pluralize
     cat = @sub_category.presence || @category.presence
 
     if cat

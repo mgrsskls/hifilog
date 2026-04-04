@@ -13,11 +13,11 @@
         </label>
         <label>
           <input type="radio" id="filter-products" value="products" name="filter"<%= " checked" if params[:filter] == 'products' %>>
-          <%= Product.model_name.human(count: 2) %>
+          <%= Product.model_name.human.pluralize %>
         </label>
         <label>
           <input type="radio" id="filter-brands" value="brands" name="filter"<%= " checked" if params[:filter] == 'brands' %>>
-          <%= Brand.model_name.human(count: 2) %>
+          <%= Brand.model_name.human.pluralize %>
         </label>
         <button class="Button">Filter</button>
       </div>

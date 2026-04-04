@@ -35,7 +35,7 @@
         <li>
           <span>
             <a class="Sidebar-link" href="<%= dashboard_custom_products_path %>"<%= active_menu_state(active_dashboard_menu, :custom_products) %>>
-              <%= CustomProduct.model_name.human(count: 2) %>
+              <%= CustomProduct.model_name.human.pluralize %>
             </a>
             <small data-user-count="custom_products"></small>
           </span>
@@ -51,7 +51,7 @@
         <li>
           <span>
             <a class="Sidebar-link" href="<%= dashboard_setups_path %>"<%= active_menu_state(active_dashboard_menu, :setups) %>>
-              <%= Setup.model_name.human(count: 2) %>
+              <%= Setup.model_name.human.pluralize %>
             </a>
             <small data-user-count="setups"></small>
           </span>
@@ -59,7 +59,7 @@
         <li>
           <span>
             <a class="Sidebar-link" href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(active_dashboard_menu, :bookmarks) %>>
-              <%= Bookmark.model_name.human(count: 2) %>
+              <%= Bookmark.model_name.human.pluralize %>
             </a>
             <small data-user-count="bookmarks"></small>
           </span>
@@ -76,7 +76,7 @@
         <li>
           <span>
             <a class="Sidebar-link" href="<%= dashboard_notes_path %>"<%= active_menu_state(active_dashboard_menu, :notes) %>>
-              <%= Note.model_name.human(count: 2) %>
+              <%= Note.model_name.human.pluralize %>
             </a>
             <small data-user-count="notes"></small>
           </span>
@@ -84,7 +84,7 @@
         <li>
           <span>
             <a class="Sidebar-link" href="<%= dashboard_events_path %>"<%= active_menu_state(active_dashboard_menu, :events) %>>
-              <%= Event.model_name.human(count: 2) %>
+              <%= Event.model_name.human.pluralize %>
             </a>
             <small data-user-count="events"></small>
           </span>

@@ -30,7 +30,7 @@ class UserController < ApplicationController
   end
 
   def bookmarks
-    page_title(Bookmark.model_name.human(count: 2))
+    page_title(Bookmark.model_name.human.pluralize)
 
     all_bookmarks = current_user.bookmarks
                                 .includes({ item: [{ sub_categories: [:category] }, :brand] })
@@ -104,7 +104,7 @@ class UserController < ApplicationController
   end
 
   def events
-    page_title(Event.model_name.human(count: 2))
+    page_title(Event.model_name.human.pluralize)
     @active_dashboard_menu = :events
     @active_events = :upcoming
 
@@ -127,7 +127,7 @@ class UserController < ApplicationController
   end
 
   def past_events
-    page_title("Past #{Event.model_name.human(count: 2)}")
+    page_title("Past #{Event.model_name.human.pluralize}")
     @active_dashboard_menu = :events
     @active_events = :past
 

@@ -3,7 +3,7 @@
     <h1>Hi-Fi Events &amp; Shows</h1>
   </div>
 
-  <nav aria-label="<%= Event.model_name.human(count: 2) %>">
+  <nav aria-label="<%= Event.model_name.human.pluralize %>">
     <ul class="Tabs">
       <li>
         <%= link_to "Upcoming <span>(#{@all_upcoming_events_count})</span>".html_safe, events_path, "aria-current": @active_events == :upcoming %>

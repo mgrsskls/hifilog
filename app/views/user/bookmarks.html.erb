@@ -7,7 +7,7 @@
 
 <%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <div class="Heading">
-    <h1><%= @bookmark_list.present? ? @bookmark_list.name : Bookmark.model_name.human(count: 2) %></h1>
+    <h1><%= @bookmark_list.present? ? @bookmark_list.name : Bookmark.model_name.human.pluralize %></h1>
 
     <% if @bookmark_list.present? %>
       <div class="u-flex u-gap-smd">
@@ -21,19 +21,19 @@
     <% end %>
   </div>
 
-  <nav aria-label="<%= Bookmark.model_name.human(count: 2) %>">
+  <nav aria-label="<%= Bookmark.model_name.human.pluralize %>">
     <ul class="Tabs">
       <li>
         <%= link_to "All <span>(#{@all_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path, "aria-current": @active_bookmarks == :all %>
       </li>
       <li>
-        <%= link_to "#{Product.model_name.human(count: 2)} <span>(#{@products_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'products'), "aria-current": @active_bookmarks == :products %>
+        <%= link_to "#{Product.model_name.human.pluralize} <span>(#{@products_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'products'), "aria-current": @active_bookmarks == :products %>
       </li>
       <li>
-        <%= link_to "#{Brand.model_name.human(count: 2)} <span>(#{@brands_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'brands'), "aria-current": @active_bookmarks == :brands %>
+        <%= link_to "#{Brand.model_name.human.pluralize} <span>(#{@brands_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'brands'), "aria-current": @active_bookmarks == :brands %>
       </li>
       <li>
-        <%= link_to "#{Event.model_name.human(count: 2)} <span>(#{@events_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'events'), "aria-current": @active_bookmarks == :events %>
+        <%= link_to "#{Event.model_name.human.pluralize} <span>(#{@events_bookmarks_count})</span>".html_safe, dashboard_bookmarks_path(type: 'events'), "aria-current": @active_bookmarks == :events %>
       </li>
     </ul>
   </nav>

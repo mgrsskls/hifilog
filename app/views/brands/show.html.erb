@@ -61,7 +61,7 @@
 
         <div class="Entity-heading">
           <h2>
-            <%= Product.model_name.human(count: 2) %>
+            <%= Product.model_name.human.pluralize %>
           </h2>
           <a href="<%= brand_products_path(brand_id: @brand.friendly_id) %>"><b>Show all products</b></a>
         </div>

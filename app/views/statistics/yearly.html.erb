@@ -16,7 +16,7 @@
   <% end %>
 
   <div class="StatisticsSection">
-    <h2><%= Product.model_name.human(count: 2) %></h2>
+    <h2><%= Product.model_name.human.pluralize %></h2>
 
     <% if @products_added_removed_per_year.any? %>
       <p class="c-secondary">These are the number of products you have added to or removed from your collection each year:</p>

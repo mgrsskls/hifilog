@@ -48,7 +48,7 @@ class ProductsController < ApplicationController
       page_title(category_name, "Search through all products in the category “#{category_name}” on HiFi Log,\
  a user-driven database for hi-fi products and brands.")
     else
-      page_title(Product.model_name.human(count: 2),
+      page_title(Product.model_name.human.pluralize,
                  'Search through all products on HiFi Log, a user-driven database for hi-fi products and brands.')
     end
   end

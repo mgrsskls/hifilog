@@ -24,7 +24,7 @@
   </div>
 
   <div class="Form-field">
-    <h2 class="Form-label h3"><%= Category.model_name.human(count: 2) %></h2>
+    <h2 class="Form-label h3"><%= Category.model_name.human.pluralize %></h2>
     <div class="Options is-light EntityForm-subCategories">
       <% menu_categories.each do |columns| %>
         <div>

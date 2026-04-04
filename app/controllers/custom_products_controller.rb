@@ -5,7 +5,7 @@ class CustomProductsController < ApplicationController
   before_action :set_menu, except: [:show]
 
   def index
-    page_title(CustomProduct.model_name.human(count: 2))
+    page_title(CustomProduct.model_name.human.pluralize)
 
     @custom_products = current_user.custom_products
                                    .includes([:images_attachments])

@@ -1,6 +1,6 @@
 <%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <div class="Heading">
-    <h1><%= Note.model_name.human(count: 2) %></h1>
+    <h1><%= Note.model_name.human.pluralize %></h1>
   </div>
 
   <% if @notes.any? %>

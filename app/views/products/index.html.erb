@@ -3,14 +3,14 @@
     <% if current_sub_category.present? or current_category.present? %>
       <%= (current_sub_category.present? ? current_sub_category : current_category).name %>
     <% else %>
-      <%= Product.model_name.human(count: 2) %>
+      <%= Product.model_name.human.pluralize %>
     <% end %>
   </h1>
 <% end %>
 
 <% content_for :actions do %>
   <b>
-    <%= Product.model_name.human(count: 2) %>
+    <%= Product.model_name.human.pluralize %>
   </b>
 
   <%= link_to user_signed_in? ? new_product_path(sub_category: current_sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "IndexPage-addLink", rel: "nofollow" do %>

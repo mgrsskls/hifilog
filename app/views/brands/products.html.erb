@@ -1,6 +1,6 @@
 <% content_for :header do %>
   <h1>
-    <%= @brand.name %> <span class="IndexPage-category"><%= Product.model_name.human(count: 2) %></span>
+    <%= @brand.name %> <span class="IndexPage-category"><%= Product.model_name.human.pluralize %></span>
   </h1>
 <% end %>
 

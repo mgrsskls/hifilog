@@ -3,13 +3,13 @@
     <% if @sub_category.present? or @category.present? %>
       <%= (@sub_category.present? ? @sub_category : @category).name %>
     <% else %>
-      <%= Brand.model_name.human(count: 2) %>
+      <%= Brand.model_name.human.pluralize %>
     <% end %>
   </h1>
 <% end %>
 
 <% content_for :actions do %>
-  <b><%= Brand.model_name.human(count: 2) %></b>
+  <b><%= Brand.model_name.human.pluralize %></b>
   <%= link_to user_signed_in? ? new_brand_path(sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_brand_path(sub_category: @sub_category&.slug)), class: "IndexPage-addLink", rel: "nofollow" do %>
     <span><%= t('brand.new.link') %></span>
   <% end %>

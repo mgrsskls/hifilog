@@ -5,7 +5,7 @@
   <div class="DashboardStatsWrapper">
     <div class="DashboardStats">
       <div class="DashboardNumbersWrapper">
-        <h3><%= Product.model_name.human(count: 2) %></h3>
+        <h3><%= Product.model_name.human.pluralize %></h3>
         <ul class="DashboardNumbers">
           <li>
             <div class="DashboardNumber">
@@ -23,7 +23,7 @@
       </div>
 
       <div class="DashboardNumbersWrapper">
-        <h3><%= Brand.model_name.human(count: 2) %></h3>
+        <h3><%= Brand.model_name.human.pluralize %></h3>
         <ul class="DashboardNumbers">
           <li>
             <div class="DashboardNumber">

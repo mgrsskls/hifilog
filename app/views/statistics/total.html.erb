@@ -16,12 +16,12 @@
   }]
 } do %>
   <div class="StatisticsSection">
-    <h2><%= Product.model_name.human(count: 2) %></h2>
+    <h2><%= Product.model_name.human.pluralize %></h2>
     <%= render "longest_products", longest_products: @total_longest_products, subline: 'You have owned these products the longest:', empty_state: t('empty_state.statistics.total_duration') %>
   </div>
 
   <div class="StatisticsSection">
-    <h2><%= Brand.model_name.human(count: 2) %></h2>
+    <h2><%= Brand.model_name.human.pluralize %></h2>
     <%= render "products_per_brand", products_per_brand: @total_products_per_brand, subline: 'You had the most products from these brands:', empty_state: t('empty_state.statistics.total_products_per_brand') %>
   </div>
 

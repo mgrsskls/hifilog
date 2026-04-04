@@ -1,9 +1,9 @@
 <% content_for :header do %>
   <div class="Heading">
-    <h1><%= Event.model_name.human(count: 2) %></h1>
+    <h1><%= Event.model_name.human.pluralize %></h1>
   </div>
 
-  <nav aria-label="<%= Event.model_name.human(count: 2) %>">
+  <nav aria-label="<%= Event.model_name.human.pluralize %>">
     <ul class="Tabs">
       <li>
         <%= link_to "Upcoming <span>(#{@all_upcoming_events_count})</span>".html_safe, dashboard_events_path, "aria-current": @active_events == :upcoming %>

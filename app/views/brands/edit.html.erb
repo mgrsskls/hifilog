@@ -50,7 +50,7 @@
     </div>
 
     <div class="Form-field">
-      <div class="Form-label"><%= Category.model_name.human(count: 2) %></div>
+      <div class="Form-label"><%= Category.model_name.human.pluralize %></div>
       <div class="Options is-light">
         <% @categories.each do |category| %>
           <details<%= " open" if (category.sub_category_ids & @brand.sub_category_ids).any? %>>

@@ -1,6 +1,6 @@
 <%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <div class="Heading">
-    <h1><%= Setup.model_name.human(count: 2) %></h1>
+    <h1><%= Setup.model_name.human.pluralize %></h1>
     <%= link_to t('setup.new.link'), new_dashboard_setup_path, class: "Button" %>
   </div>
 
@@ -10,7 +10,7 @@
         <tr>
           <th><%= Setup.human_attribute_name(:name) %></th>
           <th class="u-textCenter"><%= Setup.human_attribute_name(:private) %></th>
-          <th class="u-hide-sm Table-products"><%= Product.model_name.human(count: 2) %></th>
+          <th class="u-hide-sm Table-products"><%= Product.model_name.human.pluralize %></th>
           <th class="u-textEnd Table-actions">Actions</th>
         </tr>
       </thead>

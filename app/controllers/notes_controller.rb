@@ -27,7 +27,7 @@ class NotesController < ApplicationController
         edit_path:
       }
     end
-    page_title(Note.model_name.human(count: 2))
+    page_title(Note.model_name.human.pluralize)
   end
 
   def show
@@ -54,7 +54,7 @@ class NotesController < ApplicationController
     @product_variant = ProductVariant.find(@note.product_variant_id) if @note.product_variant_id.present?
 
     display_name = @product_variant.present? ? @product_variant.display_name : @product.display_name
-    page_title("#{Note.model_name.human(count: 2)} — #{display_name}")
+    page_title("#{Note.model_name.human.pluralize} — #{display_name}")
   end
 
   def new
