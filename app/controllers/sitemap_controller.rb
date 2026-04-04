@@ -12,7 +12,8 @@ class SitemapController < ApplicationController
         @sitemap_root_lastmod = [brand_updated_at, product_updated_at, product_variant_updated_at].compact.max
       end
       format.html do
-        @brands = Brand.order(:name)
+        @brands = Brand.includes(products: :product_variants)
+                       .order('lower(name)')
       end
     end
   end

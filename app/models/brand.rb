@@ -24,7 +24,7 @@ class Brand < ApplicationRecord
 
   extend FriendlyId
 
-  has_many :products, dependent: :destroy
+  has_many :products, -> { order(name: :asc) }, dependent: :destroy, inverse_of: :brand
   has_and_belongs_to_many :sub_categories
 
   validates :name,
@@ -46,6 +46,7 @@ class Brand < ApplicationRecord
   after_destroy :invalidate_cache
   after_save :invalidate_cache
   after_commit :clear_country_cache
+  after_commit :clear_brands_cache
 
   def categories
     @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
@@ -107,6 +108,18 @@ class Brand < ApplicationRecord
   # :nocov:
 
   private
+
+  # rubocop:disable Naming/PredicateMethod
+  def clear_brands_cache
+    # rubocop:enable Naming/PredicateMethod
+    Rails.cache.delete('brands/all_by_name')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
 
   # rubocop:disable Naming/PredicateMethod
   def clear_country_cache

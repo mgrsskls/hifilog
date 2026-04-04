@@ -1,5 +1,31 @@
 <h1>Sitemap</h1>
 
 <ul>
-  <%= render partial: 'brand', collection: @brands, cached: true %>
+  <% @brands.each do |brand| %>
+    <% cache brand do %>
+      <li>
+        <%= link_to brand.name, brand_path(brand) %>
+
+        <ul>
+          <% brand.products.each do |product| %>
+            <li>
+              <%= link_to product.name, product_path(product) %>
+              
+              <ul>
+                <% product.product_variants.each do |product_variant| %>
+                  <li>
+                    <%= link_to product_variant.name_with_fallback,
+                      product_variant_path(product_id: product.friendly_id, id: product_variant.friendly_id)
+                    %>
+                  </li>
+                <% end %>
+              </ul>
+
+            </li>
+          <% end %>
+        </ul>
+
+      </li>
+    <% end %>
+  <% end %>
 </ul>

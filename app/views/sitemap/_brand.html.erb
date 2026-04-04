@@ -1,6 +1,0 @@
-<li>
-    <%= link_to brand.name, brand_path(brand) %>
-    <ul>
-        <%= render partial: 'product', collection: brand.products.order(:name), cached: true %>
-    </ul>
-</li>
