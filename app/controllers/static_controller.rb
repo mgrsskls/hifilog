@@ -6,7 +6,9 @@ class StaticController < ApplicationController
   content_security_policy false, only: [:amp_to_headphone_calculator]
 
   def changelog
-    @html = markdown_to_html Rails.root.join('CHANGELOG.md').read
+    @html = Rails.cache.fetch('/static/changelog/v1') do
+      markdown_to_html Rails.root.join('CHANGELOG.md').read
+    end
     page_title('Changelog')
     @no_index = true
 
@@ -14,7 +16,9 @@ class StaticController < ApplicationController
   end
 
   def about
-    @html = markdown_to_html Rails.root.join('static/about.md').read
+    @html = Rails.cache.fetch('/static/about/v1') do
+      markdown_to_html Rails.root.join('static/about.md').read
+    end
     page_title('About')
     @meta_desc = 'HiFi Log is a user-driven database for hi-fi products and brands. ' \
                  'Read more about its founder and how to support hifilog.com.'
@@ -23,7 +27,9 @@ class StaticController < ApplicationController
   end
 
   def imprint
-    @html = markdown_to_html Rails.root.join('static/imprint.md').read
+    @html = Rails.cache.fetch('/static/imprint/v1') do
+      markdown_to_html Rails.root.join('static/imprint.md').read
+    end
     page_title('Imprint')
     @no_index = true
 
@@ -31,7 +37,9 @@ class StaticController < ApplicationController
   end
 
   def privacy_policy
-    @html = markdown_to_html Rails.root.join('static/privacy_policy.md').read
+    @html = Rails.cache.fetch('/static/privacy_policy/v1') do
+      markdown_to_html Rails.root.join('static/privacy_policy.md').read
+    end
     page_title('Privacy Policy')
     @no_index = true
 
