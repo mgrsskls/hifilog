@@ -1,12 +1,15 @@
 <% hide_brand ||= false %>
 <% hide_category ||= false %>
 
-<ol class="EntityList EntityList--products">
-  <%= render partial: 'shared/product',
-      collection: products.preload(:brand),
-      locals: {
-        hide_brand:,
-        hide_category:
-      }
-  %>
-</ol>
+<% cache [products, request.query_parameters, hide_brand, hide_category] do %>
+  <ol class="EntityList EntityList--products">
+    <%= render partial: 'shared/product',
+        collection: products.preload(:brand),
+        locals: {
+          hide_brand:,
+          hide_category:
+        },
+        cached: ->(product) { [product, hide_brand, hide_category] }
+    %>
+  </ol>
+<% end %>
