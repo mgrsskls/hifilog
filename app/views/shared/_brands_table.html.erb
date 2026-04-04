@@ -1,15 +1,12 @@
 <% mark ||= nil %>
 
-<% cache [brands, request.query_parameters, category, product_counts, sub_category] do %>
-  <ol class="EntityList EntityList--brands">
-    <%= render partial: 'shared/brand',
-        collection: brands,
-        locals: {
-          category:,
-          product_counts:,
-          sub_category:
-      },
-      cached: ->(brand) { [brand, brand.sub_categories, category, product_counts, sub_category] }
-    %>
-  </ol>
-<% end %>
+<ol class="EntityList EntityList--brands">
+  <%= render partial: 'shared/brand',
+      collection: brands,
+      locals: {
+        category:,
+        product_counts:,
+        sub_category:
+    }
+  %>
+</ol>
