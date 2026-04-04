@@ -157,6 +157,8 @@ GEM
     cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
     csv (3.3.5)
+    dalli (5.0.2)
+      logger
     database_consistency (3.0.2)
       activerecord (>= 3.2)
     date (3.5.1)
@@ -570,6 +572,7 @@ DEPENDENCIES
   country_select
   crawler_detect
   cssbundling-rails (~> 1.4)
+  dalli
   database_consistency
   debug
   devise

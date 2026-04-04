@@ -20,6 +20,7 @@ gem "pg"
 gem "rubocop", require: false
 gem "rubocop-rails", require: false
 gem "sassc-rails"
+gem "dalli"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
