@@ -94,7 +94,7 @@ Rails.application.routes.draw do
   end
 
   # /products
-  resources :products, only: [:show, :index, :new, :create, :edit, :update] do
+  resources :products, only: [:show, :new, :create, :edit, :update] do
     get '/changelog', action: :changelog
     get '/notes', to: 'notes#new', as: :new_notes
     resources :product_variants, only: [:create, :update]
@@ -104,6 +104,9 @@ Rails.application.routes.draw do
     get '/v/:id/changelog', to: 'product_variants#changelog', as: :variant_changelog
     get '/v/:id/notes', to: 'notes#new', as: :new_variant_notes
   end
+
+  # /product items
+  get '/products', to: 'product_items#index', as: :product_items
 
   resources :events, only: [:index]
   get '/events/past', to: 'events#past', as: :past_events
