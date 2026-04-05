@@ -42,3 +42,5 @@
 /*.sql
 *.dump
 .env
+
+.cursor/
