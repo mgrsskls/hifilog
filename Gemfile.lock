@@ -354,7 +354,7 @@ GEM
       date
       stringio
     public_suffix (7.0.5)
-    puma (7.2.0)
+    puma (8.0.0)
       nio4r (~> 2.0)
     qonfig (0.30.0)
       base64 (>= 0.2)
@@ -595,7 +595,7 @@ DEPENDENCIES
   pg
   pg_search
   pghero
-  puma (~> 7.2)
+  puma (~> 8.0)
   rack-attack
   rack-timeout
   rails (~> 8.1.3)
