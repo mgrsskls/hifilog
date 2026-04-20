@@ -160,7 +160,7 @@ GEM
     csv (3.3.5)
     dalli (5.0.2)
       logger
-    database_consistency (3.0.2)
+    database_consistency (3.0.3)
       activerecord (>= 3.2)
     date (3.5.1)
     debug (1.11.1)
