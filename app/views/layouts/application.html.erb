@@ -58,6 +58,21 @@
             });
           }
         <% end %>
+
+        self.addEventListener('pageshow', (event) => {
+          if (event.persisted) {
+            const { theme } = localStorage;
+
+            
+            if (theme) {
+              document.documentElement.dataset.theme = theme;
+              document.querySelector(`theme-toggle input[value="${theme}"]`).checked = true;
+            } else {
+              document.documentElement.removeAttribute('data-theme');
+              document.querySelector(`theme-toggle input[value="auto"]`).checked = true;
+            }
+          }
+        });
       }
     <% end %>
     <%= stylesheet_link_tag "application" %>

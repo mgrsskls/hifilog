@@ -15,8 +15,8 @@ unless ENV['DISABLE_CSP']
       policy.object_src  :none
       policy.script_src  :self,
         'https://translate.google.com',
-        'sha256-IFGn1NVcMcaShOkXxx97DFSvga/jpME0sMZb/CMQHVA=', # application.html.erb logged in
-        'sha256-kc8qPAgjdmXBOha1O8XJumFnV3dbSKuYfjpVkLJbfW4=', # application.html.erb logged out
+        'sha256-owFw+DVNZSQh1LIWoBMkMctxnIPAWCNpjr3mEaCNZLo=', # application.html.erb logged in
+        'sha256-E15uFozjXYPu7tqTMA8ttqjELJTBQxPY3VVWH2Tt7+I=', # application.html.erb logged out
         'sha256-pbMT5G+LDCIWy/FBnicfz3TU8g8+7KAH5lbzSU/zeoE=' # application.html.erb speculationrules
       policy.style_src   :self, :unsafe_inline
       policy.frame_src   :self
