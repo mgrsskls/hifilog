@@ -164,19 +164,19 @@ Wraps **`CustomProduct`** with an API shaped similarly to `ItemPresenter` / `Pos
 
 ### Other presenters
 
-`SetupPossessionPresenter`, `CurrentPossessionPresenter`, `PreviousPossessionPresenter`, and `CustomProduct*PossessionPresenter` adapt possessions (or setup membership) for specific UI contexts (e.g. setup builder, timelines). `ImagePresenter` focuses on attachment presentation where reused.
+`SetupPossessionPresenter`, `PossessionPresenter`, `PreviousPossessionPresenter`, and `CustomProduct*PossessionPresenter` adapt possessions (or setup membership) for specific UI contexts (e.g. setup builder, timelines). `ImagePresenter` focuses on attachment presentation where reused.
 
 ---
 
 ## Quick reference
 
-| Concept          | Mutable?  | Typical use                                            |
-| ---------------- | --------- | ------------------------------------------------------ |
-| `Product`        | Yes       | Admin/catalog identity, product page, HABTM categories |
-| `ProductVariant` | Yes       | Variant page, overrides under a product                |
-| `ProductItem`    | No (view) | Unified product index, filters, list thumbnails        |
-| `Possession`     | Yes       | User owns gear, photos, setups, optional option        |
-| `CustomProduct`  | Yes       | User-defined gear + one linked possession              |
-| `Bookmark`       | Yes       | Saved pointer to product/variant/brand/event           |
-| `ProductOption`  | Yes       | Spec lines on product or variant                       |
-| `CustomAttribute`| Yes       | Field definitions per subcategory; product values in JSONB on `Product` |
+| Concept           | Mutable?  | Typical use                                                             |
+| ----------------- | --------- | ----------------------------------------------------------------------- |
+| `Product`         | Yes       | Admin/catalog identity, product page, HABTM categories                  |
+| `ProductVariant`  | Yes       | Variant page, overrides under a product                                 |
+| `ProductItem`     | No (view) | Unified product index, filters, list thumbnails                         |
+| `Possession`      | Yes       | User owns gear, photos, setups, optional option                         |
+| `CustomProduct`   | Yes       | User-defined gear + one linked possession                               |
+| `Bookmark`        | Yes       | Saved pointer to product/variant/brand/event                            |
+| `ProductOption`   | Yes       | Spec lines on product or variant                                        |
+| `CustomAttribute` | Yes       | Field definitions per subcategory; product values in JSONB on `Product` |
