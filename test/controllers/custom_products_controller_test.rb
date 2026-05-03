@@ -2,6 +2,8 @@
 
 require 'test_helper'
 
+require 'base64'
+
 class CustomProductsControllerTest < ActionDispatch::IntegrationTest
   test 'index without custom products' do
     user = users(:one)
@@ -158,5 +160,54 @@ class CustomProductsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to dashboard_custom_products_url
+  end
+
+  test 'create with missing name renders validation errors' do
+    sign_in users(:one)
+
+    assert_no_difference('CustomProduct.count') do
+      post custom_products_url, params: {
+        custom_product: {
+          name: '',
+          sub_category_ids: [sub_categories(:one).id]
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test 'update clears highlighted image when flagged for removal' do
+    custom_product = custom_products(:three)
+    pixel = Base64.decode64(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+    )
+
+    custom_product.images.purge if custom_product.images.attached?
+    custom_product.images.attach(
+      io: StringIO.new(pixel),
+      filename: 'hero.png',
+      content_type: 'image/png'
+    )
+    attachment = custom_product.images.first
+    custom_product.update!(highlighted_image_id: attachment.id)
+
+    sign_in users(:one)
+
+    patch custom_product_url(custom_product), params: {
+      custom_product: {
+        name: custom_product.name,
+        sub_category_ids: custom_product.sub_categories.map(&:id),
+        highlighted_image_id: attachment.id
+      },
+      delete_image: [attachment.id.to_s]
+    }
+
+    assert_response :redirect
+    assert_nil custom_product.reload.highlighted_image_id
+    assert_not custom_product.images.attached?
+  ensure
+    custom_product&.images&.purge
+    custom_product&.update!(highlighted_image_id: nil)
   end
 end

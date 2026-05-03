@@ -25,4 +25,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to dashboard_root_url
   end
+
+  test 'create honors explicit redirect targets' do
+    post user_session_url(redirect: brands_path), params: {
+      user: {
+        email: 'user@example.com',
+        password: 'encrypted_password'
+      }
+    }
+
+    assert_response :redirect
+    assert_redirected_to brands_path
+  end
 end

@@ -30,7 +30,7 @@ class ApplicationHelperTest < ActionView::TestCase
 
   test 'user_bookmarks_count' do
     assert_nil user_bookmarks_count(nil)
-    assert_equal user_bookmarks_count(users(:one)), 2
+    assert_equal 4, user_bookmarks_count(users(:one))
     assert_equal user_bookmarks_count(users(:without_anything)), 0
   end
 

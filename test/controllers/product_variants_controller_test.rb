@@ -120,6 +120,21 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'create with invalid catalogue data renders new' do
+    path = product_product_variants_url(product_id: products(:one).id)
+    sign_in users(:one)
+
+    assert_no_difference('ProductVariant.count') do
+      post path, params: {
+        product_variant: {
+          name: ''
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+  end
+
   test 'edit' do
     product_variant = product_variants(:one)
 

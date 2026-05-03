@@ -2,6 +2,8 @@
 
 require 'test_helper'
 
+require 'securerandom'
+
 class ProductTest < ActiveSupport::TestCase
   test 'release_date' do
     assert_equal '2020/06/01', products(:release_date_ymd).formatted_release_date
@@ -142,5 +144,79 @@ class ProductTest < ActiveSupport::TestCase
   test 'url method' do
     product = products(:one)
     assert_match product.friendly_id, product.url
+  end
+
+  test 'url slug appends model number when present' do
+    product = products(:one)
+    product.update!(model_no: 'MK-II')
+
+    assert_includes product.url_slug, 'mk-ii'
+  end
+
+  test 'meta description falls back to category copy when description missing' do
+    product = products(:without_custom_attributes)
+    product.update!(description: nil, name: 'Descriptor Product')
+
+    copy = product.meta_desc
+    assert_includes copy, 'Descriptor Product'
+    assert_includes copy, product.brand.name
+    assert_includes copy, product.sub_categories.map(&:name).join(' / ')
+  end
+
+  test 'meta description truncates rich description text' do
+    product = products(:without_custom_attributes)
+    long = "<p>#{'word ' * 80}</p>"
+    product.update!(description: long)
+
+    assert_operator product.meta_desc.length, :<=, 220
+  end
+
+  test 'custom attributes list translates stored option ids' do
+    product = products(:one)
+    option = custom_attributes(:one)
+    product.update!(custom_attributes: { option.id.to_s => '1' })
+
+    assert_includes product.custom_attributes_list, I18n.t('custom_attributes.stereo')
+  end
+
+  test 'custom attributes resources indexes definitions by label' do
+    product = products(:with_custom_attributes)
+
+    lookup = product.custom_attributes_resources
+    assert_kind_of Hash, lookup
+    assert_predicate lookup['boolean'], :present?
+  end
+
+  test 'invalidate cache callback clears aggregated counters' do
+    Rails.cache.write('/products_count', 123)
+    Rails.cache.write('/newest_products', [1])
+
+    products(:one).send(:invalidate_cache)
+
+    assert_nil Rails.cache.read('/products_count')
+    assert_nil Rails.cache.read('/newest_products')
+  end
+
+  test 'persisting merges new sub categories onto the associated brand' do
+    created = nil
+    standalone = brand = nil
+    token = SecureRandom.hex(4)
+    standalone = SubCategory.create!(name: "Isolated #{token}", category: categories(:one))
+    brand = Brand.create!(name: "Side #{token}", country_code: 'US', discontinued: false)
+    brand.sub_categories << sub_categories(:one)
+
+    catalog_name = "Catalog #{token}"
+
+    created = Product.create!(
+      name: catalog_name,
+      brand:,
+      sub_category_ids: [standalone.id]
+    )
+
+    assert_includes brand.reload.sub_categories, standalone
+  ensure
+    Product.find_by(id: created&.id)&.destroy
+    standalone&.destroy
+    brand&.destroy
   end
 end

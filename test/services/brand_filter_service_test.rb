@@ -83,4 +83,20 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
         brand.name.downcase.starts_with?('b')
     end)
   end
+
+  test 'sorting exposes ascending product volume ordering' do
+    result = BrandFilterService.new(filters: { sort: 'products_asc' }).filter
+    counts = result.brands.pluck(:products_count)
+
+    assert_equal counts.sort, counts
+  end
+
+  test 'ordering supports created and metadata sort keys without errors' do
+    %w[added_asc added_desc updated_asc updated_desc].each do |sort|
+      result = BrandFilterService.new(filters: { sort: }).filter
+
+      assert_operator result.brands.count, :positive?
+      assert_nothing_raised { result.brands.load }
+    end
+  end
 end

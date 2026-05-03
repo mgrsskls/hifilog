@@ -182,4 +182,166 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     get path
     assert_response :success
   end
+
+  test 'create persists custom_attributes for boolean and number types' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+
+    params = {
+      product: {
+        name: 'Custom attributes product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'boolean' => 'true',
+          'number' => { 'value' => '42', 'unit' => 'cm' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    sign_in users(:one)
+
+    assert_difference(-> { Product.where(name: 'Custom attributes product xyz').count }, 1) do
+      post products_url, params:
+    end
+
+    assert_response :redirect
+
+    saved = Product.find_by!(name: 'Custom attributes product xyz')
+    assert_equal true, saved.custom_attributes['boolean']
+    assert_in_delta 42.0, saved.custom_attributes.dig('number', 'value')
+  ensure
+    saved&.destroy
+  end
+
+  test 'create with invalid brand renders new with product_options applied to in-memory record' do
+    sub_category_id = categories(:one).sub_categories.first.id
+
+    params = {
+      product: {
+        name: 'Brand fail options',
+        sub_category_ids: [sub_category_id],
+        discontinued: false,
+        product_options_attributes: {
+          0 => { option: 'wired' }
+        },
+        brand_attributes: {
+          name: ''
+        }
+      }
+    }
+
+    sign_in users(:one)
+
+    assert_no_difference('Product.count') do
+      post products_url, params:
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test 'update rejects invalid payload and renders edit with categories' do
+    product = products(:one)
+
+    sign_in users(:one)
+
+    patch product_url(id: product.id), params: {
+      product: {
+        name: '',
+        discontinued: product.discontinued
+      },
+      product_options_attributes: {}
+    }
+
+    assert_response :unprocessable_content
+    assert_predicate response.body, :present?
+  end
+
+  test 'update changes friendly id when name changes and applies custom_attribute params' do
+    product = products(:release_date_y)
+    slug_before = product.friendly_id
+
+    sign_in users(:one)
+
+    patch product_url(id: product.id), params: {
+      product: {
+        name: 'Renamed release product',
+        discontinued: product.discontinued,
+        sub_category_ids: product.sub_categories.map(&:id)
+      }
+    }
+
+    assert_response :redirect
+    product.reload
+    assert_equal 'Renamed release product', product.name
+    assert_not_equal slug_before, product.friendly_id
+
+    patch product_url(id: product.id), params: {
+      product: {
+        name: 'Renamed release product',
+        model_no: 'x-no',
+        discontinued: product.discontinued,
+        sub_category_ids: product.sub_categories.map(&:id),
+        custom_attributes: {
+          'boolean' => 'false',
+          'number' => { 'value' => '11', 'unit' => 'cm' }
+        }
+      }
+    }
+
+    assert_response :redirect
+
+    product.reload
+
+    assert_equal false, product.custom_attributes['boolean']
+    assert_in_delta 11.0, product.custom_attributes.dig('number', 'value')
+  end
+
+  test 'create mirrors brand discontinued flag onto the catalogue record when brand halted production' do
+    brand = brands(:one)
+    mirror = nil
+    sub_category_id = categories(:one).sub_categories.pick(:id)
+    brand.update!(discontinued: true)
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Discontinued brand mirror',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category_id],
+        product_options_attributes: {}
+      }
+    }
+
+    assert_response :redirect
+    mirror = Product.find_by!(name: 'Discontinued brand mirror')
+    assert mirror.discontinued?
+    assert_predicate brand.reload, :discontinued?
+  ensure
+    mirror&.destroy
+    brand&.update!(discontinued: false)
+  end
+
+  test 'create stops on invalid catalogue payload after brand persists' do
+    template = products(:one)
+    sign_in users(:one)
+
+    assert_no_difference(-> { Product.count }) do
+      post products_url, params: {
+        product: {
+          name: '',
+          brand_id: template.brand_id,
+          discontinued: false,
+          sub_category_ids: template.sub_categories.map(&:id),
+          product_options_attributes: {}
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+  end
 end

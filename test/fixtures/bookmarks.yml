@@ -10,3 +10,23 @@ with_product_variant:
   user: one
   item_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
   item_type: ProductVariant
+
+with_event:
+  user: one
+  item_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+  item_type: Event
+
+with_past_event:
+  user: hidden
+  item_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  item_type: Event
+
+with_brand:
+  user: one
+  item_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  item_type: Brand
+
+with_discontinued_brand:
+  user: visible
+  item_id: <%= ActiveRecord::FixtureSet.identify(:three) %>
+  item_type: Brand

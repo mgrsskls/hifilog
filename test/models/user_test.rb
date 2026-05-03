@@ -67,4 +67,46 @@ class UserTest < ActiveSupport::TestCase
     user = users(:one)
     assert_equal user.email, user.display_name
   end
+
+  test 'rejects non image avatar types on update validation' do
+    user = users(:one)
+    user.avatar.attach(
+      io: StringIO.new('not an image'),
+      filename: 'note.txt',
+      content_type: 'text/plain'
+    )
+
+    assert_not user.valid?(:update)
+    assert user.errors[:avatar_content_type].present?
+  ensure
+    user.avatar.purge if user.avatar.attached?
+  end
+
+  test 'rejects avatar files larger than five megabytes on update' do
+    user = users(:one)
+    user.avatar.attach(
+      io: StringIO.new('a' * 5_000_001),
+      filename: 'big.jpg',
+      content_type: 'image/jpeg'
+    )
+
+    assert_not user.valid?(:update)
+    assert user.errors[:avatar_file_size].present?
+  ensure
+    user.avatar.purge if user.avatar.attached?
+  end
+
+  test 'rejects non image decorative uploads on update validation' do
+    user = users(:one)
+    user.decorative_image.attach(
+      io: StringIO.new('not an image'),
+      filename: 'banner.txt',
+      content_type: 'text/plain'
+    )
+
+    assert_not user.valid?(:update)
+    assert user.errors[:decorative_image_content_type].present?
+  ensure
+    user.decorative_image.purge if user.decorative_image.attached?
+  end
 end
