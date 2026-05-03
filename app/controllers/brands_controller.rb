@@ -25,7 +25,7 @@ class BrandsController < ApplicationController
       product_filters: active_index_product_filters
     ).filter
 
-    brands = filter.brands
+    brands = filter.brands.with_attached_logo
 
     @brands = brands.page(params[:page])
     @brands = brands.page(1) if @brands.out_of_range?
@@ -71,7 +71,7 @@ a user-driven database for hi-fi products and brands."
   end
 
   def show
-    @brand = Brand.includes(sub_categories: [:category]).friendly.find(params[:id])
+    @brand = Brand.with_attached_logo.includes(sub_categories: [:category]).friendly.find(params[:id])
     brand_id = @brand.id
 
     @contributors = User.find_by_sql(["
@@ -90,7 +90,8 @@ a user-driven database for hi-fi products and brands."
   end
 
   def products
-    @brand = Brand.includes(sub_categories: [:category], products: [:product_variants]).friendly.find(params[:brand_id])
+    @brand = Brand.with_attached_logo.includes(sub_categories: [:category],
+                                               products: [:product_variants]).friendly.find(params[:brand_id])
     @category, @sub_category = extract_category(params[:category])
     @custom_attributes = extract_custom_attributes(@category, @sub_category)
     @filter_applied = active_show_product_filters

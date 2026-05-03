@@ -14,43 +14,48 @@
         </div>
 
         <div class="Entity-section">
-          <dl class="Data Entity-data">
-            <% if @brand.discontinued %>
-              <dt><%= t('status') %></dt>
-              <dd><span class="Symbol"><%= t('symbols.brand.discontinued') %></span></dd>
+          <div class="Entity-data Entity-data--brand">
+            <% if @brand.logo.attached? %>
+              <%= image_tag cdn_image_url(@brand.logo.variant(:thumb)), alt: "", "aria-hidden": "true", loading: "lazy", class: "Entity-data-logo", width: 640, height: 427 %>
             <% end %>
-            <dt><%= Brand.human_attribute_name(:country_code) %></dt>
-            <dd>
-              <div class="u-flex u-alignCenter u-gap-smd">
-                <% if @brand.country_name.present? %>
-                  <img class="Flag" src="/flags/<%= @brand.country_code.downcase %>.svg" alt="Flag of <%= @brand.country_name %>" title="<%= @brand.country_name %>" loading="lazy" width="25">
-                  <%= @brand.country_name %>
-                <% else %>
-                  -
-                <% end %>
-              </div>
-            </dd>
-            <dt><%= Brand.human_attribute_name(:website) %></dt>
-            <dd><%= @brand.website.present? ? (link_to @brand.website, "#{@brand.website}?utm_source=hifilog.com&utm_medium=referral", rel: "noreferrer noopener") : "-" %></dd>
-            <dt><%= t('brand.founded') %></dt>
-            <dd>
-              <% if @brand.founded_date.present? %>
-                <time datetime="<%= format_iso_date @brand.founded_date %>"><%= sanitize @brand.formatted_founded_date %></time>
-              <% else %>
-                -
+            <dl class="Data">
+              <% if @brand.discontinued %>
+                <dt><%= t('status') %></dt>
+                <dd><span class="Symbol"><%= t('symbols.brand.discontinued') %></span></dd>
               <% end %>
-            </dd>
-            <% if @brand.discontinued? %>
-              <dt><%= t('discontinued') %></dt>
+              <dt><%= Brand.human_attribute_name(:country_code) %></dt>
               <dd>
-                <% if @brand.discontinued_date.present? %>
-                  <time datetime="<%= format_iso_date @brand.discontinued_date %>"><%= sanitize @brand.formatted_discontinued_date %></time>
+                <div class="u-flex u-alignCenter u-gap-smd">
+                  <% if @brand.country_name.present? %>
+                    <img class="Flag" src="/flags/<%= @brand.country_code.downcase %>.svg" alt="Flag of <%= @brand.country_name %>" title="<%= @brand.country_name %>" loading="lazy" width="25">
+                    <%= @brand.country_name %>
+                  <% else %>
+                    -
+                  <% end %>
+                </div>
+              </dd>
+              <dt><%= Brand.human_attribute_name(:website) %></dt>
+              <dd><%= @brand.website.present? ? (link_to @brand.website, "#{@brand.website}?utm_source=hifilog.com&utm_medium=referral", rel: "noreferrer noopener") : "-" %></dd>
+              <dt><%= t('brand.founded') %></dt>
+              <dd>
+                <% if @brand.founded_date.present? %>
+                  <time datetime="<%= format_iso_date @brand.founded_date %>"><%= sanitize @brand.formatted_founded_date %></time>
                 <% else %>
                   -
                 <% end %>
               </dd>
-            <% end %>
-          </dl>
+              <% if @brand.discontinued? %>
+                <dt><%= t('discontinued') %></dt>
+                <dd>
+                  <% if @brand.discontinued_date.present? %>
+                    <time datetime="<%= format_iso_date @brand.discontinued_date %>"><%= sanitize @brand.formatted_discontinued_date %></time>
+                  <% else %>
+                    -
+                  <% end %>
+                </dd>
+              <% end %>
+            </dl>
+          </div>
           <% if @brand.formatted_description.present? %>
             <div class="Rte">
               <%= @brand.formatted_description %>

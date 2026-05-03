@@ -31,9 +31,11 @@
 }
 
 .Entity-data {
+	container: data / inline-size;
 	padding: 1rem 1.25rem;
 	background: var(--color-bg2);
-	max-inline-size: 24rem;
+	inline-size: 35%;
+	box-sizing: border-box;
 
 	a {
 		word-break: break-word;
@@ -42,10 +44,39 @@
 	&:not(:only-child) {
 		margin-block-end: 2rem;
 
+		@container section (width <= 48rem) {
+			inline-size: 100%;
+		}
+
 		@container section (width > 48rem) {
 			float: left;
 			margin-inline-end: var(--page-spacing);
 		}
+	}
+}
+
+.Entity-data--brand {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: start;
+}
+
+.Entity-data-logo {
+	aspect-ratio: 3/2;
+	block-size: auto;
+	inline-size: 100%;
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	object-fit: cover;
+	background: #fff;
+	box-sizing: border-box;
+	max-inline-size: 24rem;
+}
+
+@container section (32rem <=width <= 48rem) {
+	.Entity-data-logo {
+		inline-size: 50%;
 	}
 }
 

@@ -1,5 +1,5 @@
 ActiveAdmin.register Brand do
-  permit_params :country_code, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :founded_day, :founded_month, :founded_year, :full_name, :name, :website, sub_category_ids: []
+  permit_params :country_code, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :founded_day, :founded_month, :founded_year, :full_name, :logo, :name, :remove_logo, :website, sub_category_ids: []
 
   menu priority: 2
 
@@ -35,6 +35,12 @@ ActiveAdmin.register Brand do
       end
     end
     column :discontinued
+    column :logo do |brand|
+      if brand.logo.attached?
+        image_tag(cdn_image_url(brand.logo.variant(:thumb)), alt: "",
+                  style: "max-block-size: 3rem; max-inline-size: 10rem; object-fit: contain;")
+      end
+    end
     column :website
     column :country_code
     column :products do |brand|
@@ -59,8 +65,17 @@ ActiveAdmin.register Brand do
     end
   end
 
-  form do |f|
+  form html: { multipart: true } do |f|
     f.inputs do
+      logo_hint =
+        if f.object.logo.attached?
+          image_tag(cdn_image_url(f.object.logo.variant(:thumb)),
+                    alt: "", style: "max-block-size: 6rem; max-inline-size: 16rem; object-fit: contain; display: block; margin-block-end: 0.5rem;")
+        end
+      f.input :logo, as: :file,
+                      hint: logo_hint,
+                      input_html: { accept: "image/png,image/jpeg,image/jpg,image/gif,image/webp" }
+      f.input :remove_logo, as: :boolean if f.object.logo.attached?
       f.input :name
       f.input :full_name
       f.input :website

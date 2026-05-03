@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
+require 'base64'
 require 'test_helper'
 
 class BrandTest < ActiveSupport::TestCase
+  MINIMAL_PNG_BYTES = Base64.decode64(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+  ).freeze
+
   test 'validations' do
     brand = Brand.new
     assert_not brand.valid?
@@ -108,5 +113,66 @@ class BrandTest < ActiveSupport::TestCase
     brand = Brand.new(name: 'Test', description: '**Bold text**')
     desc = brand.formatted_description
     assert_includes desc, '<strong>Bold text</strong>'
+  end
+
+  test 'rejects logo with disallowed content type' do
+    brand = brands(:one)
+    brand.logo.attach(
+      io: StringIO.new('%PDF-1.4'),
+      filename: 'logo.pdf',
+      content_type: 'application/pdf'
+    )
+    assert_not brand.valid?
+    assert brand.errors.of_kind?(:logo, :invalid_content_type)
+  end
+
+  test 'rejects logo larger than 5 MB' do
+    brand = brands(:one)
+    brand.logo.attach(
+      io: StringIO.new('x'),
+      filename: 'logo.jpg',
+      content_type: 'image/jpeg'
+    )
+    brand.logo.blob.define_singleton_method(:byte_size) { 5_000_001 }
+
+    assert_not brand.valid?
+    assert brand.errors.of_kind?(:logo, :too_large)
+  end
+
+  test 'purges logo when remove_logo flag is set' do
+    brand = brands(:one)
+    brand.logo.attach(
+      io: StringIO.new(MINIMAL_PNG_BYTES),
+      filename: 'logo.png',
+      content_type: 'image/png'
+    )
+    brand.save!
+
+    brand.remove_logo = '1'
+    assert brand.save
+    brand.reload
+
+    assert_not_predicate brand.logo, :attached?
+  end
+
+  test 'replace upload wins when remove_logo checked and new logo uploaded together' do
+    brand = brands(:one)
+    brand.logo.attach(
+      io: StringIO.new(MINIMAL_PNG_BYTES),
+      filename: 'logo.png',
+      content_type: 'image/png'
+    )
+    brand.save!
+
+    brand.remove_logo = '1'
+    brand.logo.attach(
+      io: StringIO.new(MINIMAL_PNG_BYTES),
+      filename: 'replaced.png',
+      content_type: 'image/png'
+    )
+    assert brand.save
+    brand.reload
+
+    assert_predicate brand.logo, :attached?
   end
 end

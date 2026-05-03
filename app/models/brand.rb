@@ -20,12 +20,17 @@ class Brand < ApplicationRecord
   auto_strip_attributes :description
 
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
-  attr_accessor :comment
+  attr_accessor :comment, :remove_logo
 
   extend FriendlyId
 
   has_many :products, -> { order(name: :asc) }, dependent: :destroy, inverse_of: :brand
   has_and_belongs_to_many :sub_categories
+
+  has_one_attached :logo do |attachable|
+    # Format conversion only — dimensions stay as uploaded (sizes are tuned in markup/CSS).
+    attachable.variant :thumb, format: :webp
+  end
 
   validates :name,
             presence: true,
@@ -40,7 +45,12 @@ class Brand < ApplicationRecord
             inclusion: { in: ->(_) { ISO3166::Country.all.map(&:alpha2) } },
             allow_nil: true
 
+  validate :validate_logo_content_type
+  validate :validate_logo_file_size
+
   friendly_id :name, use: [:slugged, :history]
+
+  before_save :clear_logo_when_remove_requested
 
   after_update :touch_products
   after_destroy :invalidate_cache
@@ -99,6 +109,8 @@ class Brand < ApplicationRecord
       name_start
       sub_categories_id
       sub_categories_id_eq
+      logo_attachment_id_eq
+      logo_blob_id_eq
     ]
   end
 
@@ -108,6 +120,34 @@ class Brand < ApplicationRecord
   # :nocov:
 
   private
+
+  def clear_logo_when_remove_requested
+    return unless ActiveModel::Type::Boolean.new.cast(remove_logo)
+
+    self.remove_logo = nil
+
+    pending_create = attachment_changes['logo'].is_a?(ActiveStorage::Attached::Changes::CreateOne)
+    return if pending_create
+
+    self.logo = nil
+  end
+
+  def validate_logo_content_type
+    return unless logo.attached?
+
+    allowed = %w[image/jpeg image/png image/gif image/webp]
+    return if allowed.include?(logo.blob&.content_type)
+
+    errors.add(:logo, :invalid_content_type)
+  end
+
+  def validate_logo_file_size
+    return unless logo.attached?
+
+    return if logo.blob&.byte_size.to_i <= 5_000_000
+
+    errors.add(:logo, :too_large)
+  end
 
   # rubocop:disable Naming/PredicateMethod
   def clear_brands_cache

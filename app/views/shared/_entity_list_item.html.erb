@@ -6,7 +6,12 @@
 <div class="EntityListItem EntityListItem--<%= item_type.parameterize %> <%= item_type %> <%= is_discontinued ? "is-discontinued" : "is-continued" unless is_discontinued.nil? %>" id="<%= "#{item_type.parameterize}-#{item.id}" %>"<%= " aria-current=true" if is_current %>>
   <div class="EntityListItem-image" data-name="<%= name %>">
     <% if local_assigns[:list_image] %>
-      <%= image_tag cdn_image_url(list_image.variant(:thumb)), loading: "lazy", width: 640, height: 640 %>
+      <%
+        list_variant = local_assigns.fetch(:list_variant, :thumb)
+        img_attrs = { loading: "lazy", alt: "", "aria-hidden": "true" }
+        img_attrs.merge!(width: local_assigns.fetch(:list_image_width, 640), height: local_assigns.fetch(:list_image_height, 640))
+      %>
+      <%= image_tag cdn_image_url(list_image.variant(list_variant)), **img_attrs %>
     <% end %>
   </div>
   <div class="EntityListItem-wrapper">
