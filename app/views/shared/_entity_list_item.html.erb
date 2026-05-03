@@ -4,6 +4,11 @@
 %>
 
 <div class="EntityListItem EntityListItem--<%= item_type.parameterize %> <%= item_type %> <%= is_discontinued ? "is-discontinued" : "is-continued" unless is_discontinued.nil? %>" id="<%= "#{item_type.parameterize}-#{item.id}" %>"<%= " aria-current=true" if is_current %>>
+  <div class="EntityListItem-image" data-name="<%= name %>">
+    <% if local_assigns[:list_image] %>
+      <%= image_tag cdn_image_url(list_image.variant(:thumb)), loading: "lazy", width: 640, height: 640 %>
+    <% end %>
+  </div>
   <div class="EntityListItem-wrapper">
     <div class="EntityListItem-header u-status">
       <div class="EntityListItem-main">

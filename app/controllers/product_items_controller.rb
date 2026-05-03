@@ -29,6 +29,8 @@ class ProductItemsController < ApplicationController
     # Reset to page 1 if out of range
     @products = products.page(1) if @products.out_of_range?
 
+    @products = ProductItem.preload_list_possession_images(@products)
+
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
     @canonical_url = products_url

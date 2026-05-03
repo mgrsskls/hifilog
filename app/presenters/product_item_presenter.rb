@@ -6,16 +6,15 @@ class ProductItemPresenter
 
   delegate_missing_to :@object
 
-  def initialize(object)
+  def initialize(object, user_signed_in)
     @object = object
+    @user_signed_in = user_signed_in
   end
 
   def display_name
-    if @object.item_type == 'ProductVariant'
-      return "#{@object.product_name} #{ProductVariant.find_by(id: @object.item_id)&.name_with_fallback}"
-    end
+    return "#{@object.name} #{@object.variant_name}" if @object.item_type == 'ProductVariant'
 
-    @object.product_name
+    @object.name
   end
 
   def id
@@ -38,5 +37,12 @@ class ProductItemPresenter
 
   def formatted_discontinued_date
     format_partial_date(@object.discontinued_year, @object.discontinued_month, @object.discontinued_day)
+  end
+
+  def list_highlighted_image
+    possession = @object.earliest_list_possession_with_images(user_signed_in: @user_signed_in)
+    return nil unless possession
+
+    PossessionPresenter.new(possession).highlighted_image
   end
 end

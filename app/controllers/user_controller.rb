@@ -95,6 +95,7 @@ class UserController < ApplicationController
     end
 
     @bookmarks = bookmarks
+    assign_bookmark_product_items_for_thumbnails!(@bookmarks)
     @bookmarks_after_create_redirect = :dashboard_bookmarks
     @bookmarks_after_destroy_redirect = :dashboard_bookmarks
 
@@ -302,6 +303,27 @@ class UserController < ApplicationController
   end
 
   private
+
+  def assign_bookmark_product_items_for_thumbnails!(bookmark_presenters)
+    @bookmark_product_items = {}
+
+    product_ids = bookmark_presenters.select { |b| b.item_type == 'Product' }.map { |b| b.product.id }.uniq
+    variant_ids = bookmark_presenters.select { |b| b.item_type == 'ProductVariant' }
+                                     .map { |b| b.product_variant.id }
+                                     .uniq
+    return if product_ids.empty? && variant_ids.empty?
+
+    relation = ProductItem.none
+    relation = relation.or(ProductItem.where(item_type: 'Product', product_id: product_ids)) if product_ids.any?
+    if variant_ids.any?
+      relation = relation.or(ProductItem.where(item_type: 'ProductVariant', product_variant_id: variant_ids))
+    end
+
+    ProductItem.preload_list_possession_images(relation).each do |pi|
+      key = pi.item_type == 'ProductVariant' ? [:variant, pi.product_variant_id] : [:product, pi.product_id]
+      @bookmark_product_items[key] = pi
+    end
+  end
 
   def get_events(all_events: [], order: :asc)
     country_code = params[:country]

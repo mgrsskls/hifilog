@@ -83,8 +83,15 @@
               <%= actions %>
             <% end %>
           <% else %>
+            <%
+              product_item = if bookmark.item_type == 'ProductVariant'
+                               @bookmark_product_items[[:variant, bookmark.product_variant.id]]
+                             else
+                               @bookmark_product_items[[:product, bookmark.product.id]]
+                             end
+            %>
             <%= render layout: "shared/product_item", locals: {
-              item: bookmark.product_variant || bookmark.product,
+              item: ProductItemPresenter.new(product_item, true),
               name: bookmark.product.name,
               path: bookmark.product_variant.present? ? product_variant_path(id: bookmark.product_variant.slug, product_id: bookmark.product.slug) : product_path(id: bookmark.product.slug),
               brand: bookmark.product.brand,

@@ -13,7 +13,7 @@
 }
 
 .EntityList--events {
-	--card-size: 22rem;
+	--card-size: 18rem;
 }
 
 .EntityList-item .EntityListItem {
@@ -23,19 +23,64 @@
 
 .EntityListItem {
 	display: grid;
-	grid-template-rows: 1fr auto;
+	grid-template-rows: auto 1fr auto;
 	padding: var(--spacing-inline);
 	background: var(--color-bg2);
 	border-radius: var(--border-radius);
-	border: 0.0625rem solid transparent;
+	border: 0.0625rem solid var(--color-transparency-10);
+	position: relative;
 
-	&:has(.EntityList-name:focus-within) {
+	&:has(.EntityListItem-name:focus-visible) {
 		outline: 0.125rem solid var(--color-focus-outline);
 		outline-offset: 0.1875rem;
 
-		a:focus-within {
+		a:focus-visible {
 			outline: none;
 		}
+	}
+}
+
+.EntityListItem-image {
+	--radius: calc(var(--border-radius) - 0.0625rem);
+
+	display: block;
+	inline-size: calc(100% + 2 * var(--spacing-inline));
+	block-size: auto;
+	aspect-ratio: 3/2;
+	margin: calc(-1 * var(--spacing-inline));
+	margin-block-end: 1rem;
+	max-inline-size: none;
+	background-color: var(--color-bg-card-image);
+	border-start-start-radius: var(--radius);
+	border-start-end-radius: var(--radius);
+	position: relative;
+
+	&:not(:has(img)) {
+		&[data-name]::before {
+			content: attr(data-name);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			inline-size: 100%;
+			block-size: 100%;
+			position: absolute;
+			inset: 0;
+			padding: 2rem;
+			font-weight: 600;
+			font-size: 1.6rem;
+			line-height: 1.2;
+			color: var(--color-text-card-image);
+			box-sizing: border-box;
+		}
+	}
+
+	img {
+		object-fit: cover;
+		inline-size: 100%;
+		block-size: 100%;
+		border-start-start-radius: var(--radius);
+		border-start-end-radius: var(--radius);
 	}
 }
 
@@ -65,12 +110,16 @@
 	gap: 1rem;
 	justify-content: space-between;
 	align-items: start;
+	margin-inline-start: -1rem;
 }
 
 .EntityListItem .Symbols {
 	font-size: 0.75rem;
 	inline-size: 7.6em;
 	align-self: start;
+	position: absolute;
+	inset-block-start: 1rem;
+	inset-inline-end: 1rem;
 }
 
 .EntityListItem--event .Symbols {
@@ -79,6 +128,7 @@
 
 .EntityListItem-main {
 	display: flex;
+	flex: 1;
 	flex-direction: column;
 	justify-content: center;
 	line-height: 1.5;
@@ -87,6 +137,22 @@
 .EntityListItem-name {
 	font-weight: 600;
 	font-size: 1.2em;
+
+	&a::after {
+		content: "";
+		display: block;
+		inline-size: 100%;
+		block-size: 100%;
+		position: absolute;
+		inset: 0;
+		transition: box-shadow 0.2s ease-in-out;
+	}
+
+	&a:hover {
+		&::after {
+			box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+		}
+	}
 }
 
 .is-discontinued .EntityListItem-name {
@@ -126,6 +192,7 @@
 
 .EntityList-productsCount {
 	margin-inline-start: auto;
+	position: relative;
 }
 
 .EntityListItem-footer {

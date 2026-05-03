@@ -88,7 +88,8 @@
           is_discontinued: product.discontinued?,
           is_current: current == product,
           main:,
-          content:
+          content:,
+          name: product.name
         %>
       </li>
       <% product.product_variants.order(:release_year, :release_month, :release_day).each do |product_variant| %>
@@ -131,7 +132,8 @@
             is_discontinued: product_variant.discontinued?,
             is_current: current == product_variant,
             main:,
-            content:
+            content:,
+            name: product_variant.display_name
           %>
         </li>
       <% end %>

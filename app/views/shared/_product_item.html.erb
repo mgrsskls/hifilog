@@ -96,7 +96,9 @@
   is_discontinued:,
   item:,
   item_type:,
+  list_image: (item.list_highlighted_image if item.respond_to?(:list_highlighted_image)),
   main:,
   content:,
-  actions:
+  actions:,
+  name: "#{item.brand.name} #{item.display_name}"
 %>

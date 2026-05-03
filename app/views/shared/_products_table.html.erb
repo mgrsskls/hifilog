@@ -1,7 +1,7 @@
 <% hide_brand ||= false %>
 <% hide_category ||= false %>
 
-<% cache [products, request.query_parameters, hide_brand, hide_category] do %>
+<% cache [products, request.query_parameters, hide_brand, hide_category, user_signed_in?] do %>
   <ol class="EntityList EntityList--products">
     <%= render partial: 'shared/product',
         collection: products.preload(:brand),
@@ -9,7 +9,14 @@
           hide_brand:,
           hide_category:
         },
-        cached: ->(product) { [product, hide_brand, hide_category] }
+        cached: lambda { |product|
+          [
+            product,
+            hide_brand,
+            hide_category,
+            product.list_image_cache_version(user_signed_in: user_signed_in?)
+          ]
+        }
     %>
   </ol>
 <% end %>

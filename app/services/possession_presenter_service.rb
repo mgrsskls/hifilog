@@ -8,7 +8,7 @@ class PossessionPresenterService
       elsif possession.prev_owned
         PreviousPossessionPresenter.new(possession)
       else
-        CurrentPossessionPresenter.new(possession)
+        PossessionPresenter.new(possession)
       end
     end
   end

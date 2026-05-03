@@ -29,13 +29,14 @@ class PossessionPresenter < ItemPresenter
   end
 
   def highlighted_image
-    if @object.images.attached?
-      return @object.images.find(@object.highlighted_image_id) if @object.highlighted_image_id
+    return nil unless @object.images.attached?
 
-      return @object.images.first
+    if @object.highlighted_image_id.present?
+      highlighted = @object.images.find_by(id: @object.highlighted_image_id)
+      return highlighted if highlighted
     end
 
-    nil
+    @object.images.first
   end
 
   def owned_for

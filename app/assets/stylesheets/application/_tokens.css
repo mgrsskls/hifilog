@@ -17,16 +17,17 @@ html {
 	--hue-accent: 312;
 
 	--color-white: #fff;
-	--color-blue-975: hsl(var(--hue), 40%, 97.5%);
-	--color-blue-925: hsl(var(--hue), 40%, 92.5%);
-	--color-blue-750: hsl(var(--hue), 40%, 75%);
-	--color-blue-500: hsl(var(--hue), 40%, 50%);
-	--color-blue-250: hsl(var(--hue), 40%, 25%);
-	--color-blue-200: hsl(var(--hue), 40%, 20%);
-	--color-blue-175: hsl(var(--hue), 40%, 17.5%);
-	--color-blue-150: hsl(var(--hue), 40%, 15%);
-	--color-blue-125: hsl(var(--hue), 40%, 12.5%);
-	--color-blue-100: hsl(var(--hue), 40%, 10%);
+	--color-blue-975: hsl(var(--hue), 30%, 97.5%);
+	--color-blue-925: hsl(var(--hue), 30%, 92.5%);
+	--color-blue-825: hsl(var(--hue), 30%, 82.5%);
+	--color-blue-750: hsl(var(--hue), 30%, 75%);
+	--color-blue-500: hsl(var(--hue), 30%, 50%);
+	--color-blue-250: hsl(var(--hue), 30%, 25%);
+	--color-blue-200: hsl(var(--hue), 30%, 20%);
+	--color-blue-175: hsl(var(--hue), 30%, 17.5%);
+	--color-blue-150: hsl(var(--hue), 30%, 15%);
+	--color-blue-125: hsl(var(--hue), 30%, 12.5%);
+	--color-blue-100: hsl(var(--hue), 30%, 10%);
 
 	--color-accent-on-light: hsl(var(--hue-accent), 34%, 25%);
 	--color-accent-on-dark: hsl(var(--hue-accent), 50%, 85%);
@@ -114,6 +115,8 @@ html[data-theme="light"],
 	--color-input: var(--color-copy-on-light);
 	--color-menu-main-active-copy: var(--color-copy-on-light);
 	--color-menu-main-active-bg: var(--color-bg-main);
+	--color-text-card-image: var(--color-blue-825);
+	--color-bg-card-image: var(--color-blue-925);
 
 	color-scheme: light;
 	accent-color: var(--color-accent-on-light);
@@ -153,6 +156,9 @@ html[data-theme="light"],
 		--summary-arrow: var(--summary-arrow-dark);
 		--color-menu-main-active-copy: var(--color-white);
 
+		--color-text-card-image: var(--color-blue-175);
+		--color-bg-card-image: var(--color-blue-100);
+
 		color-scheme: dark;
 		accent-color: var(--color-accent-on-dark);
 		color: var(--color-copy-on-dark);
@@ -188,6 +194,9 @@ html[data-theme="dark"],
 	--color-transparency-15: var(--color-transparency-15-dark);
 	--color-transparency-25: var(--color-transparency-25-dark);
 	--summary-arrow: var(--summary-arrow-dark);
+
+	--color-text-card-image: var(--color-blue-175);
+	--color-bg-card-image: var(--color-blue-100);
 
 	color-scheme: dark;
 	accent-color: var(--color-accent-on-dark);

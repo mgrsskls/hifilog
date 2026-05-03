@@ -107,6 +107,8 @@ a user-driven database for hi-fi products and brands."
     @products = products.page(params[:page])
     @products = products.page(1) if @products.out_of_range?
 
+    @products = ProductItem.preload_list_possession_images(@products)
+
     @canonical_url = brand_products_url(brand_id: @brand.friendly_id)
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }

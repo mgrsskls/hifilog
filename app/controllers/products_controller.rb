@@ -280,7 +280,7 @@ class ProductsController < ApplicationController
     if possession.prev_owned
       PreviousPossessionPresenter.new(possession, :product)
     else
-      CurrentPossessionPresenter.new(possession, :product)
+      PossessionPresenter.new(possession, :product)
     end
   end
 
