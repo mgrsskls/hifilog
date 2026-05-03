@@ -27,6 +27,7 @@ class ProductsController < ApplicationController
 
     profile_visibility = user_signed_in? ? [1, 2] : 2
     @images = @product.possessions
+                      .where(product_variant_id: nil)
                       .includes(:images_attachments)
                       .joins(:user)
                       .where(user: { profile_visibility: })

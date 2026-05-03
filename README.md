@@ -97,7 +97,7 @@ Each row gets a **stable UUID** derived from the underlying product or variant i
 
 The `ProductItem` ActiveRecord model is `readonly?` and adds logic that does not live in SQL:
 
-- Resolving which **possessions** matter for list thumbnails and counts (base product vs variant, including aggregating variant possessions when the list row is the base product).
+- Resolving which **possessions** matter for list thumbnails (base rows use **base-product** possessions only: `product_id` set and `product_variant_id` null; variant rows use that variant’s possessions).
 - Preloading possession images for list performance.
 - Search integration across the flattened columns (name, variant name, model number, brand name).
 
@@ -110,7 +110,7 @@ A possession is a **user-owned instance** of catalog (or custom) gear:
 - **Belongs to** `User`.
 - **Optionally belongs to** `Product`, `ProductVariant`, `CustomProduct`, and `ProductOption`.
 
-Typically a possession references either a product, a variant, or a custom product; the optional `ProductOption` narrows the configuration. Images and highlighted-image metadata attach to the possession, not to the product row.
+Typically a possession references either a product, a variant, or a custom product; the optional `ProductOption` narrows the configuration. Images and highlighted-image metadata attach to the possession, not to the product row. The **product** detail gallery and **base-product** list thumbnails only use possessions with `product_variant_id` null (even if the same user also has variant-specific possessions with both ids set); **variant** pages and list rows use that variant’s possessions.
 
 **Setup** is modeled by `Setup` → `SetupPossession` → `Possession`: many possessions can appear in one named setup.
 
@@ -150,7 +150,7 @@ Wraps a **`ProductItem`** (view row), not a raw `Product` or `ProductVariant`. I
 
 - Builds the correct **show path** (product vs nested variant route) from slugs on the view row.
 - Formats release and discontinued dates from the flattened columns.
-- Exposes **possessions that contribute list imagery**, respecting profile visibility and delegating **highlighted image** choice to `PossessionPresenter`.
+- Exposes **list imagery** from the same possession sets as above (no variant photos on the base-product list row), respecting profile visibility and delegating **highlighted image** choice to `PossessionPresenter`.
 
 So: catalog list rows use `ProductItem` + `ProductItemPresenter`; a user’s gear list entry that is backed by a real possession uses `Possession` + `PossessionPresenter` (and thus `ItemPresenter`).
 

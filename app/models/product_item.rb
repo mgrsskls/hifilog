@@ -24,6 +24,13 @@ class ProductItem < ApplicationRecord
            foreign_key: :product_id,
            primary_key: :product_id,
            inverse_of: false
+  # Possessions tied to the base product catalogue row (exclude variant-linked rows that still share product_id).
+  has_many :base_product_possessions,
+           -> { where(product_variant_id: nil) },
+           class_name: 'Possession',
+           foreign_key: :product_id,
+           primary_key: :product_id,
+           inverse_of: false
   has_many :variant_possessions,
            class_name: 'Possession',
            foreign_key: :product_variant_id,
@@ -35,9 +42,9 @@ class ProductItem < ApplicationRecord
            primary_key: :product_id,
            inverse_of: false
 
-  # Possessions tied to the base product row only (product_id). Variant-only possessions often have a nil product_id.
+  # Possessions tied to this catalogue row (base product rows exclude variant-linked possessions).
   def possessions
-    item_type == 'Product' ? product_possessions : variant_possessions
+    item_type == 'Product' ? base_product_possessions : variant_possessions
   end
 
   def readonly?
@@ -57,8 +64,7 @@ class ProductItem < ApplicationRecord
       ActiveRecord::Associations::Preloader.new(
         records: product_rows,
         associations: [
-          { product_possessions: [:user, { images_attachments: :blob }] },
-          { product_variants: { possessions: [:user, { images_attachments: :blob }] } }
+          { base_product_possessions: [:user, { images_attachments: :blob }] }
         ]
       ).call
     end
@@ -79,7 +85,7 @@ class ProductItem < ApplicationRecord
     if item_type == 'ProductVariant'
       variant_possessions.to_a
     else
-      (product_possessions.to_a + product_variants.flat_map(&:possessions)).uniq(&:id)
+      base_product_possessions.to_a
     end
   end
 

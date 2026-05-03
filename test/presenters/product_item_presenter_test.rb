@@ -62,17 +62,37 @@ class ProductItemPresenterTest < ActiveSupport::TestCase
     assert signed_in.list_highlighted_image
   end
 
-  test 'base product row includes possessions linked only to a variant' do
+  test 'base product row ignores possessions linked only to a variant' do
     @product = products(:with_variants)
     possession = possessions(:current_product_variant)
     possession.update_column(:product_id, nil) # rubocop:disable Rails/SkipsModelValidations
     attach_png(possession)
 
     presenter = ProductItemPresenter.new(reload_item, true)
-    attachment = presenter.list_highlighted_image
 
-    assert attachment
-    assert_includes possession.reload.images, attachment
+    assert_nil presenter.list_highlighted_image
+  end
+
+  test 'base product row ignores variant possessions that share product_id' do
+    variant = product_variants(:one)
+    product = variant.product
+
+    possession = Possession.create!(
+      product:,
+      product_variant: variant,
+      user: users(:visible),
+      period_from: Time.zone.today,
+      prev_owned: false
+    )
+    attach_png(possession)
+
+    item = ProductItem.preload_list_possession_images(
+      ProductItem.where(item_type: 'Product', product_id: product.id)
+    ).first!
+
+    presenter = ProductItemPresenter.new(item, true)
+
+    assert_nil presenter.list_highlighted_image
   end
 
   test 'list_highlighted_image for ProductVariant row uses variant possessions' do
