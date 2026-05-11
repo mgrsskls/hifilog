@@ -4,6 +4,7 @@ require 'test_helper'
 
 class BrandHelperTest < ActionView::TestCase
   include ApplicationHelper
+  include BrandHelper
 
   delegate :params, to: :controller
 
@@ -76,7 +77,7 @@ class BrandHelperTest < ActionView::TestCase
   test 'brands_index_item_list_json_ld name follows scoped category heading' do
     category = categories(:one)
     controller.params = ActionController::Parameters.new
-    replace_request_env!('https://www.example.com/brands?category=amplifiers')
+    replace_request_env!('https://www.example.com/brands/c/amplifiers')
 
     assert_equal categories(:one).name, brands_index_item_list_json_ld(
       brands: Brand.none,
@@ -92,8 +93,10 @@ class BrandHelperTest < ActionView::TestCase
 
     path = brand_products_path_with_filter(brand, category, nil, diy_kit: '1')
 
-    assert_includes path, brand.friendly_id.to_s
-    assert_includes path, categories(:one).friendly_id.to_s
+    assert_match(
+      %r{/brands/#{Regexp.escape(brand.friendly_id)}/products/c/#{Regexp.escape(category.friendly_id)}},
+      path
+    )
     assert_match(/diy_kit=1/, path)
   end
 
@@ -104,8 +107,9 @@ class BrandHelperTest < ActionView::TestCase
 
     path = brand_products_path_with_filter(brand, category, sub_category, {})
 
-    assert_includes path, brand.friendly_id.to_s
-    assert_match(/category=/, path)
-    assert_includes path, sub_category.friendly_id.to_s
+    brand_seg = Regexp.escape(brand.friendly_id)
+    category_seg = Regexp.escape(category.friendly_id)
+    sub_seg = Regexp.escape(sub_category.friendly_id)
+    assert_match(%r{/brands/#{brand_seg}/products/c/#{category_seg}/#{sub_seg}}, path)
   end
 end

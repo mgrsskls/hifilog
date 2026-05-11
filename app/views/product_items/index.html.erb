@@ -13,13 +13,13 @@
     <%= Product.model_name.human.pluralize %>
   </b>
 
-  <%= link_to user_signed_in? ? new_product_path(sub_category: current_sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: params[:sub_category])), class: "IndexPage-addLink", rel: "nofollow" do %>
+  <%= link_to user_signed_in? ? new_product_path(sub_category: current_sub_category&.slug) : new_user_session_path(redirect: new_product_path(sub_category: current_sub_category&.slug)), class: "IndexPage-addLink", rel: "nofollow" do %>
     <span><%= t('product.new.link') %></span>
   <% end %>
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: products_path(category: params[:category]), collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products, category: current_category, sub_category: current_sub_category, filter_applied: @filter_applied %>
+  <%= render "shared/filter", reset_path: products_catalog_path(current_category, current_sub_category), filter_catalog_wide_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products, category: current_category, sub_category: current_sub_category, filter_applied: @filter_applied %>
 <% end %>
 
 <% content_for :sort do %>

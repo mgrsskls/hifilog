@@ -33,7 +33,7 @@
         <h3>Products</h3>
         <ul>
           <li>
-            … from specific categories, e.g. <%= link_to "Over-Ear Headphones", products_path(category: "headphones[over-ear-headphones]") %>, <%= link_to "Vacuum Tubes", products_path(category: "vacuum-tubes") %> or <%= link_to "MC Cartridges", products_path(category: "analog[cartridges]", "attr[6][]": 2) %>.
+            … from specific categories, e.g. <%= link_to "Over-Ear Headphones", products_subcategory_path("headphones", "over-ear-headphones") %>, <%= link_to "Vacuum Tubes", products_category_path("vacuum-tubes") %> or <%= link_to "MC Cartridges", products_subcategory_path("analog", "cartridges", "attr[6][]" => 2) %>.
           </li>
           <li>
             … that are <%= link_to "pre-assembled", products_path(products: { diy_kit: 0 }) %> or <%= link_to "DIY kits", products_path(products: { diy_kit: 1 }) %>.
@@ -54,7 +54,7 @@
         <h3>Brands</h3>
         <ul>
           <li>
-            … with specific products, e.g. <%= link_to "Floorstanding Loudspeakers", brands_path(category: "loudspeakers[floorstanding-loudspeakers]") %>, <%= link_to "Integrated Tube Amplifiers", brands_path(category: "amplifiers[integrated-amplifiers]", "attr[4][]": 2) %> or <%= link_to "Cables", brands_path(category: "cables") %>.
+            … with specific products, e.g. <%= link_to "Floorstanding Loudspeakers", brands_subcategory_path("loudspeakers", "floorstanding-loudspeakers") %>, <%= link_to "Integrated Tube Amplifiers", brands_subcategory_path("amplifiers", "integrated-amplifiers", "attr[4][]" => 2) %> or <%= link_to "Cables", brands_category_path("cables") %>.
           </li>
           <li>
             … that produce <%= link_to "pre-assembled products", brands_path({ products: { diy_kit: 0 } }) %> or <%= link_to "DIY kits", brands_path({ products: { diy_kit: 1 } }) %>.

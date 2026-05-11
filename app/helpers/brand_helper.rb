@@ -29,19 +29,17 @@ module BrandHelper
   end
 
   def brand_products_path_with_filter(brand, category, sub_category, products = {})
-    params = if sub_category.present?
-               {
-                 brand_id: brand.friendly_id,
-                 category: sub_category.present? ? "#{category.friendly_id}[#{sub_category.friendly_id}]" : nil
-               }.merge(products)
-             else
-               {
-                 brand_id: brand.friendly_id,
-                 category: category&.friendly_id
-               }.merge(products)
-             end
-
-    brand_products_path(**params)
+    extra = products.respond_to?(:to_unsafe_h) ? products.to_unsafe_h : products.to_h
+    if sub_category.present?
+      brand_brand_products_subcategory_path(brand,
+                                            sub_category.category.friendly_id,
+                                            sub_category.friendly_id,
+                                            **extra)
+    elsif category.present?
+      brand_brand_products_category_path(brand, category.friendly_id, **extra)
+    else
+      brand_products_path(brand.friendly_id, **extra)
+    end
   end
 
   private

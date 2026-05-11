@@ -4,8 +4,11 @@ class ProductItemsController < ApplicationController
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
+  include CategoryPathFromSegments
 
   before_action :set_active_menu
+  before_action :redirect_legacy_category_query_to_product_path, only: [:index]
+  before_action :ensure_product_index_category_path!, only: [:index]
 
   helper_method :current_category, :current_sub_category
 
@@ -33,8 +36,7 @@ class ProductItemsController < ApplicationController
 
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
-    @canonical_url =
-      @products.current_page > 1 ? products_url(page: @products.current_page) : products_url
+    @canonical_url = products_index_canonical_url
 
     if current_sub_category.present?
       sub_category_name = current_sub_category.name
@@ -57,7 +59,49 @@ class ProductItemsController < ApplicationController
   end
 
   def category_data
-    @category_data ||= extract_category(params[:category])
+    @category_data ||= category_pair_from_path_segments
+  end
+
+  def redirect_legacy_category_query_to_product_path
+    return unless request.get?
+    return if params[:category_slug].present?
+
+    legacy = params[:category].to_s.presence
+    return if legacy.blank?
+
+    cat, sub = extract_category(legacy)
+    return if cat.nil?
+
+    extra = merge_path_unaware_query
+    target =
+      if sub.present?
+        products_subcategory_path(sub.category.friendly_id, sub.friendly_id, **extra)
+      else
+        products_category_path(cat.friendly_id, **extra)
+      end
+    redirect_to target, status: :moved_permanently
+  end
+
+  def ensure_product_index_category_path!
+    pair = category_pair_from_path_segments
+    return head :not_found if invalid_category_path_resolution?(*pair)
+
+    @category, @sub_category = pair
+  end
+
+  def products_index_canonical_url
+    opts = @products.current_page > 1 ? { page: @products.current_page } : {}
+    if current_sub_category.present?
+      products_subcategory_url(
+        current_sub_category.category.friendly_id,
+        current_sub_category.friendly_id,
+        **opts
+      )
+    elsif current_category.present?
+      products_category_url(current_category.friendly_id, **opts)
+    else
+      products_url(**opts)
+    end
   end
 
   def current_category
@@ -73,7 +117,7 @@ class ProductItemsController < ApplicationController
   end
 
   def allowed_index_filter_params
-    allowed = [:category, :sort, :page,
+    allowed = [:sort, :page,
                { products: [:status, :query, :diy_kit, *build_custom_attributes_hash(index_custom_attributes)] }]
     params.permit(allowed)
   end

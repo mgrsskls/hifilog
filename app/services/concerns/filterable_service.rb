@@ -4,6 +4,19 @@ module FilterableService
   extend ActiveSupport::Concern
   include FilterConstants
 
+  # Segment-based URL (/c/:category_slug/:sub_category_slug) — resolves via FriendlyId slugs.
+  def extract_category_from_path(category_slug:, sub_category_slug: nil)
+    composite = compose_category_slug_param(category_slug, sub_category_slug)
+    extract_category(composite)
+  end
+
+  def compose_category_slug_param(category_slug, sub_category_slug = nil)
+    return nil if category_slug.blank?
+
+    sub_category_slug.present? ? "#{category_slug}[#{sub_category_slug}]" : category_slug.to_s
+  end
+
+  # Query-string legacy format (category=cat or cat[sub]); same lookups as segment URLs.
   def extract_category(category_param)
     return [nil, nil] if category_param.blank?
 
@@ -15,9 +28,17 @@ module FilterableService
     rescue StandardError
       nil
     end
-    sub_category = sub_category_str.present? ? SubCategory.friendly.find(sub_category_str) : nil
+    sub_category = begin
+      sub_category_str.present? ? SubCategory.friendly.find(sub_category_str) : nil
+    rescue StandardError
+      nil
+    end
 
     [category, sub_category]
+  end
+
+  def mismatched_category_sub_category?(category, sub_category)
+    sub_category.present? && category.present? && sub_category.category_id != category.id
   end
 
   def extract_custom_attributes(category, sub_category)

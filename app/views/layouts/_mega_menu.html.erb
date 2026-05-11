@@ -20,17 +20,19 @@
         <div>
           <% columns[1].each do |cat| %>
             <div class="MenuMega-list">
-              <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: cat.friendly_id }),
+              <% cat_link = entity == 'products' ? products_catalog_path(cat, nil) : brands_catalog_path(cat, nil) %>
+              <%= link_to cat_link,
                 class: "MegaMenu MegaMenu-link MegaMenu-link--lvl1 Menu-link--lvl1",
-                "aria-current": (request.path == show_all_path && category.present? && category == cat && !sub_category.present?) ? "page" : "false" do %>
+                "aria-current": (category.present? && category.id == cat.id && sub_category.blank?) ? "page" : "false" do %>
                 <span><%= cat.name %></span>
               <% end %>
               <ul>
                 <% cat.sub_categories.each do |sub| %>
                   <li>
-                    <%= link_to Rails.application.routes.url_helpers.public_send("#{entity}_path", { category: "#{cat.friendly_id}[#{sub.friendly_id}]" }),
+                    <% sub_link = entity == 'products' ? products_catalog_path(nil, sub) : brands_catalog_path(nil, sub) %>
+                    <%= link_to sub_link,
                       class: "MegaMenu MegaMenu-link MegaMenu-link--lvl2",
-                      "aria-current": (request.path == show_all_path && sub_category.present? && sub_category == sub) ? "page" : "false" do %>
+                      "aria-current": (sub_category.present? && sub_category.id == sub.id) ? "page" : "false" do %>
                       <span><%= sub.name %></span>
                     <% end %>
                   </li>

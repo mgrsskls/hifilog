@@ -5,14 +5,19 @@ class BrandsController < ApplicationController
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
+  include CategoryPathFromSegments
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
   before_action :set_active_menu
   before_action :find_brand, only: [:show]
+  before_action :redirect_legacy_category_query_to_brands_path, only: [:index]
+  before_action :ensure_brands_index_category_path!, only: [:index]
+  before_action :load_brand_for_products_page, only: [:products]
+  before_action :redirect_legacy_brand_products_category_query, only: [:products]
+  before_action :ensure_brand_products_category_path!, only: [:products]
 
   def index
-    @category, @sub_category = extract_category(params[:category])
     @custom_attributes = extract_custom_attributes(@category, @sub_category)
     @filter_applied = active_index_filters.except(:category, :sub_category).merge(
       active_index_product_filters
@@ -30,8 +35,7 @@ class BrandsController < ApplicationController
     @brands = brands.page(params[:page])
     @brands = brands.page(1) if @brands.out_of_range?
 
-    @canonical_url =
-      @brands.current_page > 1 ? brands_url(page: @brands.current_page) : brands_url
+    @canonical_url = brands_index_canonical_url
 
     @product_counts = if active_index_filters.any?
                         ProductFilterService.new(
@@ -91,9 +95,7 @@ a user-driven database for hi-fi products and brands."
   end
 
   def products
-    @brand = Brand.with_attached_logo.includes(sub_categories: [:category],
-                                               products: [:product_variants]).friendly.find(params[:brand_id])
-    @category, @sub_category = extract_category(params[:category])
+    # @brand from load_brand_for_products_page; @category, @sub_category from ensure_brand_products_category_path!
     @custom_attributes = extract_custom_attributes(@category, @sub_category)
     @filter_applied = active_show_product_filters
 
@@ -111,12 +113,7 @@ a user-driven database for hi-fi products and brands."
 
     @products = ProductItem.preload_list_possession_images(@products)
 
-    @canonical_url =
-      if @products.current_page > 1
-        brand_products_url(brand_id: @brand.friendly_id, page: @products.current_page)
-      else
-        brand_products_url(brand_id: @brand.friendly_id)
-      end
+    @canonical_url = brand_products_index_canonical_url
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
@@ -223,7 +220,7 @@ a user-driven database for hi-fi products and brands."
   end
 
   def allowed_index_filter_params
-    params.permit(:category, :sort, brands: [:status, :country, :query])
+    params.permit(:sort, brands: [:status, :country, :query])
   end
 
   def active_index_filters
@@ -243,12 +240,107 @@ a user-driven database for hi-fi products and brands."
   end
 
   def allowed_show_product_filter_params
-    params.permit(:category, :sort)
+    params.permit(:sort)
   end
 
   def active_show_product_filters
     build_filters(allowed_show_product_filter_params).merge(
       build_product_filters(allowed_index_product_filter_params)
     )
+  end
+
+  def redirect_legacy_category_query_to_brands_path
+    return unless request.get?
+    return if params[:category_slug].present?
+
+    legacy = params[:category].to_s.presence
+    return if legacy.blank?
+
+    cat, sub = extract_category(legacy)
+    return if cat.nil?
+
+    extra = merge_path_unaware_query
+    target =
+      if sub.present?
+        brands_subcategory_path(sub.category.friendly_id, sub.friendly_id, **extra)
+      else
+        brands_category_path(cat.friendly_id, **extra)
+      end
+    redirect_to target, status: :moved_permanently
+  end
+
+  def ensure_brands_index_category_path!
+    pair = category_pair_from_path_segments
+    return head :not_found if invalid_category_path_resolution?(*pair)
+
+    @category, @sub_category = pair
+  end
+
+  def brands_index_canonical_url
+    opts = @brands.current_page > 1 ? { page: @brands.current_page } : {}
+    if @sub_category.present?
+      brands_subcategory_url(
+        @sub_category.category.friendly_id,
+        @sub_category.friendly_id,
+        **opts
+      )
+    elsif @category.present?
+      brands_category_url(@category.friendly_id, **opts)
+    else
+      brands_url(**opts)
+    end
+  end
+
+  def load_brand_for_products_page
+    @brand = Brand.with_attached_logo.includes(sub_categories: [:category],
+                                               products: [:product_variants]).friendly.find(params[:brand_id])
+  end
+
+  def redirect_legacy_brand_products_category_query
+    return unless request.get?
+    return if params[:category_slug].present?
+
+    legacy = params[:category].to_s.presence
+    return if legacy.blank?
+
+    cat, sub = extract_category(legacy)
+    return if cat.nil?
+
+    extra = merge_path_unaware_query
+    target =
+      if sub.present?
+        brand_brand_products_subcategory_path(
+          @brand,
+          sub.category.friendly_id,
+          sub.friendly_id,
+          **extra
+        )
+      else
+        brand_brand_products_category_path(@brand, cat.friendly_id, **extra)
+      end
+    redirect_to target, status: :moved_permanently
+  end
+
+  def ensure_brand_products_category_path!
+    pair = category_pair_from_path_segments
+    return head :not_found if invalid_category_path_resolution?(*pair)
+
+    @category, @sub_category = pair
+  end
+
+  def brand_products_index_canonical_url
+    opts = @products.current_page > 1 ? { page: @products.current_page } : {}
+    if @sub_category.present?
+      brand_brand_products_subcategory_url(
+        @brand,
+        @sub_category.category.friendly_id,
+        @sub_category.friendly_id,
+        **opts
+      )
+    elsif @category.present?
+      brand_brand_products_category_url(@brand, @category.friendly_id, **opts)
+    else
+      brand_products_url({ brand_id: @brand.friendly_id }.merge(opts))
+    end
   end
 end

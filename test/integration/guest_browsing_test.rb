@@ -21,7 +21,7 @@ class GuestBrowsingTest < ActionDispatch::IntegrationTest
   end
 
   test 'product items index loads for guests' do
-    get product_items_path
+    get products_path
     assert_response :success
   end
 end

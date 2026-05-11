@@ -165,6 +165,50 @@ module ApplicationHelper
     safe_join(tags)
   end
 
+  # Public product / brand catalogue URLs (path segments + optional query `options`).
+  def products_catalog_path(category = nil, sub_category = nil, options = {})
+    if sub_category.present?
+      products_subcategory_path(
+        sub_category.category.friendly_id,
+        sub_category.friendly_id,
+        **options
+      )
+    elsif category.present?
+      products_category_path(category.friendly_id, **options)
+    else
+      products_path(**options)
+    end
+  end
+
+  def brands_catalog_path(category = nil, sub_category = nil, options = {})
+    if sub_category.present?
+      brands_subcategory_path(
+        sub_category.category.friendly_id,
+        sub_category.friendly_id,
+        **options
+      )
+    elsif category.present?
+      brands_category_path(category.friendly_id, **options)
+    else
+      brands_path(**options)
+    end
+  end
+
+  def brand_products_catalog_path(brand, category = nil, sub_category = nil, options = {})
+    if sub_category.present?
+      brand_brand_products_subcategory_path(
+        brand,
+        sub_category.category.friendly_id,
+        sub_category.friendly_id,
+        **options
+      )
+    elsif category.present?
+      brand_brand_products_category_path(brand, category.friendly_id, **options)
+    else
+      brand_products_path(brand.friendly_id, **options)
+    end
+  end
+
   def safe_unit_entities(text)
     escaped_text = h(text)
     allowed_mappings = {

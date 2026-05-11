@@ -86,14 +86,24 @@ Rails.application.routes.draw do
 
   # /brands
   # /brands/:brand
-  # /brands/:brand/:category
+  # /brands/c/:category_slug[/:sub_category_slug]
   get '/all_brands', controller: :brands, action: :all, constraints: lambda { |req| req.format == :json }
+  get '/brands/c/:category_slug/:sub_category_slug', to: 'brands#index', as: :brands_subcategory
+  get '/brands/c/:category_slug', to: 'brands#index', as: :brands_category
+
   resources :brands do
-    get '/products', action: :products
-    get '/changelog', action: :changelog
+    get 'products/c/:category_slug/:sub_category_slug', action: :products, as: :brand_products_subcategory
+    get 'products/c/:category_slug', action: :products, as: :brand_products_category
+    get 'products', action: :products
+    get 'changelog', action: :changelog
   end
 
-  # /products
+  # Product catalog (/products[/c/…]) — must be before resources :products
+  get '/products/c/:category_slug/:sub_category_slug', to: 'product_items#index', as: :products_subcategory
+  get '/products/c/:category_slug', to: 'product_items#index', as: :products_category
+  get '/products', to: 'product_items#index', as: :products
+
+  # /products/:id (resource CRUD…)
   resources :products, only: [:show, :new, :create, :edit, :update] do
     get '/changelog', action: :changelog
     get '/notes', to: 'notes#new', as: :new_notes
@@ -104,9 +114,6 @@ Rails.application.routes.draw do
     get '/v/:id/changelog', to: 'product_variants#changelog', as: :variant_changelog
     get '/v/:id/notes', to: 'notes#new', as: :new_variant_notes
   end
-
-  # /product items
-  get '/products', to: 'product_items#index', as: :product_items
 
   resources :events, only: [:index]
   get '/events/past', to: 'events#past', as: :past_events

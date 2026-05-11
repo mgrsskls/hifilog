@@ -3,25 +3,6 @@
 require 'test_helper'
 
 class BrandsControllerTest < ActionDispatch::IntegrationTest
-  index_params = [
-    { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
-    { sort: ['name_asc'] },
-    { status: ['discontinued'] },
-    { country: ['DE'] },
-    { 'products[diy_kit]': ['1'] },
-    { 'products[custom_attributes]': [{ amplifier_channel_type: ['1'] }] },
-    { query: ['atrium'] }
-  ]
-
-  show_products_params = [
-    { category: ['amplifiers', 'amplifiers[headphone-amplifiers]'] },
-    { sort: ['name_asc'] },
-    { status: ['discontinued'] },
-    { 'products[diy_kit]': ['1'] },
-    { 'products[custom_attributes]': [{ amplifier_channel_type: ['1'] }] },
-    { query: ['atrium'] }
-  ]
-
   test 'index' do
     get brands_url
     assert_response :success
@@ -35,20 +16,30 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  (1..index_params.size).each do |n|
-    index_params.combination(n).each do |params_group|
-      values = params_group.map { |param| param.values.first }
-      value_combinations = values.first.product(*values[1..])
+  test 'index category path' do
+    get brands_category_url(categories(:one).slug)
+    assert_response :success
+  end
 
-      value_combinations.each do |combo|
-        params = params_group.map(&:keys).flatten.zip(combo).to_h
+  test 'index subcategory path' do
+    get brands_subcategory_url(categories(:one).slug, sub_categories(:one).slug)
+    assert_response :success
+  end
 
-        define_method("test_index_#{params}") do
-          get brands_url, params: params
-          assert_response :success
-        end
-      end
-    end
+  test 'index rejects mismatched category and sub_category with 404' do
+    get brands_subcategory_url(categories(:two).slug, sub_categories(:one).slug)
+    assert_response :not_found
+  end
+
+  test 'legacy brands category query redirects with 301' do
+    get brands_url(category: categories(:one).slug)
+    assert_redirected_to brands_category_url(categories(:one).slug)
+    assert_response :moved_permanently
+  end
+
+  test 'index with sort on category path' do
+    get brands_category_url(categories(:one).slug, sort: 'name_asc')
+    assert_response :success
   end
 
   test 'show' do
@@ -56,28 +47,59 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  (1..show_products_params.size).each do |n|
-    show_products_params.combination(n).each do |params_group|
-      values = params_group.map { |param| param.values.first }
-      value_combinations = values.first.product(*values[1..])
+  test 'brand products all' do
+    brand = brands(:one)
+    get brand_products_url(brand.friendly_id)
+    assert_response :success
+  end
 
-      value_combinations.each do |combo|
-        params = params_group.map(&:keys).flatten.zip(combo).to_h
+  test 'brand products category path' do
+    brand = brands(:one)
+    get brand_brand_products_category_url(brand.friendly_id, categories(:one).slug)
+    assert_response :success
+  end
 
-        define_method("test_show_products_#{params}") do
-          get brand_products_url(brand_id: brands(:one).slug), params: params
-          assert_response :success
-        end
-      end
-    end
+  test 'brand products subcategory path' do
+    brand = brands(:one)
+    get brand_brand_products_subcategory_url(brand.friendly_id, categories(:one).slug,
+                                             sub_categories(:one).slug)
+    assert_response :success
+  end
+
+  test 'brand products rejects mismatched slugs with 404' do
+    brand = brands(:one)
+    get brand_brand_products_subcategory_url(brand.friendly_id, categories(:two).slug,
+                                             sub_categories(:one).slug)
+    assert_response :not_found
+  end
+
+  test 'legacy brand products category query redirects with 301' do
+    brand = brands(:one)
+    composite = "#{sub_categories(:one).category.slug}[#{sub_categories(:one).slug}]"
+    get brand_products_url(brand.friendly_id, category: composite)
+    assert_redirected_to brand_brand_products_subcategory_url(brand.friendly_id,
+                                                              sub_categories(:one).category.slug,
+                                                              sub_categories(:one).slug)
+    assert_response :moved_permanently
   end
 
   test 'products canonical url includes page when not on first page' do
     with_kaminari_per_page(5) do
       brand = brands(:one)
-      get brand_products_url(brand_id: brand.slug), params: { page: 2 }
+      get brand_products_url(brand.slug, page: 2)
       assert_response :success
-      assert_select 'link[rel="canonical"][href=?]', brand_products_url(brand_id: brand.slug, page: 2)
+      assert_select 'link[rel="canonical"][href=?]', brand_products_url(brand.slug, page: 2)
+    end
+  end
+
+  test 'products category canonical includes page when not on first page' do
+    with_kaminari_per_page(5) do
+      brand = brands(:one)
+      get brand_brand_products_category_url(brand.friendly_id, categories(:one).slug, page: 2)
+      assert_response :success
+      assert_select 'link[rel="canonical"][href=?]',
+                    brand_brand_products_category_url(brand.friendly_id, categories(:one).slug,
+                                                      page: 2)
     end
   end
 
@@ -166,7 +188,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'filter by category returns only brands in that category' do
-    get brands_url(category: categories(:one).slug)
+    get brands_category_url(categories(:one).slug)
     assert_response :success
     expected_names = Brand.joins(:sub_categories)
                           .where(sub_categories: { category_id: categories(:one).id })
@@ -178,7 +200,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'filter by category[sub_category] returns only brands in that sub_category' do
-    get brands_url(category: "#{sub_categories(:one).category.slug}[#{sub_categories(:one).slug}]")
+    get brands_subcategory_url(sub_categories(:one).category.slug, sub_categories(:one).slug)
     assert_response :success
     expected_names = Brand.joins(:sub_categories)
                           .where(sub_categories: { id: sub_categories(:one).id })
@@ -190,7 +212,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'filter by status returns only discontinued brands' do
-    get brands_url(status: 'discontinued')
+    get brands_url, params: { brands: { status: 'discontinued' } }
     assert_response :success
     Brand.where(discontinued: true).pluck(:name).each do |name|
       assert_match name, @response.body
@@ -199,7 +221,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
 
   test 'filter by query returns only matching brands' do
     brand = brands(:one)
-    get brands_url(query: brand.name)
+    get brands_url, params: { brands: { query: brand.name } }
     assert_response :success
     assert_match brand.name, @response.body
   end
