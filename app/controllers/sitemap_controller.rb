@@ -108,6 +108,15 @@ class SitemapController < ApplicationController
       }
     end
 
-    pages.uniq
+    dedupe_sitemap_pages_by_url(pages)
+  end
+
+  def dedupe_sitemap_pages_by_url(pages)
+    pages.group_by { |p| p[:url].to_s }.map do |_url, grouped|
+      max_updated = grouped.map { |p| p[:updated] }.compact.max
+      row = { url: grouped.first[:url] }
+      row[:updated] = max_updated if max_updated
+      row
+    end
   end
 end

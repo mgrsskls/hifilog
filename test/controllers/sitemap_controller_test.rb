@@ -34,4 +34,13 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body,
                     brands_subcategory_url(amplifiers.slug, sub_one.slug).to_s
   end
+
+  test 'xml sitemap omits duplicate loc URLs' do
+    get sitemap_path(format: :xml)
+    assert_response :success
+
+    locs = response.body.scan(%r{<loc>([^<]+)</loc>}).flatten
+    assert_equal locs.size, locs.uniq.size,
+                 "duplicate <loc> entries:\n#{locs.sort.tally.inspect}"
+  end
 end
