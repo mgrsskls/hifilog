@@ -1,4 +1,5 @@
 <% show_all_path = Rails.application.routes.url_helpers.public_send("#{entity}_path") %>
+<% mega_menu_controller = (entity == 'products') ? 'product_items' : entity %>
 
 <button class="MenuMain-link MenuMain-link--lvl1" aria-controls="menu-<%= entity %>" aria-expanded="false" <%= active_menu_state(active_menu, symbol) %>>
   <span><%= t("headings." + entity) %></span>
@@ -23,7 +24,7 @@
               <% cat_link = entity == 'products' ? products_catalog_path(cat, nil) : brands_catalog_path(cat, nil) %>
               <%= link_to cat_link,
                 class: "MegaMenu MegaMenu-link MegaMenu-link--lvl1 Menu-link--lvl1",
-                "aria-current": (category.present? && category.id == cat.id && sub_category.blank?) ? "page" : "false" do %>
+                "aria-current": (params[:controller] == mega_menu_controller && category.present? && category.id == cat.id && sub_category.blank?) ? "page" : "false" do %>
                 <span><%= cat.name %></span>
               <% end %>
               <ul>
@@ -32,7 +33,7 @@
                     <% sub_link = entity == 'products' ? products_catalog_path(nil, sub) : brands_catalog_path(nil, sub) %>
                     <%= link_to sub_link,
                       class: "MegaMenu MegaMenu-link MegaMenu-link--lvl2",
-                      "aria-current": (sub_category.present? && sub_category.id == sub.id) ? "page" : "false" do %>
+                      "aria-current": (params[:controller] == mega_menu_controller && sub_category.present? && sub_category.id == sub.id) ? "page" : "false" do %>
                       <span><%= sub.name %></span>
                     <% end %>
                   </li>
