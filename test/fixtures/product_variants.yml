@@ -3,6 +3,7 @@
 one:
   name: LTD 2024
   slug: ltd-2024
+  model_no: ZMF-LTD-2024
   description: MyText
   release_day: 1
   release_month: 12

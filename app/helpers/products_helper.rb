@@ -7,31 +7,31 @@ module ProductsHelper
   end
 
   def product_show_json_ld(product:, meta_desc:, image_urls: nil)
-    data = {
-      '@context' => 'https://schema.org',
-      '@type' => 'Product',
-      'name' => product.display_name,
-      'url' => product_url(id: product.friendly_id)
-    }
+    base_product_schema_hash(
+      name: product.display_name,
+      url: product_url(id: product.friendly_id),
+      product_for_brand_categories: product,
+      meta_desc:,
+      image_urls:,
+      release_record: product
+    )
+  end
 
-    data['description'] = meta_desc.squish if meta_desc.present?
-
-    brand_payload = schema_org_brand(product)
-    data['brand'] = brand_payload if brand_payload
-
-    urls = Array(image_urls).compact_blank
-    if urls.size == 1
-      data['image'] = urls.first
-    elsif urls.size > 1
-      data['image'] = urls
-    end
-
-    data['releaseDate'] = product.release_date.iso8601 if product.release_date.present?
-
-    category_names = product.sub_categories.map(&:name).uniq
-    data['category'] = category_names.join(', ') if category_names.any?
-
-    data
+  def product_variant_show_json_ld(product:, product_variant:, meta_desc:, image_urls: nil)
+    base_product_schema_hash(
+      name: product_variant.display_name,
+      url: product_variant_url(id: product_variant.friendly_id, product_id: product.friendly_id),
+      product_for_brand_categories: product,
+      meta_desc:,
+      image_urls:,
+      release_record: product_variant,
+      sku: product_variant.model_no,
+      is_variant_of: {
+        '@type' => 'Product',
+        'name' => product.display_name,
+        'url' => product_url(id: product.friendly_id)
+      }
+    )
   end
 
   def product_show_schema_image_urls(images)
@@ -59,6 +59,39 @@ module ProductsHelper
   end
 
   private
+
+  # rubocop:disable Metrics/ParameterLists
+  def base_product_schema_hash(name:, url:, product_for_brand_categories:, meta_desc:, image_urls:, release_record:,
+                               sku: nil, is_variant_of: nil)
+    data = {
+      '@context' => 'https://schema.org',
+      '@type' => 'Product',
+      'name' => name,
+      'url' => url
+    }
+
+    data['isVariantOf'] = is_variant_of if is_variant_of
+    data['sku'] = sku if sku.present?
+    data['description'] = meta_desc.squish if meta_desc.present?
+
+    brand_payload = schema_org_brand(product_for_brand_categories)
+    data['brand'] = brand_payload if brand_payload
+
+    urls = Array(image_urls).compact_blank
+    if urls.size == 1
+      data['image'] = urls.first
+    elsif urls.size > 1
+      data['image'] = urls
+    end
+
+    data['releaseDate'] = release_record.release_date.iso8601 if release_record.release_date.present?
+
+    category_names = product_for_brand_categories.sub_categories.map(&:name).uniq
+    data['category'] = category_names.join(', ') if category_names.any?
+
+    data
+  end
+  # rubocop:enable Metrics/ParameterLists
 
   def product_items_item_list_json_ld(products:, name:, description: nil, canonical_url: nil)
     list_url = canonical_url.presence || request.original_url

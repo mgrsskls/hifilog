@@ -151,6 +151,52 @@ class ProductsHelperTest < ActionView::TestCase
     assert_equal %w[https://a.example/x https://b.example/y], json['image']
   end
 
+  test 'product_variant_show_json_ld describes variant Product entity with parent isVariantOf' do
+    product = Product.includes(:brand, :sub_categories).find(products(:with_variants).id)
+    variant = product_variants(:one)
+    meta_desc = "  Closed-back edition \n line "
+    controller.params = ActionController::Parameters.new
+    replace_request_env!("https://www.example.com/products/#{product.friendly_id}/variants/#{variant.friendly_id}")
+
+    json = product_variant_show_json_ld(
+      product:,
+      product_variant: variant,
+      meta_desc:,
+      image_urls: nil
+    )
+
+    assert_equal 'https://schema.org', json['@context']
+    assert_equal 'Product', json['@type']
+    assert_equal variant.display_name, json['name']
+    assert_equal product_variant_url(id: variant.friendly_id, product_id: product.friendly_id), json['url']
+    assert_equal 'Closed-back edition line', json['description']
+    parent = json['isVariantOf']
+    assert_equal 'Product', parent['@type']
+    assert_equal product.display_name, parent['name']
+    assert_equal product_url(id: product.friendly_id), parent['url']
+    assert_equal 'ZMF-LTD-2024', json['sku']
+    assert_equal 'Brand', json['brand']['@type']
+    assert_equal brands(:two).name, json['brand']['name']
+    assert_equal '2000-12-01', json['releaseDate']
+    assert_equal sub_categories(:two).name, json['category']
+  end
+
+  test 'product_variant_show_json_ld omits sku when variant has no model_no' do
+    product = Product.includes(:brand, :sub_categories).find(products(:with_variants).id)
+    variant = product_variants(:three)
+    controller.params = ActionController::Parameters.new
+    replace_request_env!('https://www.example.com/')
+
+    json = product_variant_show_json_ld(
+      product:,
+      product_variant: variant,
+      meta_desc: nil,
+      image_urls: nil
+    )
+
+    assert_not json.key?('sku')
+  end
+
   test 'sub_category_links lists each sub-category with catalogue query params' do
     product = Product.includes(:sub_categories).find(products(:one).id)
 

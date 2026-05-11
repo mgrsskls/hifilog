@@ -171,3 +171,9 @@
       product_variant: @product_variant,
       canonical_url: product_variant_url(product_id: @product.friendly_id, id: @product_variant.friendly_id)
     )) %>
+<%= json_ld_script_tag(product_variant_show_json_ld(
+      product: @product,
+      product_variant: @product_variant,
+      meta_desc: @meta_desc,
+      image_urls: product_show_schema_image_urls(@images)
+    )) %>
