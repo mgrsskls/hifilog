@@ -14,6 +14,18 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_root_url
   end
 
+  test 'new with redirect param emits noindex follow robots meta' do
+    get new_user_session_url(redirect: '/brands')
+    assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+  end
+
+  test 'new without redirect does not emit noindex follow robots meta' do
+    get new_user_session_url
+    assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow', count: 0
+  end
+
   test 'create' do
     params = {
       user: {

@@ -95,7 +95,7 @@
     <% if @meta_robots.present? %>
       <meta name="robots" content="<%= @meta_robots %>">
     <% elsif @no_index %>
-      <meta name="robots" content="noindex,nofollow">
+      <meta name="robots" content="noindex, follow">
     <% end %>
     <meta property="og:title" content="<%= strip_tags(page_title).html_safe %>">
     <meta property="og:type" content="website">

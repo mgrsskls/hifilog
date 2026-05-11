@@ -112,6 +112,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
 
     get new_brand_url
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
 
     get new_brand_url(sub_category: sub_categories(:one).slug)
     assert_response :success
@@ -146,6 +147,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
 
     get path
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
 
   test 'update' do
@@ -180,6 +182,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
 
     get path
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
 
     brands(:one).update(name: 'new name')
 

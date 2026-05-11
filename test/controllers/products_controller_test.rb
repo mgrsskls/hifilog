@@ -27,6 +27,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get new_product_url
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
 
     get new_product_url(sub_category: sub_categories(:one).slug)
     assert_response :success
@@ -113,6 +114,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
       }
     )
     assert_response :unprocessable_content
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
 
   test 'edit' do
@@ -126,6 +128,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get path
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
 
   test 'update' do
@@ -176,6 +179,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get path
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
 
     products(:one).update(name: 'new name')
 

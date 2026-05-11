@@ -9,6 +9,7 @@ class BrandsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
+  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog]
   before_action :set_active_menu
   before_action :find_brand, only: [:show]
   before_action :redirect_legacy_category_query_to_brands_path, only: [:index]
@@ -178,6 +179,10 @@ a user-driven database for hi-fi products and brands."
   end
 
   private
+
+  def set_noindex_meta_robots
+    @meta_robots = 'noindex, follow'
+  end
 
   def set_meta_desc
     desc = @brand.formatted_description

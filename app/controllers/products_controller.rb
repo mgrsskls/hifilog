@@ -8,6 +8,7 @@ class ProductsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
+  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog]
   before_action :set_active_menu
   before_action :find_product, only: [:show]
 
@@ -139,6 +140,10 @@ class ProductsController < ApplicationController
   end
 
   private
+
+  def set_noindex_meta_robots
+    @meta_robots = 'noindex, follow'
+  end
 
   def find_product
     @product = Product.includes(:brand, :sub_categories).friendly.find(params[:id])

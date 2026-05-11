@@ -19,6 +19,7 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
 
     get path
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
 
   test 'create' do
@@ -133,6 +134,7 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_content
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
 
   test 'edit' do
@@ -151,6 +153,7 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
 
     get path
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
 
   test 'update' do
@@ -219,6 +222,7 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
 
     get path
     assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
 
     product_variant.update!(name: 'new name')
     get path

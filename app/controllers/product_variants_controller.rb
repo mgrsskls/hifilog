@@ -5,6 +5,7 @@ class ProductVariantsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
+  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog]
   before_action :set_active_menu
   before_action :find_product_and_variant, only: [:show]
 
@@ -170,6 +171,10 @@ class ProductVariantsController < ApplicationController
   end
 
   private
+
+  def set_noindex_meta_robots
+    @meta_robots = 'noindex, follow'
+  end
 
   def set_meta_desc
     return if @product.description.blank?
