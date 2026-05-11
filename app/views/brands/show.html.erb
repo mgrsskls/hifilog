@@ -132,4 +132,5 @@
     </div>
   </div>
 
+<%= json_ld_script_tag(brand_show_breadcrumb_json_ld(brand: @brand, canonical_url: brand_url(@brand))) %>
 <%= json_ld_script_tag(brand_show_json_ld(brand: @brand, meta_desc: @meta_desc)) %>

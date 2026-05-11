@@ -165,3 +165,9 @@
     </div>
   </div>
 </div>
+
+<%= json_ld_script_tag(product_variant_show_breadcrumb_json_ld(
+      product: @product,
+      product_variant: @product_variant,
+      canonical_url: product_variant_url(product_id: @product.friendly_id, id: @product_variant.friendly_id)
+    )) %>

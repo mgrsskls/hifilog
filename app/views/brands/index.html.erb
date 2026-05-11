@@ -54,4 +54,9 @@
   type: :brand
 %>
 
+<%= json_ld_script_tag(brands_catalogue_breadcrumb_json_ld(
+      category: @category,
+      sub_category: @sub_category,
+      canonical_url: @canonical_url
+    )) %>
 <%= json_ld_script_tag(brands_index_item_list_json_ld(brands: @brands, meta_desc: @meta_desc, category: @category, sub_category: @sub_category, canonical_url: @canonical_url)) %>

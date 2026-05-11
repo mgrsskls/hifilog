@@ -5,6 +5,7 @@ module ApplicationHelper
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
   include StructuredDataHelper
+  include BreadcrumbsHelper
   include FilterConstants
 
   def current_page?(test_path)

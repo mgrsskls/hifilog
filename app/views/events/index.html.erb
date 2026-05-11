@@ -73,4 +73,9 @@
   event_bookmarks: @event_bookmarks
 %>
 
+<%= json_ld_script_tag(events_index_breadcrumb_json_ld(
+      active_events: @active_events,
+      canonical_url: @canonical_url,
+      selected_year: @selected_year
+    )) %>
 <%= json_ld_script_tag(events_index_item_list_json_ld(events: @events, meta_desc: @meta_desc, active_events: @active_events, canonical_url: @canonical_url)) %>

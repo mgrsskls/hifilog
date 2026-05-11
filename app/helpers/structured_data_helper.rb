@@ -36,6 +36,22 @@ module StructuredDataHelper
     offset + index + 1
   end
 
+  def schema_org_breadcrumb_list(crumbs)
+    # crumbs: array of [name, absolute_url] pairs
+    {
+      '@context' => 'https://schema.org',
+      '@type' => 'BreadcrumbList',
+      'itemListElement' => crumbs.each_with_index.map do |(name, url), index|
+        {
+          '@type' => 'ListItem',
+          'position' => index + 1,
+          'name' => name,
+          'item' => url
+        }
+      end
+    }
+  end
+
   def json_ld_script_tag(json_ld_hash)
     # rubocop:disable Rails/OutputSafety -- JSON-LD built server-side; json_escape makes script embedding safe
     content_tag(:script, json_escape(json_ld_hash.to_json).html_safe, type: 'application/ld+json')

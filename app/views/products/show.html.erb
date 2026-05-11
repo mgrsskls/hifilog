@@ -167,6 +167,10 @@
   </div>
 </div>
 
+<%= json_ld_script_tag(product_show_breadcrumb_json_ld(
+      product: @product,
+      canonical_url: product_url(id: @product.friendly_id)
+    )) %>
 <%= json_ld_script_tag(product_show_json_ld(
       product: @product,
       meta_desc: @product.meta_desc,

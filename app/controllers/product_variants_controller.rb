@@ -187,7 +187,7 @@ class ProductVariantsController < ApplicationController
   def find_product_and_variant
     variant_id = params[:id]
 
-    @product = Product.friendly.find(params[:product_id])
+    @product = Product.includes(:brand, sub_categories: :category).friendly.find(params[:product_id])
     @product_variant = @product.product_variants.friendly.find(variant_id)
 
     product_friendly_id = @product.friendly_id
