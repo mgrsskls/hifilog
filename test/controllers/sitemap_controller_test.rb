@@ -20,5 +20,18 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     assert_match(/<urlset\b/, response.body)
     assert_match(/<loc>/, response.body)
     assert_operator response.body.scan('<url>').size, :>=, 2
+
+    amplifiers = categories(:one)
+    sub_one = sub_categories(:one)
+
+    assert_includes response.body, products_category_url(amplifiers.slug).to_s
+
+    assert_includes response.body, brands_category_url(amplifiers.slug).to_s
+
+    assert_includes response.body,
+                    products_subcategory_url(amplifiers.slug, sub_one.slug).to_s
+
+    assert_includes response.body,
+                    brands_subcategory_url(amplifiers.slug, sub_one.slug).to_s
   end
 end

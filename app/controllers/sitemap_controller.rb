@@ -63,6 +63,33 @@ class SitemapController < ApplicationController
       url: products_url,
       updated: [product_updated_at, product_variant_updated_at].compact.max
     }
+    Category.includes(:sub_categories).find_each do |category|
+      slug = category.friendly_id
+      cat_ts = category.updated_at
+
+      pages << {
+        url: brands_category_url(slug),
+        updated: cat_ts
+      }
+      pages << {
+        url: products_category_url(slug),
+        updated: cat_ts
+      }
+
+      category.sub_categories.each do |sub|
+        sub_ts = [sub.updated_at, cat_ts].max
+
+        pages << {
+          url: brands_subcategory_url(slug, sub.friendly_id),
+          updated: sub_ts
+        }
+        pages << {
+          url: products_subcategory_url(slug, sub.friendly_id),
+          updated: sub_ts
+        }
+      end
+    end
+
     Product.select(:id, :slug, :updated_at).find_each do |product|
       pages << {
         url: product_url(
