@@ -33,7 +33,8 @@ class ProductItemsController < ApplicationController
 
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
-    @canonical_url = products_url
+    @canonical_url =
+      @products.current_page > 1 ? products_url(page: @products.current_page) : products_url
 
     if current_sub_category.present?
       sub_category_name = current_sub_category.name

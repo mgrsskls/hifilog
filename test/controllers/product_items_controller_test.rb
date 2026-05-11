@@ -33,4 +33,12 @@ class ProductItemsControllerTest < ActionDispatch::IntegrationTest
     get products_url
     assert_response :success
   end
+
+  test 'index canonical url includes page when not on first page' do
+    with_kaminari_per_page(5) do
+      get products_url(page: 2)
+      assert_response :success
+      assert_select 'link[rel="canonical"][href=?]', products_url(page: 2)
+    end
+  end
 end

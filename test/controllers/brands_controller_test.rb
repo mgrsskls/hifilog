@@ -27,6 +27,14 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index canonical url includes page when not on first page' do
+    with_kaminari_per_page(1) do
+      get brands_url(page: 2)
+      assert_response :success
+      assert_select 'link[rel="canonical"][href=?]', brands_url(page: 2)
+    end
+  end
+
   (1..index_params.size).each do |n|
     index_params.combination(n).each do |params_group|
       values = params_group.map { |param| param.values.first }
@@ -61,6 +69,15 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
           assert_response :success
         end
       end
+    end
+  end
+
+  test 'products canonical url includes page when not on first page' do
+    with_kaminari_per_page(5) do
+      brand = brands(:one)
+      get brand_products_url(brand_id: brand.slug), params: { page: 2 }
+      assert_response :success
+      assert_select 'link[rel="canonical"][href=?]', brand_products_url(brand_id: brand.slug, page: 2)
     end
   end
 

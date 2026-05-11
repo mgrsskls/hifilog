@@ -30,7 +30,8 @@ class BrandsController < ApplicationController
     @brands = brands.page(params[:page])
     @brands = brands.page(1) if @brands.out_of_range?
 
-    @canonical_url = brands_url
+    @canonical_url =
+      @brands.current_page > 1 ? brands_url(page: @brands.current_page) : brands_url
 
     @product_counts = if active_index_filters.any?
                         ProductFilterService.new(
@@ -110,7 +111,12 @@ a user-driven database for hi-fi products and brands."
 
     @products = ProductItem.preload_list_possession_images(@products)
 
-    @canonical_url = brand_products_url(brand_id: @brand.friendly_id)
+    @canonical_url =
+      if @products.current_page > 1
+        brand_products_url(brand_id: @brand.friendly_id, page: @products.current_page)
+      else
+        brand_products_url(brand_id: @brand.friendly_id)
+      end
     @total_products_count = @brand.products.length
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?

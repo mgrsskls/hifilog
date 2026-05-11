@@ -35,7 +35,7 @@ a user-driven database for hi-fi products, brands and more.'
     @active_events = :past
     @after_create_redirect = :past_events
     @after_destroy_redirect = :past_events
-    @canonical_url = past_events_url
+    @canonical_url = past_events_url(year: @selected_year)
 
     render 'index'
   end

@@ -30,4 +30,18 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     get past_events_url(country: 'DE')
     assert_response :success
   end
+
+  test 'past canonical url is always year-specific when past events exist' do
+    available_years = Event.available_past_years
+    skip 'no past events' if available_years.empty?
+
+    year = available_years.first
+    get past_events_url
+    assert_response :success
+    assert_select 'link[rel="canonical"][href=?]', past_events_url(year:)
+
+    get past_events_url(year:)
+    assert_response :success
+    assert_select 'link[rel="canonical"][href=?]', past_events_url(year:)
+  end
 end
