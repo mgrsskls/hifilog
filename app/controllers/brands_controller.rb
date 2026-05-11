@@ -62,7 +62,7 @@ class BrandsController < ApplicationController
 
     if cat
       name = cat.name
-      page_title("#{heading}: #{name}")
+      page_title("#{name} — #{heading}")
       @meta_desc = "Search through all brands with products in the category “#{name}” on HiFi Log,\
 a user-driven database for hi-fi products and brands."
     else
@@ -121,7 +121,7 @@ a user-driven database for hi-fi products and brands."
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
-    page_title(@brand.name)
+    page_title("#{@brand.name} #{@sub_category&.name || Product.model_name.human.pluralize}")
     set_meta_desc
   end
 

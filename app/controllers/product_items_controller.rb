@@ -41,11 +41,13 @@ class ProductItemsController < ApplicationController
 
     if current_sub_category.present?
       sub_category_name = current_sub_category.name
-      page_title(sub_category_name, "Search through all products in the category “#{sub_category_name}” on HiFi Log,\
+      page_title("#{sub_category_name} — #{Product.model_name.human.pluralize}",
+                 "Search through all products in the category “#{sub_category_name}” on HiFi Log,\
     a user-driven database for hi-fi products and brands.")
     elsif current_category.present?
       category_name = current_category.name
-      page_title(category_name, "Search through all products in the category “#{category_name}” on HiFi Log,\
+      page_title("#{category_name} — #{Product.model_name.human.pluralize}",
+                 "Search through all products in the category “#{category_name}” on HiFi Log,\
     a user-driven database for hi-fi products and brands.")
     else
       page_title(Product.model_name.human.pluralize,
