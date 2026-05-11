@@ -94,4 +94,19 @@ class ProductItemsControllerTest < ActionDispatch::IntegrationTest
                                              page: 2)
     end
   end
+
+  test 'index has no noindex follow robots meta without filters' do
+    get products_url
+    assert_select 'meta[name="robots"][content="noindex, follow"]', count: 0
+  end
+
+  test 'category path without filters has no noindex follow robots meta' do
+    get products_category_url(categories(:one).slug)
+    assert_select 'meta[name="robots"][content="noindex, follow"]', count: 0
+  end
+
+  test 'index emits noindex follow when sort filter applied' do
+    get products_url(sort: 'name_asc')
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+  end
 end

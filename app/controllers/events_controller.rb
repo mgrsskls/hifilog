@@ -14,6 +14,7 @@ a user-driven database for hi-fi products, brands and more.'
     @after_create_redirect = :events
     @after_destroy_redirect = :events
     @canonical_url = events_url
+    set_events_robots_meta
   end
 
   def past
@@ -37,10 +38,18 @@ a user-driven database for hi-fi products, brands and more.'
     @after_destroy_redirect = :past_events
     @canonical_url = past_events_url(year: @selected_year)
 
+    set_events_robots_meta
     render 'index'
   end
 
   private
+
+  def set_events_robots_meta
+    return unless params[:country].present? ||
+                  (@active_events == :past && params[:year].present?)
+
+    @meta_robots = 'noindex, follow'
+  end
 
   def get_events(base_relation:, order: :asc)
     # 1. Apply country filter if present

@@ -22,6 +22,7 @@ class BrandsController < ApplicationController
     @filter_applied = active_index_filters.except(:category, :sub_category).merge(
       active_index_product_filters
     )
+    @meta_robots = 'noindex, follow' if @filter_applied.except(:category, :sub_category).present?
 
     filter = BrandFilterService.new(
       filters: active_index_filters,
@@ -98,6 +99,7 @@ a user-driven database for hi-fi products and brands."
     # @brand from load_brand_for_products_page; @category, @sub_category from ensure_brand_products_category_path!
     @custom_attributes = extract_custom_attributes(@category, @sub_category)
     @filter_applied = active_show_product_filters
+    @meta_robots = 'noindex, follow' if @filter_applied.except(:category, :sub_category).present?
 
     filter = ProductFilterService.new(
       filters: active_show_product_filters,

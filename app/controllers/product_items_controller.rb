@@ -17,6 +17,7 @@ class ProductItemsController < ApplicationController
     @sub_category = current_sub_category
     @custom_attributes = index_custom_attributes
     @filter_applied = active_index_filters.except(:category, :sub_category).merge(active_index_brand_filters)
+    @meta_robots = 'noindex, follow' if @filter_applied.except(:category, :sub_category).present?
 
     filter = ProductFilterService.new(
       filters: active_index_filters,

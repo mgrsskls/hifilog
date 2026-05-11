@@ -225,4 +225,28 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match brand.name, @response.body
   end
+
+  test 'brands index has no noindex follow robots meta without filters' do
+    get brands_url
+    assert_select 'meta[name="robots"][content="noindex, follow"]', count: 0
+  end
+
+  test 'brands index emits noindex follow when query filter applied' do
+    brand = brands(:one)
+    get brands_url, params: { brands: { query: brand.name } }
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+  end
+
+  test 'brand products category path only has no noindex follow robots meta' do
+    brand = brands(:one)
+    get brand_brand_products_category_url(brand.friendly_id, categories(:one).slug)
+    assert_select 'meta[name="robots"][content="noindex, follow"]', count: 0
+  end
+
+  test 'brand products emits noindex follow when product filter applied' do
+    brand = brands(:one)
+    get brand_brand_products_category_url(brand.friendly_id, categories(:one).slug),
+        params: { products: { diy_kit: '1' } }
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+  end
 end

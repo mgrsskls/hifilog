@@ -90,7 +90,9 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="canonical" href="<%= @canonical_url.present? ? @canonical_url : "#{ENV.fetch('FULL_HOST', '')}#{request.path}" %>">
-    <% if @no_index %>
+    <% if @meta_robots.present? %>
+      <meta name="robots" content="<%= @meta_robots %>">
+    <% elsif @no_index %>
       <meta name="robots" content="noindex,nofollow">
     <% end %>
     <meta property="og:title" content="<%= strip_tags(page_title).html_safe %>">
