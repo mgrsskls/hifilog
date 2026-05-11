@@ -47,3 +47,5 @@
   sub_category: current_sub_category,
   type: :product
 %>
+
+<%= json_ld_script_tag(products_index_item_list_json_ld(products: @products)) %>

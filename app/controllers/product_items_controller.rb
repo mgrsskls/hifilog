@@ -23,7 +23,7 @@ class ProductItemsController < ApplicationController
     ).filter
 
     page_num = params[:page].presence || 1
-    products = filter.products
+    products = filter.products.includes(:brand)
     @products = products.page(page_num)
 
     # Reset to page 1 if out of range

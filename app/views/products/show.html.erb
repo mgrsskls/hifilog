@@ -166,3 +166,9 @@
     </div>
   </div>
 </div>
+
+<%= json_ld_script_tag(product_show_json_ld(
+      product: @product,
+      meta_desc: @product.meta_desc,
+      image_urls: product_show_schema_image_urls(@images)
+    )) %>

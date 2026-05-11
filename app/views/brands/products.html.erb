@@ -40,3 +40,5 @@
   sub_category: @sub_category,
   type: :product
 %>
+
+<%= json_ld_script_tag(brand_products_item_list_json_ld(brand: @brand, meta_desc: @meta_desc, products: @products)) %>

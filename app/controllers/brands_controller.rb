@@ -104,7 +104,7 @@ a user-driven database for hi-fi products and brands."
       sub_category: @sub_category
     ).filter
 
-    products = filter.products
+    products = filter.products.includes(:brand)
 
     @products = products.page(params[:page])
     @products = products.page(1) if @products.out_of_range?

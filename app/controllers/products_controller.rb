@@ -141,7 +141,10 @@ class ProductsController < ApplicationController
   private
 
   def find_product
-    @product = find_resource(Product, :id, path_helper: ->(product) { product_path(product) })
+    @product = Product.includes(:brand, :sub_categories).friendly.find(params[:id])
+    return if request.path == product_path(@product)
+
+    redirect_to URI.parse(product_path(@product)).path, status: :moved_permanently and return
   end
 
   def set_active_menu

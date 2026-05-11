@@ -7,6 +7,10 @@ require_relative '../config/environment'
 require 'rails/test_help'
 
 module TestSupportHelpers
+  def replace_request_env!(url)
+    request.env.replace(Rack::MockRequest.env_for(url))
+  end
+
   def with_kaminari_per_page(per_page)
     old_per_page = Kaminari.config.default_per_page
     Kaminari.config.default_per_page = per_page
