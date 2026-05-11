@@ -1,7 +1,9 @@
 <% content_for :header do %>
   <h1>
     <% if @sub_category.present? or @category.present? %>
-      <span class="IndexPage-category"><%= Brand.model_name.human.pluralize %><span class="u-hiddenVisually">":</span></span> <%= (@sub_category.present? ? @sub_category : @category).name %>
+      <span class="IndexPage-category">
+        <%= Brand.model_name.human.pluralize %><span class="u-hiddenVisually">:</span></span>
+        <%= (@sub_category.present? ? @sub_category : @category).name %>
     <% else %>
       <%= Brand.model_name.human.pluralize %>
     <% end %>

@@ -1,10 +1,10 @@
 <% content_for :header do %>
   <h1>
-    <%= @brand.name %>
+    <span class="IndexPage-category"><%= @brand.name %></span>
     <% if @sub_category.present? or @category.present? %>
-      <span class="IndexPage-category"><%= (@sub_category.present? ? @sub_category : @category).name %></span>
+      <%= (@sub_category.present? ? @sub_category : @category).name %>
     <% else %>
-      <span class="IndexPage-category"><%= Product.model_name.human.pluralize %></span>
+      <%= Product.model_name.human.pluralize %>
     <% end %>
   </h1>
 <% end %>
