@@ -2,15 +2,6 @@
 	display: grid;
 }
 
-.IndexPage-title {
-	font-size: 1.8rem;
-	font-weight: normal;
-
-	span {
-		font-weight: 800;
-	}
-}
-
 .IndexPage-header {
 	grid-area: header;
 }

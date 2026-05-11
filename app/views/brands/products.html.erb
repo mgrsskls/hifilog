@@ -1,6 +1,11 @@
 <% content_for :header do %>
   <h1>
-    <%= @brand.name %> <span class="IndexPage-category"><%= Product.model_name.human.pluralize %></span>
+    <%= @brand.name %>
+    <% if @sub_category.present? or @category.present? %>
+      <span class="IndexPage-category"><%= (@sub_category.present? ? @sub_category : @category).name %></span>
+    <% else %>
+      <span class="IndexPage-category"><%= Product.model_name.human.pluralize %></span>
+    <% end %>
   </h1>
 <% end %>
 
@@ -16,7 +21,7 @@
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: brand_products_path(@brand.friendly_id), filter_brand: @brand, collection: @products, query: @products_query, categories: @all_sub_categories_grouped, type: :brand_products, custom_attributes: @custom_attributes, category: @category, sub_category: @sub_category, filter_applied: @filter_applied %>
+  <%= render "shared/filter", reset_path: brand_products_path(@brand.friendly_id), filter_brand: @brand, collection: @products, query: @products_query, type: :brand_products, custom_attributes: @custom_attributes, filter_applied: @filter_applied %>
 <% end %>
 
 <% content_for :sort do %>
