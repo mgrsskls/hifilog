@@ -60,12 +60,12 @@ class EventsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'meta[name="robots"][content="noindex, follow"]', count: 0
   end
 
-  test 'past events emits noindex follow when year in query' do
+  test 'past events year filter is indexable without noindex robots meta' do
     available_years = Event.available_past_years
     skip 'no past events' if available_years.empty?
 
     get past_events_url(year: available_years.first)
-    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+    assert_select 'meta[name="robots"][content="noindex, follow"]', count: 0
   end
 
   test 'past events emits noindex follow when country filter applied' do

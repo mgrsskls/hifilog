@@ -45,8 +45,7 @@ a user-driven database for hi-fi products, brands and more.'
   private
 
   def set_events_robots_meta
-    return unless params[:country].present? ||
-                  (@active_events == :past && params[:year].present?)
+    return if params[:country].blank?
 
     @meta_robots = 'noindex, follow'
   end
