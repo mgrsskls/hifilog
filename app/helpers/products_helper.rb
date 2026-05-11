@@ -2,8 +2,8 @@
 
 # rubocop:disable Metrics/ModuleLength
 module ProductsHelper
-  def products_index_item_list_json_ld(products:)
-    product_items_item_list_json_ld(products:, name: products_index_item_list_name)
+  def products_index_item_list_json_ld(products:, canonical_url: nil)
+    product_items_item_list_json_ld(products:, name: products_index_item_list_name, canonical_url:)
   end
 
   def product_show_json_ld(product:, meta_desc:, image_urls: nil)
@@ -40,11 +40,12 @@ module ProductsHelper
     end
   end
 
-  def brand_products_item_list_json_ld(brand:, meta_desc:, products:)
+  def brand_products_item_list_json_ld(brand:, meta_desc:, products:, canonical_url: nil)
     product_items_item_list_json_ld(
       products:,
       name: brand_products_item_list_name(brand:),
-      description: meta_desc
+      description: meta_desc,
+      canonical_url:
     )
   end
 
@@ -59,10 +60,11 @@ module ProductsHelper
 
   private
 
-  def product_items_item_list_json_ld(products:, name:, description: nil)
+  def product_items_item_list_json_ld(products:, name:, description: nil, canonical_url: nil)
+    list_url = canonical_url.presence || request.original_url
     schema_org_item_list(
       name:,
-      url: request.original_url,
+      url: list_url,
       description:,
       item_list_order: products_index_item_list_order,
       item_list_elements: products.each_with_index.map do |item, index|

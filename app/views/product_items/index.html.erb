@@ -48,4 +48,4 @@
   type: :product
 %>
 
-<%= json_ld_script_tag(products_index_item_list_json_ld(products: @products)) %>
+<%= json_ld_script_tag(products_index_item_list_json_ld(products: @products, canonical_url: @canonical_url)) %>

@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module BrandHelper
-  def brands_index_item_list_json_ld(brands:, meta_desc:, category: nil, sub_category: nil)
+  def brands_index_item_list_json_ld(brands:, meta_desc:, category: nil, sub_category: nil, canonical_url: nil)
     brands_catalogue_item_list_json_ld(
       brands:,
       meta_desc:,
-      name: brands_index_item_list_name(category:, sub_category:)
+      name: brands_index_item_list_name(category:, sub_category:),
+      canonical_url:
     )
   end
 
@@ -44,10 +45,11 @@ module BrandHelper
 
   private
 
-  def brands_catalogue_item_list_json_ld(brands:, meta_desc:, name:)
+  def brands_catalogue_item_list_json_ld(brands:, meta_desc:, name:, canonical_url: nil)
+    list_url = canonical_url.presence || request.original_url
     schema_org_item_list(
       name:,
-      url: request.original_url,
+      url: list_url,
       description: meta_desc,
       item_list_order: brands_index_item_list_order,
       item_list_elements: brands.each_with_index.map { |brand, index| list_item_for_brands_index(brands, brand, index) }

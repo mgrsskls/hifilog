@@ -27,13 +27,16 @@ class ProductsHelperTest < ActionView::TestCase
     controller.params = ActionController::Parameters.new(sort: 'name_desc')
     replace_request_env!('https://www.example.com/products?sort=name_desc')
 
-    json = products_index_item_list_json_ld(products: @products)
+    json = products_index_item_list_json_ld(
+      products: @products,
+      canonical_url: 'https://www.example.com/products'
+    )
 
     assert_equal 'ItemList', json['@type']
     assert_equal Product.model_name.human.pluralize, json['name']
     assert_equal @products.count, json['numberOfItems']
     assert_equal 'https://schema.org/ItemListOrderDescending', json['itemListOrder']
-    assert_equal 'https://www.example.com/products?sort=name_desc', json['url']
+    assert_equal 'https://www.example.com/products', json['url']
 
     row = json['itemListElement'].first
     assert_equal 'ListItem', row['@type']
@@ -85,12 +88,18 @@ class ProductsHelperTest < ActionView::TestCase
     controller.params = ActionController::Parameters.new
     replace_request_env!("https://www.example.com/brands/#{@brand.friendly_id}/products")
 
-    json = brand_products_item_list_json_ld(brand: @brand, meta_desc: @meta_desc, products: @products)
+    canonical = "https://www.example.com/brands/#{@brand.friendly_id}/products"
+    json = brand_products_item_list_json_ld(
+      brand: @brand,
+      meta_desc: @meta_desc,
+      products: @products,
+      canonical_url: canonical
+    )
 
     assert_equal 'ItemList', json['@type']
     assert_equal "#{@brand.name} #{Product.model_name.human.pluralize}", json['name']
     assert_equal 'Brand story line', json['description']
-    assert_equal "https://www.example.com/brands/#{@brand.friendly_id}/products", json['url']
+    assert_equal canonical, json['url']
     assert_equal @products.size, json['numberOfItems']
     assert json['itemListElement'].any?
   end

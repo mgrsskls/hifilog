@@ -19,14 +19,15 @@ class BrandHelperTest < ActionView::TestCase
       brands: brands_scope,
       meta_desc:,
       category: nil,
-      sub_category: nil
+      sub_category: nil,
+      canonical_url: 'https://www.example.com/brands'
     )
 
     assert_equal 'ItemList', json['@type']
     assert_equal Brand.model_name.human.pluralize, json['name']
     assert_equal 'All brands on HiFi Log', json['description']
     assert_equal 'https://schema.org/ItemListOrderDescending', json['itemListOrder']
-    assert_equal 'https://www.example.com/brands?sort=name_desc', json['url']
+    assert_equal 'https://www.example.com/brands', json['url']
 
     row = json['itemListElement'].first
     assert_equal 'ListItem', row['@type']
