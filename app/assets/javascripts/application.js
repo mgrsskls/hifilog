@@ -16,7 +16,6 @@ import "./_search.js";
 		".Button--loadingIcon, .CheckboxButton",
 	);
 	const filterCheckboxes = document.querySelectorAll(".Filter .Pagination");
-	const signUpCall = document.querySelector(".SignUpCall");
 	const sortSelect = document.querySelector("#sort-select");
 	const selectCategory = document.querySelector(".SelectCategory");
 	const searchFilterForm = document.getElementById("search-filter");
@@ -45,18 +44,6 @@ import "./_search.js";
 		sortSelect.addEventListener("change", ({ target }) => {
 			target.closest("form").submit();
 		});
-	}
-
-	if (signUpCall) {
-		const button = signUpCall.querySelector("button");
-
-		if (button) {
-			button.addEventListener("click", () => {
-				document.cookie =
-					"hide_sign_up_call=1; path=/; SameSite=Strict; Secure";
-				signUpCall.remove();
-			});
-		}
 	}
 
 	filterCheckboxes.forEach((el) => {

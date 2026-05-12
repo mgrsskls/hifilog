@@ -411,24 +411,6 @@
 		display: none !important;
 	}
 
-	.SignUpCall {
-		font-size: 0.875em;
-		text-align: center;
-		padding: 1em;
-		background: var(--color-secondary-on-light);
-		color: #fff;
-
-		p {
-			margin: 0;
-		}
-
-		a,
-		button {
-			color: inherit;
-			text-decoration: underline;
-		}
-	}
-
 	.Flag {
 		border: 0.0625rem solid var(--color-transparency-25);
 	}
