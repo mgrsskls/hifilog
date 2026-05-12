@@ -51,8 +51,29 @@ class BookmarkListsController < InheritedResources::Base
 
   def destroy
     @bookmark_list = current_user.bookmark_lists.find(params[:id])
-    @bookmark_list.destroy
-    flash[:notice] = I18n.t('bookmark_list.messages.deleted', name: @bookmark_list.name)
+    list_name = @bookmark_list.name
+    remove_bookmarks = ActiveModel::Type::Boolean.new.cast(params[:remove_bookmarks])
+    removed_count = remove_bookmarks ? @bookmark_list.bookmarks.count : 0
+
+    begin
+      ActiveRecord::Base.transaction do
+        @bookmark_list.bookmarks.destroy_all if remove_bookmarks
+        @bookmark_list.destroy!
+      end
+
+      flash[:notice] = if remove_bookmarks
+                         I18n.t(
+                           'bookmark_list.messages.deleted_remove_bookmarks',
+                           name: list_name,
+                           count: removed_count
+                         )
+                       else
+                         I18n.t('bookmark_list.messages.deleted_keep_bookmarks', name: list_name)
+                       end
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:alert] = I18n.t(:generic_error_message)
+    end
+
     redirect_to dashboard_bookmarks_path
   end
 

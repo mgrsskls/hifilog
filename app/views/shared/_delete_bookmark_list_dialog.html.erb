@@ -1,0 +1,26 @@
+<% id = local_assigns.fetch(:id, "delete-bookmark-list-#{bookmark_list.id}") %>
+<button type="button" class="DeleteButton Button Button--negative" data-dialog="dialog-<%= id %>">
+  <%= t('bookmark_list.delete.label') %>
+</button>
+
+<dialog id="dialog-<%= id %>" class="Dialog Dialog--sm">
+  <%= sanitize t('bookmark_list.delete.dialog_body', name: bookmark_list.name), tags: ['b'] %>
+
+  <div class="Form-submit">
+    <div class="u-flex u-spaceBetween u-alignCenter u-gap-md u-flexWrap">
+      <div class="u-flex u-spaceBetween u-gap-md">
+        <%= button_to t('bookmark_list.delete.keep_bookmarks'),
+          bookmark_list_path(id: bookmark_list.id),
+          method: :delete,
+          class: "Button" %>
+        <%= button_to t('bookmark_list.delete.remove_bookmarks'),
+          bookmark_list_path(id: bookmark_list.id, remove_bookmarks: true),
+          method: :delete,
+          class: "Button Button--negative" %>
+      </div>
+      <form method="dialog">
+        <button>Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>

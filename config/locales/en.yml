@@ -111,11 +111,17 @@ en:
       label: Remove
   bookmark_list:
     delete:
-      confirm: Are you sure you want to delete your bookmark list %{name}? Please note that the bookmarks in this list will remain in your bookmarks.
+      dialog_body: You are about to delete your bookmark list <b>%{name}</b>. Do you want to keep the bookmarks that are on this list (they will stay in your bookmarks without this list), or remove those bookmarks entirely?
+      keep_bookmarks: Keep bookmarks
       label: Delete
+      remove_bookmarks: Remove bookmarks too
     messages:
       created: Your bookmark list %{link} has been created.
-      deleted: Your bookmark list <b>%{name}</b> has been deleted.
+      deleted_keep_bookmarks: Your bookmark list <b>%{name}</b> has been deleted. Bookmarks from this list remain in your bookmarks.
+      deleted_remove_bookmarks:
+        zero: Your bookmark list <b>%{name}</b> has been deleted.
+        one: Your bookmark list <b>%{name}</b> has been deleted. One bookmark was removed.
+        other: Your bookmark list <b>%{name}</b> has been deleted. %{count} bookmarks were removed.
       updated: Your bookmark list <b>%{name}</b> has been updated.
     name_placeholder: e.g. "Portable HP Amps with DAC" or "New office setup"
     new:

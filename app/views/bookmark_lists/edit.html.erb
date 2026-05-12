@@ -4,12 +4,7 @@
   <% end %>
 
   <h2>Delete <%= @bookmark_list.name %></h2>
-  <%= button_to t('bookmark_list.delete.label'),
-    bookmark_list_path(id: @bookmark_list.id),
-    method: :delete,
-    class: "DeleteButton Button Button--negative",
-    "data-msg": t('bookmark_list.delete.confirm', name: @bookmark_list.name)
-  %>
+  <%= render "shared/delete_bookmark_list_dialog", bookmark_list: @bookmark_list %>
 <% end %>
 
 <%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>

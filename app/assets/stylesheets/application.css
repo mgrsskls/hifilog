@@ -414,4 +414,9 @@
 	.Flag {
 		border: 0.0625rem solid var(--color-transparency-25);
 	}
+
+	.Dialog--sm {
+		inline-size: calc(100vi - var(--page-spacing));
+		max-inline-size: 80ch;
+	}
 }

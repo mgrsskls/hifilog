@@ -97,4 +97,36 @@ class BookmarkListsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to dashboard_bookmarks_url
   end
+
+  test 'destroy keeps bookmarks when remove_bookmarks is not set' do
+    sign_in users(:one)
+    bookmark = bookmarks(:with_product)
+    assert_equal @bookmark_list.id, bookmark.bookmark_list_id
+
+    assert_difference('BookmarkList.count', -1) do
+      assert_no_difference('Bookmark.count') do
+        delete bookmark_list_url(@bookmark_list)
+      end
+    end
+
+    assert_redirected_to dashboard_bookmarks_url
+    assert_equal I18n.t('bookmark_list.messages.deleted_keep_bookmarks', name: @bookmark_list.name),
+                 flash[:notice]
+    bookmark.reload
+    assert_nil bookmark.bookmark_list_id
+  end
+
+  test 'destroy removes bookmarks when remove_bookmarks is true' do
+    sign_in users(:one)
+    bookmark = bookmarks(:with_product)
+    assert_equal @bookmark_list.id, bookmark.bookmark_list_id
+
+    assert_difference(['BookmarkList.count', 'Bookmark.count'], -1) do
+      delete bookmark_list_url(@bookmark_list, remove_bookmarks: true)
+    end
+
+    assert_redirected_to dashboard_bookmarks_url
+    assert_match(/One bookmark was removed/, flash[:notice])
+    assert_raises(ActiveRecord::RecordNotFound) { bookmark.reload }
+  end
 end
