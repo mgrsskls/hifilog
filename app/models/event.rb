@@ -70,6 +70,7 @@ class Event < ApplicationRecord
     Rails.cache.delete('events/past_count')
     Rails.cache.delete('events/upcoming_count')
     Rails.cache.delete('events/country_codes')
+    Rails.cache.delete('/newest_events')
   end
 
   def assign_calendar_year

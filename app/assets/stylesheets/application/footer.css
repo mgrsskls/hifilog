@@ -126,17 +126,6 @@ theme-toggle {
 
 .Newest-lists li {
 	font-weight: 600;
-	display: flex;
-}
-
-.Newest-lists a {
-	margin-inline-start: 0.5em;
-}
-
-.Newest-lists time {
-	font-weight: normal;
-	font-variant-numeric: tabular-nums;
-	letter-spacing: -0.025em;
 }
 
 .RssFeed {

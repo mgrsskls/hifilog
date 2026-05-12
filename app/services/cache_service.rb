@@ -58,4 +58,14 @@ class CacheService
       Brand.order(created_at: :desc).limit(10).to_a
     end
   end
+
+  def self.newest_events
+    Rails.cache.fetch('/newest_events') do
+      Event
+        .select(:id, :name, :slug, :calendar_year, :created_at)
+        .order(created_at: :desc)
+        .limit(10)
+        .to_a
+    end
+  end
 end

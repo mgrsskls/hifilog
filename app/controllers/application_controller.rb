@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
                 :brands_count,
                 :categories_count,
                 :newest_brands,
+                :newest_events,
                 :newest_products,
                 :menu_categories
 
@@ -79,6 +80,10 @@ class ApplicationController < ActionController::Base
     CacheService.newest_brands
   end
 
+  def newest_events
+    CacheService.newest_events
+  end
+
   def after_sign_in_path_for(user)
     redirect_param = request.parameters[:redirect]
 
@@ -106,6 +111,7 @@ class ApplicationController < ActionController::Base
   def set_footer_data
     @newest_products = newest_products
     @newest_brands = newest_brands
+    @newest_events = newest_events
   end
 
   def redirect_back_to_product(product: nil, product_variant: nil, custom_product: nil)

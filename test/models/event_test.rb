@@ -60,4 +60,18 @@ class EventTest < ActiveSupport::TestCase
     assert_not 'my_event'.match?(Event::SLUG_ROUTE_PATTERN)
     assert_not 'My Event'.match?(Event::SLUG_ROUTE_PATTERN)
   end
+
+  test 'flush_event_cache clears event counters and newest_events' do
+    Rails.cache.write('events/past_count', 123)
+    Rails.cache.write('events/upcoming_count', 456)
+    Rails.cache.write('events/country_codes', %w[DE US])
+    Rails.cache.write('/newest_events', [1])
+
+    events(:one).send(:flush_event_cache)
+
+    assert_nil Rails.cache.read('events/past_count')
+    assert_nil Rails.cache.read('events/upcoming_count')
+    assert_nil Rails.cache.read('events/country_codes')
+    assert_nil Rails.cache.read('/newest_events')
+  end
 end
