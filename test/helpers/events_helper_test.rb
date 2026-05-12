@@ -76,7 +76,9 @@ class EventsHelperTest < ActionView::TestCase
       start_date: Date.new(2030, 1, 1),
       end_date: Date.new(2030, 1, 2),
       country_code: 'US',
-      address: 'Somewhere'
+      address: 'Somewhere',
+      slug: 'no-url-event',
+      calendar_year: 2030
     )
     event.id = 99_001
 
@@ -92,7 +94,7 @@ class EventsHelperTest < ActionView::TestCase
       canonical_url:
     )
 
-    assert_equal 'https://www.example.com/events#event-99001', json['itemListElement'].first['item']['url']
+    assert_equal 'https://www.example.com/events/2030/no-url-event', json['itemListElement'].first['item']['url']
   end
 
   test 'events_index_item_list_json_ld falls back to request URL when canonical URL is omitted' do

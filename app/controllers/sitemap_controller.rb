@@ -7,9 +7,20 @@ class SitemapController < ApplicationController
         brand_updated_at = Brand.maximum(:updated_at)
         product_updated_at = Product.maximum(:updated_at)
         product_variant_updated_at = ProductVariant.maximum(:updated_at)
+        event_updated_at = Event.maximum(:updated_at)
 
-        @pages = build_sitemap_xml_pages(brand_updated_at, product_updated_at, product_variant_updated_at)
-        @sitemap_root_lastmod = [brand_updated_at, product_updated_at, product_variant_updated_at].compact.max
+        @pages = build_sitemap_xml_pages(
+          brand_updated_at,
+          product_updated_at,
+          product_variant_updated_at,
+          event_updated_at
+        )
+        @sitemap_root_lastmod = [
+          brand_updated_at,
+          product_updated_at,
+          product_variant_updated_at,
+          event_updated_at
+        ].compact.max
       end
       format.html do
         @brands = Brand.includes(products: :product_variants)
@@ -20,7 +31,7 @@ class SitemapController < ApplicationController
 
   private
 
-  def build_sitemap_xml_pages(brand_updated_at, product_updated_at, product_variant_updated_at)
+  def build_sitemap_xml_pages(brand_updated_at, product_updated_at, product_variant_updated_at, event_updated_at)
     pages = []
 
     pages << {
@@ -36,8 +47,14 @@ class SitemapController < ApplicationController
 
     pages << {
       url: events_url,
-      updated: Event.maximum(:updated_at)
+      updated: event_updated_at
     }
+    Event.select(:id, :slug, :calendar_year, :updated_at).find_each do |event|
+      pages << {
+        url: event_url(year: event.calendar_year, slug: event.friendly_id),
+        updated: event.updated_at
+      }
+    end
     pages << {
       url: about_url
     }

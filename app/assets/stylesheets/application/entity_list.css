@@ -206,6 +206,7 @@
 
 	.MetaLinks {
 		justify-content: end;
+		position: relative;
 	}
 }
 

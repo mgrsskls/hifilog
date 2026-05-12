@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class EventsController < ApplicationController
+  before_action :find_event, only: :show
+
   def index
     @all_upcoming_events_count = Event.cached_upcoming_count
     @all_past_events_count = Event.cached_past_count
@@ -11,10 +13,16 @@ class EventsController < ApplicationController
     @meta_desc = 'Find all upcoming hi-fi events and shows on HiFi Log,
 a user-driven database for hi-fi products, brands and more.'
     @active_events = :upcoming
-    @after_create_redirect = :events
-    @after_destroy_redirect = :events
     @canonical_url = events_url
     set_events_robots_meta
+  end
+
+  def show
+    @bookmark = current_user.bookmarks.find_by(item_id: @event.id, item_type: 'Event') if user_signed_in?
+
+    page_title(@event.name)
+    @meta_desc = "#{@event.name} — hi-fi event on HiFi Log, a user-driven database for hi-fi products, brands and more."
+    @canonical_url = event_url(year: @event.calendar_year, slug: @event.friendly_id)
   end
 
   def past
@@ -34,8 +42,6 @@ a user-driven database for hi-fi products, brands and more.'
     @meta_desc = 'Find all previous hi-fi events and shows on HiFi Log,
 a user-driven database for hi-fi products, brands and more.'
     @active_events = :past
-    @after_create_redirect = :past_events
-    @after_destroy_redirect = :past_events
     @canonical_url = past_events_url(year: @selected_year)
 
     set_events_robots_meta
@@ -50,13 +56,28 @@ a user-driven database for hi-fi products, brands and more.'
     @meta_robots = 'noindex, follow'
   end
 
+  def find_event
+    year = params[:year].to_i
+    @event = Event.includes(event_attendees: :user)
+                  .where(calendar_year: year)
+                  .friendly
+                  .find(params[:slug])
+
+    canonical_path = URI.parse(event_path(year: @event.calendar_year, slug: @event.friendly_id)).path
+    return if request.path == canonical_path
+
+    redirect_to canonical_path, status: :moved_permanently and return
+  end
+
   def get_events(base_relation:, order: :asc)
     # 1. Apply country filter if present
     scope = base_relation
     scope = scope.where(country_code: params[:country]) if params[:country].present?
 
-    # 2. Load records. By including event_attendees, we solve N+1 issues
-    @events = scope.includes(event_attendees: :user).order(start_date: order)
+    # 2. Load records; attendee counts are batched for list cards
+    @events = scope.order(start_date: order).to_a
+    ids = @events.map(&:id)
+    @event_attendee_counts = ids.empty? ? {} : EventAttendee.where(event_id: ids).group(:event_id).count
 
     # 3. Grouping - Works for "All" (Upcoming) and "Yearly" (Past)
     @years = @events.group_by { |e| e.start_date.year }.transform_values do |events_in_year|
@@ -67,14 +88,5 @@ a user-driven database for hi-fi products, brands and more.'
     @country_codes = Rails.cache.fetch('events/country_codes') do
       Event.distinct.pluck(:country_code).compact.sort
     end
-
-    # 5. Optimized Bookmarks (Uses the already-loaded @events IDs)
-    @event_bookmarks = if user_signed_in?
-                         current_user.bookmarks
-                                     .where(item_type: 'Event', item_id: @events.map(&:id))
-                                     .index_by(&:item_id)
-                       else
-                         {}
-                       end
   end
 end

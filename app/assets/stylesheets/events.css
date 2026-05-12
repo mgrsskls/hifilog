@@ -54,45 +54,6 @@
 	padding-block-end: calc(2rem - var(--top-spacing));
 }
 
-.Event {
-	display: flex;
-	flex-direction: column;
-	scroll-margin-block-start: calc(
-		var(--height-year) + var(--height-month) + var(--top-spacing)
-	);
-
-	address {
-		font-size: 0.875em;
-	}
-
-	a {
-		font-weight: 500;
-		justify-self: end;
-		word-break: break-word;
-	}
-}
-
-.Event-header {
-	display: flex;
-	justify-content: space-between;
-	gap: 1.5rem;
-	align-items: start;
-
-	> div {
-		flex-shrink: 0;
-	}
-}
-
-.Event-content {
-	display: flex;
-	flex-direction: column;
-	gap: 1em;
-
-	p {
-		margin-block: 0;
-	}
-}
-
 .Event-days {
 	color: var(--color-secondary);
 	font-weight: 500;

@@ -53,4 +53,11 @@ class EventTest < ActiveSupport::TestCase
     count = Event.cached_upcoming_count
     assert_equal Event.upcoming.count, count
   end
+
+  test 'slug patterns match route constraint and parameterize-style slugs' do
+    assert_match Event::SLUG_PATH_CONSTRAINT, 'my-event-2'
+    assert_match Event::SLUG_ROUTE_PATTERN, 'my-event-2'
+    assert_not 'my_event'.match?(Event::SLUG_ROUTE_PATTERN)
+    assert_not 'My Event'.match?(Event::SLUG_ROUTE_PATTERN)
+  end
 end

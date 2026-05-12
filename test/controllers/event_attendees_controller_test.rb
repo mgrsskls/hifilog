@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class EventAttendeesControllerTest < ActionDispatch::IntegrationTest
-  test 'create registers attendance and redirects to events by default' do
+  test 'create registers attendance and redirects to event page' do
     user = users(:one)
     event_attendees_count = user.event_attendees.count
     event = events(:two)
@@ -18,38 +18,22 @@ class EventAttendeesControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal event_attendees_count + 1, user.event_attendees.count
     assert_response :redirect
-    assert_redirected_to events_url(anchor: "event-#{event.id}")
+    assert_redirected_to event_url(year: event.calendar_year, slug: event.friendly_id)
   end
 
-  test 'create redirects for redirect param dashboard paths' do
-    user = users(:one)
+  test 'create without event_id redirects to events index' do
+    sign_in users(:one)
 
-    sign_in user
+    post event_attendees_path
 
-    [
-      ['dashboard_bookmarks', :dashboard_bookmarks_url],
-      ['dashboard_events', :dashboard_events_url],
-      ['dashboard_past_events', :dashboard_past_events_url],
-      ['past_events', :past_events_url]
-    ].each do |redirect_param, url_helper|
-      event = Event.create!(
-        name: "Redirect test #{SecureRandom.hex(4)}",
-        address: 'x',
-        url: 'https://example.test/redir',
-        country_code: 'US',
-        start_date: Time.zone.today + 360,
-        end_date: Time.zone.today + 361
-      )
-
-      post event_attendees_path(event_id: event.id, redirect: redirect_param)
-
-      assert_redirected_to send(url_helper, anchor: "event-#{event.id}")
-    end
+    assert_redirected_to events_url
+    assert_equal I18n.t(:generic_error_message), flash[:alert]
   end
 
   test 'destroy removes attendance' do
     user = users(:one)
     event_attendee = user.event_attendees.first
+    event = event_attendee.event
     event_attendees_count = user.event_attendees.count
 
     delete event_attendee_path(event_attendee)
@@ -62,7 +46,7 @@ class EventAttendeesControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal event_attendees_count - 1, user.event_attendees.count
     assert_response :redirect
-    assert_redirected_to events_url
+    assert_redirected_to event_url(year: event.calendar_year, slug: event.friendly_id)
   end
 
   test 'destroy uses past flash variant when past flag set' do
@@ -76,36 +60,5 @@ class EventAttendeesControllerTest < ActionDispatch::IntegrationTest
 
     expected = I18n.t('event_attendee.messages.destroyed.past', name: event.name)
     assert_equal expected, flash[:notice]
-  end
-
-  test 'destroy redirects for redirect param without anchor' do
-    user = users(:one)
-    event = events(:three)
-
-    sign_in user
-
-    post event_attendees_path(event_id: event.id)
-    attendee = user.event_attendees.find_by!(event_id: event.id)
-
-    delete event_attendee_path(attendee), params: { redirect: 'dashboard_bookmarks' }
-    assert_redirected_to dashboard_bookmarks_url
-
-    post event_attendees_path(event_id: event.id)
-    attendee = user.event_attendees.find_by!(event_id: event.id)
-
-    delete event_attendee_path(attendee), params: { redirect: 'dashboard_events' }
-    assert_redirected_to dashboard_events_url
-
-    post event_attendees_path(event_id: event.id)
-    attendee = user.event_attendees.find_by!(event_id: event.id)
-
-    delete event_attendee_path(attendee), params: { redirect: 'dashboard_past_events' }
-    assert_redirected_to dashboard_past_events_url
-
-    post event_attendees_path(event_id: event.id)
-    attendee = user.event_attendees.find_by!(event_id: event.id)
-
-    delete event_attendee_path(attendee), params: { redirect: 'past_events' }
-    assert_redirected_to past_events_url
   end
 end

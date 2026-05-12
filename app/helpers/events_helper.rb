@@ -56,6 +56,10 @@ module EventsHelper
 
   def events_url_for_schema(event, canonical_url:)
     return event.url if event.url.present?
+    if event.slug.present? && event.calendar_year.present?
+      return event_url(year: event.calendar_year,
+                       slug: event.friendly_id)
+    end
 
     "#{canonical_url}#event-#{event.id}"
   end

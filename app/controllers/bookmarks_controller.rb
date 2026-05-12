@@ -41,7 +41,7 @@ class BookmarksController < ApplicationController
     if @brand.present?
       redirect_to brand_path(id: @brand.friendly_id)
     elsif @event.present?
-      redirect_to events_path
+      redirect_to event_path(year: @event.calendar_year, slug: @event.friendly_id)
     else
       redirect_back_to_product(
         product: @product,

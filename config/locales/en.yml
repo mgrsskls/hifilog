@@ -18,6 +18,11 @@ en:
       custom_product:
         description: Description
         name: Name
+      event:
+        address: Address
+        country_code: Country
+        dates: Dates
+        url: Website
       possession:
         price_purchase: Purchase price
         price_purchase_currency: Currency

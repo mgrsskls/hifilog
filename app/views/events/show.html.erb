@@ -1,0 +1,77 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "entity" %>
+<% end %>
+
+<div class="Entity">
+  <div class="Entity-main">
+    <div class="Product-details">
+      <div class="Entity-heading">
+        <h1><%= @event.name %></h1>
+      </div>
+
+      <div class="Entity-section">
+        <dl class="Data">
+          <dt><%= Event.human_attribute_name(:dates) %></dt>
+          <dd>
+            <span class="Event-days">
+              <%= humanize_date_range(@event.start_date, @event.end_date) %>
+            </span>
+          </dd>
+          <% if @event.country_code.present? %>
+            <dt><%= Event.human_attribute_name(:country_code) %></dt>
+            <dd>
+              <div class="u-flex u-alignCenter u-gap-smd">
+                <% country_name = country_name_from_country_code(@event.country_code) %>
+                <img class="Flag" src="/flags/<%= @event.country_code.downcase %>.svg" alt="Flag of <%= country_name %>" title="<%= country_name %>" loading="lazy" width="25">
+                <%= country_name %>
+              </div>
+            </dd>
+          <% end %>
+          <% if @event.address.present? %>
+            <dt><%= Event.human_attribute_name(:address) %></dt>
+            <dd>
+              <address>
+                <%= simple_format(@event.address, class: "u-mb-0") %>
+              </address>
+            </dd>
+          <% end %>
+          <% if @event.url.present? %>
+            <dt><%= Event.human_attribute_name(:url) %></dt>
+            <dd><%= link_to @event.url, @event.url, rel: "noreferrer noopener" %></dd>
+          <% end %>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="Entity-sub">
+    <div class="Entity-action">
+      <%= render "shared/bookmark_button",
+        bookmark: @bookmark,
+        delete_redirect_to: event_path(year: @event.calendar_year, slug: @event.friendly_id),
+        create_bookmarks_path: bookmarks_path(event_id: @event.id)
+      %>
+    </div>
+
+    <hr>
+
+    <div class="Entity-action">
+      <div class="Event-attend">
+        <div class="u-flex u-gap-md u-alignCenter u-flexWrap">
+          <% attendee = user_signed_in? && @event.event_attendees.find { |a| a.user_id == current_user.id } %>
+          <% if attendee %>
+            <%= button_to event_attendee_path(id: attendee.id, past: @event.discontinued?), method: :delete, class: "Button Button--sm Button--accent Button--secondary Button--icon" do %>
+              <%= @event.discontinued? ? "You attended" : "You attend" %>
+              <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+            <% end %>
+          <% else %>
+            <%= button_to event_attendees_path(event_id: @event.id, past: @event.discontinued?), class: "Button Button--sm Button--accent" do %>
+              <%= @event.discontinued? ? 'I attended' : 'Attend' %>
+            <% end %>
+          <% end %>
+          <span><%= @event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: @event.event_attendees.size) %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

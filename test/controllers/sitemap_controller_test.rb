@@ -33,6 +33,10 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
 
     assert_includes response.body,
                     brands_subcategory_url(amplifiers.slug, sub_one.slug).to_s
+
+    event = events(:two)
+    assert_includes response.body,
+                    event_url(year: event.calendar_year, slug: event.friendly_id).to_s
   end
 
   test 'xml sitemap omits duplicate loc URLs' do

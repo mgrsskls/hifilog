@@ -1,6 +1,3 @@
-<% after_destroy_redirect ||= nil %>
-<% after_create_redirect ||= nil %>
-
 <% content_for :css do %>
   <%= stylesheet_link_tag "tabs" %>
   <%= stylesheet_link_tag "events" %>
@@ -23,21 +20,7 @@
                 <% month[1].each do |event| %>
                   <% i += 1 %>
                   <li class="EntityList-item">
-                    <%= render layout: "shared/event_item", locals: {
-                      event: event,
-                      after_create_redirect: after_create_redirect,
-                      after_destroy_redirect: after_destroy_redirect,
-                      active_events: active_events
-                    } do
-                    %>
-                      <% bookmark = event_bookmarks[event.id] %>
-                      <%= render "shared/bookmark_button",
-                        bookmark: bookmark,
-                        delete_redirect_to: events_path,
-                        create_bookmarks_path: bookmarks_path(event_id: event.id, anchor: "event-#{event.id}"),
-                        small_button: true
-                      %>
-                    <% end %>
+                    <%= render "shared/event_item", event: event, attendee_counts: @event_attendee_counts %>
                   </li>
                 <% end %>
               </ol>

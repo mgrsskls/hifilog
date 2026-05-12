@@ -95,9 +95,10 @@ class UserController < ApplicationController
     end
 
     @bookmarks = bookmarks
+    event_ids = @bookmarks.filter_map { |b| b.item_id if b.item_type == 'Event' }.uniq
+    @event_attendee_counts = event_ids.empty? ? {} : EventAttendee.where(event_id: event_ids).group(:event_id).count
+
     assign_bookmark_product_items_for_thumbnails!(@bookmarks)
-    @bookmarks_after_create_redirect = :dashboard_bookmarks
-    @bookmarks_after_destroy_redirect = :dashboard_bookmarks
 
     @categories = get_grouped_sub_categories(bookmarks: all_bookmarks.reject do |bookmark|
       %w[Event Brand].include? bookmark.item_type
@@ -123,8 +124,6 @@ class UserController < ApplicationController
                              .or(Event.where(start_date: ..today, end_date: nil))
                              .size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.upcoming', path: events_path)
-    @after_create_redirect = :dashboard_events
-    @after_destroy_redirect = :dashboard_events
   end
 
   def past_events
@@ -144,7 +143,6 @@ class UserController < ApplicationController
                                             .size
     @all_past_events_count = all_events.size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.past', path: past_events_path)
-    @after_destroy_redirect = :dashboard_past_events
 
     render 'events'
   end
@@ -327,20 +325,15 @@ class UserController < ApplicationController
 
   def get_events(all_events: [], order: :asc)
     country_code = params[:country]
-    @events = all_events.includes(event_attendees: [:user])
-    @events = all_events.where(country_code:) if country_code.present?
-    @years = @events.order(start_date: order)
-                    .group_by { |event| event.start_date.year }
+    scoped = country_code.present? ? all_events.where(country_code:) : all_events
+    @events = scoped.order(start_date: order).to_a
+    ids = @events.map(&:id)
+    @event_attendee_counts = ids.empty? ? {} : EventAttendee.where(event_id: ids).group(:event_id).count
+    @years = @events.group_by { |event| event.start_date.year }
                     .transform_values do |events_in_year|
                       events_in_year.group_by { |event| event.start_date.month }
                     end
     @country_codes = all_events.map(&:country_code).uniq.sort
-    if user_signed_in?
-      event_ids = @years.flat_map { |year| year[1].flat_map { |month| month[1].map(&:id) } }
-      @event_bookmarks = current_user.bookmarks.where(item_type: 'Event', item_id: event_ids).index_by(&:item_id)
-    else
-      @event_bookmarks = {}
-    end
   end
 
   def get_data(data, model, event)

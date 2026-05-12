@@ -14,7 +14,7 @@
         <button type="button" data-dialog="add-products" class="Button">
           Add / remove bookmarks
         </button>
-        <%= link_to link_to t('bookmark_list.update.label'), dashboard_edit_bookmark_list_path(id: @bookmark_list.id), class: "Button Button--secondary" %>
+        <%= link_to t('bookmark_list.update.label'), dashboard_edit_bookmark_list_path(id: @bookmark_list.id), class: "Button Button--secondary" %>
       </div>
     <% else %>
       <%= link_to "New list", dashboard_new_bookmark_list_path, class: "Button Button--secondary" %>
@@ -65,15 +65,12 @@
         <% end %>
         <li class="EntityList-item Bookmark">
           <% if bookmark.item_type == 'Event' %>
-            <%= render layout: "shared/event_item", locals: {
+            <%= render "shared/event_item",
               event: bookmark.event,
-              after_create_redirect: @bookmarks_after_create_redirect,
-              after_destroy_redirect: @bookmarks_after_destroy_redirect,
               date_format: :full,
-              active_events: @active_events
-            } do %>
-              <%= actions %>
-            <% end %>
+              attendee_counts: @event_attendee_counts,
+              footer: actions
+            %>
           <% elsif bookmark.item_type == 'Brand' %>
             <%= render layout: "shared/brand_item", locals: {
               brand: bookmark.brand,

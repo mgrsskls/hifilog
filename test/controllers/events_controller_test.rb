@@ -3,6 +3,18 @@
 require 'test_helper'
 
 class EventsControllerTest < ActionDispatch::IntegrationTest
+  test 'show' do
+    event = events(:two)
+    get event_url(year: event.calendar_year, slug: event.friendly_id)
+    assert_response :success
+    assert_select 'h1', event.name
+  end
+
+  test 'show not found' do
+    get event_url(year: 1999, slug: 'missing')
+    assert_response :not_found
+  end
+
   test 'index' do
     get events_url
     assert_response :success

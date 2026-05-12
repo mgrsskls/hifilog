@@ -82,7 +82,7 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_bookmarks_path
   end
 
-  test 'create with event redirects to events' do
+  test 'create with event redirects to event page' do
     user = users(:one)
 
     event = Event.create!(
@@ -100,7 +100,7 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
       post bookmarks_path(event_id: event.id)
     end
 
-    assert_redirected_to events_path
+    assert_redirected_to event_path(year: event.calendar_year, slug: event.slug)
   end
 
   test 'create with brand redirects to brand page' do

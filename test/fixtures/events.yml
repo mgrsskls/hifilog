@@ -5,6 +5,8 @@ one:
   country_code: DE
   start_date: 2000-01-01
   end_date: 2000-01-02
+  slug: event-1
+  calendar_year: 2000
 two:
   name: Event 2
   address: Event 2 address
@@ -12,10 +14,14 @@ two:
   country_code: US
   start_date: 2030-01-01
   end_date: 2030-01-02
+  slug: event-2
+  calendar_year: 2030
 three:
   name: Event 3
   address: Event 3 address
   url: https://www.example.com
   country_code: DE
   start_date: 2030-01-01
-  end_date: NULL
+  end_date:
+  slug: event-3
+  calendar_year: 2030
