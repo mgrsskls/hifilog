@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2025-11-01">2026-05-12</time>
+
+- Users can now add a purchase condition to their possessions ("New (first-hand)", "Second-hand", "B-Stock").
+
 ## <time datetime="2025-11-01">2025-11-01</time>
 
 - Users can now bookmark and brands events.

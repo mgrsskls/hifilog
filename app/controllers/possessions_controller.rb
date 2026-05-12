@@ -159,11 +159,22 @@ class PossessionsController < ApplicationController
 
   def possession_params
     possession = params[:possession]
+    return ActionController::Parameters.new({}).permit! unless possession
 
     possession[:highlighted_image_id] = nil if params[:delete_image]&.include?(possession[:highlighted_image_id])
+    if possession.key?(:purchase_condition)
+      raw = possession[:purchase_condition]
+      key = raw.to_s.strip
+      if key.blank?
+        possession[:purchase_condition] = nil
+      elsif !Possession.purchase_conditions.key?(key)
+        possession.delete(:purchase_condition)
+      end
+    end
 
-    params.expect(possession: [:period_from, :period_to, :product_option_id, :highlighted_image_id, :price_purchase,
-                               :price_purchase_currency, :price_sale, :price_sale_currency, { images: [] }])
+    possession.permit(:period_from, :period_to, :product_option_id, :highlighted_image_id, :price_purchase,
+                      :price_purchase_currency, :price_sale, :price_sale_currency, :purchase_condition,
+                      images: [])
   end
 
   def show_errors

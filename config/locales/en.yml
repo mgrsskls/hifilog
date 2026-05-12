@@ -28,6 +28,7 @@ en:
         price_purchase_currency: Currency
         price_sale: Sales price
         price_sale_currency: Currency
+        purchase_condition: Purchase condition
       product:
         description: Description
         discontinued: Discontinued
@@ -51,6 +52,12 @@ en:
         user_name: Username
       version:
         comment: Comment
+    enums:
+      possession:
+        purchase_condition:
+          first_hand: New (first-hand)
+          second_hand: Second-hand
+          b_stock: B-stock
     models:
       bookmark:
         one: Bookmark
@@ -326,6 +333,7 @@ en:
       saved: The note has been saved.
   optional: optional
   possession:
+    purchase_condition_blank: Not specified
     messages:
       moved_to_prev: Your <b>%{name}</b> has been moved to your list of previous products.
       removed: Your <b>%{name}</b> has been removed from your collection.

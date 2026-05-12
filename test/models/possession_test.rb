@@ -39,4 +39,35 @@ class PossessionTest < ActiveSupport::TestCase
       assert_equal 50.days.to_i, duration
     end
   end
+
+  test 'purchase_condition is optional' do
+    possession = possessions(:current_product)
+    assert_nil possession.purchase_condition
+    possession.update!(purchase_condition: :second_hand)
+    assert possession.second_hand?
+    possession.update!(purchase_condition: nil)
+    assert_nil possession.reload.purchase_condition
+  end
+
+  test 'purchase_condition enum values' do
+    possession = possessions(:current_product)
+    possession.update!(purchase_condition: :first_hand)
+    assert possession.first_hand?
+    possession.update!(purchase_condition: :b_stock)
+    assert possession.b_stock?
+  end
+
+  test 'purchase_condition_label' do
+    possession = possessions(:current_product)
+    assert_nil possession.purchase_condition_label
+
+    possession.purchase_condition = :first_hand
+    assert_equal 'New (first-hand)', possession.purchase_condition_label
+
+    possession.purchase_condition = :second_hand
+    assert_equal 'Second-hand', possession.purchase_condition_label
+
+    possession.purchase_condition = :b_stock
+    assert_equal 'B-stock', possession.purchase_condition_label
+  end
 end

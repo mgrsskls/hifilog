@@ -23,6 +23,10 @@ class CustomProductPresenter
     nil
   end
 
+  def purchase_condition
+    nil
+  end
+
   def diy_kit?
     false
   end

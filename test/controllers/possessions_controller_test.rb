@@ -109,6 +109,45 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to product_url(id: possession.product.friendly_id)
   end
 
+  test 'should update possession purchase_condition' do
+    user = users(:one)
+    possession = user.possessions.first
+    update_path = possession_url(possession)
+
+    sign_in user
+
+    patch update_path, params: {
+      possession: {
+        purchase_condition: 'second_hand'
+      }
+    }
+    assert_equal 'second_hand', possession.reload.purchase_condition
+
+    patch update_path, params: {
+      possession: {
+        purchase_condition: ''
+      }
+    }
+    assert_nil possession.reload.purchase_condition
+  end
+
+  test 'invalid purchase_condition does not overwrite stored value' do
+    user = users(:one)
+    possession = user.possessions.first
+    possession.update!(purchase_condition: :first_hand)
+    update_path = possession_url(possession)
+
+    sign_in user
+
+    patch update_path, params: {
+      possession: {
+        purchase_condition: 'not_a_real_value'
+      }
+    }
+    assert_response :redirect
+    assert_equal 'first_hand', possession.reload.purchase_condition
+  end
+
   test 'should destroy current possession' do
     user = users(:one)
     possessions_count = user.possessions.count

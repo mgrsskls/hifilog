@@ -42,6 +42,10 @@ class ItemPresenter
     nil
   end
 
+  def purchase_condition
+    nil
+  end
+
   def diy_kit?
     return @product_variant.diy_kit? if @product_variant.present?
 

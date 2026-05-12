@@ -12,7 +12,7 @@
         </div>
         <div>
           <b class="EntityPossession-headingName"><%= possession.prev_owned ? t('symbols.product.prev_owned') : t('symbols.product.in_your_collection') %></b>
-          <% if possession.period_from || possession.period_to || possession.setup || possession.product_option || possession.price_purchase || possession.price_sale %>
+          <% if possession.period_from || possession.period_to || possession.setup || possession.product_option || possession.price_purchase || possession.price_sale || possession.purchase_condition %>
             <div class="EntityPossession-period">
               <% if possession.prev_owned %>
                 <% if possession.period_from && possession.period_to %>
@@ -57,6 +57,12 @@
                   <%= display_price(possession.price_purchase, possession.price_purchase_currency) %>
                 </small>
               <% end %>
+              <% if possession.purchase_condition %>
+                <small>
+                  <span><%= Possession.human_attribute_name(:purchase_condition) %>:</span>
+                  <%= possession.purchase_condition_label %>
+                </small>
+              <% end %>
               <% if possession.price_sale %>
                 <small>
                   <span><%= Possession.human_attribute_name(:price_sale) %>:</span>
@@ -99,6 +105,10 @@
                 <% end %>
               </select>
             <% end %>
+            <%= f.label :purchase_condition %>
+            <%= f.select :purchase_condition,
+                         possession_purchase_condition_options,
+                         include_blank: t('possession.purchase_condition_blank') %>
           </div>
           <div class="EntityPossession-formPrice">
             <div class="u-flex u-gap-md">

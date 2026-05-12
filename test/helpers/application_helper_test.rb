@@ -72,4 +72,12 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_nil country_name_from_country_code(:xyz)
     assert_equal 'Germany', country_name_from_country_code(:de)
   end
+
+  test 'possession_purchase_condition_options' do
+    values = possession_purchase_condition_options.map(&:last)
+    labels = possession_purchase_condition_options.map(&:first)
+
+    assert_equal %w[first_hand second_hand b_stock], values
+    assert_equal ['New (first-hand)', 'Second-hand', 'B-stock'], labels
+  end
 end

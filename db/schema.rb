@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -291,6 +291,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_11_120000) do
     t.bigint "product_id"
     t.bigint "product_option_id"
     t.bigint "product_variant_id"
+    t.integer "purchase_condition"
     t.bigint "user_id", null: false
     t.index ["custom_product_id"], name: "index_possessions_on_custom_product_id", unique: true
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"

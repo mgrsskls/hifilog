@@ -20,6 +20,12 @@ module ApplicationHelper
     "#{number_with_delimiter number_to_rounded(price, precision: 2)} #{currency}"
   end
 
+  def possession_purchase_condition_options
+    Possession.purchase_conditions.keys.map do |name|
+      [I18n.t("activerecord.enums.possession.purchase_condition.#{name}"), name]
+    end
+  end
+
   def user_possessions_count(user:, prev_owned: false)
     return unless user
 

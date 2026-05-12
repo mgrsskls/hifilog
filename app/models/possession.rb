@@ -3,6 +3,12 @@
 class Possession < ApplicationRecord
   include Image
 
+  enum :purchase_condition, {
+    first_hand: 0,
+    second_hand: 1,
+    b_stock: 2
+  }, allow_nil: true
+
   scope :for_stats, -> { includes(:product_variant, :custom_product, product: :brand) }
   scope :current, -> { where.not(prev_owned: true) }
   scope :with_period, -> { where.not(period_from: nil) }
@@ -31,6 +37,12 @@ class Possession < ApplicationRecord
     return product.brand if product.present?
 
     nil
+  end
+
+  def purchase_condition_label
+    return if purchase_condition.blank?
+
+    I18n.t("activerecord.enums.possession.purchase_condition.#{purchase_condition}")
   end
 
   def duration
