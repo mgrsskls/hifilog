@@ -27,4 +27,23 @@ class UserActivity < ApplicationRecord
   def verb_sym
     verb.to_sym
   end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[subject user]
+  end
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[
+      created_at
+      hidden_at
+      id
+      metadata
+      occurred_at
+      subject_id
+      subject_type
+      updated_at
+      user_id
+      verb
+    ]
+  end
 end
