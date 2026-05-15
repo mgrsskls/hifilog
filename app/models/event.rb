@@ -18,7 +18,7 @@ class Event < ApplicationRecord
 
   validates :name, :start_date, presence: true
   validates :calendar_year, presence: true
-  validates :slug, presence: true
+  validates :slug, presence: true, uniqueness: { scope: :calendar_year }
 
   scope :past, -> { where(end_date: ..Time.zone.yesterday).or(where(start_date: ..Time.zone.yesterday, end_date: nil)) }
   scope :upcoming, -> { where(end_date: Time.zone.today..).or(where(start_date: Time.zone.today.., end_date: nil)) }

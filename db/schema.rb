@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_14_11_99_99) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -228,9 +228,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_120000) do
     t.string "country_code"
     t.datetime "created_at", null: false
     t.date "end_date"
-    t.string "name"
+    t.string "name", null: false
     t.string "slug", null: false
-    t.date "start_date"
+    t.date "start_date", null: false
     t.datetime "updated_at", null: false
     t.string "url"
     t.index ["country_code"], name: "index_events_on_country_code"
