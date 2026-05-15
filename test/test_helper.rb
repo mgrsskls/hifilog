@@ -7,6 +7,14 @@ require_relative '../config/environment'
 require 'rails/test_help'
 
 module TestSupportHelpers
+  ONE_BY_ONE_PNG = Base64.decode64(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+  ).freeze
+
+  def one_by_one_png_upload(filename: 'test.png')
+    { io: StringIO.new(ONE_BY_ONE_PNG), filename:, content_type: 'image/png' }
+  end
+
   def replace_request_env!(url)
     request.env.replace(Rack::MockRequest.env_for(url))
   end

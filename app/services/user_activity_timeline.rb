@@ -20,8 +20,10 @@
 #   URLs are derived at render time (see +SubjectLookup#setup_product_activity_product_url+).
 # - Rows from when the setup was private are omitted (+metadata+ +private+ at write time, or
 #   +recorded_while_setup_private+ which +before_destroy+ metadata snapshots do not overwrite).
-# - +setup_made_private+ is stored for data integrity but never rendered; only +setup_made_public+ /
-#   +setup_created+ setup lines appear when the setup is currently public or was public when destroyed.
+# - +setup_made_private+, possession/profile image upload/delete verbs (+possession_image_*+, +avatar_*+,
+#   +decorative_image_*+) are stored but never rendered on the feed.
+# - Only +setup_made_public+ / +setup_created+ setup lines appear when the setup is currently public or was
+#   public when destroyed.
 # - Same +logged_at+ (e.g. backfill using +setup.created_at+ for both): +setup_product_added+ /
 #   +setup_product_removed+ sort above +setup_created+ / +setup_made_public+ so the feed (newest first)
 #   shows membership changes before the “created setup” line for that instant.
@@ -86,7 +88,7 @@ class UserActivityTimeline
   private
 
   def activities_for_timeline
-    scope = @user.user_activities.visible.chronological.includes(:subject)
+    scope = @user.user_activities.visible.for_feed.chronological.includes(:subject)
     activities = scope.to_a
     preload_timeline_subjects!(activities)
     activities

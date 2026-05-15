@@ -48,4 +48,49 @@ class UserActivitiesBackfillTest < ActiveSupport::TestCase
 
     assert_equal possession.id.to_s, act.metadata['possession_id'].to_s
   end
+
+  test 'run_all creates possession_image_uploaded from existing images when missing' do
+    user = users(:without_anything)
+    possession = travel_to(Time.zone.local(2026, 8, 1, 10, 0, 0)) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+    end
+    travel_to(Time.zone.local(2026, 8, 1, 11, 0, 0)) do
+      possession.update!(images: [one_by_one_png_upload(filename: 'backfill.png')])
+    end
+    attachment = possession.images.attachments.sole
+    UserActivity.where(user_id: user.id, subject: possession, verb: 'possession_image_uploaded').delete_all
+
+    assert_difference(-> { UserActivity.where(verb: 'possession_image_uploaded', subject: possession).count }, 1) do
+      UserActivities::Backfill.run_all
+    end
+
+    act = UserActivity.where(
+      user_id: user.id,
+      subject: possession,
+      verb: 'possession_image_uploaded'
+    ).where("metadata->>'image_attachment_id' = ?", attachment.id.to_s).sole
+
+    assert_equal Time.zone.local(2026, 8, 1, 11, 0, 0), act.occurred_at
+  end
+
+  test 'run_all creates avatar_uploaded from existing avatar when missing' do
+    user = users(:without_anything)
+    travel_to(Time.zone.local(2026, 9, 1, 10, 0, 0)) do
+      user.update!(avatar: one_by_one_png_upload(filename: 'backfill-avatar.png'))
+    end
+    attachment = user.avatar.attachment
+    UserActivity.where(user_id: user.id, subject: user, verb: 'avatar_uploaded').delete_all
+
+    assert_difference(-> { UserActivity.where(verb: 'avatar_uploaded', subject: user).count }, 1) do
+      UserActivities::Backfill.run_all
+    end
+
+    act = UserActivity.where(
+      user_id: user.id,
+      subject: user,
+      verb: 'avatar_uploaded'
+    ).where("metadata->>'image_attachment_id' = ?", attachment.id.to_s).sole
+
+    assert_equal Time.zone.local(2026, 9, 1, 10, 0, 0), act.occurred_at
+  end
 end

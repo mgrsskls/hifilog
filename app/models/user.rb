@@ -43,6 +43,8 @@ class User < ApplicationRecord
   validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
   validate :validate_decorative_image_content_type, :validate_decorative_image_file_size, on: :update
 
+  after_commit :record_profile_image_upload_activities, on: :update
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -51,6 +53,25 @@ class User < ApplicationRecord
 
   def profile_path
     user_path(user_name.downcase)
+  end
+
+  def assign_attributes(new_attributes)
+    capture_profile_image_attachment_ids_before_assign(new_attributes) if persisted?
+    super
+  end
+
+  def purge_avatar!
+    return unless avatar.attached?
+
+    UserActivities::Recorder.avatar_deleted(self, image_attachment: avatar.attachment)
+    avatar.purge
+  end
+
+  def purge_decorative_image!
+    return unless decorative_image.attached?
+
+    UserActivities::Recorder.decorative_image_deleted(self, image_attachment: decorative_image.attachment)
+    decorative_image.purge
   end
 
   def lowercase_user_name
@@ -99,6 +120,43 @@ class User < ApplicationRecord
 
     errors.add(:decorative_image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
   end
+
+  def capture_profile_image_attachment_ids_before_assign(new_attributes)
+    attrs = new_attributes.stringify_keys
+    @avatar_attachment_id_before_save = avatar.attachment&.id if attrs.key?('avatar')
+    return unless attrs.key?('decorative_image')
+
+    @decorative_image_attachment_id_before_save = decorative_image.attachment&.id
+  end
+
+  def record_profile_image_upload_activities
+    record_profile_image_changes(:avatar, @avatar_attachment_id_before_save)
+    record_profile_image_changes(:decorative_image, @decorative_image_attachment_id_before_save)
+  ensure
+    @avatar_attachment_id_before_save = nil
+    @decorative_image_attachment_id_before_save = nil
+  end
+
+  def record_profile_image_changes(attachment_name, before_id)
+    attachment = public_send(attachment_name).attachment
+    current_id = attachment&.id
+
+    if before_id.present? && before_id != current_id
+      UserActivities::Recorder.public_send(
+        "#{attachment_name}_deleted", self, image_attachment_id: before_id
+      )
+    end
+
+    return unless current_id.present? && current_id != before_id
+
+    UserActivities::Recorder.public_send(
+      "#{attachment_name}_uploaded", self, image_attachment: attachment
+    )
+  end
+
+  private :capture_profile_image_attachment_ids_before_assign,
+          :record_profile_image_upload_activities,
+          :record_profile_image_changes
 
   # This is used for dropdowns in active_admin
   # :nocov:

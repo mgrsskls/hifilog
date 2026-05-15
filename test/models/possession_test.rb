@@ -91,6 +91,93 @@ class PossessionTest < ActiveSupport::TestCase
     assert_nil possession.reload.moved_to_previous_at
   end
 
+  test 'attaching images records possession_image_uploaded activities' do
+    possession = possessions(:current_product)
+    possession.images.purge if possession.images.attached?
+
+    assert_difference(-> { UserActivity.where(verb: 'possession_image_uploaded', subject: possession).count }, 1) do
+      possession.update!(images: [one_by_one_png_upload(filename: 'one.png')])
+    end
+
+    attachment_id = possession.images.attachments.sole.id
+    act = UserActivity.find_by!(
+      user: possession.user,
+      subject: possession,
+      verb: 'possession_image_uploaded',
+      hidden_at: nil
+    )
+    assert_equal attachment_id, act.metadata['image_attachment_id'].to_i
+  end
+
+  test 'attaching multiple images records one activity per new image' do
+    possession = possessions(:current_product)
+    possession.images.purge if possession.images.attached?
+    assert_difference(-> { UserActivity.where(verb: 'possession_image_uploaded', subject: possession).count }, 2) do
+      possession.update!(
+        images: [
+          one_by_one_png_upload(filename: 'one.png'),
+          one_by_one_png_upload(filename: 'two.png')
+        ]
+      )
+    end
+
+    attachment_ids = possession.images.attachments.map(&:id)
+    recorded_ids = UserActivity.where(verb: 'possession_image_uploaded', subject: possession)
+                               .pluck(Arel.sql("metadata->>'image_attachment_id'"))
+                               .map(&:to_i)
+    assert_equal attachment_ids.sort, recorded_ids.sort
+  end
+
+  test 'purging images records possession_image_deleted activities' do
+    possession = possessions(:current_product)
+    possession.images.purge if possession.images.attached?
+    possession.update!(images: [one_by_one_png_upload(filename: 'one.png')])
+    attachment_id = possession.images.attachments.sole.id
+
+    assert_difference(-> { UserActivity.where(verb: 'possession_image_deleted', subject: possession).count }, 1) do
+      possession.purge_images_by_id!([attachment_id])
+    end
+
+    act = UserActivity.find_by!(
+      user: possession.user,
+      subject: possession,
+      verb: 'possession_image_deleted',
+      hidden_at: nil
+    )
+    assert_equal attachment_id, act.metadata['image_attachment_id'].to_i
+    assert_not possession.reload.images.attached?
+  end
+
+  test 're-attaching same possession does not duplicate upload activities for existing attachments' do
+    possession = possessions(:current_product)
+    possession.images.purge if possession.images.attached?
+    possession.update!(images: [one_by_one_png_upload(filename: 'one.png')])
+    attachment_id = possession.images.attachments.sole.id
+
+    assert_no_difference(-> { UserActivity.where(verb: 'possession_image_uploaded', subject: possession).count }) do
+      UserActivities::Recorder.possession_image_uploaded(
+        possession,
+        image_attachment: possession.images.attachments.sole
+      )
+    end
+
+    assert_equal 1, UserActivity.where(
+      verb: 'possession_image_uploaded',
+      subject: possession
+    ).where("metadata->>'image_attachment_id' = ?", attachment_id.to_s).count
+  end
+
+  test 'updating possession without new images does not record image upload activities' do
+    possession = possessions(:current_product)
+    possession.images.purge if possession.images.attached?
+    possession.update!(images: [one_by_one_png_upload(filename: 'one.png')])
+    UserActivity.where(verb: 'possession_image_uploaded', subject: possession).delete_all
+
+    assert_no_difference(-> { UserActivity.where(verb: 'possession_image_uploaded', subject: possession).count }) do
+      possession.update!(period_from: 1.day.ago)
+    end
+  end
+
   test 'destroy sets hidden_at on related user activities' do
     user = users(:without_anything)
     possession = travel_to(Time.zone.local(2026, 8, 1, 10, 0, 0)) do

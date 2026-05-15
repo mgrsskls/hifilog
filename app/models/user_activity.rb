@@ -13,6 +13,23 @@ class UserActivity < ApplicationRecord
     setup_product_added
     setup_product_removed
     custom_product_created
+    possession_image_uploaded
+    possession_image_deleted
+    avatar_uploaded
+    avatar_deleted
+    decorative_image_uploaded
+    decorative_image_deleted
+  ].freeze
+
+  # Persisted for auditing/admin but omitted when building the public profile feed.
+  FEED_HIDDEN_VERBS = %w[
+    setup_made_private
+    possession_image_uploaded
+    possession_image_deleted
+    avatar_uploaded
+    avatar_deleted
+    decorative_image_uploaded
+    decorative_image_deleted
   ].freeze
 
   belongs_to :user
@@ -22,6 +39,7 @@ class UserActivity < ApplicationRecord
   validates :occurred_at, presence: true
 
   scope :visible, -> { where(hidden_at: nil) }
+  scope :for_feed, -> { where.not(verb: FEED_HIDDEN_VERBS) }
   scope :chronological, -> { order(occurred_at: :desc) }
 
   def verb_sym

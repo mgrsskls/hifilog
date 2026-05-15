@@ -109,6 +109,33 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to product_url(id: possession.product.friendly_id)
   end
 
+  test 'update with delete_image records possession_image_deleted' do
+    user = users(:one)
+    possession = possessions(:current_product)
+    possession.images.purge if possession.images.attached?
+    possession.update!(images: [one_by_one_png_upload(filename: 'remove.png')])
+    attachment = possession.images.attachments.sole
+
+    sign_in user
+
+    assert_difference(-> { UserActivity.where(verb: 'possession_image_deleted', subject: possession).count }, 1) do
+      patch possession_url(possession), params: {
+        possession: {},
+        delete_image: [attachment.id.to_s]
+      }
+    end
+
+    assert_response :redirect
+    assert_not possession.reload.images.attached?
+
+    act = UserActivity.find_by!(
+      user: user,
+      subject: possession,
+      verb: 'possession_image_deleted'
+    )
+    assert_equal attachment.id, act.metadata['image_attachment_id'].to_i
+  end
+
   test 'should update possession purchase_condition' do
     user = users(:one)
     possession = user.possessions.first

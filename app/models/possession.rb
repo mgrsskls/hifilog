@@ -33,9 +33,11 @@ class Possession < ApplicationRecord
   validates :custom_product_id, uniqueness: true, allow_nil: true
 
   before_save :stamp_moved_to_previous_at_when_became_previous
+  before_save :capture_image_attachment_ids_before_save
 
   before_destroy :hide_user_activities_for_possession
   after_commit :sync_user_activities_for_possession, on: [:create, :update]
+  after_commit :record_possession_image_upload_activities, on: [:create, :update]
 
   def brand
     return product_variant.product.brand if product_variant.present?
@@ -48,6 +50,14 @@ class Possession < ApplicationRecord
     return if purchase_condition.blank?
 
     I18n.t("activerecord.enums.possession.purchase_condition.#{purchase_condition}")
+  end
+
+  def purge_images_by_id!(ids)
+    Array(ids).compact_blank.each do |id|
+      attachment = images.find(id)
+      UserActivities::Recorder.possession_image_deleted(self, image_attachment: attachment)
+      attachment.purge
+    end
   end
 
   def duration
@@ -80,6 +90,29 @@ class Possession < ApplicationRecord
   # :nocov:
 
   private
+
+  def capture_image_attachment_ids_before_save
+    @image_attachment_ids_before_save = images.attachments.map(&:id)
+  end
+
+  def record_possession_image_upload_activities
+    before_ids = @image_attachment_ids_before_save || []
+    new_ids = images.attachments.map(&:id) - before_ids
+    return if new_ids.empty?
+
+    presenter = PossessionPresenterService.map_to_presenters([self]).first
+    attachments_by_id = images.attachments.index_by(&:id)
+    new_ids.each do |attachment_id|
+      attachment = attachments_by_id[attachment_id]
+      next unless attachment
+
+      UserActivities::Recorder.possession_image_uploaded(
+        self, image_attachment: attachment, presenter:
+      )
+    end
+  ensure
+    @image_attachment_ids_before_save = nil
+  end
 
   def sync_user_activities_for_possession
     UserActivities::Recorder.sync_possession(self)

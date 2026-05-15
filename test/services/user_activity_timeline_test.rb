@@ -678,6 +678,59 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
     assert_includes item_after.url, '/products/'
   end
 
+  test 'possession_image_deleted is persisted but not shown on activity timeline' do
+    user = users(:without_anything)
+    possession = travel_to(Time.zone.local(2026, 8, 3, 10, 0, 0)) do
+      Possession.create!(user: user, product: products(:two), prev_owned: false)
+    end
+    travel_to(Time.zone.local(2026, 8, 3, 11, 0, 0)) do
+      possession.update!(images: [one_by_one_png_upload(filename: 'to-delete.png')])
+    end
+    attachment_id = possession.images.attachments.sole.id
+    possession.purge_images_by_id!([attachment_id])
+
+    assert UserActivity.exists?(user: user, subject: possession, verb: 'possession_image_deleted')
+    items = timeline_items_for(user.reload)
+    assert_not(items.any? { |i| i.verb == :possession_image_deleted })
+  end
+
+  test 'possession_image_uploaded is persisted but not shown on activity timeline' do
+    user = users(:without_anything)
+    possession = travel_to(Time.zone.local(2026, 8, 2, 10, 0, 0)) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+    end
+    travel_to(Time.zone.local(2026, 8, 2, 11, 0, 0)) do
+      possession.update!(images: [one_by_one_png_upload(filename: 'feed-hidden.png')])
+    end
+
+    assert UserActivity.exists?(user: user, subject: possession, verb: 'possession_image_uploaded')
+    items = timeline_items_for(user.reload)
+    assert_not(items.any? { |i| i.verb == :possession_image_uploaded })
+  end
+
+  test 'avatar_uploaded is persisted but not shown on activity timeline' do
+    user = users(:without_anything)
+    travel_to(Time.zone.local(2026, 9, 2, 11, 0, 0)) do
+      user.update!(avatar: one_by_one_png_upload(filename: 'feed-hidden-avatar.png'))
+    end
+
+    assert UserActivity.exists?(user: user, subject: user, verb: 'avatar_uploaded')
+    items = timeline_items_for(user.reload)
+    assert_not(items.any? { |i| i.verb == :avatar_uploaded })
+  end
+
+  test 'avatar_deleted is persisted but not shown on activity timeline' do
+    user = users(:without_anything)
+    travel_to(Time.zone.local(2026, 9, 3, 10, 0, 0)) do
+      user.update!(avatar: one_by_one_png_upload(filename: 'to-delete-avatar.png'))
+    end
+    user.purge_avatar!
+
+    assert UserActivity.exists?(user: user, subject: user, verb: 'avatar_deleted')
+    items = timeline_items_for(user.reload)
+    assert_not(items.any? { |i| i.verb == :avatar_deleted })
+  end
+
   test 'setup_made_private is persisted but not shown on activity timeline' do
     user = users(:without_anything)
     setup = travel_to(Time.zone.local(2026, 6, 11, 8, 0, 0)) do

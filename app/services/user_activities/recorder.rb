@@ -28,6 +28,78 @@ class UserActivities::Recorder
       end
     end
 
+    def possession_image_uploaded(possession, occurred_at: Time.current, image_attachment: nil,
+                                  image_attachment_id: nil, presenter: nil)
+      record_possession_image_activity!(
+        possession,
+        verb: 'possession_image_uploaded',
+        occurred_at:,
+        attachment: image_attachment || image_attachment_id,
+        presenter:
+      )
+    end
+
+    def possession_image_deleted(possession, occurred_at: Time.current, image_attachment: nil, image_attachment_id: nil,
+                                 presenter: nil)
+      record_possession_image_activity!(
+        possession,
+        verb: 'possession_image_deleted',
+        occurred_at:,
+        attachment: image_attachment || image_attachment_id,
+        presenter:
+      )
+    end
+
+    def possession_image_activity_exists?(user_id:, possession:, verb:, image_attachment_id:)
+      return false if image_attachment_id.blank?
+
+      UserActivity.where(user_id:, subject: possession, verb:)
+                  .exists?(["metadata->>'image_attachment_id' = ?", image_attachment_id.to_s])
+    end
+
+    def avatar_uploaded(user, occurred_at: Time.current, image_attachment: nil, image_attachment_id: nil)
+      record_user_profile_image_activity!(
+        user,
+        verb: 'avatar_uploaded',
+        occurred_at:,
+        attachment: image_attachment || image_attachment_id
+      )
+    end
+
+    def avatar_deleted(user, occurred_at: Time.current, image_attachment: nil, image_attachment_id: nil)
+      record_user_profile_image_activity!(
+        user,
+        verb: 'avatar_deleted',
+        occurred_at:,
+        attachment: image_attachment || image_attachment_id
+      )
+    end
+
+    def decorative_image_uploaded(user, occurred_at: Time.current, image_attachment: nil, image_attachment_id: nil)
+      record_user_profile_image_activity!(
+        user,
+        verb: 'decorative_image_uploaded',
+        occurred_at:,
+        attachment: image_attachment || image_attachment_id
+      )
+    end
+
+    def decorative_image_deleted(user, occurred_at: Time.current, image_attachment: nil, image_attachment_id: nil)
+      record_user_profile_image_activity!(
+        user,
+        verb: 'decorative_image_deleted',
+        occurred_at:,
+        attachment: image_attachment || image_attachment_id
+      )
+    end
+
+    def user_profile_image_activity_exists?(user_id:, user:, verb:, image_attachment_id:)
+      return false if image_attachment_id.blank?
+
+      UserActivity.where(user_id:, subject: user, verb:)
+                  .exists?(["metadata->>'image_attachment_id' = ?", image_attachment_id.to_s])
+    end
+
     def custom_product_created(custom_product)
       user = custom_product.user
       return unless user
@@ -190,6 +262,74 @@ class UserActivities::Recorder
       activity.occurred_at = occurred_at if activity.new_record? || activity.occurred_at.blank?
       activity.metadata = (activity.metadata || {}).merge(stringify_keys(metadata))
       activity.save!
+    end
+
+    def record_possession_image_activity!(possession, verb:, occurred_at:, attachment: nil, presenter: nil)
+      user = possession.user
+      return unless user
+
+      attachment_id = possession_image_attachment_id(attachment)
+      return if attachment_id.blank?
+      return if possession_image_activity_exists?(
+        user_id: user.id, possession:, verb:, image_attachment_id: attachment_id
+      )
+
+      presenter ||= PossessionPresenterService.map_to_presenters([possession]).first
+      UserActivity.create!(
+        user_id: user.id,
+        subject: possession,
+        verb:,
+        occurred_at:,
+        metadata: stringify_keys(
+          {
+            'display_name' => presenter&.display_name,
+            'url' => presenter&.show_path,
+            'period_from' => possession.period_from&.iso8601,
+            'period_to' => possession.period_to&.iso8601,
+            'possession_created_at' => possession.created_at&.iso8601,
+            'image_attachment_id' => attachment_id
+          }.compact
+        )
+      )
+    end
+
+    def possession_image_attachment_id(attachment)
+      image_attachment_id(attachment)
+    end
+
+    def record_user_profile_image_activity!(user, verb:, occurred_at:, attachment: nil)
+      return unless user&.persisted?
+
+      attachment_id = image_attachment_id(attachment)
+      return if attachment_id.blank?
+      return if user_profile_image_activity_exists?(
+        user_id: user.id, user:, verb:, image_attachment_id: attachment_id
+      )
+
+      UserActivity.create!(
+        user_id: user.id,
+        subject: user,
+        verb:,
+        occurred_at:,
+        metadata: stringify_keys(
+          {
+            'display_name' => user.user_name,
+            'url' => user.profile_path,
+            'image_attachment_id' => attachment_id
+          }.compact
+        )
+      )
+    end
+
+    def image_attachment_id(attachment)
+      case attachment
+      when ActiveStorage::Attachment
+        attachment.id
+      when Integer
+        attachment
+      else
+        attachment.presence&.to_i
+      end
     end
 
     def stringify_keys(hash)

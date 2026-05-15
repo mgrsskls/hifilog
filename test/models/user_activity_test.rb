@@ -64,6 +64,25 @@ class UserActivityTest < ActiveSupport::TestCase
     assert_equal :setup_created, activity.verb_sym
   end
 
+  test 'for_feed scope excludes feed-hidden verbs' do
+    user = users(:without_anything)
+    possession = Possession.create!(user: user, product: products(:one), prev_owned: false)
+    possession.update!(images: [one_by_one_png_upload(filename: 'scope.png')])
+    attachment = possession.images.attachments.sole
+
+    UserActivity.where(user: user, subject: possession, verb: 'possession_image_uploaded').delete_all
+    UserActivities::Recorder.possession_image_uploaded(possession, image_attachment: attachment)
+
+    assert UserActivity.exists?(user: user, verb: 'possession_image_uploaded')
+    assert_not_includes user.user_activities.visible.for_feed.pluck(:verb), 'possession_image_uploaded'
+    assert_includes user.user_activities.visible.pluck(:verb), 'possession_image_uploaded'
+
+    user.update!(avatar: one_by_one_png_upload(filename: 'scope-avatar.png'))
+    UserActivities::Recorder.avatar_uploaded(user, image_attachment: user.avatar.attachment)
+    assert_not_includes user.user_activities.visible.for_feed.pluck(:verb), 'avatar_uploaded'
+    assert_includes user.user_activities.visible.pluck(:verb), 'avatar_uploaded'
+  end
+
   test 'visible scope excludes hidden' do
     user = users(:without_anything)
     possession = travel_to(Time.zone.local(2026, 1, 5, 12, 0, 0)) do

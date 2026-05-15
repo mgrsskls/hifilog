@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 namespace :user_activities do
-  desc 'Backfill user_activities from existing possessions, setups, setup memberships, custom products, and event RSVPs'
+  desc 'Backfill user_activities from existing possessions (including image uploads),\
+        profile images (avatar and decorative banner uploads), setups, setup memberships,\
+        custom products, and event RSVPs'
   task backfill: :environment do
     UserActivities::Backfill.run_all
   end

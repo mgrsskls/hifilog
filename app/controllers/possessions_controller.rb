@@ -82,10 +82,7 @@ class PossessionsController < ApplicationController
     end
 
     if @possession.update(possession_params)
-      params[:delete_image]&.each do |id|
-        image = @possession.images.find(id)
-        image.purge
-      end
+      @possession.purge_images_by_id!(params[:delete_image])
     else
       show_errors
     end

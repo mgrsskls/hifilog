@@ -73,6 +73,24 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_user_registration_url
   end
 
+  test 'update with delete_avatar records avatar_deleted' do
+    user = users(:one)
+    sign_in user
+    user.update!(avatar: one_by_one_png_upload(filename: 'remove-via-settings.png'))
+    UserActivity.where(user: user, subject: user, verb: 'avatar_deleted').delete_all
+
+    assert_difference(-> { UserActivity.where(verb: 'avatar_deleted', subject: user).count }, 1) do
+      patch user_registration_url, params: {
+        user: { user_name: user.user_name, current_password: 'encrypted_password' },
+        delete_avatar: true
+      }
+    end
+
+    assert_response :redirect
+    assert_not user.reload.avatar.attached?
+    assert UserActivity.exists?(user: user, subject: user, verb: 'avatar_deleted')
+  end
+
   test 'user can sign up and confirm account' do
     # Simulate visiting the sign-up page
     get new_user_registration_path
