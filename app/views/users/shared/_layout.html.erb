@@ -35,7 +35,7 @@
           <figcaption class="is-dark">
             <h1><%= user.user_name %></h1>
             <small>
-              <b>Member since</b> <time datetime="<%= user.created_at %>"><%= format_date(user.created_at).html_safe %></time>
+              <b>Member since</b> <time datetime="<%= format_iso_datetime user.created_at %>" title="<%= user.created_at.strftime("%B %d, %Y") %>"><%= format_date(user.created_at).html_safe %></time>
             </small>
           </figcaption>
         </figure>
@@ -54,7 +54,7 @@
               <ul>
                 <% setups.each do |setup| %>
                   <li>
-                    <%= link_to setup.name, user_setup_path(user_id: user.user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: user.user_name, setup: setup.id) ? "page" : "false", class: "Sidebar-link" %>
+                    <%= link_to setup.name, user_setup_path(user_id: user.lowercase_user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: user.lowercase_user_name, setup: setup.id) ? "page" : "false", class: "Sidebar-link" %>
                   </li>
                 <% end %>
               </ul>
@@ -62,15 +62,15 @@
           </li>
           <li>
             <span>
-              <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: user.user_name), "aria-current": request.path == user_previous_products_path(user_id: user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+              <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_previous_products_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
               <small><%= user_possessions_count(user: user, prev_owned: true) %></small>
             </span>
           </li>
           <li>
-            <%= link_to t('headings.history'), user_history_path(user_id: user.user_name), "aria-current": request.path == user_history_path(user_id: user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+            <%= link_to t('headings.history'), user_history_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_history_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>
           <li class="Sidebar-separator">
-            <%= link_to t('headings.contributions'), user_contributions_path(user_id: user.user_name), "aria-current": request.path == user_contributions_path(user_id: user.user_name) ? "page" : "false", class: "Sidebar-link" %>
+            <%= link_to t('headings.contributions'), user_contributions_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_contributions_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>
         </ul>
       </nav>
