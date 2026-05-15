@@ -70,4 +70,39 @@ class PossessionTest < ActiveSupport::TestCase
     possession.purchase_condition = :b_stock
     assert_equal 'B-stock', possession.purchase_condition_label
   end
+
+  test 'stamps moved_to_previous_at when prev_owned flips to true on update' do
+    user = users(:without_anything)
+    travel_to(Time.zone.local(2026, 6, 10, 14, 30, 0)) do
+      possession = Possession.create!(user: user, product: products(:one), prev_owned: false)
+      assert_nil possession.moved_to_previous_at
+
+      possession.update!(prev_owned: true)
+
+      assert possession.reload.moved_to_previous_at.present?
+      assert possession.prev_owned?
+    end
+  end
+
+  test 'does not stamp moved_to_previous_at when created already previous' do
+    user = users(:without_anything)
+    possession = Possession.create!(user: user, product: products(:two), prev_owned: true)
+
+    assert_nil possession.reload.moved_to_previous_at
+  end
+
+  test 'destroy sets hidden_at on related user activities' do
+    user = users(:without_anything)
+    possession = travel_to(Time.zone.local(2026, 8, 1, 10, 0, 0)) do
+      Possession.create!(user: user, product: products(:diy_kit), prev_owned: false)
+    end
+    UserActivities::Recorder.sync_possession(possession)
+    assert UserActivity.exists?(user: user, subject: possession, hidden_at: nil)
+
+    possession.destroy!
+
+    assert UserActivity.where(user: user, subject_id: possession.id, subject_type: 'Possession').all? do |a|
+      a.reload.hidden_at.present?
+    end
+  end
 end

@@ -18,6 +18,8 @@ class CustomProduct < ApplicationRecord
   validates :sub_categories, presence: true
   validate :validate_image_content_type, :validate_image_file_size, on: :update
 
+  after_commit :record_custom_product_user_activity, on: :create
+
   attr_accessor :delete_image
 
   def custom_attributes
@@ -44,4 +46,10 @@ class CustomProduct < ApplicationRecord
     ]
   end
   # :nocov:
+
+  private
+
+  def record_custom_product_user_activity
+    UserActivities::Recorder.custom_product_created(self)
+  end
 end

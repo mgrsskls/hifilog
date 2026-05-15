@@ -1,0 +1,14 @@
+<div class="ProfileActivity-body">
+  <div class="ProfileActivity-iconContainer" aria-hidden="true">
+    <%= user_activity_icon(verb, event_upcoming:) %>
+    <%= render "users/activity/activity_icon_check", verb: verb, event_past:, event_upcoming: %>
+  </div>
+  <div class="ProfileActivity-text">
+    <div class="ProfileActivity-primary">
+      <%= primary_html %>
+    </div>
+    <time datetime="<%= format_iso_datetime logged_at %>" title="<%= logged_at.strftime("%B %d, %Y") %>">
+      <%= time_ago_in_words logged_at %> ago
+    </time>
+  </div>
+</div>

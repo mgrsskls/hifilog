@@ -127,7 +127,11 @@ class PossessionsController < ApplicationController
 
   def move_to_prev_owneds
     possession = current_user.possessions.find(params[:possession_id])
-    possession.update(prev_owned: true, setup: nil)
+    unless possession.prev_owned?
+      possession.prev_owned = true
+      possession.setup = nil
+      possession.moved_to_previous_at = Time.current
+    end
 
     product = possession.product
     product_variant = possession.product_variant

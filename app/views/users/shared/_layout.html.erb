@@ -69,6 +69,9 @@
           <li>
             <%= link_to t('headings.history'), user_history_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_history_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>
+          <li>
+            <%= link_to t('headings.activity'), user_activity_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_activity_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
+          </li>
           <li class="Sidebar-separator">
             <%= link_to t('headings.contributions'), user_contributions_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_contributions_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>

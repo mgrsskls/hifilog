@@ -270,6 +270,7 @@ en:
     products: "<p><b>No products found.</b></p>"
     products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}" rel="nofollow">add a product here</a>.</p>
     public_profile: "<p><i>%{name}</i> has not added any products to their collection yet.</p>"
+    public_profile_activity: "<p><i>%{name}</i> has no public activity to show yet.</p>"
     public_profile_history: "<p><i>%{name}</i> has not added enough information about their products yet.</p>"
     public_profile_previous: "<p><i>%{name}</i> has not added any products to list of previous products yet.</p>"
     setup_products: <p><b>You have not added any products to this setup yet.</b></p><p>You can either do it by clicking on "Add / Remove Product" or directly on a product product page.</p>
@@ -300,6 +301,7 @@ en:
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
   headings:
     account: Account
+    activity: Activity
     changelog: Changelog
     collection: Collection
     contributions: Contributions
@@ -417,6 +419,35 @@ en:
       discontinued: Discontinued
       in_your_collection: In my collection
       prev_owned: Previously owned
+  user_activity:
+    grouped:
+      summary_added_to_collection_html: "Added <b>%{count}</b> products to their collection"
+      summary_added_to_previous_html: "Added <b>%{count}</b> products to their list of previous products"
+      summary_custom_product_created_html: "Created <b>%{count}</b> custom products"
+      summary_event_attendance_past_html: "Attended <b>%{count}</b> past events"
+      summary_event_attendance_upcoming_html: "Will attend <b>%{count}</b> events"
+      summary_moved_to_previous_html: "No longer owns <b>%{count}</b> products"
+      summary_setup_created_html: "Added <b>%{count}</b> listening setups"
+      summary_setup_made_public_html: "Published <b>%{count}</b> listening setups"
+      summary_setup_product_added_html: "Added <b>%{count}</b> products to their listening setup %{setup_link}"
+      summary_setup_product_removed_html: "Removed <b>%{count}</b> products from their listening setup %{setup_link}"
+      summary_event_attendance_cancelled_html: "No longer attends <b>%{count}</b> events"
+    meta:
+      logged: "%{datetime}"
+      owned_until: "Owned until %{to}"
+      owned_since: "Owned since %{date}"
+    title:
+      added_to_collection_html: "Added %{link} to their collection"
+      added_to_previous_html: "Added %{link} to their list of previous products"
+      custom_product_created_html: "Created custom gear %{link}"
+      event_attendance_past_html: "Attended %{link}"
+      event_attendance_upcoming_html: "Will attend %{link}"
+      moved_to_previous_html: "No longer owns %{link}"
+      setup_created_html: "Added listening setup %{link}"
+      setup_made_public_html: "Published listening setup %{link}"
+      setup_product_added_html: "Added %{product_link} to their listening setup %{setup_link}"
+      setup_product_removed_html: "Removed %{product_link} from their listening setup %{setup_link}"
+      event_attendance_cancelled_html: "No longer attends %{link}"
   user:
     edit:
       delete:

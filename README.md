@@ -126,6 +126,53 @@ Typically a possession references either a product, a variant, or a custom produ
 
 `Note` attaches discussion text to a **product** and optionally to a **product variant** in a way constrained by validations (product required; variant uniqueness per user/product in the model).
 
+## User activity
+
+The **activity feed** on a user profile (`GET /users/:id/activity`) is built from persisted **`UserActivity`** rows: one record per notable action, with a **verb**, **occurred_at** timestamp, polymorphic **subject**, and JSON **metadata** for display snapshots (names, URLs, ownership periods, setup/product ids).
+
+Activities are **written at the source** via model callbacks that call **`UserActivities::Recorder`**. The feed is **read** through **`UserActivityTimeline`**, which loads visible rows, resolves subjects, applies visibility and deduplication rules, optionally **groups** similar consecutive events, and returns `Single` or `Grouped` rows for the view.
+
+### `UserActivity` (storage)
+
+- **Belongs to** `User` and **polymorphic** `subject` (`Possession`, `Setup`, `CustomProduct`, `EventAttendee`, or `Event` for cancellations).
+- **`verb`** is one of: `added_to_collection`, `added_to_previous`, `moved_to_previous`, `event_attendance`, `event_attendance_cancelled`, `setup_created`, `setup_made_public`, `setup_made_private`, `setup_product_added`, `setup_product_removed`, `custom_product_created`.
+- **`hidden_at`** soft-hides a row without deleting it (stale possession verbs, or when a possession is removed).
+- Uniqueness for upserts is **`user` + `subject` + `verb`** (possession verbs are synced; setup product lines and visibility toggles may create multiple rows over time).
+
+### Recording (`UserActivities::Recorder`)
+
+| Source            | Verbs                                                           | Notes                                                                                                                                                                                                                                                    |
+| ----------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Possession`      | `added_to_collection`, `added_to_previous`, `moved_to_previous` | **`UserActivities::PossessionSync`** derives the expected verb set from ownership state (`prev_owned?`, `period_*`, `moved_to_previous_at`). **`sync_possession`** upserts expected rows and hides stale verbs. Destroy hides all possession activities. |
+| `CustomProduct`   | `custom_product_created`                                        | Collection add for the linked possession is suppressed when created in the same ~2s window (merged into one “created custom product” line).                                                                                                              |
+| `Setup`           | `setup_created`, `setup_made_public`, `setup_made_private`      | `setup_made_private` is stored but not shown on the feed. Destroy merges latest setup metadata into existing activity rows.                                                                                                                              |
+| `SetupPossession` | `setup_product_added`, `setup_product_removed`                  | Subject is the **setup**; product label and ids live in **metadata**. Rows recorded while the setup was private are omitted from the feed.                                                                                                               |
+| `EventAttendee`   | `event_attendance`                                              | Upserted on RSVP.                                                                                                                                                                                                                                        |
+| Event cancel flow | `event_attendance_cancelled`                                    | Subject is the **event**; created when attendance is removed.                                                                                                                                                                                            |
+
+### Timeline (`UserActivityTimeline`)
+
+Turns `user.user_activities.visible` into feed rows with rules including:
+
+- **Ordering** by `occurred_at` (newest first), not by possession `period_from` / event dates (those are display-only).
+- **Setup visibility**: only public setups, or deleted setups that were public when destroyed (`metadata['private']`).
+- **Private draft setups**: `setup_created` while private is hidden when a later `setup_made_public` exists for the same setup.
+- **Grouping**: three or more **contiguous** items sharing the same day + verb bucket + setup scope collapse into one **grouped** card with nested lines.
+- **Deduping**: consecutive rows with the same verb + subject (and possession id for setup product lines) keep only the newest.
+
+Copy and icons use **`UserActivityVerbs`** and I18n under `user_activity.*`; rendering helpers live in **`UserActivityHelper`**.
+
+### Backfill
+
+For existing data after deploying the feature:
+
+```bash
+bin/rails db:migrate
+bin/rails user_activities:backfill
+```
+
+**`UserActivities::Backfill`** walks all users and replays possession sync, custom products, setups, setup memberships (synthetic `occurred_at` where `setup_possessions` has no `created_at`), and event RSVPs. Requires **`possessions.moved_to_previous_at`**. Safe to re-run (setup product adds skip when a matching row already exists).
+
 ## Search results
 
 `SearchResult` is another read-only view (similar in spirit to `product_items`) used to expose a unified search row shape for products and variants with slugs and names for links. It complements `ProductItem` but is tuned for search payloads rather than full list rows.
@@ -170,13 +217,14 @@ Wraps **`CustomProduct`** with an API shaped similarly to `ItemPresenter` / `Pos
 
 ## Quick reference
 
-| Concept           | Mutable?  | Typical use                                                             |
-| ----------------- | --------- | ----------------------------------------------------------------------- |
-| `Product`         | Yes       | Admin/catalog identity, product page, HABTM categories                  |
-| `ProductVariant`  | Yes       | Variant page, overrides under a product                                 |
-| `ProductItem`     | No (view) | Unified product index, filters, list thumbnails                         |
-| `Possession`      | Yes       | User owns gear, photos, setups, optional option                         |
-| `CustomProduct`   | Yes       | User-defined gear + one linked possession                               |
-| `Bookmark`        | Yes       | Saved pointer to product/variant/brand/event                            |
-| `ProductOption`   | Yes       | Spec lines on product or variant                                        |
-| `CustomAttribute` | Yes       | Field definitions per subcategory; product values in JSONB on `Product` |
+| Concept           | Mutable?  | Typical use                                                                                    |
+| ----------------- | --------- | ---------------------------------------------------------------------------------------------- |
+| `Product`         | Yes       | Admin/catalog identity, product page, HABTM categories                                         |
+| `ProductVariant`  | Yes       | Variant page, overrides under a product                                                        |
+| `ProductItem`     | No (view) | Unified product index, filters, list thumbnails                                                |
+| `Possession`      | Yes       | User owns gear, photos, setups, optional option                                                |
+| `CustomProduct`   | Yes       | User-defined gear + one linked possession                                                      |
+| `Bookmark`        | Yes       | Saved pointer to product/variant/brand/event                                                   |
+| `ProductOption`   | Yes       | Spec lines on product or variant                                                               |
+| `CustomAttribute` | Yes       | Field definitions per subcategory; product values in JSONB on `Product`                        |
+| `UserActivity`    | Yes       | Profile activity feed; written by `UserActivities::Recorder`, shown via `UserActivityTimeline` |

@@ -142,4 +142,31 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get user_history_path(user_id: users(:one).user_name)
     assert_response :success
   end
+
+  test 'activity' do
+    UserActivities::Backfill.run_all
+
+    get user_activity_path(user_id: users(:hidden).user_name)
+    assert_response :not_found
+
+    get user_activity_path(user_id: users(:logged_in_only).user_name)
+    assert_response :not_found
+
+    get user_activity_path(user_id: users(:one).user_name)
+    assert_response :success
+    assert_select 'h2', I18n.t('headings.activity')
+
+    sign_in users(:one)
+
+    get user_activity_path(user_id: users(:hidden).user_name)
+    assert_response :not_found
+
+    get user_activity_path(user_id: users(:logged_in_only).user_name)
+    assert_response :success
+    assert_select 'h2', I18n.t('headings.activity')
+
+    get user_activity_path(user_id: users(:one).user_name)
+    assert_response :success
+    assert_select 'h2', I18n.t('headings.activity')
+  end
 end

@@ -1,0 +1,44 @@
+<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category } do %>
+  <% if @activity_rows.any? %>
+    <ol class="ProfileActivity">
+      <% @activity_rows.each do |row| %>
+        <li class="ProfileActivity-item">
+          <% if row.is_a?(UserActivityTimeline::Grouped) %>
+            <div class="ProfileActivity-group">
+              <% primary_html = capture do %>
+                <p><%= user_activity_group_summary(row) %>:</p>
+              <% end %>
+              <%= render "users/activity/activity_main_row",
+                          verb: row.verb,
+                          event_past: row.event_past,
+                          event_upcoming: row.event_upcoming?,
+                          thumb_image: nil,
+                          logged_at: row.logged_at,
+                          primary_html: %>
+              <ul class="ProfileActivity-nested">
+                <% row.items.each do |item| %>
+                  <%= render "users/activity/activity_nested_item", item: item %>
+                <% end %>
+              </ul>
+            </div>
+          <% else %>
+            <% item = row.item %>
+            <% primary_html = capture do %>
+              <p><%= user_activity_item_title(item) %>.</p>
+              <%= user_activity_item_meta_period(item) %>
+            <% end %>
+            <%= render "users/activity/activity_main_row",
+                        verb: item.verb,
+                        event_past: item.event_past,
+                        event_upcoming: item.event_upcoming?,
+                        thumb_image: item.thumb_image,
+                        logged_at: item.logged_at,
+                        primary_html: %>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.public_profile_activity', name: h(@user.user_name)) %>
+  <% end %>
+<% end %>

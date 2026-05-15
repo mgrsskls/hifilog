@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_14_11_99_99) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_13_180129) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -281,6 +281,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_14_11_99_99) do
     t.datetime "created_at"
     t.bigint "custom_product_id"
     t.bigint "highlighted_image_id"
+    t.datetime "moved_to_previous_at"
     t.datetime "period_from"
     t.datetime "period_to"
     t.boolean "prev_owned", default: false, null: false
@@ -420,6 +421,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_14_11_99_99) do
     t.index ["category_id", "slug"], name: "index_sub_categories_category_id_slug", unique: true
   end
 
+  create_table "user_activities", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "hidden_at"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "occurred_at", null: false
+    t.bigint "subject_id", null: false
+    t.string "subject_type", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "verb", null: false
+    t.index ["hidden_at"], name: "index_user_activities_on_hidden_at"
+    t.index ["subject_type", "subject_id"], name: "index_user_activities_on_subject"
+    t.index ["user_id", "occurred_at"], name: "index_user_activities_on_user_id_and_occurred_at", order: { occurred_at: :desc }
+    t.index ["user_id", "subject_type", "subject_id", "verb"], name: "index_user_activities_on_user_subject_verb"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
@@ -478,6 +495,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_14_11_99_99) do
   add_foreign_key "setup_possessions", "setups"
   add_foreign_key "setups", "users"
   add_foreign_key "sub_categories", "categories"
+  add_foreign_key "user_activities", "users"
 
   create_view "product_items", sql_definition: <<-SQL
       SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,

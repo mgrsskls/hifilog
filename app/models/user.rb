@@ -13,6 +13,7 @@ class User < ApplicationRecord
     visible: 2
   }
 
+  has_many :user_activities, dependent: :destroy
   has_many :possessions, dependent: :destroy
   has_many :products, through: :possessions
   has_many :product_variants, through: :possessions
@@ -50,6 +51,10 @@ class User < ApplicationRecord
 
   def profile_path
     user_path(user_name.downcase)
+  end
+
+  def lowercase_user_name
+    user_name.downcase
   end
 
   def validate_avatar_content_type

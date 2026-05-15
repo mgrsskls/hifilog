@@ -5,6 +5,8 @@ class UsersController < ApplicationController
   include Possessions
   include ActionView::Helpers::SanitizeHelper
 
+  helper UserActivityHelper
+
   def index
     page_title(User.model_name.human.pluralize)
     @meta_desc = 'See all users of hifilog.com with public profiles and how much they contributed. ' \
@@ -81,6 +83,17 @@ class UsersController < ApplicationController
 
     @possessions = get_history_possessions(@user.possessions)
     @heading = I18n.t('headings.history')
+  end
+
+  def activity
+    @user = setup_user_page
+    return unless @user
+
+    @categories = []
+    @sub_category = nil
+    @activity_rows = UserActivityTimeline.grouped_for(@user, time_zone: Time.zone)
+    @heading = I18n.t('headings.activity')
+    page_title("#{@user.user_name} — #{@heading}")
   end
 
   def contributions

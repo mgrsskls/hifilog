@@ -80,6 +80,7 @@ Rails.application.routes.draw do
     get '/previous-products', to: 'users#prev_owneds'
     get '/setups/:setup', to: 'users#show', as: :setup
     get '/history', to: 'users#history', as: :history
+    get '/activity', to: 'users#activity', as: :activity
     get '/contributions', to: 'users#contributions', as: :contributions
   end
   post '/app_news/mark_as_read', to: 'app_news#mark_as_read'

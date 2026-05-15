@@ -202,6 +202,7 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
 
     post possession_move_to_prev_owneds_url(possession)
     assert_equal Possession.find(possession.id).prev_owned, true
+    assert Possession.find(possession.id).moved_to_previous_at.present?
     assert_redirected_to product_url(id: possession.product.friendly_id)
   end
 

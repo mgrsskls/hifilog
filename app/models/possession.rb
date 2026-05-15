@@ -32,6 +32,11 @@ class Possession < ApplicationRecord
 
   validates :custom_product_id, uniqueness: true, allow_nil: true
 
+  before_save :stamp_moved_to_previous_at_when_became_previous
+
+  before_destroy :hide_user_activities_for_possession
+  after_commit :sync_user_activities_for_possession, on: [:create, :update]
+
   def brand
     return product_variant.product.brand if product_variant.present?
     return product.brand if product.present?
@@ -73,4 +78,27 @@ class Possession < ApplicationRecord
     %w[]
   end
   # :nocov:
+
+  private
+
+  def sync_user_activities_for_possession
+    UserActivities::Recorder.sync_possession(self)
+  end
+
+  def hide_user_activities_for_possession
+    UserActivities::Recorder.hide_possession_activities!(self)
+  end
+
+  # Any transition from current collection to previous (not only +move_to_prev_owneds+) should record when that
+  # happened so the activity feed can show "moved" instead of "added to previous". New rows created as
+  # +prev_owned: true+ are skipped (+persisted?+ is false on first save).
+  def stamp_moved_to_previous_at_when_became_previous
+    return unless prev_owned?
+    return if moved_to_previous_at.present?
+    return unless persisted?
+    return unless attribute_in_database(:prev_owned) == false
+
+    self.moved_to_previous_at = Time.current
+    self.setup = nil
+  end
 end
