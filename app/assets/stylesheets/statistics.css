@@ -24,12 +24,14 @@
 	justify-content: space-between;
 	border-radius: var(--border-radius);
 	text-decoration: none;
-	padding: clamp(0.5rem, 7.5%, 2rem);
+	padding: 1rem;
 	background: var(--color-bg2);
 	color: inherit;
-	gap: 0.25rem;
+	gap: 0.5rem;
 	block-size: 100%;
 	box-sizing: border-box;
+	line-height: 1.5;
+	font-size: clamp(0.875rem, 5cqi, 1rem);
 }
 
 .StatisticsNumbers-item:nth-child(1) {
@@ -59,7 +61,7 @@
 
 .StatisticsNumber-value {
 	font-size: 2.4rem;
-	font-size: clamp(1.2rem, 16cqi, 3rem);
+	font-size: clamp(1.2rem, 15cqi, 3rem);
 	font-weight: bold;
 	line-height: 1;
 	color: var(--color, var(--color-accent));

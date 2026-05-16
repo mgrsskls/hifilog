@@ -2,6 +2,7 @@
 
 class UserController < ApplicationController
   include ApplicationHelper
+  include CurrentStatisticsOverview
   include HistoryHelper
   include Bookmarks
   include NewsletterHelper
@@ -13,15 +14,22 @@ class UserController < ApplicationController
     page_title(I18n.t('dashboard'))
     @active_dashboard_menu = :dashboard
 
-    data = PaperTrail::Version.where(whodunnit: current_user.id)
-                              .select(:item_id)
-                              .distinct
-                              .group('item_type', 'event')
-                              .count
-    @products_created = get_data(data, 'Product', 'create')
-    @products_edited = get_data(data, 'Product', 'update')
-    @brands_created = get_data(data, 'Brand', 'create')
-    @brands_edited = get_data(data, 'Brand', 'update')
+    @feed = UserActivityTimeline.grouped_for(current_user, time_zone: Time.zone, limit: 10)
+
+    load_current_statistics_overview
+
+    today = Time.zone.today
+
+    @newest_users = newest_users
+
+    @events = current_user.events
+                          .where(end_date: today..)
+                          .or(Event.where(start_date: today.., end_date: nil))
+                          .limit(2)
+                          .order(start_date: :asc)
+                          .to_a
+    event_ids = @events.map(&:id)
+    @event_attendee_counts = event_ids.empty? ? {} : EventAttendee.where(event_id: event_ids).group(:event_id).count
 
     @app_news = AppNews.where('created_at > ?', current_user.created_at)
                        .where.not(id: current_user.app_news_ids)
@@ -178,6 +186,12 @@ class UserController < ApplicationController
     page_title(I18n.t('headings.history'))
     @active_dashboard_menu = :history
     @possessions = get_history_possessions(current_user.possessions)
+  end
+
+  def activity
+    page_title(I18n.t('headings.activity'))
+    @active_dashboard_menu = :activity
+    @feed = UserActivityTimeline.grouped_for(current_user, time_zone: Time.zone)
   end
 
   def has

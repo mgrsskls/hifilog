@@ -1,9 +1,11 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "numbers" %>
+  <%= stylesheet_link_tag "statistics" %>
+  <%= stylesheet_link_tag "user_dashboard" %>
 <% end %>
 <%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
-  <h1 class="Dashboard-headline"><span><%= t('headings.dashboard') %></span><%= ", #{current_user.user_name}" %>!</h1>
-
+  <h1><span><%= t('headings.dashboard') %></span><%= ", #{current_user.user_name}" %>!</h1>
+  
   <% if @app_news.any? %>
     <details class="AppNews">
       <summary><%= t('app_news.heading') %></summary>
@@ -21,86 +23,141 @@
     </details>
   <% end %>
 
-  <div class="DashboardStatsWrapper">
-    <div class="DashboardStats">
-      <h2>Your HiFi Gear</h2>
+  <div class="UserDashboard">
+    <div class="UserDashboard-feed">
+      <div class="UserDashboard-heading">
+        <h2>Your Activity</h2>
+        <%= link_to "View all", dashboard_activity_path %>
+      </div>
+      <%= render "shared/feed", feed_items: @feed, empty_state_message: t('empty_state.no_activity_dashboard') %>
+    </div>
 
-      <% if user_possessions_count(user: current_user) > 0 || user_bookmarks_count(current_user) > 0 || user_setups_count(current_user) > 0 %>
-        <ul class="DashboardNumbers">
-          <li>
-            <%= link_to dashboard_products_path, class: "DashboardNumber" do %>
-              <span class="DashboardNumber-heading"><%= Product.model_name.human.pluralize %></span>
-              <span class="DashboardNumber-value"><%= user_possessions_count(user: current_user) %></span>
-            <% end %>
-          </li>
-          <li>
-            <%= link_to dashboard_bookmarks_path, class: "DashboardNumber" do %>
-              <span class="DashboardNumber-heading"><%= Bookmark.model_name.human.pluralize %></span>
-              <span class="DashboardNumber-value"><%= user_bookmarks_count(current_user) %></span>
-            <% end %>
-          </li>
-          <li>
-            <%= link_to dashboard_setups_path, class: "DashboardNumber" do %>
-              <span class="DashboardNumber-heading"><%= Setup.model_name.human.pluralize %></span>
-              <span class="DashboardNumber-value"><%= user_setups_count(current_user) %></span>
-            <% end %>
-          </li>
-          <li>
-            <%= link_to dashboard_prev_owneds_path, class: "DashboardNumber" do %>
-              <span class="DashboardNumber-heading"><%= t('headings.prev_owneds') %></span>
-              <span class="DashboardNumber-value"><%= user_possessions_count(user: current_user, prev_owned: true) %></span>
-            <% end %>
-          </li>
-        </ul>
-      <% else %>
-        <div class="Dashboard-emptyState">
-          <%= render "shared/empty_state", message: t('empty_state.gear', products_path: products_path, brands_path: brands_path, setups_path: dashboard_setups_path) %>
+    <div class="UserDashboard-content">
+  
+      <div class="UserDashboard-statistics Statistics">
+        <div class="UserDashboard-heading">
+          <h2>Your Statistics</h2>
+          <%= link_to "View all", dashboard_statistics_root_path %>
         </div>
-      <% end %>
+        <%= render "statistics/overview_statistics",
+            overview_statistics: current_overview_statistics(
+              products_count: @current_amount_of_products,
+              brands_count: @current_amount_of_brands,
+              spendings: @current_spendings
+            ) %>
+      </div>
 
-      <h2>Your HiFi&thinsp;Log Contributions</h2>
-
-      <% if user_possessions_count(user: current_user) > 0 || user_bookmarks_count(current_user) > 0 || user_setups_count(current_user) > 0 %>
-        <div class="DashboardNumbersWrapper">
-          <h3><%= Product.model_name.human.pluralize %></h3>
-          <ul class="DashboardNumbers">
-            <li>
-              <div class="DashboardNumber">
-                <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
-                <span class="DashboardNumber-value"><%= @products_created %></span>
-              </div>
-            </li>
-            <li>
-              <div class="DashboardNumber">
-                <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
-                <span class="DashboardNumber-value"><%= @products_edited %></span>
-              </div>
-            </li>
-          </ul>
+      <div class="UserDashboard-events">
+        <div class="UserDashboard-heading">
+          <h2>Your Events</h2>
+          <%= link_to "View all", dashboard_events_path %>
         </div>
 
-        <div class="DashboardNumbersWrapper">
-          <h3><%= Brand.model_name.human.pluralize %></h3>
-          <ul class="DashboardNumbers">
-            <li>
-              <div class="DashboardNumber">
-                <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
-                <span class="DashboardNumber-value"><%= @brands_created %></span>
-              </div>
-            </li>
-            <li>
-              <div class="DashboardNumber">
-                <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
-                <span class="DashboardNumber-value"><%= @brands_edited %></span>
-              </div>
-            </li>
-          </ul>
+        <% if @events.any? %>
+          <ol>
+            <% @events.each do |event| %>
+              <li>
+                <% attendee_count = @event_attendee_counts[event.id] || 0 %>
+                <time datetime="<%= format_iso_date(event.start_date) %>">
+                  <%= humanize_date_range(event.start_date, event.end_date) %>
+                </time>
+
+                <%= link_to event.name, event_path(year: event.calendar_year, slug: event.friendly_id) %>
+
+                <div class="UserDashboard-eventMeta">
+                  <div class="EntityList-country u-flex u-gap-smd u-alignCenter">
+                    <% country_name = country_name_from_country_code(event.country_code) %>
+                    <img class="Flag" src="/flags/<%= event.country_code.downcase %>.svg" alt="Flag of <%= country_name %>" title="<%= country_name %>" loading="lazy" width="25">
+                    <%= country_name %>
+                  </div>
+
+                  <div class="EntityList-productsCount">
+                    <%= "#{attendee_count} #{t('activerecord.models.event_attendee', count: attendee_count)}" %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ol>
+        <% else %>
+          <div class="UserDashboard-empty">
+            <%= render "shared/empty_state", message: "<p><b>You have no upcoming events.</b></p><p>You can view all upcoming events <a href=\"#{dashboard_events_path}\">here</a>.</p>" %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="UserDashboard-newest">
+        <div class="UserDashboard-heading">
+          <h2>New on HiFi&thinsp;Log</h2>
         </div>
-      <% else %>
-        <div class="Dashboard-emptyState">
-          <%= render "shared/empty_state", message: t('empty_state.contributions', products_path: new_product_path, brands_path: new_brand_path) %>
+        
+        <div class="UserDashboard-newestLists">
+
+          <% if @newest_products.length > 0 %>
+            <div>
+              <div class="UserDashboard-subHeading">
+                <h3><%= Product.model_name.human.pluralize %></h3>
+                <%= link_to "View all", products_path %>
+              </div>
+              <ol>
+                <% @newest_products.last(5).each do |product| %>
+                  <li>
+                    <%= link_to product.model_no.present? ? "#{product.display_name} (#{product.model_no})" : product.display_name, product.path %>
+                  </li>
+                <% end %>
+              </ol>
+            </div>
+          <% end %>
+
+          <% if @newest_brands.length > 0 %>
+            <div>
+              <div class="UserDashboard-subHeading">
+                <h3><%= Brand.model_name.human.pluralize %></h3>
+                <%= link_to "View all", brands_path %>
+              </div>
+              <ol>
+                <% @newest_brands.last(5).each do |brand| %>
+                  <li>
+                    <%= link_to brand.name, brand_path(id: brand.friendly_id) %>
+                  </li>
+                <% end %>
+              </ol>
+            </div>
+          <% end %>
+
+          <% if @newest_events.length > 0 %>
+            <div>
+              <div class="UserDashboard-subHeading">
+                <h3><%= Event.model_name.human.pluralize %></h3>
+                <%= link_to "View all", events_path %>
+              </div>
+              <ol>
+                <% @newest_events.last(5).each do |event| %>
+                  <li>
+                    <%= link_to event.name, event_path(year: event.calendar_year, slug: event.friendly_id) %>
+                  </li>
+                <% end %>
+              </ol>
+            </div>
+          <% end %>
+          
+          <div>
+            <div class="UserDashboard-subHeading">
+              <h3><%= User.model_name.human.pluralize %></h3>
+              <%= link_to "View all", users_path %>
+            </div>
+            <ol>
+              <% @newest_users.each do |user| %>
+                <li>
+                  <%= user.visible? ?  link_to(user.user_name, user_path(id: user.lowercase_user_name)) : user.user_name %>
+                </li>
+              <% end %>
+            </ol>
+          </div>
+
         </div>
-      <% end %>
+        
+      </div>
+
     </div>
   </div>
 <% end %>

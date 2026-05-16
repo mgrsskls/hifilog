@@ -14,6 +14,26 @@ class UserControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_root_path
     assert_response :success
+    assert_select '.UserDashboard-feed'
+    assert_select '.UserDashboard-statistics .StatisticsNumbers'
+    assert_match 'You currently own', @response.body
+    assert_select '.UserDashboard-events'
+    assert_select '.UserDashboard-newest'
+    assert_select 'a[href=?]', dashboard_activity_path
+    assert_select 'a[href=?]', dashboard_statistics_root_path
+  end
+
+  test 'activity' do
+    get dashboard_activity_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_activity_path
+    assert_response :success
+    assert_select 'h1', text: I18n.t('headings.activity')
+    assert_select '.Feed, .EmptyState'
   end
 
   test 'products' do

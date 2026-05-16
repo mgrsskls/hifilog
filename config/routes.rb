@@ -55,6 +55,7 @@ Rails.application.routes.draw do
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
     get 'custom-products/:id/edit', to: 'custom_products#edit', as: :edit_custom_product
     get 'history', to: 'user#history', as: :history
+    get 'activity', to: 'user#activity', as: :activity
     scope 'statistics', as: :statistics do
       root 'statistics#current'
       get 'total', to: 'statistics#total', as: :total

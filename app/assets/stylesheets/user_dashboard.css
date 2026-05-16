@@ -1,0 +1,124 @@
+.UserDashboard {
+	--gap: 3rem;
+
+	display: grid;
+	gap: var(--gap);
+	padding-block-start: clamp(2rem, 5cqi, 3rem);
+}
+
+.UserDashboard-heading,
+.UserDashboard-subHeading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+
+	a {
+		font-size: 0.875rem;
+	}
+}
+
+.UserDashboard-heading {
+	padding-block-end: 1rem;
+	border-block-end: var(--border-light);
+	margin-block-end: 2rem;
+
+	h2 {
+		margin-block: 0;
+		font-size: 1.5rem;
+	}
+}
+
+.UserDashboard-subHeading {
+	margin-block-end: 0.5rem;
+	border-block-end: var(--border-light);
+	padding-block-end: 0.5rem;
+
+	h3 {
+		margin-block: 0;
+		font-size: 1.25rem;
+	}
+}
+
+ol + .UserDashboard-subHeading {
+	margin-block-start: 1.5rem;
+}
+
+@container dashboard-content (46rem < width < 56rem) {
+	.UserDashboard {
+		grid-template-columns: 61.8fr 38.2fr;
+	}
+}
+
+@container dashboard-content (width > 56rem) {
+	.UserDashboard {
+		grid-template-columns: 2fr 3fr;
+	}
+}
+
+.UserDashboard-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap);
+}
+
+.UserDashboard-events {
+	ol {
+		list-style: "";
+		padding: 0;
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+		gap: 1rem;
+	}
+
+	li {
+		background: var(--color-bg2);
+		padding: 1rem;
+		border-radius: var(--border-radius);
+
+		a {
+			display: block;
+			font-weight: 600;
+		}
+	}
+
+	time {
+		font-size: 0.875rem;
+		display: block;
+		color: var(--color-secondary);
+		font-weight: 500;
+	}
+}
+
+.UserDashboard-eventMeta {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	font-size: 0.875rem;
+	margin-block-start: 0.5rem;
+}
+
+.UserDashboard-newest {
+	grid-area: newest;
+}
+
+.UserDashboard-newestLists {
+	background: var(--color-bg2);
+	padding: clamp(1rem, 7.5%, 2rem);
+	border-radius: var(--border-radius);
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+	gap: 2rem;
+
+	ol {
+		list-style: square;
+		padding: 0;
+		margin: 0;
+		margin-inline-start: 1em;
+
+		a {
+			font-weight: 600;
+		}
+	}
+}
