@@ -2,22 +2,21 @@
 
 class StatisticsController < ApplicationController
   include ApplicationHelper
+  include CurrentStatisticsOverview
 
   before_action :authenticate_user!
   before_action :set_menu
 
   def current
-    @possessions = current_user.possessions.current.for_stats
-
-    @current_products_per_brand = get_products_per_brand(possessions: @possessions)
-    @current_amount_of_products = user_possessions_count(user: current_user)
-    @current_amount_of_brands   = @current_products_per_brand.size
+    load_current_statistics_overview
 
     @current_longest_products = PossessionPresenterService.map_to_presenters(
       @possessions.with_period.where(period_to: nil).sort_by(&:period_from)
     )
 
-    set_current_financials
+    @current_products_per_cost = StatisticsService.format_currency_with_presenters(
+      @current_purchase_by_currency, :price_purchase
+    )
   end
 
   def total
@@ -51,14 +50,6 @@ class StatisticsController < ApplicationController
   end
 
   private
-
-  def set_current_financials
-    raw_purchase = StatisticsService.aggregate_possessions_by_price_category(@possessions, :price_purchase,
-                                                                             :price_purchase_currency)
-
-    @current_spendings = StatisticsService.format_currency_aggregation(raw_purchase, :price_purchase, :spendings)
-    @current_products_per_cost = StatisticsService.format_currency_with_presenters(raw_purchase, :price_purchase)
-  end
 
   def set_total_financials
     purchase_data = StatisticsService.aggregate_possessions_by_price_category(@possessions, :price_purchase,

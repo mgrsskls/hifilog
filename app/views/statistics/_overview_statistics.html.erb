@@ -1,0 +1,13 @@
+<ul class="StatisticsNumbers">
+  <% overview_statistics.each do |statistic| %>
+    <li class="StatisticsNumbers-item">
+      <div class="StatisticsNumber">
+        <%= statistic[:label] %>
+        <span class="StatisticsNumber-valueWrapper">
+          <span class="StatisticsNumber-value"><%= statistic[:value] %></span>
+          <span class="StatisticsNumber-unit"><%= statistic[:unit] %></span>
+        </span>
+      </div>
+    </li>
+  <% end %>
+</ul>

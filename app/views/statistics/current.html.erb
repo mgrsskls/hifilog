@@ -1,19 +1,11 @@
 <%= render layout: "layout", locals: {
   active: :current,
   active_dashboard_menu: @active_dashboard_menu,
-  overview_statistics: [{
-    label: "You currently own",
-    value: @current_amount_of_products,
-    unit: Product.model_name.human(count: @current_amount_of_products)
-  }, {
-    label: "You have products from",
-    value: @current_amount_of_brands,
-    unit: Brand.model_name.human(count: @current_amount_of_brands)
-  }, {
-    label: "Your current products cost",
-    value: @current_spendings.any? ? number_with_delimiter(number_to_rounded(@current_spendings[0][:spendings], precision: 0)) : 0,
-    unit: @current_spendings.any? && @current_spendings[0][:currency].present? ? @current_spendings[0][:currency] : "n/a"
-  }]
+  overview_statistics: current_overview_statistics(
+    products_count: @current_amount_of_products,
+    brands_count: @current_amount_of_brands,
+    spendings: @current_spendings
+  )
 } do %>
   <div class="StatisticsSection">
     <h2><%= Product.model_name.human.pluralize %></h2>

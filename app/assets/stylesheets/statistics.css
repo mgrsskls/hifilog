@@ -5,7 +5,7 @@
 }
 
 .StatisticsNumbers {
-	--gap: clamp(0.75rem, 5cqi, 1.5rem);
+	--gap: 1rem;
 
 	display: grid;
 	margin: 0;
@@ -44,6 +44,12 @@
 	--color: hsl(200, 80%, 40%);
 }
 
+.StatisticsNumber-valueWrapper {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
 .StatisticsNumber-unit {
 	margin: 0;
 	font-weight: 600;
@@ -53,15 +59,14 @@
 
 .StatisticsNumber-value {
 	font-size: 2.4rem;
-	font-size: clamp(1.2rem, 20cqi, 3rem);
+	font-size: clamp(1.2rem, 16cqi, 3rem);
 	font-weight: bold;
 	line-height: 1;
 	color: var(--color, var(--color-accent));
 	margin-block-start: auto;
-	padding-block-start: 0.5rem;
 }
 
-@container statistics (width >= 36rem) {
+@container statistics (width >= 32rem) {
 	.StatisticsNumbers {
 		grid-template-columns: repeat(3, 1fr);
 	}
