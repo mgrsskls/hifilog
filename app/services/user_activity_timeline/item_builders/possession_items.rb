@@ -23,7 +23,6 @@ module UserActivityTimeline::ItemBuilders::PossessionItems
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: presenter_highlight_image(presenter),
       possession_created_at: possession.created_at.presence || parse_meta_time(meta['possession_created_at']),
       setup_name: nil,
       setup_url: nil,

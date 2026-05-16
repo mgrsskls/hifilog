@@ -23,7 +23,6 @@ module UserActivityTimeline::ItemBuilders::SetupItems
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -46,12 +45,6 @@ module UserActivityTimeline::ItemBuilders::SetupItems
     setup_url = setup_activity_url(setup, meta)
     setup_id = setup&.id || meta['setup_id'].presence&.to_i
 
-    thumb = nil
-    if possession
-      presenter = @lookup.possession_presenter(possession)
-      thumb = presenter_highlight_image(presenter) if presenter
-    end
-
     UserActivityTimeline::Item.new(
       verb: activity.verb_sym,
       logged_at: activity.occurred_at,
@@ -62,7 +55,6 @@ module UserActivityTimeline::ItemBuilders::SetupItems
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: thumb,
       possession_created_at: nil,
       setup_name:,
       setup_url:,

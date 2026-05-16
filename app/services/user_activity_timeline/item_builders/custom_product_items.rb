@@ -9,12 +9,10 @@ module UserActivityTimeline::ItemBuilders::CustomProductItems
       presenter = CustomProductPresenter.new(cp)
       display_name = presenter.display_name
       url = presenter.show_path
-      thumb = presenter_highlight_image(presenter)
     else
       meta = activity.metadata || {}
       display_name = meta['display_name'].presence || '—'
       url = meta['url'].presence || '#'
-      thumb = nil
     end
 
     UserActivityTimeline::Item.new(
@@ -27,7 +25,6 @@ module UserActivityTimeline::ItemBuilders::CustomProductItems
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: thumb,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,

@@ -74,8 +74,7 @@ class UserActivityTimeline::SubjectLookup
                 .includes(
                   { product: :brand },
                   { product_variant: { product: :brand } },
-                  { custom_product: [:user, { images_attachments: :blob }] },
-                  { images_attachments: :blob },
+                  { custom_product: [:user] },
                   :user
                 )
                 .to_a

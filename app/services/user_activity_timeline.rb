@@ -45,7 +45,6 @@ class UserActivityTimeline
     :event_start_date,
     :event_end_date,
     :event_past,
-    :thumb_image,
     :possession_created_at,
     :setup_name,
     :setup_url,
@@ -66,39 +65,57 @@ class UserActivityTimeline
     delegate :event_upcoming?, to: :item
   end
 
-  def self.grouped_for(user, time_zone: Time.zone)
-    new(user, time_zone:).grouped_rows
+  def self.grouped_for(user, time_zone: Time.zone, limit: nil)
+    new(user, time_zone:, limit:).grouped_rows
   end
 
-  def initialize(user, time_zone: Time.zone)
+  def initialize(user, time_zone: Time.zone, limit: nil)
     @user = user
     @time_zone = time_zone
+    @limit = limit
   end
 
   def grouped_rows
-    flat = flat_items
+    rows = build_grouped_rows(flat_items)
+    @limit ? rows.first(@limit) : rows
+  end
+
+  private
+
+  def build_grouped_rows(flat)
     rows = []
     contiguous_cluster_key_runs(flat).each do |items|
       append_grouped_or_singles!(rows, items)
     end
     rows.sort_by! { |r| timeline_row_sort_tuple(r) }
-    rows
   end
 
-  private
-
   def activities_for_timeline
-    scope = @user.user_activities.visible.for_feed.chronological.includes(:subject)
-    activities = scope.to_a
+    activities = timeline_activities.to_a
     preload_timeline_subjects!(activities)
     activities
+  end
+
+  def timeline_activities
+    scope = @user.user_activities.visible.for_feed.chronological.includes(:subject)
+    return scope unless @limit
+
+    capped = scope.limit(activities_fetch_limit)
+    capped_activities = capped.to_a
+    return capped if capped_activities.size < activities_fetch_limit
+
+    scope
+  end
+
+  def activities_fetch_limit
+    (@limit * GROUP_THRESHOLD * 3) + GROUP_THRESHOLD
   end
 
   def preload_timeline_subjects!(activities)
     attendees = activities.filter_map { |a| a.subject if a.subject_type == 'EventAttendee' }
     custom_products = activities.filter_map { |a| a.subject if a.subject_type == 'CustomProduct' }
     preload_association(attendees, :event)
-    preload_association(custom_products, :user, { images_attachments: :blob })
+    preload_association(custom_products, :user)
   end
 
   def preload_association(records, *associations)
@@ -189,9 +206,9 @@ class UserActivityTimeline
   end
 
   def flat_items
-    activities = activities_for_timeline.to_a
+    activities = activities_for_timeline
     @lookup = SubjectLookup.new(user: @user, activities:)
-    made_public_setup_ids = setup_subject_ids_with_verb(activities, 'setup_made_public')
+    made_public_setup_ids = made_public_setup_ids_for_suppression
 
     pairs =
       activities.filter_map do |a|
@@ -248,6 +265,13 @@ class UserActivityTimeline
 
   def activity_created_as_private_setup?(metadata)
     ActiveModel::Type::Boolean.new.cast((metadata || {})['private'])
+  end
+
+  def made_public_setup_ids_for_suppression
+    @made_public_setup_ids_for_suppression ||= begin
+      activities = @user.user_activities.where(verb: 'setup_made_public').includes(:subject).to_a
+      setup_subject_ids_with_verb(activities, 'setup_made_public')
+    end
   end
 
   def setup_subject_ids_with_verb(activities, verb)

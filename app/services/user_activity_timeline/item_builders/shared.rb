@@ -3,12 +3,6 @@
 module UserActivityTimeline::ItemBuilders::Shared
   private
 
-  def presenter_highlight_image(presenter)
-    return nil unless presenter.respond_to?(:highlighted_image)
-
-    presenter.highlighted_image
-  end
-
   def parse_meta_date(value)
     return nil if value.blank?
 

@@ -61,6 +61,61 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
     assert_equal 2, collection_singles.size
   end
 
+  test 'grouped_for limit caps returned rows' do
+    user = users(:without_anything)
+    products = [products(:one), products(:two), products(:diy_kit)]
+    t = Time.zone.local(2026, 4, 1, 10, 0, 0)
+    12.times do |i|
+      travel_to(t + i.days) do
+        Possession.create!(user: user, product: products[i % 3], prev_owned: false)
+      end
+    end
+
+    all_rows = UserActivityTimeline.grouped_for(user)
+    limited_rows = UserActivityTimeline.grouped_for(user, limit: 10)
+
+    assert_operator all_rows.size, :>=, 12
+    assert_equal 10, limited_rows.size
+    assert_equal timeline_row_keys(all_rows.first(10)), timeline_row_keys(limited_rows)
+  end
+
+  test 'grouped_for limit matches full timeline when fetch cap is exceeded' do
+    user = users(:without_anything)
+    products = [products(:one), products(:two), products(:diy_kit)]
+    t = Time.zone.local(2026, 4, 1, 10, 0, 0)
+    12.times do |i|
+      travel_to(t + i.days) do
+        Possession.create!(user: user, product: products[i % 3], prev_owned: false)
+      end
+    end
+
+    timeline = UserActivityTimeline.new(user, time_zone: Time.zone, limit: 10)
+    timeline.define_singleton_method(:activities_fetch_limit) { 5 }
+
+    limited = timeline.send(:grouped_rows)
+    full = UserActivityTimeline.grouped_for(user).first(10)
+
+    assert_equal 10, limited.size
+    assert_equal timeline_row_keys(full), timeline_row_keys(limited)
+  end
+
+  test 'grouped_for limit uses capped fetch when feed fits within fetch limit' do
+    user = users(:without_anything)
+    travel_to Time.zone.local(2026, 4, 1, 10, 0, 0) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+      Possession.create!(user: user, product: products(:two), prev_owned: false)
+    end
+
+    timeline = UserActivityTimeline.new(user, time_zone: Time.zone, limit: 10)
+    feed_scope = user.user_activities.visible.for_feed
+    assert_operator feed_scope.count, :<, timeline.send(:activities_fetch_limit)
+
+    limited = UserActivityTimeline.grouped_for(user, limit: 10)
+    full = UserActivityTimeline.grouped_for(user)
+
+    assert_equal timeline_row_keys(full), timeline_row_keys(limited)
+  end
+
   test 'fewer than threshold collection adds stay as single rows' do
     user = users(:without_anything)
     t = Time.zone.local(2026, 3, 5, 9, 0, 0)
@@ -756,6 +811,14 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
   def timeline_items_for(user)
     UserActivityTimeline.grouped_for(user).flat_map do |row|
       row.is_a?(UserActivityTimeline::Grouped) ? row.items : [row.item]
+    end
+  end
+
+  def timeline_row_keys(rows)
+    rows.map do |row|
+      verb = row.is_a?(UserActivityTimeline::Grouped) ? row.verb : row.item.verb
+      logged_at = row.is_a?(UserActivityTimeline::Grouped) ? row.logged_at : row.item.logged_at
+      [verb, logged_at]
     end
   end
 
