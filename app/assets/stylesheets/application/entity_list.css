@@ -40,6 +40,11 @@
 	}
 }
 
+.EntityList-image {
+	position: relative;
+	z-index: 1;
+}
+
 .EntityListItem-image {
 	--radius: calc(var(--border-radius) - 0.0625rem);
 

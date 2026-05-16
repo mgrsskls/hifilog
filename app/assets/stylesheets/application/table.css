@@ -46,10 +46,6 @@ table:not(:has(tbody + tbody)) tbody tr:nth-child(odd) {
 	background: var(--color-bg2);
 }
 
-tr:has(.Table-variant) {
-	border-block-start: var(--border-extra-light);
-}
-
 th {
 	text-align: start;
 }
@@ -88,19 +84,6 @@ td {
 	display: block;
 	line-height: 1.5;
 	margin-block-start: 0.25rem;
-}
-
-.Table-date {
-	width: 6.5em;
-}
-
-.Table-variant {
-	padding-inline-start: 2.5rem;
-	font-size: 0.875rem;
-}
-
-.Table-image {
-	width: 5rem;
 }
 
 .Table-symbols {

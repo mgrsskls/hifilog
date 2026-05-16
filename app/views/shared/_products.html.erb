@@ -1,177 +1,43 @@
 <% empty_state ||= "" %>
-<% include_images ||= defined?(include_images) ? include_images : true %>
-<% include_image_upload ||= defined?(include_image_upload) ? include_image_upload : true %>
 <% include_edit_link ||= false %>
 <% include_setup ||= false %>
 <% hide_brand ||= false %>
-<% hide_release_date ||= false %>
 <% hide_period ||= false %>
 <% hide_since ||= false %>
 <% delete_dialog ||= false %>
-<% items_breakpoint ||= 'm' %>
-<% remove_entity_partial ||= 'shared/remove_product_from_possessions' %>
 
-<div class="u-breakpoint u-breakpoint--<%= items_breakpoint %>">
-  <% if items.any? %>
-    <table class="u-breakpoint-item-l">
-      <thead>
-        <tr>
-          <% if include_images %>
-            <th class="Table-image">Photo</th>
-          <% end %>
-          <th><%= Product.human_attribute_name(:name) %></th>
-          <% unless hide_release_date %>
-            <th><%= Product.human_attribute_name(:release_date) %></th>
-          <% end %>
-          <% unless hide_since %>
-            <th style="width: 6em">Since</th>
-          <% end %>
-          <% unless hide_period %>
-            <th style="width: 6em">From</th>
-            <th style="width: 6em">Until</th>
-          <% end %>
-          <th><%= Category.model_name.human %></th>
-          <% if include_setup %>
-            <th><%= Setup.model_name %></th>
-          <% end %>
-          <th class="u-textEnd Table-actions">
-            <span class="u-hiddenVisually">
-              Actions
-            </span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <% items.each do |item| %>
-          <tr>
-            <% if include_images %>
-              <td class="Table-image">
-                <% if include_image_upload %>
-                  <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "table" %>
-                <% else %>
-                  <%= render "shared/product_image_dialog", item: item, prefix: "table" %>
-                <% end %>
-              </td>
-            <% end %>
-            <th scope="row">
-              <div class="u-flex u-gap-sm u-spaceBetween u-alignCenter">
-                <div>
-                  <% unless hide_brand %>
-                    <%= item.product.present? ? item.brand_name : "<i>#{item.brand_name}</i>".html_safe %><br>
-                  <% end %>
-                  <b><%= item.show_path.present? ? (link_to "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip, item.show_path) : item.name %></b>
-                  <% if item.product_option.present? || item.model_no.present? %>
-                    <small class="Table-productOption">
-                      <%= item.model_no if item.model_no.present? %>
-                      <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
-                      <%= item.product_option.option if item.product_option.present? %>
-                    </small>
-                  <% end %>
-                </div>
-                <% if item.diy_kit? %>
-                  <span class="Tag">
-                    <%= t('activerecord.attributes.product.diy_kit') %>
-                  </span>
-                <% end %>
-              </div>
-            </th>
-            <% unless hide_release_date %>
-              <td class="Table-sm Table-date">
-                <% if item.release_date.present? %>
-                  <time datetime="<%= item.release_date %>"><%= sanitize item.formatted_release_date %></time>
-                <% else %>
-                  -
-                <% end %>
-              </td>
-            <% end %>
-            <% unless hide_since %>
-              <%= render "shared/period_purchase_cell", item: item %>
-            <% end %>
-            <% unless hide_period %>
-              <%= render "shared/period_purchase_cell", item: item %>
-              <td class="Table-sm">
-                <% if item.period_to.present? %>
-                  <time datetime="<%= item.period_to %>"><%= format_date(item.period_to).html_safe %></time>
-                <% else %>
-                  -
-                <% end %>
-                <% if item.price_sale.present? %>
-                  <br>
-                  <%= display_price(item.price_sale, item.price_sale_currency) %>
-                <% end %>
-              </td>
-            <% end %>
-            <td class="Table-sm">
-              <% if item.sub_categories.any? %>
-                <%= item.sub_categories.map{ |sub_category| sub_category.name }.join(",<br>").html_safe %>
-              <% else %>
-                <%= item.categories.map{ |category| category.name }.join(",<br>").html_safe %>
-              <% end %>
-            </td>
-            <% if include_setup %>
-              <td class="Table-sm">
-                <%= item.setup.present? ? item.setup.name : "-" %>
-              </td>
-            <% end %>
-            <td class="Table-sm">
-              <ul class="MetaLinks">
-                <% if include_edit_link %>
-                  <li><%= link_to "Edit", item.edit_path %></li>
-                <% end %>
-                <li>
-                  <% if delete_dialog %>
-                    <%= render remove_entity_partial, possession: item, id: item.id %>
-                  <% else %>
-                    <%= button_to item.delete_button_label,
-                      item.delete_path,
-                      method: :delete,
-                      class: "DeleteButton",
-                      "data-msg": item.delete_confirm_msg
-                    %>
-                  <% end %>
-                </li>
-              </ul>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <ol class="EntityList EntityList--products u-breakpoint-item-s">
-      <% items.each do |item| %>
-        <li class="EntityList-item">
-          <div class="EntityListItem">
-            <div class="u-flex u-gap-md">
+<% if items.any? %>
+  <ol class="EntityList EntityList--products">
+    <% items.each do |item| %>
+      <li class="EntityList-item">
+        <div class="EntityListItem">
+          <div class="u-flex u-gap-md">
 
-              <% if include_images %>
-                <div class="EntityList-image">
-                  <% if include_image_upload %>
-                    <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
-                  <% else %>
-                    <%= render "shared/product_image_dialog", item: item, prefix: "list" %>
-                  <% end %>
-                </div>
-              <% end %>
-
-              <div class="EntityListItem-main">
-                <% unless hide_brand %>
-                  <span class="EntityListItem-brandName">
-                    <%= item.brand_name %>
-                  </span>
-                <% end %>
-                <a href="<%= item.show_path %>" class="EntityListItem-name">
-                  <%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %>
-                </a>
-                <% if item.product_option.present? || item.model_no.present? %>
-                  <small class="EntityListItem-modelName">
-                    <%= item.model_no if item.model_no.present? %>
-                    <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
-                    <%= item.product_option.option if item.product_option.present? %>
-                  </small>
-                <% end %>
+              <div class="EntityList-image">
+                <%= render "shared/image_upload", item: item, image_update_item: item.image_update_item, prefix: "list" %>
               </div>
 
+            <div class="EntityListItem-main">
+              <% unless hide_brand %>
+                <span class="EntityListItem-brandName">
+                  <%= item.brand_name %>
+                </span>
+              <% end %>
+              <a href="<%= item.show_path %>" class="EntityListItem-name">
+                <%= "#{item.product.name if item.product_variant.present?} #{item.short_name}".strip %>
+              </a>
+              <% if item.product_option.present? || item.model_no.present? %>
+                <small class="EntityListItem-modelName">
+                  <%= item.model_no if item.model_no.present? %>
+                  <% if item.product_option.present? && item.model_no.present? %>&middot;<% end %>
+                  <%= item.product_option.option if item.product_option.present? %>
+                </small>
+              <% end %>
             </div>
 
+          </div>
+
+          <div>
             <dl class="EntityListItem-data Data u-pb-1">
               <dt><%= Category.model_name.human %></dt>
               <dd>
@@ -225,31 +91,32 @@
                 <dd><%= item.setup.name %></dd>
               <% end %>
             </dl>
-            <div class="EntityListItem-footer EntityListItem-metaLinks">
-              <ul class="MetaLinks">
-                <% if include_edit_link %>
-                  <li><%= link_to "Edit", item.edit_path %></li>
-                <% end %>
-                <li>
-                  <% if delete_dialog %>
-                    <%= render "shared/remove_product_from_possessions", possession: item, id: "#{item.id}-2" %>
-                  <% else %>
-                    <%= button_to item.delete_button_label,
-                      item.delete_path,
-                      method: :delete,
-                      class: "DeleteButton",
-                      "data-msg": item.delete_confirm_msg
-                    %>
-                  <% end %>
-                </li>
-              </ul>
-
-            </div>
           </div>
-        </li>
-      <% end %>
-    </ol>
-  <% else %>
-    <%= render "shared/empty_state", message: empty_state %>
-  <% end %>
-</div>
+
+          <div class="EntityListItem-footer EntityListItem-metaLinks">
+            <ul class="MetaLinks">
+              <% if include_edit_link %>
+                <li><%= link_to "Edit", item.edit_path %></li>
+              <% end %>
+              <li>
+                <% if delete_dialog %>
+                  <%= render "shared/remove_product_from_possessions", possession: item, id: "#{item.id}-2" %>
+                <% else %>
+                  <%= button_to item.delete_button_label,
+                    item.delete_path,
+                    method: :delete,
+                    class: "DeleteButton",
+                    "data-msg": item.delete_confirm_msg
+                  %>
+                <% end %>
+              </li>
+            </ul>
+
+          </div>
+        </div>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <%= render "shared/empty_state", message: empty_state %>
+<% end %>

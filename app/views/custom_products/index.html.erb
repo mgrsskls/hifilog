@@ -7,15 +7,10 @@
   <% if @custom_products.any? %>
     <%= render "shared/products",
       items: @custom_products,
-      include_images: true,
-      include_image_upload: true,
       hide_brand: true,
-      hide_release_date: true,
       hide_since: true,
       hide_period: true,
-      include_edit_link: true,
-      delete_button_label: t('custom_product.delete.label'),
-      delete_confirm_msg: 'custom_product.delete.confirm'
+      include_edit_link: true
     %>
   <% else %>
     <%= render "shared/empty_state", message: t('empty_state.custom_products') %>

@@ -7,13 +7,6 @@
   <%= render "shared/products",
     items: @possessions,
     empty_state: t('empty_state.prev_owneds'),
-    brands_path: brands_path,
-    products_path: products_path,
-    include_images: true,
-    include_image_upload: true,
-    hide_release_date: true,
-    hide_since: true,
-    delete_button_label: t('product.remove_from_prev_owneds.label'),
-    delete_confirm_msg: 'product.remove_from_prev_owneds.confirm'
+    hide_since: true
   %>
 <% end %>
