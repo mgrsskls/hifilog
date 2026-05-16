@@ -320,7 +320,7 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
     assert grouped.event_past
   end
 
-  test 'event RSVP before event start keeps will attend copy when event is calendar-past' do
+  test 'event attendance uses attended copy after event end date regardless of RSVP timing' do
     user = users(:without_anything)
     event = travel_to(Time.zone.local(2019, 1, 1, 10, 0, 0)) do
       Event.create!(
@@ -342,11 +342,11 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
       item = timeline_items_for(user.reload).find do |i|
         i.verb == :event_attendance && i.display_name == 'Festival RSVP early'
       end
-      assert_not item.event_past, 'RSVP before event start should not use logged-as-attended copy'
+      assert item.event_past, 'After end date the feed should use attended copy'
     end
   end
 
-  test 'event RSVP on or after event start uses logged as attended copy' do
+  test 'event attendance keeps will attend copy while event is still running' do
     user = users(:without_anything)
     event = travel_to(Time.zone.local(2025, 7, 2, 10, 0, 0)) do
       Event.create!(
@@ -360,12 +360,19 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
     end
     travel_to(Time.zone.local(2025, 7, 2, 10, 0, 0)) do
       EventAttendee.create!(user: user, event: event)
+
+      item = timeline_items_for(user.reload).find do |i|
+        i.verb == :event_attendance && i.display_name == 'Festival RSVP during'
+      end
+      assert_not item.event_past, 'Before end date the feed should still use will attend copy'
     end
 
-    item = timeline_items_for(user.reload).find do |i|
-      i.verb == :event_attendance && i.display_name == 'Festival RSVP during'
+    travel_to(Time.zone.local(2025, 7, 4, 10, 0, 0)) do
+      item = timeline_items_for(user.reload).find do |i|
+        i.verb == :event_attendance && i.display_name == 'Festival RSVP during'
+      end
+      assert item.event_past
     end
-    assert item.event_past
   end
 
   test 'private setup is excluded from timeline even when setup_created row exists' do
@@ -506,7 +513,7 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
 
   test 'grouped_for time_zone affects event_past at calendar boundaries' do
     user = users(:without_anything)
-    travel_to(Time.utc(2025, 6, 30, 15, 0, 0)) do
+    travel_to(Time.utc(2025, 7, 2, 20, 0, 0)) do
       event = Event.create!(
         name: 'TZ boundary event',
         address: 'a',
@@ -516,16 +523,16 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
         end_date: Date.new(2025, 7, 2)
       )
       EventAttendee.create!(user: user, event: event)
-    end
 
-    item_utc = flat_timeline_items_for(user.reload, time_zone: ActiveSupport::TimeZone['UTC'])
-               .find { |i| i.verb == :event_attendance && i.display_name == 'TZ boundary event' }
-
-    item_tokyo = flat_timeline_items_for(user.reload, time_zone: ActiveSupport::TimeZone['Asia/Tokyo'])
+      item_utc = flat_timeline_items_for(user.reload, time_zone: ActiveSupport::TimeZone['UTC'])
                  .find { |i| i.verb == :event_attendance && i.display_name == 'TZ boundary event' }
 
-    assert_not item_utc.event_past
-    assert item_tokyo.event_past
+      item_tokyo = flat_timeline_items_for(user.reload, time_zone: ActiveSupport::TimeZone['Asia/Tokyo'])
+                   .find { |i| i.verb == :event_attendance && i.display_name == 'TZ boundary event' }
+
+      assert_not item_utc.event_past, 'UTC is still on the last day of the event'
+      assert item_tokyo.event_past, 'Tokyo is already past the event end date'
+    end
   end
 
   test 'timeline still shows custom product activity when product is deleted' do

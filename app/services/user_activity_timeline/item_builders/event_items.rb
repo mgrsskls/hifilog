@@ -20,7 +20,7 @@ module UserActivityTimeline::ItemBuilders::EventItems
       period_to: nil,
       event_start_date: event.start_date,
       event_end_date: event.end_date,
-      event_past: event_attendance_logged_during_or_after_event?(attendee, event),
+      event_past: event_attendance_past?(event),
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -56,13 +56,11 @@ module UserActivityTimeline::ItemBuilders::EventItems
     )
   end
 
-  def event_attendance_logged_during_or_after_event?(attendee, event)
-    logged_at = attendee.created_at
-    return false if logged_at.blank?
+  def event_attendance_past?(event)
+    today = Time.current.in_time_zone(@time_zone).to_date
+    last_day = event.end_date.presence || event.start_date
+    return false if last_day.blank?
 
-    start = event.start_date&.in_time_zone(@time_zone)&.beginning_of_day
-    return false if start.blank?
-
-    logged_at.in_time_zone(@time_zone) >= start
+    today > last_day
   end
 end

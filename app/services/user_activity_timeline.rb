@@ -11,8 +11,8 @@
 # - +setup_made_public+ uses the same clustering bucket as +setup_created+ (+cluster_key+ maps the verb).
 # - +setup_created+ is omitted from the feed when the setup was created private (+metadata+ +private+) and a
 #   +setup_made_public+ row exists for the same setup, so “draft then publish” shows one line (+setup_made_public+).
-# - Event attendance copy (+Item#event_past+): "Attended …" only when the RSVP was created on or after the
-#   calendar start of the event; earlier RSVPs stay on "Will attend …" even after the event has ended.
+# - Event attendance copy (+Item#event_past+): "Attended …" only after the event has ended (today in the
+#   feed time zone is later than +end_date+, or +start_date+ when there is no end date); until then "Will attend …".
 # - Setups: only rows for setups that are currently public, or deleted setups with +metadata+ indicating
 #   they were public when destroyed (+private+ is false in merged metadata).
 # - +setup_product_added+ / +setup_product_removed+: subject is +Setup+; product label snapshots and stable
