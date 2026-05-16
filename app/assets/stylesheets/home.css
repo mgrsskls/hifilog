@@ -112,6 +112,10 @@
 	font-weight: 600;
 }
 
+.Home-browseEvents ul li + li {
+	margin-block-start: 1em;
+}
+
 .Home-feature p {
 	max-inline-size: 30em;
 }
@@ -239,6 +243,15 @@
 	.Home-feature picture {
 		inline-size: 50%;
 	}
+
+	.Home-feature--text {
+		justify-content: center;
+	}
+
+	.Home-feature--text .Rte {
+		max-inline-size: 40em;
+		text-align: center;
+	}
 }
 
 @media (width >= 62rem) {
@@ -273,6 +286,10 @@
 
 	.Home-browseSection + .Home-browseSection {
 		grid-column: 14 / -3;
+	}
+
+	.Home-browseEvents {
+		grid-column: 3 / -3;
 	}
 
 	.Home-features {

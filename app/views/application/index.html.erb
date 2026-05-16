@@ -72,6 +72,24 @@
         </p>
       </div>
     </div>
+    <div class="Home-browseEvents">
+      <h3>Events &amp; Shows</h3>
+      <ul>
+        <li>
+          Browse <%= link_to "upcoming hi-fi events", events_path %> or <%= link_to "past hi-fi events", past_events_path %> and filter them by country or year.
+        </li>
+        <li>
+          Bookmark events you want to keep an eye on.
+        </li>
+        <li>
+          Mark events you plan to attend or have attended.
+        </li>
+      </ul>
+      <h4>Recently added</h4>
+      <p>
+        <%= newest_events.map { |event| link_to event.name, event_path(slug: event.slug, year: event.calendar_year) }.join(", ").html_safe %>, …
+      </p>
+    </div>
   </div>
 
   <div class="Home-section Home-signUp is-dark">
@@ -98,7 +116,7 @@
         </picture>
         <div class="Rte">
           <h3>Personal Collection</h3>
-          <p>You can add existing or your own custom built products to your collection, assign them to different listening setups, keep track of products you used to own or bookmark what you are interested in.</p>
+          <p>You can add existing or your own custom built products to your collection, assign them to different listening setups, keep track of products you used to own, or bookmark gear you are interested in — organized in your own lists.</p>
         </div>
       </div>
       <div class="Home-feature">
@@ -108,7 +126,7 @@
         </picture>
         <div class="Rte">
           <h3>Private Statistics</h3>
-          <p>If you add the date of ownership and the price you paid and received for your products, you will get a history and statistics about your hi-fi devices.</p>
+          <p>Track dates of ownership, purchase and sale prices, purchase condition (new, second-hand, B-stock), and gifts. See current, total, and yearly statistics — including spend, revenue, and how your collection changes over time.</p>
         </div>
       </div>
       <div class="Home-feature">
@@ -118,7 +136,7 @@
         </picture>
         <div class="Rte">
           <h3>Public Profile</h3>
-          <p>You can either keep your profile private or make it public and showcase your products, your setups and your previous gear to others.</p>
+          <p>Keep your profile private or make it public to showcase your products, setups, and previous gear — with an activity feed that shows when you add gear, change setups, or create custom products.</p>
         </div>
       </div>
       <div class="Home-feature">
