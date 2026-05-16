@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_13_180129) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_16_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -280,6 +280,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_180129) do
   create_table "possessions", force: :cascade do |t|
     t.datetime "created_at"
     t.bigint "custom_product_id"
+    t.boolean "gift", default: false, null: false
     t.bigint "highlighted_image_id"
     t.datetime "moved_to_previous_at"
     t.datetime "period_from"

@@ -11,6 +11,14 @@ class PossessionPresenterTest < ActiveSupport::TestCase
     @possession = possessions(:prev_product).tap(&:reload)
   end
 
+  test 'delegates gift flag' do
+    @possession.update!(gift: true)
+    presenter = PossessionPresenter.new(@possession.reload)
+
+    assert_predicate presenter, :gift?
+    assert_equal 'Gift / present', presenter.gift_label
+  end
+
   test 'delegates monetised timestamps and durations for previous possessions' do
     travel_to Time.zone.local(2026, 3, 28, 12, 0, 0) do
       @possession.update!(period_from: 100.days.ago, period_to: 50.days.ago)

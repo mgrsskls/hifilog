@@ -27,6 +27,14 @@ class CustomProductPresenter
     nil
   end
 
+  def gift?
+    false
+  end
+
+  def gift_label
+    nil
+  end
+
   def diy_kit?
     false
   end

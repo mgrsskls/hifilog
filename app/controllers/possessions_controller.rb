@@ -173,7 +173,7 @@ class PossessionsController < ApplicationController
       end
     end
 
-    possession.permit(:period_from, :period_to, :product_option_id, :highlighted_image_id, :price_purchase,
+    possession.permit(:period_from, :period_to, :product_option_id, :highlighted_image_id, :gift, :price_purchase,
                       :price_purchase_currency, :price_sale, :price_sale_currency, :purchase_condition,
                       images: [])
   end

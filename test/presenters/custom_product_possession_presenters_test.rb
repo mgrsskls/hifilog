@@ -8,6 +8,22 @@ class CustomProductPossessionPresentersTest < ActiveSupport::TestCase
   def default_url_options
     { host: 'www.example.com', protocol: 'https' }
   end
+  test 'CustomProductPossessionPresenter delegates gift flag' do
+    possession = possessions(:current_custom_product)
+    possession.update!(gift: true)
+    presenter = CustomProductPossessionPresenter.new(possession.reload)
+
+    assert_predicate presenter, :gift?
+    assert_equal 'Gift / present', presenter.gift_label
+  end
+
+  test 'CustomProductPresenter does not expose gift flag' do
+    presenter = CustomProductPresenter.new(custom_products(:one))
+
+    assert_not_predicate presenter, :gift?
+    assert_nil presenter.gift_label
+  end
+
   test 'CustomProductPossessionPresenter summarizes ownership windows for archival customs' do
     possession = possessions(:prev_custom_product)
 

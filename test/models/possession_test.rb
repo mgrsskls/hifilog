@@ -57,6 +57,25 @@ class PossessionTest < ActiveSupport::TestCase
     assert possession.b_stock?
   end
 
+  test 'gift clears purchase price on save' do
+    possession = possessions(:current_product)
+    possession.update!(price_purchase: 100, price_purchase_currency: 'USD')
+
+    assert possession.update(gift: true, price_purchase: 50, price_purchase_currency: 'EUR')
+    possession.reload
+    assert possession.gift?
+    assert_nil possession.price_purchase
+    assert_nil possession.price_purchase_currency
+  end
+
+  test 'gift_label' do
+    possession = possessions(:current_product)
+    assert_nil possession.gift_label
+
+    possession.gift = true
+    assert_equal 'Gift / present', possession.gift_label
+  end
+
   test 'purchase_condition_label' do
     possession = possessions(:current_product)
     assert_nil possession.purchase_condition_label

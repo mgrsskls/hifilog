@@ -46,6 +46,14 @@ class ItemPresenter
     nil
   end
 
+  def gift?
+    @object.respond_to?(:gift?) && @object.gift?
+  end
+
+  def gift_label
+    @object.respond_to?(:gift_label) ? @object.gift_label : nil
+  end
+
   def diy_kit?
     return @product_variant.diy_kit? if @product_variant.present?
 

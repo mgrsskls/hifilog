@@ -31,7 +31,10 @@ class Possession < ApplicationRecord
   attr_accessor :delete_image
 
   validates :custom_product_id, uniqueness: true, allow_nil: true
+  validates :price_purchase, absence: true, if: :gift?
+  validates :price_purchase_currency, absence: true, if: :gift?
 
+  before_validation :clear_purchase_price_when_gift
   before_save :stamp_moved_to_previous_at_when_became_previous
   before_save :capture_image_attachment_ids_before_save
 
@@ -50,6 +53,12 @@ class Possession < ApplicationRecord
     return if purchase_condition.blank?
 
     I18n.t("activerecord.enums.possession.purchase_condition.#{purchase_condition}")
+  end
+
+  def gift_label
+    return unless gift?
+
+    I18n.t('possession.gift_label')
   end
 
   def purge_images_by_id!(ids)
@@ -90,6 +99,13 @@ class Possession < ApplicationRecord
   # :nocov:
 
   private
+
+  def clear_purchase_price_when_gift
+    return unless gift?
+
+    self.price_purchase = nil
+    self.price_purchase_currency = nil
+  end
 
   def capture_image_attachment_ids_before_save
     @image_attachment_ids_before_save = images.attachments.map(&:id)

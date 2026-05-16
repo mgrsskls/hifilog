@@ -24,7 +24,8 @@ class CustomProductsController < ApplicationController
     @possession = CustomProductPossessionPresenter.new(possession) if possession
     @render_possession_details = @possession && (
       @possession.period_from || @possession.period_to || @possession.setup ||
-      @possession.price_purchase || @possession.price_sale || @possession.purchase_condition
+      @possession.price_purchase || @possession.price_sale || @possession.purchase_condition ||
+      @possession.gift?
     )
 
     @custom_product = CustomProductPresenter.new(@user.custom_products.find(id))

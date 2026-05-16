@@ -136,6 +136,37 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal attachment.id, act.metadata['image_attachment_id'].to_i
   end
 
+  test 'should update possession gift flag' do
+    user = users(:one)
+    possession = user.possessions.first
+    possession.update!(price_purchase: 250, price_purchase_currency: 'USD')
+    update_path = possession_url(possession)
+
+    sign_in user
+
+    patch update_path, params: {
+      possession: {
+        gift: '1'
+      }
+    }
+    possession.reload
+    assert possession.gift?
+    assert_nil possession.price_purchase
+    assert_nil possession.price_purchase_currency
+
+    patch update_path, params: {
+      possession: {
+        gift: '0',
+        price_purchase: '99',
+        price_purchase_currency: 'EUR'
+      }
+    }
+    possession.reload
+    assert_not possession.gift?
+    assert_equal BigDecimal('99'), possession.price_purchase
+    assert_equal 'EUR', possession.price_purchase_currency
+  end
+
   test 'should update possession purchase_condition' do
     user = users(:one)
     possession = user.possessions.first

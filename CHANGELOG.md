@@ -1,6 +1,16 @@
 # Changelog
 
-## <time datetime="2025-11-01">2026-05-12</time>
+## <time datetime="2026-05-16">2026-05-16</time>
+
+- There is now an activity page on profiles showing when a user
+  - added a product to their collection
+  - removed a product from their collection
+  - added a setup
+  - added a product to a setup
+  - created a custom product
+- Users can now mark products that they own or used to own as gifts/presents. In this case no purchase price can be applied.
+
+## <time datetime="2026-05-12">2026-05-12</time>
 
 - Users can now add a purchase condition to their possessions ("New (first-hand)", "Second-hand", "B-Stock").
 

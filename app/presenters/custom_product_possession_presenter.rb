@@ -11,6 +11,7 @@ class CustomProductPossessionPresenter < CustomProductPresenter
   delegate :price_sale, to: :@object
   delegate :price_sale_currency, to: :@object
   delegate :purchase_condition, to: :@object
+  delegate :gift, :gift?, :gift_label, to: :@object
   delegate :images, to: :@custom_product
 
   def initialize(object)

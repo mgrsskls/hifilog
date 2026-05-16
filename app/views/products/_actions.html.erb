@@ -12,7 +12,7 @@
         </div>
         <div>
           <b class="EntityPossession-headingName"><%= possession.prev_owned ? t('symbols.product.prev_owned') : t('symbols.product.in_your_collection') %></b>
-          <% if possession.period_from || possession.period_to || possession.setup || possession.product_option || possession.price_purchase || possession.price_sale || possession.purchase_condition %>
+          <% if possession.period_from || possession.period_to || possession.setup || possession.product_option || possession.price_purchase || possession.price_sale || possession.purchase_condition || possession.gift? %>
             <div class="EntityPossession-period">
               <% if possession.prev_owned %>
                 <% if possession.period_from && possession.period_to %>
@@ -51,10 +51,14 @@
                   <%= possession.product_option.option %>
                 </small>
               <% end %>
-              <% if possession.price_purchase %>
+              <% if possession.price_purchase || possession.gift? %>
                 <small>
                   <span><%= Possession.human_attribute_name(:price_purchase) %>:</span>
-                  <%= display_price(possession.price_purchase, possession.price_purchase_currency) %>
+                  <% if possession.gift? %>
+                    <%= possession.gift_label %>
+                  <% else %>
+                    <%= display_price(possession.price_purchase, possession.price_purchase_currency) %>
+                  <% end %>
                 </small>
               <% end %>
               <% if possession.purchase_condition %>
@@ -110,48 +114,7 @@
                          possession_purchase_condition_options,
                          include_blank: t('possession.purchase_condition_blank') %>
           </div>
-          <div class="EntityPossession-formPrice">
-            <div class="u-flex u-gap-md">
-              <div>
-                <%= f.label :price_purchase %>
-                <%= f.text_field :price_purchase, inputmode: "number" %>
-              </div>
-              <div>
-                <%= f.label :price_purchase_currency %>
-                <%= f.select :price_purchase_currency do %>
-                  <option value=""></option>
-                  <% ['USD', 'EUR'].each do |id| %>
-                    <option value="<%= id %>"<%= " selected" if f.object[:price_purchase_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
-                  <% end %>
-                  <hr>
-                  <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
-                    <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_purchase_currency] == currency[:id] %>><%= currency[:name] %></option>
-                  <% end %>
-                <% end %>
-              </div>
-            </div>
-            <% if possession.prev_owned %>
-              <div class="u-flex u-gap-md">
-                <div>
-                  <%= f.label :price_sale %>
-                  <%= f.text_field :price_sale, inputmode: "number" %>
-                </div>
-                <div>
-                  <%= f.label :price_sale_currency %>
-                  <%= f.select :price_sale_currency do %>
-                    <option value=""></option>
-                    <% ['USD', 'EUR'].each do |id| %>
-                      <option value="<%= id %>"<%= " selected" if f.object[:price_sale_currency] == id %>><%= CURRENCIES.find { |currency| currency[:id] == id }[:name] %></option>
-                    <% end %>
-                    <hr>
-                    <% CURRENCIES.select { |currency| !['USD', 'EUR'].include?(currency[:id]) }.sort_by { |currency| currency[:id] }.each do |currency| %>
-                      <option value="<%= currency[:id] %>"<%= " selected" if f.object[:price_sale_currency] == currency[:id] %>><%= currency[:name] %></option>
-                    <% end %>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          </div>
+          <%= render 'possessions/gift_and_price_fields', f: f, possession: possession %>
         <% end %>
         <div class="u-flex u-spaceBetween">
           <button class="Button Button--loadingIcon" form="possession-form-<%= possession.id %>">Save</button>

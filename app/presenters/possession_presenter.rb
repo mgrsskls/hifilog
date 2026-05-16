@@ -9,6 +9,7 @@ class PossessionPresenter < ItemPresenter
   delegate :price_sale, to: :@object
   delegate :price_sale_currency, to: :@object
   delegate :purchase_condition, to: :@object
+  delegate :gift, :gift?, :gift_label, to: :@object
 
   delegate :period_from, to: :@object
   delegate :period_to, to: :@object

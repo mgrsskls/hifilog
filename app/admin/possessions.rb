@@ -1,5 +1,5 @@
 ActiveAdmin.register Possession do
-  permit_params :user_id, :product_id, :product_variant_id, :custom_product_id, :product_option_id, :prev_owned, :period_from, :period_to, :price_purchase, :price_purchase_currency, :price_sale, :price_sale_currency, :purchase_condition
+  permit_params :user_id, :product_id, :product_variant_id, :custom_product_id, :product_option_id, :prev_owned, :period_from, :period_to, :gift, :price_purchase, :price_purchase_currency, :price_sale, :price_sale_currency, :purchase_condition
 
   config.filters = false
 
@@ -36,6 +36,7 @@ ActiveAdmin.register Possession do
     column "Sale", sortable: :price_sale do |entity|
       "#{entity.price_sale} #{entity.price_sale_currency}"
     end
+    column :gift
     column :purchase_condition do |entity|
       entity.purchase_condition_label || '—'
     end

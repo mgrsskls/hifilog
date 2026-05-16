@@ -208,9 +208,9 @@
                   <% end %>
                 <% end %>
               <% end %>
-              <% if item.price_purchase.present? %>
+              <% if item.price_purchase.present? || item.gift? %>
                 <dt><%= Possession.human_attribute_name(:price_purchase) %></dt>
-                <dd><%= display_price(item.price_purchase, item.price_purchase_currency) %></dd>
+                <dd><%= item.gift? ? item.gift_label : display_price(item.price_purchase, item.price_purchase_currency) %></dd>
               <% end %>
               <% if item.purchase_condition.present? %>
                 <dt><%= Possession.human_attribute_name(:purchase_condition) %></dt>

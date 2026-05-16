@@ -24,11 +24,12 @@ en:
         dates: Dates
         url: Website
       possession:
+        gift: Gift / present
         price_purchase: Purchase price
         price_purchase_currency: Currency
         price_sale: Sales price
         price_sale_currency: Currency
-        purchase_condition: Purchase condition
+        purchase_condition: Condition
       product:
         description: Description
         discontinued: Discontinued
@@ -94,6 +95,12 @@ en:
         other: Users
     errors:
       models:
+        possession:
+          attributes:
+            price_purchase:
+              present: must be blank for gift / present items
+            price_purchase_currency:
+              present: must be blank for gift / present items
         brand:
           attributes:
             logo:
@@ -335,6 +342,7 @@ en:
       saved: The note has been saved.
   optional: optional
   possession:
+    gift_label: Gift / present
     purchase_condition_blank: Not specified
     messages:
       moved_to_prev: Your <b>%{name}</b> has been moved to your list of previous products.

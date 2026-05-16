@@ -274,6 +274,18 @@ html:where([data-theme="light"]) .EntityPossession--bookmark {
 	}
 }
 
+.EntityPossession-giftToggle {
+	margin-block-end: 1rem;
+
+	label {
+		font-weight: 600;
+	}
+
+	&:has(:checked) + .EntityPossession-formPrice {
+		display: none;
+	}
+}
+
 .EntityPossession-formPrice {
 	margin-block-end: 1rem;
 
