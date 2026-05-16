@@ -10,6 +10,13 @@ class EventAttendee < ApplicationRecord
 
   validates :user, uniqueness: { scope: :event }
 
+  def self.counts_for(event_ids)
+    ids = Array(event_ids).compact
+    return {} if ids.empty?
+
+    where(event_id: ids).group(:event_id).count
+  end
+
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
     %w[created_at event_id id id_value updated_at user_id]

@@ -1,0 +1,6 @@
+<div class="Heading <%= heading_class %>">
+  <h2><%= heading %></h2>
+  <% if local_assigns[:view_all_path] %>
+    <%= link_to t('overview.view_all'), view_all_path %>
+  <% end %>
+</div>

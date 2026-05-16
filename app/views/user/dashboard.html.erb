@@ -25,40 +25,34 @@
 
   <div class="UserDashboard">
     <div class="UserDashboard-feed">
-      <div class="UserDashboard-heading">
-        <h2>Your Activity</h2>
-        <%= link_to "View all", dashboard_activity_path %>
-      </div>
+      <%= render "shared/overview/section_heading",
+          heading: t('headings.your_activity'),
+          heading_class: "UserDashboard-heading",
+          view_all_path: dashboard_activity_path %>
       <%= render "shared/feed", feed_items: @feed, empty_state_message: t('empty_state.no_activity_dashboard') %>
     </div>
 
     <div class="UserDashboard-content">
-  
-      <div class="UserDashboard-statistics Statistics">
-        <div class="UserDashboard-heading">
-          <h2>Your Statistics</h2>
-          <%= link_to "View all", dashboard_statistics_root_path %>
-        </div>
-        <%= render "statistics/overview_statistics",
-            overview_statistics: current_overview_statistics(
-              products_count: @current_amount_of_products,
-              brands_count: @current_amount_of_brands,
-              spendings: @current_spendings
-            ) %>
-      </div>
 
-      <div class="UserDashboard-events">
-        <div class="UserDashboard-heading">
-          <h2>Your Events</h2>
-          <%= link_to "View all", dashboard_events_path %>
-        </div>
+      <%= render "shared/overview/statistics_section",
+          section_class: "UserDashboard-statistics",
+          heading_class: "UserDashboard-heading",
+          heading: t('headings.your_statistics'),
+          view_all_path: dashboard_statistics_root_path,
+          statistics: overview_statistics_for(
+            products_count: @current_amount_of_products,
+            brands_count: @current_amount_of_brands,
+            spendings: @current_spendings
+          ) %>
 
-        <% if @events.any? %>
-          <%= render "shared/compact_events_list", events: @events, attendee_counts: @event_attendee_counts %>
-        <% else %>
-          <%= render "shared/empty_state", message: "<p><b>You have no upcoming events.</b></p><p>You can view all upcoming events <a href=\"#{dashboard_events_path}\">here</a>.</p>" %>
-        <% end %>
-      </div>
+      <%= render "shared/overview/events_section",
+          section_class: "UserDashboard-events",
+          heading_class: "UserDashboard-heading",
+          heading: t('headings.your_events'),
+          view_all_path: dashboard_events_path,
+          events: @events,
+          attendee_counts: @event_attendee_counts,
+          empty_message: t('empty_state.no_upcoming_events', path: dashboard_events_path) %>
 
       <div class="UserDashboard-newest">
         <div class="UserDashboard-heading">

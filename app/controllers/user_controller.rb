@@ -2,6 +2,7 @@
 
 class UserController < ApplicationController
   include ApplicationHelper
+  include Contributions
   include CurrentStatisticsOverview
   include HistoryHelper
   include Bookmarks
@@ -20,15 +21,8 @@ class UserController < ApplicationController
 
     load_current_statistics_overview
 
-    today = Time.zone.today
-    @events = current_user.events
-                          .where(end_date: today..)
-                          .or(Event.where(start_date: today.., end_date: nil))
-                          .limit(2)
-                          .order(start_date: :asc)
-                          .to_a
-    event_ids = @events.map(&:id)
-    @event_attendee_counts = event_ids.empty? ? {} : EventAttendee.where(event_id: event_ids).group(:event_id).count
+    @events = current_user.events.upcoming.order(start_date: :asc).limit(2).to_a
+    @event_attendee_counts = EventAttendee.counts_for(@events.map(&:id))
 
     @app_news = AppNews.where('created_at > ?', current_user.created_at)
                        .where.not(id: current_user.app_news_ids)
@@ -103,7 +97,7 @@ class UserController < ApplicationController
 
     @bookmarks = bookmarks
     event_ids = @bookmarks.filter_map { |b| b.item_id if b.item_type == 'Event' }.uniq
-    @event_attendee_counts = event_ids.empty? ? {} : EventAttendee.where(event_id: event_ids).group(:event_id).count
+    @event_attendee_counts = EventAttendee.counts_for(event_ids)
 
     assign_bookmark_product_items_for_thumbnails!(@bookmarks)
 
@@ -119,13 +113,10 @@ class UserController < ApplicationController
 
     user_events = current_user.events
 
-    today = Time.zone.today
-
-    all_events = user_events
-                 .where(end_date: today..)
-                 .or(Event.where(start_date: today.., end_date: nil))
+    all_events = user_events.upcoming
     get_events(all_events:, order: :asc)
     @all_upcoming_events_count = all_events.size
+    today = Time.zone.today
     @all_past_events_count = user_events
                              .where(end_date: ..today)
                              .or(Event.where(start_date: ..today, end_date: nil))
@@ -145,9 +136,7 @@ class UserController < ApplicationController
     all_events = user_events.where(end_date: ..today)
                             .or(Event.where(start_date: ..today, end_date: nil))
     get_events(all_events:, order: :desc)
-    @all_upcoming_events_count = user_events.where(end_date: today..)
-                                            .or(Event.where(start_date: today.., end_date: nil))
-                                            .size
+    @all_upcoming_events_count = user_events.upcoming.size
     @all_past_events_count = all_events.size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.past', path: past_events_path)
 
@@ -341,16 +330,12 @@ class UserController < ApplicationController
     scoped = country_code.present? ? all_events.where(country_code:) : all_events
     @events = scoped.order(start_date: order).to_a
     ids = @events.map(&:id)
-    @event_attendee_counts = ids.empty? ? {} : EventAttendee.where(event_id: ids).group(:event_id).count
+    @event_attendee_counts = EventAttendee.counts_for(ids)
     @years = @events.group_by { |event| event.start_date.year }
                     .transform_values do |events_in_year|
                       events_in_year.group_by { |event| event.start_date.month }
                     end
     @country_codes = all_events.map(&:country_code).uniq.sort
-  end
-
-  def get_data(data, model, event)
-    data[[model, event]] || 0
   end
 
   def set_menu

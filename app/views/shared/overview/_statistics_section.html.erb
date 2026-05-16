@@ -1,0 +1,7 @@
+<div class="<%= section_class %> Statistics">
+  <%= render "shared/overview/section_heading",
+      heading: heading,
+      heading_class: heading_class,
+      view_all_path: local_assigns[:view_all_path] %>
+  <%= render "statistics/overview_statistics", overview_statistics: statistics %>
+</div>

@@ -8,57 +8,39 @@
     <div class="UserProfile-content">
 
       <div class="UserProfile-collection">
-        <div class="Heading UserProfile-heading">
-          <h2>Collection</h2>
-          <%= link_to "View all", @user.collection_path %>
-        </div>
-        <% if @collection.any? %>
-          <ol>
-            <% @collection.each do |possession| %>
-              <% highlighted = possession.highlighted_image %>
-              <% next unless highlighted %>
-              <li>
-                <%= link_to possession.show_path do %>
-                  <%= image_tag cdn_image_url(highlighted.variant(:thumb)), alt: "Image of the #{possession.display_name}" %>
-                <% end %>
-              </li>
-            <% end %>
-          </ol>
-        <% else %>
-          <%= render "shared/empty_state", message: @user.possessions.empty? ? "<p><b>#{h(@user.user_name)} has no products in their collection yet.</b></p>" : "<p><b>#{h(@user.user_name)} has not uploaded any images of their products yet.</b></p>" %>
-        <% end %>
+        <%= render "shared/overview/section_heading",
+            heading: t('headings.collection'),
+            heading_class: "UserProfile-heading",
+            view_all_path: @user.collection_path %>
+        <%= render "shared/collection_preview",
+            collection: @collection,
+            empty_message: @user.possessions.empty? ? t('empty_state.profile_collection_empty', user_name: h(@user.user_name)) : t('empty_state.profile_collection_no_images', user_name: h(@user.user_name)) %>
       </div>
 
-      <div class="UserProfile-statistics Statistics">
-        <div class="Heading UserProfile-heading">
-          <h2>Statistics</h2>
-        </div>
-        <%= render "statistics/overview_statistics",
-            overview_statistics: current_overview_statistics(
-              products_count: @current_amount_of_products,
-              brands_count: @current_amount_of_brands,
-              user_name: @user.user_name
-            ) %>
-      </div>
+      <%= render "shared/overview/statistics_section",
+          section_class: "UserProfile-statistics",
+          heading_class: "UserProfile-heading",
+          heading: t('headings.statistics'),
+          statistics: overview_statistics_for(
+            products_count: @current_amount_of_products,
+            brands_count: @current_amount_of_brands,
+            user: @user
+          ) %>
 
-      <div class="UserProfile-events">
-        <div class="Heading UserProfile-heading">
-          <h2>Events</h2>
-        </div>
-
-        <% if @events.any? %>
-          <%= render "shared/compact_events_list", events: @events, attendee_counts: @event_attendee_counts %>
-        <% else %>
-          <%= render "shared/empty_state", message: "<p><b>#{h(@user.user_name)} has no upcoming events.</b></p><p>You can view all upcoming events <a href=\"#{dashboard_events_path}\">here</a>.</p>" %>
-        <% end %>
-      </div>
+      <%= render "shared/overview/events_section",
+          section_class: "UserProfile-events",
+          heading_class: "UserProfile-heading",
+          heading: t('headings.events'),
+          events: @events,
+          attendee_counts: @event_attendee_counts,
+          empty_message: t('empty_state.no_upcoming_events_profile', user_name: h(@user.user_name), path: dashboard_events_path) %>
 
     </div>
     
     <div class="UserProfile-feed">
-      <div class="Heading UserProfile-heading">
-        <h2><%= t('headings.activity') %></h2>
-      </div>
+      <%= render "shared/overview/section_heading",
+          heading: t('headings.activity'),
+          heading_class: "UserProfile-heading" %>
       <%= render "shared/feed", feed_items: @activity_rows, empty_state_message: t('empty_state.no_activity_profile', user_name: h(@user.user_name)) %>
     </div>
 

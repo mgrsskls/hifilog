@@ -3,6 +3,7 @@
 class UsersController < ApplicationController
   include HistoryHelper
   include Possessions
+  include Contributions
   include CurrentStatisticsOverview
   include ActionView::Helpers::SanitizeHelper
 
@@ -37,26 +38,11 @@ class UsersController < ApplicationController
 
     load_current_statistics_overview(@user)
 
-    today = Time.zone.today
-    @events = @user.events
-                   .where(end_date: today..)
-                   .or(Event.where(start_date: today.., end_date: nil))
-                   .order(start_date: :asc)
-                   .to_a
-    event_ids = @events.map(&:id)
-    @event_attendee_counts = event_ids.empty? ? {} : EventAttendee.where(event_id: event_ids).group(:event_id).count
+    @events = @user.events.upcoming.order(start_date: :asc).to_a
+    @event_attendee_counts = EventAttendee.counts_for(@events.map(&:id))
+    @collection = load_collection_preview(@user, limit: 6)
 
-    possessions = @user.possessions
-                       .recent_with_images(6)
-                       .includes(
-                         { images_attachments: :blob },
-                         { product: :brand },
-                         { product_variant: { product: :brand } },
-                         { custom_product: [{ sub_categories: :category }, { images_attachments: :blob }] }
-                       )
-    @collection = PossessionPresenterService.map_to_presenters(possessions)
-
-    @heading = 'Overview'
+    @heading = I18n.t('headings.overview')
     page_title("#{@user.user_name} — #{@heading}")
   end
 
@@ -68,13 +54,7 @@ class UsersController < ApplicationController
     possessions = @setup ? @setup.possessions : @user.possessions.where(prev_owned: false)
 
     all = PossessionPresenterService.map_to_presenters(get_possessions_for_user(possessions:))
-    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
-    @possessions = if @sub_category
-                     all.select { |p| p.sub_categories.include?(@sub_category) }
-                   else
-                     all
-                   end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @possessions, @categories, @sub_category = filter_presenters_by_category(all)
     @empty_state = 'public_profile'
 
     @render_since = true
@@ -94,13 +74,7 @@ class UsersController < ApplicationController
     all = PossessionPresenterService.map_to_presenters(
       get_possessions_for_user(possessions: @user.possessions.where(prev_owned: true))
     )
-    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
-    @possessions = if @sub_category
-                     all.select { |p| p.sub_categories.include?(@sub_category) }
-                   else
-                     all
-                   end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @possessions, @categories, @sub_category = filter_presenters_by_category(all)
     @empty_state = 'public_profile_previous'
 
     @render_since = false
@@ -133,19 +107,15 @@ class UsersController < ApplicationController
                               .group('item_type', 'event')
                               .count
 
-    @products_created = get_data(data, 'Product', 'create')
-    @products_edited = get_data(data, 'Product', 'update')
-    @brands_created = get_data(data, 'Brand', 'create')
-    @brands_edited = get_data(data, 'Brand', 'update')
+    @products_created = version_group_count(data, 'Product', 'create')
+    @products_edited = version_group_count(data, 'Product', 'update')
+    @brands_created = version_group_count(data, 'Brand', 'create')
+    @brands_edited = version_group_count(data, 'Brand', 'update')
 
     @heading = I18n.t('headings.contributions')
   end
 
   private
-
-  def get_data(data, model, event)
-    data[[model, event]] || 0
-  end
 
   def setup_user_page
     user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)

@@ -15,14 +15,7 @@ class PossessionsController < ApplicationController
       get_possessions_for_user(possessions: current_user.possessions.where(prev_owned: false))
     )
 
-    category = params[:category]
-    @sub_category = SubCategory.friendly.find(category) if category.present?
-    @possessions = if @sub_category
-                     all.select { |possession| possession.sub_categories.include?(@sub_category) }
-                   else
-                     all
-                   end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @possessions, @categories, @sub_category = filter_presenters_by_category(all, category_param: params[:category])
   end
 
   def previous
@@ -34,14 +27,7 @@ class PossessionsController < ApplicationController
       get_possessions_for_user(possessions: current_user.possessions.where(prev_owned: true))
     )
 
-    category = params[:category]
-    @sub_category = SubCategory.friendly.find(category) if category.present?
-    @possessions = if @sub_category
-                     all.select { |possession| possession.sub_categories.include?(@sub_category) }
-                   else
-                     all
-                   end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @possessions, @categories, @sub_category = filter_presenters_by_category(all, category_param: params[:category])
   end
 
   def create

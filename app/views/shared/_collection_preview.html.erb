@@ -1,0 +1,15 @@
+<% if collection.any? %>
+  <ol>
+    <% collection.each do |possession| %>
+      <% highlighted = possession.highlighted_image %>
+      <% next unless highlighted %>
+      <li>
+        <%= link_to possession.show_path do %>
+          <%= image_tag cdn_image_url(highlighted.variant(:thumb)), alt: "Image of the #{possession.display_name}" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <%= render "shared/empty_state", message: empty_message %>
+<% end %>

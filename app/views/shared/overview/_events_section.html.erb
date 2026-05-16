@@ -1,0 +1,12 @@
+<div class="<%= section_class %>">
+  <%= render "shared/overview/section_heading",
+      heading: heading,
+      heading_class: heading_class,
+      view_all_path: local_assigns[:view_all_path] %>
+
+  <% if events.any? %>
+    <%= render "shared/compact_events_list", events: events, attendee_counts: attendee_counts %>
+  <% else %>
+    <%= render "shared/empty_state", message: empty_message %>
+  <% end %>
+</div>

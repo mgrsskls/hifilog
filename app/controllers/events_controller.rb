@@ -77,7 +77,7 @@ a user-driven database for hi-fi products, brands and more.'
     # 2. Load records; attendee counts are batched for list cards
     @events = scope.order(start_date: order).to_a
     ids = @events.map(&:id)
-    @event_attendee_counts = ids.empty? ? {} : EventAttendee.where(event_id: ids).group(:event_id).count
+    @event_attendee_counts = EventAttendee.counts_for(ids)
 
     # 3. Grouping - Works for "All" (Upcoming) and "Yearly" (Past)
     @years = @events.group_by { |e| e.start_date.year }.transform_values do |events_in_year|

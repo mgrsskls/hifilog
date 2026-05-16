@@ -46,8 +46,8 @@
               <% end %>
             <% end %>
           </div>
-          <ul class="ProfilePossessions-images ImageLightbox ImageGallery">
-            <% if possession.images.attached? %>
+          <% if possession.images.attached? %>
+            <ul class="ProfilePossessions-images ImageLightbox ImageGallery">
               <% possession.sorted_images.each_with_index do |image, i| %>
                 <li class="ImageLightbox-item">
                   <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>" aria-label="Open larger image of the <%= possession.display_name %>">
@@ -76,8 +76,8 @@
                   </dialog>
                 </li>
               <% end %>
-            <% end %>
-          </ul>
+            </ul>
+          <% end %>
           <p>
             <small>
               <% if possession.sub_categories.any? %>

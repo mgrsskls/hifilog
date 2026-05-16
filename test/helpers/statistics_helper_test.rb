@@ -17,14 +17,13 @@ class StatisticsHelperTest < ActionView::TestCase
     assert_equal 'EUR', stats[2][:unit]
   end
 
-  test 'current_overview_statistics without spendings' do
+  test 'current_overview_statistics without param spendings does not return spendings' do
     stats = current_overview_statistics(
       products_count: 0,
       brands_count: 0,
       spendings: []
     )
 
-    assert_equal 0, stats[2][:value]
-    assert_equal 'n/a', stats[2][:unit]
+    assert_equal 2, stats.size
   end
 end

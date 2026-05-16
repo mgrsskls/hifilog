@@ -35,6 +35,14 @@ class Possession < ApplicationRecord
       .order(Arel.sql('possessions.created_at DESC NULLS LAST'))
       .limit(limit)
   }
+  scope :recent_preview, lambda { |limit = 6|
+    recent_with_images(limit).includes(
+      { images_attachments: :blob },
+      { product: :brand },
+      { product_variant: { product: :brand } },
+      { custom_product: [{ sub_categories: :category }, { images_attachments: :blob }] }
+    )
+  }
 
   belongs_to :user
   belongs_to :product, optional: true
