@@ -265,6 +265,8 @@ en:
   edit: Edit
   edit_record: Edit %{name}
   empty_state:
+    no_activity_dashboard: "<p><b>You have no activity to show yet.</b></p><p>As soon as you add products to your collection, attend events, create setups or custom products, you will see your activity here.</p>"
+    no_activity_profile: "<p><b>%{user_name} has no activity to show yet.</b></p><p>As soon as %{user_name} adds products to their collection, attends events, creates setups or custom products, you will see their activity here.</p>"
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
     brands_filter: <p><b>There are no brands yet based on your filter criteria.</b> You can <a href="%{path}" rel="nofollow">add a brand here</a>.</p>
     contributions: <p><b>You have not contributed any brands or products yet.</b></p><p>You can <a href="%{brands_path}">create a brand</a>, <a href="%{products_path}">create a product</a> or contribute by adding more information to a brand or a product directly on their sites.</p>

@@ -5,15 +5,7 @@ module UserActivityHelper
   include UserActivityPeriodMeta
 
   def user_activity_product_link(item)
-    link_to(item.url, class: 'ProfileActivity-productLink') do
-      safe_join(
-        [
-          user_activity_product_link_thumbnail(item),
-          h(item.display_name)
-        ].compact,
-        ' '
-      )
-    end
+    link_to(h(item.display_name), item.url)
   end
 
   def user_activity_item_title(item)
@@ -55,19 +47,6 @@ module UserActivityHelper
     return if verb.blank?
     return unless UserActivityVerbs.icon_verb?(verb)
 
-    render partial: 'users/activity/activity_icon', locals: { verb:, event_upcoming: }
-  end
-
-  private
-
-  def user_activity_product_link_thumbnail(item)
-    return if item.thumb_image.blank?
-
-    image_tag(
-      cdn_image_url(item.thumb_image.variant(:thumb)),
-      alt: '',
-      'aria-hidden': 'true',
-      loading: 'lazy'
-    )
+    render partial: 'shared/activity/icon', locals: { verb:, event_upcoming: }
   end
 end

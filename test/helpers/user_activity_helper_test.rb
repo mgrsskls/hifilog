@@ -5,10 +5,6 @@ require 'test_helper'
 class UserActivityHelperTest < ActionView::TestCase
   include UserActivityHelper
 
-  ONE_BY_ONE_PNG = Base64.decode64(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
-  ).freeze
-
   def h(string)
     ERB::Util.html_escape(string)
   end
@@ -24,7 +20,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: 'My setup',
       setup_url: '/users/u/setups/9',
@@ -55,7 +50,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: created,
       setup_name: nil,
       setup_url: nil,
@@ -77,7 +71,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: created,
       setup_name: nil,
       setup_url: nil,
@@ -87,15 +80,7 @@ class UserActivityHelperTest < ActionView::TestCase
     assert_nil user_activity_item_meta_period(item)
   end
 
-  test 'user_activity_product_link includes thumb when available' do
-    possession = possessions(:current_product)
-    possession.images.purge if possession.images.attached?
-    possession.images.attach(
-      io: StringIO.new(ONE_BY_ONE_PNG),
-      filename: 'thumb.png',
-      content_type: 'image/png'
-    )
-    thumb = PossessionPresenter.new(possession.reload).highlighted_image
+  test 'user_activity_product_link renders display name and url' do
     item = UserActivityTimeline::Item.new(
       verb: :added_to_collection,
       logged_at: Time.current,
@@ -106,7 +91,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: thumb,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -114,11 +98,8 @@ class UserActivityHelperTest < ActionView::TestCase
     )
 
     html = user_activity_product_link(item)
-    assert_includes html, 'ProfileActivity-productLink'
-    assert_includes html, 'img'
     assert_includes html, 'My amp'
     assert_includes html, 'href="/products/amp"'
-    assert_includes html, '<img'
   end
 
   test 'user_activity_item_title escapes display name' do
@@ -132,7 +113,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -156,7 +136,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: true,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -179,7 +158,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -203,7 +181,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -232,7 +209,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -284,7 +260,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
@@ -305,7 +280,6 @@ class UserActivityHelperTest < ActionView::TestCase
       event_start_date: nil,
       event_end_date: nil,
       event_past: nil,
-      thumb_image: nil,
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,

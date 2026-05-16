@@ -21,6 +21,7 @@ Rails.application.config.assets.precompile += %w(
   entity.css
   entity_form.css
   events.css
+  feed.css
   history.css
   home.css
   note.css
@@ -31,6 +32,7 @@ Rails.application.config.assets.precompile += %w(
   statistics.css
   tabs.css
   users.css
+  user_dashboard.css
 
   amp_to_headphone_calculator.js
   application.js
