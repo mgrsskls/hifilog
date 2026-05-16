@@ -43,6 +43,7 @@ class User < ApplicationRecord
   validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
   validate :validate_decorative_image_content_type, :validate_decorative_image_file_size, on: :update
 
+  after_commit :invalidate_cache
   after_commit :record_profile_image_upload_activities, on: :update
 
   # Include default devise modules. Others available are:
@@ -157,6 +158,18 @@ class User < ApplicationRecord
   private :capture_profile_image_attachment_ids_before_assign,
           :record_profile_image_upload_activities,
           :record_profile_image_changes
+
+  # rubocop:disable Naming/PredicateMethod
+  def invalidate_cache
+    # rubocop:enable Naming/PredicateMethod
+    Rails.cache.delete('/newest_users')
+
+    # recommended to return true, as Rails.cache.delete will return false
+    # if no cache is found and break the callback chain.
+    # rubocop:disable Style/RedundantReturn
+    return true
+    # rubocop:enable Style/RedundantReturn
+  end
 
   # This is used for dropdowns in active_admin
   # :nocov:

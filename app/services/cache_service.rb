@@ -25,6 +25,12 @@ class CacheService
     end
   end
 
+  def self.newest_users
+    Rails.cache.fetch('/newest_users') do
+      User.order(created_at: :desc).limit(5).to_a
+    end
+  end
+
   def self.newest_products
     Rails.cache.fetch('/newest_products') do
       p_sql = Product.select("id, created_at, 'Product' as item_type").order(created_at: :desc).limit(10).to_sql

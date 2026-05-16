@@ -72,6 +72,10 @@ class ApplicationController < ActionController::Base
     CacheService.categories_count
   end
 
+  def newest_users
+    CacheService.newest_users
+  end
+
   def newest_products
     CacheService.newest_products
   end
