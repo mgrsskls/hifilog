@@ -57,8 +57,15 @@
         <% actions = capture do %>
           <ul class="MetaLinks">
             <li>
-              <%= button_to bookmark_path(id: bookmark.id, redirect_to: dashboard_bookmarks_path(type: params[:type])), method: :delete, class: "DeleteButton", "data-msg": bookmark.delete_confirm_msg do %>
-                <small><%= bookmark.delete_button_label %></small>
+              <% if @bookmark_list.present? %>
+                <%= render "shared/remove_bookmark_from_bookmark_list",
+                  bookmark: bookmark,
+                  id: bookmark.id,
+                  redirect_to: dashboard_bookmark_list_path(@bookmark_list, params.permit(:type, :sort, :category)) %>
+              <% else %>
+                <%= button_to bookmark_path(id: bookmark.id, redirect_to: dashboard_bookmarks_path(type: params[:type])), method: :delete, class: "DeleteButton", "data-msg": bookmark.delete_confirm_msg do %>
+                  <small><%= bookmark.delete_button_label %></small>
+                <% end %>
               <% end %>
             </li>
           </ul>

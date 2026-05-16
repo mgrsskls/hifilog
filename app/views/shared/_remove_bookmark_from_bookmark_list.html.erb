@@ -1,27 +1,27 @@
 <% redirect_to ||= nil %>
-<button class="u-textUnderline" data-dialog="dialog-<%= id %>">
+<button type="button" class="u-textUnderline" data-dialog="dialog-remove-bookmark-<%= id %>">
   <small><%= t('bookmark_list.remove_bookmark.label') %></small>
 </button>
 
-<dialog id="dialog-<%= id %>">
-  <%= sanitize t('bookmark_list.remove_bookmark.confirm', name: possession.display_name), tags: ['b'] %>
+<dialog id="dialog-remove-bookmark-<%= id %>">
+  <%= sanitize t('bookmark_list.remove_bookmark.confirm', name: bookmark.display_name), tags: ['b'] %>
 
   <div class="Form-submit">
     <div class="u-flex u-spaceBetween u-alignCenter u-gap-md u-flexWrap">
       <div class="u-flex u-spaceBetween u-gap-md">
-        <%= button_to possession.delete_path, method: :delete, class: "Button" do %>
+        <%= button_to bookmark_path(bookmark.id, redirect_to: redirect_to), method: :delete, class: "Button" do %>
           Yes
         <% end %>
-        <%= form_for possession, method: :put do %>
+        <%= form_with url: bookmark_path(bookmark.id), method: :patch, local: true do %>
           <input type="hidden" name="bookmark_list_id" value="">
           <% if redirect_to %>
             <input type="hidden" name="redirect_to" value="<%= redirect_to %>">
           <% end %>
-          <button class="Button Button--negative">No, just remove it from this list</button>
+          <button type="submit" class="Button Button--negative">No, just remove it from this list</button>
         <% end %>
       </div>
       <form method="dialog">
-        <button>Close</button>
+        <button type="submit">Close</button>
       </form>
     </div>
   </div>
