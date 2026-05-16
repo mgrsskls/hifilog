@@ -154,7 +154,7 @@
 .UserProfile-heading {
 	padding-block-end: 1rem;
 	border-block-end: var(--border-light);
-	margin-block-end: 2rem;
+	margin-block-end: clamp(1rem, 5vi, 2rem);
 }
 
 .UserProfile-statistics,

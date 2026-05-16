@@ -13,9 +13,9 @@
 }
 
 .Feed-item + .Feed-item {
-	padding-block-start: 2rem;
+	padding-block-start: clamp(1rem, 5vi, 2rem);
 	border-block-start: 0.0625rem dotted var(--color-border-light);
-	margin-block-start: 2rem;
+	margin-block-start: clamp(1rem, 5vi, 2rem);
 }
 
 .Feed-primary {
