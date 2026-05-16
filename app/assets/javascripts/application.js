@@ -13,7 +13,7 @@ import "./_search.js";
 	const filterCategories = document.querySelectorAll('[name="category"]');
 	const filterSubCategories = document.querySelectorAll("[data-category]");
 	const buttonsWithLoadingState = document.querySelectorAll(
-		".Button--loadingIcon, .CheckboxButton",
+		".Button--loadingIcon",
 	);
 	const filterCheckboxes = document.querySelectorAll(".Filter .Pagination");
 	const sortSelect = document.querySelector("#sort-select");
@@ -184,14 +184,6 @@ import "./_search.js";
 		} else {
 			window.removeEventListener("keydown", onEscape);
 			window.removeEventListener("click", onOutSideClick);
-		}
-
-		if (button.classList.contains("MainMenu-link--mega")) {
-			document
-				.querySelectorAll("body > nav, body > main, body > footer")
-				.forEach((element) => {
-					element.inert = shouldOpen;
-				});
 		}
 	}
 
