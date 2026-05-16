@@ -1,5 +1,5 @@
 ActiveAdmin.register_page 'Analytics' do
-  menu priority: -1, label: 'Analytics'
+  menu parent: 'Data & Analytics', label: 'Analytics', priority: 1
 
   controller do
     layout 'active_admin_slim'  # This must be a layout in app/views/layouts

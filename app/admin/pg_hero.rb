@@ -1,5 +1,5 @@
 ActiveAdmin.register_page 'PgHero' do
-  menu priority: -1, label: 'PgHero'
+  menu parent: 'Data & Analytics', label: 'PgHero', priority: 999
 
   controller do
     layout 'active_admin_slim'  # This must be a layout in app/views/layouts

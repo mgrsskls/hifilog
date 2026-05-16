@@ -168,33 +168,5 @@ ActiveAdmin.register_page "Dashboard" do
       end
     end
 
-    section do
-      h3 class: "text-xl font-bold mb-4" do
-        "Recent Activity"
-      end
-      div class: "paginated-collection" do
-        table_for PaperTrail::Version.where.not(event: :destroy).order('id desc').limit(50), class: "data-table" do
-          column :id
-          column :item_type
-          column ("Item") do |v|
-            if v.item_type == "Product"
-              Product.where(id: v.item_id).last || "deleted"
-            elsif v.item_type == "Brand"
-              Brand.where(id: v.item_id).last || "deleted"
-            end
-          end
-          column :event
-          column ("User") do |v|
-            if v.whodunnit
-              user = User.find_by(id: v.whodunnit)
-              user.present? ? user : "-"
-            else
-              "-"
-            end
-          end
-          column :created_at
-        end
-      end
-    end
   end
 end

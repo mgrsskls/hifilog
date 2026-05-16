@@ -54,7 +54,7 @@ class Event < ApplicationRecord
 
   # :nocov:
   def self.ransackable_attributes(_auth_object = nil)
-    %w[address calendar_year country_code end_date name slug start_date url created_at updated_at]
+    %w[address calendar_year country_code end_date name slug start_date url created_at updated_at slugs_id_eq]
   end
 
   def self.ransackable_associations(_auth_object = nil)

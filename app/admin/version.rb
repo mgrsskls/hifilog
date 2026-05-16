@@ -1,7 +1,7 @@
 ActiveAdmin.register PaperTrail::Version do
-  actions :index, :show
+  menu parent: 'Data & Analytics', label: 'Product & Brand Activities', priority: 3
 
-  menu priority: 999
+  actions :index, :show
 
   def controller
     def index
