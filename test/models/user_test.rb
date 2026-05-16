@@ -7,6 +7,10 @@ class UserTest < ActiveSupport::TestCase
     assert_equal users(:visible).profile_path, '/users/username3'
   end
 
+  test 'collection_path' do
+    assert_equal users(:visible).collection_path, '/users/username3/collection'
+  end
+
   test 'validations' do
     user = User.new
     assert_not user.valid?

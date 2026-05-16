@@ -197,6 +197,67 @@ class PossessionTest < ActiveSupport::TestCase
     end
   end
 
+  test 'recent_with_images limits and orders by possession created_at' do
+    user = users(:without_anything)
+    user.possessions.destroy_all
+
+    possessions = [products(:one), products(:two), products(:diy_kit)].map.with_index do |product, index|
+      travel_to(Time.zone.local(2026, 7, index + 1, 12, 0, 0)) do
+        possession = Possession.create!(user: user, product: product, prev_owned: false)
+        possession.update!(images: [one_by_one_png_upload(filename: "recent-#{index}.png")])
+        possession
+      end
+    end
+
+    results = user.possessions.recent_with_images(2)
+
+    assert_equal possessions.last(2).reverse.map(&:id), results.map(&:id)
+  end
+
+  test 'recent_with_images excludes possessions without images' do
+    user = users(:without_anything)
+    user.possessions.destroy_all
+
+    travel_to(Time.zone.local(2026, 8, 1, 12, 0, 0)) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+    end
+
+    with_image = travel_to(Time.zone.local(2026, 8, 2, 12, 0, 0)) do
+      possession = Possession.create!(user: user, product: products(:two), prev_owned: false)
+      possession.update!(images: [one_by_one_png_upload(filename: 'has-image.png')])
+      possession
+    end
+
+    results = user.possessions.recent_with_images(5)
+
+    assert_equal [with_image.id], results.map(&:id)
+  end
+
+  test 'recent_with_images orders by possession created_at not image upload time' do
+    user = users(:without_anything)
+    user.possessions.destroy_all
+
+    older = travel_to(Time.zone.local(2026, 6, 1, 12, 0, 0)) do
+      possession = Possession.create!(user: user, product: products(:one), prev_owned: false)
+      possession.update!(images: [one_by_one_png_upload(filename: 'old.png')])
+      possession
+    end
+
+    newer = travel_to(Time.zone.local(2026, 8, 1, 12, 0, 0)) do
+      possession = Possession.create!(user: user, product: products(:two), prev_owned: false)
+      possession.update!(images: [one_by_one_png_upload(filename: 'newer.png')])
+      possession
+    end
+
+    travel_to(Time.zone.local(2026, 8, 10, 12, 0, 0)) do
+      older.update!(images: [one_by_one_png_upload(filename: 'reupload.png')])
+    end
+
+    results = user.possessions.recent_with_images(2)
+
+    assert_equal [newer.id, older.id], results.map(&:id)
+  end
+
   test 'destroy sets hidden_at on related user activities' do
     user = users(:without_anything)
     possession = travel_to(Time.zone.local(2026, 8, 1, 10, 0, 0)) do

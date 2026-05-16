@@ -1,0 +1,28 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "compact_events_list" %>
+<% end %>
+
+<ol class="CompactEventsList">
+    <% events.each do |event| %>
+        <li>
+            <% attendee_count = attendee_counts.fetch(event.id, 0) %>
+            <time datetime="<%= format_iso_date(event.start_date) %>">
+                <%= humanize_date_range(event.start_date, event.end_date) %>
+            </time>
+
+            <%= link_to event.name, event_path(year: event.calendar_year, slug: event.friendly_id) %>
+
+            <div class="CompactEventsList-eventMeta">
+                <div class="EntityList-country u-flex u-gap-smd u-alignCenter">
+                    <% country_name = country_name_from_country_code(event.country_code) %>
+                    <img class="Flag" src="/flags/<%= event.country_code.downcase %>.svg" alt="Flag of <%= country_name %>" title="<%= country_name %>" loading="lazy" width="25">
+                    <%= country_name %>
+                </div>
+
+                <div class="EntityList-productsCount">
+                    <%= "#{attendee_count} #{t('activerecord.models.event_attendee', count: attendee_count)}" %>
+                </div>
+            </div>
+        </li>
+    <% end %>
+</ol>

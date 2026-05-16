@@ -12,6 +12,10 @@
 	object-fit: cover;
 }
 
+.Profile-main {
+	container: profile-main / inline-size;
+}
+
 @media (width < 84.5rem) {
 	.Profile-header {
 		aspect-ratio: 4;
@@ -47,10 +51,6 @@
 
 	.Profile-products {
 		margin-block-start: 1rem;
-
-		h2 {
-			display: none;
-		}
 	}
 }
 
@@ -91,12 +91,12 @@
 }
 
 .ProfilePossessions-item {
-	padding-block-start: 3rem;
+	padding-block-start: clamp(1rem, 5vi, 3rem);
 }
 
 .ProfilePossessions-item + .ProfilePossessions-item {
 	border-block-start: var(--border) var(--color-transparency-15);
-	margin-block-start: 3rem;
+	margin-block-start: clamp(1rem, 5vi, 3rem);
 }
 
 .ProfilePossessions-header {
@@ -125,4 +125,54 @@
 .ProfilePossessions-images > :first-child {
 	grid-column: 1 / 3;
 	grid-row: 1 / 3;
+}
+
+.UserProfile {
+	display: flex;
+	gap: 3rem;
+}
+
+@container profile-main (width <= 42rem) {
+	.UserProfile {
+		flex-direction: column;
+	}
+}
+
+@container profile-main (width > 42rem) {
+	.UserProfile {
+		flex-direction: row-reverse;
+	}
+	.UserProfile-content {
+		flex: 2;
+	}
+
+	.UserProfile-feed {
+		flex: 3;
+	}
+}
+
+.UserProfile-heading {
+	padding-block-end: 1rem;
+	border-block-end: var(--border-light);
+	margin-block-end: 2rem;
+}
+
+.UserProfile-statistics,
+.UserProfile-events {
+	margin-block-start: 2rem;
+}
+
+.UserProfile-collection {
+	ol {
+		list-style: "";
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 7rem), 1fr));
+		gap: 0.5rem;
+
+		li {
+			padding: 0;
+		}
+	}
 }

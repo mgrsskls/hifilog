@@ -56,6 +56,10 @@ class User < ApplicationRecord
     user_path(user_name.downcase)
   end
 
+  def collection_path
+    user_collection_path(user_name.downcase)
+  end
+
   def assign_attributes(new_attributes)
     capture_profile_image_attachment_ids_before_assign(new_attributes) if persisted?
     super

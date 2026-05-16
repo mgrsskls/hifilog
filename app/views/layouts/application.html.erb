@@ -314,7 +314,7 @@
           @user.present? &&
           params[:controller] == "users" &&
           (
-            ["show", "prev_owneds", "history", "contributions", "activity"].include?(params[:action])
+            ["show", "collection", "prev_owneds", "history", "contributions", "activity"].include?(params[:action])
           )
         )
       %>

@@ -1,4 +1,5 @@
 <% categories ||= [] %>
+<% render_headline ||= false %>
 
 <% content_for :preloading do %>
   <% if user.decorative_image.attached? %>
@@ -39,14 +40,17 @@
             </small>
           </figcaption>
         </figure>
-        <button class="Sidebar-toggle h3" aria-expanded="false">
+        <button class="Sidebar-toggle" aria-expanded="false">
           <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="12" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
-          <%= heading %>
+          Menu
         </button>
         <ul class="Sidebar-menu" id="sidebar-menu">
           <li>
+            <%= link_to 'Overview', user.profile_path, "aria-current": request.path == user.profile_path ? "page" : "false", class: "Sidebar-link" %>
+          </li>
+          <li>
             <span>
-              <%= link_to t('headings.current_products'), user.profile_path, "aria-current": request.path == user.profile_path ? "page" : "false", class: "Sidebar-link" %>
+              <%= link_to t('headings.current_products'), user.collection_path, "aria-current": request.path == user.collection_path ? "page" : "false", class: "Sidebar-link" %>
               <small><%= user_possessions_count(user: user) %></small>
             </span>
             <% setups = user.setups.where(private: false) %>
@@ -69,9 +73,6 @@
           <li>
             <%= link_to t('headings.history'), user_history_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_history_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>
-          <li>
-            <%= link_to t('headings.activity'), user_activity_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_activity_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
-          </li>
           <li class="Sidebar-separator">
             <%= link_to t('headings.contributions'), user_contributions_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_contributions_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
           </li>
@@ -79,10 +80,14 @@
       </nav>
     </div>
     <div class="Profile-products">
-      <div class="Heading">
-        <h2><%= heading %></h2>
-        <%= render "shared/category_filter", categories: categories, sub_category: sub_category %>
-      </div>
+      <% if render_headline %>
+        <div class="Heading">
+          <h2><%= heading %></h2>
+          <% if defined?(categories) && defined?(sub_category) %>
+            <%= render "shared/category_filter", categories: categories, sub_category: sub_category %>
+          <% end %>
+        </div>
+      <% end %>
 
       <div class="Profile-main">
         <%= yield %>

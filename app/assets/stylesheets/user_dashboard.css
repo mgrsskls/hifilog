@@ -62,43 +62,6 @@ ol + .UserDashboard-subHeading {
 	gap: var(--gap);
 }
 
-.UserDashboard-events {
-	ol {
-		list-style: "";
-		padding: 0;
-		margin: 0;
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
-		gap: 1rem;
-	}
-
-	li {
-		background: var(--color-bg2);
-		padding: 1rem;
-		border-radius: var(--border-radius);
-
-		a {
-			display: block;
-			font-weight: 600;
-		}
-	}
-
-	time {
-		font-size: 0.875rem;
-		display: block;
-		color: var(--color-secondary);
-		font-weight: 500;
-	}
-}
-
-.UserDashboard-eventMeta {
-	display: flex;
-	gap: 1rem;
-	align-items: center;
-	font-size: 0.875rem;
-	margin-block-start: 0.5rem;
-}
-
 .UserDashboard-newest {
 	grid-area: newest;
 }

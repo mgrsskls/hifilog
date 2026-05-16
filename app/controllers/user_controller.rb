@@ -16,12 +16,11 @@ class UserController < ApplicationController
 
     @feed = UserActivityTimeline.grouped_for(current_user, time_zone: Time.zone, limit: 10)
 
+    @newest_users = newest_users
+
     load_current_statistics_overview
 
     today = Time.zone.today
-
-    @newest_users = newest_users
-
     @events = current_user.events
                           .where(end_date: today..)
                           .or(Event.where(start_date: today.., end_date: nil))

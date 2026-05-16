@@ -3,6 +3,7 @@
 class UsersController < ApplicationController
   include HistoryHelper
   include Possessions
+  include CurrentStatisticsOverview
   include ActionView::Helpers::SanitizeHelper
 
   helper UserActivityHelper
@@ -29,6 +30,40 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
+    @categories = []
+    @sub_category = nil
+
+    @activity_rows = UserActivityTimeline.grouped_for(@user, time_zone: Time.zone)
+
+    load_current_statistics_overview(@user)
+
+    today = Time.zone.today
+    @events = @user.events
+                   .where(end_date: today..)
+                   .or(Event.where(start_date: today.., end_date: nil))
+                   .order(start_date: :asc)
+                   .to_a
+    event_ids = @events.map(&:id)
+    @event_attendee_counts = event_ids.empty? ? {} : EventAttendee.where(event_id: event_ids).group(:event_id).count
+
+    possessions = @user.possessions
+                       .recent_with_images(6)
+                       .includes(
+                         { images_attachments: :blob },
+                         { product: :brand },
+                         { product_variant: { product: :brand } },
+                         { custom_product: [{ sub_categories: :category }, { images_attachments: :blob }] }
+                       )
+    @collection = PossessionPresenterService.map_to_presenters(possessions)
+
+    @heading = 'Overview'
+    page_title("#{@user.user_name} — #{@heading}")
+  end
+
+  def collection
+    @user = setup_user_page
+    return unless @user
+
     @setup = @user.setups.find(params[:setup]) if params[:setup]
     possessions = @setup ? @setup.possessions : @user.possessions.where(prev_owned: false)
 
@@ -50,8 +85,6 @@ class UsersController < ApplicationController
                else
                  I18n.t('headings.current_products')
                end
-
-    render 'show'
   end
 
   def prev_owneds
@@ -74,7 +107,7 @@ class UsersController < ApplicationController
     @render_period = true
     @heading = I18n.t('headings.prev_owneds')
 
-    render 'show'
+    render 'collection'
   end
 
   def history
@@ -86,14 +119,8 @@ class UsersController < ApplicationController
   end
 
   def activity
-    @user = setup_user_page
-    return unless @user
-
-    @categories = []
-    @sub_category = nil
-    @activity_rows = UserActivityTimeline.grouped_for(@user, time_zone: Time.zone)
-    @heading = I18n.t('headings.activity')
-    page_title("#{@user.user_name} — #{@heading}")
+    user_name = (params[:user_id].presence || params[:id]).downcase
+    redirect_to user_path(id: user_name), status: :moved_permanently
   end
 
   def contributions

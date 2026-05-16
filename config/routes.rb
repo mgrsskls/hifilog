@@ -77,11 +77,12 @@ Rails.application.routes.draw do
   resources :bookmarks, only: [:create, :update, :destroy]
   resources :setups, only: [:create, :update, :destroy]
   resources :users, only: [:index, :show] do
+    get '/collection', to: 'users#collection', as: :collection
     get '/custom-products/:id', to: 'custom_products#show', as: :custom_product
     get '/previous-products', to: 'users#prev_owneds'
-    get '/setups/:setup', to: 'users#show', as: :setup
+    get '/setups/:setup', to: 'users#collection', as: :setup
     get '/history', to: 'users#history', as: :history
-    get '/activity', to: 'users#activity', as: :activity
+    get '/activity', to: 'users#activity'
     get '/contributions', to: 'users#contributions', as: :contributions
   end
   post '/app_news/mark_as_read', to: 'app_news#mark_as_read'

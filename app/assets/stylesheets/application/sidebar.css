@@ -94,7 +94,7 @@
 
 	.Sidebar-menu {
 		padding-inline: var(--page-spacing);
-		padding-block-end: 2rem;
+		padding-block: 1rem;
 	}
 
 	.Sidebar-toggle {
@@ -105,8 +105,9 @@
 		box-sizing: border-box;
 		padding-block: 0.5rem;
 		padding-inline: var(--page-spacing);
-		margin-block: 1rem;
 		color: inherit;
+		background: var(--color-bg2);
+		font-weight: 600;
 
 		svg {
 			inline-size: 0.825em;

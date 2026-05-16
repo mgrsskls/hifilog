@@ -45,6 +45,10 @@ class CustomProductPossessionPresenter < CustomProductPresenter
 
   delegate :prev_owned, to: :@object
 
+  def highlighted_image
+    super.presence || PossessionPresenter.new(@object).highlighted_image
+  end
+
   def owned_for
     parsed_from = period_from.to_date if period_from.present?
     parsed_to = period_to.to_date if period_to.present?

@@ -12,6 +12,29 @@ class Possession < ApplicationRecord
   scope :for_stats, -> { includes(:product_variant, :custom_product, product: :brand) }
   scope :current, -> { where.not(prev_owned: true) }
   scope :with_period, -> { where.not(period_from: nil) }
+  scope :with_images, lambda {
+    where(<<~SQL.squish)
+      EXISTS (
+        SELECT 1 FROM active_storage_attachments
+        WHERE record_type = 'Possession'
+          AND record_id = possessions.id
+          AND name = 'images'
+      )
+      OR EXISTS (
+        SELECT 1 FROM active_storage_attachments
+        WHERE record_type = 'CustomProduct'
+          AND record_id = possessions.custom_product_id
+          AND name = 'images'
+          AND possessions.custom_product_id IS NOT NULL
+      )
+    SQL
+  }
+  scope :recent_with_images, lambda { |limit = 5|
+    current
+      .with_images
+      .order(Arel.sql('possessions.created_at DESC NULLS LAST'))
+      .limit(limit)
+  }
 
   belongs_to :user
   belongs_to :product, optional: true

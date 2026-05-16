@@ -1,90 +1,66 @@
-<% content_for :js do %>
-  <%= javascript_include_tag "gallery", type: "module" %>
+<% content_for :css do %>
+  <%= stylesheet_link_tag "statistics" %>
 <% end %>
-<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category } do %>
-  <% if @possessions.any? %>
-    <ul class="ProfilePossessions">
-      <% @possessions.each do |possession| %>
-        <li class="ProfilePossessions-item">
-          <div class="ProfilePossessions-header">
-            <h3 class="h4">
-              <a href="<%= possession.show_path %>">
-                <b><%= possession.display_name %></b>
-              </a>
-              <% if possession.product_option.present? || possession.model_no.present? %>
-                <div>
-                  <small class="Table-productOption">
-                    <%= possession.model_no if possession.model_no.present? %>
-                    <% if possession.product_option.present? && possession.model_no.present? %>&middot;<% end %>
-                    <%= possession.product_option.option if possession.product_option.present? %>
-                  </small>
-                </div>
-              <% end %>
-            </h3>
 
-            <% if possession.prev_owned %>
-              <small>
-                <% if possession.period_from && possession.period_to %>
-                  Owned from <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time> &ndash; <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
-                <% elsif possession.period_from %>
-                  Owned since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
-                <% elsif possession.period_to %>
-                  Owned until <time datetime="<%= possession.period_to %>"><%= format_date(possession.period_to).html_safe %></time>
+<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading } do %>
+  <div class="UserProfile">
+
+    <div class="UserProfile-content">
+
+      <div class="UserProfile-collection">
+        <div class="Heading UserProfile-heading">
+          <h2>Collection</h2>
+          <%= link_to "View all", @user.collection_path %>
+        </div>
+        <% if @collection.any? %>
+          <ol>
+            <% @collection.each do |possession| %>
+              <% highlighted = possession.highlighted_image %>
+              <% next unless highlighted %>
+              <li>
+                <%= link_to possession.show_path do %>
+                  <%= image_tag cdn_image_url(highlighted.variant(:thumb)), alt: "Image of the #{possession.display_name}" %>
                 <% end %>
-              </small>
-            <% else %>
-              <% if possession.period_from %>
-                <small>
-                  Since <time datetime="<%= possession.period_from %>"><%= format_date(possession.period_from).html_safe %></time>
-                </small>
-              <% end %>
+              </li>
             <% end %>
-          </div>
-          <ul class="ProfilePossessions-images ImageLightbox ImageGallery">
-            <% if possession.images.attached? %>
-              <% possession.sorted_images.each_with_index do |image, i| %>
-                <li class="ImageLightbox-item">
-                  <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>" aria-label="Open larger image of the <%= possession.display_name %>">
-                    <picture>
-                      <%= image_tag cdn_image_url(image.variant(:thumb)), alt: "Image of the #{possession.display_name}" %>
-                    </picture>
-                  </button>
-                  <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
-                    <picture>
-                      <%= image_tag cdn_image_url(image.variant(:large)), alt: "Image of the #{possession.display_name}", loading: "lazy" %>
-                    </picture>
-                    <% if possession.sorted_images.size > 1 %>
-                      <div class="ImageGallery-info is-dark">
-                        <% if i < possession.sorted_images.size - 1 %>
-                          <button type="button" rel="next" aria-label="Next">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
-                          </button>
-                        <% end %>
-                        <% if i > 0 %>
-                          <button type="button" rel="prev" aria-label="Previous">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
-                          </button>
-                        <% end %>
-                      </div>
-                    <% end %>
-                  </dialog>
-                </li>
-              <% end %>
-            <% end %>
-          </ul>
-          <p>
-            <small>
-              <% if possession.sub_categories.any? %>
-                <%= possession.sub_categories.map{ |sub_category| sub_category.name }.join(", ").html_safe %>
-              <% else %>
-                <%= possession.categories.map{ |category| category.name }.join(", ").html_safe %>
-              <% end %>
-            </small>
-          </p>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <%= render "shared/empty_state", message: t("empty_state.#{@empty_state}", name: h(@user.user_name)) %>
-  <% end %>
+          </ol>
+        <% else %>
+          <%= render "shared/empty_state", message: @user.possessions.empty? ? "<p><b>#{h(@user.user_name)} has no products in their collection yet.</b></p>" : "<p><b>#{h(@user.user_name)} has not uploaded any images of their products yet.</b></p>" %>
+        <% end %>
+      </div>
+
+      <div class="UserProfile-statistics Statistics">
+        <div class="Heading UserProfile-heading">
+          <h2>Statistics</h2>
+        </div>
+        <%= render "statistics/overview_statistics",
+            overview_statistics: current_overview_statistics(
+              products_count: @current_amount_of_products,
+              brands_count: @current_amount_of_brands,
+              user_name: @user.user_name
+            ) %>
+      </div>
+
+      <div class="UserProfile-events">
+        <div class="Heading UserProfile-heading">
+          <h2>Events</h2>
+        </div>
+
+        <% if @events.any? %>
+          <%= render "shared/compact_events_list", events: @events, attendee_counts: @event_attendee_counts %>
+        <% else %>
+          <%= render "shared/empty_state", message: "<p><b>#{h(@user.user_name)} has no upcoming events.</b></p><p>You can view all upcoming events <a href=\"#{dashboard_events_path}\">here</a>.</p>" %>
+        <% end %>
+      </div>
+
+    </div>
+    
+    <div class="UserProfile-feed">
+      <div class="Heading UserProfile-heading">
+        <h2><%= t('headings.activity') %></h2>
+      </div>
+      <%= render "shared/feed", feed_items: @activity_rows, empty_state_message: t('empty_state.no_activity_profile', user_name: h(@user.user_name)) %>
+    </div>
+
+  </div>
 <% end %>

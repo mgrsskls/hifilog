@@ -128,7 +128,9 @@ Typically a possession references either a product, a variant, or a custom produ
 
 ## User activity
 
-The **activity feed** on a user profile (`GET /users/:id/activity`) is built from persisted **`UserActivity`** rows: one record per notable action, with a **verb**, **occurred_at** timestamp, polymorphic **subject**, and JSON **metadata** for display snapshots (names, URLs, ownership periods, setup/product ids).
+The **profile overview** at `GET /users/:id` combines a collection preview, statistics, upcoming events, and an **activity feed** built from persisted **`UserActivity`** rows. The legacy URL `GET /users/:id/activity` redirects to the overview permanently. The full product grid is at `GET /users/:id/collection` (including setup-specific routes under `/users/:id/setups/:setup`).
+
+Each **`UserActivity`** row has a **verb**, **occurred_at** timestamp, polymorphic **subject**, and JSON **metadata** for display snapshots (names, URLs, ownership periods, setup/product ids).
 
 Activities are **written at the source** via model callbacks that call **`UserActivities::Recorder`**. The feed is **read** through **`UserActivityTimeline`**, which loads visible rows, resolves subjects, applies visibility and deduplication rules, optionally **groups** similar consecutive events, and returns `Single` or `Grouped` rows for the view.
 
