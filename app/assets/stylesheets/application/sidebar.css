@@ -46,10 +46,19 @@
 	}
 }
 
-.Sidebar-separator {
+.Sidebar-menu--account {
+	flex-wrap: wrap;
+	flex-direction: row;
+
+	li {
+		flex: 0 0 calc(50% - 0.25rem);
+	}
+}
+
+.Sidebar-menu + .Sidebar-menu {
 	border-block-start: var(--border-light);
-	margin-block-start: 1rem;
-	padding-block-start: 1rem;
+	margin-block-start: 2rem;
+	padding-block-start: 2rem;
 }
 
 .Sidebar-link {
@@ -118,7 +127,7 @@
 		color: #fff;
 	}
 
-	.Sidebar-separator {
+	.Sidebar-menu + .Sidebar-menu {
 		border-block-start-color: var(--color-transparency-25);
 	}
 }

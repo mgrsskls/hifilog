@@ -1,3 +1,7 @@
+.Dashboard-products {
+	container: dashboard-content / inline-size;
+}
+
 @media (width < 48rem) {
 	.Dashboard-menu {
 		display: none;
@@ -38,16 +42,23 @@
 	}
 
 	.Dashboard-userName {
-		margin-block-end: 1rem;
+		margin-block-end: 2rem;
 	}
 
-	.Dashboard-userName span {
+	.Dashboard-userNameText {
 		font-size: 1.5rem;
 		font-weight: 600;
 		line-height: 1.1;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		overflow: hidden;
+		display: block;
+		color: var(--color-copy);
+	}
+
+	.Dashboard-userNameLink {
+		display: block;
+		font-size: 0.875rem;
 	}
 
 	.Dashboard-userName--sm span {
@@ -63,9 +74,4 @@
 		aspect-ratio: 1;
 		block-size: auto;
 	}
-}
-
-.Dashboard-headline {
-	padding-block-end: 0.5em;
-	border-block-end: var(--border-light);
 }

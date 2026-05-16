@@ -2,7 +2,7 @@
 	background: var(--color-bg2);
 	border-radius: var(--border-radius);
 	margin-block-start: 1.5rem;
-	padding: 1.5rem clamp(var(--page-spacing), 8vi, 8rem);
+	padding: 1.5rem;
 	margin-trim: block;
 	text-align: center;
 }
