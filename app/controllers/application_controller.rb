@@ -2,6 +2,7 @@
 
 class ApplicationController < ActionController::Base
   include ApplicationHelper
+  include SafeRedirect
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :set_footer_data
@@ -93,8 +94,8 @@ class ApplicationController < ActionController::Base
 
     if user.instance_of?(AdminUser)
       admin_root_path
-    elsif redirect_param
-      redirect_param
+    elsif (path = safe_redirect_path(redirect_param))
+      path
     else
       stored_location_for(user) || dashboard_root_path
     end

@@ -8,7 +8,8 @@ class Users::SessionsController < Devise::SessionsController
   def new
     @active_menu = :login
     page_title(I18n.t('user_form.login'))
-    @meta_robots = 'noindex, follow' if params[:redirect].present?
+    @safe_redirect = safe_redirect_path(params[:redirect])
+    @meta_robots = 'noindex, follow' if @safe_redirect.present?
     super
   end
 

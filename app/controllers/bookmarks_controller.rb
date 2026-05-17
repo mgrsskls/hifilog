@@ -59,7 +59,7 @@ class BookmarksController < ApplicationController
       bookmark.update(bookmark_list_id: nil)
     end
 
-    redirect_to params[:redirect_to] || dashboard_bookmarks_path
+    redirect_to_safe_path(params[:redirect_to], fallback: dashboard_bookmarks_path)
   end
 
   def destroy
@@ -73,6 +73,6 @@ class BookmarksController < ApplicationController
       )
     end
 
-    redirect_to params[:redirect_to] || dashboard_bookmarks_path
+    redirect_to_safe_path(params[:redirect_to], fallback: dashboard_bookmarks_path)
   end
 end

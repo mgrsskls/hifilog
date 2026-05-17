@@ -132,8 +132,9 @@ class PossessionsController < ApplicationController
       flash[:alert] = I18n.t(:generic_error_message)
     end
 
-    param_redirect_to = params[:redirect_to]
-    return redirect_to param_redirect_to if param_redirect_to
+    if (path = safe_redirect_path(params[:redirect_to]))
+      return redirect_to path
+    end
 
     redirect_back_to_product(
       product:,
