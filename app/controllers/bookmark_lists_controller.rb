@@ -38,7 +38,7 @@ class BookmarkListsController < InheritedResources::Base
     @bookmark_list = current_user.bookmark_lists.find(params[:id])
     @active_dashboard_menu = :bookmarks
 
-    if @bookmark_list.update(bookmark_list_params)
+    if @bookmark_list.update(scoped_bookmark_list_params)
       flash[:notice] = I18n.t(
         'bookmark_list.messages.updated',
         name: @bookmark_list.name
@@ -86,5 +86,14 @@ class BookmarkListsController < InheritedResources::Base
 
   def bookmark_list_params
     params.expect(bookmark_list: [:name, { bookmark_ids: [] }])
+  end
+
+  def scoped_bookmark_list_params
+    permitted = bookmark_list_params
+    bookmark_ids = permitted[:bookmark_ids]
+    return permitted if bookmark_ids.blank?
+
+    permitted[:bookmark_ids] = current_user.bookmarks.where(id: bookmark_ids).pluck(:id)
+    permitted
   end
 end

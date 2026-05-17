@@ -98,6 +98,25 @@ class BookmarkListsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_bookmarks_url
   end
 
+  test 'update ignores bookmark_ids from other users' do
+    sign_in users(:one)
+    other_user = users(:visible)
+    other_bookmark = Bookmark.create!(
+      user: other_user,
+      item: products(:one),
+      item_type: 'Product'
+    )
+
+    patch bookmark_list_url(@bookmark_list), params: {
+      bookmark_list: {
+        bookmark_ids: [other_bookmark.id]
+      }
+    }
+
+    assert_redirected_to dashboard_bookmark_list_url(@bookmark_list)
+    assert_not_equal @bookmark_list.id, other_bookmark.reload.bookmark_list_id
+  end
+
   test 'destroy keeps bookmarks when remove_bookmarks is not set' do
     sign_in users(:one)
     bookmark = bookmarks(:with_product)
