@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 class Event < ApplicationRecord
-  # Single source for config/routes.rb :slug constraint (no \A/\z — Rails forbids anchors there)
-  # FriendlyId parameterize output matches this pattern.
-  SLUG_PATTERN_SOURCE = '[a-z0-9]+(?:-[a-z0-9]+)*'
-  SLUG_PATH_CONSTRAINT = Regexp.new(SLUG_PATTERN_SOURCE)
-  SLUG_ROUTE_PATTERN = Regexp.new("\\A#{SLUG_PATTERN_SOURCE}\\z")
+  include SlugRouteConstraints
 
   extend FriendlyId
 

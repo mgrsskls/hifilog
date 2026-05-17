@@ -54,13 +54,6 @@ class EventTest < ActiveSupport::TestCase
     assert_equal Event.upcoming.count, count
   end
 
-  test 'slug patterns match route constraint and parameterize-style slugs' do
-    assert_match Event::SLUG_PATH_CONSTRAINT, 'my-event-2'
-    assert_match Event::SLUG_ROUTE_PATTERN, 'my-event-2'
-    assert_not 'my_event'.match?(Event::SLUG_ROUTE_PATTERN)
-    assert_not 'My Event'.match?(Event::SLUG_ROUTE_PATTERN)
-  end
-
   test 'flush_event_cache clears event counters and newest_events' do
     Rails.cache.write('events/past_count', 123)
     Rails.cache.write('events/upcoming_count', 456)
