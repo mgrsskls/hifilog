@@ -156,9 +156,6 @@ a user-driven database for hi-fi products and brands."
     @brand = Brand.friendly.find(params[:id])
     is_discontinued = @brand.discontinued
 
-    old_name = @brand.name
-    @brand.slug = nil if old_name != brand_params[:name]
-
     if @brand.update(brand_params)
       if is_discontinued == false && @brand.discontinued == true
         @brand.products.each do |product|

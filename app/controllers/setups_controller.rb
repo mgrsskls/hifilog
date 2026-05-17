@@ -2,6 +2,7 @@
 
 class SetupsController < ApplicationController
   include Possessions
+  include FriendlyFinder
 
   before_action :authenticate_user!
   before_action :set_menu
@@ -12,7 +13,8 @@ class SetupsController < ApplicationController
   end
 
   def show
-    user_setup(params[:id])
+    @setup = current_user.setups.friendly.find(params[:id])
+
     page_title(@setup.name)
 
     @all_possessions = PossessionPresenterService.map_to_presenters(
@@ -57,7 +59,9 @@ class SetupsController < ApplicationController
   end
 
   def edit
-    user_setup(params[:id])
+    @setup = current_user.setups.friendly.find(params[:id])
+    return if performed?
+
     page_title("#{t('edit')} #{@setup.name}")
   end
 
@@ -79,15 +83,17 @@ class SetupsController < ApplicationController
   end
 
   def update
-    setup_id = params[:id]
-    user_setup(setup_id)
+    @setup = current_user.setups.friendly.find(params[:id])
     @active_dashboard_menu = :setups
 
-    possessions_in_other_setups = current_user.setup_possessions
-                                              .where.not(setup_id:)
-                                              .where(possession_id: setup_params[:possession_ids])
+    update_params = setup_params.except(:possession_ids)
+    success = if possession_ids_submitted?
+                sync_setup_possessions(update_params)
+              else
+                @setup.update(update_params)
+              end
 
-    if possessions_in_other_setups.update(setup_id:) && @setup.update(setup_params)
+    if success
       flash[:notice] = I18n.t(
         'setup.messages.updated',
         name: @setup.name
@@ -99,7 +105,7 @@ class SetupsController < ApplicationController
   end
 
   def destroy
-    user_setup(params[:id])
+    @setup = current_user.setups.friendly.find(params[:id])
     @setup.destroy
     flash[:notice] = I18n.t('setup.messages.deleted', name: @setup.name)
     redirect_to dashboard_setups_path
@@ -116,7 +122,26 @@ class SetupsController < ApplicationController
     params.expect(setup: [:name, :private, { possession_ids: [] }])
   end
 
-  def user_setup(id)
-    @setup = current_user.setups.find(id)
+  def possession_ids_submitted?
+    setup = params[:setup]
+    return false unless setup
+
+    setup.key?(:possession_ids) || setup.key?('possession_ids')
+  end
+
+  def permitted_possession_ids
+    ids = Array(setup_params[:possession_ids]).map(&:to_i).reject(&:zero?)
+    current_user.possessions.where(id: ids).pluck(:id)
+  end
+
+  def sync_setup_possessions(update_params)
+    setup_id = @setup.id
+    permitted_ids = permitted_possession_ids
+    possessions_in_other_setups = current_user.setup_possessions
+                                              .where.not(setup_id:)
+                                              .where(possession_id: permitted_ids)
+
+    possessions_in_other_setups.update(setup_id:) &&
+      @setup.update(update_params.merge(possession_ids: permitted_ids))
   end
 end

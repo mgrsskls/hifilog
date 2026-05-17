@@ -123,7 +123,7 @@ class ApplicationController < ActionController::Base
     if custom_product.present?
       return redirect_back_or_to user_custom_product_url(
         user_id: current_user.user_name.downcase,
-        id: custom_product.id
+        id: custom_product.friendly_id
       )
     end
 

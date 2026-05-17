@@ -5,6 +5,7 @@ class SetupPossession < ApplicationRecord
   belongs_to :possession
 
   validates :possession, uniqueness: true
+  validate :possession_belongs_to_setup_user
 
   after_update :record_setup_product_moved_user_activity
   before_destroy :stash_setup_and_possession_for_setup_product_removed_activity
@@ -30,6 +31,13 @@ class SetupPossession < ApplicationRecord
   # :nocov:
 
   private
+
+  def possession_belongs_to_setup_user
+    return if possession.blank? || setup.blank?
+    return if possession.user_id == setup.user_id
+
+    errors.add(:possession, :invalid)
+  end
 
   def record_setup_product_added_user_activity
     UserActivities::Recorder.setup_product_added(self)

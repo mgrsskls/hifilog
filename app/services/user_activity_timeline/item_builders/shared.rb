@@ -21,9 +21,14 @@ module UserActivityTimeline::ItemBuilders::Shared
 
   def setup_activity_url(setup, meta)
     if setup
-      user_setup_path(user_id: @user.user_name.downcase, setup: setup.id)
+      user_setup_path(user_id: @user.user_name.downcase, setup: setup.friendly_id)
     elsif (sid = meta['setup_id'].presence&.to_i)&.positive?
-      user_setup_path(user_id: @user.user_name.downcase, setup: sid)
+      found = @user.setups.find_by(id: sid)
+      if found
+        user_setup_path(user_id: @user.user_name.downcase, setup: found.friendly_id)
+      else
+        meta['url'].presence || '#'
+      end
     else
       meta['url'].presence || '#'
     end

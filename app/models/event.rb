@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Event < ApplicationRecord
-  include SlugRouteConstraints
-
   extend FriendlyId
 
   has_many :event_attendees, dependent: :destroy
@@ -71,5 +69,9 @@ class Event < ApplicationRecord
 
   def assign_calendar_year
     self.calendar_year = start_date&.year
+  end
+
+  def should_generate_new_friendly_id?
+    slug.blank? || name_changed?
   end
 end

@@ -1,5 +1,5 @@
 <%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
-  <%= form_for @custom_product, url: custom_product_path(id: @custom_product.id), html: { class: "EntityForm", method: :put } do |f| %>
+  <%= form_for @custom_product, url: custom_product_path(@custom_product), html: { class: "EntityForm", method: :put } do |f| %>
     <% content_for :heading do %>
       <%= t('edit') %>
       <span><%= @custom_product.name %></span>

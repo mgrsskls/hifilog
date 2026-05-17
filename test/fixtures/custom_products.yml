@@ -1,5 +1,6 @@
 one:
   name: name
+  slug: name
   description: description
   user: one
   sub_categories:
@@ -7,6 +8,7 @@ one:
 
 two:
   name: name2
+  slug: name2
   description: description2
   user: one
   sub_categories:
@@ -14,6 +16,7 @@ two:
 
 three:
   name: name3
+  slug: name3
   description: description3
   user: one
   sub_categories:

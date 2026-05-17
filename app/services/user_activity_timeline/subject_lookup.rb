@@ -26,7 +26,10 @@ class UserActivityTimeline::SubjectLookup
     return presenter.show_path if presenter
 
     if (cid = meta['custom_product_id'].presence&.to_i)&.positive?
-      return user_custom_product_path(user_id: @user.user_name.downcase, id: cid)
+      custom_product = @user.custom_products.find_by(id: cid)
+      if custom_product
+        return user_custom_product_path(user_id: @user.user_name.downcase, id: custom_product.friendly_id)
+      end
     end
 
     pid = meta['product_id'].presence&.to_i

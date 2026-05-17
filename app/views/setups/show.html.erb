@@ -26,6 +26,7 @@
       <dialog class="AddEntityDialog" id="add-products">
         <%= form_for @setup, method: :put do |f| %>
           <h2>Add Products <small>to <%= @setup.name %></small></h2>
+          <input type="hidden" name="setup[possession_ids][]" value="">
           <div class="AddEntityDialog-list">
             <% @all_possessions .each do |presenter| %>
               <div class="AddEntityDialog-option">

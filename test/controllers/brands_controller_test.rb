@@ -186,7 +186,7 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
 
     brands(:one).update(name: 'new name')
 
-    get path
+    get brand_changelog_url(brand_id: brands(:one).friendly_id)
     assert_response :success
   end
 

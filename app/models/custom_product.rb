@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 class CustomProduct < ApplicationRecord
+  extend FriendlyId
+
   include Description
   include Image
 
   belongs_to :user
+
+  friendly_id :name, use: [:slugged, :scoped, :history], scope: :user_id
   has_one :possession, dependent: :destroy
   has_and_belongs_to_many :sub_categories
   has_many_attached :images do |attachable|
@@ -15,6 +19,7 @@ class CustomProduct < ApplicationRecord
   auto_strip_attributes :name, squish: true
 
   validates :name, presence: true, uniqueness: { scope: :user }
+  validates :slug, presence: true, uniqueness: { scope: :user_id }, if: -> { has_attribute?(:slug) }
   validates :sub_categories, presence: true
   validate :validate_image_content_type, :validate_image_file_size, on: :update
 
@@ -46,6 +51,10 @@ class CustomProduct < ApplicationRecord
     ]
   end
   # :nocov:
+
+  def should_generate_new_friendly_id?
+    slug.blank? || name_changed?
+  end
 
   private
 

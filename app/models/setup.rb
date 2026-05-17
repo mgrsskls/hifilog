@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 class Setup < ApplicationRecord
+  extend FriendlyId
+
   belongs_to :user, optional: true
   has_many :setup_possessions, dependent: :destroy
   has_many :possessions, through: :setup_possessions
+
+  friendly_id :name, use: [:slugged, :scoped, :history], scope: :user_id
 
   before_destroy :snapshot_user_activities_metadata
   after_commit :record_setup_created_user_activity, on: :create
@@ -12,6 +16,7 @@ class Setup < ApplicationRecord
   auto_strip_attributes :name, squish: true
 
   validates :name, presence: true, uniqueness: { scope: :user }
+  validates :slug, presence: true, uniqueness: { scope: :user_id }
   validates :private, inclusion: { in: [true, false], message: I18n.t('setup.validation.private.selected') }
   validates :user, presence: true
 
@@ -28,6 +33,8 @@ class Setup < ApplicationRecord
       created_at_lteq
       updated_at_gteq
       updated_at_lteq
+      slugs_id_eq
+      slug
     ]
   end
 
@@ -35,6 +42,10 @@ class Setup < ApplicationRecord
     %w[]
   end
   # :nocov:
+
+  def should_generate_new_friendly_id?
+    slug.blank? || name_changed?
+  end
 
   private
 

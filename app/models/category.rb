@@ -7,7 +7,7 @@ class Category < ApplicationRecord
 
   has_many :sub_categories, dependent: :destroy
 
-  friendly_id :name, use: [:slugged]
+  friendly_id :name, use: [:slugged, :history]
 
   validates :name, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
@@ -33,6 +33,10 @@ class Category < ApplicationRecord
     %w[]
   end
   # :nocov:
+
+  def should_generate_new_friendly_id?
+    slug.blank? || name_changed?
+  end
 
   private
 

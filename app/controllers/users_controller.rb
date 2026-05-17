@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   include Possessions
   include Contributions
   include CurrentStatisticsOverview
-  include ActionView::Helpers::SanitizeHelper
+  include FriendlyFinder
 
   helper UserActivityHelper
 
@@ -50,11 +50,25 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    @setup = @user.setups.find(params[:setup]) if params[:setup]
-    possessions = @setup ? @setup.possessions : @user.possessions.where(prev_owned: false)
+    if params[:setup].present?
+      @setup = @user.setups.where(private: false).friendly.find(params[:setup])
 
-    all = PossessionPresenterService.map_to_presenters(get_possessions_for_user(possessions:))
-    @possessions, @categories, @sub_category = filter_presenters_by_category(all)
+      if request.path != user_setup_path(setup: @setup.friendly_id, user_id: @user.lowercase_user_name)
+        redirect_to URI.parse(user_setup_path(setup: @setup.friendly_id, user_id: @user.lowercase_user_name)).path,
+                    status: :moved_permanently and return
+      end
+    end
+    possessions = @setup.present? ? @setup.possessions : @user.possessions.where(prev_owned: false)
+
+    all = PossessionPresenterService.map_to_presenters(possessions)
+
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @possessions = if @sub_category
+                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                   else
+                     all
+                   end
+    @categories = get_grouped_sub_categories(possessions: all)
     @empty_state = 'public_profile'
 
     @render_since = true
@@ -74,7 +88,13 @@ class UsersController < ApplicationController
     all = PossessionPresenterService.map_to_presenters(
       get_possessions_for_user(possessions: @user.possessions.where(prev_owned: true))
     )
-    @possessions, @categories, @sub_category = filter_presenters_by_category(all)
+    @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
+    @possessions = if @sub_category
+                     all.select { |p| p.sub_categories.include?(@sub_category) }
+                   else
+                     all
+                   end
+    @categories = get_grouped_sub_categories(possessions: all)
     @empty_state = 'public_profile_previous'
 
     @render_since = false

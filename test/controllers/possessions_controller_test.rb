@@ -75,7 +75,7 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal user.possessions.count, possessions_count + 1
     assert_redirected_to user_custom_product_url(
-      id: Possession.last.custom_product.id,
+      id: Possession.last.custom_product.friendly_id,
       user_id: user.user_name.downcase
     )
   end
@@ -298,6 +298,9 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
 
     post possession_move_to_prev_owneds_url(possession)
     assert_equal Possession.find(possession.id).prev_owned, true
-    assert_redirected_to user_custom_product_url(id: possession.custom_product.id, user_id: user.user_name.downcase)
+    assert_redirected_to user_custom_product_url(
+      id: possession.custom_product.friendly_id,
+      user_id: user.user_name.downcase
+    )
   end
 end

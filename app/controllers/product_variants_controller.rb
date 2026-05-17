@@ -121,9 +121,6 @@ class ProductVariantsController < ApplicationController
   def update
     @product_variant = ProductVariant.find(params[:id])
 
-    old_name = @product_variant.name
-    @product_variant.slug = nil if old_name != product_variant_update_params[:name]
-
     product_options_attributes = params[:product_options_attributes]
 
     if product_options_attributes.present?
@@ -190,22 +187,13 @@ class ProductVariantsController < ApplicationController
   end
 
   def find_product_and_variant
-    variant_id = params[:id]
-
     @product = Product.includes(:brand, sub_categories: :category).friendly.find(params[:product_id])
-    @product_variant = @product.product_variants.friendly.find(variant_id)
+    @product_variant = @product.product_variants.friendly.find(params[:id])
+    return if request.path == product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
 
-    product_friendly_id = @product.friendly_id
-    variant_path = product_variant_path(product_id: product_friendly_id, id: variant_id)
-
-    return unless request.path != variant_path
-
-    # If an old id or a numeric id was used to find the record, then
-    # the request path will not match the product_path, and we should do
-    # a 301 redirect that uses the current friendly id.
     redirect_to URI.parse(
-      variant_path
-    ).path, status: :moved_permanently
+      product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
+    ).path, status: :moved_permanently and return
   end
 
   def product_variant_params

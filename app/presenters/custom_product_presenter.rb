@@ -52,19 +52,19 @@ class CustomProductPresenter
   end
 
   def show_path
-    user_custom_product_path(id: @custom_product.id, user_id: user.user_name.downcase)
+    user_custom_product_path(id: @custom_product.friendly_id, user_id: user.user_name.downcase)
   end
 
   def edit_path
-    dashboard_edit_custom_product_path(id: @custom_product.id)
+    dashboard_edit_custom_product_path(@custom_product)
   end
 
   def update_path
-    custom_product_path(id: @custom_product.id)
+    custom_product_path(@custom_product)
   end
 
   def delete_path
-    custom_product_path(id: @custom_product.id)
+    custom_product_path(@custom_product)
   end
 
   def delete_button_label

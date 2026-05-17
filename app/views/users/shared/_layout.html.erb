@@ -58,7 +58,7 @@
               <ul>
                 <% setups.each do |setup| %>
                   <li>
-                    <%= link_to setup.name, user_setup_path(user_id: user.lowercase_user_name, setup: setup.id), "aria-current": request.path == user_setup_path(user_id: user.lowercase_user_name, setup: setup.id) ? "page" : "false", class: "Sidebar-link" %>
+                    <%= link_to setup.name, user_setup_path(user_id: user.lowercase_user_name, setup: setup.friendly_id), "aria-current": request.path == user_setup_path(user_id: user.lowercase_user_name, setup: setup.friendly_id) ? "page" : "false", class: "Sidebar-link" %>
                   </li>
                 <% end %>
               </ul>

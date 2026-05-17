@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_16_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_17_181307) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -202,8 +202,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_120000) do
     t.text "description"
     t.bigint "highlighted_image_id"
     t.citext "name", null: false
+    t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["slug", "user_id"], name: "index_custom_products_on_slug_and_user_id", unique: true
     t.index ["user_id", "name"], name: "index_custom_products_on_user_id_and_name", unique: true
   end
 
@@ -405,9 +407,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_120000) do
     t.datetime "created_at", null: false
     t.citext "name", null: false
     t.boolean "private", null: false
+    t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["name", "user_id"], name: "index_setups_on_name_and_user_id", unique: true
+    t.index ["slug", "user_id"], name: "index_setups_on_slug_and_user_id", unique: true
     t.index ["user_id"], name: "index_setups_on_user_id"
   end
 

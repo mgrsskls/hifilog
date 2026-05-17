@@ -25,4 +25,15 @@ ActiveAdmin.register Setup do
     end
     actions
   end
+
+  controller do
+    def find_resource
+      scoped_collection.friendly.find(params[:id])
+    end
+
+    def show
+      @setup = Setup.friendly.find(params[:id])
+      show! #it seems to need this
+    end
+  end
 end

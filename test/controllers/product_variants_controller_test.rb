@@ -225,7 +225,30 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
 
     product_variant.update!(name: 'new name')
-    get path
+    get product_variant_changelog_url(
+      id: product_variant.friendly_id,
+      product_id: product_variant.product.friendly_id
+    )
     assert_response :success
+  end
+
+  test 'show redirects to canonical slug when an old friendly id slug is used' do
+    product_variant = product_variants(:two)
+    product = product_variant.product
+    old_slug = product_variant.slug
+
+    get product_variant_url(product_id: product.friendly_id, id: old_slug)
+    assert_response :success
+
+    sign_in users(:one)
+    patch product_product_variant_url(id: product_variant.id, product_id: product.id),
+          params: { product_variant: { name: 'Renamed variant title' } }
+    product_variant.reload
+
+    assert_not_equal old_slug, product_variant.slug
+
+    get product_variant_url(product_id: product.friendly_id, id: old_slug)
+    assert_response :moved_permanently
+    assert_redirected_to product_variant_url(product_id: product.friendly_id, id: product_variant.friendly_id)
   end
 end

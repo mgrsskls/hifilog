@@ -118,8 +118,17 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get user_collection_path(user_id: users(:visible).user_name)
     assert_response :success
 
-    get user_setup_path(user_id: users(:one).user_name, setup: users(:one).setups.first.id)
+    public_setup = users(:one).setups.find_by!(private: false)
+    get user_setup_path(user_id: users(:one).user_name, setup: public_setup.friendly_id)
     assert_response :success
+
+    get user_setup_path(user_id: users(:one).user_name, setup: public_setup.id)
+    assert_response :redirect
+    assert_redirected_to user_setup_path(user_id: users(:one).user_name, setup: public_setup.friendly_id)
+
+    private_setup = users(:one).setups.find_by!(private: true)
+    get user_setup_path(user_id: users(:one).user_name, setup: private_setup.friendly_id)
+    assert_response :not_found
 
     get user_collection_path(
       user_id: users(:one).user_name,
@@ -129,10 +138,28 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     get user_setup_path(
       user_id: users(:one).user_name,
-      setup: users(:one).setups.first.id,
+      setup: public_setup.friendly_id,
       category: users(:one).products.first.sub_categories.first.name.parameterize
     )
     assert_response :success
+  end
+
+  test 'setup collection redirects to canonical slug after rename' do
+    user = users(:one)
+    user.update!(profile_visibility: :visible)
+    setup = user.setups.find_by!(private: false)
+    old_slug = setup.slug
+
+    sign_in user
+    patch setup_url(setup), params: { setup: { name: 'Renamed public setup' } }
+    assert_response :redirect
+
+    setup.reload
+    assert_not_equal old_slug, setup.slug
+
+    get user_setup_path(user_id: user.user_name, setup: old_slug)
+    assert_response :moved_permanently
+    assert_redirected_to user_setup_path(user_id: user.lowercase_user_name, setup: setup.friendly_id)
   end
 
   test 'contributions' do

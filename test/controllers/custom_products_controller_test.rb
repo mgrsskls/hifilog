@@ -71,9 +71,10 @@ class CustomProductsControllerTest < ActionDispatch::IntegrationTest
       } }
     end
     assert_equal user.custom_products.count, custom_products_count + 1
+    created = CustomProduct.last
     assert_redirected_to user_custom_product_url(
-      id: CustomProduct.last.id,
-      user_id: CustomProduct.last.user.user_name.downcase
+      id: created.friendly_id,
+      user_id: created.user.user_name.downcase
     )
   end
 
@@ -84,31 +85,65 @@ class CustomProductsControllerTest < ActionDispatch::IntegrationTest
     # custom product belongs to public user
     # owned by user
     user.update!(profile_visibility: 2)
-    get user_custom_product_url(id: custom_product.id, user_id: custom_product.user.user_name.downcase)
+    get user_custom_product_url(id: custom_product.friendly_id, user_id: custom_product.user.user_name.downcase)
     assert_response :success
 
+    get user_custom_product_url(id: custom_product.id, user_id: custom_product.user.user_name.downcase)
+    assert_response :redirect
+    assert_redirected_to user_custom_product_url(id: custom_product.friendly_id,
+                                                 user_id: custom_product.user.user_name.downcase)
+
     # not owned by user
-    get user_custom_product_url(id: custom_products(:three).id, user_id: custom_product.user.user_name.downcase)
+    get user_custom_product_url(
+      id: custom_products(:three).friendly_id,
+      user_id: custom_product.user.user_name.downcase
+    )
     assert_response :success
 
     # custom product belongs to hidden user
     user.update!(profile_visibility: 0)
-    get user_custom_product_url(id: custom_product.id, user_id: custom_product.user.user_name.downcase)
+    get user_custom_product_url(id: custom_product.friendly_id, user_id: custom_product.user.user_name.downcase)
     assert_response :redirect
     assert_redirected_to root_url
 
     # custom product belongs to user only visible logged in
     user.update!(profile_visibility: 1)
-    get user_custom_product_url(id: custom_product.id, user_id: custom_product.user.user_name.downcase)
+    get user_custom_product_url(id: custom_product.friendly_id, user_id: custom_product.user.user_name.downcase)
     assert_response :redirect
     assert_redirected_to new_user_session_path(
-      redirect: user_custom_product_path(id: custom_product.id, user_id: custom_product.user.user_name.downcase)
+      redirect: user_custom_product_path(
+        id: custom_product.friendly_id,
+        user_id: custom_product.user.user_name.downcase
+      )
     )
 
     # … and user is the same
     sign_in user
-    get user_custom_product_url(id: custom_product.id, user_id: custom_product.user.user_name.downcase)
+    get user_custom_product_url(id: custom_product.friendly_id, user_id: custom_product.user.user_name.downcase)
     assert_response :success
+  end
+
+  test 'show redirects to canonical slug after rename' do
+    user = users(:one)
+    user.update!(profile_visibility: :visible)
+    custom_product = custom_products(:one)
+    old_slug = custom_product.slug
+
+    sign_in user
+    patch custom_product_url(custom_product), params: {
+      custom_product: {
+        name: 'Renamed custom product',
+        sub_category_ids: custom_product.sub_category_ids
+      }
+    }
+    assert_response :redirect
+
+    custom_product.reload
+    assert_not_equal old_slug, custom_product.slug
+
+    get user_custom_product_url(id: old_slug, user_id: user.user_name.downcase)
+    assert_response :moved_permanently
+    assert_redirected_to user_custom_product_url(id: custom_product.slug, user_id: user.user_name.downcase)
   end
 
   test 'should get edit' do
@@ -140,8 +175,9 @@ class CustomProductsControllerTest < ActionDispatch::IntegrationTest
       name:
     } }
     assert_equal name, CustomProduct.find(custom_product.id).name
+    custom_product.reload
     assert_redirected_to user_custom_product_url(
-      id: custom_product.id,
+      id: custom_product.friendly_id,
       user_id: custom_product.user.user_name.downcase
     )
   end

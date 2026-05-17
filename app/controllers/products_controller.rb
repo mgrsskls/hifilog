@@ -112,9 +112,6 @@ class ProductsController < ApplicationController
 
   def update
     @product = Product.find(params[:id])
-    old_name = @product.name
-    old_model_no = @product.model_no
-    @product.slug = nil if old_name != product_update_params[:name] || old_model_no != product_update_params[:model_no]
 
     custom_attributes = product_update_params[:custom_attributes]
     convert_custom_attributes!(custom_attributes) if custom_attributes.present?

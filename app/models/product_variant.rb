@@ -115,6 +115,15 @@ class ProductVariant < ApplicationRecord
   end
   # :nocov:
 
+  def should_generate_new_friendly_id?
+    slug.blank? ||
+      name_changed? ||
+      model_no_changed? ||
+      release_year_changed? ||
+      release_month_changed? ||
+      release_day_changed?
+  end
+
   private
 
   # rubocop:disable Naming/PredicateMethod

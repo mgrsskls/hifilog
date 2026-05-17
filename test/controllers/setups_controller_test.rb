@@ -33,7 +33,7 @@ class SetupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     get dashboard_setup_path(
-      id: setup.id,
+      setup,
       category: setup.possessions.where.not(product_id: nil).first.product.sub_categories.first.slug
     )
     assert_response :success
@@ -105,6 +105,96 @@ class SetupsControllerTest < ActionDispatch::IntegrationTest
     patch setup_url(id: setup.id), params: params
     assert_response :redirect
     assert_redirected_to dashboard_setups_path
+  end
+
+  test 'update name only preserves possessions' do
+    user = users(:with_everything)
+    setup = setups(:with_products)
+    possession_count = setup.possessions.count
+    assert possession_count.positive?
+
+    sign_in user
+
+    patch setup_url(setup), params: { setup: { name: 'Renamed only', private: setup.private } }
+
+    assert_response :redirect
+    setup.reload
+    assert_equal 'Renamed only', setup.name
+    assert_equal possession_count, setup.possessions.count
+  end
+
+  test 'update changes slug when name changes' do
+    user = users(:one)
+    setup = user.setups.first
+    old_slug = setup.slug
+
+    sign_in user
+
+    patch setup_url(setup), params: { setup: { name: 'Renamed setup' } }
+    assert_response :redirect
+
+    setup.reload
+    assert_equal 'Renamed setup', setup.name
+    assert_equal 'renamed-setup', setup.slug
+    assert_not_equal old_slug, setup.slug
+  end
+
+  test 'update with possession_ids syncs setup possessions' do
+    user = users(:one)
+    setup = setups(:one)
+    possession = Possession.create!(user:, product: products(:two), prev_owned: false)
+    other = Possession.create!(user:, product: products(:diy_kit), prev_owned: false)
+    SetupPossession.create!(setup:, possession:)
+    SetupPossession.create!(setup:, possession: other)
+
+    sign_in user
+
+    patch setup_url(setup), params: {
+      setup: {
+        possession_ids: ['', possession.id]
+      }
+    }
+
+    assert_response :redirect
+    setup.reload
+    assert_equal [possession.id], setup.possession_ids
+  end
+
+  test 'update with empty possession_ids clears setup possessions' do
+    user = users(:one)
+    setup = setups(:one)
+    possession = Possession.create!(user:, product: products(:two), prev_owned: false)
+    SetupPossession.create!(setup:, possession:)
+
+    sign_in user
+
+    patch setup_url(setup), params: {
+      setup: {
+        possession_ids: ['']
+      }
+    }
+
+    assert_response :redirect
+    assert_empty setup.reload.possession_ids
+  end
+
+  test 'update ignores possession_ids from other users' do
+    attacker = users(:one)
+    victim = users(:visible)
+    victim_possession = Possession.create!(user: victim, product: products(:two), prev_owned: false)
+    setup = attacker.setups.first
+
+    sign_in attacker
+
+    patch setup_url(id: setup.id), params: {
+      setup: {
+        possession_ids: [victim_possession.id]
+      }
+    }
+
+    assert_response :redirect
+    assert_not_includes setup.reload.possession_ids, victim_possession.id
+    assert_nil victim_possession.reload.setup
   end
 
   test 'destroy' do

@@ -1,0 +1,61 @@
+# Fixture slugs bypass FriendlyId callbacks; seed history so rename/redirect tests work.
+
+setup_one:
+  slug: one
+  sluggable_type: Setup
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  scope: user_id:<%= ActiveRecord::FixtureSet.identify(:one) %>
+
+setup_two:
+  slug: two
+  sluggable_type: Setup
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+  scope: user_id:<%= ActiveRecord::FixtureSet.identify(:one) %>
+
+setup_with_products:
+  slug: with-products
+  sluggable_type: Setup
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:with_products) %>
+  scope: user_id:<%= ActiveRecord::FixtureSet.identify(:with_everything) %>
+
+setup_without_products:
+  slug: without-products
+  sluggable_type: Setup
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:without_products) %>
+  scope: user_id:<%= ActiveRecord::FixtureSet.identify(:with_everything) %>
+
+custom_product_one:
+  slug: name
+  sluggable_type: CustomProduct
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  scope: user_id:<%= ActiveRecord::FixtureSet.identify(:one) %>
+
+custom_product_two:
+  slug: name2
+  sluggable_type: CustomProduct
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+  scope: user_id:<%= ActiveRecord::FixtureSet.identify(:one) %>
+
+custom_product_three:
+  slug: name3
+  sluggable_type: CustomProduct
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:three) %>
+  scope: user_id:<%= ActiveRecord::FixtureSet.identify(:one) %>
+
+product_variant_one:
+  slug: ltd-2024
+  sluggable_type: ProductVariant
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  scope: product_id:<%= ActiveRecord::FixtureSet.identify(:with_variants) %>
+
+product_variant_two:
+  slug: mystring2
+  sluggable_type: ProductVariant
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+  scope: product_id:<%= ActiveRecord::FixtureSet.identify(:with_variants) %>
+
+product_variant_three:
+  slug: mystring3
+  sluggable_type: ProductVariant
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:three) %>
+  scope: product_id:<%= ActiveRecord::FixtureSet.identify(:with_variants) %>

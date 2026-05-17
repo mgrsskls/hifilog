@@ -11,7 +11,7 @@ class SubCategory < ApplicationRecord
   has_and_belongs_to_many :custom_attributes
   has_and_belongs_to_many :custom_products
 
-  friendly_id :name, use: [:slugged]
+  friendly_id :name, use: [:slugged, :history]
 
   auto_strip_attributes :name, squish: true
 
@@ -31,6 +31,7 @@ class SubCategory < ApplicationRecord
       name_eq
       name_start
       order
+      slugs_id
     ]
   end
 
@@ -38,6 +39,10 @@ class SubCategory < ApplicationRecord
     %w[brands category custom_attributes custom_products products]
   end
   # :nocov:
+
+  def should_generate_new_friendly_id?
+    slug.blank? || name_changed?
+  end
 
   private
 

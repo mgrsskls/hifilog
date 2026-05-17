@@ -38,6 +38,19 @@ class SetupTest < ActiveSupport::TestCase
     assert setup.errors[:private].any?
   end
 
+  test 'renaming preserves previous slug in history' do
+    setup = setups(:one)
+    user = setup.user
+    old_slug = setup.slug
+
+    setup.update!(name: 'Renamed setup title')
+
+    setup.reload
+    assert_equal 'renamed-setup-title', setup.slug
+    assert FriendlyId::Slug.exists?(slug: old_slug, sluggable: setup)
+    assert user.setups.friendly.find(old_slug)
+  end
+
   test 'user presence validation' do
     setup = Setup.new(name: 'Test', private: true)
     assert_not setup.valid?

@@ -3,6 +3,15 @@
 require 'test_helper'
 
 class SetupPossessionTest < ActiveSupport::TestCase
+  test 'possession must belong to setup user' do
+    setup = setups(:one)
+    other_possession = Possession.create!(user: users(:visible), product: products(:one), prev_owned: false)
+
+    sp = SetupPossession.new(setup: setup, possession: other_possession)
+    assert_not sp.valid?
+    assert sp.errors[:possession].any?
+  end
+
   test 'creating setup_possession records setup_product_added activity' do
     user = users(:without_anything)
     setup = travel_to(Time.zone.local(2026, 6, 1, 10, 0, 0)) do

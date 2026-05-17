@@ -19,4 +19,15 @@ ActiveAdmin.register CustomProduct do
     end
     actions
   end
+
+  controller do
+    def find_resource
+      scoped_collection.friendly.find(params[:id])
+    end
+
+    def show
+      @custom_product = CustomProduct.friendly.find(params[:id])
+      show! #it seems to need this
+    end
+  end
 end

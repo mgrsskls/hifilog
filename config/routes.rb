@@ -120,8 +120,7 @@ Rails.application.routes.draw do
 
   resources :events, only: [:index]
   get '/events/past', to: 'events#past', as: :past_events
-  get '/events/:year/:slug', to: 'events#show', as: :event,
-                             constraints: { year: /(?:19|20)\d{2}/, slug: SlugRouteConstraints::SLUG_PATH_CONSTRAINT }
+  get '/events/:year/:slug', to: 'events#show', as: :event
   resources :event_attendees, only: [:create, :destroy]
 
   get '/search', to: "search#results"

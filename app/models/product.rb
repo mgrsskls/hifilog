@@ -147,6 +147,10 @@ by the audio manufacturer #{brand.name}#{" from #{brand.country_name}" if brand.
   end
   # :nocov:
 
+  def should_generate_new_friendly_id?
+    slug.blank? || name_changed? || model_no_changed?
+  end
+
   private
 
   # rubocop:disable Naming/PredicateMethod

@@ -183,7 +183,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     products(:one).update(name: 'new name')
 
-    get path
+    get product_changelog_url(product_id: products(:one).friendly_id)
     assert_response :success
   end
 

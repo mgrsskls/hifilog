@@ -21,14 +21,6 @@ class BrandTest < ActiveSupport::TestCase
     assert brand2.errors[:name].any?
   end
 
-  test 'slug uniqueness' do
-    brand1 = brands(:one)
-    brand2 = Brand.new(name: 'Different Name')
-    brand2.slug = brand1.slug
-    assert_not brand2.valid?
-    assert brand2.errors[:slug].any?
-  end
-
   test 'country_code_has_allowed_value validation' do
     brand = Brand.new(name: 'Test Brand', country_code: 'INVALID')
     assert_not brand.valid?

@@ -2,20 +2,24 @@
 
 one:
   name: one
+  slug: one
   user: one
   private: false
 
 two:
   name: two
+  slug: two
   user: one
   private: true
 
 with_products:
   name: With products
+  slug: with-products
   user: with_everything
   private: true
 
 without_products:
   name: Without products
+  slug: without-products
   user: with_everything
   private: false

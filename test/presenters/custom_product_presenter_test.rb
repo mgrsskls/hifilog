@@ -14,7 +14,7 @@ class CustomProductPresenterTest < ActiveSupport::TestCase
     owner = presenter.user.user_name.downcase
     assert_includes presenter.edit_path, '/dashboard/custom-products'
     assert_includes presenter.show_path, owner
-    assert_includes presenter.show_path, custom_products(:one).id.to_s
+    assert_includes presenter.show_path, custom_products(:one).slug
   end
 
   test 'sorted images hoist highlighted uploads before the remainder' do

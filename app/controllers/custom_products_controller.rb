@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class CustomProductsController < ApplicationController
+  include FriendlyFinder
+
   before_action :authenticate_user!, except: [:show]
   before_action :set_menu, except: [:show]
 
@@ -17,10 +19,11 @@ class CustomProductsController < ApplicationController
 
   def show
     @user = User.find_by('lower(user_name) = ?', params[:user_id].downcase)
+    raise ActiveRecord::RecordNotFound if @user.nil?
 
-    id = params[:id]
+    find_custom_product(params[:id], @user)
 
-    possession = @user.possessions.find_by(custom_product_id: id)
+    possession = @user.possessions.find_by(custom_product_id: @custom_product.id)
     @possession = CustomProductPossessionPresenter.new(possession) if possession
     @render_possession_details = @possession && (
       @possession.period_from || @possession.period_to || @possession.setup ||
@@ -28,7 +31,7 @@ class CustomProductsController < ApplicationController
       @possession.gift?
     )
 
-    @custom_product = CustomProductPresenter.new(@user.custom_products.find(id))
+    @custom_product = CustomProductPresenter.new(@custom_product)
 
     unless current_user == @user
       redirect_path = get_redirect_if_unauthorized(@user, @custom_product)
@@ -48,7 +51,9 @@ class CustomProductsController < ApplicationController
   end
 
   def edit
-    @custom_product = current_user.custom_products.find(params[:id])
+    @custom_product = current_user.custom_products.friendly.find(params[:id])
+    return if performed?
+
     @categories = Category.includes([:sub_categories])
 
     page_title("#{t('edit')} #{@custom_product.name}")
@@ -68,7 +73,10 @@ class CustomProductsController < ApplicationController
         'custom_product.messages.created',
         name: @custom_product.name
       )
-      redirect_to user_custom_product_path(id: @custom_product.id, user_id: current_user.user_name.downcase)
+      redirect_to user_custom_product_path(
+        id: @custom_product.friendly_id,
+        user_id: current_user.user_name.downcase
+      )
     else
       @active_dashboard_menu = :custom_products
       @categories = Category.includes([:sub_categories])
@@ -77,9 +85,7 @@ class CustomProductsController < ApplicationController
   end
 
   def update
-    id = params[:id]
-
-    @custom_product = current_user.custom_products.find(id)
+    @custom_product = current_user.custom_products.friendly.find(params[:id])
     @categories = Category.includes([:sub_categories])
 
     if @custom_product.update(custom_product_params)
@@ -87,26 +93,31 @@ class CustomProductsController < ApplicationController
         'custom_product.messages.updated',
         link: ActionController::Base.helpers.link_to(
           @custom_product.name,
-          user_custom_product_path(id:, user_id: current_user.user_name.downcase)
+          user_custom_product_path(
+            id: @custom_product.friendly_id,
+            user_id: current_user.user_name.downcase
+          )
         )
       )
 
-      params[:delete_image]&.each do |id|
-        image = @custom_product.images.find(id)
+      params[:delete_image]&.each do |image_id|
+        image = @custom_product.images.find(image_id)
         image.purge
       end
 
-      redirect_back_or_to user_custom_product_url(
-        user_id: @custom_product.user.user_name.downcase,
-        id:
-      )
+      redirect_to URI.parse(
+        user_custom_product_url(
+          user_id: @custom_product.user.user_name.downcase,
+          id: @custom_product.friendly_id
+        )
+      ).path
     else
       render :edit, status: :unprocessable_content
     end
   end
 
   def destroy
-    @custom_product = current_user.custom_products.find(params[:id])
+    @custom_product = current_user.custom_products.friendly.find(params[:id])
     @custom_product.destroy
     flash[:notice] = I18n.t('custom_product.messages.deleted', name: @custom_product.name)
     redirect_to dashboard_custom_products_path
@@ -117,6 +128,17 @@ class CustomProductsController < ApplicationController
   def set_menu
     @active_dashboard_menu = :custom_products
     @active_menu = :dashboard
+  end
+
+  def find_custom_product(id, user)
+    @custom_product = user.custom_products.friendly.find(id)
+
+    return if request.path == user_custom_product_path(id: @custom_product.friendly_id,
+                                                       user_id: user.lowercase_user_name)
+
+    redirect_to URI.parse(
+      user_custom_product_path(id: @custom_product.friendly_id, user_id: user.lowercase_user_name)
+    ).path, status: :moved_permanently and return
   end
 
   def custom_product_params
@@ -138,7 +160,10 @@ class CustomProductsController < ApplicationController
     # if the visited profile is not visible to anyone and the visiting user is a different user
     return root_url if user.hidden? && current_user != user
 
-    redir = user_custom_product_path(id: custom_product.id, user_id: user.user_name.downcase)
+    redir = user_custom_product_path(
+      id: custom_product.friendly_id,
+      user_id: user.user_name.downcase
+    )
     new_user_session_url(redirect: URI.parse(redir).path)
   end
 end

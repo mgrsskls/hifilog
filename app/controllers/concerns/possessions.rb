@@ -61,13 +61,6 @@ module Possessions
       end
   end
 
-  def filter_presenters_by_category(all, category_param: params[:category])
-    sub_category = SubCategory.friendly.find(category_param) if category_param.present?
-    possessions = sub_category ? all.select { |p| p.sub_categories.include?(sub_category) } : all
-    categories = get_grouped_sub_categories(possessions: all)
-    [possessions, categories, sub_category]
-  end
-
   def load_collection_preview(user, limit: 6)
     PossessionPresenterService.map_to_presenters(user.possessions.recent_preview(limit))
   end

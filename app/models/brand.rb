@@ -119,6 +119,10 @@ class Brand < ApplicationRecord
   end
   # :nocov:
 
+  def should_generate_new_friendly_id?
+    slug.blank? || name_changed?
+  end
+
   private
 
   def clear_logo_when_remove_requested
