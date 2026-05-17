@@ -1,7 +1,7 @@
 <div class="FlashMessages">
   <% messages.each do |name, message| %>
     <p class="FlashMessage FlashMessage--<%= name %>">
-      <%= message.html_safe %>
+      <%= flash_message_html(message) %>
     </p>
   <% end %>
 </div>

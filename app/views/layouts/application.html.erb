@@ -84,7 +84,7 @@
       <%= javascript_include_tag "delete_form", type: "module" if user_signed_in? %>
     <% end %>
     <%= javascript_include_tag "sentry", type: "module" if Rails.env.production? %>
-    <meta name="description" content="<%= @meta_desc.present? ? @meta_desc.squish.html_safe : (strip_tags t('meta_description')) %>">
+    <meta name="description" content="<%= @meta_desc.present? ? h(@meta_desc.squish) : strip_tags(t('meta_description')) %>">
     <link rel="icon" href="/favicon.ico?v=6" sizes="32x32">
     <link rel="icon" href="/icon.svg?v=8" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8">
@@ -97,14 +97,14 @@
     <% elsif @no_index %>
       <meta name="robots" content="noindex, follow">
     <% end %>
-    <meta property="og:title" content="<%= strip_tags(page_title).html_safe %>">
+    <meta property="og:title" content="<%= h(strip_tags(page_title)) %>">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://www.hifilog.com/og.png?v=1">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="<%= seo_canonical_url %>">
     <meta property="og:site_name" content="<%= APP_NAME %>">
-    <meta property="og:description" content="<%= @meta_desc.present? ? @meta_desc.squish.html_safe : (strip_tags t('meta_description')) %>">
+    <meta property="og:description" content="<%= @meta_desc.present? ? h(@meta_desc.squish) : strip_tags(t('meta_description')) %>">
     <meta name="fediverse:creator" content="@hifilog@mastodon.social">
   </head>
 
@@ -309,15 +309,15 @@
     </header>
     <main id="content">
       <%= render "shared/flash_messages", messages: flash if flash.any? %>
-      <% if (params[:controller] == "application" && params[:action] == "index") ||
+      <% full_page_view = (params[:controller] == "application" && params[:action] == "index") ||
         (
           @user.present? &&
           params[:controller] == "users" &&
           (
             ["show", "collection", "prev_owneds", "history", "contributions", "activity"].include?(params[:action])
           )
-        )
-      %>
+        ) %>
+      <% if full_page_view && response.status != 404 %>
         <%= yield %>
       <% else %>
         <div class="Main">

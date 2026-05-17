@@ -125,9 +125,8 @@ class UsersController < ApplicationController
       return nil
     end
 
-    user_name = sanitize(user.user_name)
-    page_title(user_name)
-    @meta_desc = "The public profile of #{user_name} on hifilog.com — check out their hi-fi gear! " \
+    page_title(ERB::Util.html_escape(user.user_name))
+    @meta_desc = "The public profile of #{user.user_name} on hifilog.com — check out their hi-fi gear! " \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
 
     @active_dashboard_menu = :profile if current_user == user

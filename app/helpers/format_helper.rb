@@ -30,8 +30,10 @@ module FormatHelper
     datetime.strftime('%Y-%m-%dT%H:%M+0000')
   end
 
+  SCRIPT_TAG_PATTERN = %r{<script\b[^>]*>[\s\S]*?</script>}i
+
   def markdown_to_html(content)
-    Commonmarker.to_html(
+    html = Commonmarker.to_html(
       content,
       options: {
         render: {
@@ -39,5 +41,10 @@ module FormatHelper
         }
       }
     )
+    strip_script_tags(html)
+  end
+
+  def strip_script_tags(html)
+    html.gsub(SCRIPT_TAG_PATTERN, '')
   end
 end
