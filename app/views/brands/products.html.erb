@@ -21,7 +21,7 @@
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: brand_products_path(@brand.friendly_id), filter_brand: @brand, collection: @products, query: @products_query, type: :brand_products, custom_attributes: @custom_attributes, filter_applied: @filter_applied %>
+  <%= render "shared/filter", reset_path: brand_products_path(@brand.friendly_id), query: @products_query, type: :brand_products, custom_attributes: @custom_attributes, filter_applied: @filter_applied %>
 <% end %>
 
 <% content_for :sort do %>

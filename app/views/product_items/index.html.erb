@@ -11,7 +11,7 @@
 <% end %>
 
 <% content_for :filter do %>
-  <%= render "shared/filter", reset_path: products_catalog_path(current_category, current_sub_category), filter_catalog_wide_path: products_path, collection: @products, custom_attributes: @custom_attributes, query: @products_query, type: :products, category: current_category, sub_category: current_sub_category, filter_applied: @filter_applied %>
+  <%= render "shared/filter", reset_path: products_catalog_path(current_category, current_sub_category), custom_attributes: @custom_attributes, query: @products_query, type: :products, filter_applied: @filter_applied %>
 <% end %>
 
 <% content_for :sort do %>

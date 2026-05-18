@@ -1,7 +1,5 @@
 <%
   filter_active_label = t("symbols.#{(type == :products or type == :brand_products) ? 'product' : 'brand'}.continued")
-  categories ||= []
-  filter_catalog_wide_path ||= reset_path
   diy_kit_is_filtered = false
   custom_attributes_filtered = []
 %>
@@ -236,52 +234,6 @@
             </option>
           </select>
         </div>
-
-        <% if categories.any? %>
-          <div class="Filter-section">
-            <label for="filter-sub-categories" class="Filter-label">
-              <%= Category.model_name.human %>
-            </label>
-            <select class="Filter-input" id="filter-sub-categories" autocomplete="off"
-              onchange="(function(sel){var f=document.getElementById(&quot;filter&quot;);var o=sel.selectedOptions[0];var p=o.getAttribute(&quot;data-path&quot;);if(p)f.action=p;})(this)">
-              <option value=""<%= ' selected'.html_safe if category.blank? && sub_category.blank? %> data-path="<%= filter_catalog_wide_path %>">
-                <%= t('filter.all') %>
-              </option>
-              <% categories.each do |group| %>
-                <% parent_slug = group[0].friendly_id %>
-                <% cat_parent_path =
-                     case type
-                     when :products
-                       products_category_path(parent_slug)
-                     when :brands
-                       brands_category_path(parent_slug)
-                     when :brand_products
-                       brand_brand_products_category_path(filter_brand, parent_slug)
-                     end %>
-                <% parent_selected = category.present? && sub_category.blank? && category.id == group[0].id %>
-                <option value="<%= group[0].slug %>" data-path="<%= cat_parent_path %>"<%= ' selected'.html_safe if parent_selected %>>
-                  <%= group[0].name %>
-                </option>
-                <optgroup label="<%= group[0].name %> categories">
-                  <% group[1].each do |sub| %>
-                    <% cat_sub_path =
-                         case type
-                         when :products
-                           products_subcategory_path(parent_slug, sub.friendly_id)
-                         when :brands
-                           brands_subcategory_path(parent_slug, sub.friendly_id)
-                         when :brand_products
-                           brand_brand_products_subcategory_path(filter_brand, parent_slug, sub.friendly_id)
-                         end %>
-                    <option value="<%= group[0].slug %>[<%= sub.slug %>]" data-path="<%= cat_sub_path %>"<%= ' selected'.html_safe if sub_category.present? && sub_category.id == sub.id %>>
-                      <%= sub.name %>
-                    </option>
-                  <% end %>
-                </optgroup>
-              <% end %>
-            </select>
-          </div>
-        <% end %>
 
         <% if type == :brands %>
           <%= country_filter %>
