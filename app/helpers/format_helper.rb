@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module FormatHelper
+  MARKDOWN_ALLOWED_TAGS = %w[a img p b strong hr ul ol li h1 h2 h3 h4 h5 h6 blockquote em time br].freeze
+  MARKDOWN_ALLOWED_ATTRIBUTES = %w[href src alt rel height width loading].freeze
   def format_partial_date(year, month, day)
     return nil if year.nil?
     return year.to_s if month.nil?
@@ -30,21 +32,15 @@ module FormatHelper
     datetime.strftime('%Y-%m-%dT%H:%M+0000')
   end
 
-  SCRIPT_TAG_PATTERN = %r{<script\b[^>]*>[\s\S]*?</script>}i
-
   def markdown_to_html(content)
-    html = Commonmarker.to_html(
-      content,
-      options: {
-        render: {
-          unsafe: true
-        }
-      }
+    ActionController::Base.helpers.sanitize(
+      Commonmarker.to_html(content, options: {
+                             render: {
+                               unsafe: true
+                             }
+                           }),
+      tags: MARKDOWN_ALLOWED_TAGS,
+      attributes: MARKDOWN_ALLOWED_ATTRIBUTES
     )
-    strip_script_tags(html)
-  end
-
-  def strip_script_tags(html)
-    html.gsub(SCRIPT_TAG_PATTERN, '')
   end
 end
