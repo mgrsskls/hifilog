@@ -79,10 +79,6 @@
 }
 
 @media (width < 48rem) {
-	.Sidebar:has(.Sidebar-toggle[aria-expanded="true"]) {
-		background: var(--color-blue-150);
-	}
-
 	.Sidebar-userName {
 		padding-block: 0.75rem;
 	}
@@ -95,33 +91,6 @@
 	.Sidebar-menu {
 		padding-inline: var(--page-spacing);
 		padding-block: 1rem;
-	}
-
-	.Sidebar-toggle {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-		inline-size: 100%;
-		box-sizing: border-box;
-		padding-block: 0.5rem;
-		padding-inline: var(--page-spacing);
-		color: inherit;
-		background: var(--color-bg2);
-		font-weight: 600;
-
-		svg {
-			inline-size: 0.825em;
-			transition: all 0.15s ease;
-			fill: var(--color-accent);
-		}
-
-		&[aria-expanded="false"] svg {
-			rotate: -90deg;
-		}
-	}
-
-	[aria-expanded="false"] + .Sidebar-menu {
-		display: none;
 	}
 
 	.Sidebar-link:is([aria-current="true"], [aria-current="page"]) {

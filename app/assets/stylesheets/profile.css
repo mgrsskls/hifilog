@@ -39,13 +39,74 @@
 	.Profile-meta {
 		margin-inline: calc(-1 * var(--page-spacing));
 
-		.Sidebar-userName {
+		.Sidebar {
 			background: var(--color-blue-125);
+
+			a {
+				color: var(--color-header-copy);
+
+				&[aria-current="page"] {
+					color: var(--color-white);
+				}
+			}
+
+			nav {
+				display: none;
+			}
+
+			&:has(.Sidebar-toggle[aria-expanded="true"]) nav {
+				display: block;
+			}
+		}
+
+		.Sidebar-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 1rem;
+			background: var(--color-blue-125);
+			padding: var(--page-spacing);
+		}
+
+		.Sidebar-userName {
+			display: flex;
 			margin: 0;
-			padding-inline: var(--page-spacing);
 			display: flex;
 			gap: 0.75rem;
 			align-items: center;
+			background: none;
+			padding: 0;
+			appearance: none;
+		}
+
+		.Sidebar-toggle {
+			display: flex;
+			gap: 0.375em;
+			align-items: center;
+			box-sizing: border-box;
+			background: var(--color-button-bg);
+			border-radius: calc(var(--border-radius));
+			color: #fff;
+			padding: 0.375em;
+			font-size: 0.875em;
+			font-weight: 600;
+
+			svg {
+				transition: all 0.15s ease;
+				fill: currentColor;
+			}
+
+			&[aria-expanded="true"] svg:nth-child(1) {
+				display: none;
+			}
+
+			&[aria-expanded="false"] svg:nth-child(2) {
+				display: none;
+			}
+		}
+
+		.Sidebar-menu {
+			color: var(--color-accent-on-dark);
 		}
 	}
 

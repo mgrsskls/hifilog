@@ -203,10 +203,8 @@ import "./_search.js";
 		const shouldOpen = button.getAttribute("aria-expanded") === "false";
 
 		if (shouldOpen) {
-			button.parentNode.classList.add("is-dark");
 			button.setAttribute("aria-expanded", "true");
 		} else {
-			button.parentNode.classList.remove("is-dark");
 			button.setAttribute("aria-expanded", "false");
 		}
 	}
