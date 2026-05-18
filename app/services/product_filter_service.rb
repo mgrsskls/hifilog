@@ -23,15 +23,17 @@ class ProductFilterService
           id: ProductItem.joins(
             'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
           )
-              .where(products_sub_categories: { sub_category_id: @sub_category.id })
-              .select(:id)
+                         .where(products_sub_categories: { sub_category_id: @sub_category.id })
+                         .select(:id)
         )
       else
         matching_sub_categories = products.where(
           id: ProductItem.joins(
             'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
           )
-              .joins('INNER JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id')
+                         .joins(
+                           'INNER JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id'
+                         )
                          .where(sub_categories: { category_id: @category.id })
                          .select(:id)
         )
