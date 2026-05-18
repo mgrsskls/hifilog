@@ -100,7 +100,7 @@
                 <%= link_to "View all", events_path %>
               </div>
               <ol>
-                <% @newest_events.last(5).each do |event| %>
+                <% @newest_events.first(5).each do |event| %>
                   <li>
                     <%= link_to event.name, event_path(year: event.calendar_year, slug: event.friendly_id) %>
                   </li>
