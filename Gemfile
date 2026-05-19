@@ -13,6 +13,7 @@ gem "sprockets-rails"
 gem "puma", "~> 8.0"
 
 gem "devise"
+gem "cloudflare-turnstile-rails"
 gem "activeadmin", "~> 4.0.0.beta22"
 gem "kaminari"
 gem "friendly_id"

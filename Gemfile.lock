@@ -139,6 +139,10 @@ GEM
       uniform_notifier (~> 1.11)
     childprocess (5.1.0)
       logger (~> 1.5)
+    cloudflare-turnstile-rails (1.0.1)
+      actionpack (>= 5.0)
+      actionview (>= 5.0)
+      railties (>= 5.0)
     code_analyzer (0.5.5)
       sexp_processor
     coercible (1.0.0)
@@ -568,6 +572,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   bullet
+  cloudflare-turnstile-rails
   commonmarker
   country_select
   crawler_detect

@@ -25,7 +25,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     return head :forbidden if request.is_crawler?
 
-    super
+    if valid_turnstile?
+      super
+    else
+      redirect_to new_user_registration_path, alert: t('user_form.turnstile_failed')
+    end
   end
 
   # PUT /resource

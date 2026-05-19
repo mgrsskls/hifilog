@@ -15,11 +15,12 @@ unless ENV['DISABLE_CSP']
       policy.object_src  :none
       policy.script_src  :self,
         'https://translate.google.com',
+        'challenges.cloudflare.com',
         'sha256-owFw+DVNZSQh1LIWoBMkMctxnIPAWCNpjr3mEaCNZLo=', # application.html.erb logged in
         'sha256-E15uFozjXYPu7tqTMA8ttqjELJTBQxPY3VVWH2Tt7+I=', # application.html.erb logged out
         'sha256-pbMT5G+LDCIWy/FBnicfz3TU8g8+7KAH5lbzSU/zeoE=' # application.html.erb speculationrules
       policy.style_src   :self, :unsafe_inline
-      policy.frame_src   :self
+      policy.frame_src   :self, 'https://challenges.cloudflare.com/'
       policy.connect_src :self, 'https://*.ingest.de.sentry.io'
       # Specify URI for violation reports
       policy.report_uri ENV['SENTRY_CSP_REPORT_URI'] if ENV['SENTRY_CSP_REPORT_URI'].present?
