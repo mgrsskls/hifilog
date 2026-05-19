@@ -68,7 +68,7 @@
                 <%= link_to "View all", products_path %>
               </div>
               <ol>
-                <% @newest_products.last(5).each do |product| %>
+                <% @newest_products.first(5).each do |product| %>
                   <li>
                     <%= link_to product.model_no.present? ? "#{product.display_name} (#{product.model_no})" : product.display_name, product.path %>
                   </li>
@@ -84,7 +84,7 @@
                 <%= link_to "View all", brands_path %>
               </div>
               <ol>
-                <% @newest_brands.last(5).each do |brand| %>
+                <% @newest_brands.first(5).each do |brand| %>
                   <li>
                     <%= link_to brand.name, brand_path(id: brand.friendly_id) %>
                   </li>
