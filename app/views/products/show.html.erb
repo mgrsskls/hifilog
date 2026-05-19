@@ -27,7 +27,7 @@
           <ul class="Entity-image ImageLightbox ImageGallery">
             <% @images.each_with_index do |image, i| %>
               <li class="ImageLightbox-item">
-                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
+                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>" aria-label="Open image <%= i+1 %> of <%= @images.size %>">
                   <picture>
                     <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                   </picture>

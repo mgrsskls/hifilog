@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"devDependencies": {
-		"@axe-core/cli": "^4.11.1",
+		"@axe-core/cli": "^4.11.3",
 		"@tailwindcss/postcss": "^4.2.1",
 		"chromedriver": "^146.0.3",
 		"cssnano": "^7.1.3",

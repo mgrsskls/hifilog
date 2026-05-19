@@ -35,6 +35,9 @@ module FormatHelper
   def markdown_to_html(content)
     ActionController::Base.helpers.sanitize(
       Commonmarker.to_html(content, options: {
+                             extension: {
+                               header_ids: nil
+                             },
                              render: {
                                unsafe: true
                              }

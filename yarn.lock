@@ -15,25 +15,25 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@axe-core/cli@^4.11.1":
-  version "4.11.1"
-  resolved "https://registry.yarnpkg.com/@axe-core/cli/-/cli-4.11.1.tgz#01d75d0eb5aa3e871c6836102e074f3ed8d8f86e"
-  integrity sha512-xC7doMReoy7QnQ18azdpIZHoYL1HcG5c5wvEcCpm5kWny520RGTRrBcnAZENaQ9nTQAkE7fXZFK4Z1cfBDTBFg==
+"@axe-core/cli@^4.11.3":
+  version "4.11.3"
+  resolved "https://registry.yarnpkg.com/@axe-core/cli/-/cli-4.11.3.tgz#3d7baeb0867ecc5bc22a8e67e6f76dc6fc236908"
+  integrity sha512-l6cbHsawKr8G0taTfFNKHghZr703cVGQ5+o53CmCoAW53x4KIuQ6T6bXFwW/8odh92JVMqHzBJi84QH0ne+paw==
   dependencies:
-    "@axe-core/webdriverjs" "^4.11.1"
-    axe-core "~4.11.1"
+    "@axe-core/webdriverjs" "^4.11.3"
+    axe-core "~4.11.4"
     chromedriver latest
     colors "^1.4.0"
     commander "^9.4.1"
     dotenv "^17.2.2"
-    selenium-webdriver "~4.39.0"
+    selenium-webdriver "~4.41.0"
 
-"@axe-core/webdriverjs@^4.11.1":
-  version "4.11.1"
-  resolved "https://registry.yarnpkg.com/@axe-core/webdriverjs/-/webdriverjs-4.11.1.tgz#c8ef9a074fb9ddc7d3c63f08fb2dbdbd4add2d4a"
-  integrity sha512-UVq7uBsqaQlHj7PQPg+WhE0nV6ccYtE0cnGglStS5RE3RAB+gQcb30R1k3usI+Q/xyROSJHhusOus4BzqrlZ1w==
+"@axe-core/webdriverjs@^4.11.3":
+  version "4.11.3"
+  resolved "https://registry.yarnpkg.com/@axe-core/webdriverjs/-/webdriverjs-4.11.3.tgz#db6a32940395ef06887d9acc04c6dee8dc2229c9"
+  integrity sha512-JGaYFUQq2Jebo7JOve/HZFnoxlNKKCfLSUuZKaZro+TKy2Fh1uPFeNBdCt+zzxa8+7YMkIKmDieGPIQLLuWJRg==
   dependencies:
-    axe-core "~4.11.1"
+    axe-core "~4.11.4"
 
 "@babel/helper-string-parser@^7.27.1":
   version "7.27.1"
@@ -1334,10 +1334,10 @@ autoprefixer@^10.4.24:
     picocolors "^1.1.1"
     postcss-value-parser "^4.2.0"
 
-axe-core@~4.11.1:
-  version "4.11.1"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.11.1.tgz#052ff9b2cbf543f5595028b583e4763b40c78ea7"
-  integrity sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==
+axe-core@~4.11.4:
+  version "4.11.4"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.11.4.tgz#5b535e381ff1e61ffdd615e5483d16186d3b46a5"
+  integrity sha512-KunSNx+TVpkAw/6ULfhnx+HWRecjqZGTOyquAoWHYLRSdK1tB5Ihce1ZW+UY3fj33bYAFWPu7W/GRSmmrCGuxA==
 
 axios@^1.13.5, axios@^1.7.4:
   version "1.16.0"
@@ -3754,15 +3754,15 @@ sax@^1.5.0:
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.5.0.tgz#b5549b671069b7aa392df55ec7574cf411179eb8"
   integrity sha512-21IYA3Q5cQf089Z6tgaUTr7lDAyzoTPx5HRtbhsME8Udispad8dC/+sziTNugOEx54ilvatQ9YCzl4KQLPcRHA==
 
-selenium-webdriver@~4.39.0:
-  version "4.39.0"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.39.0.tgz#82c5dd78d2e03b3054d77ea591c3cb601022f801"
-  integrity sha512-NAs9jCU+UeZ/ZmRb8R6zOp7N8eMklefdBYASnaRmCNXdgFE8w3OCxxZmLixkwqnGDHY5VF7hCulfw1Mls43N/A==
+selenium-webdriver@~4.41.0:
+  version "4.41.0"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.41.0.tgz#53b4e459462c4df64a99d5aedd15d4520a7c9977"
+  integrity sha512-1XxuKVhr9az24xwixPBEDGSZP+P0z3ZOnCmr9Oiep0MlJN2Mk+flIjD3iBS9BgyjS4g14dikMqnrYUPIjhQBhA==
   dependencies:
     "@bazel/runfiles" "^6.5.0"
     jszip "^3.10.1"
     tmp "^0.2.5"
-    ws "^8.18.3"
+    ws "^8.19.0"
 
 setimmediate@^1.0.5:
   version "1.0.5"
@@ -4034,10 +4034,10 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
 
-ws@^8.18.3:
-  version "8.19.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.19.0.tgz#ddc2bdfa5b9ad860204f5a72a4863a8895fd8c8b"
-  integrity sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==
+ws@^8.19.0:
+  version "8.20.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.20.1.tgz#91a9ae2b312ccf98e0a85ec499b48cef45ab0ddb"
+  integrity sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==
 
 y18n@^5.0.5:
   version "5.0.8"
