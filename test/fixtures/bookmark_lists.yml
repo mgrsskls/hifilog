@@ -5,3 +5,7 @@ one:
 two:
   name: DAPs
   user: one
+
+other_user:
+  name: Other user list
+  user: hidden

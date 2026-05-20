@@ -52,9 +52,10 @@ class BookmarksController < ApplicationController
 
   def update
     bookmark = current_user.bookmarks.find(params[:id])
+    list = current_user.bookmark_lists.find(params[:bookmark_list_id]) if params[:bookmark_list_id].present?
 
-    if params[:bookmark_list_id].present?
-      bookmark.update(bookmark_list_id: params[:bookmark_list_id])
+    if list
+      bookmark.update(bookmark_list_id: list.id)
     else
       bookmark.update(bookmark_list_id: nil)
     end

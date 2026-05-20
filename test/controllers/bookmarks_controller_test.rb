@@ -141,6 +141,20 @@ class BookmarksControllerTest < ActionDispatch::IntegrationTest
     assert_equal bookmark_lists(:two).id, bookmark.reload.bookmark_list_id
   end
 
+  test 'update rejects bookmark list owned by another user' do
+    user = users(:one)
+    bookmark = bookmarks(:with_product)
+    other_list = bookmark_lists(:other_user)
+    original_list_id = bookmark.bookmark_list_id
+
+    sign_in user
+
+    patch bookmark_path(bookmark), params: { bookmark_list_id: other_list.id }
+
+    assert_response :not_found
+    assert_equal original_list_id, bookmark.reload.bookmark_list_id
+  end
+
   test 'update clears bookmark list when id omitted' do
     user = users(:one)
     bookmark = bookmarks(:with_product)
