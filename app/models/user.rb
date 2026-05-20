@@ -39,6 +39,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates :confirmation_token, uniqueness: true, allow_nil: true
   validates :reset_password_token, uniqueness: true, allow_nil: true
+  validates :unlock_token, uniqueness: true, allow_nil: true
   validates :user_name, presence: true, uniqueness: { case_sensitive: false }
   validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
   validate :validate_decorative_image_content_type, :validate_decorative_image_file_size, on: :update
@@ -50,7 +51,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :confirmable
+         :confirmable, :lockable
 
   def profile_path
     user_path(user_name.downcase)
