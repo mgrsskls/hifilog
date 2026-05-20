@@ -21,6 +21,7 @@ unless ENV['DISABLE_CSP']
         'sha256-pbMT5G+LDCIWy/FBnicfz3TU8g8+7KAH5lbzSU/zeoE=' # application.html.erb speculationrules
       policy.style_src   :self, :unsafe_inline
       policy.frame_src   :self, 'https://challenges.cloudflare.com/'
+      policy.frame_ancestors :self
       policy.connect_src :self, 'https://*.ingest.de.sentry.io'
       # Specify URI for violation reports
       policy.report_uri ENV['SENTRY_CSP_REPORT_URI'] if ENV['SENTRY_CSP_REPORT_URI'].present?
