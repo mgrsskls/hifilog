@@ -6,10 +6,16 @@ Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new if Rails.env.te
 Rack::Attack.throttled_response_retry_after_header = true
 
 module RackAttackThrottles
+  CATALOG_WRITE_PATH = %r{\A/(products|brands)(/|$)}.freeze
+
   module_function
 
   def normalize_email(req)
     req.params.dig('user', 'email').to_s.downcase.gsub(/\s+/, '')
+  end
+
+  def write_request?(req)
+    %w[POST PATCH PUT].include?(req.request_method)
   end
 end
 
@@ -44,6 +50,14 @@ Rack::Attack.throttle('signups/ip', limit: 5, period: 3600) do |req|
   req.ip if req.path == '/user' && req.post?
 end
 
+# 3b. Registration per email
+Rack::Attack.throttle('signups/email', limit: 3, period: 3600) do |req|
+  if req.path == '/user' && req.post?
+    email = RackAttackThrottles.normalize_email(req)
+    email if email.present?
+  end
+end
+
 # 4. Admin login per IP
 Rack::Attack.throttle('admin logins/ip', limit: 5, period: 300) do |req|
   req.ip if req.path == '/admin/login' && req.post?
@@ -55,6 +69,28 @@ Rack::Attack.throttle('confirmations/email', limit: 5, period: 3600) do |req|
     email = RackAttackThrottles.normalize_email(req)
     email if email.present?
   end
+end
+
+# 5b. Confirmation resend per IP
+Rack::Attack.throttle('confirmations/ip', limit: 10, period: 3600) do |req|
+  req.ip if req.path == '/user/confirmation' && req.post?
+end
+
+# 7. Catalog writes per IP (wiki product/brand create and update)
+Rack::Attack.throttle('catalog_writes/ip', limit: 30, period: 3600) do |req|
+  if RackAttackThrottles.write_request?(req) && req.path.match?(RackAttackThrottles::CATALOG_WRITE_PATH)
+    req.ip
+  end
+end
+
+# 8. Bookmark mutations per IP
+Rack::Attack.throttle('bookmarks/ip', limit: 120, period: 3600) do |req|
+  req.ip if req.path.start_with?('/bookmarks') && RackAttackThrottles.write_request?(req)
+end
+
+# 9. Note mutations per IP
+Rack::Attack.throttle('notes/ip', limit: 60, period: 3600) do |req|
+  req.ip if req.path.start_with?('/notes') && RackAttackThrottles.write_request?(req)
 end
 
 # 6. Search per IP

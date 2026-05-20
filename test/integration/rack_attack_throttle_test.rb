@@ -38,6 +38,39 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
     assert_response :too_many_requests
   end
 
+  test 'throttles repeated signups by email' do
+    params = {
+      user: {
+        user_name: 'signup_throttle',
+        email: 'signup-throttle@example.com',
+        password: 'passwordpassword',
+        password_confirmation: 'passwordpassword'
+      }
+    }
+
+    3.times do |i|
+      post user_registration_url, params: params, headers: { 'REMOTE_ADDR' => "198.51.100.#{i}" }
+      assert_not_equal 429, response.status
+    end
+
+    post user_registration_url, params: params, headers: { 'REMOTE_ADDR' => '198.51.100.99' }
+    assert_response :too_many_requests
+  end
+
+  test 'throttles repeated confirmation resend requests by IP' do
+    10.times do |i|
+      post user_confirmation_url,
+           params: { user: { email: "confirm-ip-#{i}@example.com" } },
+           headers: { 'REMOTE_ADDR' => '203.0.113.10' }
+      assert_not_equal 429, response.status
+    end
+
+    post user_confirmation_url,
+         params: { user: { email: 'confirm-ip-last@example.com' } },
+         headers: { 'REMOTE_ADDR' => '203.0.113.10' }
+    assert_response :too_many_requests
+  end
+
   test 'throttles repeated password reset requests by email' do
     params = { user: { email: users(:one).email } }
 
