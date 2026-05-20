@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class UserControllerTest < ActionDispatch::IntegrationTest
-  include NewsletterHelper
-
   test 'dashboard' do
     get dashboard_root_path
     assert_response :redirect
@@ -217,9 +215,16 @@ class UserControllerTest < ActionDispatch::IntegrationTest
 
     user = users(:one)
     user.update(receives_newsletter: true)
-    hash = generate_unsubscribe_hash(user.email)
+    hash = NewsletterUnsubscribeService.generate_token(user.email)
 
-    get newsletters_unsubscribe_path(email: user.email, hash: hash)
+    get newsletters_unsubscribe_path(hash: hash)
+    assert_response :redirect
+    assert_redirected_to root_path
+    assert_equal false, user.reload.receives_newsletter
+
+    user.update(receives_newsletter: true)
+
+    get newsletters_unsubscribe_path(hash: hash, email: 'attacker@example.com')
     assert_response :redirect
     assert_redirected_to root_path
     assert_equal false, user.reload.receives_newsletter
@@ -227,7 +232,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     user.update(receives_newsletter: true)
     invalid_hash = 'invalid_hash'
 
-    get newsletters_unsubscribe_path(email: user.email, hash: invalid_hash)
+    get newsletters_unsubscribe_path(hash: invalid_hash)
     assert_response :redirect
     assert_redirected_to root_path
     assert_equal true, user.reload.receives_newsletter

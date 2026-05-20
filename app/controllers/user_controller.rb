@@ -6,7 +6,6 @@ class UserController < ApplicationController
   include CurrentStatisticsOverview
   include HistoryHelper
   include Bookmarks
-  include NewsletterHelper
 
   before_action :authenticate_user!, except: [:newsletter_unsubscribe]
   before_action :set_menu
@@ -293,8 +292,10 @@ class UserController < ApplicationController
   end
 
   def newsletter_unsubscribe
-    if verify_unsubscribe_hash(params[:hash])
-      user = User.find_by(email: params[:email])
+    hash_param = params[:hash].presence || request.query_parameters['hash'].presence
+    user = NewsletterUnsubscribeService.decode_token(hash_param)
+
+    if user
       user.update(receives_newsletter: false)
       redirect_to root_path, notice: I18n.t('newsletter.messages.unsubscribed')
     else
