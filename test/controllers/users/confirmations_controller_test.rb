@@ -3,32 +3,24 @@
 require 'test_helper'
 
 class Users::ConfirmationsControllerTest < ActionDispatch::IntegrationTest
-  test 'new' do
-    get new_user_confirmation_url
-    assert_response :success
+  setup do
+    @turnstile_site_key = Cloudflare::Turnstile::Rails.configuration.site_key
+    @turnstile_secret_key = Cloudflare::Turnstile::Rails.configuration.secret_key
+    Cloudflare::Turnstile::Rails.configuration.site_key = '1x00000000000000000000AA'
+    Cloudflare::Turnstile::Rails.configuration.secret_key = '1x0000000000000000000000000000000AA'
   end
 
-  test 'show confirms user signs in and redirects to dashboard' do
-    password = 'password_one_two345'
-    user_name = 'unconfirmed_user_xyz'
+  teardown do
+    Cloudflare::Turnstile::Rails.configuration.site_key = @turnstile_site_key
+    Cloudflare::Turnstile::Rails.configuration.secret_key = @turnstile_secret_key
+  end
 
-    user = User.new(
-      email: 'unconfirmed-flow@example.com',
-      password: password,
-      password_confirmation: password,
-      user_name: user_name
-    )
-    user.skip_confirmation_notification!
-    user.save!
+  test 'create rejects confirmation resend when turnstile verification fails' do
+    Cloudflare::Turnstile::Rails.configuration.secret_key = '2x0000000000000000000000000000000AA'
 
-    assert_not user.confirmed?
+    post user_confirmation_url, params: { user: { email: users(:one).email } }
 
-    get user_confirmation_url(confirmation_token: user.confirmation_token)
-    assert_redirected_to dashboard_root_path
-
-    assert_predicate user.reload, :confirmed?
-
-    follow_redirect!
-    assert_response :success
+    assert_redirected_to new_user_confirmation_path
+    assert_equal I18n.t('user_form.turnstile_failed'), flash[:alert]
   end
 end

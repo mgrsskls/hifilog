@@ -9,9 +9,15 @@ class Users::UnlocksController < Devise::UnlocksController
   # end
 
   # POST /resource/unlock
-  # def create
-  #   super
-  # end
+  def create
+    return head :forbidden if request.is_crawler?
+
+    if valid_turnstile?
+      super
+    else
+      redirect_to new_user_unlock_path, alert: t('user_form.turnstile_failed')
+    end
+  end
 
   # GET /resource/unlock?unlock_token=abcdef
   # def show

@@ -11,9 +11,15 @@ class Users::PasswordsController < Devise::PasswordsController
   end
 
   # POST /resource/password
-  # def create
-  #   super
-  # end
+  def create
+    return head :forbidden if request.is_crawler?
+
+    if valid_turnstile?
+      super
+    else
+      redirect_to new_user_password_path, alert: t('user_form.turnstile_failed')
+    end
+  end
 
   # GET /resource/password/edit?reset_password_token=abcdef
   # def edit
