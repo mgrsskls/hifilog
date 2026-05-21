@@ -30,6 +30,7 @@ class UserMailerTest < ActionMailer::TestCase
     assert_includes header_value, unsubscribe_url
     assert header_value.strip.start_with?('<')
     assert header_value.strip.end_with?('>')
+    assert_equal 'List-Unsubscribe=One-Click', mail.header['List-Unsubscribe-Post'].decoded
     assert_includes mail.body.encoded, unsubscribe_url
   end
 end

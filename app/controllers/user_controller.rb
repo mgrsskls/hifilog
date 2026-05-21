@@ -8,6 +8,7 @@ class UserController < ApplicationController
   include Bookmarks
 
   before_action :authenticate_user!, except: [:newsletter_unsubscribe]
+  skip_before_action :verify_authenticity_token, only: :newsletter_unsubscribe
   before_action :set_menu
 
   def dashboard
@@ -292,18 +293,40 @@ class UserController < ApplicationController
   end
 
   def newsletter_unsubscribe
-    hash_param = params[:hash].presence || request.query_parameters['hash'].presence
-    user = NewsletterUnsubscribeService.decode_token(hash_param)
+    return head :bad_request if request.post? && !one_click_unsubscribe_request?
+
+    user = newsletter_unsubscribe_user
 
     if user
       user.update(receives_newsletter: false)
+      respond_to_newsletter_unsubscribe(:success)
+    else
+      respond_to_newsletter_unsubscribe(:invalid)
+    end
+  end
+
+  private
+
+  def newsletter_unsubscribe_user
+    hash_param = params[:hash].presence || request.query_parameters['hash'].presence
+    NewsletterUnsubscribeService.decode_token(hash_param)
+  end
+
+  def respond_to_newsletter_unsubscribe(result)
+    if request.post?
+      return head :bad_request if result == :invalid
+
+      head :ok
+    elsif result == :success
       redirect_to root_path, notice: I18n.t('newsletter.messages.unsubscribed')
     else
       redirect_to root_path, alert: I18n.t('newsletter.messages.invalid_unsubscribe_link')
     end
   end
 
-  private
+  def one_click_unsubscribe_request?
+    params['List-Unsubscribe'] == 'One-Click'
+  end
 
   def assign_bookmark_product_items_for_thumbnails!(bookmark_presenters)
     @bookmark_product_items = {}

@@ -209,34 +209,76 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test 'newsletter_unsubscribe' do
+  test 'newsletter_unsubscribe via GET' do
+    with_newsletter_unsubscribe_secret do
+      user = users(:one)
+      user.update(receives_newsletter: true)
+      hash = NewsletterUnsubscribeService.generate_token(user.email)
+
+      get newsletters_unsubscribe_path(hash: hash)
+      assert_response :redirect
+      assert_redirected_to root_path
+      assert_equal false, user.reload.receives_newsletter
+
+      user.update(receives_newsletter: true)
+
+      get newsletters_unsubscribe_path(hash: hash, email: 'attacker@example.com')
+      assert_response :redirect
+      assert_redirected_to root_path
+      assert_equal false, user.reload.receives_newsletter
+
+      user.update(receives_newsletter: true)
+
+      get newsletters_unsubscribe_path(hash: 'invalid_hash')
+      assert_response :redirect
+      assert_redirected_to root_path
+      assert_equal true, user.reload.receives_newsletter
+    end
+  end
+
+  test 'newsletter one-click unsubscribe via POST' do
+    with_newsletter_unsubscribe_secret do
+      user = users(:one)
+      user.update(receives_newsletter: true)
+      hash = NewsletterUnsubscribeService.generate_token(user.email)
+
+      post newsletters_unsubscribe_path(hash: hash), params: { 'List-Unsubscribe' => 'One-Click' }
+      assert_response :success
+      assert_equal '', response.body
+      assert_equal false, user.reload.receives_newsletter
+
+      user.update(receives_newsletter: true)
+
+      post newsletters_unsubscribe_path(hash: hash, email: 'attacker@example.com'),
+           params: { 'List-Unsubscribe' => 'One-Click' }
+      assert_response :success
+      assert_equal false, user.reload.receives_newsletter
+    end
+  end
+
+  test 'newsletter one-click POST rejects invalid token and missing one-click body' do
+    with_newsletter_unsubscribe_secret do
+      user = users(:one)
+      user.update(receives_newsletter: true)
+      hash = NewsletterUnsubscribeService.generate_token(user.email)
+
+      post newsletters_unsubscribe_path(hash: 'invalid_hash'), params: { 'List-Unsubscribe' => 'One-Click' }
+      assert_response :bad_request
+      assert_equal true, user.reload.receives_newsletter
+
+      post newsletters_unsubscribe_path(hash: hash)
+      assert_response :bad_request
+      assert_equal true, user.reload.receives_newsletter
+    end
+  end
+
+  private
+
+  def with_newsletter_unsubscribe_secret
     original_secret = ENV.fetch('NEWSLETTER_UNSUBSCRIBE_SECRET', nil)
     ENV['NEWSLETTER_UNSUBSCRIBE_SECRET'] = 'NEWSLETTER_UNSUBSCRIBE_SECRET'
-
-    user = users(:one)
-    user.update(receives_newsletter: true)
-    hash = NewsletterUnsubscribeService.generate_token(user.email)
-
-    get newsletters_unsubscribe_path(hash: hash)
-    assert_response :redirect
-    assert_redirected_to root_path
-    assert_equal false, user.reload.receives_newsletter
-
-    user.update(receives_newsletter: true)
-
-    get newsletters_unsubscribe_path(hash: hash, email: 'attacker@example.com')
-    assert_response :redirect
-    assert_redirected_to root_path
-    assert_equal false, user.reload.receives_newsletter
-
-    user.update(receives_newsletter: true)
-    invalid_hash = 'invalid_hash'
-
-    get newsletters_unsubscribe_path(hash: invalid_hash)
-    assert_response :redirect
-    assert_redirected_to root_path
-    assert_equal true, user.reload.receives_newsletter
-
+    yield
+  ensure
     ENV['NEWSLETTER_UNSUBSCRIBE_SECRET'] = original_secret
   end
 end

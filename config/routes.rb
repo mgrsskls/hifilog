@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     end
   end
 
-  get 'newsletters/unsubscribe', to: 'user#newsletter_unsubscribe', as: :newsletters_unsubscribe
+  match 'newsletters/unsubscribe', to: 'user#newsletter_unsubscribe', via: %i[get post], as: :newsletters_unsubscribe
 
   scope '/dashboard', as: :dashboard do
     root 'user#dashboard'
