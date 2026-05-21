@@ -82,4 +82,50 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
     post user_password_url, params: params, headers: { 'REMOTE_ADDR' => '198.51.100.99' }
     assert_response :too_many_requests
   end
+
+  test 'throttles repeated catalog write requests by IP' do
+    product = products(:one)
+    params = { product: { name: 'catalog throttle product' } }
+    headers = { 'REMOTE_ADDR' => '198.51.100.50' }
+
+    30.times do
+      post products_url, params: params, headers: headers
+      assert_not_equal 429, response.status
+    end
+
+    post products_url, params: params, headers: headers
+    assert_response :too_many_requests
+
+    headers = { 'REMOTE_ADDR' => '198.51.100.51' }
+
+    patch product_url(product), params: params, headers: headers
+    assert_not_equal 429, response.status
+  end
+
+  test 'throttles repeated bookmark mutations by IP' do
+    product = products(:two)
+    headers = { 'REMOTE_ADDR' => '198.51.100.60' }
+
+    120.times do
+      post bookmarks_path(product_id: product.id), headers: headers
+      assert_not_equal 429, response.status
+    end
+
+    post bookmarks_path(product_id: product.id), headers: headers
+    assert_response :too_many_requests
+  end
+
+  test 'throttles repeated note mutations by IP' do
+    product = products(:two)
+    params = { note: { text: 'throttle note', product_id: product.id } }
+    headers = { 'REMOTE_ADDR' => '198.51.100.70' }
+
+    60.times do
+      post notes_url, params: params, headers: headers
+      assert_not_equal 429, response.status
+    end
+
+    post notes_url, params: params, headers: headers
+    assert_response :too_many_requests
+  end
 end
