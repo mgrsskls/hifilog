@@ -5,6 +5,7 @@ class ProductsController < ApplicationController
   include ActiveSupport::NumberHelper
   include ApplicationHelper
   include FriendlyFinder
+  include ProductCatalogShow
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
@@ -13,38 +14,7 @@ class ProductsController < ApplicationController
   before_action :find_product, only: [:show]
 
   def show
-    id = @product.id
-
-    if user_signed_in?
-      @possessions = current_user.possessions
-                                 .includes(:product, :product_option, :setup_possession, :setup)
-                                 .where(product_id: id, product_variant_id: nil)
-                                 .order([:prev_owned, :period_from, :period_to, :created_at])
-                                 .map { |possession| map_possession_to_presenter(possession) }
-      @bookmark = current_user.bookmarks.find_by(item_id: id, item_type: 'Product')
-      @note = current_user.notes.find_by(product_id: id, product_variant_id: nil)
-      @setups = current_user.setups.includes(:possessions)
-    end
-
-    profile_visibility = user_signed_in? ? [1, 2] : 2
-    @images = @product.possessions
-                      .where(product_variant_id: nil)
-                      .includes(:images_attachments)
-                      .joins(:user)
-                      .where(user: { profile_visibility: })
-                      .where(active_storage_attachments: { record_type: 'Possession', name: 'images' })
-                      .map { |possession| PossessionPresenter.new possession }
-                      .flat_map(&:sorted_images)
-                      .map { |image| ImagePresenter.new(image) }
-
-    @contributors = ActiveRecord::Base.connection.execute("
-      SELECT DISTINCT
-        users.id, users.user_name, users.profile_visibility,
-        versions.item_type, versions.item_id FROM users
-      JOIN versions
-      ON users.id = CAST(versions.whodunnit AS integer)
-      WHERE versions.item_id = #{id} AND versions.item_type = 'Product'
-    ")
+    assign_product_catalog_show_data(product: @product)
 
     page_title([@product.brand&.name, @product.name].compact.join(' '), @product.meta_desc)
   end
@@ -280,14 +250,6 @@ class ProductsController < ApplicationController
     end
 
     permitted
-  end
-
-  def map_possession_to_presenter(possession)
-    if possession.prev_owned
-      PreviousPossessionPresenter.new(possession, :product)
-    else
-      PossessionPresenter.new(possession, :product)
-    end
   end
 
   def assign_brand_from_params(params)

@@ -121,6 +121,43 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'show renders catalog data for guest' do
+    get product_variant_url(
+      product_id: @product_variant.product.friendly_id,
+      id: @product_variant.friendly_id
+    )
+
+    assert_response :success
+    assert_select 'dt', text: I18n.t('headings.contributors')
+    assert_select '.EntityPossession', count: 0
+  end
+
+  test 'show renders catalog data for signed-in user' do
+    sign_in users(:one)
+
+    get product_variant_url(
+      product_id: @product_variant.product.friendly_id,
+      id: @product_variant.friendly_id
+    )
+
+    assert_response :success
+    assert_select '.EntityPossession', minimum: 1
+    assert_select 'dt', text: I18n.t('headings.contributors')
+  end
+
+  test 'show renders community image gallery when visible possessions have images' do
+    possession = possessions(:current_product_variant)
+    possession.update!(images: [one_by_one_png_upload(filename: 'variant-gallery.png')])
+
+    get product_variant_url(
+      product_id: @product_variant.product.friendly_id,
+      id: @product_variant.friendly_id
+    )
+
+    assert_response :success
+    assert_select 'ul.Entity-image.ImageLightbox'
+  end
+
   test 'create with invalid catalogue data renders new' do
     path = product_product_variants_url(product_id: products(:one).id)
     sign_in users(:one)

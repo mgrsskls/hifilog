@@ -68,6 +68,17 @@ The product holds shared identity: brand, name, slug, categorization, and shared
 
 Variants delegate missing attributes to the parent (`delegate_missing_to :product`). Variant-specific fields override or extend the base. Bookmarks may reference a variant as polymorphic `item` even though the variant model does not declare `has_many :bookmarks`.
 
+## Catalog detail pages
+
+**Product** and **ProductVariant** show pages share one orchestration path. For either entry type, the app loads:
+
+- A **community image gallery** from possessions owned by users whose profiles allow catalog imagery (public always; logged-in-only when the viewer is signed in). Base-product pages use possessions with no variant; variant pages use that variant’s possessions.
+- **Contributors** from version history on the parent product.
+- **Custom attributes** from the product (variants surface the parent’s attribute set).
+- When the viewer is signed in: their **possessions**, **bookmark**, **note**, and **setups** scoped to that product or variant.
+
+**`ProductCatalogShowService`** assembles this context for both show pages.
+
 ## Product option
 
 `ProductOption` belongs to **either** a product **or** a variant (never both): structured spec lines (e.g. color, impedance). Possessions may optionally reference one to record the configuration the user actually has.
@@ -175,7 +186,7 @@ A **backfill** task can rebuild activities from existing possessions, setups, RS
 
 ## Cross-cutting concerns
 
-**Service objects** orchestrate catalog filtering, statistics, caching of taxonomy/counts, possession→presenter selection, newsletter unsubscribe, and activity recording/backfill.
+**Service objects** orchestrate catalog filtering, catalog detail (product/variant show) pages, statistics, caching of taxonomy/counts, possession→presenter selection, newsletter unsubscribe, and activity recording/backfill.
 
 **Caching** covers taxonomy menus, entity counts, custom attribute definitions, event counts, and some rendered legal or policy content.
 

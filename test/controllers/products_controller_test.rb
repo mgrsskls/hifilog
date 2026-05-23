@@ -18,6 +18,38 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'show renders catalog data for guest' do
+    product = products(:one)
+
+    get product_url(id: product.friendly_id)
+
+    assert_response :success
+    assert_select 'dt', text: I18n.t('headings.contributors')
+    assert_select '.EntityPossession', count: 0
+  end
+
+  test 'show renders catalog data for signed-in user' do
+    product = products(:one)
+
+    sign_in users(:one)
+
+    get product_url(id: product.friendly_id)
+
+    assert_response :success
+    assert_select '.EntityPossession', minimum: 1
+    assert_select 'dt', text: I18n.t('headings.contributors')
+  end
+
+  test 'show renders community image gallery when visible possessions have images' do
+    product = products(:one)
+    possessions(:current_product).update!(images: [one_by_one_png_upload(filename: 'catalog-gallery.png')])
+
+    get product_url(id: product.friendly_id)
+
+    assert_response :success
+    assert_select 'ul.Entity-image.ImageLightbox'
+  end
+
   test 'new' do
     get new_product_url
     assert_response :redirect

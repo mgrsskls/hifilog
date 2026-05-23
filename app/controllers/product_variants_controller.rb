@@ -2,6 +2,7 @@
 
 class ProductVariantsController < ApplicationController
   include ApplicationHelper
+  include ProductCatalogShow
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :changelog]
@@ -11,54 +12,8 @@ class ProductVariantsController < ApplicationController
 
   def show
     @brand = @product.brand
-    product_id = @product.id
 
-    product_variant_id = @product_variant.id
-
-    if user_signed_in?
-      @possessions = PossessionPresenterService.map_to_presenters(
-        current_user.possessions
-          .includes([:product])
-          .includes([:product_variant])
-          .includes([:setup_possession])
-          .includes([:setup])
-          .includes([:product_option])
-          .where(
-            product_id:,
-            product_variant_id:
-          )
-          .order([
-                   :prev_owned,
-                   :period_from,
-                   :period_to,
-                   :created_at
-                 ])
-      )
-
-      @bookmark = current_user.bookmarks.find_by(item_id: product_variant_id, item_type: 'ProductVariant')
-      @note = current_user.notes.find_by(product_variant_id:)
-      @setups = current_user.setups
-    end
-
-    @images = @product_variant.possessions
-                              .includes([:images_attachments])
-                              .joins(:user)
-                              .where(user: { profile_visibility: user_signed_in? ? [1, 2] : 2 })
-                              .select { |possession| possession.images.attached? }
-                              .map { |possession| PossessionPresenter.new possession }
-                              .flat_map(&:sorted_images)
-                              .map { |image| ImagePresenter.new image }
-
-    @custom_attributes = CustomAttribute.where(label: @product.custom_attributes&.keys).index_by(&:label)
-
-    @contributors = ActiveRecord::Base.connection.execute("
-      SELECT DISTINCT
-        users.id, users.user_name, users.profile_visibility,
-        versions.item_type, versions.item_id FROM users
-      JOIN versions
-      ON users.id = CAST(versions.whodunnit AS integer)
-      WHERE versions.item_id = #{product_id} AND versions.item_type = 'Product'
-    ")
+    assign_product_catalog_show_data(product: @product, product_variant: @product_variant)
 
     page_title("#{@product.display_name} #{@product_variant.short_name}")
     set_meta_desc
