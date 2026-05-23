@@ -16,6 +16,17 @@ ActiveAdmin.register User do
     column "Confirmed" do |user|
       user.confirmed_at.present?
     end
+    column "Privacy policy", sortable: :privacy_policy_accepted_at do |user|
+      if user.privacy_policy_current?
+        title = [user.privacy_policy_version, user.privacy_policy_accepted_at&.strftime("%d.%m.%Y %H:%M")].compact.join(" · ")
+        "<span class=\"status-tag\" data-status=\"yes\" title=\"#{title}\">&check;</span>".html_safe
+      elsif user.privacy_policy_accepted_at.present?
+        title = "#{user.privacy_policy_version} (accepted #{user.privacy_policy_accepted_at.strftime('%d.%m.%Y %H:%M')}) — current is #{PrivacyPolicy::VERSION}"
+        "<span class=\"status-tag\" title=\"#{title}\" style=\"background: none; border: 1px solid\">&cross;</span>".html_safe
+      else
+        "<span class=\"status-tag\" title=\"Not accepted\">&cross;</span>".html_safe
+      end
+    end
     column :possessions do |user|
       user.possessions.count
     end

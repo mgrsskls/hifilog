@@ -1,21 +1,24 @@
 # HiFi Log
 
+Architecture reference for the domain model, read-only SQL projections, and how the main concepts relate. Not a setup or operations guide.
+
 ## Conceptual overview
 
 The catalog is built around **brands** and **products**. A **product** is the canonical model for a piece of gear (name, brand, categories, base specs). A **product variant** is a distinct line under that product (different finish, revision, regional model, etc.) that can override some fields while still inheriting the rest from the parent product via delegation.
 
 **Possessions** represent a user’s relationship to something in the catalog (or to a user-defined **custom product**): ownership, photos, purchase details, and optional links into **setups**. They always point at real database rows (`products`, `product_variants`, or `custom_products`), not at the unified listing abstraction.
 
-**Product items** are not a third kind of catalog entity. They are a **read-only database view** that flattens each product and each of its variants into one row each, so lists, search, and filters can treat “a row in the catalog” uniformly while still knowing whether that row is the base product or a variant.
+**Product items** are not a third kind of catalog entity. They are a **read-only database view** that flattens each product and each of its variants into one row each, so lists and filters can treat “a row in the catalog” uniformly while still knowing whether that row is the base product or a variant.
 
 ```mermaid
 flowchart TB
+  Category --> SubCategory
+  SubCategory --> Product
+  SubCategory --> CustomAttribute
   Brand --> Product
   Product --> ProductVariant
   Product --> ProductOption
   ProductVariant --> ProductOption
-  SubCategory --> CustomAttribute
-  Product --> SubCategory
   User --> Possession
   Possession --> Product
   Possession --> ProductVariant
@@ -23,212 +26,202 @@ flowchart TB
   Possession --> ProductOption
   Product --> Bookmark
   ProductVariant --> Bookmark
+  Brand --> Bookmark
+  Event --> Bookmark
+  User --> BookmarkList
+  BookmarkList --> Bookmark
   Setup --> SetupPossession --> Possession
   Product --> Note
   ProductVariant --> Note
+  User --> EventAttendee --> Event
   subgraph readonly [Read-only projection]
     ProductItem["ProductItem (view)"]
+    SearchResult["SearchResult (view)"]
   end
   Product -.-> ProductItem
   ProductVariant -.-> ProductItem
+  Product -.-> SearchResult
+  ProductVariant -.-> SearchResult
+  Brand -.-> SearchResult
 ```
+
+## Taxonomy
+
+**`Category`** and **`SubCategory`** form the gear taxonomy. Products, brands, and custom products link to subcategories (HABTM). **`CustomAttribute`** definitions are also scoped to subcategories so structured fields only apply where relevant. Category trees are cached for navigation.
+
+## Brand
+
+**`Brand`** is the manufacturer or label (identity, country, lifecycle dates, description, optional logo). Brands link to subcategories and have many products. Catalog edits are versioned (see [Auditing](#auditing)).
 
 ## Product
 
 - **Belongs to** `Brand`.
 - **Has many** `ProductVariant`, `ProductOption`, `Possession`, `Note`, `Bookmark` (as polymorphic `item`).
-- **Has and belongs to many** `SubCategory` (with `Category` above that in the taxonomy).
+- **Has and belongs to many** `SubCategory`.
 
-The product holds the shared identity: brand, base name, URL slug for the product page, categorization, and shared metadata. Options that apply at the product level are stored as `ProductOption` rows tied to `product_id`.
+The product holds shared identity: brand, name, slug, categorization, and shared metadata. Options at the product level are `ProductOption` rows on `product_id`.
 
 ## Product variant
 
 - **Belongs to** `Product`.
-- **Has many** `ProductOption`, `Possession`, `Note` (variants do not carry their own bookmarks in the same way as products in every flow, but bookmarks can target `ProductVariant` directly where the UI allows it).
+- **Has many** `ProductOption`, `Possession`, `Note`.
 
-Variants reuse a lot of behavior from the parent product (`delegate_missing_to :product`), so missing attributes fall through to the product. Variant-specific columns (name, slug scoped under the product, release/discontinued dates, price, model number, etc.) override or supplement that base. Each variant has its own URL under the parent product.
-
-Uniqueness of variant identity is enforced in the model (name scoped with product, model number, and release components).
+Variants delegate missing attributes to the parent (`delegate_missing_to :product`). Variant-specific fields override or extend the base. Bookmarks may reference a variant as polymorphic `item` even though the variant model does not declare `has_many :bookmarks`.
 
 ## Product option
 
-`ProductOption` is a structured attribute line (e.g. color, impedance) that belongs to **either** a product **or** a variant, never both in one row:
+`ProductOption` belongs to **either** a product **or** a variant (never both): structured spec lines (e.g. color, impedance). Possessions may optionally reference one to record the configuration the user actually has.
 
-- `product_id` set → option for the base product.
-- `product_variant_id` set → option for that variant.
+## Custom attributes (definitions vs values)
 
-Possessions can optionally reference a `ProductOption` (for example to record which factory option the user actually has).
+**Definitions** (`CustomAttribute`) are reusable fields tied to subcategories: label, input type, options JSON, units, highlighted flag. Definitions are cached globally.
 
-## Custom attributes (schema vs stored values)
+**Values** live in `products.custom_attributes` (JSONB); keys are attribute labels. Variants do not store their own values—the `product_items` view exposes the parent product’s hash for variant rows too.
 
-The app separates **attribute definitions** from **per-product values**.
+**`CustomProduct`** opts out by returning an empty `custom_attributes` hash.
 
-### `CustomAttribute` (definition)
+Filtering on catalog indexes uses the definitions applicable to the current category context.
 
-- **Has and belongs to many** `SubCategory` (join `custom_attributes_sub_categories`). That ties each definition to the parts of the taxonomy where it applies (e.g. “amplifier channel type” only on relevant subcategories).
-- Each row is a **reusable field definition**: unique `label`, `input_type` (`number`, `option`, `options`, `boolean`), optional `options` (JSON for choice labels/values), optional `units` and `inputs` arrays (validated against fixed allowlists), and a `highlighted` flag for UI emphasis.
-- Definitions are **cached** (`CustomAttribute.all_cached`) and the cache is cleared on commit when a definition changes.
+## Product item (view)
 
-### Stored values on `Product`
+`product_items` unions one row per product and one row per variant (`item_type` distinguishes them). Each row has a stable UUID for the view’s primary key; **foreign keys elsewhere still use `products.id` and `product_variants.id`**.
 
-- Actual answers live in `products.custom_attributes`, a **JSONB** column exposed through `store_accessor :custom_attributes`.
-- Keys in that hash are **`CustomAttribute#label` values** (stable string identifiers such as `amplifier_channel_type`). Values hold the chosen option id, numeric payload, boolean, etc., depending on `input_type` and how forms submit (see `ProductsController` strong params and `convert_custom_attributes!`).
-- List partials match rows by resolving **`CustomAttribute.all_cached`** with `ca.label == key` (see `shared/_product_item`).
-- **`Product#custom_attributes_list`** walks the hash and resolves definitions from the product’s **subcategories**’ `custom_attributes` to build a single display string via I18n and each definition’s `options` map.
-- **`Product#custom_attributes_resources`** loads `CustomAttribute` rows with `where(label: custom_attributes&.keys)` for helpers that need the full definition records.
+The `ProductItem` model is read-only and encodes list behavior: which possessions supply thumbnails (base-product rows ignore variant-linked possessions), image preloading, and catalog-scoped search on flattened columns.
 
-### Variants and listings
-
-- **Variants do not have their own `custom_attributes` column.** The `product_items` view exposes the parent **product’s** `custom_attributes` for both base-product rows and variant rows, so list UIs show the same structured metadata for the whole product family.
-
-### Filtering and forms
-
-- Category/brand/product index flows load the relevant **`CustomAttribute` records** for the current category or subcategory and build Ransack/filter params (e.g. `ProductFilterService`, `ProductItemsController`, `BrandsController`).
-- **`CustomProduct`** does not use this system: it implements `custom_attributes` as an **empty hash** so it stays outside the catalog’s structured-attribute machinery.
-
-## Product item (view + `ProductItem` model)
-
-`product_items` is a SQL **UNION** of:
-
-1. One row per **product** (`item_type = 'Product'`), with `product_id` set and `product_variant_id` null.
-2. One row per **product variant** (`item_type = 'ProductVariant'`), with both `product_id` and `product_variant_id` set.
-
-Each row gets a **stable UUID** derived from the underlying product or variant id, so the view has a primary key usable for APIs and forms, but **possessions and foreign keys in the rest of the schema still use `products.id` and `product_variants.id`**, not that UUID.
-
-The `ProductItem` ActiveRecord model is `readonly?` and adds logic that does not live in SQL:
-
-- Resolving which **possessions** matter for list thumbnails (base rows use **base-product** possessions only: `product_id` set and `product_variant_id` null; variant rows use that variant’s possessions).
-- Preloading possession images for list performance.
-- Search integration across the flattened columns (name, variant name, model number, brand name).
-
-Use **Product** / **ProductVariant** when you create, update, or link records. Use **ProductItem** when you need a single query shape for “everything we list as one product line in the catalog.”
+Use **Product** / **ProductVariant** to mutate data; use **ProductItem** for unified catalog listing and filters.
 
 ## Possession
 
-A possession is a **user-owned instance** of catalog (or custom) gear:
+A **user-owned instance** of catalog or custom gear, optionally tied to a `ProductOption`. Images attach to the possession. Product pages and base-product list thumbnails use possessions with no `product_variant_id`; variant surfaces use that variant’s possessions.
 
-- **Belongs to** `User`.
-- **Optionally belongs to** `Product`, `ProductVariant`, `CustomProduct`, and `ProductOption`.
+**Setups** group possessions: `Setup` → `SetupPossession` → `Possession`. Setups are per-user, named, and may be **private** (affects public visibility and activity feed).
 
-Typically a possession references either a product, a variant, or a custom product; the optional `ProductOption` narrows the configuration. Images and highlighted-image metadata attach to the possession, not to the product row. The **product** detail gallery and **base-product** list thumbnails only use possessions with `product_variant_id` null (even if the same user also has variant-specific possessions with both ids set); **variant** pages and list rows use that variant’s possessions.
+### Current vs previous collection
 
-**Setup** is modeled by `Setup` → `SetupPossession` → `Possession`: many possessions can appear in one named setup.
+**`prev_owned`** separates the active collection from previous gear. **`period_from`** / **`period_to`** describe ownership spans; **`moved_to_previous_at`** records when an item left the current collection. Ownership changes drive corresponding **user activity** verbs.
 
 ## Custom product
 
-`CustomProduct` is a **parallel track** for user-defined gear that is not in the shared catalog. It belongs to a user, has categories, images, and a **single** linked `Possession` (enforced by uniqueness on `custom_product_id` on possessions). It does not participate in `Product` / `ProductVariant` / `ProductItem`.
+User-defined gear outside the shared catalog: categories, images, and exactly one linked **possession**. Does not use `Product`, `ProductVariant`, or `ProductItem`.
 
 ## Bookmark
 
-`Bookmark` is polymorphic: `item` may be a `Product`, `ProductVariant`, `Brand`, or `Event`, depending on what the user saved. It is not a possession; it is a lightweight saved reference for the user.
+Polymorphic saved reference (`Product`, `ProductVariant`, `Brand`, or `Event`)—not ownership. **`BookmarkList`** optionally groups bookmarks per user.
+
+## Event
+
+Dated occurrences with RSVPs via **`EventAttendee`**. Bookmarkable; included in global search projection for products/brands only, not events.
 
 ## Notes
 
-`Note` attaches discussion text to a **product** and optionally to a **product variant** in a way constrained by validations (product required; variant uniqueness per user/product in the model).
+Discussion text on a **product**, optionally scoped to a **variant** (one note per user per product/variant combination).
+
+## Users, profiles, and dashboard
+
+**`User`** accounts hold the collection, setups, bookmarks, notes, RSVPs, and profile media (avatar, decorative image).
+
+**Profile visibility** (`hidden`, `logged_in_only`, `visible`) controls public discoverability and whether collection imagery from that user appears on catalog pages.
+
+- **Public profile**: overview (collection preview, statistics, upcoming events, activity feed), full collection, previous gear, history, contributions.
+- **Dashboard**: the signed-in owner’s workspace—same domains plus account settings and a dedicated activity view.
+
+## Authentication and admin
+
+**Users** authenticate for the site (registration, confirmation, lockout). **Admin users** are a separate scope for back-office catalog management (ActiveAdmin). Community members can create and edit catalog entities; admins operate the full admin interface.
+
+## Privacy policy
+
+Published policy text has a **version** (requires re-acceptance) and a **content revision** (text-only updates). Users store which version they accepted and when. Sign-up requires acceptance; users on an outdated version must accept again or delete their account before using the app. Static/legal pages and account recovery remain available during that gate.
 
 ## User activity
 
-The **profile overview** at `GET /users/:id` combines a collection preview, statistics, upcoming events, and an **activity feed** built from persisted **`UserActivity`** rows. The legacy URL `GET /users/:id/activity` redirects to the overview permanently. The full product grid is at `GET /users/:id/collection` (including setup-specific routes under `/users/:id/setups/:setup`).
+Persisted **`UserActivity`** rows: **verb**, **occurred_at**, polymorphic **subject**, JSON **metadata** for display snapshots.
 
-Each **`UserActivity`** row has a **verb**, **occurred_at** timestamp, polymorphic **subject**, and JSON **metadata** for display snapshots (names, URLs, ownership periods, setup/product ids).
+**Write path:** model callbacks → **`UserActivities::Recorder`** (possession sync via **`PossessionSync`** for ownership verbs).
 
-Activities are **written at the source** via model callbacks that call **`UserActivities::Recorder`**. The feed is **read** through **`UserActivityTimeline`**, which loads visible rows, resolves subjects, applies visibility and deduplication rules, optionally **groups** similar consecutive events, and returns `Single` or `Grouped` rows for the view.
+**Read path:** **`UserActivityTimeline`** → feed rows on public overview and owner dashboard.
 
-### `UserActivity` (storage)
+### Verbs and sources
 
-- **Belongs to** `User` and **polymorphic** `subject` (`Possession`, `Setup`, `CustomProduct`, `EventAttendee`, `Event` for cancellations, or `User` for profile image verbs).
-- **`verb`** is one of: `added_to_collection`, `added_to_previous`, `moved_to_previous`, `event_attendance`, `event_attendance_cancelled`, `setup_created`, `setup_made_public`, `setup_made_private`, `setup_product_added`, `setup_product_removed`, `custom_product_created`, `possession_image_uploaded`, `possession_image_deleted`, `avatar_uploaded`, `avatar_deleted`, `decorative_image_uploaded`, `decorative_image_deleted`.
-- **`hidden_at`** soft-hides a row without deleting it (stale possession verbs, or when a possession is removed).
-- Uniqueness for upserts is **`user` + `subject` + `verb`** (possession ownership verbs are synced; setup product lines, visibility toggles, and possession image events may create multiple rows over time).
+| Source                   | Verbs (summary)                                                               |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `Possession`             | Collection/previous/moved; image upload/delete (image verbs hidden from feed) |
+| `CustomProduct`          | `custom_product_created` (may suppress duplicate collection line)             |
+| `Setup`                  | Created; public/private toggle (private toggle hidden from feed)              |
+| `SetupPossession`        | Product added/removed from setup (private setups omitted from feed)           |
+| `EventAttendee` / cancel | Attendance and cancellation                                                   |
+| `User`                   | Avatar and decorative image changes (hidden from feed)                        |
 
-### Recording (`UserActivities::Recorder`)
+Full verb list: `added_to_collection`, `added_to_previous`, `moved_to_previous`, `event_attendance`, `event_attendance_cancelled`, `setup_created`, `setup_made_public`, `setup_made_private`, `setup_product_added`, `setup_product_removed`, `custom_product_created`, `possession_image_uploaded`, `possession_image_deleted`, `avatar_uploaded`, `avatar_deleted`, `decorative_image_uploaded`, `decorative_image_deleted`.
 
-| Source            | Verbs                                                                                                                    | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Possession`      | `added_to_collection`, `added_to_previous`, `moved_to_previous`, `possession_image_uploaded`, `possession_image_deleted` | Ownership verbs: **`UserActivities::PossessionSync`** derives the expected set from `prev_owned?`, `period_*`, and `moved_to_previous_at`; **`sync_possession`** upserts and hides stale rows. Image verbs: one row per new attachment (after save) or per purge via **`purge_images_by_id!`**; metadata includes **`image_attachment_id`**. Neither image verb is shown on the profile feed. Destroy hides all possession activities. |
-| `CustomProduct`   | `custom_product_created`                                                                                                 | Collection add for the linked possession is suppressed when created in the same ~2s window (merged into one “created custom product” line).                                                                                                                                                                                                                                                                                            |
-| `Setup`           | `setup_created`, `setup_made_public`, `setup_made_private`                                                               | `setup_made_private` is stored but not shown on the feed. Destroy merges latest setup metadata into existing activity rows.                                                                                                                                                                                                                                                                                                            |
-| `SetupPossession` | `setup_product_added`, `setup_product_removed`                                                                           | Subject is the **setup**; product label and ids live in **metadata**. Rows recorded while the setup was private are omitted from the feed.                                                                                                                                                                                                                                                                                             |
-| `EventAttendee`   | `event_attendance`                                                                                                       | Upserted on RSVP.                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Event cancel flow | `event_attendance_cancelled`                                                                                             | Subject is the **event**; created when attendance is removed.                                                                                                                                                                                                                                                                                                                                                                          |
-| `User`            | `avatar_uploaded`, `avatar_deleted`, `decorative_image_uploaded`, `decorative_image_deleted`                             | One row per attachment change on **`avatar`** or **`decorative_image`** (`has_one_attached`); metadata includes **`image_attachment_id`**. Deletes go through **`purge_avatar!`** / **`purge_decorative_image!`** (account settings); replacing an image records delete then upload. None of these verbs appear on the profile feed.                                                                                                   |
+**`hidden_at`** soft-hides rows. Some verbs are stored for auditing but excluded from the public feed (`FEED_HIDDEN_VERBS`).
 
-### Timeline (`UserActivityTimeline`)
+### Timeline rules
 
-Turns `user.user_activities.visible.for_feed` into feed rows with rules including (`for_feed` excludes `UserActivity::FEED_HIDDEN_VERBS`; those rows stay in the DB for admin/auditing):
+- Order by `occurred_at`, not display dates in metadata.
+- Respect setup visibility (public setups only; special case for setups deleted after being public).
+- Hide redundant private `setup_created` when a later public toggle exists.
+- Group contiguous similar items; dedupe consecutive duplicates.
 
-- **Ordering** by `occurred_at` (newest first), not by possession `period_from` / event dates (those are display-only).
-- **Setup visibility**: only public setups, or deleted setups that were public when destroyed (`metadata['private']`).
-- **Private draft setups**: `setup_created` while private is hidden when a later `setup_made_public` exists for the same setup.
-- **Stored but not rendered**: `setup_made_private`, possession/profile image verbs (`possession_image_*`, `avatar_*`, `decorative_image_*`) are persisted for auditing/admin but map to no feed item.
-- **Grouping**: three or more **contiguous** items sharing the same day + verb bucket + setup scope collapse into one **grouped** card with nested lines.
-- **Deduping**: consecutive rows with the same verb + subject (and possession id for setup product lines) keep only the newest.
+A **backfill** task can rebuild activities from existing possessions, setups, RSVPs, and attachments where historical data allows.
 
-Copy and icons use **`UserActivityVerbs`** and I18n under `user_activity.*`; rendering helpers live in **`UserActivityHelper`**.
+## Search
 
-### Backfill
+**`SearchResult`** is a read-only view unioning products, variants, and brands with a unified name/slug shape for global search. **`ProductItem`** powers catalog browsing and category filters—separate concern from site-wide search.
 
-For existing data after deploying the feature:
+## Auditing
 
-```bash
-bin/rails db:migrate
-bin/rails user_activities:backfill
-```
+**PaperTrail** versions **products**, **variants**, and **brands**. Per-record changelogs and a contributions summary show who edited the catalog over time.
 
-**`UserActivities::Backfill`** walks all users and replays possession sync, custom products, setups, setup memberships (synthetic `occurred_at` where `setup_possessions` has no `created_at`), event RSVPs, **`possession_image_uploaded`** (from attachment `created_at` when images still exist), and **`avatar_uploaded`** / **`decorative_image_uploaded`** when those attachments still exist. Image **delete** verbs are live-only; historical deletes cannot be reconstructed. Requires **`possessions.moved_to_previous_at`**. Safe to re-run (skips when a matching row already exists, keyed by metadata where needed).
+## Cross-cutting concerns
 
-## Search results
+**Service objects** orchestrate catalog filtering, statistics, caching of taxonomy/counts, possession→presenter selection, newsletter unsubscribe, and activity recording/backfill.
 
-`SearchResult` is another read-only view (similar in spirit to `product_items`) used to expose a unified search row shape for products and variants with slugs and names for links. It complements `ProductItem` but is tuned for search payloads rather than full list rows.
+**Caching** covers taxonomy menus, entity counts, custom attribute definitions, event counts, and some rendered legal or policy content.
 
----
+**Attachments** (Active Storage): possession and custom-product image galleries; user avatar and decorative banner; brand logos. Purges on possessions and profile images can emit activity rows.
 
-## Presenters: what they wrap and why
+**App news** announcements can be dismissed per user (HABTM).
 
-Presenters sit **next to** ActiveRecord models. They format values, pick URLs, and centralize view-facing rules so templates and controllers stay thin.
+**Statistics** aggregate a user’s possessions (current vs previous, costs, duration, categories) for dashboard and profile summaries.
 
-### `ItemPresenter`
+**Security:** rate limits on auth and catalog writes; content security policy; bot challenge on registration and password reset.
 
-Base presenter for objects that have an optional `product` and `product_variant` (the typical case is **`Possession`**). It resolves **display name**, **model number** (variant overrides product), **paths** to product vs variant edit/show routes, and shared product fields (brand, categories). Specialized presenters subclass it.
+## Presenters
 
-### `PossessionPresenter` (`< ItemPresenter`)
+Presenters sit beside models and centralize display rules for templates.
 
-Adds possession-specific behavior: purchase/sale prices, ownership period copy, **sorted and highlighted images** for galleries, and REST paths for updating or deleting the possession.
+| Presenter                                                               | Wraps                                                                |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **`ItemPresenter`**                                                     | Base for gear with optional product/variant (usually via possession) |
+| **`PossessionPresenter`**                                               | Current possession: prices, periods, gallery                         |
+| **`PreviousPossessionPresenter`**                                       | Previous-collection possession                                       |
+| **`ProductItemPresenter`**                                              | Catalog list row (paths, dates, list thumbnails)                     |
+| **`BookmarkPresenter`**                                                 | Polymorphic bookmark target                                          |
+| **`CustomProductPresenter`**                                            | Custom product with possession-like UI                               |
+| **`SetupPossessionPresenter`**, **`CustomProduct*PossessionPresenter`** | Setup builder and related contexts                                   |
+| **`ImagePresenter`**                                                    | Shared attachment presentation                                       |
 
-### `ProductItemPresenter`
-
-Wraps a **`ProductItem`** (view row), not a raw `Product` or `ProductVariant`. It:
-
-- Builds the correct **show path** (product vs nested variant route) from slugs on the view row.
-- Formats release and discontinued dates from the flattened columns.
-- Exposes **list imagery** from the same possession sets as above (no variant photos on the base-product list row), respecting profile visibility and delegating **highlighted image** choice to `PossessionPresenter`.
-
-So: catalog list rows use `ProductItem` + `ProductItemPresenter`; a user’s gear list entry that is backed by a real possession uses `Possession` + `PossessionPresenter` (and thus `ItemPresenter`).
-
-### `BookmarkPresenter`
-
-Wraps a **`Bookmark`** and branches on `item_type` to load `Product`, `ProductVariant`, `Brand`, or `Event`, then exposes a unified **display name**, **discontinued** semantics, and delete path for the bookmark row.
-
-### `CustomProductPresenter`
-
-Wraps **`CustomProduct`** with an API shaped similarly to `ItemPresenter` / `PossessionPresenter` where the UI needs the same partials (names, paths, images, highlighted image), but without catalog product/variant ids.
-
-### Other presenters
-
-`SetupPossessionPresenter`, `PossessionPresenter`, `PreviousPossessionPresenter`, and `CustomProduct*PossessionPresenter` adapt possessions (or setup membership) for specific UI contexts (e.g. setup builder, timelines). `ImagePresenter` focuses on attachment presentation where reused.
+**`PossessionPresenterService`** chooses among possession presenters by ownership state and custom-product linkage.
 
 ---
 
 ## Quick reference
 
-| Concept           | Mutable?  | Typical use                                                                                    |
-| ----------------- | --------- | ---------------------------------------------------------------------------------------------- |
-| `Product`         | Yes       | Admin/catalog identity, product page, HABTM categories                                         |
-| `ProductVariant`  | Yes       | Variant page, overrides under a product                                                        |
-| `ProductItem`     | No (view) | Unified product index, filters, list thumbnails                                                |
-| `Possession`      | Yes       | User owns gear, photos, setups, optional option                                                |
-| `CustomProduct`   | Yes       | User-defined gear + one linked possession                                                      |
-| `Bookmark`        | Yes       | Saved pointer to product/variant/brand/event                                                   |
-| `ProductOption`   | Yes       | Spec lines on product or variant                                                               |
-| `CustomAttribute` | Yes       | Field definitions per subcategory; product values in JSONB on `Product`                        |
-| `UserActivity`    | Yes       | Profile activity feed; written by `UserActivities::Recorder`, shown via `UserActivityTimeline` |
+| Concept                     | Mutable?  | Role                                                  |
+| --------------------------- | --------- | ----------------------------------------------------- |
+| `Category` / `SubCategory`  | Yes       | Taxonomy; scopes catalog and custom attributes        |
+| `Brand`                     | Yes       | Manufacturer; products; bookmarks; search             |
+| `Product`                   | Yes       | Shared catalog identity                               |
+| `ProductVariant`            | Yes       | Variant-specific overrides                            |
+| `ProductItem`               | No (view) | Unified catalog rows                                  |
+| `SearchResult`              | No (view) | Global search rows                                    |
+| `Possession`                | Yes       | Ownership, photos, setups; current vs previous        |
+| `Setup`                     | Yes       | Named public/private gear groupings                   |
+| `CustomProduct`             | Yes       | Off-catalog user gear                                 |
+| `Bookmark` / `BookmarkList` | Yes       | Saved references; optional lists                      |
+| `Event` / `EventAttendee`   | Yes       | Occurrences and RSVPs                                 |
+| `ProductOption`             | Yes       | Spec lines on product or variant                      |
+| `CustomAttribute`           | Yes       | Field definitions; values on `Product`                |
+| `UserActivity`              | Yes       | Social/history feed                                   |
+| `User`                      | Yes       | Account, visibility, policy acceptance, profile media |
