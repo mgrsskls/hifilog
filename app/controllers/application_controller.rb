@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :set_footer_data
+  before_action :require_privacy_policy_acceptance!, if: :privacy_policy_enforcement_needed?
   after_action :record_page_view
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -112,6 +113,41 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def privacy_policy_enforcement_needed?
+    user_signed_in? && !current_user.privacy_policy_current? && request.format.html?
+  end
+
+  def require_privacy_policy_acceptance!
+    return if skip_privacy_policy_enforcement?
+
+    store_location_for(:user, request.fullpath) if request.get?
+    redirect_to new_privacy_policy_acceptance_path
+  end
+
+  def skip_privacy_policy_enforcement?
+    signing_out? ||
+      privacy_policy_exempt_controller? ||
+      newsletter_unsubscribe?
+  end
+
+  def privacy_policy_exempt_controller?
+    controller_path == 'privacy_policy_acceptances' ||
+      controller_path == 'static' ||
+      devise_account_recovery_controller?
+  end
+
+  def devise_account_recovery_controller?
+    %w[users/confirmations users/passwords users/unlocks].include?(controller_path)
+  end
+
+  def newsletter_unsubscribe?
+    controller_path == 'user' && action_name == 'newsletter_unsubscribe'
+  end
+
+  def signing_out?
+    controller_path == 'users/sessions' && action_name == 'destroy'
+  end
 
   def set_footer_data
     @newest_products = newest_products

@@ -40,6 +40,7 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
 
   test 'throttles repeated signups by email' do
     params = {
+      privacy_policy_accepted: '1',
       user: {
         user_name: 'signup_throttle',
         email: 'signup-throttle@example.com',

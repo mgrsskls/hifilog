@@ -84,6 +84,17 @@ class User < ApplicationRecord
     user_name.downcase
   end
 
+  def privacy_policy_current?
+    privacy_policy_version == PrivacyPolicy::VERSION
+  end
+
+  def accept_privacy_policy!
+    update!(
+      privacy_policy_accepted_at: Time.current,
+      privacy_policy_version: PrivacyPolicy::VERSION
+    )
+  end
+
   def validate_avatar_content_type
     return unless avatar.attachment
 

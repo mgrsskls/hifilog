@@ -4,30 +4,40 @@ one:
   confirmed_at: 2024-01-01
   encrypted_password: $2a$12$Q2a2KrQdsYUbMR7z3McIHeWZ.P5n.sKPEr.S8SmRtR0FlG8dh5H1a # "encrypted_password"
   profile_visibility: 2
+  privacy_policy_accepted_at: 2026-01-01 00:00:00
+  privacy_policy_version: v2
 
 hidden:
   email: user1@example.com
   profile_visibility: hidden
   user_name: username1
   confirmed_at: 2024-01-01
+  privacy_policy_accepted_at: 2026-01-01 00:00:00
+  privacy_policy_version: v2
 
 logged_in_only:
   email: user2@example.com
   profile_visibility: logged_in_only
   user_name: username2
   confirmed_at: 2024-01-01
+  privacy_policy_accepted_at: 2026-01-01 00:00:00
+  privacy_policy_version: v2
 
 visible:
   email: user3@example.com
   profile_visibility: visible
   user_name: username3
   confirmed_at: 2024-01-01
+  privacy_policy_accepted_at: 2026-01-01 00:00:00
+  privacy_policy_version: v2
 
 with_everything:
   email: user4@example.com
   profile_visibility: visible
   user_name: username4
   confirmed_at: 2024-01-01
+  privacy_policy_accepted_at: 2026-01-01 00:00:00
+  privacy_policy_version: v2
 
 without_anything:
   encrypted_password: encrypted_password
@@ -36,3 +46,21 @@ without_anything:
   user_name: username5
   confirmed_at: 2024-01-01
   app_news: []
+  privacy_policy_accepted_at: 2026-01-01 00:00:00
+  privacy_policy_version: v2
+
+privacy_policy_outdated:
+  email: outdated-privacy@example.com
+  profile_visibility: visible
+  user_name: outdated_privacy
+  confirmed_at: 2024-01-01
+  encrypted_password: $2a$12$Q2a2KrQdsYUbMR7z3McIHeWZ.P5n.sKPEr.S8SmRtR0FlG8dh5H1a
+  privacy_policy_version: v1
+  privacy_policy_accepted_at: 2024-01-01 00:00:00
+
+privacy_policy_missing:
+  email: missing-privacy@example.com
+  profile_visibility: visible
+  user_name: missing_privacy
+  confirmed_at: 2024-01-01
+  encrypted_password: $2a$12$Q2a2KrQdsYUbMR7z3McIHeWZ.P5n.sKPEr.S8SmRtR0FlG8dh5H1a

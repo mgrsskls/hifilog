@@ -1,0 +1,27 @@
+<div class="Form Form--centered">
+  <div class="Rte">
+    <h1><%= t('privacy_policy_overlay.heading') %></h1>
+    <p><%= t('privacy_policy_overlay.intro') %></p>
+  </div>
+
+  <%= form_with url: privacy_policy_acceptance_path, method: :post, html: { id: 'privacy-policy-accept-form', class: 'u-mt-lg' } do %>
+    <div class="Form-field">
+      <input type="checkbox" name="privacy_policy_accepted" id="privacy-policy-accepted" value="1" required>
+      <label for="privacy-policy-accepted">
+        <%= t('user_form.privacy_policy_accept') %>
+        <%= link_to t('user_form.privacy_policy'), privacy_policy_path, target: '_blank', rel: 'noopener' %>
+      </label>
+    </div>
+
+    <div class="Form-submit">
+      <%= button_tag t('privacy_policy_overlay.accept'), type: 'submit', class: 'Button' %>
+    </div>
+  <% end %>
+
+  <%= button_to t('privacy_policy_overlay.deny'),
+    privacy_policy_acceptance_path,
+    method: :delete,
+    class: 'DeleteAccount Button Button--negative u-mt-lg',
+    data: { msg: t('privacy_policy_overlay.deny_confirm') }
+  %>
+</div>

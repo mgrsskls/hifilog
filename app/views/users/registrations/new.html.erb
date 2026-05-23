@@ -42,6 +42,14 @@
       <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
     </div>
 
+    <div class="Form-field">
+      <input type="checkbox" name="privacy_policy_accepted" id="privacy-policy-accepted" value="1" required>
+      <label for="privacy-policy-accepted">
+        <%= t('user_form.privacy_policy_accept') %>
+        <%= link_to t('user_form.privacy_policy'), privacy_policy_path %>
+      </label>
+    </div>
+
     <div class="Form-submit">
       <%= cloudflare_turnstile_tag %>
       <button type="submit" class="Button"><%= t('user_form.signup') %></button>

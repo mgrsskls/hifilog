@@ -39,3 +39,10 @@ class ActiveSupport::TestCase
   include Devise::Test::IntegrationHelpers
   include TestSupportHelpers
 end
+
+# Rack::Attack uses a shared MemoryStore in test; clear it so throttled endpoints
+# (sign-up, login, etc.) do not leak counts across unrelated integration tests.
+class ActionDispatch::IntegrationTest
+  setup { Rack::Attack.cache.store.clear }
+  teardown { Rack::Attack.cache.store.clear }
+end

@@ -39,6 +39,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :privacy_policy_acceptance, only: %i[new create destroy]
+
   match 'newsletters/unsubscribe', to: 'user#newsletter_unsubscribe', via: %i[get post], as: :newsletters_unsubscribe
 
   scope '/dashboard', as: :dashboard do

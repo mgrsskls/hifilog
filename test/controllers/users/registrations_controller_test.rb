@@ -39,6 +39,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   test 'create' do
     params = {
+      privacy_policy_accepted: '1',
       user: {
         user_name: 'user_name',
         email: 'mail@example.com',
@@ -49,6 +50,10 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     post user_registration_url, params: params
     assert_response :redirect
     assert_redirected_to root_url # user will be redirected to root as they first have to activate their account
+
+    user = User.find_by!(email: 'mail@example.com')
+    assert user.privacy_policy_accepted_at.present?
+    assert_equal PrivacyPolicy::VERSION, user.privacy_policy_version
 
     sign_in users(:one)
 
@@ -103,11 +108,47 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert UserActivity.exists?(user: user, subject: user, verb: 'avatar_deleted')
   end
 
+  test 'create rejects sign up when privacy policy is not accepted' do
+    assert_no_difference('User.count') do
+      post user_registration_url, params: {
+        user: {
+          user_name: 'user_name',
+          email: 'privacy-policy-fail@example.com',
+          password: 'passwordpassword',
+          password_confirmation: 'passwordpassword'
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, I18n.t('user_form.privacy_policy_required')
+    assert_nil User.find_by(email: 'privacy-policy-fail@example.com')
+  end
+
+  test 'create rejects sign up when privacy policy is explicitly declined' do
+    assert_no_difference('User.count') do
+      post user_registration_url, params: {
+        privacy_policy_accepted: '0',
+        user: {
+          user_name: 'user_name',
+          email: 'privacy-policy-declined@example.com',
+          password: 'passwordpassword',
+          password_confirmation: 'passwordpassword'
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, I18n.t('user_form.privacy_policy_required')
+    assert_nil User.find_by(email: 'privacy-policy-declined@example.com')
+  end
+
   test 'create rejects sign up when turnstile verification fails' do
     Cloudflare::Turnstile::Rails.configuration.secret_key = '2x0000000000000000000000000000000AA'
 
     assert_no_difference('User.count') do
       post user_registration_url, params: {
+        privacy_policy_accepted: '1',
         user: {
           user_name: 'user_name',
           email: 'turnstile-fail@example.com',
@@ -132,6 +173,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     # Fill in and submit the sign-up form
     assert_difference('User.count', 1) do
       post user_registration_path, params: {
+        privacy_policy_accepted: '1',
         user: {
           user_name: 'user_name',
           email: email,

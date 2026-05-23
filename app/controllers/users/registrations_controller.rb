@@ -25,8 +25,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     return head :forbidden if request.is_crawler?
 
+    unless privacy_policy_accepted?
+      build_resource(sign_up_params)
+      resource.errors.add(:base, t('user_form.privacy_policy_required'))
+      clean_up_passwords resource
+      set_minimum_password_length
+      respond_with resource
+      return
+    end
+
     if valid_turnstile?
-      super
+      super do |user|
+        record_privacy_policy_acceptance!(user) if user.persisted?
+      end
     else
       redirect_to new_user_registration_path, alert: t('user_form.turnstile_failed')
     end
@@ -77,4 +88,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def after_inactive_sign_up_path_for(resource)
   #   super(resource)
   # end
+
+  private
+
+  def privacy_policy_accepted?
+    ActiveModel::Type::Boolean.new.cast(params[:privacy_policy_accepted])
+  end
+
+  def record_privacy_policy_acceptance!(user)
+    user.accept_privacy_policy!
+  end
 end

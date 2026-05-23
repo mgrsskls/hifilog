@@ -508,7 +508,19 @@ en:
     login: Log in
     logout: Log out
     signup: Sign up
+    privacy_policy: Privacy Policy
+    privacy_policy_accept: I accept the
+    privacy_policy_required: You must accept the Privacy Policy to sign up.
     turnstile_failed: We could not verify that you're human.
+  privacy_policy_overlay:
+    accepted: Thank you. You can continue using HiFi Log.
+    account_deleted: Your account has been deleted.
+    accept: Accept and continue
+    deny: Decline and delete my account
+    deny_confirm: Are you sure you want to decline the Privacy Policy? Your account and all associated data will be deleted immediately.
+    heading: Privacy Policy Update
+    intro: We have updated our Privacy Policy. To continue using HiFi Log, please read and accept the updated policy. If you do not accept, you can delete your account.
+    required: You must accept the Privacy Policy to continue.
   views:
     pagination:
       next: Next &rarr;

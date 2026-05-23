@@ -37,7 +37,7 @@ class StaticController < ApplicationController
   end
 
   def privacy_policy
-    @html = Rails.cache.fetch('/static/privacy_policy/v2') do
+    @html = Rails.cache.fetch(PrivacyPolicy::CACHE_KEY) do
       markdown_to_html Rails.root.join('static/privacy_policy.md').read
     end
     page_title('Privacy Policy')
