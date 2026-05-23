@@ -22,7 +22,7 @@ unless ENV['DISABLE_CSP']
       policy.style_src   :self, :unsafe_inline
       policy.frame_src   :self, 'https://challenges.cloudflare.com/'
       policy.frame_ancestors :self
-      policy.connect_src :self, 'https://*.ingest.de.sentry.io'
+      policy.connect_src :self
       # Specify URI for violation reports
       policy.report_uri ENV['SENTRY_CSP_REPORT_URI'] if ENV['SENTRY_CSP_REPORT_URI'].present?
     end
