@@ -5,5 +5,6 @@ if Rails.env.production?
     config.traces_sample_rate = 1.0
     config.profiles_sample_rate = 1.0
     config.rails.skippable_job_adapters = ['ActiveAdmin']
+    config.send_default_pii = false
   end
 end
