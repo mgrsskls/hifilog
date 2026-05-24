@@ -23,7 +23,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: 'My setup',
       setup_url: '/users/u/setups/9',
-      setup_id: 9
+      setup_id: 9,
+      possession_id: nil,
+      gallery_image: nil
     )
     group = UserActivityTimeline::Grouped.new(
       verb: :setup_product_added,
@@ -53,7 +55,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: created,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     assert_not_nil user_activity_item_meta_period(item)
@@ -74,7 +78,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: created,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     assert_nil user_activity_item_meta_period(item)
@@ -94,7 +100,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     html = user_activity_product_link(item)
@@ -116,7 +124,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     html = user_activity_item_title(item)
@@ -139,7 +149,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     html = user_activity_item_title(item)
@@ -161,7 +173,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     html = user_activity_item_title(item)
@@ -184,7 +198,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
     group = UserActivityTimeline::Grouped.new(
       verb: :added_to_collection,
@@ -212,7 +228,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
     group = UserActivityTimeline::Grouped.new(
       verb: :setup_made_public,
@@ -248,6 +266,92 @@ class UserActivityHelperTest < ActionView::TestCase
     assert_nil user_activity_icon(:not_a_verb)
   end
 
+  test 'user_activity_icon renders photo glyph for possession_image_uploaded' do
+    html = user_activity_icon(:possession_image_uploaded).to_s
+    assert_includes html, '<svg'
+    assert_includes html, 'm2.25 15.75'
+  end
+
+  test 'user_activity_group_summary for grouped possession image uploads' do
+    sample = UserActivityTimeline::Item.new(
+      verb: :possession_image_uploaded,
+      logged_at: Time.current,
+      display_name: 'My amp',
+      url: '/products/amp',
+      period_from: nil,
+      period_to: nil,
+      event_start_date: nil,
+      event_end_date: nil,
+      event_past: nil,
+      possession_created_at: nil,
+      setup_name: nil,
+      setup_url: nil,
+      setup_id: nil,
+      possession_id: 1,
+      gallery_image: nil
+    )
+    group = UserActivityTimeline::Grouped.new(
+      verb: :possession_image_uploaded,
+      logged_at: Time.current,
+      items: [sample, sample, sample],
+      event_past: nil
+    )
+
+    html = user_activity_group_summary(group)
+    assert_includes html, '3'
+    assert_includes html, 'photos'
+    assert_includes html, 'My amp'
+  end
+
+  test 'user_activity_gallery_images handles a single timeline item' do
+    gallery_image = Struct.new(:created_at, :id).new(Time.current, 1)
+    item = UserActivityTimeline::Item.new(
+      verb: :possession_image_uploaded,
+      logged_at: Time.current,
+      display_name: 'My amp',
+      url: '/products/amp',
+      period_from: nil,
+      period_to: nil,
+      event_start_date: nil,
+      event_end_date: nil,
+      event_past: nil,
+      possession_created_at: nil,
+      setup_name: nil,
+      setup_url: nil,
+      setup_id: nil,
+      possession_id: 1,
+      gallery_image:
+    )
+
+    assert_equal [gallery_image], user_activity_gallery_images(item)
+  end
+
+  test 'user_activity_gallery_images sorts by image created_at ascending' do
+    older_image = Struct.new(:created_at, :id).new(2.days.ago, 1)
+    newer_image = Struct.new(:created_at, :id).new(1.hour.ago, 2)
+    item_attrs = {
+      verb: :possession_image_uploaded,
+      logged_at: Time.current,
+      display_name: 'My amp',
+      url: '/products/amp',
+      period_from: nil,
+      period_to: nil,
+      event_start_date: nil,
+      event_end_date: nil,
+      event_past: nil,
+      possession_created_at: nil,
+      setup_name: nil,
+      setup_url: nil,
+      setup_id: nil
+    }
+    items = [
+      UserActivityTimeline::Item.new(**item_attrs, possession_id: 1, gallery_image: newer_image),
+      UserActivityTimeline::Item.new(**item_attrs, possession_id: 1, gallery_image: older_image)
+    ]
+
+    assert_equal [older_image, newer_image], user_activity_gallery_images(items)
+  end
+
   test 'moved_to_previous period meta when period_to differs from logged day' do
     logged = Time.zone.local(2026, 1, 10, 12, 0, 0)
     item = UserActivityTimeline::Item.new(
@@ -263,7 +367,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     assert_not_nil user_activity_item_meta_period(item)
@@ -283,7 +389,9 @@ class UserActivityHelperTest < ActionView::TestCase
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
 
     html = user_activity_item_title(item)

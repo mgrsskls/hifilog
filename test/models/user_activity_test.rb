@@ -74,8 +74,7 @@ class UserActivityTest < ActiveSupport::TestCase
     UserActivities::Recorder.possession_image_uploaded(possession, image_attachment: attachment)
 
     assert UserActivity.exists?(user: user, verb: 'possession_image_uploaded')
-    assert_not_includes user.user_activities.visible.for_feed.pluck(:verb), 'possession_image_uploaded'
-    assert_includes user.user_activities.visible.pluck(:verb), 'possession_image_uploaded'
+    assert_includes user.user_activities.visible.for_feed.pluck(:verb), 'possession_image_uploaded'
 
     user.update!(avatar: one_by_one_png_upload(filename: 'scope-avatar.png'))
     UserActivities::Recorder.avatar_uploaded(user, image_attachment: user.avatar.attachment)

@@ -12,7 +12,8 @@ module UserActivityVerbs
     :setup_made_public,
     :setup_product_added,
     :setup_product_removed,
-    :custom_product_created
+    :custom_product_created,
+    :possession_image_uploaded
   ].freeze
 
   SETUP_PRODUCT_VERBS = [:setup_product_added, :setup_product_removed].freeze

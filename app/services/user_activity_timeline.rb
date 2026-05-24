@@ -20,8 +20,10 @@
 #   URLs are derived at render time (see +SubjectLookup#setup_product_activity_product_url+).
 # - Rows from when the setup was private are omitted (+metadata+ +private+ at write time, or
 #   +recorded_while_setup_private+ which +before_destroy+ metadata snapshots do not overwrite).
-# - +setup_made_private+, possession/profile image upload/delete verbs (+possession_image_*+, +avatar_*+,
-#   +decorative_image_*+) are stored but never rendered on the feed.
+# - +possession_image_uploaded+ groups only within the same possession (+cluster_key+ includes +possession_id+);
+#   each upload is a separate row (dedupe includes +image_attachment_id+). Thumbnails render on the feed.
+# - +setup_made_private+, +possession_image_deleted+, and profile image verbs (+avatar_*+, +decorative_image_*+)
+#   are stored but never rendered on the feed.
 # - Only +setup_made_public+ / +setup_created+ setup lines appear when the setup is currently public or was
 #   public when destroyed.
 # - Same +logged_at+ (e.g. backfill using +setup.created_at+ for both): +setup_product_added+ /
@@ -49,6 +51,8 @@ class UserActivityTimeline
     :setup_name,
     :setup_url,
     :setup_id,
+    :possession_id,
+    :gallery_image,
     keyword_init: true
   ) do
     def event_upcoming?
@@ -202,7 +206,13 @@ class UserActivityTimeline
       else
         :_
       end
-    [day, cluster_verb, suffix, setup_scope]
+    possession_scope =
+      if item.verb == :possession_image_uploaded
+        item.possession_id || 0
+      else
+        :_
+      end
+    [day, cluster_verb, suffix, setup_scope, possession_scope]
   end
 
   def flat_items
@@ -250,6 +260,11 @@ class UserActivityTimeline
       return nil if pid.blank?
 
       [activity.verb, activity.subject_type, activity.subject_id, pid.to_i]
+    when 'possession_image_uploaded'
+      attachment_id = activity.metadata&.[]('image_attachment_id')
+      return nil if attachment_id.blank?
+
+      [activity.verb, activity.subject_type, activity.subject_id, attachment_id.to_s]
     else
       [activity.verb, activity.subject_type, activity.subject_id]
     end

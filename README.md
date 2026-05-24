@@ -154,14 +154,14 @@ Persisted **`UserActivity`** rows: **verb**, **occurred_at**, polymorphic **subj
 
 ### Verbs and sources
 
-| Source                   | Verbs (summary)                                                               |
-| ------------------------ | ----------------------------------------------------------------------------- |
-| `Possession`             | Collection/previous/moved; image upload/delete (image verbs hidden from feed) |
-| `CustomProduct`          | `custom_product_created` (may suppress duplicate collection line)             |
-| `Setup`                  | Created; public/private toggle (private toggle hidden from feed)              |
-| `SetupPossession`        | Product added/removed from setup (private setups omitted from feed)           |
-| `EventAttendee` / cancel | Attendance and cancellation                                                   |
-| `User`                   | Avatar and decorative image changes (hidden from feed)                        |
+| Source                   | Verbs (summary)                                                     |
+| ------------------------ | ------------------------------------------------------------------- |
+| `Possession`             | Collection/previous/moved; image uploads on feed (deletes hidden)   |
+| `CustomProduct`          | `custom_product_created` (may suppress duplicate collection line)   |
+| `Setup`                  | Created; public/private toggle (private toggle hidden from feed)    |
+| `SetupPossession`        | Product added/removed from setup (private setups omitted from feed) |
+| `EventAttendee` / cancel | Attendance and cancellation                                         |
+| `User`                   | Avatar and decorative image changes (hidden from feed)              |
 
 Full verb list: `added_to_collection`, `added_to_previous`, `moved_to_previous`, `event_attendance`, `event_attendance_cancelled`, `setup_created`, `setup_made_public`, `setup_made_private`, `setup_product_added`, `setup_product_removed`, `custom_product_created`, `possession_image_uploaded`, `possession_image_deleted`, `avatar_uploaded`, `avatar_deleted`, `decorative_image_uploaded`, `decorative_image_deleted`.
 

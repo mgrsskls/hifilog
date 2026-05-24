@@ -2,38 +2,49 @@
     <% content_for :css do %>
         <%= stylesheet_link_tag "feed" %>
     <% end %>
+    <% if feed_includes_possession_image_gallery?(feed_items) %>
+        <% content_for :js do %>
+            <%= javascript_include_tag "gallery", type: "module" %>
+        <% end %>
+    <% end %>
     <ol class="Feed">
         <% feed_items.each do |row| %>
         <li class="Feed-item">
             <% if row.is_a?(UserActivityTimeline::Grouped) %>
-            <div class="Feed-group">
+                <% if row.verb == :possession_image_uploaded %>
+                    <%= render "shared/activity/possession_image_upload", grouped: true, row: %>
+                <% else %>
+                <div class="Feed-group">
+                    <% primary_html = capture do %>
+                    <p><%= user_activity_group_summary(row) %>:</p>
+                    <% end %>
+                    <%= render "shared/activity/main_row",
+                                verb: row.verb,
+                                event_past: row.event_past,
+                                event_upcoming: row.event_upcoming?,
+                                logged_at: row.logged_at,
+                                primary_html: %>
+                    <ul class="Feed-nested">
+                    <% row.items.each do |item| %>
+                        <%= render "shared/activity/nested_item", item: item %>
+                    <% end %>
+                    </ul>
+                </div>
+                <% end %>
+            <% elsif row.item.verb == :possession_image_uploaded %>
+                <%= render "shared/activity/possession_image_upload", grouped: false, item: row.item %>
+            <% else %>
+                <% item = row.item %>
                 <% primary_html = capture do %>
-                <p><%= user_activity_group_summary(row) %>:</p>
+                    <p><%= user_activity_item_title(item) %>.</p>
+                    <%= user_activity_item_meta_period(item) %>
                 <% end %>
                 <%= render "shared/activity/main_row",
-                            verb: row.verb,
-                            event_past: row.event_past,
-                            event_upcoming: row.event_upcoming?,
-                            logged_at: row.logged_at,
+                            verb: item.verb,
+                            event_past: item.event_past,
+                            event_upcoming: item.event_upcoming?,
+                            logged_at: item.logged_at,
                             primary_html: %>
-                <ul class="Feed-nested">
-                <% row.items.each do |item| %>
-                    <%= render "shared/activity/nested_item", item: item %>
-                <% end %>
-                </ul>
-            </div>
-            <% else %>
-            <% item = row.item %>
-            <% primary_html = capture do %>
-                <p><%= user_activity_item_title(item) %>.</p>
-                <%= user_activity_item_meta_period(item) %>
-            <% end %>
-            <%= render "shared/activity/main_row",
-                        verb: item.verb,
-                        event_past: item.event_past,
-                        event_upcoming: item.event_upcoming?,
-                        logged_at: item.logged_at,
-                        primary_html: %>
             <% end %>
         </li>
         <% end %>

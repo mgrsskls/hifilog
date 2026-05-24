@@ -1,0 +1,23 @@
+<%# locals: grouped (boolean), row (Grouped, when grouped), item (Item, when single) %>
+<div class="Feed-group">
+  <% primary_html = capture do %>
+    <% if grouped %>
+      <p><%= user_activity_group_summary(row) %>:</p>
+    <% else %>
+      <p><%= user_activity_item_title(item) %>.</p>
+    <% end %>
+  <% end %>
+  <% verb = grouped ? row.verb : item.verb %>
+  <% logged_at = grouped ? row.logged_at : item.logged_at %>
+  <% event_past = grouped ? row.event_past : item.event_past %>
+  <% event_upcoming = grouped ? row.event_upcoming? : item.event_upcoming? %>
+  <%= render "shared/activity/main_row",
+              verb:,
+              event_past:,
+              event_upcoming:,
+              logged_at:,
+              primary_html: %>
+  <%= render "shared/image_gallery",
+              images: user_activity_gallery_images(grouped ? row.items : item),
+              list_class: "Feed-nested Feed-nested--images ImageLightbox ImageGallery" %>
+</div>

@@ -26,7 +26,9 @@ module UserActivityTimeline::ItemBuilders::SetupItems
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id:
+      setup_id:,
+      possession_id: nil,
+      gallery_image: nil
     )
   end
 
@@ -58,7 +60,9 @@ module UserActivityTimeline::ItemBuilders::SetupItems
       possession_created_at: nil,
       setup_name:,
       setup_url:,
-      setup_id:
+      setup_id:,
+      possession_id: nil,
+      gallery_image: nil
     )
   end
 

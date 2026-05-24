@@ -441,6 +441,10 @@ en:
       in_your_collection: In my collection
       prev_owned: Previously owned
   user_activity:
+    image_gallery:
+      open_image: "Open image %{index} of %{count}"
+      next: Next
+      previous: Previous
     grouped:
       summary_added_to_collection_html: "Added <b>%{count}</b> products to their collection"
       summary_added_to_previous_html: "Added <b>%{count}</b> products to their list of previous products"
@@ -453,6 +457,7 @@ en:
       summary_setup_product_added_html: "Added <b>%{count}</b> products to their listening setup %{setup_link}"
       summary_setup_product_removed_html: "Removed <b>%{count}</b> products from their listening setup %{setup_link}"
       summary_event_attendance_cancelled_html: "No longer attends <b>%{count}</b> events"
+      summary_possession_image_uploaded_html: "Added <b>%{count}</b> photos to %{product_link}"
     meta:
       logged: "%{datetime}"
       owned_until: "Owned until %{to}"
@@ -469,6 +474,7 @@ en:
       setup_product_added_html: "Added %{product_link} to their listening setup %{setup_link}"
       setup_product_removed_html: "Removed %{product_link} from their listening setup %{setup_link}"
       event_attendance_cancelled_html: "No longer attends %{link}"
+      possession_image_uploaded_html: "Added a photo to %{link}"
   user:
     edit:
       delete:

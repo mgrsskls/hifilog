@@ -18,7 +18,9 @@ module UserActivityTimeline::ItemBuilders
       custom_product_activity_item(activity)
     when 'setup_created', 'setup_made_public'
       setup_activity_item(activity)
-    when 'setup_made_private', 'possession_image_uploaded', 'possession_image_deleted',
+    when 'possession_image_uploaded'
+      possession_image_uploaded_activity_item(activity)
+    when 'setup_made_private', 'possession_image_deleted',
          'avatar_uploaded', 'avatar_deleted', 'decorative_image_uploaded', 'decorative_image_deleted'
       nil
     when 'setup_product_added', 'setup_product_removed'

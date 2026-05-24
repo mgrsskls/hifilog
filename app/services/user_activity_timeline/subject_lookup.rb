@@ -21,6 +21,15 @@ class UserActivityTimeline::SubjectLookup
       PossessionPresenterService.map_to_presenters([possession]).first
   end
 
+  def possession_gallery_image(attachment_id)
+    return nil if attachment_id.blank?
+
+    attachment = @image_attachments_by_id[attachment_id.to_i]
+    return nil unless attachment&.blob
+
+    ImagePresenter.new(attachment)
+  end
+
   def setup_product_activity_product_url(meta, possession)
     presenter = possession_presenter(possession)
     return presenter.show_path if presenter
@@ -81,6 +90,19 @@ class UserActivityTimeline::SubjectLookup
                   :user
                 )
                 .to_a
+
+    image_attachment_ids =
+      @activities.filter_map do |activity|
+        next unless activity.verb == 'possession_image_uploaded'
+
+        activity.metadata&.[]('image_attachment_id')&.to_i
+      end
+    @image_attachments_by_id =
+      if image_attachment_ids.empty?
+        {}
+      else
+        ActiveStorage::Attachment.where(id: image_attachment_ids.uniq).includes(:blob).index_by(&:id)
+      end
 
     @possessions_by_id = unique_possessions.index_by(&:id)
     @possession_presenters_by_id = unique_possessions.zip(

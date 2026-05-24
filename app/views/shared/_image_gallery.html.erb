@@ -1,0 +1,36 @@
+<% list_class = local_assigns.fetch(:list_class, "Entity-image ImageLightbox ImageGallery") %>
+<% if images.any? %>
+  <ul class="<%= list_class %>">
+    <% images.each_with_index do |image, i| %>
+      <li class="ImageLightbox-item">
+        <button type="button" class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>" aria-label="<%= t('user_activity.image_gallery.open_image', index: i + 1, count: images.size) %>">
+          <picture>
+            <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+          </picture>
+        </button>
+        <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
+          <picture>
+            <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+          </picture>
+          <div class="ImageGallery-info is-dark">
+            <% if images.size > 1 %>
+              <% if i < images.size - 1 %>
+                <button type="button" rel="next" aria-label="<%= t('user_activity.image_gallery.next') %>">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.3 4.5 7.4 7.5-7.4 7.5"/></svg>
+                </button>
+              <% end %>
+              <% if i > 0 %>
+                <button type="button" rel="prev" aria-label="<%= t('user_activity.image_gallery.previous') %>">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.8 19.5 8.2 12l7.6-7.5"/></svg>
+                </button>
+              <% end %>
+            <% end %>
+            <% if image.user %>
+              <p>by <%= link_to image.user.user_name, image.user.profile_path %></p>
+            <% end %>
+          </div>
+        </dialog>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

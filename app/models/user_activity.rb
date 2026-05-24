@@ -24,7 +24,6 @@ class UserActivity < ApplicationRecord
   # Persisted for auditing/admin but omitted when building the public profile feed.
   FEED_HIDDEN_VERBS = %w[
     setup_made_private
-    possession_image_uploaded
     possession_image_deleted
     avatar_uploaded
     avatar_deleted

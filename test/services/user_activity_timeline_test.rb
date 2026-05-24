@@ -756,18 +756,120 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
     assert_not(items.any? { |i| i.verb == :possession_image_deleted })
   end
 
-  test 'possession_image_uploaded is persisted but not shown on activity timeline' do
+  test 'possession_image_uploaded appears on activity timeline with gallery image' do
     user = users(:without_anything)
     possession = travel_to(Time.zone.local(2026, 8, 2, 10, 0, 0)) do
       Possession.create!(user: user, product: products(:one), prev_owned: false)
     end
     travel_to(Time.zone.local(2026, 8, 2, 11, 0, 0)) do
-      possession.update!(images: [one_by_one_png_upload(filename: 'feed-hidden.png')])
+      possession.update!(images: [one_by_one_png_upload(filename: 'feed-visible.png')])
     end
 
     assert UserActivity.exists?(user: user, subject: possession, verb: 'possession_image_uploaded')
     items = timeline_items_for(user.reload)
+    item = items.find { |i| i.verb == :possession_image_uploaded }
+    assert item
+    assert item.gallery_image
+    assert_equal possession.id, item.possession_id
+  end
+
+  test 'possession_image_uploaded omitted from timeline when attachment is purged' do
+    user = users(:without_anything)
+    possession = travel_to(Time.zone.local(2026, 8, 3, 10, 0, 0)) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+    end
+    travel_to(Time.zone.local(2026, 8, 3, 11, 0, 0)) do
+      possession.update!(images: [one_by_one_png_upload(filename: 'purged-feed.png')])
+    end
+    attachment = possession.images_attachments.last
+    assert UserActivity.exists?(user: user, subject: possession, verb: 'possession_image_uploaded')
+
+    attachment.purge
+
+    items = timeline_items_for(user.reload)
     assert_not(items.any? { |i| i.verb == :possession_image_uploaded })
+    assert UserActivity.exists?(user: user, subject: possession, verb: 'possession_image_uploaded')
+  end
+
+  test 'possession_image_uploaded groups three uploads same possession same day only' do
+    user = users(:without_anything)
+    possession = travel_to(Time.zone.local(2026, 8, 4, 10, 0, 0)) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+    end
+    day = Time.zone.local(2026, 8, 4, 11, 0, 0)
+    travel_to(day) { possession.images.attach(one_by_one_png_upload(filename: 'group-a.png')) }
+    travel_to(day + 1.minute) { possession.images.attach(one_by_one_png_upload(filename: 'group-b.png')) }
+    travel_to(day + 2.minutes) { possession.images.attach(one_by_one_png_upload(filename: 'group-c.png')) }
+
+    rows = UserActivityTimeline.grouped_for(user.reload)
+    grouped = rows.find { |r| r.is_a?(UserActivityTimeline::Grouped) && r.verb == :possession_image_uploaded }
+    assert grouped
+    assert_equal 3, grouped.items.size
+    assert_equal 1, grouped.items.map(&:possession_id).uniq.size
+  end
+
+  test 'possession_image_uploaded does not group uploads for two possessions of same product same day' do
+    user = users(:without_anything)
+    product = products(:one)
+    day = Time.zone.local(2026, 8, 7, 10, 0, 0)
+    possession_a = travel_to(day) do
+      Possession.create!(user: user, product: product, prev_owned: false)
+    end
+    possession_b = travel_to(day + 1.minute) do
+      Possession.create!(user: user, product: product, prev_owned: false)
+    end
+    upload_day = day + 1.hour
+    3.times do |i|
+      travel_to(upload_day + i.minutes) do
+        possession_a.images.attach(one_by_one_png_upload(filename: "same-product-a-#{i}.png"))
+      end
+    end
+    3.times do |i|
+      travel_to(upload_day + (10 + i).minutes) do
+        possession_b.images.attach(one_by_one_png_upload(filename: "same-product-b-#{i}.png"))
+      end
+    end
+
+    rows = UserActivityTimeline.grouped_for(user.reload)
+    grouped = rows.select { |r| r.is_a?(UserActivityTimeline::Grouped) && r.verb == :possession_image_uploaded }
+    assert_equal 2, grouped.size
+    assert_equal [possession_a.id, possession_b.id].sort, grouped.flat_map(&:items).map(&:possession_id).uniq.sort
+  end
+
+  test 'possession_image_uploaded does not group uploads for different possessions same day' do
+    user = users(:without_anything)
+    day = Time.zone.local(2026, 8, 5, 10, 0, 0)
+    possession_a = travel_to(day) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+    end
+    possession_b = travel_to(day + 1.minute) do
+      Possession.create!(user: user, product: products(:two), prev_owned: false)
+    end
+    possession_c = travel_to(day + 2.minutes) do
+      Possession.create!(user: user, product: products(:diy_kit), prev_owned: false)
+    end
+    travel_to(day + 3.minutes) { possession_a.update!(images: [one_by_one_png_upload(filename: 'split-a.png')]) }
+    travel_to(day + 4.minutes) { possession_b.update!(images: [one_by_one_png_upload(filename: 'split-b.png')]) }
+    travel_to(day + 5.minutes) { possession_c.update!(images: [one_by_one_png_upload(filename: 'split-c.png')]) }
+
+    rows = UserActivityTimeline.grouped_for(user.reload)
+    grouped = rows.select { |r| r.is_a?(UserActivityTimeline::Grouped) && r.verb == :possession_image_uploaded }
+    assert_empty grouped
+    singles = rows.select { |r| r.is_a?(UserActivityTimeline::Single) && r.item.verb == :possession_image_uploaded }
+    assert_equal 3, singles.size
+  end
+
+  test 'possession_image_uploaded keeps consecutive uploads for same possession' do
+    user = users(:without_anything)
+    possession = travel_to(Time.zone.local(2026, 8, 6, 10, 0, 0)) do
+      Possession.create!(user: user, product: products(:one), prev_owned: false)
+    end
+    day = Time.zone.local(2026, 8, 6, 11, 0, 0)
+    travel_to(day) { possession.images.attach(one_by_one_png_upload(filename: 'dedupe-a.png')) }
+    travel_to(day + 1.minute) { possession.images.attach(one_by_one_png_upload(filename: 'dedupe-b.png')) }
+
+    items = timeline_items_for(user.reload).select { |i| i.verb == :possession_image_uploaded }
+    assert_equal 2, items.size
   end
 
   test 'avatar_uploaded is persisted but not shown on activity timeline' do

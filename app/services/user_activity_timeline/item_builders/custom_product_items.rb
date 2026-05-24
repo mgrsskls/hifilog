@@ -28,7 +28,9 @@ module UserActivityTimeline::ItemBuilders::CustomProductItems
       possession_created_at: nil,
       setup_name: nil,
       setup_url: nil,
-      setup_id: nil
+      setup_id: nil,
+      possession_id: nil,
+      gallery_image: nil
     )
   end
 end
