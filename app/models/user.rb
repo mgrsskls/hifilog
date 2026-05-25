@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  require 'mini_magick'
-
   include Rails.application.routes.url_helpers
 
   strip_attributes
