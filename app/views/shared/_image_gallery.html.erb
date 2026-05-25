@@ -25,8 +25,8 @@
                 </button>
               <% end %>
             <% end %>
-            <% if image.user %>
-              <p>by <%= link_to image.user.user_name, image.user.profile_path %></p>
+            <% if (uploader = image.user) %>
+              <p>by <%= link_to uploader.user_name, uploader.profile_path %></p>
             <% end %>
           </div>
         </dialog>

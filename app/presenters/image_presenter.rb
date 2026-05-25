@@ -8,8 +8,17 @@ class ImagePresenter
   end
 
   def user
-    return Possession.find(record_id).user if record_type == 'Possession'
+    return @user if instance_variable_defined?(:@user)
 
-    nil
+    @user = possession_record&.user
+  end
+
+  private
+
+  def possession_record
+    return nil unless record_type == 'Possession'
+
+    record = @image.record if @image.respond_to?(:record)
+    record.is_a?(Possession) ? record : Possession.find_by(id: record_id)
   end
 end

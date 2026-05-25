@@ -27,6 +27,11 @@ class UserActivityTimeline::SubjectLookup
     attachment = @image_attachments_by_id[attachment_id.to_i]
     return nil unless attachment&.blob
 
+    if attachment.record_type == 'Possession'
+      possession = @possessions_by_id[attachment.record_id]
+      attachment.association(:record).target = possession if possession
+    end
+
     ImagePresenter.new(attachment)
   end
 
@@ -101,7 +106,9 @@ class UserActivityTimeline::SubjectLookup
       if image_attachment_ids.empty?
         {}
       else
-        ActiveStorage::Attachment.where(id: image_attachment_ids.uniq).includes(:blob).index_by(&:id)
+        ActiveStorage::Attachment.where(id: image_attachment_ids.uniq)
+                                 .includes(:blob, record: :user)
+                                 .index_by(&:id)
       end
 
     @possessions_by_id = unique_possessions.index_by(&:id)
