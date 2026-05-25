@@ -1,5 +1,9 @@
-<%= strip_tags yield %>
+<%= yield %>
 
-<hr>
+<% if @unsubscribe_hash.present? %>
 
-You can <a href="<%= newsletters_unsubscribe_url(hash: @unsubscribe_hash) %>">unsubscribe here</a> if you do not want to receive these emails.
+---
+
+You can unsubscribe here if you do not want to receive these emails:
+<%= newsletters_unsubscribe_url(hash: @unsubscribe_hash) %>
+<% end %>

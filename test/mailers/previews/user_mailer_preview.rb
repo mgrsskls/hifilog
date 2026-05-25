@@ -4,8 +4,10 @@
 class UserMailerPreview < ActionMailer::Preview
   # Preview this email at http://localhost:3000/rails/mailers/user_mailer/newsletter_email
   def newsletter_email
+    user = User.first
     UserMailer.newsletter_email(
-      User.first,
+      user.email,
+      user.user_name,
       # rubocop:disable Layout/LineLength
       '# Hi %user_name%,
 
