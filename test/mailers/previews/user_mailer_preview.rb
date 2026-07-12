@@ -27,8 +27,8 @@ If you own (or used to own) a product, you can now upload multiple photos of it.
 
 ---
 
-**Statistics and history**
-There is now a [statistics page](https://www.hifilog.com/dashboard/statistics) that shows how many products you have bought and sold per year and how many products you own from each brand. Let me know if you are interested in other statistics.
+**Insights and history**
+There is now an [insights page](https://www.hifilog.com/dashboard/insights) that shows how many products you have bought and sold per year and how many products you own from each brand. Let me know if you are interested in other insights.
 
 <img src="https://www.hifilog.com/newsletter/2025-04-06/statistics.jpg" alt="" aria-hidden="true">
 

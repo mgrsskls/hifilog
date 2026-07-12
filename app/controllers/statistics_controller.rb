@@ -67,7 +67,7 @@ class StatisticsController < ApplicationController
   end
 
   def set_menu
-    page_title(I18n.t('headings.statistics'))
+    page_title(I18n.t('headings.insights'))
     @active_menu = :dashboard
     @active_dashboard_menu = :statistics
   end

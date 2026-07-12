@@ -327,20 +327,20 @@ en:
     current_products: Collection
     dashboard: Welcome back
     edited: Edited
+    events: Events
     feed: Feed
     following: Following
     followers: Followers
     blocked: Blocked users
     history: History
+    insights: Insights
     my_community: Community
     notifications: Notifications
     overview: Overview
     prev_owneds: Previous products
     profile: Profile
-    statistics: Statistics
-    events: Events
-    your_statistics: Your Statistics
     your_events: Your Events
+    your_insights: Your Insights
   overview:
     view_all: View all
   home:

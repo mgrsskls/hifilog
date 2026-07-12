@@ -12,6 +12,20 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_statistics_root_path
     assert_response :success
+    assert_equal '/dashboard/insights', path
+  end
+
+  test 'legacy statistics paths redirect to insights' do
+    sign_in users(:one)
+
+    get '/dashboard/statistics'
+    assert_redirected_to '/dashboard/insights'
+
+    get '/dashboard/statistics/total'
+    assert_redirected_to '/dashboard/insights/total'
+
+    get '/dashboard/statistics/yearly'
+    assert_redirected_to '/dashboard/insights/yearly'
   end
 
   test 'total' do

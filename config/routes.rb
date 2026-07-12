@@ -70,11 +70,14 @@ Rails.application.routes.draw do
     get 'following', to: 'user#following', as: :following
     get 'followers', to: 'user#followers', as: :followers
     get 'blocked', to: 'user#blocked', as: :blocked
-    scope 'statistics', as: :statistics do
+    scope 'insights', as: :statistics do
       root 'statistics#current'
       get 'total', to: 'statistics#total', as: :total
       get 'yearly', to: 'statistics#yearly', as: :yearly
     end
+    get 'statistics', to: redirect('/dashboard/insights'), as: false
+    get 'statistics/total', to: redirect('/dashboard/insights/total'), as: false
+    get 'statistics/yearly', to: redirect('/dashboard/insights/yearly'), as: false
     resources :setups, only: [:index, :show, :new, :edit]
     resources :notes, only: [:index, :show]
   end
