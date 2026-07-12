@@ -28,6 +28,24 @@ module TestSupportHelpers
   end
 end
 
+module MailerTestHelper
+  def mail_body_html(mail)
+    mail.multipart? ? mail.html_part.body.decoded : mail.body.decoded
+  end
+
+  def mail_body_text(mail)
+    mail.multipart? ? mail.text_part.body.decoded : mail.body.decoded
+  end
+
+  def assert_plain_text_email(body)
+    assert_no_match(%r{</?[a-z][^>]*>}i, body, 'expected plain text without HTML tags')
+  end
+end
+
+class ActionMailer::TestCase
+  include MailerTestHelper
+end
+
 class ActiveSupport::TestCase
   # Run tests in parallel with specified workers
   # parallelize(workers: :number_of_processors)

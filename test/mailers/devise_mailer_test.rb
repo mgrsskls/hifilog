@@ -7,9 +7,16 @@ class DeviseMailerTest < ActionMailer::TestCase
     user = users(:one)
     mail = Devise::Mailer.confirmation_instructions(user, 'faketoken', {})
 
-    body = mail.body.decoded
+    html = mail_body_html(mail)
+    text = mail_body_text(mail)
 
-    assert_match 'HiFi Log', body
-    assert_match 'Confirm my account', body
+    assert_equal ['info@mail.hifilog.com'], mail.from
+    assert mail.multipart?, 'expected multipart email with plain text part'
+    assert_match 'HiFi Log', html
+    assert_match 'Confirm my account', html
+    assert_no_match(/unsubscribe/i, html)
+    assert_no_match(/unsubscribe/i, text)
+    assert_plain_text_email(text)
+    assert_match(%r{https?://}, text)
   end
 end

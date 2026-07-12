@@ -17,11 +17,13 @@ class UserMailerTest < ActionMailer::TestCase
   test 'newsletter_email' do
     user = users(:one)
     mail = UserMailer.newsletter_email(user.email, user.user_name, 'Hi %user_name%')
+    text_body = mail_body_text(mail)
+    html_body = mail_body_html(mail)
 
     assert_equal 'hifilog.com Newsletter', mail.subject
     assert_equal [user.email], mail.to
     assert_equal ['newsletter@mail.hifilog.com'], mail.from
-    assert_match 'Hi one_username', mail.body.encoded
+    assert mail.multipart?
 
     token = NewsletterUnsubscribeService.generate_token(user.email)
     unsubscribe_url = newsletters_unsubscribe_url(hash: token)
@@ -31,7 +33,9 @@ class UserMailerTest < ActionMailer::TestCase
     assert header_value.strip.start_with?('<')
     assert header_value.strip.end_with?('>')
     assert_equal 'List-Unsubscribe=One-Click', mail.header['List-Unsubscribe-Post'].decoded
-    assert_includes mail.body.encoded, unsubscribe_url
-    assert_match 'HiFi Log', mail.html_part.body.decoded
+    assert_match 'Hi one_username', text_body
+    assert_plain_text_email(text_body)
+    assert_includes text_body, unsubscribe_url
+    assert_match 'HiFi Log', html_body
   end
 end
