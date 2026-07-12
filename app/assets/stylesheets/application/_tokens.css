@@ -18,6 +18,7 @@ html {
 
 	--color-white: #fff;
 	--color-blue-975: hsl(var(--hue), 30%, 97.5%);
+	--color-blue-950: hsl(var(--hue), 30%, 95%);
 	--color-blue-925: hsl(var(--hue), 30%, 92.5%);
 	--color-blue-825: hsl(var(--hue), 30%, 82.5%);
 	--color-blue-750: hsl(var(--hue), 30%, 75%);
@@ -84,6 +85,7 @@ html[data-theme="light"],
 
 	--color-bg-main: var(--color-bg-on-light);
 	--color-bg2: var(--color-blue-975);
+	--color-bg3: var(--color-blue-950);
 	--color-accent: var(--color-accent-on-light);
 	--color-accent-secondary: var(--color-secondary-accent-on-light);
 	--color-button-copy: var(--color-white);
@@ -142,6 +144,7 @@ html[data-theme="light"],
 		--color-bookmark-copy: var(--color-bookmark-light);
 
 		--color-bg2: var(--color-blue-125);
+		--color-bg3: var(--color-blue-150);
 		--color-accent: var(--color-accent-on-dark);
 		--color-accent-secondary: var(--color-secondary-accent-on-dark);
 		--color-copy: var(--color-copy-on-dark);
@@ -183,6 +186,7 @@ html[data-theme="dark"],
 	--color-bookmark-copy: var(--color-bookmark-light);
 
 	--color-bg2: var(--color-blue-125);
+	--color-bg3: var(--color-blue-150);
 	--color-accent: var(--color-accent-on-dark);
 	--color-accent-secondary: var(--color-secondary-accent-on-dark);
 	--color-copy: var(--color-copy-on-dark);

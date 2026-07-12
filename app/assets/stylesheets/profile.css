@@ -215,11 +215,11 @@
 		flex-direction: row-reverse;
 	}
 	.UserProfile-content {
-		flex: 2;
+		flex: 1;
 	}
 
 	.UserProfile-feed {
-		flex: 3;
+		flex: 1;
 	}
 }
 

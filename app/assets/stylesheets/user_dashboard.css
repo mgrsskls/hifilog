@@ -52,7 +52,7 @@ ol + .UserDashboard-subHeading {
 
 @container dashboard-content (width > 56rem) {
 	.UserDashboard {
-		grid-template-columns: 2fr 3fr;
+		grid-template-columns: 1fr 1fr;
 	}
 }
 

@@ -65,10 +65,7 @@
               <%= link_to 'Overview', user.profile_path, "aria-current": request.path == user.profile_path ? "page" : "false", class: "Sidebar-link" %>
             </li>
             <li>
-              <span>
-                <%= link_to t('headings.current_products'), user.collection_path, "aria-current": request.path == user.collection_path ? "page" : "false", class: "Sidebar-link" %>
-                <small><%= user_possessions_count(user: user) %></small>
-              </span>
+              <%= link_to t('headings.current_products'), user.collection_path, "aria-current": request.path == user.collection_path ? "page" : "false", class: "Sidebar-link" %>
               <% setups = user.setups.where(private: false) %>
               <% if setups.any? %>
                 <ul>
@@ -81,10 +78,7 @@
               <% end %>
             </li>
             <li>
-              <span>
-                <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_previous_products_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
-                <small><%= user_possessions_count(user: user, prev_owned: true) %></small>
-              </span>
+              <%= link_to t('headings.prev_owneds'), user_previous_products_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_previous_products_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>
             </li>
             <li>
               <%= link_to t('headings.history'), user_history_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_history_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" %>

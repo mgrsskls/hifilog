@@ -7,7 +7,7 @@
     paginator:     the paginator that renders the pagination tags inside
 -%>
 <%= paginator.render do -%>
-  <ol class="Pagination Pagination--centered Pagination--pages">
+  <ol class="Pagination Pagination--pages">
     <%= prev_page_tag %>
     <%= first_page_tag unless current_page.first? %>
     <% each_page do |page| -%>

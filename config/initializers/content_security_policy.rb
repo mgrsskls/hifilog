@@ -16,7 +16,7 @@ unless ENV['DISABLE_CSP']
       policy.script_src  :self,
         'https://translate.google.com',
         'challenges.cloudflare.com',
-        'sha256-owFw+DVNZSQh1LIWoBMkMctxnIPAWCNpjr3mEaCNZLo=', # application.html.erb logged in
+        'sha256-eLdq5qVOLH5BJ7CNDRIP9OjIfR+ue1Mj2vnl+7Jr3Z4=', # application.html.erb logged in
         'sha256-E15uFozjXYPu7tqTMA8ttqjELJTBQxPY3VVWH2Tt7+I=', # application.html.erb logged out
         'sha256-pbMT5G+LDCIWy/FBnicfz3TU8g8+7KAH5lbzSU/zeoE=' # application.html.erb speculationrules
       policy.style_src   :self, :unsafe_inline

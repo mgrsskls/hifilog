@@ -11,99 +11,131 @@
           <span class="Dashboard-userNameLink"><%= t('headings.profile') %></span>
         </div>
       </a>
-      <ul class="Sidebar-menu Sidebar-menu--account">
-        <li>
-          <a class="Sidebar-link" href="<%= dashboard_root_path %>"<%= active_menu_state(active_dashboard_menu, :dashboard) %>>
-            Dashboard
-          </a>
-        </li>
-        <li>
-          <a class="Sidebar-link" href="<%= dashboard_activity_path %>"<%= active_menu_state(active_dashboard_menu, :activity) %>>
-            <%= t('headings.activity') %>
-          </a>
-        </li>
-        <li>
-          <a class="Sidebar-link" href="<%= dashboard_statistics_root_path %>"<%= active_menu_state(active_dashboard_menu, :statistics) %>>
-            <%= t('headings.statistics') %>
-          </a>
-        </li>
-        <li>
-          <a class="Sidebar-link" href="<%= dashboard_contributions_path %>"<%= active_menu_state(active_dashboard_menu, :contributions) %>><%= t('headings.contributions') %></a>
-        </li>
-        <li>
-          <a class="Sidebar-link" href="<%= dashboard_history_path %>"<%= active_menu_state(active_dashboard_menu, :history) %>>
-            <%= t('headings.history') %>
-          </a>
-        </li>
-        <li>
-          <a class="Sidebar-link" href="<%= edit_user_registration_path %>"<%= active_menu_state(active_dashboard_menu, :account) %>><%= t('headings.account') %></a>
-        </li>
-      </ul>
+
       <ul class="Sidebar-menu">
         <li>
-          <span>
-            <a class="Sidebar-link" href="<%= dashboard_products_path %>"<%= active_menu_state(active_dashboard_menu, :products) %>>
-              <%= t('headings.collection') %>
-            </a>
-            <small data-user-count="products"></small>
-          </span>
+          <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_root_path %>"<%= active_menu_state(active_dashboard_menu, :dashboard) %>>
+            <%= render "shared/dashboard_nav_icon", icon: :home %>
+            <b><%= t('headings.home') %></b>
+          </a>
         </li>
+
         <li>
-          <span>
-            <a class="Sidebar-link" href="<%= dashboard_custom_products_path %>"<%= active_menu_state(active_dashboard_menu, :custom_products) %>>
-              <%= CustomProduct.model_name.human.pluralize %>
-            </a>
-            <small data-user-count="custom_products"></small>
-          </span>
+          <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_feed_path %>"<%= active_menu_state(active_dashboard_menu, :feed) %>>
+            <%= render "shared/dashboard_nav_icon", icon: :feed %>
+            <b><%= t('headings.feed') %></b>
+          </a>
         </li>
+
         <li>
-          <span>
-            <a class="Sidebar-link" href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(active_dashboard_menu, :prev_owneds) %>>
-              <%= t('headings.prev_owneds') %>
-            </a>
-            <small data-user-count="previous_products"></small>
-          </span>
+          <div class="u-flex u-alignCenter u-gap-sm">
+            <%= render "shared/dashboard_nav_icon", icon: :gear %>
+            <b><%= t('headings.collection') %></b>
+          </div>
+
+          <ul>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_products_path %>"<%= active_menu_state(active_dashboard_menu, :products) %>>
+                <%= t('headings.current_products') %>
+              </a>
+              <span data-user-count="products"></span>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(active_dashboard_menu, :prev_owneds) %>>
+                <%= t('headings.prev_owneds') %>
+              </a>
+              <span data-user-count="previous_products"></span>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_custom_products_path %>"<%= active_menu_state(active_dashboard_menu, :custom_products) %>>
+                <%= t('headings.custom_products') %>
+              </a>
+              <span data-user-count="custom_products"></span>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_setups_path %>"<%= active_menu_state(active_dashboard_menu, :setups) %>>
+                <%= t('headings.setups') %>
+              </a>
+              <span data-user-count="setups"></span>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_history_path %>"<%= active_menu_state(active_dashboard_menu, :history) %>>
+                <%= t('headings.history') %>
+              </a>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_statistics_root_path %>"<%= active_menu_state(active_dashboard_menu, :statistics) %>>
+                <%= t('headings.insights') %>
+              </a>
+            </li>
+          </ul>
         </li>
+
         <li>
-          <span>
-            <a class="Sidebar-link" href="<%= dashboard_setups_path %>"<%= active_menu_state(active_dashboard_menu, :setups) %>>
-              <%= Setup.model_name.human.pluralize %>
+          <div class="u-flex u-alignCenter u-gap-sm">
+            <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_events_path %>"<%= active_menu_state(active_dashboard_menu, :events) %>>
+              <%= render "shared/dashboard_nav_icon", icon: :events %>
+              <b><%= t('headings.events') %></b>
             </a>
-            <small data-user-count="setups"></small>
-          </span>
+            <span data-user-count="events"></span>
+          </div>
         </li>
+
         <li>
-          <span>
-            <a class="Sidebar-link" href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(active_dashboard_menu, :bookmarks) %>>
-              <%= Bookmark.model_name.human.pluralize %>
+          <div class="u-flex u-alignCenter u-gap-sm">
+            <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_notes_path %>"<%= active_menu_state(active_dashboard_menu, :notes) %>>
+              <%= render "shared/dashboard_nav_icon", icon: :notes %>
+              <b><%= Note.model_name.human.pluralize %></b>
             </a>
-            <small data-user-count="bookmarks"></small>
-          </span>
-          <% if current_user.bookmark_lists.any? %>
-            <ul>
-              <% current_user.bookmark_lists.each do |list| %>
-                <li>
-                  <%= link_to list.name, dashboard_bookmark_list_path(list), "aria-current": active_dashboard_menu == "bookmark_list_#{list.id}" ? "page" : "false", class: "Sidebar-link" %>
-                </li>
-              <% end %>
-            </ul>
-          <% end %>
+            <span data-user-count="notes"></span>
+          </div>
         </li>
+
         <li>
-          <span>
-            <a class="Sidebar-link" href="<%= dashboard_notes_path %>"<%= active_menu_state(active_dashboard_menu, :notes) %>>
-              <%= Note.model_name.human.pluralize %>
+          <div class="u-flex u-alignCenter u-gap-sm">
+            <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(active_dashboard_menu, :bookmarks) %>>
+              <%= render "shared/dashboard_nav_icon", icon: :bookmarks %>
+              <b><%= Bookmark.model_name.human.pluralize %></b>
             </a>
-            <small data-user-count="notes"></small>
-          </span>
+            <span data-user-count="bookmarks"></span>
+          </div>
         </li>
+
         <li>
-          <span>
-            <a class="Sidebar-link" href="<%= dashboard_events_path %>"<%= active_menu_state(active_dashboard_menu, :events) %>>
-              <%= Event.model_name.human.pluralize %>
-            </a>
-            <small data-user-count="events"></small>
-          </span>
+          <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_following_path %>"<%= active_menu_state(active_dashboard_menu, :community) %>>
+            <%= render "shared/dashboard_nav_icon", icon: :community %>
+            <b><%= t('headings.my_community') %></b>
+          </a>
+        </li>
+
+        <li>
+          <div class="u-flex u-alignCenter u-gap-sm">
+            <%= render "shared/dashboard_nav_icon", icon: :settings %>
+            <b><%= t('headings.settings') %></b>
+          </div>
+
+          <ul>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_profile_settings_path %>"<%= active_menu_state(active_dashboard_menu, :profile) %>>
+                <%= t('headings.profile') %>
+              </a>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_notification_settings_path %>"<%= active_menu_state(active_dashboard_menu, :notifications) %>>
+                <%= t('headings.notifications') %>
+              </a>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= dashboard_blocked_path %>"<%= active_menu_state(active_dashboard_menu, :blocked) %>>
+                <%= t('headings.blocked') %>
+              </a>
+            </li>
+            <li>
+              <a class="Sidebar-link" href="<%= edit_user_registration_path %>"<%= active_menu_state(active_dashboard_menu, :account) %>>
+                <%= t('headings.account') %>
+              </a>
+            </li>
+          </ul>
         </li>
       </ul>
     </nav>

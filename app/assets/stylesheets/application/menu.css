@@ -59,22 +59,13 @@
 		color: var(--color-header-copy);
 		text-decoration: none;
 		border: none;
+		color: var(--color-white);
 	}
 
 	.MenuList :where(a, button):hover span {
 		text-decoration: underline;
 		text-underline-offset: var(--underline-offset);
 		text-decoration-thickness: var(--underline-width);
-	}
-
-	.MenuList :is([aria-current="true"], [aria-current="page"]) span {
-		text-decoration: underline;
-		text-underline-offset: var(--underline-offset);
-		text-decoration-thickness: var(--underline-width);
-	}
-
-	.Menu-subList [aria-current="page"] span {
-		color: var(--color-accent);
 	}
 
 	.Menu-link--lvl1 {

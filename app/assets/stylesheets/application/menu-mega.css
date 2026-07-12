@@ -24,6 +24,14 @@
 	margin-block-start: 0.5rem;
 }
 
+.MenuMega-list li:has([aria-current="page"]) {
+	border-radius: var(--border-radius);
+	background: var(--color-blue-250);
+	padding-inline: 0.5rem;
+	margin-inline: -0.5rem;
+	font-weight: 600;
+}
+
 @media (width < 58.5rem) {
 	.MenuMega {
 		--page-spacing: 0;

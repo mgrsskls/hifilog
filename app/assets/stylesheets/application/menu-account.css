@@ -1,15 +1,33 @@
-.MenuAccount-list li {
-	padding-block: 0.2rem;
+.MenuAccount-list {
+	li {
+		padding-block: 0.25rem;
+		padding-inline: 0.5rem;
+		margin-inline: -0.5rem;
+	}
 
-	ul {
-		font-size: 0.875em;
-		padding-block-start: 0.5rem;
-		padding-inline-start: 1rem;
+	li:has(> :is([aria-current="page"], [aria-current="true"])) {
+		font-weight: 600;
+		background: var(--color-blue-250);
+		border-radius: var(--border-radius);
+	}
+
+	> li {
+		&:not(:first-child) {
+			margin-block-start: 0.25rem;
+		}
+
+		ul {
+			font-size: 0.875em;
+			padding-inline-start: 1.75rem;
+			padding-block: 0.25rem;
+		}
 	}
 }
 
-.MenuAccount-list-separator {
-	margin-block-start: 1rem;
+.MenuAccount-list svg {
+	margin-inline-end: 0.25rem;
+	inline-size: 1.25em;
+	stroke: var(--color-secondary);
 }
 
 @media (width < 58.5rem) {
@@ -19,7 +37,7 @@
 	}
 
 	.MenuAccount-list {
-		margin-block-start: 1rem;
+		padding-block: 1.5rem 1rem;
 	}
 
 	.MenuAccount-list + .MenuAccount-list,
@@ -36,17 +54,17 @@
 
 	[aria-expanded="true"] ~ .Menu-subList {
 		display: flex;
+		flex-direction: column;
 	}
 
 	.MenuAccount [aria-expanded="true"] ~ .Menu-subList {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
 		padding: 1.5rem 2rem;
 	}
 
 	.MenuAccount-list {
 		inset-inline-end: 0;
 		min-inline-size: 12rem;
+		padding-block-end: 1rem;
 	}
 
 	.MenuAccount-item:is(:hover, :focus-within) {
@@ -56,9 +74,12 @@
 	.MenuAccount-list :where(a, button) {
 		display: flex;
 		inline-size: 100%;
-		justify-content: space-between;
 		align-items: center;
 		block-size: auto;
+
+		[data-user-count] {
+			margin-inline-start: 0.5rem;
+		}
 	}
 
 	.MenuAccount-logout {
