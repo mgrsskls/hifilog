@@ -34,6 +34,8 @@ flowchart TB
   Product --> Note
   ProductVariant --> Note
   User --> EventAttendee --> Event
+  User -->|follower| UserFollow -->|followed| User
+  User -->|blocker| UserBlock -->|blocked| User
   subgraph readonly [Read-only projection]
     ProductItem["ProductItem (view)"]
     SearchResult["SearchResult (view)"]
@@ -134,7 +136,15 @@ Discussion text on a **product**, optionally scoped to a **variant** (one note p
 **Profile visibility** (`hidden`, `logged_in_only`, `visible`) controls public discoverability and whether collection imagery from that user appears on catalog pages.
 
 - **Public profile**: overview (collection preview, statistics, upcoming events, activity feed), full collection, previous gear, history, contributions.
-- **Dashboard**: the signed-in owner’s workspace—same domains plus account settings and a dedicated activity view.
+- **Dashboard**: the signed-in owner’s workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), blocked users, and the Devise account form.
+
+## Following and blocking
+
+**`UserFollow`** is a self-referential join (`follower` → `followed`). Creating one records a `followed_by_user` activity for the followed user and, if they opted in (`receives_follow_notifications`), sends a notification email—at most once per follower/followed pair, so follow/unfollow toggling cannot spam the inbox (past `followed_by_user` activities serve as the notification record). Unfollowing soft-hides the activity. Users cannot follow themselves or someone who blocks them; hidden profiles are excluded from follow feeds (`visible_in_follow_feed`).
+
+**`UserBlock`** (`blocker` → `blocked`) severs follow relationships in both directions on create. Blocks are not disclosed to the blocked user: the follow button stays visible and a follow attempt fails generically.
+
+The follow notification email carries a `List-Unsubscribe` header and an unsubscribe link backed by **`FollowNotificationUnsubscribeService`** (signed token, parallel to the newsletter flow).
 
 ## Authentication and admin
 
@@ -150,7 +160,7 @@ Persisted **`UserActivity`** rows: **verb**, **occurred_at**, polymorphic **subj
 
 **Write path:** model callbacks → **`UserActivities::Recorder`** (possession sync via **`PossessionSync`** for ownership verbs).
 
-**Read path:** **`UserActivityTimeline`** → feed rows on public overview and owner dashboard.
+**Read path:** **`UserActivityTimeline`** → feed rows on the public overview and the owner dashboard. The dashboard feed is following-based: it merges the owner’s activities with those of followed users (hidden profiles excluded) and shows the actor per row. A dedicated `/dashboard/feed` page paginates the same timeline at the database level.
 
 ### Verbs and sources
 
@@ -162,10 +172,11 @@ Persisted **`UserActivity`** rows: **verb**, **occurred_at**, polymorphic **subj
 | `SetupPossession`        | Product added/removed from setup (private setups omitted from feed) |
 | `EventAttendee` / cancel | Attendance and cancellation                                         |
 | `User`                   | Avatar and decorative image changes (hidden from feed)              |
+| `UserFollow`             | `followed_by_user` (dashboard only; hidden again on unfollow)       |
 
-Full verb list: `added_to_collection`, `added_to_previous`, `moved_to_previous`, `event_attendance`, `event_attendance_cancelled`, `setup_created`, `setup_made_public`, `setup_made_private`, `setup_product_added`, `setup_product_removed`, `custom_product_created`, `possession_image_uploaded`, `possession_image_deleted`, `avatar_uploaded`, `avatar_deleted`, `decorative_image_uploaded`, `decorative_image_deleted`.
+Full verb list: `added_to_collection`, `added_to_previous`, `moved_to_previous`, `event_attendance`, `event_attendance_cancelled`, `setup_created`, `setup_made_public`, `setup_made_private`, `setup_product_added`, `setup_product_removed`, `custom_product_created`, `possession_image_uploaded`, `possession_image_deleted`, `avatar_uploaded`, `avatar_deleted`, `decorative_image_uploaded`, `decorative_image_deleted`, `followed_by_user`.
 
-**`hidden_at`** soft-hides rows. Some verbs are stored for auditing but excluded from the public feed (`FEED_HIDDEN_VERBS`).
+**`hidden_at`** soft-hides rows. Some verbs are stored for auditing but excluded from the public feed (`FEED_HIDDEN_VERBS`); others appear only on the owner’s dashboard feed, never on public profiles (`PRIVATE_FEED_VERBS`, currently `followed_by_user`).
 
 ### Timeline rules
 
@@ -186,7 +197,7 @@ A **backfill** task can rebuild activities from existing possessions, setups, RS
 
 ## Cross-cutting concerns
 
-**Service objects** orchestrate catalog filtering, catalog detail (product/variant show) pages, statistics, caching of taxonomy/counts, possession→presenter selection, newsletter unsubscribe, and activity recording/backfill.
+**Service objects** orchestrate catalog filtering, catalog detail (product/variant show) pages, statistics, caching of taxonomy/counts, possession→presenter selection, newsletter and follow-notification unsubscribe, and activity recording/backfill.
 
 **Caching** covers taxonomy menus, entity counts, custom attribute definitions, event counts, and some rendered legal or policy content.
 
@@ -194,9 +205,9 @@ A **backfill** task can rebuild activities from existing possessions, setups, RS
 
 **App news** announcements can be dismissed per user (HABTM).
 
-**Statistics** aggregate a user’s possessions (current vs previous, costs, duration, categories) for dashboard and profile summaries.
+**Statistics** aggregate a user’s possessions (current vs previous, costs, duration, categories) for dashboard and profile summaries. In the UI this section is called **Insights** (`/dashboard/insights`); the code keeps the statistics naming.
 
-**Security:** rate limits on auth and catalog writes; content security policy; bot challenge on registration and password reset.
+**Security:** rate limits on auth, catalog writes, and follow/block mutations; content security policy; bot challenge on registration and password reset.
 
 ## Presenters
 
@@ -235,4 +246,6 @@ Presenters sit beside models and centralize display rules for templates.
 | `ProductOption`             | Yes       | Spec lines on product or variant                      |
 | `CustomAttribute`           | Yes       | Field definitions; values on `Product`                |
 | `UserActivity`              | Yes       | Social/history feed                                   |
+| `UserFollow`                | Yes       | Follower → followed relationship; drives feed & email |
+| `UserBlock`                 | Yes       | Blocker → blocked; severs follows both ways           |
 | `User`                      | Yes       | Account, visibility, policy acceptance, profile media |
