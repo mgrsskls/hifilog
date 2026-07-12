@@ -159,10 +159,25 @@ class UserActivityTimeline
                   .merge(feed_scope)
                   .chronological
                   .includes(:subject, :user)
-    # Who follows a user is only their own business: in a multi-user feed,
-    # never expose followed_by_user rows belonging to other users.
-    scope = scope.where.not(verb: 'followed_by_user').or(scope.where(user_id: @viewer_id)) if @multi_user
+    scope = following_feed_visibility(scope) if @multi_user
     scope
+  end
+
+  # Two rules for the following feed; the viewer's own rows are unrestricted:
+  # - Who follows a user is only their own business: never expose
+  #   followed_by_user rows belonging to other users.
+  # - A followed user's activities only appear from the moment the viewer
+  #   followed them; their earlier history stays off the feed.
+  def following_feed_visibility(scope)
+    scope = scope.where.not(verb: 'followed_by_user').or(scope.where(user_id: @viewer_id))
+    scope.where(<<~SQL.squish, viewer_id: @viewer_id)
+      user_activities.user_id = :viewer_id OR EXISTS (
+        SELECT 1 FROM user_follows
+        WHERE user_follows.follower_id = :viewer_id
+          AND user_follows.followed_id = user_activities.user_id
+          AND user_activities.occurred_at >= user_follows.created_at
+      )
+    SQL
   end
 
   def activities_fetch_limit

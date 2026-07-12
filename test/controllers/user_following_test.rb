@@ -22,6 +22,101 @@ class UserFollowingTest < ActionDispatch::IntegrationTest
     assert_match followed.user_name, @response.body
   end
 
+  test 'following feed omits activities from before the follow was created' do
+    follower = users(:one)
+    followed = users(:without_anything)
+
+    travel_to Time.zone.local(2026, 8, 1, 12, 0, 0) do
+      Possession.create!(user: followed, product: products(:one), prev_owned: false)
+    end
+
+    travel_to Time.zone.local(2026, 8, 2, 12, 0, 0) do
+      UserFollow.create!(follower:, followed:)
+    end
+
+    travel_to Time.zone.local(2026, 8, 3, 12, 0, 0) do
+      Possession.create!(user: followed, product: products(:two), prev_owned: false)
+    end
+
+    followed_items = followed_user_items(follower, followed)
+
+    assert_equal 1, followed_items.size
+    assert_match products(:two).name, followed_items.first.display_name
+    assert_no_match products(:one).name, followed_user_names(follower, followed)
+  end
+
+  test 'following feed includes followed user activity at exactly follow created_at' do
+    follower = users(:one)
+    followed = users(:without_anything)
+    follow_time = Time.zone.local(2026, 8, 2, 12, 0, 0)
+    follow = nil
+
+    travel_to follow_time do
+      follow = UserFollow.create!(follower:, followed:)
+    end
+
+    travel_to follow_time + 1.hour do
+      possession = Possession.create!(user: followed, product: products(:two), prev_owned: false)
+      activity = UserActivity.find_by!(user: followed, subject: possession, verb: 'added_to_collection')
+      activity.update_column(:occurred_at, follow.created_at) # rubocop:disable Rails/SkipsModelValidations
+    end
+
+    followed_items = followed_user_items(follower, followed)
+
+    assert_equal 1, followed_items.size
+    assert_match products(:two).name, followed_items.first.display_name
+  end
+
+  test 'following feed keeps viewer own activities regardless of follow dates' do
+    follower = users(:one)
+    followed = users(:without_anything)
+
+    travel_to Time.zone.local(2026, 8, 1, 12, 0, 0) do
+      Possession.create!(user: follower, product: products(:diy_kit), prev_owned: false)
+    end
+
+    travel_to Time.zone.local(2026, 8, 2, 12, 0, 0) do
+      UserFollow.create!(follower:, followed:)
+    end
+
+    viewer_items = flat_items(UserActivityTimeline.grouped_for_following(follower))
+                   .select { |item| item.actor_user_id == follower.id }
+
+    assert(viewer_items.any? { |item| item.display_name.include?(products(:diy_kit).name) })
+  end
+
+  test 'following feed after re-follow omits activities from before the new follow' do
+    follower = users(:one)
+    followed = users(:without_anything)
+    follow = nil
+
+    travel_to Time.zone.local(2026, 8, 2, 12, 0, 0) do
+      follow = UserFollow.create!(follower:, followed:)
+    end
+
+    travel_to Time.zone.local(2026, 8, 3, 12, 0, 0) do
+      Possession.create!(user: followed, product: products(:two), prev_owned: false)
+    end
+
+    travel_to Time.zone.local(2026, 8, 4, 12, 0, 0) do
+      follow.destroy!
+    end
+
+    travel_to Time.zone.local(2026, 8, 5, 12, 0, 0) do
+      UserFollow.create!(follower:, followed:)
+    end
+
+    travel_to Time.zone.local(2026, 8, 6, 12, 0, 0) do
+      Possession.create!(user: followed, product: products(:diy_kit), prev_owned: false)
+    end
+
+    followed_items = followed_user_items(follower, followed)
+
+    assert_equal 1, followed_items.size
+    assert_match products(:diy_kit).name, followed_items.first.display_name
+    assert_no_match products(:two).name, followed_user_names(follower, followed)
+  end
+
   test 'grouped_for_following excludes hidden followed users' do
     follower = users(:one)
     followed = users(:without_anything)
@@ -121,5 +216,14 @@ class UserFollowingTest < ActionDispatch::IntegrationTest
 
   def actor_user_ids(rows)
     flat_items(rows).map(&:actor_user_id).compact
+  end
+
+  def followed_user_items(viewer, followed)
+    flat_items(UserActivityTimeline.grouped_for_following(viewer))
+      .select { |item| item.actor_user_id == followed.id }
+  end
+
+  def followed_user_names(viewer, followed)
+    followed_user_items(viewer, followed).map(&:display_name).join
   end
 end
