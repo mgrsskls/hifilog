@@ -1,0 +1,13 @@
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <div class="Heading">
+    <h1><%= t('headings.profile') %></h1>
+  </div>
+
+  <div class="Form">
+    <%= form_with model: @user, url: dashboard_profile_settings_path, method: :patch do |f| %>
+      <%= render "shared/flash_messages", messages: @user.errors.full_messages.map { |message| [:alert, message] } if @user.errors.any? %>
+
+      <%= render "user/profile_settings_form", f: %>
+    <% end %>
+  </div>
+<% end %>

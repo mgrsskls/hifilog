@@ -43,6 +43,48 @@ class UserController < ApplicationController
     @feed_pagination = feed_page.activities
   end
 
+  def profile
+    page_title(I18n.t('headings.profile'))
+    @active_dashboard_menu = :profile
+    @user = current_user
+  end
+
+  def update_profile
+    page_title(I18n.t('headings.profile'))
+    @active_dashboard_menu = :profile
+    @user = current_user
+
+    unless current_user.update_with_password(profile_settings_params)
+      flash.now[:alert] = current_user.errors.full_messages.to_sentence
+      render :profile, status: :unprocessable_content
+      return
+    end
+
+    current_user.purge_avatar! if params[:delete_avatar]
+    current_user.purge_decorative_image! if params[:delete_decorative_image]
+
+    redirect_to dashboard_profile_settings_path, notice: t('user.profile_settings.updated')
+  end
+
+  def notification_settings
+    page_title(I18n.t('headings.notifications'))
+    @active_dashboard_menu = :notifications
+    @user = current_user
+  end
+
+  def update_notification_settings
+    page_title(I18n.t('headings.notifications'))
+    @active_dashboard_menu = :notifications
+    @user = current_user
+
+    if current_user.update(notification_settings_params)
+      redirect_to dashboard_notification_settings_path, notice: t('user.notification_settings.updated')
+    else
+      flash.now[:alert] = current_user.errors.full_messages.to_sentence
+      render :notification_settings, status: :unprocessable_content
+    end
+  end
+
   def bookmarks
     page_title(Bookmark.model_name.human.pluralize)
 
@@ -443,5 +485,13 @@ class UserController < ApplicationController
 
   def previously_owned?(possession_id, prev_owned, id)
     possession_id == id && prev_owned
+  end
+
+  def profile_settings_params
+    params.expect(user: [:profile_visibility, :avatar, :decorative_image, :current_password])
+  end
+
+  def notification_settings_params
+    params.expect(user: [:receives_follow_notifications, :receives_newsletter])
   end
 end

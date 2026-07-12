@@ -63,6 +63,10 @@ Rails.application.routes.draw do
     get 'custom-products/:id/edit', to: 'custom_products#edit', as: :edit_custom_product
     get 'history', to: 'user#history', as: :history
     get 'feed', to: 'user#feed', as: :feed
+    get 'settings/profile', to: 'user#profile', as: :profile_settings
+    patch 'settings/profile', to: 'user#update_profile'
+    get 'settings/notifications', to: 'user#notification_settings', as: :notification_settings
+    patch 'settings/notifications', to: 'user#update_notification_settings'
     get 'following', to: 'user#following', as: :following
     get 'followers', to: 'user#followers', as: :followers
     get 'blocked', to: 'user#blocked', as: :blocked

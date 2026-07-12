@@ -1,0 +1,43 @@
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <div class="Heading">
+    <h1><%= t('headings.notifications') %></h1>
+  </div>
+
+  <div class="Form">
+    <%= form_with model: @user, url: dashboard_notification_settings_path, method: :patch do |f| %>
+      <%= render "shared/flash_messages", messages: @user.errors.full_messages.map { |message| [:alert, message] } if @user.errors.any? %>
+
+      <h3><%= t('user.notification_settings.follow_notifications.heading') %></h3>
+
+      <p><%= t('user.notification_settings.follow_notifications.intro') %></p>
+
+      <div>
+        <%= f.radio_button :receives_follow_notifications, true, checked: current_user.receives_follow_notifications? %>
+        <%= f.label :receives_follow_notifications_true,
+                    t('user.notification_settings.follow_notifications.true') %>
+      </div>
+      <div>
+        <%= f.radio_button :receives_follow_notifications, false, checked: !current_user.receives_follow_notifications? %>
+        <%= f.label :receives_follow_notifications_false,
+                    t('user.notification_settings.follow_notifications.false') %>
+      </div>
+
+      <h3><%= t('user.notification_settings.newsletter.heading') %></h3>
+
+      <p><%= t('user.notification_settings.newsletter.intro_html') %></p>
+
+      <div>
+        <%= f.radio_button :receives_newsletter, true, checked: current_user.receives_newsletter? %>
+        <%= f.label :receives_newsletter_true, t('user.notification_settings.newsletter.true') %>
+      </div>
+      <div>
+        <%= f.radio_button :receives_newsletter, false, checked: !current_user.receives_newsletter? %>
+        <%= f.label :receives_newsletter_false, t('user.notification_settings.newsletter.false') %>
+      </div>
+
+      <div class="Form-submit">
+        <%= f.button t('user.notification_settings.save'), type: "submit", class: "Button" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -48,9 +48,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     page_title(I18n.t('headings.account'))
     @active_dashboard_menu = :account
 
-    current_user.purge_avatar! if params[:delete_avatar]
-    current_user.purge_decorative_image! if params[:delete_decorative_image]
-
     super
   end
 

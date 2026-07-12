@@ -1,0 +1,86 @@
+<h3><%= t('user.profile_settings.visibility.heading') %></h3>
+
+<div>
+  <%= f.radio_button :profile_visibility, :hidden, checked: current_user.hidden? %>
+  <%= f.label :profile_visibility_hidden, t('user.edit.update.profile_visibility.hidden') %>
+</div>
+<div>
+  <%= f.radio_button :profile_visibility, :logged_in_only, checked: current_user.logged_in_only? %>
+  <%= f.label :profile_visibility_logged_in_only, t('user.edit.update.profile_visibility.logged_in_only') %>
+</div>
+<div>
+  <%= f.radio_button :profile_visibility, :visible, checked: current_user.visible? %>
+  <%= f.label :profile_visibility_visible, t('user.edit.update.profile_visibility.visible') %>
+</div>
+
+<% unless current_user.hidden? %>
+  <p>
+    <%= t('user.edit.update.profile_url') %><br>
+    <a href="<%= current_user.profile_path %>"><b><%= request.protocol + request.host_with_port + current_user.profile_path %></b></a>
+  </p>
+<% end %>
+
+<h3><%= t('user.profile_settings.images.heading') %></h3>
+<div class="Form-field">
+  <div class="Rte">
+    <p>
+      <small>
+        <b>Note:</b> You may be held personally liable for uploading images that infringe the rights of intellectual property owners. Only upload images to which you have the rights or which are available for public use.
+      </small>
+    </p>
+  </div>
+</div>
+
+<div class="ImageUpload Form-field">
+  <div class="Form-field">
+    <%= f.label :avatar, class: "h4 Form-label" %>
+    <div class="u-flex u-gap-md">
+      <% if current_user.avatar.attached? %>
+        <picture>
+          <%= image_tag cdn_image_url(current_user.avatar.variant(:thumb)), "aria-hidden": "true", alt: "", class: "Avatar", style: "inline-size: 2.5rem; block-size: 2.5rem;" %>
+        </picture>
+      <% end %>
+      <%= f.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp" %>
+    </div>
+  </div>
+
+  <% if current_user.avatar.attached? %>
+    <div class="Form-field">
+      <input type="checkbox" name="delete_avatar" id="delete-avatar">
+      <label for="delete-avatar"><%= t('user.profile_settings.images.delete_avatar') %></label>
+    </div>
+  <% end %>
+</div>
+
+<div class="ImageUpload Form-field">
+  <div class="Form-field">
+    <%= f.label :decorative_image, class: "h4 Form-label" %>
+    <div class="u-flex u-gap-md">
+      <% if current_user.decorative_image.attached? %>
+        <picture>
+          <%= image_tag cdn_image_url(current_user.decorative_image.variant(:thumb)), "aria-hidden": "true", alt: "", style: "inline-size: 12.04rem; block-size: 2.5rem;" %>
+        </picture>
+      <% end %>
+      <%= f.file_field :decorative_image, accept: "image/jpeg,image/png,image/gif,image/webp" %>
+    </div>
+  </div>
+
+  <% if current_user.decorative_image.attached? %>
+    <div class="Form-field">
+      <input type="checkbox" name="delete_decorative_image" id="delete-decorative-image">
+      <label for="delete-decorative-image"><%= t('user.profile_settings.images.delete_header_image') %></label>
+    </div>
+  <% end %>
+</div>
+
+<h3><%= t('user.edit.update.save.heading') %></h3>
+
+<div class="Form-field">
+  <%= f.label :current_password, class: "Form-label" %>
+  <%= f.password_field :current_password, required: true, autocomplete: "current-password" %>
+  <small class="Form-hint"><%= t('user.edit.update.save.confirm_with_password') %></small>
+</div>
+
+<div class="Form-submit">
+  <%= f.button t('user.profile_settings.save'), type: "submit", class: "Button" %>
+</div>

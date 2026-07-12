@@ -12,6 +12,12 @@ class DashboardNavigationTest < ActionDispatch::IntegrationTest
     get dashboard_feed_path
     assert_response :success
 
+    get dashboard_profile_settings_path
+    assert_response :success
+
+    get dashboard_notification_settings_path
+    assert_response :success
+
     get dashboard_products_path
     assert_response :success
 

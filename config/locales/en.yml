@@ -333,11 +333,12 @@ en:
     blocked: Blocked users
     history: History
     my_community: Community
+    notifications: Notifications
+    overview: Overview
     prev_owneds: Previous products
     profile: Profile
     statistics: Statistics
     events: Events
-    overview: Overview
     your_statistics: Your Statistics
     your_events: Your Events
   overview:
@@ -511,6 +512,28 @@ en:
       possession_image_uploaded_html: "Added a photo to %{link}"
       followed_by_user_html: "%{link} started following you"
   user:
+    notification_settings:
+      updated: Your notification settings have been saved.
+      save: Save notification settings
+      follow_notifications:
+        heading: New followers
+        intro: We send an email when another user starts following you.
+        'true': Email me when someone follows me
+        'false': Do not email me when someone follows me
+      newsletter:
+        heading: Newsletter
+        intro_html: Once in a while we send out newsletters with updates regarding <i>HiFi&thinsp;Log</i>.<br>You can unsubscribe any time.
+        'true': I want to receive newsletters.
+        'false': I do not want to receive newsletters.
+    profile_settings:
+      updated: Your profile settings have been saved.
+      save: Save profile settings
+      visibility:
+        heading: Visibility
+      images:
+        heading: Images
+        delete_avatar: Delete avatar
+        delete_header_image: Delete Header Image
     edit:
       delete:
         confirm: Are you sure you want to delete your account? All data will be deleted immediately.
@@ -533,9 +556,6 @@ en:
           hidden: No one but me can see my profile and my product photos.
           logged_in_only: Only logged in users can see my profile and my product photos.
           visible: Logged in and logged out users can see my profile and my product photos.
-        receives_newsletter:
-          'false': I do not want to receive newsletters.
-          'true': I want to receive newsletters.
         required: required
         save:
           confirm_with_password: We need your current password to confirm your changes.
