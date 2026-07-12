@@ -1,0 +1,24 @@
+<% if user_follows.any? %>
+  <ul class="FollowingList">
+    <% user_follows.each do |user_follow| %>
+      <% followed = user_follow.followed %>
+      <li class="FollowingList-item u-flex u-alignCenter u-gap-md">
+        <%= render "shared/avatar", user: followed, size: 64 %>
+        <div class="FollowingList-info u-flexGrow">
+          <% if followed.hidden? %>
+            <span><%= followed.user_name %></span>
+            <small><%= t('user_follow.hidden_profile') %></small>
+          <% else %>
+            <%= link_to followed.user_name, followed.profile_path %>
+          <% end %>
+        </div>
+        <%= button_to t('user_follow.unfollow'),
+                      user_follow_path(user_follow, redirect_to: dashboard_following_path),
+                      method: :delete,
+                      class: "Button Button--sm Button--secondary" %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <%= render "shared/empty_state", message: t('user_follow.empty_state.no_following') %>
+<% end %>

@@ -251,4 +251,38 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to user_path(id: users(:one).user_name.downcase)
     assert_response :moved_permanently
   end
+
+  test 'show follow button when signed in and not own profile' do
+    profile_user = users(:logged_in_only)
+    sign_in users(:one)
+
+    get user_path(id: profile_user.user_name)
+    assert_response :success
+    assert_select 'form', text: /#{Regexp.escape(I18n.t('user_follow.follow'))}/
+
+    UserFollow.create!(follower: users(:one), followed: profile_user)
+    get user_path(id: profile_user.user_name)
+    assert_response :success
+    assert_select 'form', text: /#{Regexp.escape(I18n.t('user_follow.unfollow'))}/
+  end
+
+  test 'show hides follow button for users the viewer blocked' do
+    profile_user = users(:logged_in_only)
+    sign_in users(:one)
+    UserBlock.create!(blocker: users(:one), blocked: profile_user)
+
+    get user_path(id: profile_user.user_name)
+    assert_response :success
+    assert_select '.Profile-follow form', count: 0
+  end
+
+  test 'show still renders follow button for viewers blocked by the profile owner' do
+    profile_user = users(:logged_in_only)
+    sign_in users(:one)
+    UserBlock.create!(blocker: profile_user, blocked: users(:one))
+
+    get user_path(id: profile_user.user_name)
+    assert_response :success
+    assert_select '.Profile-follow form', text: /#{Regexp.escape(I18n.t('user_follow.follow'))}/
+  end
 end

@@ -5,24 +5,17 @@ module UserActivityHelper
   include UserActivityPeriodMeta
 
   def user_activity_product_link(item)
+    return h(item.display_name) if item.url.blank?
+
     link_to(h(item.display_name), item.url)
   end
 
   def user_activity_item_title(item)
-    verb = item.verb&.to_sym
-    if UserActivityVerbs.setup_product_verb?(verb)
-      product_link = user_activity_product_link(item)
-      setup_link =
-        if item.setup_url.present?
-          link_to(h(item.setup_name), item.setup_url)
-        else
-          h(item.setup_name)
-        end
-      return t(UserActivityVerbs.title_i18n_key(verb), product_link:, setup_link:).html_safe
+    if UserActivityVerbs.setup_product_verb?(item.verb&.to_sym)
+      user_activity_setup_product_title(item)
+    else
+      user_activity_simple_title(item)
     end
-
-    link = user_activity_product_link(item)
-    t(UserActivityVerbs.title_i18n_key(verb, event_past: item.event_past), link:).html_safe
   end
 
   def user_activity_gallery_images(items)
@@ -63,6 +56,23 @@ module UserActivityHelper
     end
 
     t(key, count: group.items.size).html_safe
+  end
+
+  def user_activity_setup_product_title(item)
+    verb = item.verb&.to_sym
+    product_link = user_activity_product_link(item)
+    setup_link =
+      if item.setup_url.present?
+        link_to(h(item.setup_name), item.setup_url)
+      else
+        h(item.setup_name)
+      end
+    t(UserActivityVerbs.title_i18n_key(verb), product_link:, setup_link:).html_safe
+  end
+
+  def user_activity_simple_title(item)
+    link = user_activity_product_link(item)
+    t(UserActivityVerbs.title_i18n_key(item.verb&.to_sym, event_past: item.event_past), link:).html_safe
   end
 
   def user_activity_icon(verb, event_upcoming: false)

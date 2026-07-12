@@ -7,15 +7,17 @@ class UserController < ApplicationController
   include HistoryHelper
   include Bookmarks
 
-  before_action :authenticate_user!, except: [:newsletter_unsubscribe]
-  skip_before_action :verify_authenticity_token, only: :newsletter_unsubscribe
+  FEED_PAGE_SIZE = 50
+
+  before_action :authenticate_user!, except: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
+  skip_before_action :verify_authenticity_token, only: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
   before_action :set_menu
 
   def dashboard
     page_title(I18n.t('dashboard'))
     @active_dashboard_menu = :dashboard
 
-    @feed = UserActivityTimeline.grouped_for(current_user, time_zone: Time.zone, limit: 10)
+    @feed = UserActivityTimeline.grouped_for_following(current_user, time_zone: Time.zone, limit: 10)
 
     @newest_users = newest_users
 
@@ -28,6 +30,17 @@ class UserController < ApplicationController
                        .where.not(id: current_user.app_news_ids)
                        .order(:created_at)
                        .reverse
+  end
+
+  def feed
+    page_title(I18n.t('headings.feed'))
+    @active_dashboard_menu = :feed
+
+    feed_page = UserActivityTimeline.paginated_for_following(
+      current_user, time_zone: Time.zone, page: params[:page], per: FEED_PAGE_SIZE
+    )
+    @feed = feed_page.rows
+    @feed_pagination = feed_page.activities
   end
 
   def bookmarks
@@ -176,10 +189,31 @@ class UserController < ApplicationController
     @possessions = get_history_possessions(current_user.possessions)
   end
 
-  def activity
-    page_title(I18n.t('headings.activity'))
-    @active_dashboard_menu = :activity
-    @feed = UserActivityTimeline.grouped_for(current_user, time_zone: Time.zone)
+  def following
+    setup_community_section(active_tab: :following)
+    page_title(I18n.t('headings.following'))
+    @user_follows = current_user.user_follows
+                                .includes(:followed)
+                                .joins(:followed)
+                                .order(Arel.sql('LOWER(users.user_name) ASC'))
+  end
+
+  def followers
+    setup_community_section(active_tab: :followers)
+    page_title(I18n.t('headings.followers'))
+    @follower_relationships = current_user.follower_relationships
+                                          .includes(follower: { avatar_attachment: :blob })
+                                          .joins(:follower)
+                                          .order(Arel.sql('LOWER(users.user_name) ASC'))
+  end
+
+  def blocked
+    page_title(I18n.t('headings.blocked'))
+    @active_dashboard_menu = :blocked
+    @user_blocks = current_user.user_blocks
+                               .includes(blocked: { avatar_attachment: :blob })
+                               .joins(:blocked)
+                               .order(Arel.sql('LOWER(users.user_name) ASC'))
   end
 
   def has
@@ -305,11 +339,29 @@ class UserController < ApplicationController
     end
   end
 
+  def follow_notification_unsubscribe
+    return head :bad_request if request.post? && !one_click_unsubscribe_request?
+
+    user = follow_notification_unsubscribe_user
+
+    if user
+      user.update(receives_follow_notifications: false)
+      respond_to_follow_notification_unsubscribe(:success)
+    else
+      respond_to_follow_notification_unsubscribe(:invalid)
+    end
+  end
+
   private
 
   def newsletter_unsubscribe_user
     hash_param = params[:hash].presence || request.query_parameters['hash'].presence
     NewsletterUnsubscribeService.decode_token(hash_param)
+  end
+
+  def follow_notification_unsubscribe_user
+    hash_param = params[:hash].presence || request.query_parameters['hash'].presence
+    FollowNotificationUnsubscribeService.decode_token(hash_param)
   end
 
   def respond_to_newsletter_unsubscribe(result)
@@ -321,6 +373,18 @@ class UserController < ApplicationController
       redirect_to root_path, notice: I18n.t('newsletter.messages.unsubscribed')
     else
       redirect_to root_path, alert: I18n.t('newsletter.messages.invalid_unsubscribe_link')
+    end
+  end
+
+  def respond_to_follow_notification_unsubscribe(result)
+    if request.post?
+      return head :bad_request if result == :invalid
+
+      head :ok
+    elsif result == :success
+      redirect_to root_path, notice: I18n.t('user_follow.notifications.unsubscribed')
+    else
+      redirect_to root_path, alert: I18n.t('user_follow.notifications.invalid_unsubscribe_link')
     end
   end
 
@@ -360,6 +424,13 @@ class UserController < ApplicationController
                       events_in_year.group_by { |event| event.start_date.month }
                     end
     @country_codes = all_events.map(&:country_code).uniq.sort
+  end
+
+  def setup_community_section(active_tab:)
+    @active_dashboard_menu = :community
+    @active_community_tab = active_tab
+    @following_count = current_user.user_follows.count
+    @followers_count = current_user.follower_relationships.count
   end
 
   def set_menu

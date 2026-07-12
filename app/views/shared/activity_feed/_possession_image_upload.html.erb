@@ -1,4 +1,5 @@
-<%# locals: grouped (boolean), row (Grouped, when grouped), item (Item, when single) %>
+<%# locals: grouped (boolean), row (Grouped, when grouped), item (Item, when single), show_actor (boolean, default false) %>
+<% show_actor = local_assigns.fetch(:show_actor, false) %>
 <div class="Feed-group">
   <% primary_html = capture do %>
     <% if grouped %>
@@ -11,12 +12,15 @@
   <% logged_at = grouped ? row.logged_at : item.logged_at %>
   <% event_past = grouped ? row.event_past : item.event_past %>
   <% event_upcoming = grouped ? row.event_upcoming? : item.event_upcoming? %>
-  <%= render "shared/activity/main_row",
+  <% actor_item = grouped ? row.items.first : item %>
+  <%= render "shared/activity_feed/main_row",
               verb:,
               event_past:,
               event_upcoming:,
               logged_at:,
-              primary_html: %>
+              primary_html:,
+              actor_item:,
+              show_actor: %>
   <%= render "shared/image_gallery",
               images: user_activity_gallery_images(grouped ? row.items : item),
               list_class: "Feed-nested Feed-nested--images ImageLightbox ImageGallery" %>

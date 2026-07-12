@@ -221,6 +221,31 @@ class UserActivities::Recorder
       )
     end
 
+    def followed_by_user(follow)
+      followed = follow.followed
+      follower = follow.follower
+      return unless followed && follower
+
+      upsert_activity!(
+        user_id: followed.id,
+        subject: follow,
+        verb: 'followed_by_user',
+        occurred_at: follow.created_at,
+        metadata: follower_metadata(follower)
+      )
+    end
+
+    def hide_followed_by_user(follow)
+      return if follow.id.blank?
+
+      # update_all avoids re-validating subject after the UserFollow row is destroyed.
+      UserActivity.visible
+                  .where(subject_type: follow.class.name, subject_id: follow.id, verb: 'followed_by_user')
+                  # rubocop:disable Rails/SkipsModelValidations
+                  .update_all(hidden_at: Time.current, updated_at: Time.current)
+      # rubocop:enable Rails/SkipsModelValidations
+    end
+
     def event_attendance_cancelled(user:, event:, occurred_at: Time.current)
       return unless user && event
 
@@ -240,6 +265,14 @@ class UserActivities::Recorder
         'event_start_date' => event.start_date&.iso8601,
         'event_end_date' => event.end_date&.iso8601
       }.compact
+    end
+
+    def follower_metadata(follower)
+      {
+        'follower_id' => follower.id,
+        'follower_user_name' => follower.user_name,
+        'url' => follower.profile_path
+      }
     end
 
     private

@@ -1,0 +1,10 @@
+<% redirect_to ||= request.path %>
+<% if user_follow %>
+  <%= button_to user_follow_path(user_follow, redirect_to:), method: :delete, class: "Button Button--sm Button--secondary" do %>
+    <%= t('user_follow.unfollow') %>
+  <% end %>
+<% else %>
+  <%= button_to user_follows_path(followed_id: user.id, redirect_to:), class: "Button Button--sm" do %>
+    <%= t('user_follow.follow') %>
+  <% end %>
+<% end %>

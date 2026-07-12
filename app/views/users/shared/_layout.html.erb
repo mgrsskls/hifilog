@@ -27,6 +27,14 @@
         <%= image_tag cdn_image_url(user.decorative_image.variant(:large)), "aria-hidden": "true", alt: "", class: "Profile-headerImage", width: 1512, height: 314, "fetchpriority": "high" %>
       </picture>
     <% end %>
+    <%# Only hide the button for users the viewer blocked themselves. Viewers
+        who were blocked by this profile's owner still see it (their follow
+        attempt fails generically), so the block is not disclosed. %>
+    <% if user_signed_in? && current_user != user && !current_user.blocked?(user) %>
+      <div class="Profile-follow">
+        <%= render "shared/follow_button", user:, user_follow: @user_follow %>
+      </div>
+    <% end %>
   </div>
   <div class="Profile-content u-container" id="products">
     <div class="Profile-meta">

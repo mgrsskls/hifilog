@@ -1,7 +1,0 @@
-<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
-  <div class="Heading">
-    <h1><%= t('headings.activity') %></h1>
-  </div>
-
-  <%= render "shared/feed", feed_items: @feed, empty_state_message: t('empty_state.no_activity_dashboard') %>
-<% end %>

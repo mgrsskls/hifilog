@@ -7,6 +7,7 @@ module UserActivityTimeline::ItemBuilders
   include CustomProductItems
   include SetupItems
   include EventItems
+  include FollowItems
 
   private
 
@@ -29,6 +30,8 @@ module UserActivityTimeline::ItemBuilders
       event_attendance_activity_item(activity)
     when 'event_attendance_cancelled'
       event_cancelled_activity_item(activity)
+    when 'followed_by_user'
+      followed_by_user_activity_item(activity)
     end
   end
 end

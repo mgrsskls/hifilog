@@ -53,6 +53,10 @@ class UserActivityTimeline
     :setup_id,
     :possession_id,
     :gallery_image,
+    :actor_user_id,
+    :actor_user_name,
+    :actor_profile_path,
+    :actor_user,
     keyword_init: true
   ) do
     def event_upcoming?
@@ -69,19 +73,56 @@ class UserActivityTimeline
     delegate :event_upcoming?, to: :item
   end
 
-  def self.grouped_for(user, time_zone: Time.zone, limit: nil)
-    new(user, time_zone:, limit:).grouped_rows
+  # +rows+ are the grouped rows for the requested page; +activities+ is the
+  # Kaminari-paginated relation backing them (for the paginate view helper).
+  PaginatedFeed = Struct.new(:rows, :activities, keyword_init: true)
+
+  def self.grouped_for(user, time_zone: Time.zone, limit: nil, public_profile_feed: false)
+    new(user, time_zone:, limit:, public_profile_feed:).grouped_rows
   end
 
-  def initialize(user, time_zone: Time.zone, limit: nil)
+  def self.grouped_for_following(viewer, time_zone: Time.zone, limit: nil)
+    new_for_following(viewer, time_zone:, limit:).grouped_rows
+  end
+
+  def self.paginated_for_following(viewer, time_zone: Time.zone, page: nil, per: 50)
+    new_for_following(viewer, time_zone:).paginated_rows(page:, per:)
+  end
+
+  def self.new_for_following(viewer, time_zone: Time.zone, limit: nil)
+    followed_ids = viewer.followed_users.visible_in_follow_feed.pluck(:id)
+    new(viewer, time_zone:, limit:, following_user_ids: [viewer.id] + followed_ids)
+  end
+  private_class_method :new_for_following
+
+  # +following_user_ids+ marks a following feed: it lists whose activities to
+  # include (viewer first) and switches on actor display for every row.
+  def initialize(user, time_zone: Time.zone, limit: nil, following_user_ids: nil, public_profile_feed: false)
     @user = user
+    @viewer_id = user.id
+    @user_ids = following_user_ids || [user.id]
+    @multi_user = @user_ids.size > 1
+    @show_actor = following_user_ids.present?
+    @public_profile_feed = public_profile_feed
     @time_zone = time_zone
     @limit = limit
   end
 
   def grouped_rows
-    rows = build_grouped_rows(flat_items)
+    rows = build_grouped_rows(flat_items(activities_for_timeline))
     @limit ? rows.first(@limit) : rows
+  end
+
+  # Paginates activities at the database level instead of loading the whole
+  # timeline. Grouping and deduping apply per page, so a cluster that spans a
+  # page boundary renders as separate (possibly ungrouped) rows on each page.
+  def paginated_rows(page:, per:)
+    activities = timeline_activities_scope.page(page).per(per)
+    activities = timeline_activities_scope.page(1).per(per) if activities.out_of_range?
+
+    loaded = activities.to_a
+    preload_timeline_subjects!(loaded)
+    PaginatedFeed.new(rows: build_grouped_rows(flat_items(loaded)), activities:)
   end
 
   private
@@ -101,13 +142,26 @@ class UserActivityTimeline
   end
 
   def timeline_activities
-    scope = @user.user_activities.visible.for_feed.chronological.includes(:subject)
+    scope = timeline_activities_scope
     return scope unless @limit
 
     capped = scope.limit(activities_fetch_limit)
     capped_activities = capped.to_a
     return capped if capped_activities.size < activities_fetch_limit
 
+    scope
+  end
+
+  def timeline_activities_scope
+    feed_scope = @public_profile_feed ? UserActivity.for_public_profile_feed : UserActivity.for_feed
+    scope =
+      UserActivity.where(user_id: @user_ids)
+                  .merge(feed_scope)
+                  .chronological
+                  .includes(:subject, :user)
+    # Who follows a user is only their own business: in a multi-user feed,
+    # never expose followed_by_user rows belonging to other users.
+    scope = scope.where.not(verb: 'followed_by_user').or(scope.where(user_id: @viewer_id)) if @multi_user
     scope
   end
 
@@ -120,6 +174,12 @@ class UserActivityTimeline
     custom_products = activities.filter_map { |a| a.subject if a.subject_type == 'CustomProduct' }
     preload_association(attendees, :event)
     preload_association(custom_products, :user)
+    user_follows = activities.filter_map { |a| a.subject if a.subject_type == 'UserFollow' }
+    preload_association(user_follows, :follower)
+    return unless @show_actor
+
+    preload_association(activities.filter_map(&:user).uniq, { avatar_attachment: :blob })
+    preload_association(user_follows.filter_map(&:follower).uniq, { avatar_attachment: :blob })
   end
 
   def preload_association(records, *associations)
@@ -212,21 +272,28 @@ class UserActivityTimeline
       else
         :_
       end
-    [day, cluster_verb, suffix, setup_scope, possession_scope]
+    user_scope = @multi_user ? (item.actor_user_id || 0) : :_
+    [day, cluster_verb, suffix, setup_scope, possession_scope, user_scope]
   end
 
-  def flat_items
-    activities = activities_for_timeline
-    @lookup = SubjectLookup.new(user: @user, activities:)
-    made_public_setup_ids = made_public_setup_ids_for_suppression
+  def flat_items(activities)
+    @lookups_by_user_id = {}
+    activities_by_user_id = activities.group_by(&:user_id)
 
     pairs =
       activities.filter_map do |a|
+        activity_user = a.user
+        made_public_setup_ids = made_public_setup_ids_for_suppression(activity_user)
         next if suppress_setup_created_after_private_then_public?(a, made_public_setup_ids)
+
+        @user = activity_user
+        @lookup = lookup_for(activity_user, activities_by_user_id[activity_user.id])
 
         item = activity_to_item(a)
         next unless item
         next if item.logged_at.blank?
+
+        item = item_with_actor(item, activity_actor_user(a, activity_user)) if @show_actor
 
         [a, item]
       end
@@ -282,11 +349,39 @@ class UserActivityTimeline
     ActiveModel::Type::Boolean.new.cast((metadata || {})['private'])
   end
 
-  def made_public_setup_ids_for_suppression
-    @made_public_setup_ids_for_suppression ||= begin
-      activities = @user.user_activities.where(verb: 'setup_made_public').includes(:subject).to_a
-      setup_subject_ids_with_verb(activities, 'setup_made_public')
-    end
+  def activity_actor_user(activity, activity_user)
+    return activity_user unless activity.verb == 'followed_by_user'
+
+    follow = activity.subject
+    follow.is_a?(UserFollow) ? follow.follower : activity_user
+  end
+
+  def lookup_for(user, user_activities)
+    @lookups_by_user_id[user.id] ||= SubjectLookup.new(user:, activities: user_activities)
+  end
+
+  def item_with_actor(item, user)
+    Item.new(
+      **item.to_h,
+      actor_user_id: user.id,
+      actor_user_name: user.user_name,
+      actor_profile_path: user.profile_path,
+      actor_user: user
+    )
+  end
+
+  def made_public_setup_ids_for_suppression(user)
+    made_public_setup_ids_by_user_id.fetch(user.id) { Set.new }
+  end
+
+  # One query for all feed users instead of one per user.
+  def made_public_setup_ids_by_user_id
+    @made_public_setup_ids_by_user_id ||=
+      UserActivity.where(user_id: @user_ids, verb: 'setup_made_public')
+                  .includes(:subject)
+                  .to_a
+                  .group_by(&:user_id)
+                  .transform_values { |activities| setup_subject_ids_with_verb(activities, 'setup_made_public') }
   end
 
   def setup_subject_ids_with_verb(activities, verb)

@@ -64,6 +64,15 @@ class UserActivityTest < ActiveSupport::TestCase
     assert_equal :setup_created, activity.verb_sym
   end
 
+  test 'for_public_profile_feed scope excludes private feed verbs' do
+    user = users(:one)
+    follow = user_follows(:visible_follows_one)
+    UserActivities::Recorder.followed_by_user(follow)
+
+    assert_includes user.user_activities.visible.for_feed.pluck(:verb), 'followed_by_user'
+    assert_not_includes user.user_activities.visible.for_public_profile_feed.pluck(:verb), 'followed_by_user'
+  end
+
   test 'for_feed scope excludes feed-hidden verbs' do
     user = users(:without_anything)
     possession = Possession.create!(user: user, product: products(:one), prev_owned: false)

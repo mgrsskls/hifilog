@@ -1,0 +1,60 @@
+<%# locals: feed_items, empty_state_message, show_actor (boolean, default false) %>
+<% show_actor = local_assigns.fetch(:show_actor, false) %>
+<% if feed_items.any? %>
+  <% content_for :css do %>
+    <%= stylesheet_link_tag "feed" %>
+  <% end %>
+  <% if feed_includes_possession_image_gallery?(feed_items) %>
+    <% content_for :js do %>
+      <%= javascript_include_tag "gallery", type: "module" %>
+    <% end %>
+  <% end %>
+  <ol class="Feed <%= show_actor ? "Feed--dashboard" : "Feed--profile" %>">
+    <% feed_items.each do |row| %>
+      <li class="Feed-item">
+        <% if row.is_a?(UserActivityTimeline::Grouped) %>
+          <% if row.verb == :possession_image_uploaded %>
+            <%= render "shared/activity_feed/possession_image_upload", grouped: true, row:, show_actor: %>
+          <% else %>
+            <div class="Feed-group">
+              <% primary_html = capture do %>
+                <p><%= user_activity_group_summary(row) %>:</p>
+              <% end %>
+              <%= render "shared/activity_feed/main_row",
+                          verb: row.verb,
+                          event_past: row.event_past,
+                          event_upcoming: row.event_upcoming?,
+                          logged_at: row.logged_at,
+                          primary_html:,
+                          actor_item: row.items.first,
+                          show_actor: %>
+              <ul class="Feed-nested">
+                <% row.items.each do |item| %>
+                  <%= render "shared/activity/nested_item", item: item %>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        <% elsif row.item.verb == :possession_image_uploaded %>
+          <%= render "shared/activity_feed/possession_image_upload", grouped: false, item: row.item, show_actor: %>
+        <% else %>
+          <% item = row.item %>
+          <% primary_html = capture do %>
+            <p><%= user_activity_item_title(item) %>.</p>
+            <%= user_activity_item_meta_period(item) %>
+          <% end %>
+          <%= render "shared/activity_feed/main_row",
+                      verb: item.verb,
+                      event_past: item.event_past,
+                      event_upcoming: item.event_upcoming?,
+                      logged_at: item.logged_at,
+                      primary_html:,
+                      actor_item: item,
+                      show_actor: %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <%= render "shared/empty_state", message: empty_state_message %>
+<% end %>

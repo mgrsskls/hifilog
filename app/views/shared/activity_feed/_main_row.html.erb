@@ -1,0 +1,47 @@
+<%# locals: verb, event_past, event_upcoming, logged_at, primary_html, actor_item, show_actor (boolean, default false) %>
+<% show_actor = local_assigns.fetch(:show_actor, false) %>
+<% actor_user = show_actor ? local_assigns[:actor_item]&.actor_user : nil %>
+<%# Hidden users' profiles are not reachable, so show them without a link. %>
+<% actor_linked = actor_user && (!actor_user.hidden? || actor_user == current_user) %>
+<% meta_html = capture do %>
+  <div class="Feed-meta">
+    <% if actor_user %>
+      <% if actor_linked %>
+        <%= link_to actor_user.profile_path, class: "Feed-actor" do %>
+          <span><%= actor_user.user_name %></span>
+        <% end %>
+      <% else %>
+        <span class="Feed-actor"><span><%= actor_user.user_name %></span></span>
+      <% end %>
+      <span class="Feed-metaSeparator" aria-hidden="true">&middot;</span>
+    <% end %>
+    <time datetime="<%= format_iso_datetime logged_at %>" title="<%= logged_at.strftime("%B %d, %Y") %>">
+      <%= time_ago_in_words logged_at %> ago
+    </time>
+  </div>
+<% end %>
+<div class="Feed-body<%= " Feed-body--profile" unless show_actor %>">
+  <% if actor_user %>
+    <% if actor_linked %>
+      <%= link_to actor_user.profile_path, class: "Feed-actorAvatar" do %>
+        <%= render "shared/avatar", user: actor_user, size: 56 %>
+      <% end %>
+    <% else %>
+      <span class="Feed-actorAvatar">
+        <%= render "shared/avatar", user: actor_user, size: 56 %>
+      </span>
+    <% end %>
+  <% else %>
+    <div class="Feed-iconContainer" aria-hidden="true">
+      <%= user_activity_icon(verb, event_upcoming:) %>
+      <%= render "shared/activity/icon_check", verb: verb, event_past:, event_upcoming: %>
+    </div>
+  <% end %>
+  <div class="Feed-text <%= show_actor ? "Feed-text--dashboard" : "Feed-text--profile" %>">
+    <%= meta_html if show_actor %>
+    <div class="Feed-primary">
+      <%= primary_html %>
+    </div>
+    <%= meta_html unless show_actor %>
+  </div>
+</div>

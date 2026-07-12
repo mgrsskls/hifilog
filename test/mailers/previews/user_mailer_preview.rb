@@ -3,6 +3,11 @@
 # Preview all emails at http://localhost:3000/rails/mailers/user_mailer
 class UserMailerPreview < ActionMailer::Preview
   # Preview this email at http://localhost:3000/rails/mailers/user_mailer/newsletter_email
+  def followed_notification
+    follow = UserFollow.includes(:follower, :followed).first
+    UserMailer.followed_notification(follow)
+  end
+
   def newsletter_email
     user = User.first
     UserMailer.newsletter_email(

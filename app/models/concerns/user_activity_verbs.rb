@@ -13,7 +13,8 @@ module UserActivityVerbs
     :setup_product_added,
     :setup_product_removed,
     :custom_product_created,
-    :possession_image_uploaded
+    :possession_image_uploaded,
+    :followed_by_user
   ].freeze
 
   SETUP_PRODUCT_VERBS = [:setup_product_added, :setup_product_removed].freeze

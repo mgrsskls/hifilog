@@ -41,7 +41,7 @@
       <%= render "shared/overview/section_heading",
           heading: t('headings.activity'),
           heading_class: "UserProfile-heading" %>
-      <%= render "shared/feed", feed_items: @activity_rows, empty_state_message: t('empty_state.no_activity_profile', user_name: h(@user.user_name)) %>
+      <%= render "shared/activity_feed/feed", feed_items: @activity_rows, empty_state_message: t('empty_state.no_activity_profile', user_name: h(@user.user_name)) %>
     </div>
 
   </div>

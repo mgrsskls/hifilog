@@ -23,6 +23,7 @@ Rails.application.config.assets.precompile += %w(
   entity_form.css
   events.css
   feed.css
+  following.css
   history.css
   home.css
   note.css

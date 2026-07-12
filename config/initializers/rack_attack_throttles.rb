@@ -93,6 +93,14 @@ Rack::Attack.throttle('notes/ip', limit: 60, period: 3600) do |req|
   req.ip if req.path.start_with?('/notes') && RackAttackThrottles.write_request?(req)
 end
 
+# 10. Follow and block mutations per IP
+Rack::Attack.throttle('follow_mutations/ip', limit: 60, period: 3600) do |req|
+  if RackAttackThrottles.write_request?(req) &&
+     (req.path.start_with?('/user_follows') || req.path.start_with?('/user_blocks'))
+    req.ip
+  end
+end
+
 # 6. Search per IP
 Rack::Attack.throttle('search/ip', limit: 60, period: 60) do |req|
   req.ip if req.path == '/search' && req.get?

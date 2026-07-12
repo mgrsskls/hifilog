@@ -34,7 +34,8 @@ class UsersController < ApplicationController
     @categories = []
     @sub_category = nil
 
-    @activity_rows = UserActivityTimeline.grouped_for(@user, time_zone: Time.zone)
+    @activity_rows = UserActivityTimeline.grouped_for(@user, time_zone: Time.zone, public_profile_feed: true)
+    @user_follow = current_user&.user_follows&.find_by(followed: @user) if user_signed_in? && current_user != @user
 
     load_current_statistics_overview(@user)
 

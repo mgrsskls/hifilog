@@ -1,0 +1,9 @@
+<% follower_link =
+     if @follower_profile_url
+       link_to(@follower.user_name, @follower_profile_url)
+     else
+       h(@follower.user_name)
+     end %>
+<p>
+  <%= t('user_follow.mailer.body_html', follower_link:).html_safe %>
+</p>

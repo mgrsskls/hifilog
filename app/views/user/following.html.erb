@@ -1,0 +1,16 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "following" %>
+  <%= stylesheet_link_tag "tabs" %>
+<% end %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <div class="Heading">
+    <h1><%= t('headings.following') %></h1>
+  </div>
+
+  <%= render "user/community/tabs",
+             active_tab: @active_community_tab,
+             following_count: @following_count,
+             followers_count: @followers_count %>
+
+  <%= render "user/community/following_list", user_follows: @user_follows %>
+<% end %>

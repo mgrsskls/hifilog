@@ -1,9 +1,20 @@
 .Profile {
 	padding-block-end: 4rem;
+
+	h1 {
+		color: var(--color-white);
+	}
 }
 
 .Profile-header {
 	background: var(--color-blue-175);
+	position: relative;
+}
+
+.Profile-follow {
+	position: absolute;
+	inset-block-end: var(--page-spacing);
+	inset-inline-end: var(--page-spacing);
 }
 
 .Profile-headerImage {

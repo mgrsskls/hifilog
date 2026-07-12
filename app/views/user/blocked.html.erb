@@ -1,0 +1,10 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "following" %>
+<% end %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <div class="Heading">
+    <h1><%= t('headings.blocked') %></h1>
+  </div>
+
+  <%= render "user/community/blocked_list", user_blocks: @user_blocks %>
+<% end %>

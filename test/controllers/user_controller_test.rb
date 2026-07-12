@@ -17,21 +17,112 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_match 'You currently own', @response.body
     assert_select '.UserDashboard-events'
     assert_select '.UserDashboard-newest'
-    assert_select 'a[href=?]', dashboard_activity_path
+    assert_select 'a[href=?]', dashboard_feed_path
     assert_select 'a[href=?]', dashboard_statistics_root_path
   end
 
-  test 'activity' do
-    get dashboard_activity_path
+  test 'feed' do
+    get dashboard_feed_path
     assert_response :redirect
     assert_redirected_to new_user_session_path
 
     sign_in users(:one)
 
-    get dashboard_activity_path
+    get dashboard_feed_path
     assert_response :success
-    assert_select 'h1', text: I18n.t('headings.activity')
+    assert_select 'h1', text: I18n.t('headings.feed')
     assert_select '.Feed, .EmptyState'
+    assert_select 'a.Sidebar-link[href=?][aria-current="true"]', dashboard_feed_path
+    assert_select 'nav .Tabs', count: 0
+  end
+
+  test 'feed shows invalid page as first page' do
+    sign_in users(:one)
+
+    get dashboard_feed_path(page: 999)
+    assert_response :success
+    assert_select 'h1', text: I18n.t('headings.feed')
+  end
+
+  test 'feed paginates at fifty rows per page' do
+    user = users(:one)
+    sign_in user
+
+    51.times do |index|
+      travel_to(Time.zone.local(2026, 10, 1) + index.days) do
+        CustomProduct.create!(
+          name: "Feed pagination #{index}",
+          user: user,
+          sub_categories: [sub_categories(:one)]
+        )
+      end
+    end
+
+    get dashboard_feed_path
+    assert_response :success
+    assert_select '.Pagination'
+
+    get dashboard_feed_path(page: 2)
+    assert_response :success
+    assert_select '.Feed-item', count: 1
+  end
+
+  test 'following' do
+    get dashboard_following_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_following_path
+    assert_response :success
+    assert_select 'h1', text: I18n.t('headings.following')
+    assert_select 'a.Sidebar-link[href=?][aria-current="true"]', dashboard_following_path
+    assert_select 'a.Sidebar-link[href=?][aria-current="false"]', dashboard_feed_path
+    assert_select 'nav .Tabs a[href=?][aria-current="true"]', dashboard_following_path
+    assert_select '.FollowingList-item', minimum: 1
+  end
+
+  test 'followers' do
+    get dashboard_followers_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_followers_path
+    assert_response :success
+    assert_select 'h1', text: I18n.t('headings.followers')
+    assert_select 'a.Sidebar-link[href=?][aria-current="true"]', dashboard_following_path
+    assert_select 'nav .Tabs a[href=?][aria-current="true"]', dashboard_followers_path
+    assert_select '.FollowingList-item', minimum: 1
+    assert_match users(:visible).user_name, @response.body
+  end
+
+  test 'blocked' do
+    get dashboard_blocked_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+    blocked = users(:logged_in_only)
+    user_block = UserBlock.create!(blocker: users(:one), blocked:)
+
+    get dashboard_blocked_path
+    assert_response :success
+    assert_select 'h1', text: I18n.t('headings.blocked')
+    assert_select 'a.Sidebar-link[href=?][aria-current="true"]', dashboard_blocked_path
+    assert_select 'a.Sidebar-link[href=?][aria-current="false"]', dashboard_following_path
+    assert_select 'nav .Tabs', count: 0
+    assert_select '.FollowingList-item', minimum: 1
+    assert_match blocked.user_name, @response.body
+    assert_select 'form', text: /#{Regexp.escape(I18n.t('user_follow.unblock'))}/
+
+    delete user_block_path(user_block, redirect_to: dashboard_blocked_path)
+    assert_redirected_to dashboard_blocked_path
+
+    get dashboard_blocked_path
+    assert_select '.EmptyState', text: /#{Regexp.escape(I18n.t('user_follow.empty_state.no_blocked'))}/
   end
 
   test 'products' do
@@ -269,6 +360,41 @@ class UserControllerTest < ActionDispatch::IntegrationTest
       post newsletters_unsubscribe_path(hash: hash)
       assert_response :bad_request
       assert_equal true, user.reload.receives_newsletter
+    end
+  end
+
+  test 'follow notification unsubscribe via GET' do
+    with_newsletter_unsubscribe_secret do
+      user = users(:one)
+      user.update(receives_follow_notifications: true)
+      hash = FollowNotificationUnsubscribeService.generate_token(user.email)
+
+      get follow_notifications_unsubscribe_path(hash: hash)
+      assert_response :redirect
+      assert_redirected_to root_path
+      assert_equal I18n.t('user_follow.notifications.unsubscribed'), flash[:notice]
+      assert_equal false, user.reload.receives_follow_notifications?
+
+      user.update(receives_follow_notifications: true)
+
+      get follow_notifications_unsubscribe_path(hash: 'invalid_hash')
+      assert_response :redirect
+      assert_redirected_to root_path
+      assert_equal I18n.t('user_follow.notifications.invalid_unsubscribe_link'), flash[:alert]
+      assert_equal true, user.reload.receives_follow_notifications?
+    end
+  end
+
+  test 'follow notification one-click unsubscribe via POST' do
+    with_newsletter_unsubscribe_secret do
+      user = users(:one)
+      user.update(receives_follow_notifications: true)
+      hash = FollowNotificationUnsubscribeService.generate_token(user.email)
+
+      post follow_notifications_unsubscribe_path(hash: hash), params: { 'List-Unsubscribe' => 'One-Click' }
+      assert_response :success
+      assert_equal '', response.body
+      assert_equal false, user.reload.receives_follow_notifications?
     end
   end
 

@@ -216,4 +216,25 @@ class UserActivitiesRecorderTest < ActiveSupport::TestCase
       UserActivities::Recorder.custom_product_created(cp)
     end
   end
+
+  test 'followed_by_user records activity for followed user' do
+    follower = users(:one)
+    followed = users(:without_anything)
+    follow = UserFollow.create!(follower:, followed:)
+
+    act = UserActivity.find_by!(user: followed, subject: follow, verb: 'followed_by_user')
+    assert_equal follower.user_name, act.metadata['follower_user_name']
+    assert_equal follower.profile_path, act.metadata['url']
+  end
+
+  test 'hide_followed_by_user hides activity on unfollow' do
+    follow = user_follows(:one_follows_visible)
+    # Fixtures bypass the after_commit callback that records the activity.
+    UserActivities::Recorder.followed_by_user(follow)
+    act = UserActivity.find_by!(user: follow.followed, subject: follow, verb: 'followed_by_user')
+
+    follow.destroy
+
+    assert act.reload.hidden_at.present?
+  end
 end

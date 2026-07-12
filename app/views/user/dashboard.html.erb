@@ -26,10 +26,10 @@
   <div class="UserDashboard">
     <div class="UserDashboard-feed">
       <%= render "shared/overview/section_heading",
-          heading: t('headings.your_activity'),
+          heading: t('headings.feed'),
           heading_class: "UserDashboard-heading",
-          view_all_path: dashboard_activity_path %>
-      <%= render "shared/feed", feed_items: @feed, empty_state_message: t('empty_state.no_activity_dashboard') %>
+          view_all_path: dashboard_feed_path %>
+      <%= render "shared/activity_feed/feed", feed_items: @feed, empty_state_message: t('empty_state.no_activity_dashboard'), show_actor: true %>
     </div>
 
     <div class="UserDashboard-content">

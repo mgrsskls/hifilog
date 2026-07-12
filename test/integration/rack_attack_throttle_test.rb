@@ -129,4 +129,25 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
     post notes_url, params: params, headers: headers
     assert_response :too_many_requests
   end
+
+  test 'throttles repeated follow mutations by IP' do
+    sign_in users(:one)
+    followed = users(:logged_in_only)
+    headers = { 'REMOTE_ADDR' => '198.51.100.80' }
+
+    60.times do |_i|
+      post user_follows_path,
+           params: { followed_id: followed.id, redirect_to: dashboard_following_path },
+           headers: headers
+      assert_not_equal 429, response.status
+      follow = UserFollow.find_by(follower: users(:one), followed:)
+      follow&.destroy
+      UserBlock.where(blocker: users(:one), blocked: followed).destroy_all
+    end
+
+    post user_follows_path,
+         params: { followed_id: followed.id, redirect_to: dashboard_following_path },
+         headers: headers
+    assert_response :too_many_requests
+  end
 end

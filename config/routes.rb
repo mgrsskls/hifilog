@@ -44,6 +44,8 @@ Rails.application.routes.draw do
   resource :privacy_policy_acceptance, only: %i[new create destroy]
 
   match 'newsletters/unsubscribe', to: 'user#newsletter_unsubscribe', via: %i[get post], as: :newsletters_unsubscribe
+  match 'follow-notifications/unsubscribe', to: 'user#follow_notification_unsubscribe', via: %i[get post],
+                                            as: :follow_notifications_unsubscribe
 
   scope '/dashboard', as: :dashboard do
     root 'user#dashboard'
@@ -60,7 +62,10 @@ Rails.application.routes.draw do
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
     get 'custom-products/:id/edit', to: 'custom_products#edit', as: :edit_custom_product
     get 'history', to: 'user#history', as: :history
-    get 'activity', to: 'user#activity', as: :activity
+    get 'feed', to: 'user#feed', as: :feed
+    get 'following', to: 'user#following', as: :following
+    get 'followers', to: 'user#followers', as: :followers
+    get 'blocked', to: 'user#blocked', as: :blocked
     scope 'statistics', as: :statistics do
       root 'statistics#current'
       get 'total', to: 'statistics#total', as: :total
@@ -127,6 +132,8 @@ Rails.application.routes.draw do
   get '/events/past', to: 'events#past', as: :past_events
   get '/events/:year/:slug', to: 'events#show', as: :event
   resources :event_attendees, only: [:create, :destroy]
+  resources :user_follows, only: [:create, :destroy]
+  resources :user_blocks, only: [:create, :destroy]
 
   get '/search', to: "search#results"
 

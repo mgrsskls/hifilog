@@ -1,0 +1,9 @@
+<% if @follower_profile_url %>
+<%= t(
+      'user_follow.mailer.body_text',
+      follower_name: @follower.user_name,
+      profile_url: @follower_profile_url
+    ) %>
+<% else %>
+<%= t('user_follow.mailer.body_text_without_profile', follower_name: @follower.user_name) %>
+<% end %>

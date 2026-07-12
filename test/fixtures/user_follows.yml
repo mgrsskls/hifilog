@@ -1,0 +1,7 @@
+one_follows_visible:
+  follower: one
+  followed: visible
+
+visible_follows_one:
+  follower: visible
+  followed: one

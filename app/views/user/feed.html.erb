@@ -1,0 +1,13 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "feed" %>
+<% end %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <div class="Heading">
+    <h1><%= t('headings.feed') %></h1>
+  </div>
+
+  <div class="u-breakpoint u-breakpoint--l">
+    <%= render "shared/activity_feed/feed", feed_items: @feed, empty_state_message: t('empty_state.no_activity_dashboard'), show_actor: true %>
+    <%= paginate @feed_pagination %>
+  </div>
+<% end %>

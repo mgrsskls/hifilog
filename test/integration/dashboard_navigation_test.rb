@@ -9,6 +9,9 @@ class DashboardNavigationTest < ActionDispatch::IntegrationTest
     get dashboard_root_path
     assert_response :success
 
+    get dashboard_feed_path
+    assert_response :success
+
     get dashboard_products_path
     assert_response :success
 

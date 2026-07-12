@@ -19,7 +19,11 @@ class UserActivity < ApplicationRecord
     avatar_deleted
     decorative_image_uploaded
     decorative_image_deleted
+    followed_by_user
   ].freeze
+
+  # Shown on the dashboard activity feed only, not on public profiles.
+  PRIVATE_FEED_VERBS = %w[followed_by_user].freeze
 
   # Persisted for auditing/admin but omitted when building the public profile feed.
   FEED_HIDDEN_VERBS = %w[
@@ -39,6 +43,7 @@ class UserActivity < ApplicationRecord
 
   scope :visible, -> { where(hidden_at: nil) }
   scope :for_feed, -> { where.not(verb: FEED_HIDDEN_VERBS) }
+  scope :for_public_profile_feed, -> { for_feed.where.not(verb: PRIVATE_FEED_VERBS) }
   scope :chronological, -> { order(occurred_at: :desc) }
 
   def verb_sym

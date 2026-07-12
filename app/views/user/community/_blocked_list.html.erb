@@ -1,0 +1,24 @@
+<% if user_blocks.any? %>
+  <ul class="FollowingList">
+    <% user_blocks.each do |user_block| %>
+      <% blocked = user_block.blocked %>
+      <li class="FollowingList-item u-flex u-alignCenter u-gap-md">
+        <%= render "shared/avatar", user: blocked, size: 64 %>
+        <div class="FollowingList-info u-flexGrow">
+          <% if blocked.hidden? %>
+            <span><%= blocked.user_name %></span>
+            <small><%= t('user_follow.hidden_profile') %></small>
+          <% else %>
+            <%= link_to blocked.user_name, blocked.profile_path %>
+          <% end %>
+        </div>
+        <%= button_to t('user_follow.unblock'),
+                      user_block_path(user_block, redirect_to: dashboard_blocked_path),
+                      method: :delete,
+                      class: "Button Button--sm Button--secondary" %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <%= render "shared/empty_state", message: t('user_follow.empty_state.no_blocked') %>
+<% end %>

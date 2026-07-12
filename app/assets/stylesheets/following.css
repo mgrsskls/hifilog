@@ -1,0 +1,18 @@
+.FollowingList {
+	list-style: "";
+	margin: 0;
+	padding: 0;
+}
+
+.FollowingList-item {
+	padding-block: 1rem;
+	border-block-end: 0.0625rem solid var(--color-border-light);
+
+	&:first-child {
+		padding-block-start: 0;
+	}
+}
+
+.FollowingList-info {
+	flex-grow: 1;
+}

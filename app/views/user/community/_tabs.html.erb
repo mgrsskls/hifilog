@@ -1,0 +1,14 @@
+<nav aria-label="<%= t('headings.my_community') %>">
+  <ul class="Tabs">
+    <li>
+      <%= link_to "#{t('headings.following')} <span>(#{following_count})</span>".html_safe,
+                  dashboard_following_path,
+                  "aria-current": active_tab == :following %>
+    </li>
+    <li>
+      <%= link_to "#{t('headings.followers')} <span>(#{followers_count})</span>".html_safe,
+                  dashboard_followers_path,
+                  "aria-current": active_tab == :followers %>
+    </li>
+  </ul>
+</nav>

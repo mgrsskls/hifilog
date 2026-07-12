@@ -33,6 +33,18 @@ class User < ApplicationRecord
   end
   has_many :event_attendees, dependent: :destroy
   has_many :events, through: :event_attendees
+  has_many :user_follows, foreign_key: :follower_id, dependent: :destroy, inverse_of: :follower
+  has_many :followed_users, through: :user_follows, source: :followed
+  has_many :follower_relationships, class_name: 'UserFollow', foreign_key: :followed_id, dependent: :destroy,
+                                    inverse_of: :followed
+  has_many :followers, through: :follower_relationships, source: :follower
+  has_many :user_blocks, foreign_key: :blocker_id, dependent: :destroy, inverse_of: :blocker
+  has_many :blocked_users, through: :user_blocks, source: :blocked
+  has_many :blocker_relationships, class_name: 'UserBlock', foreign_key: :blocked_id, dependent: :destroy,
+                                   inverse_of: :blocked
+  has_many :blocked_by_users, through: :blocker_relationships, source: :blocker
+
+  scope :visible_in_follow_feed, -> { where.not(profile_visibility: :hidden) }
 
   auto_strip_attributes :user_name, squish: true
 
@@ -59,6 +71,28 @@ class User < ApplicationRecord
 
   def collection_path
     user_collection_path(user_name.downcase)
+  end
+
+  def following?(other)
+    return false if other.nil? || other == self
+
+    user_follows.exists?(followed_id: other.id)
+  end
+
+  def blocked?(other)
+    return false if other.nil? || other == self
+
+    user_blocks.exists?(blocked_id: other.id)
+  end
+
+  def blocked_by?(other)
+    return false if other.nil? || other == self
+
+    blocker_relationships.exists?(blocker_id: other.id)
+  end
+
+  def blocks?(other)
+    blocked?(other) || blocked_by?(other)
   end
 
   def assign_attributes(new_attributes)
@@ -202,6 +236,7 @@ class User < ApplicationRecord
       user_name_eq
       user_name_start
       receives_newsletter
+      receives_follow_notifications
     ]
   end
 

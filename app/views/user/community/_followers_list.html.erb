@@ -1,0 +1,29 @@
+<% if follower_relationships.any? %>
+  <ul class="FollowingList">
+    <% follower_relationships.each do |follower_relationship| %>
+      <% follower = follower_relationship.follower %>
+      <li class="FollowingList-item u-flex u-alignCenter u-gap-md">
+        <%= render "shared/avatar", user: follower, size: 64 %>
+        <div class="FollowingList-info u-flexGrow">
+          <% if follower.hidden? %>
+            <span><%= follower.user_name %></span>
+            <small><%= t('user_follow.hidden_profile') %></small>
+          <% else %>
+            <%= link_to follower.user_name, follower.profile_path %>
+          <% end %>
+        </div>
+        <div class="u-flex u-gap-sm">
+          <%= button_to t('user_follow.remove_follower'),
+                        user_follow_path(follower_relationship, redirect_to: dashboard_followers_path),
+                        method: :delete,
+                        class: "Button Button--sm Button--secondary" %>
+          <%= button_to t('user_follow.block'),
+                        user_blocks_path(blocked_id: follower.id, redirect_to: dashboard_followers_path),
+                        class: "Button Button--sm Button--negative" %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <%= render "shared/empty_state", message: t('user_follow.empty_state.no_followers') %>
+<% end %>

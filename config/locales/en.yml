@@ -106,6 +106,10 @@ en:
             logo:
               invalid_content_type: must be JPG, PNG, GIF, or WebP.
               too_large: must be 5 MB or smaller.
+        user_follow:
+          attributes:
+            followed:
+              blocked: is blocked
   add_to_bookmarks: Bookmark
   add_to_collection: Add to <b>Collection</b>
   add_to_prev_owned: Add to <b>Previous Products</b>
@@ -265,7 +269,7 @@ en:
   edit: Edit
   edit_record: Edit %{name}
   empty_state:
-    no_activity_dashboard: "<p><b>You have no activity to show yet.</b></p><p>As soon as you add products to your collection, attend events, create setups or custom products, you will see your activity here.</p>"
+    no_activity_dashboard: "<p><b>You have no activity to show yet.</b></p><p>As soon as you add products to your collection, attend events, create setups or custom products, or follow other users, you will see activity here.</p>"
     no_activity_profile: "<p><b>%{user_name} has no activity to show yet.</b></p><p>As soon as %{user_name} adds products to their collection, attends events, creates setups or custom products, you will see their activity here.</p>"
     no_upcoming_events: "<p><b>You have no upcoming events.</b></p><p>You can view all upcoming events <a href=\"%{path}\">here</a>.</p>"
     no_upcoming_events_profile: "<p><b>%{user_name} has no upcoming events.</b></p><p>You can view all upcoming events <a href=\"%{path}\">here</a>.</p>"
@@ -323,13 +327,17 @@ en:
     current_products: Collection
     dashboard: Welcome back
     edited: Edited
+    feed: Feed
+    following: Following
+    followers: Followers
+    blocked: Blocked users
     history: History
+    my_community: Community
     prev_owneds: Previous products
     profile: Profile
     statistics: Statistics
     events: Events
     overview: Overview
-    your_activity: Your Activity
     your_statistics: Your Statistics
     your_events: Your Events
   overview:
@@ -440,6 +448,32 @@ en:
       discontinued: Discontinued
       in_your_collection: In my collection
       prev_owned: Previously owned
+  user_follow:
+    follow: Follow
+    following: Following
+    unfollow: Unfollow
+    remove_follower: Remove
+    block: Block
+    unblock: Unblock
+    hidden_profile: Profile hidden
+    messages:
+      followed: "You are now following %{name}."
+      unfollowed: "You unfollowed %{name}."
+      removed_follower: "You removed %{name} as a follower."
+      blocked: "You blocked %{name}."
+      unblocked: "You unblocked %{name}."
+    empty_state:
+      no_following: You are not following anyone yet. Visit a user profile to follow them.
+      no_followers: No one is following you yet.
+      no_blocked: You have not blocked anyone.
+    notifications:
+      unsubscribed: You will no longer receive emails when someone follows you.
+      invalid_unsubscribe_link: Invalid unsubscribe link.
+    mailer:
+      subject: "%{follower_name} is now following you on HiFi Log"
+      body_html: "%{follower_link} is now following you."
+      body_text: "%{follower_name} is now following you. View their profile: %{profile_url}"
+      body_text_without_profile: "%{follower_name} is now following you."
   user_activity:
     image_gallery:
       open_image: "Open image %{index} of %{count}"
@@ -475,6 +509,7 @@ en:
       setup_product_removed_html: "Removed %{product_link} from their listening setup %{setup_link}"
       event_attendance_cancelled_html: "No longer attends %{link}"
       possession_image_uploaded_html: "Added a photo to %{link}"
+      followed_by_user_html: "%{link} started following you"
   user:
     edit:
       delete:

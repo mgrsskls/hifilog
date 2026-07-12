@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_12_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -442,6 +442,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_150000) do
     t.index ["user_id", "subject_type", "subject_id", "verb"], name: "index_user_activities_on_user_subject_verb"
   end
 
+  create_table "user_blocks", force: :cascade do |t|
+    t.bigint "blocked_id", null: false
+    t.bigint "blocker_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blocked_id"], name: "index_user_blocks_on_blocked_id"
+    t.index ["blocker_id", "blocked_id"], name: "index_user_blocks_on_blocker_id_and_blocked_id", unique: true
+    t.index ["blocker_id"], name: "index_user_blocks_on_blocker_id"
+  end
+
+  create_table "user_follows", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "followed_id", null: false
+    t.bigint "follower_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["followed_id"], name: "index_user_follows_on_followed_id"
+    t.index ["follower_id", "followed_id"], name: "index_user_follows_on_follower_id_and_followed_id", unique: true
+    t.index ["follower_id"], name: "index_user_follows_on_follower_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
@@ -454,6 +474,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_150000) do
     t.datetime "privacy_policy_accepted_at"
     t.string "privacy_policy_version"
     t.integer "profile_visibility", default: 0
+    t.boolean "receives_follow_notifications", default: true, null: false
     t.boolean "receives_newsletter", default: true, null: false
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
@@ -507,6 +528,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_150000) do
   add_foreign_key "setups", "users"
   add_foreign_key "sub_categories", "categories"
   add_foreign_key "user_activities", "users"
+  add_foreign_key "user_blocks", "users", column: "blocked_id"
+  add_foreign_key "user_blocks", "users", column: "blocker_id"
+  add_foreign_key "user_follows", "users", column: "followed_id"
+  add_foreign_key "user_follows", "users", column: "follower_id"
 
   create_view "product_items", sql_definition: <<-SQL
       SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,
