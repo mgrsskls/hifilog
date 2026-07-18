@@ -92,7 +92,8 @@ import "./_search.js";
 
 	buttonsWithLoadingState.forEach((el) => {
 		const button = el.closest("button");
-		const form = el.closest("form");
+		const form = button?.form;
+		if (!button || !form) return;
 
 		button.addEventListener("click", () => {
 			if (form.checkValidity()) {
