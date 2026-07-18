@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
     user_agent = request.user_agent
 
     return if user_agent.blank?
-    return if BLOCKED_AGENTS.any? { |agent| user_agent.include?(agent) }
+    return if BLOCKED_AGENTS.any? { |agent| user_agent.match?(agent) }
     return unless response&.content_type&.start_with?('text/html')
     return if request.is_crawler?
     return if current_user&.id == 1
