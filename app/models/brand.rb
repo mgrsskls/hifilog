@@ -10,7 +10,7 @@ class Brand < ApplicationRecord
   include DateFromComponents
   include PgSearchByName
 
-  pg_search_by_name(against: { name: 'A', full_name: 'B' })
+  pg_search_by_name(against: [:name, :full_name])
 
   nilify_blanks
 

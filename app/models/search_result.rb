@@ -11,6 +11,7 @@ class SearchResult < ApplicationRecord
                       product_name: 'A',
                       product_variant_name: 'A',
                       brand_name: 'A',
+                      brand_full_name: 'A',
                       model_no: 'B'
                     })
 
