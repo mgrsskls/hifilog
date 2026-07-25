@@ -149,13 +149,15 @@ Rails.application.routes.draw do
   get '/sitemap', to: 'sitemap#show', as: :sitemap
   get '/feed.rss', to: 'feed#rss', as: :rss
 
-  get '/changelog', to: 'static#changelog', constraints: lambda { |req| req.format == :html }
-  get '/about', to: 'static#about', constraints: lambda { |req| req.format == :html }
-  get '/privacy-policy', to: 'static#privacy_policy', constraints: lambda { |req| req.format == :html }
-  get '/imprint', to: 'static#imprint', constraints: lambda { |req| req.format == :html }
+  html_only = { defaults: { format: :html }, constraints: { format: 'html' } }
+
+  get '/changelog', to: 'static#changelog', **html_only
+  get '/about', to: 'static#about', **html_only
+  get '/privacy-policy', to: 'static#privacy_policy', **html_only
+  get '/imprint', to: 'static#imprint', **html_only
   scope '/calculators', as: :calculators do
-    root 'static#calculators', constraints: lambda { |req| req.format == :html }
-    get '/resistors-for-amplifier-to-headphone-adapter', to: 'static#amp_to_headphone_calculator', constraints: lambda { |req| req.format == :html }
+    root 'static#calculators', **html_only
+    get '/resistors-for-amplifier-to-headphone-adapter', to: 'static#amp_to_headphone_calculator', **html_only
   end
 
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
