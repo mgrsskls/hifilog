@@ -177,6 +177,12 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'changelog returns 404 for an unknown brand' do
+    get brand_changelog_url(brand_id: 'no-such-brand')
+
+    assert_response :not_found
+  end
+
   test 'filter by category returns only brands in that category' do
     get brands_category_url(categories(:one).slug)
     assert_response :success

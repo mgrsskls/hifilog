@@ -206,6 +206,35 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # Regression: ApplicationController#not_found used to re-render the changelog template for a
+  # missing record, which blew up on the nil @product instead of returning a 404.
+  test 'changelog returns 404 for an unknown product' do
+    get product_changelog_url(product_id: 'no-such-product')
+
+    assert_response :not_found
+  end
+
+  # Pins per-version attribution: a version with no whodunnit is credited to hifilog.com even
+  # when the version rendered directly above it has a known author. Correct today because the
+  # author is a block-local, but it is one refactor away from breaking silently.
+  test 'changelog credits each version to its own author' do
+    product = products(:one)
+
+    product.update!(name: 'Changelog attribution older') # no whodunnit outside a request
+    PaperTrail.request(whodunnit: users(:one).id.to_s) do
+      product.update!(name: 'Changelog attribution newer')
+    end
+
+    get product_changelog_url(product_id: product.reload.friendly_id)
+    assert_response :success
+
+    headings = css_select('.Changelog-itemHeading').map(&:text)
+
+    assert_equal 2, headings.size
+    assert_equal(1, headings.count { |heading| heading.include?('hifilog.com') })
+    assert_equal(1, headings.count { |heading| heading.include?(users(:one).user_name) })
+  end
+
   test 'create persists custom_attributes for boolean and number types' do
     brand = brands(:one)
     sub_category = brand.sub_categories.first

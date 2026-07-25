@@ -253,6 +253,24 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'changelog returns 404 for an unknown variant' do
+    get product_variant_changelog_url(
+      id: 'no-such-variant',
+      product_id: product_variants(:one).product.friendly_id
+    )
+
+    assert_response :not_found
+  end
+
+  test 'changelog returns 404 for an unknown product' do
+    get product_variant_changelog_url(
+      id: product_variants(:one).friendly_id,
+      product_id: 'no-such-product'
+    )
+
+    assert_response :not_found
+  end
+
   test 'show redirects to canonical slug when an old friendly id slug is used' do
     product_variant = product_variants(:two)
     product = product_variant.product

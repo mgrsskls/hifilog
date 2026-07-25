@@ -80,4 +80,17 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal %w[first_hand second_hand b_stock], values
     assert_equal ['New (first-hand)', 'Second-hand', 'B-stock'], labels
   end
+
+  test 'changelog_brand_name resolves an existing brand' do
+    brand = brands(:one)
+
+    assert_equal brand.name, changelog_brand_name(brand.id)
+  end
+
+  # A version can reference a brand that has been deleted since. Brand.find would raise
+  # RecordNotFound part-way through rendering the changelog.
+  test 'changelog_brand_name labels a brand that no longer exists' do
+    assert_equal '<i>Deleted</i>', changelog_brand_name(0)
+    assert_predicate changelog_brand_name(0), :html_safe?
+  end
 end

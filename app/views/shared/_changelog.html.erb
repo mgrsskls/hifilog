@@ -27,15 +27,10 @@
 <ol reversed class="Changelog">
     <% versions.reverse.each_with_index do |version, i| %>
       <%
-        if version.whodunnit.nil?
-          user_fallback = "hifilog.com"
-        else
-          if User.find_by(id: version.whodunnit).nil?
-            user_fallback = "<i>Deleted</i>"
-          else
-            user = User.find(version.whodunnit)
-          end
-        end
+        # One lookup per version instead of two: the previous form called User.find_by to test
+        # for existence and then User.find to fetch the same row again.
+        user = version.whodunnit.present? ? User.find_by(id: version.whodunnit) : nil
+        user_fallback = version.whodunnit.present? ? "<i>Deleted</i>" : "hifilog.com"
       %>
       <li class="Changelog-item">
         <p class="Changelog-itemHeading">
@@ -109,7 +104,7 @@
                                 -
                               <% end %>
                             <% elsif change[0] == "brand_id" && change[1][0].present? %>
-                              <%= Brand.find(change[1][0]).name %>
+                              <%= changelog_brand_name(change[1][0]) %>
                             <% elsif change[0] == "country_code" && change[1][0].present? %>
                               <%= country_name_from_country_code(change[1][0]) %>
                             <% elsif !change[1][0].nil? %>
@@ -173,7 +168,7 @@
                                 -
                               <% end %>
                             <% elsif change[0] == "brand_id" && change[1][1].present? %>
-                              <%= Brand.find(change[1][1]).name %>
+                              <%= changelog_brand_name(change[1][1]) %>
                             <% elsif change[0] == "country_code" && change[1][1].present? %>
                               <%= country_name_from_country_code(change[1][1]) %>
                             <% elsif !change[1][1].nil? %>

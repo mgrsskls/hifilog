@@ -97,6 +97,14 @@ module ApplicationHelper
     PaperTrail::Serializers::YAML.load(changes)
   end
 
+  # A changelog row describes historical state, so it can reference a brand that no longer
+  # exists: ActiveAdmin permits reassigning a product's brand_id, and the old brand can be
+  # deleted afterwards while the product itself survives under its new one. `Brand.find` would
+  # then raise RecordNotFound part-way through rendering and take the whole changelog down.
+  def changelog_brand_name(brand_id)
+    Brand.find_by(id: brand_id)&.name || tag.i('Deleted')
+  end
+
   def filter_versions(versions)
     versions.select do |version|
       log = get_changelog(version.object_changes)

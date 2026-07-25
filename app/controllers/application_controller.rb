@@ -103,12 +103,12 @@ class ApplicationController < ActionController::Base
   end
 
   def not_found
-    if action_name == 'changelog' || controller_path.split('/').first == 'admin'
-      render
-    else
-      respond_to do |format|
-        format.all  { render 'application/not_found', status: :not_found, formats: [:html] }
-      end
+    # ActiveAdmin handles its own missing records; re-rendering the current action is its
+    # existing behaviour and is left alone here.
+    return render if controller_path.split('/').first == 'admin'
+
+    respond_to do |format|
+      format.all { render 'application/not_found', status: :not_found, formats: [:html] }
     end
   end
 
