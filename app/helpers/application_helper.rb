@@ -92,6 +92,8 @@ module ApplicationHelper
   end
 
   def get_changelog(changes)
+    return {} if changes.nil?
+
     PaperTrail::Serializers::YAML.load(changes)
   end
 
