@@ -129,12 +129,7 @@ class ProductVariantsController < ApplicationController
   end
 
   def set_meta_desc
-    return if @product.description.blank?
-
-    @meta_desc = ActionController::Base.helpers.truncate(
-      ActionController::Base.helpers.strip_tags(@product.formatted_description),
-      length: 200
-    )
+    @meta_desc = @product_variant.meta_desc
   end
 
   def set_active_menu

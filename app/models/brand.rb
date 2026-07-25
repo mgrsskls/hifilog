@@ -6,6 +6,7 @@ class Brand < ApplicationRecord
   include ApplicationHelper
   include Format
   include Description
+  include MetaDescription
   include DiscontinuedDate
   include DateFromComponents
   include PgSearchByName
@@ -82,6 +83,22 @@ class Brand < ApplicationRecord
     super || fallback_description
   end
 
+  # Moved here from BrandsController#set_meta_desc so that the copy is testable and shared by
+  # the show and products pages. A written description is used as-is; the generated summary
+  # gains a sentence about how much of the brand is actually catalogued.
+  def meta_desc
+    return truncate_meta(strip_tags(formatted_description)) if description.present?
+
+    generated = fallback_description
+    return meta_sentences(strip_tags(generated), meta_catalog_sentence) if generated.present?
+
+    meta_sentences(
+      "#{name} #{discontinued? ? 'was' : 'is'} an audio hi-fi brand" \
+      "#{" from #{country_name}" if country_name.present?}.",
+      meta_catalog_sentence
+    )
+  end
+
   def self.active_country_codes
     Rails.cache.fetch('brands/active_country_codes') do
       where.not(country_code: nil)
@@ -124,6 +141,18 @@ class Brand < ApplicationRecord
   end
 
   private
+
+  # `products_count` is nil for every brand created before the counter cache was added and never
+  # touched since, so fall back to a count for those rather than reporting zero products for a
+  # brand that has some. Once the counter cache is backfilled this never issues a query.
+  def meta_catalog_sentence
+    count = products_count || products.count
+
+    return 'Its products, specifications and history are documented on HiFi Log.' if count.zero?
+    return '1 product is documented on HiFi Log.' if count == 1
+
+    "#{count} products are documented on HiFi Log."
+  end
 
   def clear_logo_when_remove_requested
     return unless ActiveModel::Type::Boolean.new.cast(remove_logo)

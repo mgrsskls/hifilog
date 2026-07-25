@@ -171,6 +171,63 @@ class ProductTest < ActiveSupport::TestCase
     assert_operator product.meta_desc.length, :<=, 220
   end
 
+  test 'meta description is a single squished line' do
+    product = products(:without_custom_attributes)
+    product.update!(description: nil)
+
+    copy = product.meta_desc
+    assert_not_includes copy, "\n"
+    assert_not_includes copy, '  '
+  end
+
+  test 'meta description names the brand country when known' do
+    product = products(:without_custom_attributes)
+    product.update!(description: nil)
+
+    assert_includes product.meta_desc, product.brand.country_name
+  end
+
+  test 'meta description omits the country when the brand has none' do
+    product = products(:without_custom_attributes)
+    product.update!(description: nil)
+    product.brand.update!(country_code: nil)
+
+    assert_includes product.reload.meta_desc, product.brand.name
+    assert_not_includes product.meta_desc, ' from '
+  end
+
+  test 'meta description includes the model number' do
+    product = products(:without_custom_attributes)
+    product.update!(description: nil, model_no: 'MK-VII')
+
+    assert_includes product.meta_desc, '(MK-VII)'
+  end
+
+  test 'meta description reports release and discontinued years' do
+    product = products(:without_custom_attributes)
+    product.update!(description: nil, release_year: 1978)
+
+    assert_includes product.meta_desc, 'Released in 1978.'
+
+    product.update!(discontinued: true, discontinued_year: 1982)
+
+    assert_includes product.reload.meta_desc, 'Released in 1978, discontinued in 1982.'
+  end
+
+  test 'meta description reports how many variants are documented' do
+    product = products(:with_variants)
+    product.update!(description: nil)
+
+    assert_includes product.meta_desc, "#{product.product_variants.size} variants are documented"
+  end
+
+  test 'meta description omits the variant count when there are none' do
+    product = products(:without_custom_attributes)
+    product.update!(description: nil)
+
+    assert_not_includes product.meta_desc, 'documented on HiFi Log'
+  end
+
   test 'custom attributes list translates stored option ids' do
     product = products(:one)
     option = custom_attributes(:one)

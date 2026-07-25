@@ -107,6 +107,64 @@ class BrandTest < ActiveSupport::TestCase
     assert_includes desc, '<strong>Bold text</strong>'
   end
 
+  test 'meta_desc uses the written description and strips its markup' do
+    brand = Brand.new(name: 'Test', description: '**Bold text**')
+
+    assert_equal 'Bold text', brand.meta_desc
+  end
+
+  test 'meta_desc truncates a long written description' do
+    brand = Brand.new(name: 'Test', description: 'word ' * 80)
+
+    assert_operator brand.meta_desc.length, :<=, 200
+  end
+
+  test 'meta_desc appends the catalog sentence to the generated summary' do
+    brand = Brand.new(name: 'Test', country_code: 'DE', founded_year: 2020)
+    copy = brand.meta_desc
+
+    assert_includes copy, 'Germany'
+    assert_includes copy, 'documented on HiFi Log'
+    assert_not_includes copy, '<'
+  end
+
+  test 'meta_desc counts the catalogued products' do
+    brand = brands(:one)
+    brand.update!(description: nil)
+
+    assert_includes brand.meta_desc, "#{brand.products.count} products are documented on HiFi Log."
+  end
+
+  test 'meta_desc counts products when the counter cache was never backfilled' do
+    brand = brands(:one)
+    brand.update!(description: nil)
+    brand.products_count = nil
+
+    assert_includes brand.meta_desc, "#{brand.products.count} products are documented on HiFi Log."
+  end
+
+  test 'meta_desc falls back to a plain sentence when nothing is known' do
+    brand = Brand.new(name: 'Nondescript')
+
+    assert_equal 'Nondescript is an audio hi-fi brand. Its products, specifications and history ' \
+                 'are documented on HiFi Log.', brand.meta_desc
+  end
+
+  test 'meta_desc uses the past tense for a discontinued brand with nothing known' do
+    brand = Brand.new(name: 'Nondescript', discontinued: true)
+
+    assert_includes brand.meta_desc, 'was an audio hi-fi brand.'
+  end
+
+  test 'meta_desc is a single squished line' do
+    brand = brands(:one)
+    brand.update!(description: nil)
+
+    copy = brand.meta_desc
+    assert_not_includes copy, "\n"
+    assert_not_includes copy, '  '
+  end
+
   test 'rejects logo with disallowed content type' do
     brand = brands(:one)
     brand.logo.attach(

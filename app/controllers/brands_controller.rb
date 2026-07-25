@@ -182,18 +182,7 @@ a user-driven database for hi-fi products and brands."
   end
 
   def set_meta_desc
-    desc = @brand.formatted_description
-
-    if desc.present?
-      @meta_desc = ActionController::Base.helpers.truncate(
-        ActionController::Base.helpers.strip_tags(desc),
-        length: 200, escape: false
-      )
-      return
-    end
-
-    @meta_desc = "#{@brand.name} is an audio hi-fi brand. \
-    Find out more about it on hifilog.com, a user-driven database for hi-fi products and brands."
+    @meta_desc = @brand.meta_desc
   end
 
   def find_brand

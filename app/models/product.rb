@@ -7,6 +7,7 @@ class Product < ApplicationRecord
   include ActiveSupport::NumberHelper
   include Format
   include Description
+  include MetaDescription
   include PgSearchByName
   include DatePartsValidatable
   include ReleaseDate
@@ -109,17 +110,17 @@ class Product < ApplicationRecord
   end
 
   def meta_desc
-    if description.present?
-      return ActionController::Base.helpers.truncate(
-        ActionController::Base.helpers.strip_tags(formatted_description),
-        length: 200
-      )
-    end
+    return truncate_meta(strip_tags(formatted_description)) if description.present?
 
-    "The #{name}
-#{discontinued? && product_variants.all?(&:discontinued) ? 'were' : 'are'}
-#{sub_categories.map(&:name).join(' / ')}
-by the audio manufacturer #{brand.name}#{" from #{brand.country_name}" if brand.country_code.present?}."
+    meta_sentences(
+      meta_identity_sentence,
+      meta_lifecycle_sentence,
+      meta_variants_sentence
+    )
+  end
+
+  def fully_discontinued?
+    discontinued? && product_variants.all?(&:discontinued)
   end
 
   # :nocov:
@@ -152,6 +153,21 @@ by the audio manufacturer #{brand.name}#{" from #{brand.country_name}" if brand.
   end
 
   private
+
+  def meta_identity_sentence
+    subject = meta_subject(name, ("(#{model_no})" if model_no.present?))
+
+    "The #{subject} #{fully_discontinued? ? 'were' : 'are'} #{sub_category_names.join(' / ')} " \
+      "by #{meta_maker}."
+  end
+
+  def meta_variants_sentence
+    count = product_variants.size
+    return if count.zero?
+    return '1 variant is documented on HiFi Log.' if count == 1
+
+    "#{count} variants are documented on HiFi Log."
+  end
 
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache

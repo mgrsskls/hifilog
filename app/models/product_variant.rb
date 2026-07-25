@@ -7,6 +7,7 @@ class ProductVariant < ApplicationRecord
   include ActiveSupport::NumberHelper
   include Format
   include Description
+  include MetaDescription
   include PgSearchByName
   include DatePartsValidatable
   include ReleaseDate
@@ -83,6 +84,16 @@ class ProductVariant < ApplicationRecord
     product_variant_url(product_id: product.friendly_id, id: slug)
   end
 
+  def meta_desc
+    return truncate_meta(strip_tags(formatted_description)) if description.present?
+    return product.meta_desc if product.description.present?
+
+    meta_sentences(
+      meta_identity_sentence,
+      meta_lifecycle_sentence
+    )
+  end
+
   def slug_candidates
     [
       [:name, :model_no],
@@ -125,6 +136,13 @@ class ProductVariant < ApplicationRecord
   end
 
   private
+
+  def meta_identity_sentence
+    subject = meta_subject(product.name, name_with_fallback, ("(#{model_no})" if model_no.present?))
+
+    "The #{subject} #{discontinued? ? 'were' : 'are'} #{product.sub_category_names.join(' / ')} " \
+      "by #{meta_maker}."
+  end
 
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache

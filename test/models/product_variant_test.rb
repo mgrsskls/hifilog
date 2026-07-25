@@ -71,4 +71,39 @@ class ProductVariantTest < ActiveSupport::TestCase
 
     assert_nil product_variant.formatted_description
   end
+
+  test 'meta_desc uses the variant description when it has one' do
+    product_variant = product_variants(:one)
+
+    assert_equal 'MyText', product_variant.meta_desc
+  end
+
+  test 'meta_desc falls back to the parent product description' do
+    product_variant = product_variants(:one)
+    product_variant.update!(description: nil)
+    product_variant.product.update!(description: 'Parent copy')
+
+    assert_equal product_variant.product.meta_desc, product_variant.meta_desc
+  end
+
+  test 'meta_desc is generated from the variant data when no description exists anywhere' do
+    product_variant = product_variants(:one)
+    product_variant.update!(description: nil)
+    product = product_variant.product
+
+    copy = product_variant.meta_desc
+
+    assert_includes copy, product.name
+    assert_includes copy, product_variant.name_with_fallback
+    assert_includes copy, product_variant.model_no
+    assert_includes copy, product.brand.name
+    assert_includes copy, 'Released in 2000.'
+  end
+
+  test 'meta_desc no longer leaves variant pages without a description' do
+    product_variant = product_variants(:three)
+    product_variant.update!(description: nil)
+
+    assert_predicate product_variant.meta_desc, :present?
+  end
 end
