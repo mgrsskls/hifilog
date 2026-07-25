@@ -60,11 +60,7 @@
           <ul>
             <% changelog.each do |change| %>
               <% unless change[0] == "slug" %>
-                <li>
-                    <b><%= t('brand.' + change[0]) %></b>
-                    <dl>
-                          <dt><%= t('changelog.before') %></dt>
-                          <dd class="Changelog-old">
+                <% before = capture do %>
                             <% if change[0] == "custom_attributes" %>
                               <% if change[1][0].present? %>
                                 <ul>
@@ -127,10 +123,8 @@
                             <% else %>
                               -
                             <% end %>
-                          </dd>
-
-                          <dt><%= t('changelog.after') %></dt>
-                          <dd class="Changelog-new">
+                <% end %>
+                <% after = capture do %>
                             <% if change[0] == "custom_attributes" %>
                               <% if change[1][1].present? %>
                                 <ul>
@@ -193,10 +187,19 @@
                             <% else %>
                               -
                             <% end %>
-                          </dd>
+                <% end %>
+                <% unless before.strip == "-" && after.strip == "-" %>
+                  <li>
+                      <b><%= t('brand.' + change[0]) %></b>
+                      <dl>
+                            <dt><%= t('changelog.before') %></dt>
+                            <dd class="Changelog-old"><%= before %></dd>
 
-                    </dl>
-                </li>
+                            <dt><%= t('changelog.after') %></dt>
+                            <dd class="Changelog-new"><%= after %></dd>
+                      </dl>
+                  </li>
+                <% end %>
               <% end %>
             <% end %>
           </ul>
