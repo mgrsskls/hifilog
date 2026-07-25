@@ -53,11 +53,6 @@
 	font-weight: bold;
 }
 
-.Home-intro .AppName span {
-	color: var(--color-accent);
-	font-weight: inherit;
-}
-
 .Home-intro h1 {
 	margin-block: 0;
 	font-size: clamp(1.6rem, 4vi, 2rem);

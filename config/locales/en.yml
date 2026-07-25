@@ -420,9 +420,9 @@ en:
       lead: You go to add the amplifier you just bought, and it is not in the database yet. So you add it — and it is there for the next person who goes looking.
       mechanics: Every brand and product can be edited by anyone with an account, and every change is recorded in the entry's changelog, so a mistake can always be seen and corrected. You do not have to be certain to be useful.
       mission: There are already plenty of places for brands to promote themselves. What has been missing is a place built by its users, where anyone can find unbiased information about all hi-fi gear and not just the most marketed. Every entry added takes it a little closer to being the world's most complete hi-fi database.
-    intro_down: <span class="AppName">HiFi <span>Log</span></span> is a user-driven database with over <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
-    intro_eq: <span class="AppName">HiFi <span>Log</span></span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
-    intro_up: <span class="AppName">HiFi <span>Log</span></span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
+    intro_down: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with over <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
+    intro_eq: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
+    intro_up: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     recently_added: Recently added to HiFi Log
     recently_added_heading: Recently added
   meta_description: "<em>HiFi Log</em> is a user-driven database for hi-fi products and brands. Users can create their own collection and keep track of their past gear."
