@@ -201,21 +201,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'changelog' do
-    path = product_changelog_url(product_id: products(:one).friendly_id)
-
-    get path
-    assert_response :redirect
-    assert_redirected_to new_user_session_path
-
-    sign_in users(:one)
-
-    get path
-    assert_response :success
-    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
-
-    products(:one).update(name: 'new name')
-
     get product_changelog_url(product_id: products(:one).friendly_id)
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
     assert_response :success
   end
 

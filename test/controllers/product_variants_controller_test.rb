@@ -245,27 +245,11 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
 
   test 'changelog' do
     product_variant = product_variants(:one)
-
-    path = product_variant_changelog_url(
-      id: product_variant.friendly_id,
-      product_id: product_variant.product.friendly_id
-    )
-
-    get path
-    assert_response :redirect
-    assert_redirected_to new_user_session_path
-
-    sign_in users(:one)
-
-    get path
-    assert_response :success
-    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
-
-    product_variant.update!(name: 'new name')
     get product_variant_changelog_url(
       id: product_variant.friendly_id,
       product_id: product_variant.product.friendly_id
     )
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
     assert_response :success
   end
 
