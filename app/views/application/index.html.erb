@@ -25,12 +25,12 @@
 
   <div class="Home-section Home-browse">
     <div class="Home-sectionHeader">
-      <h2 class="LargeHeadline">Discover.</h2>
-      <p>Browse through hi-fi products and brands &amp; discover whatever you are looking for.</p>
+      <h2 class="LargeHeadline"><%= t('home.browse.heading') %></h2>
+      <p><%= t('home.browse.intro') %></p>
     </div>
     <div class="Home-browseSections">
       <div class="Home-browseSection">
-        <h3>Products</h3>
+        <h3><%= t('home.browse.products_heading') %></h3>
         <ul>
           <li>
             … from specific categories, e.g. <%= link_to "Over-Ear Headphones", products_subcategory_path("headphones", "over-ear-headphones") %>, <%= link_to "Vacuum Tubes", products_category_path("vacuum-tubes") %> or <%= link_to "MC Cartridges", products_subcategory_path("analog", "cartridges", "attr[6][]" => 2) %>.
@@ -45,13 +45,13 @@
             … that are <%= link_to "still in production", products_path({ products: { status: :continued } }) %> or <%= link_to "discontinued", products_path({ products: { status: :discontinued } }) %>.
           </li>
         </ul>
-        <h4>Recently added</h4>
+        <h4><%= t('home.recently_added_heading') %></h4>
         <p>
           <%= newest_products.map { |product| link_to product.display_name, product.path }.join(", ").html_safe %>, …
         </p>
       </div>
       <div class="Home-browseSection">
-        <h3>Brands</h3>
+        <h3><%= t('home.browse.brands_heading') %></h3>
         <ul>
           <li>
             … with specific products, e.g. <%= link_to "Floorstanding Loudspeakers", brands_subcategory_path("loudspeakers", "floorstanding-loudspeakers") %>, <%= link_to "Integrated Tube Amplifiers", brands_subcategory_path("amplifiers", "integrated-amplifiers", "attr[4][]" => 2) %> or <%= link_to "Cables", brands_category_path("cables") %>.
@@ -66,14 +66,14 @@
             … that are <%= link_to "still in business", brands_path({ brands: { status: :continued } }) %> or <%= link_to "out of business", brands_path({ brands: { status: :discontinued } }) %>.
           </li>
         </ul>
-        <h4>Recently added</h4>
+        <h4><%= t('home.recently_added_heading') %></h4>
         <p>
           <%= newest_brands.map { |brand| link_to brand.name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
         </p>
       </div>
     </div>
     <div class="Home-browseEvents">
-      <h3>Events &amp; Shows</h3>
+      <h3><%= t('home.browse.events_heading') %></h3>
       <ul>
         <li>
           Browse <%= link_to "upcoming hi-fi events", events_path %> or <%= link_to "past hi-fi events", past_events_path %> and filter them by country or year.
@@ -85,28 +85,17 @@
           Mark events you plan to attend or have attended.
         </li>
       </ul>
-      <h4>Recently added</h4>
+      <h4><%= t('home.recently_added_heading') %></h4>
       <p>
         <%= newest_events.map { |event| link_to event.name, event_path(slug: event.slug, year: event.calendar_year) }.join(", ").html_safe %>, …
       </p>
     </div>
   </div>
 
-  <div class="Home-section Home-signUp is-dark">
+  <div class="Home-section Home-features is-dark">
     <div class="Home-sectionHeader">
-      <h2 class="LargeHeadline">Contribute.</h2>
-      <p>Be part of a community &amp; contribute to building the largest database for hi-fi products and brands.</p>
-    </div>
-    <div class="Rte">
-      <p>There are already plenty of places for brands to promote themselves and their products — but what's been missing is a place by users. A place where anyone can find unbiased information about all hi-fi gear, not just the most popular or most marketed. That is why we created hifilog.com: a platform that is 100% user-driven, where all content comes from the community.</p>
-      <p>Become a part of it, <a href="<%= new_user_registration_path %>">sign up</a> and help build the world's most complete hi-fi database. You can add new products and brands, or improve existing entries to make sure the information stays accurate and useful for everyone.</p>
-    </div>
-  </div>
-
-  <div class="Home-section Home-features">
-    <div class="Home-sectionHeader">
-      <h2 class="LargeHeadline">Collect.</h2>
-      <p>Create your own profile &amp; collect all your gear &mdash; previous, current and future.</p>
+      <h2 class="LargeHeadline"><%= t('home.collect.heading') %></h2>
+      <p><%= t('home.collect.intro') %></p>
     </div>
     <div class="Home-featuresContainer">
       <div class="Home-feature">
@@ -115,8 +104,8 @@
           <img src="/home/screenshot-04.png" width="2754" height="2112" alt="Screenshot showing the collection of a logged in hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Personal Collection</h3>
-          <p>You can add existing or your own custom built products to your collection, assign them to different listening setups, keep track of products you used to own, or bookmark gear you are interested in — organized in your own lists.</p>
+          <h3><%= t('home.collect.features.collection.heading') %></h3>
+          <p><%= t('home.collect.features.collection.text') %></p>
         </div>
       </div>
       <div class="Home-feature">
@@ -125,8 +114,8 @@
           <img src="/home/screenshot-01.png" width="2754" height="2112" alt="Screenshot showing insights of a logged in hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Private Insights</h3>
-          <p>Track dates of ownership, purchase and sale prices, purchase condition (new, second-hand, B-stock), and gifts. See current, total, and yearly insights — including spend, revenue, and how your collection changes over time.</p>
+          <h3><%= t('home.collect.features.insights.heading') %></h3>
+          <p><%= t('home.collect.features.insights.text') %></p>
         </div>
       </div>
       <div class="Home-feature">
@@ -135,8 +124,8 @@
           <img src="/home/screenshot-02.png" width="2754" height="2112" alt="Screenshot showing the profile page of a hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Public Profile</h3>
-          <p>Keep your profile private or make it public to showcase your products, setups, and previous gear — with an activity feed that shows when you add gear, change setups, or create custom products.</p>
+          <h3><%= t('home.collect.features.profile.heading') %></h3>
+          <p><%= t('home.collect.features.profile.text') %></p>
         </div>
       </div>
       <div class="Home-feature">
@@ -145,10 +134,23 @@
           <img src="/home/screenshot-03.png" width="2754" height="2112" alt="Screenshot showing the product history of a logged in hifilog user" loading="lazy">
         </picture>
         <div class="Rte">
-          <h3>Product History</h3>
-          <p>Your hi-fi journey is going for a while and you keep buying and selling gear? Get a visual timeline of your personal hi-fi history.</p>
+          <h3><%= t('home.collect.features.history.heading') %></h3>
+          <p><%= t('home.collect.features.history.text') %></p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="Home-section Home-signUp">
+    <div class="Home-sectionHeader">
+      <h2 class="LargeHeadline"><%= t('home.contribute.heading') %></h2>
+      <p><%= t('home.contribute.intro') %></p>
+    </div>
+    <div class="Rte">
+      <p><%= t('home.contribute.lead') %></p>
+      <p><%= t('home.contribute.mechanics') %></p>
+      <p><%= t('home.contribute.mission') %></p>
+      <p><%= t('home.contribute.cta_html', sign_up_path: new_user_registration_path) %></p>
     </div>
   </div>
 </div>

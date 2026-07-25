@@ -130,31 +130,14 @@
 	grid-column: 1 / -1;
 	display: grid;
 	grid-template-columns: subgrid;
-	color: var(--color-white);
 
 	a {
-		color: inherit;
 		font-weight: 600;
 	}
 
 	.Rte {
 		grid-column: 3 / -3;
 	}
-}
-
-.Home-features,
-[data-theme="light"] .Home-features {
-	background: var(--color-blue-925);
-}
-
-@media (prefers-color-scheme: dark) {
-	.Home-features {
-		background: var(--color-bg-main);
-	}
-}
-
-[data-theme="dark"] .Home-features {
-	background: var(--color-bg-main);
 }
 
 @media (width > 48rem) {
