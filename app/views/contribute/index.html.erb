@@ -1,0 +1,38 @@
+<div class="Heading">
+  <h1><%= t('contribute.index.heading') %></h1>
+</div>
+
+<div class="Rte">
+  <p><%= t('contribute.index.intro').html_safe %></p>
+</div>
+
+<ul class="ContributeQueues">
+  <li class="ContributeQueue">
+    <h2 class="ContributeQueue-heading">
+      <%= link_to t('contribute.brands_without_products.heading'), contribute_brands_without_products_path %>
+    </h2>
+    <p><%= t('contribute.index.brands_without_products_body') %></p>
+  </li>
+
+  <li class="ContributeQueue">
+    <h2 class="ContributeQueue-heading">
+      <%= link_to t('contribute.incomplete_brands.heading'), contribute_incomplete_brands_path %>
+    </h2>
+    <p><%= t('contribute.index.incomplete_brands_body') %></p>
+  </li>
+
+  <li class="ContributeQueue">
+    <h2 class="ContributeQueue-heading">
+      <%= link_to t('contribute.incomplete_products.heading'), contribute_incomplete_products_path %>
+    </h2>
+    <p><%= t('contribute.index.incomplete_products_body') %></p>
+  </li>
+</ul>
+
+<div class="Rte">
+  <p>
+    <%= t('contribute.index.outro_html',
+          new_brand_path: new_brand_path,
+          new_product_path: new_product_path) %>
+  </p>
+</div>

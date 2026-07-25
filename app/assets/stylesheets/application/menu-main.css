@@ -1,5 +1,6 @@
 .MenuMain-link {
 	white-space: nowrap;
+	box-sizing: border-box;
 }
 
 .MenuMain-link svg {
@@ -17,8 +18,8 @@
 	flex-shrink: 0;
 }
 
-@media (width < 58.5rem) {
-	.MenuMain .MenuMain-item + .MenuMain-item,
+@media (width < 68.5rem) {
+	.MenuMain-item + .MenuMain-item,
 	.MenuAccount {
 		border-block-start: var(--border) var(--divider-color);
 	}
@@ -30,7 +31,7 @@
 	}
 }
 
-@media (width >= 58.5rem) {
+@media (width >= 68.5rem) {
 	.MenuMain-link {
 		display: flex;
 		align-items: center;
@@ -41,10 +42,6 @@
 
 	.MenuMain-link {
 		position: relative;
-		padding-inline: 0.75rem;
-	}
-
-	.MenuMain-link--lvl1 {
 		padding-inline: 1.5rem;
 	}
 
@@ -63,8 +60,8 @@
 	}
 }
 
-@media (width >= 58.5rem) and (width < 64rem) {
-	.MenuMain-link--lvl1 {
+@media (68rem < width < 76rem) {
+	.MenuMain-link {
 		padding-inline: 1rem;
 	}
 }

@@ -80,6 +80,45 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
+  test 'adding an incomplete product to the collection nudges for the missing details' do
+    user = users(:one)
+    product = products(:two)
+
+    assert_predicate product, :incomplete?
+
+    sign_in user
+    post possessions_url(id: product.id)
+
+    assert_includes flash[:notice].to_s, edit_product_path(id: product.friendly_id)
+  end
+
+  test 'adding a complete product to the collection does not nudge' do
+    user = users(:one)
+    product = products(:two)
+    product.update!(
+      release_year: 1978,
+      description: 'A pair of headphones.',
+      price: 100,
+      price_currency: 'USD'
+    )
+
+    assert_predicate product, :complete?
+
+    sign_in user
+    post possessions_url(id: product.id)
+
+    assert_nil flash[:notice]
+  end
+
+  test 'adding a custom product to the collection does not nudge' do
+    user = users(:one)
+
+    sign_in user
+    post possessions_url(custom_product_id: custom_products(:three).id)
+
+    assert_nil flash[:notice]
+  end
+
   test 'should update possession' do
     user = users(:one)
     possession = user.possessions.first

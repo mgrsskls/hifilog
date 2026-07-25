@@ -6,6 +6,7 @@
 @import url("./application/avatar.css") layer(components);
 @import url("./application/back_link.css") layer(components);
 @import url("./application/button.css") layer(components);
+@import url("./application/contribute.css") layer(components);
 @import url("./application/empty_state.css") layer(components);
 @import url("./application/entity_list.css") layer(components);
 @import url("./application/filter.css") layer(components);
@@ -15,6 +16,7 @@
 @import url("./application/header.css") layer(components);
 @import url("./application/heading.css") layer(components);
 @import url("./application/image_dialog.css") layer(components);
+@import url("./application/incomplete_entry.css") layer(components);
 @import url("./application/image_gallery.css") layer(components);
 @import url("./application/index_page.css") layer(components);
 @import url("./application/instructions.css") layer(components);

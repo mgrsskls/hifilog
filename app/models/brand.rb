@@ -4,6 +4,7 @@ class Brand < ApplicationRecord
   include Rails.application.routes.url_helpers
   include PgSearch::Model
   include ApplicationHelper
+  include Completeness
   include Format
   include Description
   include MetaDescription
@@ -51,6 +52,27 @@ class Brand < ApplicationRecord
 
   friendly_id :name, use: [:slugged, :history]
 
+  COMPLETENESS_WEIGHTS = {
+    description: 3,
+    country_code: 2,
+    discontinued: 2,
+    discontinued_year: 1,
+    founded_year: 1,
+    website: 1
+  }.freeze
+  COMPLETENESS_PRODUCTS_WEIGHT = 5
+
+  scope :without_products, -> { where(products_count: 0) }
+  scope :missing_founded_year, -> { where(founded_year: nil) }
+  scope :missing_description, -> { where(description: nil) }
+  # `where.not(discontinued: true)` would exclude brands whose status is unknown, but those
+  # are still asked for a website by #completeness_fields, which only exempts discontinued ones.
+  scope :missing_website, -> { where(website: nil).where('brands.discontinued IS NOT TRUE') }
+  scope :missing_country_code, -> { where(country_code: nil) }
+  scope :missing_discontinued, -> { where(discontinued: nil) }
+  scope :missing_discontinued_year, -> { where(discontinued_year: nil, discontinued: true) }
+  scope :incomplete, -> { where('brands.completeness < 100') }
+
   before_save :clear_logo_when_remove_requested
 
   after_update :touch_products
@@ -58,6 +80,28 @@ class Brand < ApplicationRecord
   after_save :invalidate_cache
   after_commit :clear_country_cache
   after_commit :clear_brands_cache
+
+  # A brand out of business has no current website to link to, and one still trading has no year
+  # of discontinuation. They swap places, and both weigh 1, so the denominator stays 14 either
+  # way and scores stay comparable across the catalogue.
+  def completeness_fields
+    return super - [:discontinued_year] unless discontinued?
+
+    super - [:website]
+  end
+
+  def completeness_present?(field)
+    return !discontinued.nil? if field == :discontinued
+
+    super
+  end
+
+  # Having any products at all is worth more than every other brand field combined; an empty
+  # brand page has nothing on it worth reading.
+  def completeness_components
+    super + [[products_count.to_i.positive? ? COMPLETENESS_PRODUCTS_WEIGHT : 0,
+              COMPLETENESS_PRODUCTS_WEIGHT]]
+  end
 
   def categories
     @categories ||= sub_categories.map(&:category).uniq.sort_by(&:name)
@@ -128,6 +172,9 @@ class Brand < ApplicationRecord
       sub_categories_id_eq
       logo_attachment_id_eq
       logo_blob_id_eq
+      completeness_eq
+      completeness_gt
+      completeness_lt
     ]
   end
 

@@ -160,7 +160,7 @@ import "./_search.js";
 				if (shouldOpen) {
 					menuButton.setAttribute("aria-expanded", "true");
 
-					if (window.matchMedia("(width < 58.5rem)")) {
+					if (window.matchMedia("(width < 68.5rem)")) {
 						if (
 							menuButton.getBoundingClientRect().bottom > window.innerHeight
 						) {

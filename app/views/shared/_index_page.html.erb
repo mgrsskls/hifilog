@@ -20,10 +20,12 @@
           <p class="FilterInfo">
             <small><%= page_entries_info records %></small>
           </p>
-          <form class="u-flex u-alignCenter u-gap-md">
-            <%= hidden_fields_for_params(params.except(:order, :controller, :action, :category_slug, :sub_category_slug)) %>
-            <%= yield :sort %>
-          </form>
+          <% if yield(:sort).present? %>
+            <form class="u-flex u-alignCenter u-gap-md">
+              <%= hidden_fields_for_params(params.except(:order, :controller, :action, :category_slug, :sub_category_slug)) %>
+              <%= yield :sort %>
+            </form>
+          <% end %>
         </div>
         <%= yield :table %>
         <%= paginate records %>

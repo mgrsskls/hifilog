@@ -63,7 +63,7 @@
           if (event.persisted) {
             const { theme } = localStorage;
 
-            
+
             if (theme) {
               document.documentElement.dataset.theme = theme;
               document.querySelector(`theme-toggle input[value="${theme}"]`).checked = true;
@@ -177,6 +177,11 @@
                 </div>
                 <nav class="Header-account" aria-label="Account">
                   <ul class="MenuAccount MenuList">
+                    <li class="MenuMain-item">
+                      <%= link_to contribute_root_path, class: "MenuMain-link MenuMain-link--lvl1", "aria-current": params[:controller] == "contribute" ? "page" : "false" do %>
+                        <span><%= t('contribute.index.heading') %></span>
+                      <% end %>
+                    </li>
                     <% if user_signed_in? %>
                       <li class="MenuMain-item MenuMain-item--account">
                         <button class="MenuMain-link MenuMain-link--account u-hide-sm" aria-controls="menu-account" aria-expanded="false" <%= active_menu_state(@active_menu, :dashboard) %>>

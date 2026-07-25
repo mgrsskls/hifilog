@@ -115,6 +115,11 @@
     </dl>
 
     <div class="Entity-meta">
+      <%= render "shared/incomplete_entry",
+        record: @product_variant,
+        edit_path: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
+      %>
+
       <ul class="Entity-metaLinks MetaLinks">
         <li>
           <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)), rel: "nofollow" %>

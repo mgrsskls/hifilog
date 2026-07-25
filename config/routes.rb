@@ -142,6 +142,14 @@ Rails.application.routes.draw do
   resources :user_follows, only: [:create, :destroy]
   resources :user_blocks, only: [:create, :destroy]
 
+  # Contribution queues: entries with a known gap. Noindex, see ContributeController.
+  scope '/contribute', as: :contribute do
+    root 'contribute#index'
+    get 'brands-without-products', to: 'contribute#brands_without_products', as: :brands_without_products
+    get 'incomplete-brands', to: 'contribute#incomplete_brands', as: :incomplete_brands
+    get 'incomplete-products', to: 'contribute#incomplete_products', as: :incomplete_products
+  end
+
   get '/search', to: "search#results"
 
   root "application#index"

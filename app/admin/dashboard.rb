@@ -92,6 +92,27 @@ ActiveAdmin.register_page "Dashboard" do
         end
       end
       div do
+        avg_brand_completeness = number_to_rounded(Brand.average(:completeness).to_f, precision: 2)
+        avg_product_completeness = number_to_rounded(ProductItem.average(:completeness).to_f, precision: 2)
+        h3 class: "text-xl font-bold mb-2" do
+          "Completeness"
+        end
+        dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
+          div class: "AdminDashboardStat", "style": "--val: #{avg_brand_completeness}" do
+            dt class: "font-bold text-gray-700" do
+              "Brands (average)"
+            end
+            dd "#{avg_brand_completeness}%"
+          end
+          div class: "AdminDashboardStat", "style": "--val: #{avg_product_completeness}" do
+            dt class: "font-bold text-gray-700" do
+              "Products (average)"
+            end
+            dd "#{avg_product_completeness}%"
+          end
+        end
+      end
+      div do
         products_with_release_year_count = Product.where.not(release_year: nil).count
         products_with_release_year_count_percentage = number_to_rounded(products_with_release_year_count / all_products_count.to_f * 100, precision: 2)
         products_with_description_count = Product.where.not(description: nil).count

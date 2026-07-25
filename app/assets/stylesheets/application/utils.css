@@ -168,13 +168,13 @@
 	--color: var(--color-discontinued-marker);
 }
 
-@media (width < 58.5rem) {
+@media (width < 68.5rem) {
 	.u-hide-sm {
 		display: none;
 	}
 }
 
-@media (width >= 58.5rem) {
+@media (width >= 68.5rem) {
 	.u-hide-lg {
 		display: none;
 	}

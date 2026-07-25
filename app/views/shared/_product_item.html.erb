@@ -1,5 +1,7 @@
 <% hide_brand ||= false %>
 <% hide_category ||= false %>
+<% render_completeness ||= false %>
+<% completeness ||= nil %>
 
 <% main = capture do %>
   <% unless hide_brand %>
@@ -100,5 +102,7 @@
   main:,
   content:,
   actions:,
-  name: "#{item.brand.name} #{item.display_name}"
+  name: "#{item.brand.name} #{item.display_name}",
+  render_completeness:,
+  completeness:
 %>

@@ -1,3 +1,5 @@
+<% render_completeness ||= false %>
+
 <% main = capture do %>
   <%= link_to brand.name, brand_path(id: brand.friendly_id), class: "EntityListItem-name" %>
   <% if brand.full_name.present? %>
@@ -44,5 +46,7 @@
   name: brand.name,
   list_image: (brand.logo.attached? ? brand.logo : nil),
   list_image_width: 640,
-  list_image_height: 427
+  list_image_height: 427,
+  render_completeness:,
+  completeness: brand.completeness
 %>

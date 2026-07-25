@@ -34,8 +34,10 @@
                   <% end %>
                 </div>
               </dd>
-              <dt><%= Brand.human_attribute_name(:website) %></dt>
-              <dd><%= @brand.website.present? ? (link_to @brand.website, "#{@brand.website}?utm_source=hifilog.com&utm_medium=referral", rel: "noreferrer noopener") : "-" %></dd>
+              <% if !@brand.discontinued? %>
+                <dt><%= Brand.human_attribute_name(:website) %></dt>
+                <dd><%= @brand.website.present? ? (link_to @brand.website, "#{@brand.website}?utm_source=hifilog.com&utm_medium=referral", rel: "noreferrer noopener") : "-" %></dd>
+              <% end %>
               <dt><%= t('brand.founded') %></dt>
               <dd>
                 <% if @brand.founded_date.present? %>
@@ -63,14 +65,12 @@
           <% end %>
         </div>
 
-
         <div class="Entity-heading">
           <h2>
             <%= Product.model_name.human.pluralize %>
           </h2>
           <a href="<%= brand_products_path(brand_id: @brand.friendly_id) %>"><b>Show all products</b></a>
         </div>
-
 
         <% if @all_sub_categories_grouped.any? %>
           <dl class="Data">
@@ -111,14 +111,10 @@
       </dl>
 
       <div class="Entity-meta">
-        <dl>
-          <dt><%= t('headings.contributors') %></dt>
-          <dd>
-            <%= @contributors.any? ? safe_join(@contributors.map { |c| c["profile_visibility"] != 0 ? link_to(c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }, ", ") : "hifilog.com" %>
-          </dd>
-        </dl>
-
-        <hr>
+        <%= render "shared/incomplete_entry",
+          record: @brand,
+          edit_path: edit_brand_path(id: @brand.friendly_id)
+        %>
 
         <ul class="Entity-metaLinks MetaLinks">
           <li>
@@ -128,6 +124,13 @@
             <%= link_to t('headings.changelog'), brand_changelog_path(@brand), rel: "nofollow" %>
           </li>
         </ul>
+
+        <dl>
+          <dt><%= t('headings.contributors') %></dt>
+          <dd>
+            <%= @contributors.any? ? safe_join(@contributors.map { |c| c["profile_visibility"] != 0 ? link_to(c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }, ", ") : "hifilog.com" %>
+          </dd>
+        </dl>
       </div>
     </div>
   </div>

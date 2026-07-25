@@ -60,7 +60,11 @@ class PossessionsController < ApplicationController
       custom_product: @custom_product || nil,
       prev_owned: params[:prev_owned] == 'true'
     )
-    flash[:alert] = I18n.t(:generic_error_message) unless @active_possession.save
+    if @active_possession.save
+      set_completeness_nudge
+    else
+      flash[:alert] = I18n.t(:generic_error_message)
+    end
 
     redirect_back_to_product(
       product: @product,
@@ -158,6 +162,26 @@ class PossessionsController < ApplicationController
   end
 
   private
+
+  # Someone who has just added a piece of gear is the most likely person to know the details it
+  # is still missing, and this is the moment they are looking at it.
+  def set_completeness_nudge
+    entry = @product_variant || @product
+    return if entry.blank? || entry.complete?
+
+    path = if @product_variant
+             product_edit_variant_path(
+               product_id: @product_variant.product.friendly_id,
+               id: @product_variant.friendly_id
+             )
+           else
+             edit_product_path(id: @product.friendly_id)
+           end
+
+    # rubocop:disable Rails/ActionControllerFlashBeforeRender
+    flash[:notice] = I18n.t('completeness.possession_nudge_html', path:, name: entry.display_name)
+    # rubocop:enable Rails/ActionControllerFlashBeforeRender
+  end
 
   def possession_params
     possession = params[:possession]

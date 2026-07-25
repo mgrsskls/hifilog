@@ -137,6 +137,10 @@ class ProductFilterService
                release_month DESC NULLS LAST,
                release_day DESC NULLS LAST,
                LOWER(product_items.name)'
+            when 'completeness_asc'
+              'product_items.completeness ASC, product_items.created_at DESC, LOWER(product_items.name)'
+            when 'completeness_desc'
+              'product_items.completeness DESC, product_items.created_at DESC, LOWER(product_items.name)'
             when 'added_asc' then 'created_at ASC'
             when 'added_desc' then 'created_at DESC'
             when 'updated_asc' then 'updated_at ASC'

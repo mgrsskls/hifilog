@@ -1,0 +1,26 @@
+.ContributeQueues {
+	list-style: none;
+	padding: 0;
+	margin-block: 1rem;
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+
+.ContributeQueue {
+	background: var(--color-bg2);
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	padding: 1.5rem;
+	margin-trim: block;
+
+	p {
+		margin-block-end: 0;
+	}
+}
+
+.ContributeQueue-heading {
+	margin-block: 0 0.5rem;
+	font-size: 1.5rem;
+	line-height: 1.5;
+}

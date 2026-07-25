@@ -1,6 +1,8 @@
 <%
   actions ||= nil
   is_current ||= false
+  render_completeness ||= false
+  completeness ||= nil
 %>
 
 <div class="EntityListItem EntityListItem--<%= item_type.parameterize %> <%= item_type %> <%= is_discontinued ? "is-discontinued" : "is-continued" unless is_discontinued.nil? %>" id="<%= "#{item_type.parameterize}-#{item.id}" %>"<%= " aria-current=true" if is_current %>>
@@ -25,9 +27,20 @@
     <%= content %>
   </div>
 
-  <% if actions.present? %>
+  <% if actions.present? || render_completeness %>
     <div class="EntityListItem-footer">
       <%= actions %>
+
+      <% if render_completeness %>
+        <div class="Completeness">
+          <span class="Completeness-bar">
+            <span class="Completeness-value" style="--value: <%= completeness %>%"></span>
+          </span>
+          <span class="Completeness-label">
+            <%= completeness %>% <span class="u-hiddenVisually">completed</span>
+          </span>
+        </div>
+      <% end %>
     </div>
   <% end %>
 </div>

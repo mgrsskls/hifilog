@@ -41,7 +41,6 @@
 
 .IndexPage-content {
 	grid-area: content;
-	padding-block: 2rem;
 }
 
 .IndexPage-contentHeader {
@@ -105,5 +104,6 @@
 		border-inline-start: var(--border-light);
 		padding-inline-start: var(--page-spacing);
 		margin-inline-start: calc(-1 * 0.0625rem);
+		padding-block: 2rem;
 	}
 }

@@ -30,9 +30,8 @@
 	stroke: var(--color-secondary);
 }
 
-@media (width < 58.5rem) {
-	.MenuAccount {
-		gap: 1rem;
+@media (width < 68.5rem) {
+	.MenuMain-item--account {
 		padding-block-start: 2rem;
 	}
 
@@ -47,7 +46,7 @@
 	}
 }
 
-@media (width >= 58.5rem) {
+@media (width >= 68.5rem) {
 	[aria-expanded="false"] ~ .Menu-subList {
 		display: none;
 	}

@@ -162,6 +162,46 @@ en:
     by: by
     change: Edited
     comment: Comment
+  completeness:
+    cta: Add the information if you can help out.
+    fields:
+      country_code: the country it comes from
+      discontinued: whether it is still in business
+      discontinued_year: the year it was discontinued
+      description: a description
+      founded_year: the year it was founded
+      release_year: the release year
+      website: a website
+    missing: "%{name} is still missing %{gaps}."
+    possession_nudge_html: You own a %{name}. Want to help filling out the missing information? <a href="%{path}">Add it here</a>.
+  contribute:
+    brands_without_products:
+      heading: Brands without products
+    filter:
+      all_categories: All categories
+      anything: Anything missing
+      apply: Apply
+      missing: Missing
+      missing_options:
+        country_code: Country
+        description: Description
+        discontinued: Status
+        discontinued_year: Year of discontinuation
+        founded_year: Founded
+        release_year: Release year
+        specs: Specifications
+        website: Website
+    incomplete_brands:
+      heading: Brands with missing details
+    incomplete_products:
+      heading: Products with missing details
+    index:
+      brands_without_products_body: These brands are in our database but no products have been added to them yet.
+      incomplete_brands_body: These brands exist but are missing information like release year, description or their country of origin.
+      heading: Contribute
+      intro: "Every brand and product on <i>HiFi&thinsp;Log</i> was added by hand, so most of them are still missing some information.<br>Want to help us out? Here are some entry points:"
+      outro_html: Nothing here that you know? You can also <a href="%{new_brand_path}"><b>add a brand</b></a> or <a href="%{new_product_path}"><b>add a product</b></a> from scratch.
+      incomplete_products_body: These products are missing details like release year, description or other specifications.
   custom_attribute_inputs:
     h: Height
     l: Length
@@ -277,6 +317,9 @@ en:
     profile_collection_no_images: "<p><b>%{user_name} has not uploaded any images of their products yet.</b></p>"
     bookmarks: "<p><b>You have not added any products to your bookmarks yet.</b></p><p>Your can do that directly on a product page.</p>"
     brands_filter: <p><b>There are no brands yet based on your filter criteria.</b> You can <a href="%{path}" rel="nofollow">add a brand here</a>.</p>
+    contribute_brands_without_products: <p><b>No brands without products match this filter.</b></p><p>If a brand is missing entirely, you can <a href="%{path}" rel="nofollow">add it here</a>.</p>
+    contribute_brands: <p><b>No brands match this filter.</b></p><p>If a product is missing entirely, you can <a href="%{path}" rel="nofollow">add it here</a>.</p>
+    contribute_products: <p><b>No products match this filter.</b></p><p>If a product is missing entirely, you can <a href="%{path}" rel="nofollow">add it here</a>.</p>
     contributions: <p><b>You have not contributed any brands or products yet.</b></p><p>You can <a href="%{brands_path}">create a brand</a>, <a href="%{products_path}">create a product</a> or contribute by adding more information to a brand or a product directly on their sites.</p>
     cta: <p><b>No products have been added to <i>%{name}</i> yet.</b> You can <a href="%{path}">add a product here</a>.</p>
     custom_products: "<p><b>You haven't created any custom products yet.</b></p><p>If you build for example your own loudspeakers or amplifiers, you can add these here.</p>"
@@ -458,6 +501,8 @@ en:
   sort_by:
     added_asc: 'Added: Oldest first'
     added_desc: 'Added: Newest first'
+    completeness_asc: 'Completeness: Least complete first'
+    completeness_desc: 'Completeness: Nearly complete first'
     label: Sort
     name_asc: 'Name: A first'
     name_desc: 'Name: Z first'

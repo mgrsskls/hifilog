@@ -6,6 +6,7 @@ class Product < ApplicationRecord
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
   include Format
+  include Completeness
   include Description
   include MetaDescription
   include PgSearchByName
@@ -61,6 +62,14 @@ class Product < ApplicationRecord
 
   store_accessor :custom_attributes
 
+  COMPLETENESS_WEIGHTS = { description: 3, release_year: 2, discontinued_year: 1 }.freeze
+  # Specs are scored as one group so categories stay comparable: a headphone with four
+  # highlighted attributes and a cable with none are both measured out of the same 8.
+  COMPLETENESS_SPECS_WEIGHT = 3
+
+  scope :missing_release_year, -> { where(release_year: nil) }
+  scope :missing_description, -> { where(description: nil) }
+
   after_commit :invalidate_cache
   after_commit :update_brand_sub_categories
 
@@ -103,6 +112,43 @@ class Product < ApplicationRecord
     end
 
     attributes.join(', ')
+  end
+
+  # One indexed join per call, memoised, and never called from the contribute queues (those
+  # filter in SQL instead), so this stays a single extra query on a product page.
+  # An entry still in production has no year of discontinuation to give, so it is only asked for
+  # once the entry is marked discontinued.
+  def completeness_fields
+    return super - [:discontinued_year] unless discontinued?
+
+    super
+  end
+
+  def applicable_highlighted_attributes
+    @applicable_highlighted_attributes ||=
+      CustomAttribute.where(highlighted: true)
+                     .joins(:sub_categories)
+                     .where(sub_categories: { id: sub_category_ids })
+                     .distinct
+                     .pluck(:label)
+  end
+
+  # Not memoised: custom_attributes can change on a loaded record, and this is a cheap reject
+  # over a handful of labels. The query it depends on is memoised above.
+  def missing_highlighted_attributes
+    applicable_highlighted_attributes.reject { |label| highlighted_attribute_filled?(label) }
+  end
+
+  # 2 points for the fraction filled, plus a final point only once the set is closed, so a
+  # nearly finished entry outranks a half finished one.
+  def completeness_components
+    applicable = applicable_highlighted_attributes
+    return super if applicable.empty?
+
+    filled = applicable.size - missing_highlighted_attributes.size
+    bonus = filled == applicable.size ? 1 : 0
+
+    super + [[Rational(2 * filled, applicable.size) + bonus, COMPLETENESS_SPECS_WEIGHT]]
   end
 
   def sub_category_names
@@ -153,6 +199,14 @@ class Product < ApplicationRecord
   end
 
   private
+
+  # Mirrors the SQL in db/views/product_items_v18.sql: the key must exist and hold something
+  # that is neither JSON null nor an empty string. `.present?` would disagree on a stored false.
+  def highlighted_attribute_filled?(label)
+    value = (custom_attributes || {})[label]
+
+    !value.nil? && value != ''
+  end
 
   def meta_identity_sentence
     subject = meta_subject(name, ("(#{model_no})" if model_no.present?))

@@ -218,3 +218,31 @@
 .EntityListItem-metaLinks {
 	font-size: 0.875em;
 }
+
+.Completeness {
+	display: flex;
+	gap: 0.5rem;
+	font-size: 0.875rem;
+	align-items: center;
+}
+
+.Completeness-bar {
+	display: block;
+	background: var(--color-transparency-10);
+	block-size: 0.5em;
+	border-radius: 0.5em;
+	flex: 1;
+}
+
+.Completeness-value {
+	display: block;
+	inline-size: var(--value);
+	block-size: inherit;
+	background: var(--color-accent);
+	border-radius: inherit;
+}
+
+.Completeness-label {
+	flex: 0 0 2em;
+	text-align: end;
+}

@@ -32,7 +32,7 @@
 	font-weight: 600;
 }
 
-@media (width < 58.5rem) {
+@media (width < 68.5rem) {
 	.MenuMega {
 		--page-spacing: 0;
 
@@ -70,7 +70,7 @@
 	}
 }
 
-@media (width >= 58.5rem) {
+@media (width >= 68.5rem) {
 	.MenuMega {
 		inset-inline: 0;
 		background: var(--color-menu-bg);

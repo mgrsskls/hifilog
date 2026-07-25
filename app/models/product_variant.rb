@@ -6,6 +6,7 @@ class ProductVariant < ApplicationRecord
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
   include Format
+  include Completeness
   include Description
   include MetaDescription
   include PgSearchByName
@@ -60,7 +61,19 @@ class ProductVariant < ApplicationRecord
             numericality: { only_integer: true }
   validates :discontinued, inclusion: { in: [true, false] }
 
+  # Variants inherit the parent's custom attributes and cannot edit them, so specs are not
+  # part of a variant's own completeness.
+  COMPLETENESS_WEIGHTS = { description: 3, release_year: 2, discontinued_year: 1 }.freeze
+
   after_commit :invalidate_cache
+
+  # An entry still in production has no year of discontinuation to give, so it is only asked for
+  # once the entry is marked discontinued.
+  def completeness_fields
+    return super - [:discontinued_year] unless discontinued?
+
+    super
+  end
 
   def name_with_fallback
     return 'Update' if name.blank?

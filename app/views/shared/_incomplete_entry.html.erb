@@ -1,0 +1,20 @@
+<%
+  missing_fields = record.missing_fields
+  missing_specs = record.missing_highlighted_attributes
+%>
+<% if missing_fields.any? || missing_specs.any? %>
+  <%
+    gaps = missing_fields.map { |field| t("completeness.fields.#{field}") }
+    gaps += missing_specs.map do |attribute|
+      t("custom_attribute_labels.#{attribute}", default: attribute).downcase
+    end
+    # Editing still requires an account, so send signed-out visitors through sign-in and back.
+    target = user_signed_in? ? edit_path : new_user_session_path(redirect: edit_path)
+  %>
+  <p class="IncompleteEntry">
+    <%= t('completeness.missing',
+          name: record.display_name,
+          gaps: gaps.to_sentence(two_words_connector: ' and ', last_word_connector: ' and ')) %>
+    <%= link_to t('completeness.cta'), target, rel: "nofollow" %>
+  </p>
+<% end %>

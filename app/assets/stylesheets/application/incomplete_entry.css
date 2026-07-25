@@ -1,0 +1,12 @@
+.IncompleteEntry {
+	background: var(--color-bg2);
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	padding: 1rem;
+	margin-block-start: 0;
+	margin-block-end: 2rem;
+
+	a {
+		font-weight: 600;
+	}
+}

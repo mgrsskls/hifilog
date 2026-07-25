@@ -42,10 +42,23 @@ class ProductItem < ApplicationRecord
            primary_key: :product_id,
            inverse_of: false
 
-  # Possessions tied to this catalogue row (base product rows exclude variant-linked possessions).
   def possessions
     item_type == 'Product' ? base_product_possessions : variant_possessions
   end
+
+  scope :missing_release_year, -> { where(release_year: nil) }
+  # The view's `description` is always the parent product's, so a variant row needs its own
+  # column here. Otherwise a variant with no description of its own is never listed, even though
+  # its completeness score — which uses the variant's own description — counts it as missing.
+  scope :missing_description, lambda {
+    where(item_type: 'Product', description: nil)
+      .or(where(item_type: 'ProductVariant', variant_description: nil))
+  }
+  scope :missing_discontinued_year, -> { where(discontinued_year: nil, discontinued: true) }
+  scope :missing_specs, lambda {
+    where('product_items.specs_applicable > 0 AND product_items.specs_filled < product_items.specs_applicable')
+  }
+  scope :incomplete, -> { where('product_items.completeness < 100') }
 
   def readonly?
     true

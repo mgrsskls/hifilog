@@ -1,0 +1,76 @@
+<% content_for :header do %>
+  <h1>
+    <span class="IndexPage-category">
+      <%= t('contribute.index.heading') %><span class="u-hiddenVisually">:</span>
+    </span>
+    <%= t('contribute.incomplete_brands.heading') %>
+  </h1>
+<% end %>
+
+<% content_for :filter do %>
+  <% filter_applied = [@category, @missing].compact %>
+  <form id="filter" method="get" action="<%= contribute_incomplete_brands_path %>">
+    <div class="Filter">
+      <button class="Filter-open Button Button--secondary" type="button" aria-controls="filter" aria-expanded="false">Filter</button>
+      <div class="Filter-form">
+        <div class="Filter-grid">
+          <div class="Filter-section">
+            <label class="Filter-label" for="contribute-category"><%= Category.model_name.human %></label>
+            <select name="category" id="contribute-category" class="Filter-input">
+              <option value=""><%= t('contribute.filter.all_categories') %></option>
+              <% menu_categories.values.flatten.each do |category| %>
+                <option value="<%= category.friendly_id %>"<%= " selected" if @category == category %>>
+                  <%= category.name %>
+                </option>
+              <% end %>
+            </select>
+          </div>
+          <div class="Filter-section">
+            <label class="Filter-label" for="contribute-missing"><%= t('contribute.filter.missing') %></label>
+            <select name="missing" id="contribute-missing" class="Filter-input">
+              <option value=""><%= t('contribute.filter.anything') %></option>
+              <% ContributeController::BRAND_MISSING_FILTERS.each do |missing| %>
+                <option value="<%= missing %>"<%= " selected" if @missing == missing %>>
+                  <%= t("contribute.filter.missing_options.#{missing}") %>
+                </option>
+              <% end %>
+            </select>
+          </div>
+        </div>
+        <div class="Filter-actions u-flex u-gap-md">
+          <button class="Filter-close" type="button" aria-controls="filter" aria-expanded="false">Close</button>
+          <div class="Filter-submit u-flex u-gap-md u-alignCenter">
+            <button class="Button" type="submit">Filter</button>
+            <%= link_to "Reset", contribute_incomplete_brands_path, class: "Filter-reset" %>
+          </div>
+        </div>
+      </div>
+
+      <p class="Filter-status<%= " is-active" if filter_applied.any? %>">
+        <% if filter_applied.any? %>
+          <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Filters applied.
+        <% else %>
+          No filters applied.
+        <% end %>
+      </p>
+    </div>
+  </form>
+<% end %>
+
+<% content_for :table do %>
+  <%= render "shared/brands_table",
+      brands: @brands,
+      category: @category,
+      sub_category: nil,
+      product_counts: @product_counts,
+      render_completeness: true
+  %>
+<% end %>
+
+<%= render "shared/index_page",
+  records: @brands,
+  category: @category,
+  sub_category: nil,
+  empty_state_message: t('empty_state.contribute_brands', path: new_brand_path),
+  type: :brand
+%>
