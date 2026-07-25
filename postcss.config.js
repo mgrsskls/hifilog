@@ -3,7 +3,7 @@ export default {
 		"@tailwindcss/postcss": {},
 		"postcss-import": {},
 		"postcss-preset-env": {
-			browsers: "> 0.3% and not dead",
+			browsers: "baseline widely available",
 		},
 		cssnano: {},
 	},
