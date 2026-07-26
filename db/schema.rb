@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_130100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_194407) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -451,7 +451,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_130100) do
     t.datetime "updated_at", null: false
     t.index ["blocked_id"], name: "index_user_blocks_on_blocked_id"
     t.index ["blocker_id", "blocked_id"], name: "index_user_blocks_on_blocker_id_and_blocked_id", unique: true
-    t.index ["blocker_id"], name: "index_user_blocks_on_blocker_id"
   end
 
   create_table "user_follows", force: :cascade do |t|
@@ -461,7 +460,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_130100) do
     t.datetime "updated_at", null: false
     t.index ["followed_id"], name: "index_user_follows_on_followed_id"
     t.index ["follower_id", "followed_id"], name: "index_user_follows_on_follower_id_and_followed_id", unique: true
-    t.index ["follower_id"], name: "index_user_follows_on_follower_id"
   end
 
   create_table "users", force: :cascade do |t|
