@@ -5,7 +5,7 @@ class Category < ApplicationRecord
 
   default_scope { order(order: :asc) }
 
-  has_many :sub_categories, dependent: :destroy
+  has_many :sub_categories, dependent: :destroy, inverse_of: :category
 
   friendly_id :name, use: [:slugged, :history]
 

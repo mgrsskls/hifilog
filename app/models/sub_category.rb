@@ -5,7 +5,7 @@ class SubCategory < ApplicationRecord
 
   default_scope { order(order: :asc, name: :asc) }
 
-  belongs_to :category
+  belongs_to :category, inverse_of: :sub_categories
   has_and_belongs_to_many :products, join_table: :products_sub_categories
   has_and_belongs_to_many :brands
   has_and_belongs_to_many :custom_attributes

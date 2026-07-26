@@ -8,15 +8,16 @@ class NotesController < ApplicationController
   def index
     @active_menu = :dashboard
     @active_dashboard_menu = :notes
-    @notes = current_user.notes.order(updated_at: :desc, created_at: :desc).map do |note|
+    @notes = current_user.notes.includes(product: :brand, product_variant: { product: :brand })
+                         .order(updated_at: :desc, created_at: :desc).map do |note|
       if note.product_variant_id.present?
-        item = ProductVariant.find(note.product_variant_id)
+        item = note.product_variant
         edit_path = product_new_variant_notes_path(
           product_id: note.product.friendly_id,
           id: note.product_variant.friendly_id
         )
       else
-        item = Product.find(note.product_id)
+        item = note.product
         edit_path = product_new_notes_path(product_id: note.product.friendly_id)
       end
 
