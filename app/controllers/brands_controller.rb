@@ -45,7 +45,7 @@ class BrandsController < ApplicationController
                           brands: @brands,
                           category: @category,
                           sub_category: @sub_category
-                        ).filter.products.group_by(&:brand_id).transform_values(&:length)
+                        ).filter.products.except(:order).group(:brand_id).count
                       else
                         @brands.to_h do |brand|
                           [
@@ -117,8 +117,6 @@ a user-driven database for hi-fi products and brands."
     @products = ProductItem.preload_list_possession_images(@products)
 
     @canonical_url = brand_products_index_canonical_url
-    @total_products_count = @brand.products.length
-    @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
     page_title("#{@brand.name} #{@sub_category&.name || Product.model_name.human.pluralize}")
@@ -285,8 +283,7 @@ a user-driven database for hi-fi products and brands."
   end
 
   def load_brand_for_products_page
-    @brand = Brand.with_attached_logo.includes(sub_categories: [:category],
-                                               products: [:product_variants]).friendly.find(params[:brand_id])
+    @brand = Brand.with_attached_logo.friendly.find(params[:brand_id])
   end
 
   def redirect_legacy_brand_products_category_query

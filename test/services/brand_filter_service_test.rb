@@ -62,7 +62,61 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
   test 'sorting by products_count returns brands in correct order' do
     result = BrandFilterService.new(filters: { sort: 'products_desc' }).filter
     counts = result.brands.map(&:products_count)
+
     assert_equal counts.sort.reverse, counts
+  end
+
+  test 'sorting by products with category uses matching product counts not totals' do
+    category = categories(:two)
+    brand_with_matching = brands(:two)
+    brand_without_matching = brands(:three)
+
+    # brand_without_matching is linked to the category via brands_sub_categories but its product
+    # lives in another category — total products_count would incorrectly rank it first.
+    brand_without_matching.update!(products_count: 100)
+    brand_with_matching.update!(products_count: 1)
+
+    result = BrandFilterService.new(
+      filters: { sort: 'products_desc' },
+      category:
+    ).filter.brands.to_a
+
+    assert_includes result, brand_with_matching
+    assert_includes result, brand_without_matching
+    assert_operator result.index(brand_with_matching), :<, result.index(brand_without_matching)
+  end
+
+  test 'sorting by products with product filters uses matching product counts not totals' do
+    brand_with_one_match = brands(:two)
+    brand_with_two_matches = brands(:one)
+
+    Product.create!(
+      name: 'Another DIY',
+      brand: brand_with_two_matches,
+      slug: 'another-diy',
+      diy_kit: true,
+      sub_category_ids: [sub_categories(:one).id]
+    )
+    Product.create!(
+      name: 'Third DIY',
+      brand: brand_with_two_matches,
+      slug: 'third-diy',
+      diy_kit: true,
+      sub_category_ids: [sub_categories(:one).id]
+    )
+
+    # Totals would rank brand_with_one_match first if we used products_count.
+    brand_with_one_match.update!(products_count: 100)
+    brand_with_two_matches.update!(products_count: 2)
+
+    result = BrandFilterService.new(
+      filters: { sort: 'products_desc' },
+      product_filters: { diy_kit: '1' }
+    ).filter.brands.to_a
+
+    assert_includes result, brand_with_two_matches
+    assert_includes result, brand_with_one_match
+    assert_operator result.index(brand_with_two_matches), :<, result.index(brand_with_one_match)
   end
 
   test 'return all brands without any params' do

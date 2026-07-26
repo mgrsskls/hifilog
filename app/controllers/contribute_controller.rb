@@ -84,14 +84,17 @@ class ContributeController < ApplicationController
     end
   end
 
-  # Subqueries rather than joins, so paging and ordering are not affected by duplicate rows from
-  # the category join.
   def filter_brands_by_category(scope)
     return scope if @category.blank?
 
-    scope.where(
-      id: Brand.joins(sub_categories: :category).where(categories: { id: @category.id }).select(:id)
-    )
+    scope.where(<<~SQL.squish, category_id: @category.id)
+      EXISTS (
+        SELECT 1 FROM brands_sub_categories
+        INNER JOIN sub_categories ON sub_categories.id = brands_sub_categories.sub_category_id
+        WHERE brands_sub_categories.brand_id = brands.id
+          AND sub_categories.category_id = :category_id
+      )
+    SQL
   end
 
   def filter_products_by_category(scope)

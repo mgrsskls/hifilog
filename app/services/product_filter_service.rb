@@ -10,35 +10,24 @@ class ProductFilterService
     @filters = filters
     @category = category
     @sub_category = sub_category
-    @products = brands.any? ? ProductItem.where(brand_id: brands.map(&:id)) : ProductItem.all
+    @products = products_scope_for(brands)
     @brand_filters = brand_filters
   end
 
   def filter
     products = @products
 
-    if @sub_category || @category
-      if @sub_category
-        matching_sub_categories = products.where(
-          id: ProductItem.joins(
-            'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
-          )
-                         .where(products_sub_categories: { sub_category_id: @sub_category.id })
-                         .select(:id)
-        )
-      else
-        matching_sub_categories = products.where(
-          id: ProductItem.joins(
-            'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
-          )
-                         .joins(
-                           'INNER JOIN sub_categories ON sub_categories.id = products_sub_categories.sub_category_id'
-                         )
-                         .where(sub_categories: { category_id: @category.id })
-                         .select(:id)
-        )
-      end
-      products = matching_sub_categories
+    if @sub_category
+      products = products.joins(
+        'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
+      ).where(products_sub_categories: { sub_category_id: @sub_category.id })
+    elsif @category
+      # product_id avoids duplicate rows when a product has multiple sub-categories in the category
+      products = products.where(
+        product_id: Product.joins(:sub_categories)
+                           .where(sub_categories: { category_id: @category.id })
+                           .select(:id)
+      )
     end
 
     data = {
@@ -72,6 +61,21 @@ class ProductFilterService
   end
 
   private
+
+  def products_scope_for(brands)
+    if brands.is_a?(ActiveRecord::Relation)
+      # Reselect id so pg_search rank columns do not break `IN (SELECT …)`.
+      # Keep ORDER BY when LIMIT/OFFSET are present — otherwise the limited subquery
+      # returns an arbitrary set of brands, not the same page as the outer query.
+      brand_ids = brands.reselect(brands.klass.arel_table[:id])
+      brand_ids = brand_ids.except(:order) if brands.limit_value.nil? && brands.offset_value.nil?
+      ProductItem.where(brand_id: brand_ids)
+    elsif brands.present?
+      ProductItem.where(brand_id: brands.map(&:id))
+    else
+      ProductItem.all
+    end
+  end
 
   def apply_status_filter(scope, options)
     discontinued = options[:status] == 'discontinued'

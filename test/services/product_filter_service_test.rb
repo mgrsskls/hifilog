@@ -221,4 +221,14 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
 
     assert_includes result.products.pluck(:product_id), product.id
   end
+
+  test 'paginated ordered brand relation scopes products to the same page of brands' do
+    ordered_page = BrandFilterService.new(filters: { sort: 'products_desc' }).filter.brands.page(1)
+    page_brand_ids = ordered_page.map(&:id)
+
+    result = ProductFilterService.new(filters: {}, brands: ordered_page).filter
+    counted_brand_ids = result.products.except(:order).distinct.pluck(:brand_id)
+
+    assert_equal page_brand_ids.sort, counted_brand_ids.sort
+  end
 end
