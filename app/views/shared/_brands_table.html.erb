@@ -1,5 +1,6 @@
 <% mark ||= nil %>
 <% render_completeness ||= false %>
+<% brands = brands.preload(sub_categories: [:category]) if brands.respond_to?(:preload) %>
 
 <% cache [brands, request.query_parameters, category, product_counts, sub_category,
           render_completeness] do %>

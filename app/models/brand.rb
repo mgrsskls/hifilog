@@ -104,7 +104,16 @@ class Brand < ApplicationRecord
   end
 
   def categories
-    @categories ||= sub_categories.includes(:category).map(&:category).uniq.sort_by(&:name)
+    # Avoid sub_categories.includes(:category) when already preloaded — that rebuilds a
+    # relation and re-queries per brand (N+1 on brands#index).
+    @categories ||= begin
+      scs = if association(:sub_categories).loaded?
+              sub_categories
+            else
+              sub_categories.includes(:category)
+            end
+      scs.map(&:category).uniq.sort_by(&:name)
+    end
   end
 
   def display_name

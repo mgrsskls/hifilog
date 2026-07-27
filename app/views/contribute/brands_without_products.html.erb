@@ -46,11 +46,9 @@
   </form>
 <% end %>
 
-<% brands = @brands.preload(sub_categories: [:category]) %>
-
 <% content_for :table do %>
   <%= render "shared/brands_table",
-    brands:,
+    brands: @brands,
     category: @category,
     sub_category: nil,
     product_counts: @product_counts,
@@ -59,7 +57,7 @@
 <% end %>
 
 <%= render "shared/index_page",
-  records: brands,
+  records: @brands,
   category: @category,
   sub_category: nil,
   empty_state_message: t('empty_state.contribute_brands_without_products', path: new_brand_path),
