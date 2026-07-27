@@ -50,7 +50,9 @@ class BrandFilterService
     if @product_filters.present?
       filtered_products_relation = ProductFilterService.new(
         filters: @product_filters,
-        brands:
+        brands:,
+        category: @category,
+        sub_category: @sub_category
       ).filter.products
 
       brands = brands.where(id: filtered_products_relation.select(:brand_id))

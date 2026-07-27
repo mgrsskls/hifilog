@@ -43,6 +43,50 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
     assert_equal [brands(:two)], result.brands.to_a
   end
 
+  test 'product filters are scoped to the selected sub_category' do
+    brand = brands(:two)
+    matching_sub_category = sub_categories(:two)
+    other_sub_category = sub_categories(:one)
+
+    # Brand is linked to another sub_category, but its only diy_kit product lives elsewhere.
+    brand.sub_categories << other_sub_category unless brand.sub_category_ids.include?(other_sub_category.id)
+
+    result_outside = BrandFilterService.new(
+      product_filters: { diy_kit: '1' },
+      sub_category: other_sub_category
+    ).filter
+
+    result_inside = BrandFilterService.new(
+      product_filters: { diy_kit: '1' },
+      sub_category: matching_sub_category
+    ).filter
+
+    assert_not_includes result_outside.brands.to_a, brand
+    assert_includes result_inside.brands.to_a, brand
+  end
+
+  test 'product filters are scoped to the selected category' do
+    brand = brands(:two)
+    matching_category = categories(:two)
+    other_category = categories(:one)
+    other_sub_category = sub_categories(:one)
+
+    brand.sub_categories << other_sub_category unless brand.sub_category_ids.include?(other_sub_category.id)
+
+    result_outside = BrandFilterService.new(
+      product_filters: { diy_kit: '1' },
+      category: other_category
+    ).filter
+
+    result_inside = BrandFilterService.new(
+      product_filters: { diy_kit: '1' },
+      category: matching_category
+    ).filter
+
+    assert_not_includes result_outside.brands.to_a, brand
+    assert_includes result_inside.brands.to_a, brand
+  end
+
   test 'filter by custom attributes returns correct brands' do
     custom_attribute = custom_attributes(:one)
     result = BrandFilterService.new(product_filters: { custom: { custom_attribute.label => ['1'] } }).filter
