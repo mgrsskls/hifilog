@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_26_194407) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_215406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -215,6 +215,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_194407) do
     t.bigint "custom_product_id", null: false
     t.bigint "sub_category_id", null: false
     t.index ["custom_product_id", "sub_category_id"], name: "idx_on_custom_product_id_sub_category_id_7b23a66fa1", unique: true
+    t.index ["sub_category_id"], name: "index_custom_products_sub_categories_on_sub_category_id"
   end
 
   create_table "event_attendees", force: :cascade do |t|

@@ -19,7 +19,7 @@ class CustomProduct < ApplicationRecord
   auto_strip_attributes :name, squish: true
 
   validates :name, presence: true, uniqueness: { scope: :user }
-  validates :slug, presence: true, uniqueness: { scope: :user_id }, if: -> { has_attribute?(:slug) }
+  validates :slug, presence: true, uniqueness: { scope: :user }
   validates :sub_categories, presence: true
   validate :validate_image_content_type, :validate_image_file_size, on: :update
 
