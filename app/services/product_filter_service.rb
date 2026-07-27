@@ -76,9 +76,6 @@ class ProductFilterService
 
   def base_table_counts_eligible?
     @brand_filters.blank? &&
-      @filters[:status].blank? &&
-      @filters[:country].blank? &&
-      @filters[:diy_kit].blank? &&
       @filters[:query].blank? &&
       @filters[:custom].blank?
   end
@@ -90,15 +87,29 @@ class ProductFilterService
     products = Product.all
     products = products.where(brand_id: brand_ids) unless brand_ids.nil?
     products = scope_products_by_taxonomy(products)
+    products = apply_base_table_filters(products)
 
     variants = ProductVariant.joins(:product)
     variants = variants.where(products: { brand_id: brand_ids }) unless brand_ids.nil?
     variants = scope_variants_by_taxonomy(variants)
+    variants = apply_base_table_filters(variants, variants: true)
 
     counts = Hash.new(0)
     products.group(:brand_id).count.each { |brand_id, count| counts[brand_id] += count }
     variants.group('products.brand_id').count.each { |brand_id, count| counts[brand_id] += count }
     counts
+  end
+
+  def apply_base_table_filters(scope, variants: false)
+    scope = scope.where(discontinued: @filters[:status] == 'discontinued') if @filters[:status].present?
+    scope = scope.where(diy_kit: @filters[:diy_kit] == '1') if @filters[:diy_kit].present?
+
+    if @filters[:country].present?
+      scope = variants ? scope.joins(product: :brand) : scope.joins(:brand)
+      scope = scope.where(brands: { country_code: @filters[:country].strip.upcase })
+    end
+
+    scope
   end
 
   def scope_products_by_taxonomy(products)
