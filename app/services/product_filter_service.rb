@@ -10,6 +10,7 @@ class ProductFilterService
     @filters = filters
     @category = category
     @sub_category = sub_category
+    @brands = brands
     @products = products_scope_for(brands)
     @brand_filters = brand_filters
   end
@@ -60,7 +61,86 @@ class ProductFilterService
     Result.new(products:)
   end
 
+  # Counts matching product_items (products + variants) per brand_id.
+  # Prefer base tables when product-level filters are absent so we avoid scanning the
+  # product_items view (and its completeness LATERAL) for brands#index badges.
+  def counts_by_brand
+    if base_table_counts_eligible?
+      counts_by_brand_on_base_tables
+    else
+      filter.products.except(:order).group(:brand_id).count
+    end
+  end
+
   private
+
+  def base_table_counts_eligible?
+    @brand_filters.blank? &&
+      @filters[:status].blank? &&
+      @filters[:country].blank? &&
+      @filters[:diy_kit].blank? &&
+      @filters[:query].blank? &&
+      @filters[:custom].blank?
+  end
+
+  def counts_by_brand_on_base_tables
+    brand_ids = resolved_brand_ids
+    return {} if brand_ids == []
+
+    products = Product.all
+    products = products.where(brand_id: brand_ids) unless brand_ids.nil?
+    products = scope_products_by_taxonomy(products)
+
+    variants = ProductVariant.joins(:product)
+    variants = variants.where(products: { brand_id: brand_ids }) unless brand_ids.nil?
+    variants = scope_variants_by_taxonomy(variants)
+
+    counts = Hash.new(0)
+    products.group(:brand_id).count.each { |brand_id, count| counts[brand_id] += count }
+    variants.group('products.brand_id').count.each { |brand_id, count| counts[brand_id] += count }
+    counts
+  end
+
+  def scope_products_by_taxonomy(products)
+    if @sub_category
+      products.joins(:sub_categories).where(sub_categories: { id: @sub_category.id })
+    elsif @category
+      products.where(
+        id: Product.joins(:sub_categories)
+                   .where(sub_categories: { category_id: @category.id })
+                   .select(:id)
+      )
+    else
+      products
+    end
+  end
+
+  def scope_variants_by_taxonomy(variants)
+    if @sub_category
+      variants.joins(product: :sub_categories).where(sub_categories: { id: @sub_category.id })
+    elsif @category
+      variants.where(
+        product_id: Product.joins(:sub_categories)
+                           .where(sub_categories: { category_id: @category.id })
+                           .select(:id)
+      )
+    else
+      variants
+    end
+  end
+
+  # nil = no brand restriction; [] = explicitly empty page of brands.
+  def resolved_brand_ids
+    brands = @brands
+
+    if brands.is_a?(ActiveRecord::Relation)
+      scope = brands.reselect(brands.klass.arel_table[:id])
+      scope = scope.except(:order) if brands.limit_value.nil? && brands.offset_value.nil?
+      scope.pluck(:id)
+    elsif brands.present?
+      brands.map { |brand| brand.is_a?(ApplicationRecord) ? brand.id : brand }
+    end
+  end
 
   def products_scope_for(brands)
     if brands.is_a?(ActiveRecord::Relation)
@@ -71,7 +151,8 @@ class ProductFilterService
       brand_ids = brand_ids.except(:order) if brands.limit_value.nil? && brands.offset_value.nil?
       ProductItem.where(brand_id: brand_ids)
     elsif brands.present?
-      ProductItem.where(brand_id: brands.map(&:id))
+      ids = brands.map { |brand| brand.is_a?(ApplicationRecord) ? brand.id : brand }
+      ProductItem.where(brand_id: ids)
     else
       ProductItem.all
     end

@@ -231,4 +231,70 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
 
     assert_equal page_brand_ids.sort, counted_brand_ids.sort
   end
+
+  test 'counts_by_brand with sub_category matches product_items grouping and includes variants' do
+    brand = brands(:two)
+    sub_category = sub_categories(:two)
+    expected = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      sub_category:
+    ).filter.products.except(:order).group(:brand_id).count
+
+    counts = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      sub_category:
+    ).counts_by_brand
+
+    assert_equal expected, counts
+    assert_operator counts[brand.id], :>, brand.products.joins(:sub_categories)
+                                               .where(sub_categories: { id: sub_category.id }).count
+  end
+
+  test 'counts_by_brand with category matches product_items grouping' do
+    brand = brands(:two)
+    category = categories(:two)
+    expected = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      category:
+    ).filter.products.except(:order).group(:brand_id).count
+
+    counts = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      category:
+    ).counts_by_brand
+
+    assert_equal expected, counts
+  end
+
+  test 'counts_by_brand with product filters still matches product_items grouping' do
+    expected = ProductFilterService.new(
+      filters: { diy_kit: '1' },
+      brands: [brands(:two)]
+    ).filter.products.except(:order).group(:brand_id).count
+
+    counts = ProductFilterService.new(
+      filters: { diy_kit: '1' },
+      brands: [brands(:two)]
+    ).counts_by_brand
+
+    assert_equal expected, counts
+  end
+
+  test 'counts_by_brand accepts loaded brand ids without re-querying a relation' do
+    brand = brands(:one)
+    sub_category = sub_categories(:one)
+
+    counts = ProductFilterService.new(
+      filters: {},
+      brands: [brand.id],
+      sub_category:
+    ).counts_by_brand
+
+    assert_equal brand.id, counts.keys.sole
+    assert_operator counts[brand.id], :positive?
+  end
 end

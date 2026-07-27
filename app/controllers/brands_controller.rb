@@ -39,20 +39,20 @@ class BrandsController < ApplicationController
 
     @canonical_url = brands_index_canonical_url
 
+    page_brands = @brands.to_a
     @product_counts = if active_index_filters.any?
-                        ProductFilterService.new(
-                          filters: active_index_product_filters,
-                          brands: @brands,
-                          category: @category,
-                          sub_category: @sub_category
-                        ).filter.products.except(:order).group(:brand_id).count
-                      else
-                        @brands.to_h do |brand|
-                          [
-                            brand.id,
-                            brand.products_count
-                          ]
+                        if page_brands.empty?
+                          {}
+                        else
+                          ProductFilterService.new(
+                            filters: active_index_product_filters,
+                            brands: page_brands,
+                            category: @category,
+                            sub_category: @sub_category
+                          ).counts_by_brand
                         end
+                      else
+                        page_brands.to_h { |brand| [brand.id, brand.products_count] }
                       end
 
     @brands_query = params.dig(:brands, :query)&.strip
