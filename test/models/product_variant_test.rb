@@ -2,6 +2,8 @@
 
 require 'test_helper'
 
+require 'securerandom'
+
 class ProductVariantTest < ActiveSupport::TestCase
   include ApplicationHelper
 
@@ -105,5 +107,43 @@ class ProductVariantTest < ActiveSupport::TestCase
     product_variant.update!(description: nil)
 
     assert_predicate product_variant.meta_desc, :present?
+  end
+
+  def real_products_count(brand)
+    brand.products.count + ProductVariant.joins(:product).where(products: { brand_id: brand.id }).count
+  end
+
+  test 'creating a variant recalculates the brand products_count' do
+    product = products(:one)
+    brand = product.brand
+    variant = ProductVariant.create!(name: "Counted #{SecureRandom.hex(4)}", product:, discontinued: false)
+
+    assert_equal real_products_count(brand), brand.reload.products_count
+  ensure
+    variant&.destroy
+  end
+
+  test 'destroying a variant recalculates the brand products_count' do
+    product = products(:one)
+    brand = product.brand
+    variant = ProductVariant.create!(name: "Counted #{SecureRandom.hex(4)}", product:, discontinued: false)
+
+    variant.destroy
+
+    assert_equal real_products_count(brand), brand.reload.products_count
+  end
+
+  test 'destroying a product cascades to its variants without breaking the brand products_count' do
+    brand = brands(:one)
+    product = Product.create!(
+      name: "Counted #{SecureRandom.hex(4)}",
+      brand:,
+      sub_category_ids: [sub_categories(:one).id]
+    )
+    ProductVariant.create!(name: "Counted #{SecureRandom.hex(4)}", product:, discontinued: false)
+
+    product.destroy
+
+    assert_equal real_products_count(brand), brand.reload.products_count
   end
 end

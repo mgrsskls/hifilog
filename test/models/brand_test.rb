@@ -143,6 +143,17 @@ class BrandTest < ActiveSupport::TestCase
     assert_includes brand.meta_desc, "#{brand.products.count} products are documented on HiFi Log."
   end
 
+  test 'recalculate_products_count! counts products and variants' do
+    brand = brands(:one)
+    expected = brand.products.count +
+               ProductVariant.joins(:product).where(products: { brand_id: brand.id }).count
+    brand.update!(products_count: -1)
+
+    brand.recalculate_products_count!
+
+    assert_equal expected, brand.reload.products_count
+  end
+
   test 'meta_desc falls back to a plain sentence when nothing is known' do
     brand = Brand.new(name: 'Nondescript')
 

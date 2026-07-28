@@ -103,6 +103,20 @@ class Brand < ApplicationRecord
               COMPLETENESS_PRODUCTS_WEIGHT]]
   end
 
+  # products_count covers product_items (products + variants), matching ProductFilterService's
+  # definition of "products" elsewhere. Recomputed (not incremented) so it self-heals regardless
+  # of which side — Product or ProductVariant — triggered the change.
+  # update_column on purpose: a plain #update would run after_update :touch_products, bulk-touching
+  # every product on the brand just because a derived count changed.
+  # rubocop:disable Rails/SkipsModelValidations
+  def recalculate_products_count!
+    update_column(
+      :products_count,
+      products.count + ProductVariant.joins(:product).where(products: { brand_id: id }).count
+    )
+  end
+  # rubocop:enable Rails/SkipsModelValidations
+
   def categories
     # Avoid sub_categories.includes(:category) when already preloaded — that rebuilds a
     # relation and re-queries per brand (N+1 on brands#index).

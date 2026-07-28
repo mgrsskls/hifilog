@@ -29,7 +29,7 @@ class Product < ApplicationRecord
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
 
-  belongs_to :brand, touch: true, counter_cache: :products_count
+  belongs_to :brand, touch: true
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
@@ -72,6 +72,8 @@ class Product < ApplicationRecord
 
   after_commit :invalidate_cache
   after_commit :update_brand_sub_categories
+  after_create_commit :recalculate_brand_products_count
+  after_destroy_commit :recalculate_products_count_after_destroy
 
   def display_name
     return "#{brand.name} #{name}" if brand
@@ -241,5 +243,15 @@ class Product < ApplicationRecord
 
     brand.sub_categories << (sub_categories - brand.sub_categories)
     brand.save
+  end
+
+  def recalculate_brand_products_count
+    brand&.recalculate_products_count!
+  end
+
+  # brand_id is a plain attribute, still readable on the in-memory (destroyed) record here — no
+  # need to remember it before destroy the way ProductVariant does for its indirect brand link.
+  def recalculate_products_count_after_destroy
+    Brand.find_by(id: brand_id)&.recalculate_products_count!
   end
 end

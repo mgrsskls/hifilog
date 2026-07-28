@@ -276,4 +276,34 @@ class ProductTest < ActiveSupport::TestCase
     standalone&.destroy
     brand&.destroy
   end
+
+  def real_products_count(brand)
+    brand.products.count + ProductVariant.joins(:product).where(products: { brand_id: brand.id }).count
+  end
+
+  test 'creating a product recalculates the brand products_count' do
+    brand = brands(:one)
+    created = Product.create!(
+      name: "Counted #{SecureRandom.hex(4)}",
+      brand:,
+      sub_category_ids: [sub_categories(:one).id]
+    )
+
+    assert_equal real_products_count(brand), brand.reload.products_count
+  ensure
+    created&.destroy
+  end
+
+  test 'destroying a product recalculates the brand products_count' do
+    brand = brands(:one)
+    product = Product.create!(
+      name: "Counted #{SecureRandom.hex(4)}",
+      brand:,
+      sub_category_ids: [sub_categories(:one).id]
+    )
+
+    product.destroy
+
+    assert_equal real_products_count(brand), brand.reload.products_count
+  end
 end

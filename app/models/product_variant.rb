@@ -65,7 +65,10 @@ class ProductVariant < ApplicationRecord
   # part of a variant's own completeness.
   COMPLETENESS_WEIGHTS = { description: 3, release_year: 2, discontinued_year: 1 }.freeze
 
+  before_destroy :remember_brand_id_for_products_count
   after_commit :invalidate_cache
+  after_create_commit :recalculate_brand_products_count
+  after_destroy_commit :recalculate_remembered_brand_products_count
 
   # An entry still in production has no year of discontinuation to give, so it is only asked for
   # once the entry is marked discontinued.
@@ -168,5 +171,20 @@ class ProductVariant < ApplicationRecord
     # rubocop:disable Style/RedundantReturn
     return true
     # rubocop:enable Style/RedundantReturn
+  end
+
+  def recalculate_brand_products_count
+    product&.brand&.recalculate_products_count!
+  end
+
+  # Runs before destroy (not after) because the parent product may itself be mid-destroy in the
+  # same transaction (has_many :product_variants, dependent: :destroy on Product) — by the time an
+  # after_destroy_commit callback fires, `product` may no longer be loadable from the DB.
+  def remember_brand_id_for_products_count
+    @brand_id_for_products_count = product&.brand_id
+  end
+
+  def recalculate_remembered_brand_products_count
+    Brand.find_by(id: @brand_id_for_products_count)&.recalculate_products_count!
   end
 end
