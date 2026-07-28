@@ -19,9 +19,10 @@ class ProductFilterService
     products = @products
 
     if @sub_category
-      products = products.joins(
-        'INNER JOIN products_sub_categories ON products_sub_categories.product_id = product_items.product_id'
-      ).where(products_sub_categories: { sub_category_id: @sub_category.id })
+      # Plucked ids (not a JOIN or IN-subquery) so Postgres can push the filter into the
+      # product_items view's base-table scans before running its per-row LATERAL/subquery
+      # costs (completeness, sub_category_names)
+      products = products.where(product_id: @sub_category.product_ids)
     elsif @category
       # product_id avoids duplicate rows when a product has multiple sub-categories in the category
       products = products.where(
