@@ -1,0 +1,14 @@
+<div class="Heading">
+  <h1><%= t('user_follow.notifications.unsubscribe.heading') %></h1>
+</div>
+
+<div class="Rte">
+  <% if @user %>
+    <p><%= t('user_follow.notifications.unsubscribe.confirm_prompt') %></p>
+    <%= button_to follow_notifications_unsubscribe_path(hash: @unsubscribe_hash), class: "Button" do %>
+      <%= t('user_follow.notifications.unsubscribe.confirm_button') %>
+    <% end %>
+  <% else %>
+    <p><%= t('user_follow.notifications.invalid_unsubscribe_link') %></p>
+  <% end %>
+</div>

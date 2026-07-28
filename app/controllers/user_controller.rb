@@ -12,6 +12,8 @@ class UserController < ApplicationController
   before_action :authenticate_user!, except: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
   skip_before_action :verify_authenticity_token, only: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
   before_action :set_menu
+  before_action :prevent_unsubscribe_hash_referrer_leak,
+                only: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
 
   def dashboard
     page_title(I18n.t('dashboard'))
@@ -369,7 +371,12 @@ class UserController < ApplicationController
   end
 
   def newsletter_unsubscribe
-    return head :bad_request if request.post? && !one_click_unsubscribe_request?
+    @unsubscribe_hash = params[:hash]
+
+    if request.get?
+      @user = newsletter_unsubscribe_user
+      return
+    end
 
     user = newsletter_unsubscribe_user
 
@@ -382,7 +389,12 @@ class UserController < ApplicationController
   end
 
   def follow_notification_unsubscribe
-    return head :bad_request if request.post? && !one_click_unsubscribe_request?
+    @unsubscribe_hash = params[:hash]
+
+    if request.get?
+      @user = follow_notification_unsubscribe_user
+      return
+    end
 
     user = follow_notification_unsubscribe_user
 
@@ -396,6 +408,10 @@ class UserController < ApplicationController
 
   private
 
+  def prevent_unsubscribe_hash_referrer_leak
+    response.set_header('Referrer-Policy', 'no-referrer')
+  end
+
   def newsletter_unsubscribe_user
     hash_param = params[:hash].presence || request.query_parameters['hash'].presence
     NewsletterUnsubscribeService.decode_token(hash_param)
@@ -407,7 +423,7 @@ class UserController < ApplicationController
   end
 
   def respond_to_newsletter_unsubscribe(result)
-    if request.post?
+    if one_click_unsubscribe_request?
       return head :bad_request if result == :invalid
 
       head :ok
@@ -419,7 +435,7 @@ class UserController < ApplicationController
   end
 
   def respond_to_follow_notification_unsubscribe(result)
-    if request.post?
+    if one_click_unsubscribe_request?
       return head :bad_request if result == :invalid
 
       head :ok

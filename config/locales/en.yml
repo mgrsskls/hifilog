@@ -431,6 +431,10 @@ en:
       invalid_unsubscribe_link: Invalid unsubscribe link.
       unsubscribed: You have been unsubscribed.
     subject: hifilog.com Newsletter
+    unsubscribe:
+      heading: Unsubscribe from the newsletter
+      confirm_prompt: Do you want to stop receiving the HiFi Log newsletter?
+      confirm_button: Yes, unsubscribe me
   not_found: We could not find what you were looking for.
   note:
     delete:
@@ -549,6 +553,10 @@ en:
     notifications:
       unsubscribed: You will no longer receive emails when someone follows you.
       invalid_unsubscribe_link: Invalid unsubscribe link.
+      unsubscribe:
+        heading: Unsubscribe from follow notifications
+        confirm_prompt: Do you want to stop receiving emails when someone follows you?
+        confirm_button: Yes, unsubscribe me
     mailer:
       subject: "%{follower_name} is now following you on HiFi Log"
       body_html: "%{follower_link} is now following you."
