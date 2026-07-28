@@ -8,10 +8,13 @@ ActiveAdmin.register User do
   index do
     selectable_column
     id_column
-    column :email
-    column :user_name
-    column "Created", sortable: :created_at do |user|
-      "#{user.created_at.strftime("%d.%m.%Y")}<br><small>#{user.created_at.strftime("%H:%M")}</small>".html_safe
+    column :user do |user|
+      div do
+        b do
+          user.user_name
+        end
+      end
+      user.email
     end
     column "Confirmed" do |user|
       user.confirmed_at.present?
@@ -27,11 +30,11 @@ ActiveAdmin.register User do
         "<span class=\"status-tag\" title=\"Not accepted\">&cross;</span>".html_safe
       end
     end
-    column :possessions do |user|
-      user.possessions.count
-    end
     column "Newsletter", sortable: :receives_newsletter do |user|
       user.receives_newsletter
+    end
+    column "Follow Emails", sortable: :receives_follow_notifications do |user|
+      user.receives_follow_notifications
     end
     column "Visibility", sortable: :profile_visibility do |user|
       if user.profile_visibility == "hidden"
@@ -41,6 +44,15 @@ ActiveAdmin.register User do
       else
         "<span class=\"status-tag\" data-status=\"yes\" title=\"#{user.profile_visibility}\">&check;</span>".html_safe
       end
+    end
+    column "Created", sortable: :created_at do |user|
+      "#{user.created_at.strftime("%d.%m.%Y")}<br><small>#{user.created_at.strftime("%H:%M")}</small>".html_safe
+    end
+    column :possessions do |user|
+      user.possessions.count
+    end
+    column :followers do |user|
+      user.followers.count
     end
     actions
   end
