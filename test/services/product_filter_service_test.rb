@@ -297,4 +297,85 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     assert_equal brand.id, counts.keys.sole
     assert_operator counts[brand.id], :positive?
   end
+
+  test 'total_count with sub_category matches product_items count and includes variants' do
+    brand = brands(:two)
+    sub_category = sub_categories(:two)
+    expected = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      sub_category:
+    ).filter.products.except(:order).count
+
+    total = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      sub_category:
+    ).total_count
+
+    assert_equal expected, total
+    assert_operator total, :>, brand.products.joins(:sub_categories)
+                                    .where(sub_categories: { id: sub_category.id }).count
+  end
+
+  test 'total_count with category matches product_items count' do
+    brand = brands(:two)
+    category = categories(:two)
+    expected = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      category:
+    ).filter.products.except(:order).count
+
+    total = ProductFilterService.new(
+      filters: {},
+      brands: [brand],
+      category:
+    ).total_count
+
+    assert_equal expected, total
+  end
+
+  test 'total_count with product filters still matches product_items count' do
+    expected = ProductFilterService.new(
+      filters: { diy_kit: '1' },
+      brands: [brands(:two)]
+    ).filter.products.except(:order).count
+
+    total = ProductFilterService.new(
+      filters: { diy_kit: '1' },
+      brands: [brands(:two)]
+    ).total_count
+
+    assert_equal expected, total
+  end
+
+  test 'total_count falls back to the view count when a search query is present' do
+    product = products(:one)
+
+    expected = ProductFilterService.new(
+      filters: { query: product.name },
+      brands: [@brand]
+    ).filter.products.except(:order).count
+
+    total = ProductFilterService.new(
+      filters: { query: product.name },
+      brands: [@brand]
+    ).total_count
+
+    assert_equal expected, total
+  end
+
+  test 'total_count accepts loaded brand ids without re-querying a relation' do
+    brand = brands(:one)
+    sub_category = sub_categories(:one)
+
+    total = ProductFilterService.new(
+      filters: {},
+      brands: [brand.id],
+      sub_category:
+    ).total_count
+
+    assert_operator total, :positive?
+  end
 end

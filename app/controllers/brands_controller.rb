@@ -102,17 +102,19 @@ a user-driven database for hi-fi products and brands."
     @filter_applied = active_show_product_filters
     @meta_robots = 'noindex, follow' if @filter_applied.except(:category, :sub_category).present?
 
-    filter = ProductFilterService.new(
+    filter_service = ProductFilterService.new(
       filters: active_show_product_filters,
       brands: [@brand],
       category: @category,
       sub_category: @sub_category
-    ).filter
+    )
+    filter = filter_service.filter
 
     products = filter.products.includes(:brand)
+    total_count = filter_service.total_count
 
-    @products = products.page(params[:page])
-    @products = products.page(1) if @products.out_of_range?
+    @products = PrecomputedTotalCount.attach(products.page(params[:page]), total_count)
+    @products = PrecomputedTotalCount.attach(products.page(1), total_count) if @products.out_of_range?
 
     @products = ProductItem.preload_list_possession_images(@products)
 

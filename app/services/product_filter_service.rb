@@ -75,6 +75,17 @@ class ProductFilterService
     end
   end
 
+  # Total matching product_items (products + variants), regardless of brand.
+  # Same base-table shortcut as counts_by_brand — lets pagination avoid a COUNT(*) through the
+  # product_items view (and its completeness LATERAL / sub_category_names subqueries).
+  def total_count
+    if base_table_counts_eligible?
+      total_count_on_base_tables
+    else
+      filter.products.except(:order).count
+    end
+  end
+
   private
 
   def base_table_counts_eligible?
@@ -84,8 +95,26 @@ class ProductFilterService
   end
 
   def counts_by_brand_on_base_tables
+    products, variants = base_table_scopes
+    return {} if products.nil?
+
+    counts = Hash.new(0)
+    products.group(:brand_id).count.each { |brand_id, count| counts[brand_id] += count }
+    variants.group('products.brand_id').count.each { |brand_id, count| counts[brand_id] += count }
+    counts
+  end
+
+  def total_count_on_base_tables
+    products, variants = base_table_scopes
+    return 0 if products.nil?
+
+    products.count + variants.count
+  end
+
+  # Returns [nil, nil] when brand_ids resolves to an explicitly empty list (see resolved_brand_ids).
+  def base_table_scopes
     brand_ids = resolved_brand_ids
-    return {} if brand_ids == []
+    return [nil, nil] if brand_ids == []
 
     products = Product.all
     products = products.where(brand_id: brand_ids) unless brand_ids.nil?
@@ -97,10 +126,7 @@ class ProductFilterService
     variants = scope_variants_by_taxonomy(variants)
     variants = apply_base_table_filters(variants, variants: true)
 
-    counts = Hash.new(0)
-    products.group(:brand_id).count.each { |brand_id, count| counts[brand_id] += count }
-    variants.group('products.brand_id').count.each { |brand_id, count| counts[brand_id] += count }
-    counts
+    [products, variants]
   end
 
   def apply_base_table_filters(scope, variants: false)

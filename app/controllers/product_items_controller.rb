@@ -19,19 +19,21 @@ class ProductItemsController < ApplicationController
     @filter_applied = active_index_filters.except(:category, :sub_category).merge(active_index_brand_filters)
     @meta_robots = 'noindex, follow' if @filter_applied.except(:category, :sub_category).present?
 
-    filter = ProductFilterService.new(
+    filter_service = ProductFilterService.new(
       filters: active_index_filters,
       category: current_category,
       sub_category: current_sub_category,
       brand_filters: active_index_brand_filters
-    ).filter
+    )
+    filter = filter_service.filter
 
     page_num = params[:page].presence || 1
     products = filter.products.includes(:brand)
-    @products = products.page(page_num)
+    total_count = filter_service.total_count
+    @products = PrecomputedTotalCount.attach(products.page(page_num), total_count)
 
     # Reset to page 1 if out of range
-    @products = products.page(1) if @products.out_of_range?
+    @products = PrecomputedTotalCount.attach(products.page(1), total_count) if @products.out_of_range?
 
     @products = ProductItem.preload_list_possession_images(@products)
 
