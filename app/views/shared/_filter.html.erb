@@ -216,7 +216,7 @@
       <div class="Filter-grid Filter-inputs">
         <div class="Filter-section">
           <label class="Filter-label" for="entity-search"><%= t('search') %></label>
-          <input id="entity-search" class="Filter-input" type="text" name="<%= type == :brands ? "brands[query]" : "products[query]" %>" placeholder="Name" value="<%= query %>">
+          <input id="entity-search" class="Filter-input" type="text" name="<%= type == :brands ? "brands[query]" : "products[query]" %>" placeholder="Name" value="<%= query %>" minlength="2">
         </div>
 
         <div class="Filter-section">
