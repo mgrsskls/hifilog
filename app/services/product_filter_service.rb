@@ -48,12 +48,15 @@ class ProductFilterService
     products = apply_custom_filters(products, data) if data[:custom_attributes].present?
 
     if @brand_filters.present?
-      brands_scope = Brand.where(id: products.select(:brand_id))
+      # ORDER BY is irrelevant inside these IN (...) subqueries and forces Postgres to
+      # sort the full product_items/brands tables for no reason — strip it (see
+      # products_scope_for/resolved_brand_ids below for the same pattern).
+      brands_scope = Brand.where(id: products.except(:order).select(:brand_id))
 
       brand_ids_from_brand_filter = BrandFilterService.new(
         filters: @brand_filters,
         brands: brands_scope
-      ).filter.brands.select(:id)
+      ).filter.brands.except(:order).select(:id)
 
       products = products.where(brand_id: brand_ids_from_brand_filter)
     end
