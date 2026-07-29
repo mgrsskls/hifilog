@@ -198,6 +198,9 @@ class Brand < ApplicationRecord
       completeness_eq
       completeness_gt
       completeness_lt
+      products_count_eq
+      products_count_gt
+      products_count_lt
     ]
   end
 
