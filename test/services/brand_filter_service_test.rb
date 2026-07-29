@@ -103,66 +103,6 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
     assert_equal names.sort.reverse, names
   end
 
-  test 'sorting by products_count returns brands in correct order' do
-    result = BrandFilterService.new(filters: { sort: 'products_desc' }).filter
-    counts = result.brands.map(&:products_count)
-
-    assert_equal counts.sort.reverse, counts
-  end
-
-  test 'sorting by products with category uses matching product counts not totals' do
-    category = categories(:two)
-    brand_with_matching = brands(:two)
-    brand_without_matching = brands(:three)
-
-    # brand_without_matching is linked to the category via brands_sub_categories but its product
-    # lives in another category — total products_count would incorrectly rank it first.
-    brand_without_matching.update!(products_count: 100)
-    brand_with_matching.update!(products_count: 1)
-
-    result = BrandFilterService.new(
-      filters: { sort: 'products_desc' },
-      category:
-    ).filter.brands.to_a
-
-    assert_includes result, brand_with_matching
-    assert_includes result, brand_without_matching
-    assert_operator result.index(brand_with_matching), :<, result.index(brand_without_matching)
-  end
-
-  test 'sorting by products with product filters uses matching product counts not totals' do
-    brand_with_one_match = brands(:two)
-    brand_with_two_matches = brands(:one)
-
-    Product.create!(
-      name: 'Another DIY',
-      brand: brand_with_two_matches,
-      slug: 'another-diy',
-      diy_kit: true,
-      sub_category_ids: [sub_categories(:one).id]
-    )
-    Product.create!(
-      name: 'Third DIY',
-      brand: brand_with_two_matches,
-      slug: 'third-diy',
-      diy_kit: true,
-      sub_category_ids: [sub_categories(:one).id]
-    )
-
-    # Totals would rank brand_with_one_match first if we used products_count.
-    brand_with_one_match.update!(products_count: 100)
-    brand_with_two_matches.update!(products_count: 2)
-
-    result = BrandFilterService.new(
-      filters: { sort: 'products_desc' },
-      product_filters: { diy_kit: '1' }
-    ).filter.brands.to_a
-
-    assert_includes result, brand_with_two_matches
-    assert_includes result, brand_with_one_match
-    assert_operator result.index(brand_with_two_matches), :<, result.index(brand_with_one_match)
-  end
-
   test 'return all brands without any params' do
     result = BrandFilterService.new(filters: {}).filter
     assert_equal Brand.all.to_a.sort_by(&:id), result.brands.to_a.sort_by(&:id)
@@ -182,13 +122,6 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
     end)
   end
 
-  test 'sorting exposes ascending product volume ordering' do
-    result = BrandFilterService.new(filters: { sort: 'products_asc' }).filter
-    counts = result.brands.pluck(:products_count)
-
-    assert_equal counts.sort, counts
-  end
-
   test 'ordering supports created and metadata sort keys without errors' do
     %w[added_asc added_desc updated_asc updated_desc].each do |sort|
       result = BrandFilterService.new(filters: { sort: }).filter
@@ -196,5 +129,54 @@ class BrandFilterServiceTest < ActiveSupport::TestCase
       assert_operator result.brands.count, :positive?
       assert_nothing_raised { result.brands.load }
     end
+  end
+
+  test 'relevance tier outranks the hand-picked sort when a query is present' do
+    Brand.create!(name: 'Audio')
+    Brand.create!(name: 'Audio Note')
+    Brand.create!(name: 'Zeta Audio')
+
+    result = BrandFilterService.new(filters: { query: 'Audio', sort: 'name_desc' }).filter
+
+    # name_desc on its own would start at "Zeta Audio". The relevance tier pulls
+    # the exact match up first, then the prefix match, then the substring ones.
+    assert_equal ['Audio', 'Audio Note', 'Zeta Audio', 'Feliks Audio'], result.brands.map(&:name)
+  end
+
+  test 'hand-picked sort still orders brands inside a relevance tier' do
+    Brand.create!(name: 'Audio Alpha')
+    Brand.create!(name: 'Audio Beta')
+
+    ascending = BrandFilterService.new(filters: { query: 'Audio', sort: 'name_asc' }).filter
+    descending = BrandFilterService.new(filters: { query: 'Audio', sort: 'name_desc' }).filter
+
+    prefix_tier = ->(result) { result.brands.map(&:name).select { |name| name.start_with?('Audio ') } }
+
+    assert_equal ['Audio Alpha', 'Audio Beta'], prefix_tier.call(ascending)
+    assert_equal ['Audio Beta', 'Audio Alpha'], prefix_tier.call(descending)
+  end
+
+  test 'relevance ordering ignores accents' do
+    Brand.create!(name: 'Ölufsen')
+    Brand.create!(name: 'Zeta Olufsen')
+
+    result = BrandFilterService.new(filters: { query: 'Olufsen', sort: 'name_desc' }).filter
+
+    assert_equal ['Ölufsen', 'Zeta Olufsen'], result.brands.map(&:name)
+  end
+
+  test 'query with LIKE wildcards is matched literally' do
+    Brand.create!(name: '100% Audio')
+
+    result = BrandFilterService.new(filters: { query: '100% Audio' }).filter
+
+    assert_includes result.brands.map(&:name), '100% Audio'
+  end
+
+  test 'relevance ordering leaves the plain sort untouched without a query' do
+    result = BrandFilterService.new(filters: { sort: 'name_asc' }).filter
+    names = result.brands.map(&:name).map(&:downcase)
+
+    assert_equal names.sort, names
   end
 end

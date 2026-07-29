@@ -223,7 +223,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
   end
 
   test 'paginated ordered brand relation scopes products to the same page of brands' do
-    ordered_page = BrandFilterService.new(filters: { sort: 'products_desc' }).filter.brands.page(1)
+    ordered_page = BrandFilterService.new(filters: { sort: 'name_asc' }).filter.brands.page(1)
     page_brand_ids = ordered_page.map(&:id)
 
     result = ProductFilterService.new(filters: {}, brands: ordered_page).filter

@@ -3,6 +3,23 @@
 class ProductFilterService
   include FilterConstants
   include FilterableService
+  include RelevanceOrdering
+
+  # People search either for the bare product name / model number or for
+  # "brand + model", so both forms get to reach the exact/prefix tiers.
+  BRANDED_NAME_SQL = "COALESCE(product_items.brand_name, '') || ' ' || product_items.name"
+  RELEVANCE_EXACT_COLUMNS = [
+    'product_items.name',
+    'product_items.variant_name',
+    'product_items.model_no',
+    BRANDED_NAME_SQL
+  ].freeze
+  RELEVANCE_CONTAINS_COLUMNS = [
+    'product_items.brand_name',
+    'product_items.name',
+    'product_items.variant_name',
+    'product_items.model_no'
+  ].freeze
 
   Result = Struct.new(:products)
 
@@ -41,7 +58,6 @@ class ProductFilterService
       custom_attributes: @filters[:custom]
     }
 
-    products = apply_ordering(products, data)
     products = apply_status_filter(products, data) if data[:status].present?
     products = apply_country_filter(products, data) if data[:country].present?
     products = apply_diy_kit_filter(products, data) if data[:diy_kit].present?
@@ -61,6 +77,10 @@ class ProductFilterService
 
       products = products.where(brand_id: brand_ids_from_brand_filter)
     end
+
+    # Ordering goes last: `reorder` has to overwrite the `rank DESC` that
+    # search_by_name appended, and every `.except(:order)` above stays cheap.
+    products = apply_ordering(products, data)
 
     Result.new(products:)
   end
@@ -213,8 +233,11 @@ class ProductFilterService
     scope.where(diy_kit: options[:diy_kit] == '1')
   end
 
+  # No surrounding `%`: pg_search is not LIKE. tsearch strips them anyway, but
+  # `ranked_by: ':trigram'` compares them literally, which dragged similarity
+  # below the 0.2 threshold and dropped legitimate matches.
   def apply_search_filter(scope, options)
-    scope.search_by_name("%#{options[:query].strip}%")
+    scope.search_by_name(options[:query].strip)
   end
 
   def apply_custom_filters(scope, options)
@@ -246,38 +269,41 @@ class ProductFilterService
     scope
   end
 
+  # ORDER BY, in order of precedence:
+  #   1. relevance (only with a query; beats the hand-picked sort)
+  #   2. hand-picked sort (orders rows inside a tier)
+  #   3. product_items.id (LOWER(name) is not unique enough for stable paging)
   def apply_ordering(scope, options)
-    order = case options[:sort]&.downcase
-            when 'name_desc'
-              'LOWER(product_items.name) DESC,
-               release_year ASC NULLS FIRST,
-               release_month ASC NULLS FIRST,
-               release_day ASC NULLS FIRST'
-            when 'release_date_asc'
-              'release_year ASC NULLS LAST,
-               release_month ASC NULLS LAST,
-               release_day ASC NULLS LAST,
-               LOWER(product_items.name)'
-            when 'release_date_desc'
-              'release_year DESC NULLS LAST,
-               release_month DESC NULLS LAST,
-               release_day DESC NULLS LAST,
-               LOWER(product_items.name)'
-            when 'completeness_asc'
-              'product_items.completeness ASC, product_items.created_at DESC, LOWER(product_items.name)'
-            when 'completeness_desc'
-              'product_items.completeness DESC, product_items.created_at DESC, LOWER(product_items.name)'
-            when 'added_asc' then 'created_at ASC'
-            when 'added_desc' then 'created_at DESC'
-            when 'updated_asc' then 'updated_at ASC'
-            when 'updated_desc' then 'updated_at DESC'
-            else 'LOWER(product_items.name) ASC,
-                  release_year ASC NULLS FIRST,
-                  release_month ASC NULLS FIRST,
-                  release_day ASC NULLS FIRST'
-            end
+    query = options[:query]
+    order = manual_order_sql(options[:sort])
 
-    scope.order(order)
+    if (tier = relevance_tier_sql(query, exact: RELEVANCE_EXACT_COLUMNS,
+                                         contains: RELEVANCE_CONTAINS_COLUMNS))
+      order = [tier, order].join(', ')
+    end
+
+    scope.reorder(Arel.sql("#{order}, product_items.id"))
+  end
+
+  def manual_order_sql(sort)
+    case sort&.downcase
+    when 'name_desc'
+      'LOWER(product_items.name) DESC, release_year ASC NULLS FIRST, ' \
+      'release_month ASC NULLS FIRST, release_day ASC NULLS FIRST'
+    when 'release_date_asc'
+      'release_year ASC NULLS LAST, release_month ASC NULLS LAST, ' \
+      'release_day ASC NULLS LAST, LOWER(product_items.name)'
+    when 'release_date_desc'
+      'release_year DESC NULLS LAST, release_month DESC NULLS LAST, ' \
+      'release_day DESC NULLS LAST, LOWER(product_items.name)'
+    when 'added_asc' then 'product_items.created_at ASC'
+    when 'added_desc' then 'product_items.created_at DESC'
+    when 'updated_asc' then 'product_items.updated_at ASC'
+    when 'updated_desc' then 'product_items.updated_at DESC'
+    else
+      'LOWER(product_items.name) ASC, release_year ASC NULLS FIRST, ' \
+      'release_month ASC NULLS FIRST, release_day ASC NULLS FIRST'
+    end
   end
 
   def convert_values(unit, min, max)

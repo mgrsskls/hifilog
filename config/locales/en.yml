@@ -505,13 +505,9 @@ en:
   sort_by:
     added_asc: 'Added: Oldest first'
     added_desc: 'Added: Newest first'
-    completeness_asc: 'Completeness: Least complete first'
-    completeness_desc: 'Completeness: Nearly complete first'
     label: Sort
     name_asc: 'Name: A first'
     name_desc: 'Name: Z first'
-    products_asc: 'Products: Least first'
-    products_desc: 'Products: Most first'
     release_date_asc: 'Released: Oldest first'
     release_date_desc: 'Released: Newest first'
     updated_asc: 'Updated: Least recent first'

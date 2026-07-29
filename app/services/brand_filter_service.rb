@@ -3,6 +3,9 @@
 class BrandFilterService
   include FilterConstants
   include FilterableService
+  include RelevanceOrdering
+
+  SEARCH_COLUMNS = ['brands.name', 'brands.full_name'].freeze
 
   Result = Struct.new(:brands)
 
@@ -36,16 +39,15 @@ class BrandFilterService
       SQL
     end
 
-    brands = apply_ordering(brands, @filters[:sort])
     if (status = @filters[:status].presence)
       brands = apply_status_filter(brands, status)
     end
     if (country = @filters[:country].presence)
       brands = apply_country_filter(brands, country)
     end
-    if (query = @filters[:query].presence)
-      brands = apply_search_filter(brands, query)
-    end
+
+    query = @filters[:query].presence
+    brands = apply_search_filter(brands, query) if query
 
     if @product_filters.present?
       filtered_products_relation = ProductFilterService.new(
@@ -55,8 +57,14 @@ class BrandFilterService
         sub_category: @sub_category
       ).filter.products
 
-      brands = brands.where(id: filtered_products_relation.select(:brand_id))
+      # ORDER BY is irrelevant inside the IN (...) subquery and only makes Postgres
+      # sort product_items for nothing.
+      brands = brands.where(id: filtered_products_relation.except(:order).select(:brand_id))
     end
+
+    # Ordering goes last: `reorder` has to overwrite the `rank DESC` that
+    # search_by_name appended.
+    brands = apply_ordering(brands, @filters[:sort], query:)
 
     Result.new(brands:)
   end
@@ -68,7 +76,7 @@ class BrandFilterService
   end
 
   def apply_search_filter(scope, value)
-    scope.search_by_name(value.strip).with_pg_search_rank
+    scope.search_by_name(value.strip)
   end
 
   def apply_status_filter(scope, value)
@@ -77,66 +85,35 @@ class BrandFilterService
     scope.where(discontinued:)
   end
 
-  def apply_ordering(scope, value)
-    sort = value&.downcase
+  # ORDER BY, in order of precedence:
+  #   1. relevance (only with a query; beats the hand-picked sort)
+  #   2. hand-picked sort
+  #   3. brands.id (LOWER(name) is not unique enough for stable paging)
+  def apply_ordering(scope, value, query: nil)
+    order = ordering_for(value&.downcase)
 
-    case sort
-    when 'products_asc', 'products_desc'
-      if matching_products_count_ordering?
-        # Match brands#index counts: product_items (incl. variants), with category/product filters.
-        # brands.products_count is total products only and ignores those filters.
-        order_by_matching_products_count(scope, sort)
-      elsif sort == 'products_asc'
-        scope.order('brands.products_count ASC NULLS FIRST, LOWER(brands.name)')
-      else
-        scope.order('brands.products_count DESC NULLS LAST, LOWER(brands.name)')
-      end
-    when 'name_desc'
-      scope.order('LOWER(brands.name) DESC')
-    when 'completeness_asc'
-      scope.order('brands.completeness ASC, brands.created_at DESC, LOWER(brands.name)')
-    when 'completeness_desc'
-      scope.order('brands.completeness DESC, brands.created_at DESC, LOWER(brands.name)')
-    when 'added_asc'
-      scope.order('brands.created_at ASC, LOWER(brands.name)')
-    when 'added_desc'
-      scope.order('brands.created_at DESC, LOWER(brands.name)')
-    when 'updated_asc'
-      scope.order('brands.updated_at ASC, LOWER(brands.name)')
-    when 'updated_desc'
-      scope.order('brands.updated_at DESC, LOWER(brands.name)')
-    else
-      scope.order('LOWER(brands.name) ASC')
+    if (tier = relevance_tier_sql(query, exact: SEARCH_COLUMNS,
+                                         contains: SEARCH_COLUMNS))
+      order = [tier, order].join(', ')
     end
+
+    scope.reorder(Arel.sql("#{order}, brands.id"))
   end
 
-  def matching_products_count_ordering?
-    @category.present? || @sub_category.present? || @product_filters.present?
-  end
-
-  def order_by_matching_products_count(scope, sort)
-    matching_products = ProductFilterService.new(
-      filters: @product_filters,
-      category: @category,
-      sub_category: @sub_category
-    ).filter.products.except(:order)
-
-    counts_sql = matching_products
-                 .group(:brand_id)
-                 .select('product_items.brand_id, COUNT(*) AS matching_products_count')
-                 .to_sql
-
-    direction = sort == 'products_asc' ? 'ASC' : 'DESC'
-
-    scope
-      .joins(<<~SQL.squish)
-        LEFT OUTER JOIN (#{counts_sql}) AS matching_product_counts
-          ON matching_product_counts.brand_id = brands.id
-      SQL
-      .order(
-        Arel.sql(
-          "COALESCE(matching_product_counts.matching_products_count, 0) #{direction}, LOWER(brands.name)"
-        )
-      )
+  def ordering_for(sort)
+    case sort
+    when 'name_desc'
+      'LOWER(brands.name) DESC'
+    when 'added_asc'
+      'brands.created_at ASC, LOWER(brands.name)'
+    when 'added_desc'
+      'brands.created_at DESC, LOWER(brands.name)'
+    when 'updated_asc'
+      'brands.updated_at ASC, LOWER(brands.name)'
+    when 'updated_desc'
+      'brands.updated_at DESC, LOWER(brands.name)'
+    else
+      'LOWER(brands.name) ASC'
+    end
   end
 end

@@ -71,8 +71,8 @@ module BrandHelper
 
     schema_item_list_order(
       sort,
-      ascending: %w[name_asc products_asc added_asc updated_asc],
-      descending: %w[name_desc products_desc added_desc updated_desc]
+      ascending: %w[name_asc added_asc updated_asc],
+      descending: %w[name_desc added_desc updated_desc]
     )
   end
 
