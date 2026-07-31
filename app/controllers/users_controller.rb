@@ -21,10 +21,12 @@ class UsersController < ApplicationController
                            users.user_name,
                            users.profile_visibility,
                            users.created_at,
-                           COUNT(DISTINCT versions.item_id) as count
+                           COUNT(DISTINCT versions.item_id) AS count
                          ')
                          .group('users.id, users.user_name, users.profile_visibility, users.created_at')
-                         .order(count: :desc)
+                         # Arel.sql keeps the SELECT alias; order(count: :desc) becomes
+                         # ORDER BY "users"."count", which PostgreSQL treats as count(users).
+                         .order(Arel.sql('count DESC'))
     prepare_follow_state_for_index if user_signed_in?
   end
 

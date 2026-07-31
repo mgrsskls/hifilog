@@ -8,6 +8,34 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index orders users by contribution score descending' do
+    low = users(:one)
+    mid = users(:visible)
+    high = users(:logged_in_only)
+
+    PaperTrail.request(whodunnit: low.id.to_s) do
+      products(:one).update!(name: 'Low score contribution')
+    end
+    PaperTrail.request(whodunnit: mid.id.to_s) do
+      products(:one).update!(name: 'Mid score contribution one')
+      products(:two).update!(name: 'Mid score contribution two')
+    end
+    PaperTrail.request(whodunnit: high.id.to_s) do
+      products(:one).update!(name: 'High score contribution one')
+      products(:two).update!(name: 'High score contribution two')
+      products(:diy_kit).update!(name: 'High score contribution three')
+    end
+
+    get users_path
+    assert_response :success
+
+    names = css_select('.Users-ranking table tbody tr td:nth-child(2) b').map { |node| node.text.squish }
+    assert_equal [high.user_name, mid.user_name, low.user_name], names.first(3)
+
+    scores = css_select('.Users-ranking table tbody tr td:nth-child(3)').map { |node| node.text.to_i }
+    assert_equal scores.sort.reverse, scores
+  end
+
   test 'index shows follow button for followable users when signed in' do
     follower = users(:one)
     followable = users(:logged_in_only)
