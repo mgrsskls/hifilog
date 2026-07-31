@@ -6,7 +6,7 @@
 		"chromedriver": "^151.0.1",
 		"cssnano": "^8.0.2",
 		"esbuild": "^0.28.1",
-		"postcss": "^8.5.23",
+		"postcss": "^8.5.24",
 		"postcss-cli": "^11.0.1",
 		"postcss-import": "^16.1.1",
 		"postcss-preset-env": "^11.3.2",
