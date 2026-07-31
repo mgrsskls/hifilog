@@ -10,6 +10,8 @@ ActiveAdmin.register Bookmark do
     column "Bookmark" do |bookmark|
       if bookmark.item_type == 'Event'
         Event.find(bookmark.item_id)
+      elsif bookmark.item_type == 'Brand'
+        Brand.find(bookmark.item_id)
       elsif bookmark.item_type == 'ProductVariant'
         ProductVariant.find(bookmark.item_id)
       else
