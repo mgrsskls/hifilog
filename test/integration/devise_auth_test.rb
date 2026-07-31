@@ -22,6 +22,12 @@ class DeviseAuthTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'admin user can access user images page' do
+    sign_in admin_users(:admin_user)
+    get admin_user_images_path
+    assert_response :success
+  end
+
   test 'user cant access dashboard' do
     get dashboard_root_path
     assert_response :redirect
