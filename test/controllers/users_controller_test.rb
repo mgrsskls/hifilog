@@ -6,6 +6,20 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'index' do
     get users_path
     assert_response :success
+    assert_select '.Users-ranking table tbody tr', User.count
+  end
+
+  test 'index includes users without contributions' do
+    get users_path
+    assert_response :success
+
+    names = css_select('.Users-ranking table tbody tr td:nth-child(2) b').map { |node| node.text.squish }
+    assert_includes names, users(:without_anything).user_name
+
+    scores_by_name = css_select('.Users-ranking table tbody tr').to_h do |row|
+      [row.at_css('td:nth-child(2) b').text.squish, row.at_css('td:nth-child(3)').text.to_i]
+    end
+    assert_equal 0, scores_by_name.fetch(users(:without_anything).user_name)
   end
 
   test 'index orders users by contribution score descending' do
@@ -34,18 +48,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     scores = css_select('.Users-ranking table tbody tr td:nth-child(3)').map { |node| node.text.to_i }
     assert_equal scores.sort.reverse, scores
+    assert_equal User.count, names.size
   end
 
   test 'index shows follow button for followable users when signed in' do
     follower = users(:one)
     followable = users(:logged_in_only)
-
-    PaperTrail.request(whodunnit: followable.id.to_s) do
-      products(:one).update!(name: 'Index followable contribution')
-    end
-    PaperTrail.request(whodunnit: follower.id.to_s) do
-      products(:two).update!(name: 'Index follower contribution')
-    end
 
     get users_path
     assert_response :success
@@ -71,12 +79,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     hidden = users(:hidden)
     blocked = users(:logged_in_only)
     followable = users(:with_everything)
-
-    [viewer, hidden, blocked, followable].each_with_index do |user, index|
-      PaperTrail.request(whodunnit: user.id.to_s) do
-        products(:one).update!(name: "Index visibility contribution #{index}")
-      end
-    end
 
     UserBlock.create!(blocker: viewer, blocked: blocked)
     sign_in viewer

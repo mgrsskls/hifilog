@@ -14,7 +14,7 @@ class UsersController < ApplicationController
     @meta_desc = 'See all users of hifilog.com with public profiles and how much they contributed. ' \
                  'HiFi Log is a user-driven database for hi-fi products and brands.'
     @users_by_products = User
-                         .joins('INNER JOIN "versions" ON "versions"."whodunnit" = CAST("users"."id" AS varchar)')
+                         .joins('LEFT OUTER JOIN "versions" ON "versions"."whodunnit" = CAST("users"."id" AS varchar)')
                          .includes(:avatar_attachment)
                          .select('
                            users.id,
@@ -26,7 +26,7 @@ class UsersController < ApplicationController
                          .group('users.id, users.user_name, users.profile_visibility, users.created_at')
                          # Arel.sql keeps the SELECT alias; order(count: :desc) becomes
                          # ORDER BY "users"."count", which PostgreSQL treats as count(users).
-                         .order(Arel.sql('count DESC'))
+                         .order(Arel.sql('count DESC, users.created_at ASC'))
     prepare_follow_state_for_index if user_signed_in?
   end
 
