@@ -6,20 +6,20 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'index' do
     get users_path
     assert_response :success
-    assert_select '.Users-ranking table tbody tr', User.count
+    assert_select '.Users-user', User.count
   end
 
   test 'index includes users without contributions' do
     get users_path
     assert_response :success
 
-    names = css_select('.Users-ranking table tbody tr td:nth-child(2) b').map { |node| node.text.squish }
+    names = css_select('.Users-user b').map { |node| node.text.squish }
     assert_includes names, users(:without_anything).user_name
 
-    scores_by_name = css_select('.Users-ranking table tbody tr').to_h do |row|
-      [row.at_css('td:nth-child(2) b').text.squish, row.at_css('td:nth-child(3)').text.to_i]
+    contributions_by_name = css_select('.Users-user').to_h do |item|
+      [item.at_css('b').text.squish, item.at_css('dd').text.to_i]
     end
-    assert_equal 0, scores_by_name.fetch(users(:without_anything).user_name)
+    assert_equal 0, contributions_by_name.fetch(users(:without_anything).user_name)
   end
 
   test 'index orders users by contribution score descending' do
@@ -43,11 +43,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get users_path
     assert_response :success
 
-    names = css_select('.Users-ranking table tbody tr td:nth-child(2) b').map { |node| node.text.squish }
+    names = css_select('.Users-user b').map { |node| node.text.squish }
     assert_equal [high.user_name, mid.user_name, low.user_name], names.first(3)
 
-    scores = css_select('.Users-ranking table tbody tr td:nth-child(3)').map { |node| node.text.to_i }
-    assert_equal scores.sort.reverse, scores
+    contributions = css_select('.Users-user dd:first-of-type').map { |node| node.text.to_i }
+    assert_equal contributions.sort.reverse, contributions
     assert_equal User.count, names.size
   end
 
@@ -62,14 +62,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in follower
     get users_path
     assert_response :success
-    assert_select '.Users-ranking table .Users-follow form',
+    assert_select '.Users .Users-follow form',
                   text: /#{Regexp.escape(I18n.t('user_follow.follow'))}/,
                   minimum: 1
 
     UserFollow.create!(follower: follower, followed: followable)
     get users_path
     assert_response :success
-    assert_select '.Users-ranking table .Users-follow form',
+    assert_select '.Users .Users-follow form',
                   text: /#{Regexp.escape(I18n.t('user_follow.unfollow'))}/,
                   minimum: 1
   end
@@ -85,7 +85,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get users_path
     assert_response :success
 
-    follow_forms = css_select('.Users-ranking table .Users-follow form')
+    follow_forms = css_select('.Users .Users-follow form')
     followed_ids = follow_forms.filter_map do |form|
       next if form.at_css('input[name="_method"][value="delete"]')
 

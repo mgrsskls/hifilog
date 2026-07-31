@@ -1,13 +1,11 @@
 .Users {
-	display: flex;
-	gap: 2rem 4rem;
-	align-items: start;
-}
+	--spacing-inline: 1rem;
 
-.Users-info {
-	background: var(--color-bg2);
-	border-radius: var(--border-radius);
-	border: var(--border-light);
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+	gap: 2rem;
+	list-style: "";
+	padding: 0;
 }
 
 .Users-follow {
@@ -16,39 +14,4 @@
 
 .Users-follow form {
 	margin: 0;
-}
-
-.Users-followHeading {
-	inline-size: 1%;
-}
-
-@media (width >= 40rem) {
-	.Users-rank {
-		inline-size: 3rem;
-	}
-}
-
-@media (width < 54rem) {
-	.Users {
-		flex-direction: column;
-	}
-
-	.Users-ranking {
-		inline-size: 100%;
-	}
-
-	.Users-info {
-		padding: calc(2 * var(--page-spacing));
-	}
-}
-
-@media (width >= 54rem) {
-	.Users-ranking {
-		flex: 1;
-	}
-
-	.Users-info {
-		padding: 2rem;
-		flex: 0 0 16rem;
-	}
 }
