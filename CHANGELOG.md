@@ -1,5 +1,13 @@
 # Changelog
 
+## <time datetime="2026-07-25">2026-07-25</time>
+
+- There is now a [Contribute](/contribute) section showing which brands and products are still missing information.
+
+## <time datetime="2026-07-12">2026-07-12</time>
+
+- Users can now follow other users. The following user can then see their activity on their activity feed. Users can only follow another user if their profile visibility is not set to hidden.
+
 ## <time datetime="2026-05-16">2026-05-16</time>
 
 - There is now an activity page on profiles showing when a user
