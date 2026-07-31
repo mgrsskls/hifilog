@@ -8,6 +8,66 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index shows follow button for followable users when signed in' do
+    follower = users(:one)
+    followable = users(:logged_in_only)
+
+    PaperTrail.request(whodunnit: followable.id.to_s) do
+      products(:one).update!(name: 'Index followable contribution')
+    end
+    PaperTrail.request(whodunnit: follower.id.to_s) do
+      products(:two).update!(name: 'Index follower contribution')
+    end
+
+    get users_path
+    assert_response :success
+    assert_select '.Users-follow form', count: 0
+
+    sign_in follower
+    get users_path
+    assert_response :success
+    assert_select '.Users-ranking table .Users-follow form',
+                  text: /#{Regexp.escape(I18n.t('user_follow.follow'))}/,
+                  minimum: 1
+
+    UserFollow.create!(follower: follower, followed: followable)
+    get users_path
+    assert_response :success
+    assert_select '.Users-ranking table .Users-follow form',
+                  text: /#{Regexp.escape(I18n.t('user_follow.unfollow'))}/,
+                  minimum: 1
+  end
+
+  test 'index hides follow button for self, hidden, and blocked users' do
+    viewer = users(:one)
+    hidden = users(:hidden)
+    blocked = users(:logged_in_only)
+    followable = users(:with_everything)
+
+    [viewer, hidden, blocked, followable].each_with_index do |user, index|
+      PaperTrail.request(whodunnit: user.id.to_s) do
+        products(:one).update!(name: "Index visibility contribution #{index}")
+      end
+    end
+
+    UserBlock.create!(blocker: viewer, blocked: blocked)
+    sign_in viewer
+    get users_path
+    assert_response :success
+
+    follow_forms = css_select('.Users-ranking table .Users-follow form')
+    followed_ids = follow_forms.filter_map do |form|
+      next if form.at_css('input[name="_method"][value="delete"]')
+
+      Rack::Utils.parse_query(URI(form['action']).query)['followed_id']&.to_i
+    end
+
+    assert_includes followed_ids, followable.id
+    assert_not_includes followed_ids, viewer.id
+    assert_not_includes followed_ids, hidden.id
+    assert_not_includes followed_ids, blocked.id
+  end
+
   test 'show' do
     UserActivities::Backfill.run_all
 

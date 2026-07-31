@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2026-07-31">2026-07-31</time>
+
+- Logged-in users can now follow and unfollow other users directly from the [Users](/users) ranking page.
+
 ## <time datetime="2026-07-25">2026-07-25</time>
 
 - There is now a [Contribute](/contribute) section showing which brands and products are still missing information.

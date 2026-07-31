@@ -10,6 +10,18 @@
 	border: var(--border-light);
 }
 
+.Users-follow {
+	white-space: nowrap;
+}
+
+.Users-follow form {
+	margin: 0;
+}
+
+.Users-followHeading {
+	inline-size: 1%;
+}
+
 @media (width >= 40rem) {
 	.Users-rank {
 		inline-size: 3rem;

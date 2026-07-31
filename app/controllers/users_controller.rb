@@ -25,6 +25,7 @@ class UsersController < ApplicationController
                          ')
                          .group('users.id, users.user_name, users.profile_visibility, users.created_at')
                          .order(count: :desc)
+    prepare_follow_state_for_index if user_signed_in?
   end
 
   def show
@@ -137,6 +138,12 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def prepare_follow_state_for_index
+    user_ids = @users_by_products.map(&:id)
+    @follows_by_user_id = current_user.user_follows.where(followed_id: user_ids).index_by(&:followed_id)
+    @blocked_user_ids = current_user.user_blocks.where(blocked_id: user_ids).pluck(:blocked_id).to_set
+  end
 
   def setup_user_page
     user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)

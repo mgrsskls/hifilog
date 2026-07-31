@@ -15,6 +15,9 @@
             <th>User</th>
             <th>Score</th>
             <th>Member since</th>
+            <% if user_signed_in? %>
+              <th class="Users-followHeading" aria-label="<%= t('user_follow.follow') %>"></th>
+            <% end %>
           </tr>
         </thead>
         <tbody>
@@ -38,6 +41,20 @@
               <td>
                 <time datetime="<%= user["created_at"] %>"><%= format_date(user["created_at"]).html_safe %></time>
               </td>
+              <% if user_signed_in? %>
+                <td class="Users-follow">
+                  <%# Only hide the button for users the viewer blocked themselves. Viewers
+                      who were blocked by this ranking user still see it (their follow
+                      attempt fails generically), so the block is not disclosed.
+                      Hidden profiles cannot be followed. %>
+                  <% if current_user.id != user.id && !user.hidden? && !@blocked_user_ids.include?(user.id) %>
+                    <%= render "shared/follow_button",
+                               user:,
+                               user_follow: @follows_by_user_id[user.id],
+                               redirect_to: users_path %>
+                  <% end %>
+                </td>
+              <% end %>
             </tr>
           <% end %>
         </tbody>
@@ -47,20 +64,28 @@
           <li class="EntityList-item">
             <div class="EntityListItem">
               <div class="EntityList-name">
-                <div class="u-flex u-gap-md">
+                <div class="u-flex u-gap-md u-alignCenter">
                   <div>
                     <%= i + 1 %>.
                   </div>
                   <% if user["profile_visibility"] == "hidden" %>
-                    <div class="u-flex u-gap-md u-alignCenter">
+                    <div class="u-flex u-gap-md u-alignCenter u-flexGrow">
                       <%= render "shared/avatar", user: user, size: 32 %>
                       <b><%= user["user_name"] %></b>
                     </div>
                   <% else %>
-                    <%= link_to user.profile_path, class: "u-flex u-gap-md u-alignCenter" do %>
+                    <%= link_to user.profile_path, class: "u-flex u-gap-md u-alignCenter u-flexGrow" do %>
                       <%= render "shared/avatar", user: user, size: 32 %>
                       <b><%= user["user_name"] %></b>
                     <% end %>
+                  <% end %>
+                  <% if user_signed_in? && current_user.id != user.id && !user.hidden? && !@blocked_user_ids.include?(user.id) %>
+                    <div class="Users-follow">
+                      <%= render "shared/follow_button",
+                                 user:,
+                                 user_follow: @follows_by_user_id[user.id],
+                                 redirect_to: users_path %>
+                    </div>
                   <% end %>
                 </div>
               </div>
