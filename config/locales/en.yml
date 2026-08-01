@@ -1,5 +1,9 @@
 ---
 en:
+  helpers:
+    page_entries_info:
+      more_pages:
+        display_entries: "Displaying <b>%{first}–%{last}</b> of <b>%{total}</b> in total"
   active: Active
   activerecord:
     attributes:
