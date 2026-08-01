@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_01_095251) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -133,7 +133,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_095251) do
   end
 
   create_table "brands", force: :cascade do |t|
-    t.virtual "completeness", type: :integer, as: "(round(((100.0 * ((((((\nCASE\n    WHEN (products_count > 0) THEN 5\n    ELSE 0\nEND +\nCASE\n    WHEN (NULLIF(btrim(description), ''::text) IS NOT NULL) THEN 3\n    ELSE 0\nEND) +\nCASE\n    WHEN (NULLIF(btrim((country_code)::text), ''::text) IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN (discontinued IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN (founded_year IS NOT NULL) THEN 1\n    ELSE 0\nEND) +\nCASE\n    WHEN (discontinued IS TRUE) THEN\n    CASE\n        WHEN (discontinued_year IS NOT NULL) THEN 1\n        ELSE 0\n    END\n    WHEN (NULLIF(btrim((website)::text), ''::text) IS NOT NULL) THEN 1\n    ELSE 0\nEND))::numeric) / (14)::numeric)))::integer", stored: true
+    t.virtual "completeness", type: :integer, as: "(round(((100.0 * (((((((\nCASE\n    WHEN (products_count > 0) THEN 5\n    ELSE 0\nEND +\nCASE\n    WHEN (NULLIF(btrim(description), ''::text) IS NOT NULL) THEN 3\n    ELSE 0\nEND) +\nCASE\n    WHEN (sub_categories_count > 0) THEN 3\n    ELSE 0\nEND) +\nCASE\n    WHEN (NULLIF(btrim((country_code)::text), ''::text) IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN (discontinued IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN (founded_year IS NOT NULL) THEN 1\n    ELSE 0\nEND) +\nCASE\n    WHEN (discontinued IS TRUE) THEN\n    CASE\n        WHEN (discontinued_year IS NOT NULL) THEN 1\n        ELSE 0\n    END\n    WHEN (NULLIF(btrim((website)::text), ''::text) IS NOT NULL) THEN 1\n    ELSE 0\nEND))::numeric) / (17)::numeric)))::integer", stored: true
     t.string "country_code"
     t.datetime "created_at", null: false
     t.text "description"
@@ -148,6 +148,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_095251) do
     t.citext "name", null: false
     t.integer "products_count", default: 0, null: false
     t.citext "slug", null: false
+    t.integer "sub_categories_count", default: 0, null: false
     t.datetime "updated_at", null: false
     t.string "website"
     t.index "\"left\"((name)::text, 1)", name: "index_brands_name_prefix"

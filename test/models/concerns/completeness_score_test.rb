@@ -81,6 +81,27 @@ class CompletenessScoreTest < ActiveSupport::TestCase
     assert_equal Brand.find(brand.id).completeness_score, Brand.find(brand.id).completeness
   end
 
+  # The counter cache is the only part of the brand expression that is not a column the form
+  # writes, so it is the one most likely to drift from the join table.
+  test 'brand scores agree in Ruby and in SQL with and without sub-categories' do
+    brand = Brand.create!(name: 'Score Uncategorised Brand', description: 'Text',
+                          country_code: 'DE', discontinued: false, founded_year: 1970,
+                          website: 'https://example.com')
+
+    assert_equal 0, brand.sub_categories_count
+
+    fresh = Brand.find(brand.id)
+
+    assert_equal fresh.completeness_score, fresh.completeness
+    assert_equal 53, fresh.completeness # 9 of 17
+
+    brand.update!(sub_category_ids: [sub_categories(:one).id])
+    fresh = Brand.find(brand.id)
+
+    assert_equal fresh.completeness_score, fresh.completeness
+    assert_equal 71, fresh.completeness # 12 of 17
+  end
+
   test 'a brand with no products scores the same in Ruby and in SQL' do
     empty = Brand.create!(
       name: 'Score Empty Brand',

@@ -175,6 +175,7 @@ en:
       description: a description
       founded_year: the year it was founded
       release_year: the release year
+      sub_categories: the kinds of gear it makes
       website: a website
     missing: "%{name} is still missing %{gaps}."
     possession_nudge_html: You own a %{name}. Want to help filling out the missing information? <a href="%{path}">Add it here</a>.
@@ -194,6 +195,7 @@ en:
         founded_year: Founded
         release_year: Release year
         specs: Specifications
+        sub_categories: Categories
         website: Website
     incomplete_brands:
       heading: Brands with missing details

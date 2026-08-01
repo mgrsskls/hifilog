@@ -7,7 +7,9 @@
 class ContributeController < ApplicationController
   include ApplicationHelper
 
-  BRAND_MISSING_FILTERS = %w[founded_year description country_code discontinued discontinued_year website].freeze
+  BRAND_MISSING_FILTERS = %w[
+    founded_year description sub_categories country_code discontinued discontinued_year website
+  ].freeze
   PRODUCT_MISSING_FILTERS = %w[release_year description discontinued_year specs].freeze
 
   BRAND_ORDER = 'brands.completeness DESC, brands.created_at DESC, LOWER(brands.name)'
@@ -68,6 +70,7 @@ class ContributeController < ApplicationController
     case missing
     when 'founded_year' then Brand.missing_founded_year
     when 'description' then Brand.missing_description
+    when 'sub_categories' then Brand.missing_sub_categories
     when 'country_code' then Brand.missing_country_code
     when 'discontinued' then Brand.missing_discontinued
     when 'discontinued_year' then Brand.missing_discontinued_year

@@ -1,5 +1,9 @@
 # Changelog
 
+## <time datetime="2026-08-01">2026-08-01</time>
+
+- A brand's categories now count towards how complete it is, and the [Contribute](/contribute) section can list brands that have not been assigned any.
+
 ## <time datetime="2026-07-31">2026-07-31</time>
 
 - Logged-in users can now follow and unfollow other users directly from the [Users](/users) ranking page.

@@ -117,6 +117,19 @@ class ContributeControllerTest < ActionDispatch::IntegrationTest
     assert_includes list, brands(:two).name
   end
 
+  test 'incomplete brands can be narrowed to brands with no categories' do
+    uncategorised = Brand.create!(name: 'Contribute Uncategorised Brand')
+
+    get contribute_incomplete_brands_url(missing: 'sub_categories')
+
+    assert_response :success
+
+    list = css_select('.EntityList--brands').to_s
+
+    assert_includes list, uncategorised.name
+    assert_not_includes list, brands(:one).name
+  end
+
   test 'the website filter still lists a brand whose status is unknown' do
     brand = brands(:one)
 

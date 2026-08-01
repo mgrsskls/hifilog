@@ -169,15 +169,58 @@ class CompletenessTest < ActiveSupport::TestCase
   end
 
   test 'having products dominates a brand score' do
-    empty = Brand.create!(name: 'Completeness Empty Brand', sub_category_ids: [sub_categories(:one).id])
+    empty = Brand.create!(name: 'Completeness Empty Brand')
 
     assert_equal 0, empty.completeness_score
 
     empty.update!(description: 'Text', country_code: 'DE', discontinued: false,
-                  founded_year: 1970, website: 'https://example.com')
+                  founded_year: 1970, website: 'https://example.com',
+                  sub_category_ids: [sub_categories(:one).id])
 
-    # Everything except products: 9 of 14.
-    assert_equal 64, empty.completeness_score
+    # Everything except products: 12 of 17.
+    assert_equal 71, empty.completeness_score
+  end
+
+  test 'a brand with no sub-categories is missing them' do
+    brand = Brand.create!(name: 'Completeness Uncategorised Brand')
+
+    assert_equal 0, brand.sub_categories_count
+    assert_includes brand.missing_fields, :sub_categories
+    assert_includes Brand.missing_sub_categories, brand
+
+    brand.update!(sub_category_ids: [sub_categories(:one).id])
+
+    assert_equal 1, brand.reload.sub_categories_count
+    assert_not_includes brand.missing_fields, :sub_categories
+    assert_not_includes Brand.missing_sub_categories, brand
+  end
+
+  test 'the sub-categories counter follows the association both ways' do
+    brand = brands(:one)
+
+    assert_equal 1, brand.sub_categories_count
+
+    brand.sub_categories << sub_categories(:two)
+
+    assert_equal 2, brand.reload.sub_categories_count
+
+    brand.sub_categories.destroy(sub_categories(:two))
+
+    assert_equal 1, brand.reload.sub_categories_count
+
+    brand.update!(sub_category_ids: [])
+
+    assert_equal 0, brand.reload.sub_categories_count
+  end
+
+  test 'a brand created with sub-categories has them counted' do
+    brand = Brand.create!(
+      name: 'Completeness Categorised Brand',
+      sub_category_ids: [sub_categories(:one).id, sub_categories(:two).id]
+    )
+
+    assert_equal 2, brand.sub_categories_count
+    assert_equal 2, brand.reload.sub_categories_count
   end
 
   test 'variant completeness uses the variants own fields' do

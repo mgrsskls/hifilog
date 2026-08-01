@@ -27,7 +27,13 @@ class Brand < ApplicationRecord
   extend FriendlyId
 
   has_many :products, -> { order(name: :asc) }, dependent: :destroy, inverse_of: :brand
-  has_and_belongs_to_many :sub_categories
+  # A join table has no counter cache option, and the callbacks below only fire for changes made
+  # through the association on a record that already exists — `sub_category_ids=` on a new record
+  # runs them before there is a row to update. `after_save` catches that case (and any other path
+  # that goes through a save), so the two together cover everything AR can do.
+  has_and_belongs_to_many :sub_categories,
+                          after_add: :recalculate_sub_categories_count!,
+                          after_remove: :recalculate_sub_categories_count!
 
   has_one_attached :logo do |attachable|
     # Format conversion only — dimensions stay as uploaded (sizes are tuned in markup/CSS).
@@ -54,6 +60,7 @@ class Brand < ApplicationRecord
 
   COMPLETENESS_WEIGHTS = {
     description: 3,
+    sub_categories: 3,
     country_code: 2,
     discontinued: 2,
     discontinued_year: 1,
@@ -71,12 +78,14 @@ class Brand < ApplicationRecord
   scope :missing_country_code, -> { where(country_code: nil) }
   scope :missing_discontinued, -> { where(discontinued: nil) }
   scope :missing_discontinued_year, -> { where(discontinued_year: nil, discontinued: true) }
+  scope :missing_sub_categories, -> { where(sub_categories_count: 0) }
   scope :incomplete, -> { where('brands.completeness < 100') }
 
   before_save :clear_logo_when_remove_requested
 
   after_update :touch_products
   after_destroy :invalidate_cache
+  after_save :recalculate_sub_categories_count!
   after_save :invalidate_cache
   after_commit :clear_country_cache
   after_commit :clear_brands_cache
@@ -90,8 +99,11 @@ class Brand < ApplicationRecord
     super - [:website]
   end
 
+  # sub_categories reads the counter cache rather than the association: it is the same value the
+  # SQL expression sees, so Ruby and SQL cannot disagree, and it costs no query.
   def completeness_present?(field)
     return !discontinued.nil? if field == :discontinued
+    return sub_categories_count.to_i.positive? if field == :sub_categories
 
     super
   end
@@ -114,6 +126,18 @@ class Brand < ApplicationRecord
       :products_count,
       products.count + ProductVariant.joins(:product).where(products: { brand_id: id }).count
     )
+  end
+
+  # Recomputed rather than incremented, for the same reasons as products_count: it self-heals, and
+  # update_column keeps a derived count from bulk-touching every product on the brand.
+  # Takes and ignores an argument so it can serve as an after_add / after_remove hook.
+  def recalculate_sub_categories_count!(_sub_category = nil)
+    return unless persisted?
+
+    count = sub_categories.count
+    return if count == sub_categories_count
+
+    update_column(:sub_categories_count, count)
   end
   # rubocop:enable Rails/SkipsModelValidations
 
@@ -201,6 +225,9 @@ class Brand < ApplicationRecord
       products_count_eq
       products_count_gt
       products_count_lt
+      sub_categories_count_eq
+      sub_categories_count_gt
+      sub_categories_count_lt
     ]
   end
 
