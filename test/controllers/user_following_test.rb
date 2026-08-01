@@ -10,9 +10,9 @@ class UserFollowingTest < ActionDispatch::IntegrationTest
   test 'dashboard feed includes followed user activity with name' do
     follower = users(:one)
     followed = users(:without_anything)
-    UserFollow.create!(follower:, followed:)
 
     travel_to Time.zone.local(2026, 8, 1, 12, 0, 0) do
+      UserFollow.create!(follower:, followed:)
       Possession.create!(user: followed, product: products(:one), prev_owned: false)
     end
 
