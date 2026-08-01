@@ -24,7 +24,7 @@ class ProductOption < ApplicationRecord
             allow_nil: true
 
   # This is used for dropdowns in active_admin
-  # :nocov:
+  # simplecov:disable
   def display_name
     return "#{option} (#{model_no})" if model_no.present?
 
@@ -50,5 +50,5 @@ class ProductOption < ApplicationRecord
       product_variant
     ]
   end
-  # :nocov:
+  # simplecov:enable
 end

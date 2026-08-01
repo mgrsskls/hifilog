@@ -9,7 +9,7 @@ class UserBlock < ApplicationRecord
 
   after_create :remove_follow_relationships
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[blocked_id blocker_id created_at id id_value updated_at]
   end
@@ -17,7 +17,7 @@ class UserBlock < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[blocked blocker]
   end
-  # :nocov:
+  # simplecov:enable
 
   private
 

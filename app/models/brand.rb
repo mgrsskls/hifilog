@@ -199,7 +199,7 @@ class Brand < ApplicationRecord
     end
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       pg_search_document_id
@@ -234,7 +234,7 @@ class Brand < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-  # :nocov:
+  # simplecov:enable
 
   def should_generate_new_friendly_id?
     slug.blank? || name_changed?

@@ -20,7 +20,7 @@ class SubCategory < ApplicationRecord
 
   after_save :invalidate_cache
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       category_id
@@ -38,7 +38,7 @@ class SubCategory < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[brands category custom_attributes custom_products products]
   end
-  # :nocov:
+  # simplecov:enable
 
   def should_generate_new_friendly_id?
     slug.blank? || name_changed?

@@ -7,7 +7,7 @@ class Bookmark < ApplicationRecord
 
   validates :item_id, uniqueness: { scope: [:user_id, :item_type] }
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       bookmark_list_id_eq
@@ -21,5 +21,5 @@ class Bookmark < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-  # :nocov:
+  # simplecov:enable
 end

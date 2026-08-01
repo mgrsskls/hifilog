@@ -17,7 +17,7 @@ class EventAttendee < ApplicationRecord
     where(event_id: ids).group(:event_id).count
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[created_at event_id id id_value updated_at user_id]
   end
@@ -25,7 +25,7 @@ class EventAttendee < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[event user]
   end
-  # :nocov:
+  # simplecov:enable
 
   private
 

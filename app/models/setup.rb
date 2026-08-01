@@ -24,7 +24,7 @@ class Setup < ApplicationRecord
     private? ? I18n.t('setup.private_values.yes') : I18n.t('setup.private_values.no')
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       user_id
@@ -41,7 +41,7 @@ class Setup < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-  # :nocov:
+  # simplecov:enable
 
   def should_generate_new_friendly_id?
     slug.blank? || name_changed?

@@ -220,7 +220,7 @@ class User < ApplicationRecord
   end
 
   # This is used for dropdowns in active_admin
-  # :nocov:
+  # simplecov:disable
   def display_name
     email
   end
@@ -241,5 +241,5 @@ class User < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-  # :nocov:
+  # simplecov:enable
 end

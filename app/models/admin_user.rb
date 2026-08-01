@@ -6,7 +6,7 @@ class AdminUser < ApplicationRecord
   devise :database_authenticatable,
          :recoverable, :rememberable, :validatable
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at
@@ -18,5 +18,5 @@ class AdminUser < ApplicationRecord
       updated_at
     ]
   end
-  # :nocov:
+  # simplecov:enable
 end

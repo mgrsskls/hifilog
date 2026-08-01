@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-SimpleCov.start 'rails' do
+SimpleCov.load_profile 'rails'
+
+SimpleCov.configure do
   enable_coverage :branch
 
-  add_filter %r{^/app/admin/}
-  add_filter %r{^/config/}
-  add_filter %r{^/test/}
+  skip %r{^/app/admin/}
+  skip %r{^/config/}
+  skip %r{^/test/}
 
-  add_group 'Presenters', 'app/presenters'
-  add_group 'Serializers', 'app/serializers'
+  group 'Presenters', 'app/presenters'
+  group 'Serializers', 'app/serializers'
 end

@@ -119,7 +119,7 @@ class ProductVariant < ApplicationRecord
     ]
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
@@ -140,7 +140,7 @@ class ProductVariant < ApplicationRecord
       product_id_eq
     ]
   end
-  # :nocov:
+  # simplecov:enable
 
   def should_generate_new_friendly_id?
     slug.blank? ||

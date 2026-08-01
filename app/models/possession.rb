@@ -112,7 +112,7 @@ class Possession < ApplicationRecord
     Time.zone.now - period_from
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       user_id
@@ -127,7 +127,7 @@ class Possession < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-  # :nocov:
+  # simplecov:enable
 
   private
 

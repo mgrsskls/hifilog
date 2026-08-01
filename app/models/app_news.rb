@@ -13,7 +13,7 @@ class AppNews < ApplicationRecord
     # rubocop:enable Rails/OutputSafety
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[]
   end
@@ -21,5 +21,5 @@ class AppNews < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[]
   end
-  # :nocov:
+  # simplecov:enable
 end

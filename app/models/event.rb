@@ -46,7 +46,7 @@ class Event < ApplicationRecord
     Time.zone.today > start_date
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[address calendar_year country_code end_date name slug start_date url created_at updated_at slugs_id_eq]
   end
@@ -54,7 +54,7 @@ class Event < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[event_attendees users]
   end
-  # :nocov:private
+  # simplecov:enable
 
   def self.time_until_midnight
     (Date.tomorrow.beginning_of_day - Time.current).to_i.seconds

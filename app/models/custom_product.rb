@@ -31,7 +31,7 @@ class CustomProduct < ApplicationRecord
     {}
   end
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       created_at
@@ -50,7 +50,7 @@ class CustomProduct < ApplicationRecord
       user
     ]
   end
-  # :nocov:
+  # simplecov:enable
 
   def should_generate_new_friendly_id?
     slug.blank? || name_changed?

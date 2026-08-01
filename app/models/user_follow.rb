@@ -12,7 +12,7 @@ class UserFollow < ApplicationRecord
   after_commit :notify_followed_user, on: :create
   after_destroy_commit :hide_followed_by_user_activity
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[created_at followed_id follower_id id id_value updated_at]
   end
@@ -20,7 +20,7 @@ class UserFollow < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[followed follower]
   end
-  # :nocov:
+  # simplecov:enable
 
   private
 

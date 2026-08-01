@@ -12,7 +12,7 @@ class SetupPossession < ApplicationRecord
   after_commit :record_setup_product_added_user_activity, on: :create
   after_destroy_commit :record_setup_product_removed_user_activity
 
-  # :nocov:
+  # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       id
@@ -28,7 +28,7 @@ class SetupPossession < ApplicationRecord
       setup
     ]
   end
-  # :nocov:
+  # simplecov:enable
 
   private
 
