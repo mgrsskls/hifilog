@@ -117,6 +117,7 @@ a user-driven database for hi-fi products and brands."
     @products = PrecomputedTotalCount.attach(products.page(1), total_count) if @products.out_of_range?
 
     @products = ProductItem.preload_list_possession_images(@products)
+    @products = ProductItem.preload_sub_category_names(@products)
 
     @canonical_url = brand_products_index_canonical_url
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?

@@ -93,7 +93,7 @@ ActiveAdmin.register_page "Dashboard" do
       end
       div do
         avg_brand_completeness = number_to_rounded(Brand.average(:completeness).to_f, precision: 2)
-        avg_product_completeness = number_to_rounded(ProductItem.average(:completeness).to_f, precision: 2)
+        avg_product_completeness = number_to_rounded(ContributeProductItem.average(:completeness).to_f, precision: 2)
         h3 class: "text-xl font-bold mb-2" do
           "Completeness"
         end

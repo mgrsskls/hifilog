@@ -197,20 +197,20 @@ class CompletenessTest < ActiveSupport::TestCase
     assert_empty product_variants(:one).missing_highlighted_attributes
   end
 
-  test 'ProductItem.incomplete covers variants as well as products' do
-    assert_includes ProductItem.incomplete.map(&:product_id), products(:two).id
-    assert_includes ProductItem.incomplete.map(&:product_variant_id), product_variants(:three).id
+  test 'ContributeProductItem.incomplete covers variants as well as products' do
+    assert_includes ContributeProductItem.incomplete.map(&:product_id), products(:two).id
+    assert_includes ContributeProductItem.incomplete.map(&:product_variant_id), product_variants(:three).id
   end
 
-  test 'ProductItem.missing_specs finds entries with specs to give that have not given them all' do
+  test 'ContributeProductItem.missing_specs finds entries with specs to give that have not given them all' do
     products(:one).update!(custom_attributes: {})
 
-    assert_includes ProductItem.missing_specs.map(&:product_id), products(:one).id
-    assert_not_includes ProductItem.missing_specs.map(&:product_id), products(:with_custom_attributes).id
+    assert_includes ContributeProductItem.missing_specs.map(&:product_id), products(:one).id
+    assert_not_includes ContributeProductItem.missing_specs.map(&:product_id), products(:with_custom_attributes).id
   end
 
-  test 'ProductItem.missing_specs never lists a variant' do
-    assert_empty ProductItem.missing_specs.where(item_type: 'ProductVariant')
+  test 'ContributeProductItem.missing_specs never lists a variant' do
+    assert_empty ContributeProductItem.missing_specs.where(item_type: 'ProductVariant')
   end
 
   test 'Brand.without_products finds brands with an empty catalogue' do
@@ -290,9 +290,9 @@ class CompletenessTest < ActiveSupport::TestCase
     assert_includes Brand.missing_country_code, brand
   end
 
-  test 'ProductItem.missing_discontinued_year only lists discontinued entries' do
+  test 'ContributeProductItem.missing_discontinued_year only lists discontinued entries' do
     discontinued = products(:discontinued)
-    listed = -> { ProductItem.missing_discontinued_year.map(&:product_id) }
+    listed = -> { ContributeProductItem.missing_discontinued_year.map(&:product_id) }
 
     assert_predicate discontinued, :discontinued?
     assert_nil discontinued.discontinued_year
@@ -322,57 +322,57 @@ class CompletenessTest < ActiveSupport::TestCase
 
   test 'every product missing scope agrees with that products completeness fields' do
     Product.find_each do |product|
-      item = ProductItem.find_by(product_id: product.id, item_type: 'Product')
+      item = ContributeProductItem.find_by(product_id: product.id, item_type: 'Product')
 
       Product::COMPLETENESS_WEIGHTS.each_key do |field|
         expected = product.missing_fields.include?(field)
-        listed = ProductItem.public_send(:"missing_#{field}").exists?(id: item.id)
+        listed = ContributeProductItem.public_send(:"missing_#{field}").exists?(id: item.id)
 
         assert_equal expected, listed,
                      "#{product.name}: completeness #{expected ? 'counts' : 'does not count'} " \
-                     "#{field} as missing, but ProductItem.missing_#{field} disagrees"
+                     "#{field} as missing, but ContributeProductItem.missing_#{field} disagrees"
       end
     end
   end
 
   test 'a variant is judged on its own description, not its parents' do
     variant = product_variants(:one)
-    item = ProductItem.find_by(product_variant_id: variant.id, item_type: 'ProductVariant')
+    item = ContributeProductItem.find_by(product_variant_id: variant.id, item_type: 'ProductVariant')
 
     assert_nil variant.product.description
     assert_predicate variant.description, :present?
     assert_not_includes variant.missing_fields, :description
-    assert_not ProductItem.missing_description.exists?(id: item.id)
+    assert_not ContributeProductItem.missing_description.exists?(id: item.id)
 
     variant.update!(description: nil)
 
     assert_includes variant.missing_fields, :description
-    assert ProductItem.missing_description.exists?(id: item.id)
+    assert ContributeProductItem.missing_description.exists?(id: item.id)
   end
 
   test 'a product is still judged on its own description' do
     product = products(:with_variants)
-    item = ProductItem.find_by(product_id: product.id, item_type: 'Product')
+    item = ContributeProductItem.find_by(product_id: product.id, item_type: 'Product')
 
     assert_nil product.description
-    assert ProductItem.missing_description.exists?(id: item.id)
+    assert ContributeProductItem.missing_description.exists?(id: item.id)
 
     product.update!(description: 'Some text.')
 
-    assert_not ProductItem.missing_description.exists?(id: item.id)
+    assert_not ContributeProductItem.missing_description.exists?(id: item.id)
   end
 
   test 'every variant missing scope agrees with that variants completeness fields' do
     ProductVariant.find_each do |variant|
-      item = ProductItem.find_by(product_variant_id: variant.id, item_type: 'ProductVariant')
+      item = ContributeProductItem.find_by(product_variant_id: variant.id, item_type: 'ProductVariant')
 
       ProductVariant::COMPLETENESS_WEIGHTS.each_key do |field|
         expected = variant.missing_fields.include?(field)
-        listed = ProductItem.public_send(:"missing_#{field}").exists?(id: item.id)
+        listed = ContributeProductItem.public_send(:"missing_#{field}").exists?(id: item.id)
 
         assert_equal expected, listed,
                      "variant #{variant.id}: completeness #{expected ? 'counts' : 'does not count'} " \
-                     "#{field} as missing, but ProductItem.missing_#{field} disagrees"
+                     "#{field} as missing, but ContributeProductItem.missing_#{field} disagrees"
       end
     end
   end

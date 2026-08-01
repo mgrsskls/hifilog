@@ -35,6 +35,14 @@ Metrics/MethodLength:
 Rails/HasAndBelongsToMany:
   Enabled: false
 
+# Scenic view-backed rows are read-only (`readonly?` is true) and their associations point at
+# real tables via synthetic keys. A `:dependent` option would either be dead code or, worse,
+# cascade a delete out of a view into a base table.
+Rails/HasManyOrHasOneDependent:
+  Exclude:
+    - app/models/concerns/catalogue_product_row.rb
+    - app/models/product_item.rb
+
 Metrics/CyclomaticComplexity:
   Enabled: false
 

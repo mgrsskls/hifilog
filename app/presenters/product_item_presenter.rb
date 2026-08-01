@@ -11,6 +11,14 @@ class ProductItemPresenter
     @user_signed_in = user_signed_in
   end
 
+  # Only contribute_product_items carries a completeness score; the leaner product_items view
+  # dropped it (and the LATERAL that computes it) so catalogue listings do not pay for it.
+  # Returning nil rather than letting delegate_missing_to raise keeps shared/_product usable for
+  # both, and shared/_entity_list_item only renders the bar when render_completeness is set.
+  def completeness
+    @object.completeness if @object.has_attribute?(:completeness)
+  end
+
   def display_name
     return "#{@object.name} #{@object.variant_name}" if @object.item_type == 'ProductVariant'
 

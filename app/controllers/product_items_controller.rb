@@ -36,6 +36,7 @@ class ProductItemsController < ApplicationController
     @products = PrecomputedTotalCount.attach(products.page(1), total_count) if @products.out_of_range?
 
     @products = ProductItem.preload_list_possession_images(@products)
+    @products = ProductItem.preload_sub_category_names(@products)
 
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 

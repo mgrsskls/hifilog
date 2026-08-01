@@ -3,18 +3,18 @@
 require 'test_helper'
 
 # The completeness score exists twice: in Ruby (Completeness#completeness_score, used for the
-# prompts) and in SQL (a generated column on brands, an expression in the product_items view,
-# used for sorting). Nothing stops the two from drifting apart except this test.
+# prompts) and in SQL (a generated column on brands, an expression in the contribute_product_items
+# view, used for sorting). Nothing stops the two from drifting apart except this test.
 #
 # If you change a weight, change it in all three places: the concern or model, the brands
-# migration, and db/views/product_items_vNN.sql.
+# migration, and db/views/contribute_product_items_vNN.sql.
 class CompletenessScoreTest < ActiveSupport::TestCase
   def product_item_for(product)
-    ProductItem.find_by(product_id: product.id, item_type: 'Product')
+    ContributeProductItem.find_by(product_id: product.id, item_type: 'Product')
   end
 
   def variant_item_for(variant)
-    ProductItem.find_by(product_variant_id: variant.id, item_type: 'ProductVariant')
+    ContributeProductItem.find_by(product_variant_id: variant.id, item_type: 'ProductVariant')
   end
 
   test 'every fixture brand scores the same in Ruby and in SQL' do
@@ -28,7 +28,7 @@ class CompletenessScoreTest < ActiveSupport::TestCase
     Product.find_each do |product|
       item = product_item_for(product)
 
-      assert_not_nil item, "no product_items row for #{product.name}"
+      assert_not_nil item, "no contribute_product_items row for #{product.name}"
       assert_equal product.completeness_score, item.completeness,
                    "product #{product.name}: Ruby #{product.completeness_score}, SQL #{item.completeness}"
     end
@@ -38,7 +38,7 @@ class CompletenessScoreTest < ActiveSupport::TestCase
     ProductVariant.find_each do |variant|
       item = variant_item_for(variant)
 
-      assert_not_nil item, "no product_items row for variant #{variant.id}"
+      assert_not_nil item, "no contribute_product_items row for variant #{variant.id}"
       assert_equal variant.completeness_score, item.completeness,
                    "variant #{variant.id}: Ruby #{variant.completeness_score}, SQL #{item.completeness}"
     end

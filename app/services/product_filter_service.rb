@@ -32,21 +32,32 @@ class ProductFilterService
     @brand_filters = brand_filters
   end
 
+  # Memoised: counts_by_brand and total_count both call this on top of the caller's own call, and
+  # the taxonomy branches below execute a pluck rather than compose a subquery — so without this
+  # the same id list is fetched and discarded two or three times per request. The instance is
+  # built from immutable filters, so one result is good for its whole lifetime.
   def filter
+    return @filter if defined?(@filter)
+
     products = @products
 
     if @sub_category
       # Plucked ids (not a JOIN or IN-subquery) so Postgres can push the filter into the
-      # product_items view's base-table scans before running its per-row LATERAL/subquery
-      # costs (completeness, sub_category_names)
+      # product_items view's base-table scans instead of materializing the full view first
       products = products.where(product_id: @sub_category.product_ids)
     elsif @category
-      # product_id avoids duplicate rows when a product has multiple sub-categories in the category
+      # Plucked ids for the same reason as @sub_category above (not a JOIN or IN-subquery) so
+      # Postgres can push the filter into the product_items view's base-table scans instead of
+      # materializing the full view first. `distinct` avoids duplicate ids when a product has
+      # multiple sub-categories in the category.
+      # rubocop:disable Rails/PluckInWhere -- pluck is intentional here, not the subquery this cop prefers
       products = products.where(
         product_id: Product.joins(:sub_categories)
                            .where(sub_categories: { category_id: @category.id })
-                           .select(:id)
+                           .distinct
+                           .pluck(:id)
       )
+      # rubocop:enable Rails/PluckInWhere
     end
 
     data = {
@@ -82,12 +93,12 @@ class ProductFilterService
     # search_by_name appended, and every `.except(:order)` above stays cheap.
     products = apply_ordering(products, data)
 
-    Result.new(products:)
+    @filter = Result.new(products:)
   end
 
   # Counts matching product_items (products + variants) per brand_id.
   # Prefer base tables when product-level filters are absent so we avoid scanning the
-  # product_items view (and its completeness LATERAL) for brands#index badges.
+  # product_items view for brands#index badges.
   def counts_by_brand
     if base_table_counts_eligible?
       counts_by_brand_on_base_tables
@@ -98,7 +109,7 @@ class ProductFilterService
 
   # Total matching product_items (products + variants), regardless of brand.
   # Same base-table shortcut as counts_by_brand — lets pagination avoid a COUNT(*) through the
-  # product_items view (and its completeness LATERAL / sub_category_names subqueries).
+  # product_items view.
   def total_count
     if base_table_counts_eligible?
       total_count_on_base_tables

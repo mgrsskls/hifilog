@@ -146,6 +146,16 @@ class ContributeControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # sub_category_names is no longer a column on the view — it is preloaded per page. Without this
+  # the controller could stop preloading and the only symptom would be an empty category badge.
+  test 'the products queue renders sub category names' do
+    get contribute_incomplete_products_url
+
+    assert_response :success
+    assert_select '.EntityList--products .EntityListItem-data dd',
+                  text: sub_categories(:two).name, minimum: 1
+  end
+
   test 'the queues render a completeness bar' do
     get contribute_incomplete_products_url
 

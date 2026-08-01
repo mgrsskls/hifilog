@@ -16,8 +16,9 @@
 # permanently capped below 100% for something nobody can fix.
 #
 # IMPORTANT: the score is computed twice — here in Ruby, and in SQL so that it can be sorted on
-# (a generated column on `brands`, an expression in the `product_items` view). The two must agree.
-# CompletenessScoreTest compares them for every fixture row; change one and you must change both.
+# (a generated column on `brands`, an expression in the `contribute_product_items` view). The two
+# must agree. CompletenessScoreTest compares them for every fixture row; change one and you must
+# change both.
 module Completeness
   extend ActiveSupport::Concern
 

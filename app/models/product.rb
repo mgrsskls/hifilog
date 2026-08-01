@@ -202,8 +202,9 @@ class Product < ApplicationRecord
 
   private
 
-  # Mirrors the SQL in db/views/product_items_v18.sql: the key must exist and hold something
-  # that is neither JSON null nor an empty string. `.present?` would disagree on a stored false.
+  # Mirrors the SQL in db/views/contribute_product_items_v01.sql: the key must exist and hold
+  # something that is neither JSON null nor an empty string. `.present?` would disagree on a
+  # stored false.
   def highlighted_attribute_filled?(label)
     value = (custom_attributes || {})[label]
 

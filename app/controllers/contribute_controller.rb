@@ -11,7 +11,8 @@ class ContributeController < ApplicationController
   PRODUCT_MISSING_FILTERS = %w[release_year description discontinued_year specs].freeze
 
   BRAND_ORDER = 'brands.completeness DESC, brands.created_at DESC, LOWER(brands.name)'
-  PRODUCT_ORDER = 'product_items.completeness DESC, product_items.created_at DESC, LOWER(product_items.name)'
+  PRODUCT_ORDER = 'contribute_product_items.completeness DESC, ' \
+                  'contribute_product_items.created_at DESC, LOWER(contribute_product_items.name)'
 
   before_action :set_active_menu
   before_action :set_noindex_meta_robots
@@ -57,7 +58,8 @@ class ContributeController < ApplicationController
 
     @products = items.includes(:brand).page(params[:page])
     @products = items.includes(:brand).page(1) if @products.out_of_range?
-    @products = ProductItem.preload_list_possession_images(@products)
+    @products = ContributeProductItem.preload_list_possession_images(@products)
+    @products = ContributeProductItem.preload_sub_category_names(@products)
   end
 
   private
@@ -76,11 +78,11 @@ class ContributeController < ApplicationController
 
   def scope_for_product_missing(missing)
     case missing
-    when 'release_year' then ProductItem.missing_release_year
-    when 'description' then ProductItem.missing_description
-    when 'discontinued_year' then ProductItem.missing_discontinued_year
-    when 'specs' then ProductItem.missing_specs
-    else ProductItem.incomplete
+    when 'release_year' then ContributeProductItem.missing_release_year
+    when 'description' then ContributeProductItem.missing_description
+    when 'discontinued_year' then ContributeProductItem.missing_discontinued_year
+    when 'specs' then ContributeProductItem.missing_specs
+    else ContributeProductItem.incomplete
     end
   end
 
