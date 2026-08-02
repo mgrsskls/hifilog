@@ -33,6 +33,7 @@ class ProductVariant < ApplicationRecord
   has_many :users, through: :possessions
   has_many :notes, dependent: :destroy
   has_many :product_options, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy, as: :item
 
   friendly_id :slug_candidates, use: [:slugged, :scoped, :history], scope: :product
 

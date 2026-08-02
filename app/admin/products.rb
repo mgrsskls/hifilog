@@ -29,6 +29,25 @@ ActiveAdmin.register Product do
     link_to 'Add Variant', new_admin_product_variant_path(product_variant: { product_id: @product.id }), class: 'action-item-button'
   end
 
+  action_item :convert_to_variant, only: :show do
+    link_to 'Convert to Variant', convert_to_variant_admin_product_path(resource), class: 'action-item-button'
+  end
+
+  member_action :convert_to_variant, method: [:get, :post] do
+    if request.post?
+      begin
+        target = Product.find_by(id: params[:target_product_id])
+        variant = ProductConversionService.to_variant(resource, target, name: params[:variant_name])
+        redirect_to admin_product_variant_path(variant),
+                    notice: "Converted to a variant of #{variant.product.display_name}."
+      rescue ProductConversionService::ConversionError => e
+        redirect_to convert_to_variant_admin_product_path(resource), alert: e.message
+      end
+    else
+      render 'active_admin/products/convert_to_variant'
+    end
+  end
+
   form do |f|
     f.inputs do
       f.input :name

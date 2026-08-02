@@ -1,0 +1,41 @@
+<% target_products = Product.where(brand_id: resource.brand_id).where.not(id: resource.id).order(:name) %>
+
+<div>
+  <div class="mb-4">
+    <p>
+      <strong><%= resource.display_name %></strong> will become a variant of the product you pick below.
+      Its owners, notes, options, bookmarks and edit history move with it. The product itself is
+      deleted afterwards, so its current URL stops working.
+    </p>
+    <p>
+      Only other <strong><%= resource.brand.name %></strong> products can be chosen — a conversion
+      never changes brand.
+    </p>
+  </div>
+
+  <% if target_products.empty? %>
+    <p>
+      <%= resource.brand.name %> has no other products, so there is nothing to convert this into.
+    </p>
+  <% else %>
+    <%= form_for resource, url: convert_to_variant_admin_product_path(resource), method: :post, html: { class: "formtastic" } do |f| %>
+      <div class="input">
+        <label class="label" for="target_product_id">New parent product</label>
+        <select name="target_product_id" id="target_product_id" required>
+          <option value="">— select a product —</option>
+          <%= options_from_collection_for_select(target_products, :id, :name) %>
+        </select>
+      </div>
+
+      <div class="input">
+        <label class="label" for="variant_name">Variant name</label>
+        <input type="text" name="variant_name" id="variant_name" value="<%= resource.name %>">
+        <p class="inline-hints">Leave as is to keep the current name.</p>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Convert to Variant</button>
+      </div>
+    <% end %>
+  <% end %>
+</div>

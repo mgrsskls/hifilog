@@ -5,6 +5,28 @@ ActiveAdmin.register ProductVariant do
 
   config.filters = false
 
+  action_item :convert_to_product, only: :show do
+    link_to 'Convert to Product', convert_to_product_admin_product_variant_path(resource), class: 'action-item-button'
+  end
+
+  member_action :convert_to_product, method: [:get, :post] do
+    if request.post?
+      begin
+        product = ProductConversionService.to_product(
+          resource,
+          sub_category_ids: params[:sub_category_ids],
+          custom_attributes: (resource.product&.custom_attributes if params[:inherit_custom_attributes]),
+          name: params[:product_name]
+        )
+        redirect_to admin_product_path(product), notice: "Converted to the product #{product.display_name}."
+      rescue ProductConversionService::ConversionError => e
+        redirect_to convert_to_product_admin_product_variant_path(resource), alert: e.message
+      end
+    else
+      render 'active_admin/product_variants/convert_to_product'
+    end
+  end
+
   index do
     selectable_column
     id_column
