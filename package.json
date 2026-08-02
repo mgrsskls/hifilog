@@ -3,10 +3,10 @@
 	"devDependencies": {
 		"@axe-core/cli": "^4.12.1",
 		"@tailwindcss/postcss": "^4.3.3",
-		"chromedriver": "^151.0.1",
+		"chromedriver": "^151.0.2",
 		"cssnano": "^8.0.2",
 		"esbuild": "^0.28.1",
-		"postcss": "^8.5.24",
+		"postcss": "^8.5.25",
 		"postcss-cli": "^11.0.1",
 		"postcss-import": "^16.1.1",
 		"postcss-preset-env": "^11.3.2",
