@@ -1,19 +1,21 @@
 AllCops:
   NewCops: enable
   Exclude:
-    - db/migrate/**/*
-    - db/schema.rb
-    - config/**/*
-    - script/**/*
-    - bin/**/*
     - app/admin/**/*
-    - app/channels/**/*
-    - app/jobs/**/*
+    - bin/**/*
+    - config/**/*
+    - coverage/**/*
+    - db/**/*
+    - log/**/*
     - node_modules/**/*
+    - public/**/*
+    - static/**/*
+    - storage/**/*
+    - tmp/**/*
+    - vendor/**/*
     - Gemfile
     - Rakefile
     - config.ru
-    - vendor/**/*
 
 plugins: rubocop-rails
 

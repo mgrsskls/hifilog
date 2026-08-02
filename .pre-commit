@@ -4,6 +4,6 @@
 set -eo pipefail
 
 echo Running pre-commit hook
-bundle exec rubocop --raise-cop-error
+bundle exec rubocop -A --raise-cop-error
 bundle exec rails test
 npm run lint
