@@ -120,7 +120,10 @@ class UserFollowingTest < ActionDispatch::IntegrationTest
   test 'grouped_for_following excludes hidden followed users' do
     follower = users(:one)
     followed = users(:without_anything)
-    UserFollow.create!(follower:, followed:)
+
+    travel_to Time.zone.local(2026, 8, 1, 12, 0, 0) do
+      UserFollow.create!(follower:, followed:)
+    end
 
     travel_to Time.zone.local(2026, 8, 2, 12, 0, 0) do
       Possession.create!(user: followed, product: products(:two), prev_owned: false)
