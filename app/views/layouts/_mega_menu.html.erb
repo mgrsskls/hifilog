@@ -1,17 +1,18 @@
 <% show_all_path = Rails.application.routes.url_helpers.public_send("#{entity}_path") %>
 <% mega_menu_controller = (entity == 'products') ? 'product_items' : entity %>
+<% heading = (entity == 'products' ? Product : Brand).model_name.human.pluralize %>
 
 <button class="MenuMain-link MenuMain-link--lvl1" aria-controls="menu-<%= entity %>" aria-expanded="false" <%= active_menu_state(active_menu, symbol) %>>
-  <span><%= t("headings." + entity) %></span>
+  <span><%= heading %></span>
   <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 12"><path fill-rule="evenodd" d="M.5.72a1.49 1.49 0 0 1 2.1 0l7.39 7.39L17.38.72a1.49 1.49 0 1 1 2.1 2.1l-8.44 8.44a1.49 1.49 0 0 1-2.1 0L.5 2.82a1.49 1.49 0 0 1 0-2.1z" clip-rule="evenodd"/></svg>
 </button>
 <div class="MenuMega Menu-subList" id="menu-<%= entity %>">
   <div class="u-container">
     <div class="MenuMega-header">
       <div class="MenuMega-headerTitle">
-        <span class="h2"><%= t("headings." + entity) %></span>
+        <span class="h2"><%= heading %></span>
         <%= link_to show_all_path do %>
-          <span>Show all</span>
+          <span>Overview</span>
         <% end %>
       </div>
       <%= link_to cta_label, user_signed_in? ? cta_path : new_user_session_path(redirect: cta_path), class: "Button", rel: "nofollow" %>

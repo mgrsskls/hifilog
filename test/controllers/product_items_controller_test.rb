@@ -109,4 +109,120 @@ class ProductItemsControllerTest < ActionDispatch::IntegrationTest
     get products_url(sort: 'name_asc')
     assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
+
+  test 'bare products url renders the hub, not the product list' do
+    get products_url
+
+    assert_response :success
+    assert_select '.CatalogueHub'
+    assert_select '.EntityList--products', count: 0
+  end
+
+  test 'hub links every category and sub category' do
+    get products_url
+
+    Category.find_each do |category|
+      assert_select 'a[href=?]', products_category_path(category.friendly_id)
+    end
+    SubCategory.find_each do |sub_category|
+      assert_select 'a[href=?]',
+                    products_subcategory_path(sub_category.category.friendly_id,
+                                              sub_category.friendly_id)
+    end
+  end
+
+  test 'hub offers an escape hatch to the full alphabetical list' do
+    get products_url
+
+    assert_select 'a[href=?]', products_path(sort: 'name_asc')
+  end
+
+  # The hub lists categories, not products, so an ItemList would describe items that are not
+  # on the page.
+  test 'hub emits CollectionPage and breadcrumbs but no ItemList' do
+    get products_url
+
+    types = css_select('script[type="application/ld+json"]').map { |node| JSON.parse(node.text)['@type'] }
+
+    assert_includes types, 'CollectionPage'
+    assert_includes types, 'BreadcrumbList'
+    assert_not_includes types, 'ItemList'
+  end
+
+  test 'hub canonical is the bare products url' do
+    get products_url
+
+    assert_select 'link[rel="canonical"][href=?]', products_url
+  end
+
+  test 'hub is indexable' do
+    get products_url
+
+    assert_select 'meta[name="robots"][content="noindex, follow"]', count: 0
+  end
+
+  # Each of these means the visitor asked a question of the catalogue, so they get the list.
+  {
+    'sort' => { sort: 'name_asc' },
+    'page' => { page: 2 },
+    'product query' => { products: { query: 'atrium' } },
+    'product status' => { products: { status: 'discontinued' } },
+    'brand country' => { brands: { country: 'DE' } }
+  }.each do |label, params|
+    test "products url with a #{label} param renders the list, not the hub" do
+      get products_url(**params)
+
+      assert_response :success
+      assert_select '.CatalogueHub', count: 0
+    end
+  end
+
+  # Campaign params are appended to shared links constantly; they must not downgrade the hub.
+  test 'tracking params still render the hub' do
+    get products_url(utm_source: 'newsletter', utm_medium: 'email')
+
+    assert_response :success
+    assert_select '.CatalogueHub'
+  end
+
+  # An applied filter must be visible. The fieldset previously keyed its open state and its
+  # "filter applied" marker off the country param alone, so a brand status filter was active but
+  # invisible: collapsed fieldset, no indicator.
+  test 'brand status filter opens and flags the brands fieldset' do
+    get products_url(brands: { status: 'discontinued' })
+
+    assert_response :success
+    assert_select 'details.Filter-fieldset[open] > summary', text: /Brands/
+    assert_select 'details.Filter-fieldset[open] > summary svg[aria-label="Filter applied"]'
+  end
+
+  test 'brand country filter opens and flags the brands fieldset' do
+    get products_url(brands: { country: 'DE' })
+
+    assert_response :success
+    assert_select 'details.Filter-fieldset[open] > summary', text: /Brands/
+  end
+
+  test 'brands fieldset stays closed without a brand filter' do
+    get products_url(sort: 'name_asc')
+
+    assert_response :success
+    assert_select 'details.Filter-fieldset[open] > summary', text: /Brands/, count: 0
+  end
+
+  # The non-goal of this change: category pages carry the catalogue's unique content and its
+  # links into the product detail pages, so they must keep listing products.
+  test 'category and sub category paths keep their product listings' do
+    get products_category_url(categories(:one).slug)
+
+    assert_response :success
+    assert_select '.CatalogueHub', count: 0
+    assert_select '.EntityList--products'
+
+    get products_subcategory_url(categories(:one).slug, sub_categories(:one).slug)
+
+    assert_response :success
+    assert_select '.CatalogueHub', count: 0
+    assert_select '.EntityList--products'
+  end
 end

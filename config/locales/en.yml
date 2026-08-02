@@ -156,6 +156,18 @@ en:
       label: Edit
   brand:
     founded: Founded
+    hub:
+      browse_heading: Browse by category
+      contribute_heading: Something missing?
+      contribute_link: Find entries with gaps
+      diy_kit: Making DIY Kits
+      in_business: In Business
+      lead_html: <b>%{brands_count} brands</b> with <a href="%{products_path}">%{products_count} products</a>, in %{categories_count} categories.<br>Search by name, pick a category below or <a href="%{brands_path}">browse through all brands</a>.
+      meta_desc: Browse hi-fi brands by category on HiFi Log, a user-driven database for hi-fi products and brands.
+      out_of_business: Out of Business
+      search_label: Search brands
+      search_placeholder: Name
+      search_submit: Search
     new:
       heading: Add Brand
       link: Add Brand
@@ -458,6 +470,18 @@ en:
       removed: Your <b>%{name}</b> has been removed from your collection.
       removed_from_prev: Your <b>%{name}</b> has been removed from your list of previous products.
   product:
+    hub:
+      browse_heading: Browse by category
+      contribute_heading: Something missing?
+      contribute_link: Find entries with gaps
+      discontinued: Discontinued
+      diy_kit: DIY Kits
+      in_production: In Production
+      lead_html: <b>%{products_count} products</b> from <a href="%{brands_path}">%{brands_count} brands</a>, in %{categories_count} categories.<br>Search by name or model number, pick a category below or <a href="%{products_path}">browse through all products</a>.
+      meta_desc: Browse hi-fi products by category on HiFi Log, a user-driven database for hi-fi products and brands.
+      search_label: Search products
+      search_placeholder: Name or model number
+      search_submit: Search
     meta:
       owned_by: Owned by
     new:

@@ -245,4 +245,86 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
         params: { products: { diy_kit: '1' } }
     assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
   end
+
+  test 'bare brands url renders the hub, not the brand list' do
+    get brands_url
+
+    assert_response :success
+    assert_select '.CatalogueHub'
+    assert_select '.EntityList--brands', count: 0
+  end
+
+  test 'hub links every category and sub category' do
+    get brands_url
+
+    Category.find_each do |category|
+      assert_select 'a[href=?]', brands_category_path(category.friendly_id)
+    end
+    SubCategory.find_each do |sub_category|
+      assert_select 'a[href=?]',
+                    brands_subcategory_path(sub_category.category.friendly_id,
+                                            sub_category.friendly_id)
+    end
+  end
+
+  # The hub lists categories, not brands, so an ItemList would describe items that are not
+  # on the page.
+  test 'hub emits CollectionPage and breadcrumbs but no ItemList' do
+    get brands_url
+
+    types = css_select('script[type="application/ld+json"]').map { |node| JSON.parse(node.text)['@type'] }
+
+    assert_includes types, 'CollectionPage'
+    assert_includes types, 'BreadcrumbList'
+    assert_not_includes types, 'ItemList'
+  end
+
+  test 'hub canonical is the bare brands url' do
+    get brands_url
+
+    assert_select 'link[rel="canonical"][href=?]', brands_url
+  end
+
+  test 'hub search posts brand queries back to the brands index' do
+    get brands_url
+
+    assert_select 'form[action=?] input[name=?]', brands_path, 'brands[query]'
+  end
+
+  {
+    'sort' => { sort: 'name_asc' },
+    'page' => { page: 2 },
+    'brand query' => { brands: { query: 'zmf' } },
+    'brand status' => { brands: { status: 'discontinued' } },
+    'product diy_kit' => { products: { diy_kit: '1' } }
+  }.each do |label, params|
+    test "brands url with a #{label} param renders the list, not the hub" do
+      get brands_url(**params)
+
+      assert_response :success
+      assert_select '.CatalogueHub', count: 0
+    end
+  end
+
+  # Campaign params are appended to shared links constantly; they must not downgrade the hub.
+  test 'tracking params still render the brands hub' do
+    get brands_url(utm_source: 'newsletter', utm_medium: 'email')
+
+    assert_response :success
+    assert_select '.CatalogueHub'
+  end
+
+  test 'category and sub category paths keep their brand listings' do
+    get brands_category_url(categories(:one).slug)
+
+    assert_response :success
+    assert_select '.CatalogueHub', count: 0
+    assert_select '.EntityList--brands'
+
+    get brands_subcategory_url(categories(:one).slug, sub_categories(:one).slug)
+
+    assert_response :success
+    assert_select '.CatalogueHub', count: 0
+    assert_select '.EntityList--brands'
+  end
 end

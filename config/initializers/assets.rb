@@ -15,6 +15,7 @@ Rails.application.config.assets.precompile += %w(
   amp_to_headphone_calculator.css
   application.css
   bookmarks.css
+  catalogue_hub.css
   changelog.css
   compact_events_list.css
   contributions.css

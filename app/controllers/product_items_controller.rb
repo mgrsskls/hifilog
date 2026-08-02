@@ -12,7 +12,12 @@ class ProductItemsController < ApplicationController
 
   helper_method :current_category, :current_sub_category
 
+  # Presence of any of these means the products should be rendered
+  HUB_BLOCKING_PARAMS = %w[sort page products brands].freeze
+
   def index
+    return render_hub if hub_state?
+
     @category = current_category
     @sub_category = current_sub_category
     @custom_attributes = index_custom_attributes
@@ -62,6 +67,20 @@ class ProductItemsController < ApplicationController
 
   def set_active_menu
     @active_menu = :products
+  end
+
+  # Only the bare /products URL becomes the hub. Category and sub-category paths keep their
+  # product listings — those pages carry the catalogue's unique content and its links into the
+  # product detail pages, and a visitor who picked a category is asking to see it.
+  def hub_state?
+    current_category.blank? && current_sub_category.blank? &&
+      !params.keys.intersect?(HUB_BLOCKING_PARAMS)
+  end
+
+  def render_hub
+    @canonical_url = products_url
+    page_title(Product.model_name.human.pluralize, t('product.hub.meta_desc'))
+    render :hub
   end
 
   def category_data

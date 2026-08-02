@@ -1,0 +1,102 @@
+<%#
+  Browse hub shared by /products and /brands.
+
+  Locals:
+    entity           'products' | 'brands' — selects path helpers, i18n scope and JSON-LD
+    lead             html_safe intro sentence, built by the caller (the counts differ per entity)
+    entry_points     array of [label, path] rendered as tags into the filtered list state
+    new_label/path   the "add an entry" call to action
+    contribute_label/path  link into the matching contribute queue
+    canonical_url    absolute URL, also used for the JSON-LD
+
+  Branching on `entity` for path helpers follows layouts/_mega_menu, which does the same.
+%>
+<%
+  products = entity == 'products'
+  i18n_scope = products ? 'product' : 'brand'
+  heading = (products ? Product : Brand).model_name.human.pluralize
+  search_path = products ? products_path : brands_path
+  search_param = products ? 'products[query]' : 'brands[query]'
+
+  # menu_categories is the cache the mega menu already uses: { column => [categories] }.
+  # Flattening keeps the same column-major order the menu presents, so the two agree.
+  hub_categories = menu_categories.values.flatten
+%>
+
+<div class="CatalogueHub">
+  <div class="CatalogueHub-intro">
+    <div class="CatalogueHub-introMain">
+      <div>
+        <h1><%= heading %></h1>
+        <p class="CatalogueHub-lead"><%= lead %></p>
+
+        <ul class="CatalogueHub-entryPoints">
+          <% entry_points.each do |label, path| %>
+            <li><%= link_to label, path, class: "Tag Tag--large" %></li>
+          <% end %>
+        </ul>
+      </div>
+
+      <%= form_tag search_path, method: :get, class: "CatalogueHub-search" do %>
+        <label class="CatalogueHub-searchLabel" for="hub-search">
+          <%= t("#{i18n_scope}.hub.search_label") %>
+        </label>
+        <div class="CatalogueHub-searchRow">
+          <input
+            id="hub-search"
+            class="CatalogueHub-searchInput"
+            type="search"
+            name="<%= search_param %>"
+            placeholder="<%= t("#{i18n_scope}.hub.search_placeholder") %>"
+            minlength="2"
+            required>
+          <button class="Button" type="submit"><%= t("#{i18n_scope}.hub.search_submit") %></button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <section class="CatalogueHub-section CatalogueHub-section--categories" aria-labelledby="hub-browse">
+    <h2 id="hub-browse"><%= t("#{i18n_scope}.hub.browse_heading") %></h2>
+    <ul class="CatalogueHub-grid">
+      <% hub_categories.each do |category| %>
+        <li class="CatalogueHub-category">
+          <h3 class="CatalogueHub-categoryName">
+            <%= render "shared/icons/categories/#{category.slug}" %>
+            <%= link_to category.name, products ? products_catalog_path(category, nil) : brands_catalog_path(category, nil) %>
+          </h3>
+          <% if category.sub_categories.any? %>
+            <ul class="CatalogueHub-subCategories">
+              <% category.sub_categories.each do |sub_category| %>
+                <li>
+                  <%= link_to sub_category.name, products ? products_catalog_path(nil, sub_category) : brands_catalog_path(nil, sub_category) %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <section class="CatalogueHub-section CatalogueHub-section--contribute" aria-labelledby="hub-contribute">
+    <h2 id="hub-contribute"><%= t("#{i18n_scope}.hub.contribute_heading") %></h2>
+    <p class="CatalogueHub-contributeActions">
+      <%= link_to new_label, new_path, class: "Button", rel: "nofollow" %>
+      <%= link_to contribute_label, contribute_path, rel: "nofollow" %>
+    </p>
+  </section>
+</div>
+
+<%= json_ld_script_tag(
+      if products
+        products_catalogue_breadcrumb_json_ld(category: nil, sub_category: nil, canonical_url: canonical_url)
+      else
+        brands_catalogue_breadcrumb_json_ld(category: nil, sub_category: nil, canonical_url: canonical_url)
+      end
+    ) %>
+<%= json_ld_script_tag(schema_org_collection_page(
+      name: heading,
+      url: canonical_url,
+      description: t("#{i18n_scope}.hub.meta_desc")
+    )) %>

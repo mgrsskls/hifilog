@@ -18,7 +18,12 @@ class BrandsController < ApplicationController
   before_action :redirect_legacy_brand_products_category_query, only: [:products]
   before_action :ensure_brand_products_category_path!, only: [:products]
 
+  # Presence of any of these means the brands list should be rendered
+  HUB_BLOCKING_PARAMS = %w[sort page brands products].freeze
+
   def index
+    return render_hub if hub_state?
+
     @custom_attributes = extract_custom_attributes(@category, @sub_category)
     @filter_applied = active_index_filters.except(:category, :sub_category).merge(
       active_index_product_filters
@@ -192,6 +197,20 @@ a user-driven database for hi-fi products and brands."
 
   def set_active_menu
     @active_menu = :brands
+  end
+
+  # Only the bare /brands URL becomes the hub. Category and sub-category paths keep their brand
+  # listings — those pages carry the catalogue's unique content and its links into the brand
+  # detail pages, and a visitor who picked a category is asking to see it.
+  def hub_state?
+    @category.blank? && @sub_category.blank? &&
+      !params.keys.intersect?(HUB_BLOCKING_PARAMS)
+  end
+
+  def render_hub
+    @canonical_url = brands_url
+    page_title(Brand.model_name.human.pluralize, t('brand.hub.meta_desc'))
+    render :hub
   end
 
   def brand_params

@@ -1,0 +1,23 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "catalogue_hub" %>
+<% end %>
+
+<%= render "shared/catalogue_hub",
+  entity: "brands",
+  lead: t('brand.hub.lead_html',
+    brands_count: number_with_delimiter(brands_count),
+    products_count: number_with_delimiter(products_count),
+    products_path: products_path,
+    categories_count: number_with_delimiter(categories_count),
+    brands_path: brands_path(sort: 'name_asc')
+  ).html_safe,
+  entry_points: [
+    [t('brand.hub.in_business'), brands_path(brands: { status: :continued })],
+    [t('brand.hub.out_of_business'), brands_path(brands: { status: :discontinued })],
+    [t('brand.hub.diy_kit'), brands_path(products: { diy_kit: 1 })]
+  ],
+  new_label: t('brand.new.link'),
+  new_path: new_brand_path,
+  contribute_label: t('brand.hub.contribute_link'),
+  contribute_path: contribute_incomplete_brands_path,
+  canonical_url: @canonical_url %>

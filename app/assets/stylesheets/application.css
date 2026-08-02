@@ -272,16 +272,22 @@
 
 	.Tag {
 		display: inline-flex;
-		padding-block: 0.1em;
-		padding-inline: 0.6em;
 		border: var(--border-light);
 		border-width: 0.09375rem;
 		text-decoration: none;
 		text-align: center;
 		border-radius: 1.5em;
+		font-size: 0.875rem;
+		padding-block: 0.25em;
+		padding-inline: 1em;
 		font-weight: 600;
-		font-size: 0.75rem;
 		margin-inline-start: 0.5rem;
+	}
+
+	.Tag:not(.Tag--large) {
+		font-size: 0.75rem;
+		padding-block: 0.1em;
+		padding-inline: 0.6em;
 	}
 
 	@keyframes spinner {

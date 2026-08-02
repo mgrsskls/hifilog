@@ -36,6 +36,19 @@ module StructuredDataHelper
     offset + index + 1
   end
 
+  # For pages that introduce a collection without enumerating its members. Deliberately not an
+  # ItemList: the hub lists categories, not products, so there is no item list to describe.
+  def schema_org_collection_page(name:, url:, description: nil)
+    {
+      '@context' => 'https://schema.org',
+      '@type' => 'CollectionPage',
+      'name' => name,
+      'url' => url
+    }.tap do |hash|
+      hash['description'] = description.squish if description.present?
+    end
+  end
+
   def schema_org_breadcrumb_list(crumbs)
     # crumbs: array of [name, absolute_url] pairs
     {
