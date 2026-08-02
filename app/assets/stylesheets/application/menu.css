@@ -71,7 +71,7 @@
 	.Menu-link--lvl1 {
 		font-size: 1.2rem;
 		font-weight: 600;
-		color: #fff;
+		color: var(--color-blue-750);
 		gap: 0.5rem;
 	}
 
