@@ -11,6 +11,10 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::RoutingError, with: :not_found
+  # Requesting an unsupported format (e.g. appending .json/.xml to an html-only
+  # route) has no matching template rather than no matching route, so it raises
+  # this instead of ActionController::RoutingError.
+  rescue_from ActionView::MissingTemplate, with: :not_found
 
   helper_method :current_user,
                 :products_count,
