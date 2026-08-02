@@ -8,7 +8,7 @@ The catalog is built around **brands** and **products**. A **product** is the ca
 
 **Possessions** represent a user’s relationship to something in the catalog (or to a user-defined **custom product**): ownership, photos, purchase details, and optional links into **setups**. They always point at real database rows (`products`, `product_variants`, or `custom_products`), not at the unified listing abstraction.
 
-**Product items** are not a third kind of catalog entity. They are a **read-only database view** that flattens each product and each of its variants into one row each, so lists and filters can treat “a row in the catalog” uniformly while still knowing whether that row is the base product or a variant.
+**Product items** are not a third kind of catalog entity. They are a **read-only database view** that flattens each product and each of its variants into one row each, so lists and filters can treat “a row in the catalog” uniformly while still knowing whether that row is the base product or a variant. A second view of the same shape, **contribute product items**, adds the completeness columns the contribution queues sort and filter on.
 
 ```mermaid
 flowchart TB
@@ -38,10 +38,13 @@ flowchart TB
   User -->|blocker| UserBlock -->|blocked| User
   subgraph readonly [Read-only projection]
     ProductItem["ProductItem (view)"]
+    ContributeProductItem["ContributeProductItem (view)"]
     SearchResult["SearchResult (view)"]
   end
   Product -.-> ProductItem
   ProductVariant -.-> ProductItem
+  Product -.-> ContributeProductItem
+  ProductVariant -.-> ContributeProductItem
   Product -.-> SearchResult
   ProductVariant -.-> SearchResult
   Brand -.-> SearchResult
@@ -95,13 +98,18 @@ Variants delegate missing attributes to the parent (`delegate_missing_to :produc
 
 Filtering on catalog indexes uses the definitions applicable to the current category context.
 
-## Product item (view)
+## Catalog row views (`ProductItem`, `ContributeProductItem`)
 
 `product_items` unions one row per product and one row per variant (`item_type` distinguishes them). Each row has a stable UUID for the view’s primary key; **foreign keys elsewhere still use `products.id` and `product_variants.id`**.
 
-The `ProductItem` model is read-only and encodes list behavior: which possessions supply thumbnails (base-product rows ignore variant-linked possessions), image preloading, and catalog-scoped search on flattened columns.
+`contribute_product_items` is a second view of the same shape plus `completeness`, `specs_applicable`, and `specs_filled` (computed by a LATERAL join over highlighted custom attributes). The split keeps that per-row spec work off every catalog listing while letting the contribution queues **sort and filter on completeness in SQL**.
 
-Use **Product** / **ProductVariant** to mutate data; use **ProductItem** for unified catalog listing and filters.
+Both models are read-only and share **`CatalogueProductRow`**: brand and possession associations, list-thumbnail selection (base-product rows ignore variant-linked possessions), image and subcategory-name preloading. Differences:
+
+- **`ProductItem`** adds `pg_search` name search and `has_many :product_options` (options point at _this_ view’s synthetic UUID, so the association only exists here).
+- **`ContributeProductItem`** adds the gap scopes: `missing_release_year`, `missing_description`, `missing_discontinued_year`, `missing_specs`, `incomplete`. It carries its own `variant_description` column, because the shared `description` is always the parent product’s—without it a variant lacking its own description would never appear in the queue its score says it belongs in.
+
+Use **Product** / **ProductVariant** to mutate data; use **ProductItem** for catalog listing and filters, **ContributeProductItem** for the contribution queues.
 
 ## Possession
 
@@ -195,6 +203,36 @@ A **backfill** task can rebuild activities from existing possessions, setups, RS
 
 **PaperTrail** versions **products**, **variants**, and **brands**. Per-record changelogs and a contributions summary show who edited the catalog over time.
 
+## Completeness and contribution queues
+
+Most catalog entries carry little more than a name and a brand, so _incomplete_ is the normal state rather than an error. The **`Completeness`** concern (included by `Brand`, `Product`, `ProductVariant`) describes how filled-in an entry is two ways: as **named gaps** (`missing_fields`, `missing_highlighted_attributes`) for prompts on entry pages, and as a **0–100 score** for ordering the queues.
+
+Including models declare `COMPLETENESS_WEIGHTS`, weighted by how many surfaces a field feeds rather than by feel:
+
+| Model            | Weights                                                                                                                                      |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Brand`          | description 3, sub_categories 3, country_code 2, discontinued 2, discontinued_year 1, founded_year 1, website 1, plus **has any products** 5 |
+| `Product`        | description 3, release_year 2, discontinued_year 1, plus **highlighted specs** 3                                                             |
+| `ProductVariant` | description 3, release_year 2, discontinued_year 1                                                                                           |
+
+Rules worth knowing:
+
+- **Inapplicable fields leave the denominator** rather than scoring as missing (`completeness_fields` override), so nothing is permanently capped below 100% for something nobody can fix. A brand still trading is asked for a website but not a discontinuation year, and vice versa—both weigh 1, so the denominator stays 14 either way and scores stay comparable.
+- **Highlighted custom attributes** are the app’s notion of a “key spec”. They score as one group (2 points for the fraction filled, plus a final point only once the set is closed) so categories with many and few applicable attributes remain comparable. Variants inherit the parent’s attributes and cannot edit them, so specs are not part of a variant’s own score.
+- `completeness_present?` is overridden where `.present?` is the wrong question—most notably a nullable boolean, where `false` is a real answer and only `nil` means “nobody has said”.
+- Arithmetic is `Rational`, not `Float`, to match the SQL side exactly.
+
+**The score is computed twice**: in Ruby here, and in SQL so it can be sorted on—a **generated column on `brands`**, an **expression in the `contribute_product_items` view**. The two must agree; `CompletenessScoreTest` compares them for every fixture row. Change one and you must change both.
+
+### Contribution queues
+
+**`ContributeController`** (`/contribute`) is a task board for contributors: lists of entries with one known, specific gap. It is read-only and `noindex`—every link leads into the existing brand or product edit forms.
+
+- `brands-without-products`, `incomplete-brands` (`?missing=` one of founded_year, description, sub_categories, country_code, discontinued, discontinued_year, website)
+- `incomplete-products` (`?missing=` one of release_year, description, discontinued_year, specs)
+
+Both are optionally scoped to a `Category` and ordered by **descending completeness**—the nearly finished entries first, so a contributor is handed a small, finishable job instead of a blank form.
+
 ## Cross-cutting concerns
 
 **Service objects** orchestrate catalog filtering, catalog detail (product/variant show) pages, statistics, caching of taxonomy/counts, possession→presenter selection, newsletter and follow-notification unsubscribe, and activity recording/backfill.
@@ -237,6 +275,7 @@ Presenters sit beside models and centralize display rules for templates.
 | `Product`                   | Yes       | Shared catalog identity                               |
 | `ProductVariant`            | Yes       | Variant-specific overrides                            |
 | `ProductItem`               | No (view) | Unified catalog rows                                  |
+| `ContributeProductItem`     | No (view) | Same rows plus completeness/specs, for contribute     |
 | `SearchResult`              | No (view) | Global search rows                                    |
 | `Possession`                | Yes       | Ownership, photos, setups; current vs previous        |
 | `Setup`                     | Yes       | Named public/private gear groupings                   |
