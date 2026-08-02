@@ -2,25 +2,13 @@
 <% hide_category ||= false %>
 <% render_completeness ||= false %>
 
-<% cache [products, request.query_parameters, hide_brand, hide_category, user_signed_in?,
-          render_completeness] do %>
-  <ol class="EntityList EntityList--products">
-    <%= render partial: 'shared/product',
-        collection: products,
-        locals: {
-          hide_brand:,
-          hide_category:,
-          render_completeness:,
-        },
-        cached: lambda { |product|
-          [
-            product,
-            hide_brand,
-            hide_category,
-            product.list_image_cache_version(user_signed_in: user_signed_in?),
-            render_completeness
-          ]
-        }
-    %>
-  </ol>
-<% end %>
+<ol class="EntityList EntityList--products">
+  <%= render partial: 'shared/product',
+      collection: products,
+      locals: {
+        hide_brand:,
+        hide_category:,
+        render_completeness:
+      }
+  %>
+</ol>

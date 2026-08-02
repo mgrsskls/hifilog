@@ -93,17 +93,4 @@ module CatalogueProductRow
     candidates.select! { |possession| possession.images.attached? }
     candidates.min_by { |possession| possession.created_at || Time.zone.at(0) }
   end
-
-  def list_image_cache_version(user_signed_in:)
-    possession = earliest_list_possession_with_images(user_signed_in: user_signed_in)
-    return 'none' unless possession
-
-    attachment = PossessionPresenter.new(possession).highlighted_image
-    img_part = if attachment
-                 "#{attachment.id}-#{attachment.blob_id}-#{attachment.created_at.to_fs(:usec)}"
-               else
-                 'none'
-               end
-    "#{possession.id}-#{possession.highlighted_image_id}-#{possession.created_at&.to_fs(:usec)}-#{img_part}"
-  end
 end

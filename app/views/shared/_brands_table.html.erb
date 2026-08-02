@@ -2,20 +2,14 @@
 <% render_completeness ||= false %>
 <% brands = brands.preload(sub_categories: [:category]) if brands.respond_to?(:preload) %>
 
-<% cache [brands, request.query_parameters, category, product_counts, sub_category,
-          render_completeness] do %>
-  <ol class="EntityList EntityList--brands">
-    <%= render partial: 'shared/brand',
-        collection: brands,
-        locals: {
-          category:,
-          product_counts:,
-          sub_category:,
-          render_completeness:,
-      },
-      cached: lambda { |brand|
-        [brand, brand.sub_categories, category, product_counts, sub_category, render_completeness]
-      }
-    %>
-  </ol>
-<% end %>
+<ol class="EntityList EntityList--brands">
+  <%= render partial: 'shared/brand',
+      collection: brands,
+      locals: {
+        category:,
+        product_counts:,
+        sub_category:,
+        render_completeness:,
+    }
+  %>
+</ol>

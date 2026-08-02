@@ -153,14 +153,6 @@ class ProductItemTest < ActiveSupport::TestCase
     assert_equal 0, sub_category_queries
   end
 
-  test 'list_image_cache_version yields none without matching thumbnail possessions' do
-    row = ProductItem.find_by(item_type: 'Product', product_id: products(:without_custom_attributes).id)
-    skip 'product_items view row unavailable in this suite' unless row
-
-    row.define_singleton_method(:earliest_list_possession_with_images) { |_args| nil }
-    assert_equal 'none', row.list_image_cache_version(user_signed_in: false)
-  end
-
   private
 
   def count_possession_queries(&)

@@ -82,6 +82,7 @@ class Brand < ApplicationRecord
   scope :incomplete, -> { where('brands.completeness < 100') }
 
   before_save :clear_logo_when_remove_requested
+  before_save :touch_updated_at_for_logo_change
 
   after_update :touch_products
   after_destroy :invalidate_cache
@@ -129,7 +130,8 @@ class Brand < ApplicationRecord
   end
 
   # Recomputed rather than incremented, for the same reasons as products_count: it self-heals, and
-  # update_column keeps a derived count from bulk-touching every product on the brand.
+  # update_columns keeps a derived count from bulk-touching every product on the brand (a plain
+  # #update would run after_update :touch_products).
   # Takes and ignores an argument so it can serve as an after_add / after_remove hook.
   def recalculate_sub_categories_count!(_sub_category = nil)
     return unless persisted?
@@ -137,7 +139,7 @@ class Brand < ApplicationRecord
     count = sub_categories.count
     return if count == sub_categories_count
 
-    update_column(:sub_categories_count, count)
+    update_columns(sub_categories_count: count, updated_at: Time.current)
   end
   # rubocop:enable Rails/SkipsModelValidations
 
@@ -263,6 +265,12 @@ class Brand < ApplicationRecord
     return if pending_create
 
     self.logo = nil
+  end
+
+  def touch_updated_at_for_logo_change
+    return if attachment_changes['logo'].blank?
+
+    self.updated_at = Time.current
   end
 
   def validate_logo_content_type
