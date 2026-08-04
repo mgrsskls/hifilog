@@ -161,6 +161,8 @@ class UserController < ApplicationController
     @categories = get_grouped_sub_categories(bookmarks: all_bookmarks.reject do |bookmark|
       %w[Event Brand].include? bookmark.item_type
     end)
+
+    @bookmark_list_options = bookmark_list_dialog_presenters
   end
 
   def events
@@ -448,6 +450,29 @@ class UserController < ApplicationController
 
   def one_click_unsubscribe_request?
     params['List-Unsubscribe'] == 'One-Click'
+  end
+
+  # Presenters for the "add bookmarks to this list" dialog. BookmarkPresenter touches
+  # +bookmark.item+ (and +item.product+ for variants) in its constructor, so without
+  # preloading this is two N+1s over every bookmark the user has. The +item+ association is
+  # polymorphic, so nested associations are preloaded per concrete type instead of via
+  # +includes+ (Brand / Event do not respond to +brand+ / +product+).
+  def bookmark_list_dialog_presenters
+    return [] if @bookmark_list.blank?
+
+    bookmarks = current_user.bookmarks.includes(:bookmark_list, :item).to_a
+    items = bookmarks.filter_map(&:item)
+
+    preload_records(items.grep(Product), :brand)
+    preload_records(items.grep(ProductVariant), product: :brand)
+
+    bookmarks.map { |bookmark| BookmarkPresenter.new(bookmark) }
+  end
+
+  def preload_records(records, *associations)
+    return if records.empty?
+
+    ActiveRecord::Associations::Preloader.new(records:, associations:).call
   end
 
   def assign_bookmark_product_items_for_thumbnails!(bookmark_presenters)

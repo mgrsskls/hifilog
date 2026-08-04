@@ -123,7 +123,7 @@
         <input type="hidden" name="bookmark_list[bookmark_ids][]">
         <h2>Add bookmarks <small>to <%= @bookmark_list.name %></small></h2>
         <div class="AddEntityDialog-list">
-          <% current_user.bookmarks.map { |bm| BookmarkPresenter.new(bm) }.each do |presenter| %>
+          <% @bookmark_list_options.each do |presenter| %>
             <div class="AddEntityDialog-option">
               <%= check_box_tag "bookmark_list[bookmark_ids][]", presenter.id, { id: "bookmark_list_bookmark_ids_#{presenter.id}", checked: @bookmark_list.bookmark_ids.include?(presenter.id) } %>
               <%= f.label :bookmark_ids, value: presenter.id do %>
