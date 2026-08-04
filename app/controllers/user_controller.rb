@@ -23,7 +23,7 @@ class UserController < ApplicationController
 
     @newest_users = newest_users
 
-    load_current_statistics_overview
+    load_current_statistics_summary
 
     @events = current_user.events.upcoming.order(start_date: :asc).limit(2).to_a
     @event_attendee_counts = EventAttendee.counts_for(@events.map(&:id))

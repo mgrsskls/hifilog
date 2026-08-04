@@ -40,7 +40,7 @@ class UsersController < ApplicationController
     @activity_rows = UserActivityTimeline.grouped_for(@user, time_zone: Time.zone, public_profile_feed: true)
     @user_follow = current_user&.user_follows&.find_by(followed: @user) if user_signed_in? && current_user != @user
 
-    load_current_statistics_overview(@user)
+    load_current_statistics_summary(@user)
 
     @events = @user.events.upcoming.order(start_date: :asc).to_a
     @event_attendee_counts = EventAttendee.counts_for(@events.map(&:id))
