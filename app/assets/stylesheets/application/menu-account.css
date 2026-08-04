@@ -1,14 +1,15 @@
 .MenuAccount-list {
-	li {
+	a {
+		display: flex;
 		padding-block: 0.25rem;
 		padding-inline: 0.5rem;
 		margin-inline: -0.5rem;
-	}
 
-	li:has(> :is([aria-current="page"], [aria-current="true"])) {
-		font-weight: 600;
-		background: var(--color-blue-250);
-		border-radius: var(--border-radius);
+		&:is([aria-current="page"], [aria-current="true"]) {
+			font-weight: 600;
+			background: var(--color-blue-250);
+			border-radius: var(--border-radius);
+		}
 	}
 
 	> li {
@@ -64,6 +65,7 @@
 		inset-inline-end: 0;
 		min-inline-size: 12rem;
 		padding-block-end: 1rem;
+		white-space: nowrap;
 	}
 
 	.MenuAccount-item:is(:hover, :focus-within) {

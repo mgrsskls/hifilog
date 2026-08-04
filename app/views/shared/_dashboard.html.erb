@@ -13,57 +13,61 @@
       </a>
 
       <ul class="Sidebar-menu">
-        <li>
-          <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_root_path %>"<%= active_menu_state(active_dashboard_menu, :dashboard) %>>
-            <%= render "shared/dashboard_nav_icon", icon: :home %>
-            <b><%= t('headings.home') %></b>
-          </a>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_root_path %>"<%= active_menu_state(active_dashboard_menu, :dashboard) %>>
+              <%= render "shared/dashboard_nav_icon", icon: :home %>
+              <b><%= t('headings.home') %></b>
+            </a>
+          </div>
         </li>
 
-        <li>
-          <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_feed_path %>"<%= active_menu_state(active_dashboard_menu, :feed) %>>
-            <%= render "shared/dashboard_nav_icon", icon: :feed %>
-            <b><%= t('headings.feed') %></b>
-          </a>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_feed_path %>"<%= active_menu_state(active_dashboard_menu, :feed) %>>
+              <%= render "shared/dashboard_nav_icon", icon: :feed %>
+              <b><%= t('headings.feed') %></b>
+            </a>
+          </div>
         </li>
 
-        <li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
           <div class="u-flex u-alignCenter u-gap-sm">
             <%= render "shared/dashboard_nav_icon", icon: :gear %>
             <b><%= t('headings.collection') %></b>
           </div>
 
           <ul>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_products_path %>"<%= active_menu_state(active_dashboard_menu, :products) %>>
                 <%= t('headings.current_products') %>
               </a>
               <span data-user-count="products"></span>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_prev_owneds_path %>"<%= active_menu_state(active_dashboard_menu, :prev_owneds) %>>
                 <%= t('headings.prev_owneds') %>
               </a>
               <span data-user-count="previous_products"></span>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_custom_products_path %>"<%= active_menu_state(active_dashboard_menu, :custom_products) %>>
                 <%= t('headings.custom_products') %>
               </a>
               <span data-user-count="custom_products"></span>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_setups_path %>"<%= active_menu_state(active_dashboard_menu, :setups) %>>
                 <%= t('headings.setups') %>
               </a>
               <span data-user-count="setups"></span>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_history_path %>"<%= active_menu_state(active_dashboard_menu, :history) %>>
                 <%= t('headings.history') %>
               </a>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_statistics_root_path %>"<%= active_menu_state(active_dashboard_menu, :statistics) %>>
                 <%= t('headings.insights') %>
               </a>
@@ -71,7 +75,7 @@
           </ul>
         </li>
 
-        <li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
           <div class="u-flex u-alignCenter u-gap-sm">
             <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_events_path %>"<%= active_menu_state(active_dashboard_menu, :events) %>>
               <%= render "shared/dashboard_nav_icon", icon: :events %>
@@ -81,7 +85,7 @@
           </div>
         </li>
 
-        <li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
           <div class="u-flex u-alignCenter u-gap-sm">
             <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_notes_path %>"<%= active_menu_state(active_dashboard_menu, :notes) %>>
               <%= render "shared/dashboard_nav_icon", icon: :notes %>
@@ -91,7 +95,7 @@
           </div>
         </li>
 
-        <li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
           <div class="u-flex u-alignCenter u-gap-sm">
             <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_bookmarks_path %>"<%= active_menu_state(active_dashboard_menu, :bookmarks) %>>
               <%= render "shared/dashboard_nav_icon", icon: :bookmarks %>
@@ -99,38 +103,49 @@
             </a>
             <span data-user-count="bookmarks"></span>
           </div>
+          <% if current_user.bookmark_lists.any? %>
+            <ul>
+              <% current_user.bookmark_lists.each do |list| %>
+                <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
+                  <%= link_to list.name, dashboard_bookmark_list_path(list), "aria-current": @active_dashboard_menu == "bookmark_list_#{list.id}" ? "page" : "false", class: "Sidebar-link" %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
         </li>
 
-        <li>
-          <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_following_path %>"<%= active_menu_state(active_dashboard_menu, :community) %>>
-            <%= render "shared/dashboard_nav_icon", icon: :community %>
-            <b><%= t('headings.my_community') %></b>
-          </a>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <a class="Sidebar-link u-flex u-alignCenter u-gap-sm" href="<%= dashboard_following_path %>"<%= active_menu_state(active_dashboard_menu, :community) %>>
+              <%= render "shared/dashboard_nav_icon", icon: :community %>
+              <b><%= t('headings.my_community') %></b>
+            </a>
+          </div>
         </li>
 
-        <li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
           <div class="u-flex u-alignCenter u-gap-sm">
             <%= render "shared/dashboard_nav_icon", icon: :settings %>
             <b><%= t('headings.settings') %></b>
           </div>
 
           <ul>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_profile_settings_path %>"<%= active_menu_state(active_dashboard_menu, :profile) %>>
                 <%= t('headings.profile') %>
               </a>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_notification_settings_path %>"<%= active_menu_state(active_dashboard_menu, :notifications) %>>
                 <%= t('headings.notifications') %>
               </a>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= dashboard_blocked_path %>"<%= active_menu_state(active_dashboard_menu, :blocked) %>>
                 <%= t('headings.blocked') %>
               </a>
             </li>
-            <li>
+            <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
               <a class="Sidebar-link" href="<%= edit_user_registration_path %>"<%= active_menu_state(active_dashboard_menu, :account) %>>
                 <%= t('headings.account') %>
               </a>

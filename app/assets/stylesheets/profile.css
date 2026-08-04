@@ -4,6 +4,16 @@
 	h1 {
 		color: var(--color-white);
 	}
+
+	.Sidebar {
+		li {
+			padding-block: 0.05rem;
+
+			ul {
+				padding-block-start: 0.5rem;
+			}
+		}
+	}
 }
 
 .Profile-header {

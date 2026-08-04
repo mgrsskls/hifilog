@@ -34,15 +34,13 @@
 	}
 
 	li {
-		padding-block: 0.25rem;
 		padding-inline: 0.5rem;
 		margin-inline: -0.5rem;
-	}
 
-	li:has(> :is([aria-current="page"], [aria-current="true"])) {
-		font-weight: 600;
-		background: var(--color-blue-250);
-		border-radius: var(--border-radius);
+		&.Sidebar-menuItem--lvl1 > div,
+		&.Sidebar-menuItem--lvl2 {
+			padding-block: 0.25rem;
+		}
 	}
 
 	svg {
@@ -87,8 +85,11 @@
 	font-weight: 600;
 }
 
-li:has(> .Sidebar-link:is([aria-current="true"], [aria-current="page"])),
-li:has(> div > .Sidebar-link:is([aria-current="true"], [aria-current="page"])) {
+.Sidebar-menuItem--lvl1
+	> div:has(> .Sidebar-link:is([aria-current="true"], [aria-current="page"])),
+.Sidebar-menuItem--lvl2:has(
+	> .Sidebar-link:is([aria-current="true"], [aria-current="page"])
+) {
 	background-color: var(--color-bg3);
 	padding-inline: 0.5rem;
 	margin-inline: -0.5rem;
