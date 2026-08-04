@@ -62,17 +62,15 @@ class UsersController < ApplicationController
                     status: :moved_permanently and return
       end
     end
-    possessions = @setup.present? ? @setup.possessions : @user.possessions.where(prev_owned: false)
-
-    all = PossessionPresenterService.map_to_presenters(possessions)
+    base = @setup.present? ? @setup.possessions : @user.possessions.where(prev_owned: false)
 
     @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
-    @possessions = if @sub_category
-                     all.select { |p| p.sub_categories.include?(@sub_category) }
-                   else
-                     all
-                   end
-    @categories = get_grouped_sub_categories(possessions: all)
+    list_scope = @sub_category ? possessions_in_sub_category(base, @sub_category) : base
+
+    @possessions = PossessionPresenterService.map_to_presenters(
+      get_possessions_for_user(possessions: list_scope)
+    )
+    @categories = get_grouped_sub_categories_from_scope(possessions: base)
     @empty_state = 'public_profile'
 
     @render_since = true
