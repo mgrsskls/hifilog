@@ -98,7 +98,6 @@
               item: ProductItemPresenter.new(product_item, true),
               name: bookmark.product.name,
               path: bookmark.product_variant.present? ? product_variant_path(id: bookmark.product_variant.slug, product_id: bookmark.product.slug) : product_path(id: bookmark.product.slug),
-              brand: bookmark.product.brand,
               model_no: bookmark.product_variant.present? ? bookmark.product_variant.model_no : bookmark.product.model_no,
               variant_name: bookmark.product_variant.present? ? bookmark.product_variant.name : nil,
               item_type: bookmark.item_type,

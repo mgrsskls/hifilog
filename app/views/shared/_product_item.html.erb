@@ -6,7 +6,7 @@
 <% main = capture do %>
   <% unless hide_brand %>
     <span class="EntityListItem-brandName">
-      <%= brand.name %>
+      <%= item.brand_name %>
     </span>
   <% end %>
   <a href="<%= path %>" class="EntityListItem-name">
@@ -102,7 +102,7 @@
   main:,
   content:,
   actions:,
-  name: "#{item.brand.name} #{item.display_name}",
+  name: "#{item.brand_name} #{item.display_name}",
   render_completeness:,
   completeness:
 %>
