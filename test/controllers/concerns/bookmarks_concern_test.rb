@@ -16,13 +16,13 @@ class BookmarksConcernTest < ActiveSupport::TestCase
     @harness = Harness.new
   end
 
-  test 'get_grouped_sub_categories nests presenters under sorted categories with dashboard bookmark paths' do
+  test 'grouped_sub_categories nests presenters under sorted categories with dashboard bookmark paths' do
     presenters = [
       BookmarkPresenter.new(bookmarks(:with_product)),
       BookmarkPresenter.new(bookmarks(:with_product_variant))
     ]
 
-    grouped = @harness.get_grouped_sub_categories(bookmarks: presenters)
+    grouped = @harness.grouped_sub_categories(bookmarks: presenters)
 
     assert grouped.is_a?(Array)
     assert grouped.present?

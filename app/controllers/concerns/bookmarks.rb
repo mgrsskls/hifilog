@@ -3,7 +3,7 @@
 module Bookmarks
   extend ActiveSupport::Concern
 
-  def get_grouped_sub_categories(bookmarks: [])
+  def grouped_sub_categories(bookmarks: [])
     bookmarks
       .map(&:product)
       .flat_map(&:sub_categories)

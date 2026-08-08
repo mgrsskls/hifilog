@@ -68,9 +68,9 @@ class UsersController < ApplicationController
     list_scope = @sub_category ? possessions_in_sub_category(base, @sub_category) : base
 
     @possessions = PossessionPresenterService.map_to_presenters(
-      get_possessions_for_user(possessions: list_scope)
+      possessions_for_user(possessions: list_scope)
     )
-    @categories = get_grouped_sub_categories_from_scope(possessions: base)
+    @categories = grouped_sub_categories_from_scope(possessions: base)
     @empty_state = 'public_profile'
 
     @render_since = true
@@ -88,7 +88,7 @@ class UsersController < ApplicationController
     return unless @user
 
     all = PossessionPresenterService.map_to_presenters(
-      get_possessions_for_user(possessions: @user.possessions.where(prev_owned: true))
+      possessions_for_user(possessions: @user.possessions.where(prev_owned: true))
     )
     @sub_category = SubCategory.friendly.find(params[:category]) if params[:category].present?
     @possessions = if @sub_category
@@ -96,7 +96,7 @@ class UsersController < ApplicationController
                    else
                      all
                    end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @categories = grouped_sub_categories(possessions: all)
     @empty_state = 'public_profile_previous'
 
     @render_since = false
@@ -110,7 +110,7 @@ class UsersController < ApplicationController
     @user = setup_user_page
     return unless @user
 
-    @possessions = get_history_possessions(@user.possessions)
+    @possessions = history_possessions(@user.possessions)
     @heading = I18n.t('headings.history')
   end
 

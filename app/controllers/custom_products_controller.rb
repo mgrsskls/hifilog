@@ -31,7 +31,7 @@ class CustomProductsController < ApplicationController
     @custom_product = CustomProductPresenter.new(@custom_product)
 
     unless current_user == @user
-      redirect_path = get_redirect_if_unauthorized(@user, @custom_product)
+      redirect_path = redirect_if_unauthorized(@user, @custom_product)
       return redirect_to redirect_path if redirect_path
     end
 
@@ -151,7 +151,7 @@ class CustomProductsController < ApplicationController
     params.expect(custom_product: [:name, :description, :highlighted_image_id, { sub_category_ids: [], images: [] }])
   end
 
-  def get_redirect_if_unauthorized(user, custom_product)
+  def redirect_if_unauthorized(user, custom_product)
     return if user.visible?
 
     # if visited profile is not visible to logged out users and the current user is logged in

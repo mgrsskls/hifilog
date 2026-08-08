@@ -77,7 +77,7 @@ class Dashboard::BookmarksController < ApplicationController
 
     assign_bookmark_product_items_for_thumbnails!(@bookmarks)
 
-    @categories = get_grouped_sub_categories(bookmarks: all_bookmarks.reject do |bookmark|
+    @categories = grouped_sub_categories(bookmarks: all_bookmarks.reject do |bookmark|
       %w[Event Brand].include? bookmark.item_type
     end)
 

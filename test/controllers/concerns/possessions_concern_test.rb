@@ -16,22 +16,22 @@ class PossessionsConcernTest < ActiveSupport::TestCase
     @harness = Harness.new
   end
 
-  test 'get_possessions_for_user returns an ordered possession scope' do
+  test 'possessions_for_user returns an ordered possession scope' do
     user = users(:one)
-    rel = @harness.get_possessions_for_user(possessions: user.possessions)
+    rel = @harness.possessions_for_user(possessions: user.possessions)
 
     assert_kind_of ActiveRecord::Relation, rel
     assert_predicate rel, :any?
     assert_nothing_raised { rel.load }
   end
 
-  test 'get_grouped_sub_categories groups presenters like dashboard possessions navigation' do
+  test 'grouped_sub_categories groups presenters like dashboard possessions navigation' do
     user = users(:one)
     presenters = PossessionPresenterService.map_to_presenters(
-      @harness.get_possessions_for_user(possessions: user.possessions)
+      @harness.possessions_for_user(possessions: user.possessions)
     )
 
-    grouped = @harness.get_grouped_sub_categories(possessions: presenters)
+    grouped = @harness.grouped_sub_categories(possessions: presenters)
 
     assert grouped.is_a?(Array)
 

@@ -11,7 +11,7 @@ class PossessionsController < ApplicationController
     @active_dashboard_menu = :products
 
     all = PossessionPresenterService.map_to_presenters(
-      get_possessions_for_user(possessions: current_user.possessions.where(prev_owned: false))
+      possessions_for_user(possessions: current_user.possessions.where(prev_owned: false))
     )
 
     category = params[:category]
@@ -21,7 +21,7 @@ class PossessionsController < ApplicationController
                    else
                      all
                    end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @categories = grouped_sub_categories(possessions: all)
   end
 
   def previous
@@ -30,7 +30,7 @@ class PossessionsController < ApplicationController
     @active_dashboard_menu = :prev_owneds
 
     all = PossessionPresenterService.map_to_presenters(
-      get_possessions_for_user(possessions: current_user.possessions.where(prev_owned: true))
+      possessions_for_user(possessions: current_user.possessions.where(prev_owned: true))
     )
 
     category = params[:category]
@@ -40,7 +40,7 @@ class PossessionsController < ApplicationController
                    else
                      all
                    end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @categories = grouped_sub_categories(possessions: all)
   end
 
   def create

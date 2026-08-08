@@ -51,7 +51,7 @@
           <time datetime="<%= format_iso_datetime version.created_at %>"><%= format_datetime(version.created_at).html_safe %></time>
         </p>
 
-          <% changelog = get_changelog(version.object_changes) %>
+          <% changelog = deserialize_changelog(version.object_changes) %>
           <ul>
             <% changelog.each do |change| %>
               <% unless change[0] == "slug" %>

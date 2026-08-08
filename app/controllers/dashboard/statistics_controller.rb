@@ -23,7 +23,7 @@ class Dashboard::StatisticsController < ApplicationController
 
     @total_amount_of_products = @possessions.size
     @total_amount_of_brands   = @possessions.map(&:brand).uniq.size
-    @total_products_per_brand = get_products_per_brand(possessions: @possessions)
+    @total_products_per_brand = products_per_brand(possessions: @possessions)
 
     @total_longest_products = PossessionPresenterService.map_to_presenters(
       @possessions.where(prev_owned: true).with_period.where.not(period_to: nil)

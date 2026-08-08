@@ -9,7 +9,7 @@ class Dashboard::HistoryController < ApplicationController
   def index
     page_title(I18n.t('headings.history'))
     @active_dashboard_menu = :history
-    @possessions = get_history_possessions(current_user.possessions)
+    @possessions = history_possessions(current_user.possessions)
   end
 
   private

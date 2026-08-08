@@ -3,7 +3,7 @@
 module Possessions
   extend ActiveSupport::Concern
 
-  def get_possessions_for_user(possessions: [])
+  def possessions_for_user(possessions: [])
     possessions
       .includes([{ product: [{ sub_categories: :category }, :brand] }])
       .includes(
@@ -59,7 +59,7 @@ module Possessions
     SQL
   end
 
-  def get_grouped_sub_categories(possessions: [])
+  def grouped_sub_categories(possessions: [])
     format_grouped_sub_categories(
       possessions.flat_map(&:sub_categories).sort_by(&:name).uniq
     )
@@ -67,7 +67,7 @@ module Possessions
 
   # Category nav for a possession scope without hydrating presenters or their images.
   # Two subquery lookups instead of walking every possession in Ruby.
-  def get_grouped_sub_categories_from_scope(possessions:)
+  def grouped_sub_categories_from_scope(possessions:)
     scope = possessions.unscope(:order, :select)
 
     format_grouped_sub_categories(

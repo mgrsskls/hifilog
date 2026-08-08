@@ -34,7 +34,7 @@ class SetupsController < ApplicationController
         )
     )
 
-    all = get_possessions_for_user(possessions: @setup.possessions).map do |possession|
+    all = possessions_for_user(possessions: @setup.possessions).map do |possession|
       if possession.custom_product
         CustomProductSetupPossessionPresenter.new(possession, @setup)
       else
@@ -49,7 +49,7 @@ class SetupsController < ApplicationController
                    else
                      all
                    end
-    @categories = get_grouped_sub_categories(possessions: all)
+    @categories = grouped_sub_categories(possessions: all)
   end
 
   def new

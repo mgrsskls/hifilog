@@ -14,7 +14,7 @@ module CurrentStatisticsOverview
     LEFT JOIN brands ON brands.id = COALESCE(products.brand_id, variant_products.brand_id)
   SQL
 
-  # Mirrors +get_products_per_brand+, which groups by brand *name* and collapses every
+  # Mirrors +products_per_brand+, which groups by brand *name* and collapses every
   # custom product into a single "Custom" bucket (CustomProductPresenter#brand_name).
   BRAND_NAME_SQL = <<~SQL.squish
     CASE WHEN possessions.custom_product_id IS NOT NULL THEN 'Custom' ELSE brands.name END
@@ -31,7 +31,7 @@ module CurrentStatisticsOverview
     include_spendings = current_user == user if include_spendings.nil?
 
     @possessions = user.possessions.current.for_stats
-    @current_products_per_brand = get_products_per_brand(possessions: @possessions)
+    @current_products_per_brand = products_per_brand(possessions: @possessions)
     @current_amount_of_products = user_possessions_count(user: user)
     @current_amount_of_brands = @current_products_per_brand.size
 

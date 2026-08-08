@@ -91,7 +91,7 @@ module ApplicationHelper
         .exists?(prev_owned: prev_owned, products: { brand_id: brand })
   end
 
-  def get_changelog(changes)
+  def deserialize_changelog(changes)
     return {} if changes.nil?
 
     PaperTrail::Serializers::YAML.load(changes)
@@ -107,7 +107,7 @@ module ApplicationHelper
 
   def filter_versions(versions)
     versions.select do |version|
-      log = get_changelog(version.object_changes)
+      log = deserialize_changelog(version.object_changes)
       log_length = log.length
       log_length > 1 || (log_length == 1 && log['slug'].nil?)
     end
@@ -123,8 +123,8 @@ module ApplicationHelper
     country.translations[I18n.locale.to_s] || country.common_name || country.iso_short_name
   end
 
-  def get_products_per_brand(possessions:)
-    products_per_brand = possessions.map do |possession|
+  def products_per_brand(possessions:)
+    entries = possessions.map do |possession|
       if possession.custom_product
         {
           brand_name: CustomProductPresenter.new(possession.custom_product).brand_name,
@@ -138,11 +138,11 @@ module ApplicationHelper
       end
     end
 
-    products_per_brand = products_per_brand.group_by do |possession|
+    grouped = entries.group_by do |possession|
       possession[:brand_name]
     end
 
-    products_per_brand.sort_by do |brand|
+    grouped.sort_by do |brand|
       [-brand[1].size, brand[0].downcase]
     end
   end
