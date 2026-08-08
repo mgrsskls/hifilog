@@ -1,0 +1,135 @@
+# frozen_string_literal: true
+
+class SitemapBuilder
+  include Rails.application.routes.url_helpers
+
+  def initialize(url_options: {})
+    @url_options = url_options
+    @brand_updated_at = Brand.maximum(:updated_at)
+    @product_updated_at = Product.maximum(:updated_at)
+    @product_variant_updated_at = ProductVariant.maximum(:updated_at)
+    @event_updated_at = Event.maximum(:updated_at)
+  end
+
+  # Absolute sitemap <loc> URLs must use the current request's host — without this,
+  # url_helpers falls back to routes.default_url_options, which can diverge from it.
+  def default_url_options
+    @url_options
+  end
+
+  def root_lastmod
+    [@brand_updated_at, @product_updated_at, @product_variant_updated_at, @event_updated_at].compact.max
+  end
+
+  def pages
+    dedupe_by_url(build_pages)
+  end
+
+  private
+
+  def build_pages
+    pages = []
+
+    pages << {
+      url: users_url,
+      updated: User.maximum(:updated_at)
+    }
+    User.where(profile_visibility: 2).find_each do |user|
+      pages << {
+        url: user_url(user.user_name.downcase),
+        updated: user.updated_at
+      }
+    end
+
+    pages << {
+      url: events_url,
+      updated: @event_updated_at
+    }
+    Event.select(:id, :slug, :calendar_year, :updated_at).find_each do |event|
+      pages << {
+        url: event_url(year: event.calendar_year, slug: event.friendly_id),
+        updated: event.updated_at
+      }
+    end
+    pages << {
+      url: about_url
+    }
+    pages << {
+      url: calculators_root_url
+    }
+    pages << {
+      url: calculators_resistors_for_amplifier_to_headphone_adapter_url
+    }
+
+    pages << {
+      url: brands_url,
+      updated: @brand_updated_at
+    }
+    Brand.select(:id, :slug, :updated_at).find_each do |brand|
+      pages << {
+        url: brand_url(brand),
+        updated: brand.updated_at
+      }
+    end
+
+    pages << {
+      url: products_url,
+      updated: [@product_updated_at, @product_variant_updated_at].compact.max
+    }
+    Category.includes(:sub_categories).find_each do |category|
+      slug = category.friendly_id
+      cat_ts = category.updated_at
+
+      pages << {
+        url: brands_category_url(slug),
+        updated: cat_ts
+      }
+      pages << {
+        url: products_category_url(slug),
+        updated: cat_ts
+      }
+
+      category.sub_categories.each do |sub|
+        sub_ts = [sub.updated_at, cat_ts].max
+
+        pages << {
+          url: brands_subcategory_url(slug, sub.friendly_id),
+          updated: sub_ts
+        }
+        pages << {
+          url: products_subcategory_url(slug, sub.friendly_id),
+          updated: sub_ts
+        }
+      end
+    end
+
+    Product.select(:id, :slug, :updated_at).find_each do |product|
+      pages << {
+        url: product_url(
+          id: product.friendly_id
+        ),
+        updated: product.updated_at
+      }
+    end
+    ProductVariant.select(:id, :slug, :product_id, :updated_at).includes(:product).find_each do |product_variant|
+      pages << {
+        url: product_variant_url(
+          id: product_variant.friendly_id,
+          product_id: product_variant.product.friendly_id
+        ),
+        updated: product_variant.updated_at
+      }
+    end
+
+    pages
+  end
+
+  def dedupe_by_url(pages)
+    pages.group_by { |p| p[:url].to_s }.map do |_url, grouped|
+      max_updated = grouped.map { |p| p[:updated] }.compact.max
+      row = { url: grouped.first[:url] }
+      row[:updated] = max_updated if max_updated
+      row
+    end
+  end
+end
