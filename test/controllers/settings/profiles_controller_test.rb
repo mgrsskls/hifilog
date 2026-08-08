@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class UserProfileSettingsTest < ActionDispatch::IntegrationTest
+class Settings::ProfilesControllerTest < ActionDispatch::IntegrationTest
   test 'profile settings requires sign in' do
     get dashboard_profile_settings_path
     assert_redirected_to new_user_session_path

@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class UserNotificationSettingsTest < ActionDispatch::IntegrationTest
+class Settings::NotificationsControllerTest < ActionDispatch::IntegrationTest
   test 'notification settings requires sign in' do
     get dashboard_notification_settings_path
     assert_redirected_to new_user_session_path

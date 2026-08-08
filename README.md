@@ -144,7 +144,7 @@ Discussion text on a **product**, optionally scoped to a **variant** (one note p
 **Profile visibility** (`hidden`, `logged_in_only`, `visible`) controls public discoverability and whether collection imagery from that user appears on catalog pages.
 
 - **Public profile**: overview (collection preview, statistics, upcoming events, activity feed), full collection, previous gear, history, contributions.
-- **Dashboard**: the signed-in owner’s workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), blocked users, and the Devise account form.
+- **Dashboard**: the signed-in owner’s workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), blocked users, and the Devise account form. The settings pages are RESTful `show`/`update` controllers under a `Settings::` namespace (**`Settings::ProfilesController`**, **`Settings::NotificationsController`**); their routes keep the `dashboard_profile_settings` / `dashboard_notification_settings` helper names.
 
 ## Following and blocking
 
