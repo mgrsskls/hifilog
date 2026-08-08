@@ -4,11 +4,11 @@ Architecture reference for the domain model, read-only SQL projections, and how 
 
 ## Conceptual overview
 
-The catalog is built around **brands** and **products**. A **product** is the canonical model for a piece of gear (name, brand, categories, base specs). A **product variant** is a distinct line under that product (different finish, revision, regional model, etc.) that can override some fields while still inheriting the rest from the parent product via delegation.
+The catalog is built around **brands** and **products**. A **product** is the canonical model for a piece of gear (name, brand, categories, base specs). A **product variant** is a distinct line under that product (different finish, revision, regional model, etc.) that can override some fields while still inheriting the rest from the parent product.
 
-**Possessions** represent a user’s relationship to something in the catalog (or to a user-defined **custom product**): ownership, photos, purchase details, and optional links into **setups**. They always point at real database rows (`products`, `product_variants`, or `custom_products`), not at the unified listing abstraction.
+**Possessions** represent a user's relationship to something in the catalog (or to a user-defined **custom product**): ownership, photos, purchase details, and optional links into **setups**. They always point at real database rows (`products`, `product_variants`, or `custom_products`), not at the unified listing abstraction.
 
-**Product items** are not a third kind of catalog entity. They are a **read-only database view** that flattens each product and each of its variants into one row each, so lists and filters can treat “a row in the catalog” uniformly while still knowing whether that row is the base product or a variant. A second view of the same shape, **contribute product items**, adds the completeness columns the contribution queues sort and filter on.
+**Product items** are not a third kind of catalog entity. They are a **read-only database view** that flattens each product and each of its variants into one row each, so lists and filters can treat "a row in the catalog" uniformly while still knowing whether that row is the base product or a variant. A second view of the same shape, **contribute product items**, adds the completeness information the contribution queues sort and filter on.
 
 ```mermaid
 flowchart TB
@@ -52,7 +52,7 @@ flowchart TB
 
 ## Taxonomy
 
-**`Category`** and **`SubCategory`** form the gear taxonomy. Products, brands, and custom products link to subcategories (HABTM). **`CustomAttribute`** definitions are also scoped to subcategories so structured fields only apply where relevant. Category trees are cached for navigation.
+**`Category`** and **`SubCategory`** form the gear taxonomy. Products, brands, and custom products each link to many subcategories. **`CustomAttribute`** definitions are also scoped to subcategories so structured fields only apply where relevant. Category trees are cached for navigation.
 
 ## Brand
 
@@ -60,27 +60,22 @@ flowchart TB
 
 ## Product
 
-- **Belongs to** `Brand`.
-- **Has many** `ProductVariant`, `ProductOption`, `Possession`, `Note`, `Bookmark` (as polymorphic `item`).
-- **Has and belongs to many** `SubCategory`.
+A product belongs to one brand, has many variants, options, possessions, notes, and can be bookmarked. It links to many subcategories.
 
-The product holds shared identity: brand, name, slug, categorization, and shared metadata. Options at the product level are `ProductOption` rows on `product_id`.
+The product holds shared identity: brand, name, slug, categorization, and shared metadata. Options declared directly on the product represent product-level specs, as distinct from options declared on a specific variant.
 
 ## Product variant
 
-- **Belongs to** `Product`.
-- **Has many** `ProductOption`, `Possession`, `Note`.
-
-Variants delegate missing attributes to the parent (`delegate_missing_to :product`). Variant-specific fields override or extend the base. Bookmarks may reference a variant as polymorphic `item` even though the variant model does not declare `has_many :bookmarks`.
+A variant belongs to one product and has its own options, possessions, and notes. Where a variant doesn't override a field, it falls back to the parent product's value. Variants can also be bookmarked directly, alongside products, brands, and events.
 
 ## Catalog detail pages
 
 **Product** and **ProductVariant** show pages share one orchestration path. For either entry type, the app loads:
 
-- A **community image gallery** from possessions owned by users whose profiles allow catalog imagery (public always; logged-in-only when the viewer is signed in). Base-product pages use possessions with no variant; variant pages use that variant’s possessions.
+- A **community image gallery** from possessions owned by users whose profiles allow catalog imagery (public always; logged-in-only when the viewer is signed in). Base-product pages use possessions with no variant; variant pages use that variant's possessions.
 - **Contributors** from version history on the parent product.
-- **Custom attributes** from the product (variants surface the parent’s attribute set).
-- When the viewer is signed in: their **possessions**, **bookmark**, **note**, and **setups** scoped to that product or variant.
+- **Custom attributes** from the product (variants surface the parent's attribute set).
+- When the viewer is signed in: their **possession**, **bookmark**, **note**, and **setups** scoped to that product or variant.
 
 **`ProductCatalogShowService`** assembles this context for both show pages.
 
@@ -90,36 +85,33 @@ Variants delegate missing attributes to the parent (`delegate_missing_to :produc
 
 ## Custom attributes (definitions vs values)
 
-**Definitions** (`CustomAttribute`) are reusable fields tied to subcategories: label, input type, options JSON, units, highlighted flag. Definitions are cached globally.
+**Definitions** (`CustomAttribute`) are reusable fields tied to subcategories: label, input type, options, units, highlighted flag. Definitions are cached globally.
 
-**Values** live in `products.custom_attributes` (JSONB); keys are attribute labels. Variants do not store their own values—the `product_items` view exposes the parent product’s hash for variant rows too.
+**Values** are stored directly on the product as a flexible set of key/value pairs, keyed by attribute label. Variants do not store their own values; wherever custom attributes are displayed for a variant, the parent product's values are shown instead.
 
-**`CustomProduct`** opts out by returning an empty `custom_attributes` hash.
+**`CustomProduct`** does not participate in this system at all.
 
 Filtering on catalog indexes uses the definitions applicable to the current category context.
 
 ## Catalog row views (`ProductItem`, `ContributeProductItem`)
 
-`product_items` unions one row per product and one row per variant (`item_type` distinguishes them). Each row has a stable UUID for the view’s primary key; **foreign keys elsewhere still use `products.id` and `product_variants.id`**.
+`ProductItem` unions one row per product and one row per variant, distinguishing the two. Foreign keys elsewhere in the app still point at `Product` and `ProductVariant` directly — the view exists purely as a unified read surface, not as a new entity to relate to.
 
-`contribute_product_items` is a second view of the same shape plus `completeness`, `specs_applicable`, and `specs_filled` (computed by a LATERAL join over highlighted custom attributes). The split keeps that per-row spec work off every catalog listing while letting the contribution queues **sort and filter on completeness in SQL**.
+`ContributeProductItem` is a second view of the same shape, additionally carrying completeness information computed in SQL. Splitting it out keeps that extra computation off every catalog listing while letting the contribution queues sort and filter on completeness directly in the database.
 
-Both models are read-only and share **`CatalogueProductRow`**: brand and possession associations, list-thumbnail selection (base-product rows ignore variant-linked possessions), image and subcategory-name preloading. Differences:
-
-- **`ProductItem`** adds `pg_search` name search and `has_many :product_options` (options point at _this_ view’s synthetic UUID, so the association only exists here).
-- **`ContributeProductItem`** adds the gap scopes: `missing_release_year`, `missing_description`, `missing_discontinued_year`, `missing_specs`, `incomplete`. It carries its own `variant_description` column, because the shared `description` is always the parent product’s—without it a variant lacking its own description would never appear in the queue its score says it belongs in.
+Both models are read-only and share **`CatalogueProductRow`**, a concern covering brand and possession associations, list-thumbnail selection (base-product rows ignore variant-linked possessions), and image/subcategory-name preloading. `ProductItem` additionally supports name search and exposes the options that belong to each row. `ContributeProductItem` additionally exposes named gaps (missing release year, description, discontinued year, or specs) for the contribution queues to filter on, and carries its own variant-specific description so a variant lacking its own description doesn't disappear from that queue.
 
 Use **Product** / **ProductVariant** to mutate data; use **ProductItem** for catalog listing and filters, **ContributeProductItem** for the contribution queues.
 
 ## Possession
 
-A **user-owned instance** of catalog or custom gear, optionally tied to a `ProductOption`. Images attach to the possession. Product pages and base-product list thumbnails use possessions with no `product_variant_id`; variant surfaces use that variant’s possessions.
+A **user-owned instance** of catalog or custom gear, optionally tied to a `ProductOption`. Images attach to the possession. Product pages and base-product list thumbnails use possessions with no linked variant; variant surfaces use that variant's possessions.
 
 **Setups** group possessions: `Setup` → `SetupPossession` → `Possession`. Setups are per-user, named, and may be **private** (affects public visibility and activity feed).
 
 ### Current vs previous collection
 
-**`prev_owned`** separates the active collection from previous gear. **`period_from`** / **`period_to`** describe ownership spans; **`moved_to_previous_at`** records when an item left the current collection. Ownership changes drive corresponding **user activity** verbs.
+A flag separates the active collection from previous gear. Ownership spans are tracked as date ranges, and a timestamp records when an item moved from current to previous. Ownership changes drive corresponding **user activity** entries.
 
 ## Custom product
 
@@ -141,18 +133,18 @@ Discussion text on a **product**, optionally scoped to a **variant** (one note p
 
 **`User`** accounts hold the collection, setups, bookmarks, notes, RSVPs, and profile media (avatar, decorative image).
 
-**Profile visibility** (`hidden`, `logged_in_only`, `visible`) controls public discoverability and whether collection imagery from that user appears on catalog pages.
+**Profile visibility** (hidden, logged-in-only, visible) controls public discoverability and whether collection imagery from that user appears on catalog pages.
 
 - **Public profile**: overview (collection preview, statistics, upcoming events, activity feed), full collection, previous gear, history, contributions.
-- **Dashboard**: the signed-in owner’s workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), blocked users, and the Devise account form. The settings pages are RESTful `show`/`update` controllers under a `Settings::` namespace (**`Settings::ProfilesController`**, **`Settings::NotificationsController`**); their routes keep the `dashboard_profile_settings` / `dashboard_notification_settings` helper names.
+- **Dashboard**: the signed-in owner's workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), and blocked users, alongside the Devise account form. The settings pages live under a dedicated **`Settings::`** namespace of controllers.
 
 ## Following and blocking
 
-**`UserFollow`** is a self-referential join (`follower` → `followed`). Creating one records a `followed_by_user` activity for the followed user and, if they opted in (`receives_follow_notifications`), sends a notification email—at most once per follower/followed pair, so follow/unfollow toggling cannot spam the inbox (past `followed_by_user` activities serve as the notification record). Unfollowing soft-hides the activity. Users cannot follow themselves or someone who blocks them; hidden profiles are excluded from follow feeds (`visible_in_follow_feed`).
+**`UserFollow`** is a self-referential relationship (`follower` → `followed`). Creating one records an activity for the followed user and, if they've opted in to follow notifications, sends a notification email—at most once per follower/followed pair, so follow/unfollow toggling cannot spam the inbox. Unfollowing soft-hides the activity. Users cannot follow themselves or someone who blocks them; hidden profiles are excluded from follow feeds.
 
 **`UserBlock`** (`blocker` → `blocked`) severs follow relationships in both directions on create. Blocks are not disclosed to the blocked user: the follow button stays visible and a follow attempt fails generically.
 
-The follow notification email carries a `List-Unsubscribe` header and an unsubscribe link backed by **`FollowNotificationUnsubscribeService`** (signed token, parallel to the newsletter flow). The unsubscribe endpoints are public, token-authenticated controllers—**`FollowNotificationUnsubscribesController`** and **`NewsletterUnsubscribesController`**—that share the **`TokenUnsubscribe`** concern: `GET` renders a confirmation page without mutating, `POST` performs the unsubscribe and also answers RFC 8058 one-click (`List-Unsubscribe: One-Click`) requests. Because recipients may not be signed in, both are exempt from the privacy-policy gate.
+Follow notification emails support one-click unsubscribe, backed by **`FollowNotificationUnsubscribeService`** (signed token, parallel to the newsletter flow). The unsubscribe endpoints are public, token-authenticated controllers—**`FollowNotificationUnsubscribesController`** and **`NewsletterUnsubscribesController`**—that share the **`TokenUnsubscribe`** concern, separating a non-mutating confirmation step from the actual unsubscribe, and also supporting one-click unsubscribe requests initiated by mail clients. Because recipients may not be signed in, both are exempt from the privacy-policy gate.
 
 ## Authentication and admin
 
@@ -164,34 +156,15 @@ Published policy text has a **version** (requires re-acceptance) and a **content
 
 ## User activity
 
-Persisted **`UserActivity`** rows: **verb**, **occurred_at**, polymorphic **subject**, JSON **metadata** for display snapshots.
+Persisted **`UserActivity`** rows capture a verb, when it occurred, the affected catalog or social item, and enough metadata to render a feed entry without re-fetching it.
 
-**Write path:** model callbacks → **`UserActivities::Recorder`** (possession sync via **`PossessionSync`** for ownership verbs).
+**Write path:** model callbacks feed into **`UserActivities::Recorder`** (with a **`PossessionSync`** helper reconciling ownership-related verbs).
 
-**Read path:** **`UserActivityTimeline`** → feed rows on the public overview and the owner dashboard. The dashboard feed is following-based: it merges the owner’s activities with those of followed users (hidden profiles excluded) and shows the actor per row. A dedicated `/dashboard/feed` page paginates the same timeline at the database level.
+**Read path:** **`UserActivityTimeline`** builds feed rows for the public overview and the owner dashboard. The dashboard feed is following-based: it merges the owner's activities with those of followed users (hidden profiles excluded) and shows the actor per row. A dedicated feed page paginates the same timeline at the database level.
 
-### Verbs and sources
+Activity is generated across most of the domain: collection changes, custom products, setups (created, and made public/private), possessions added to or removed from a setup, event attendance, profile image changes, and new follows. Some verbs are recorded for auditing but excluded from public feeds; a small subset is only ever shown on the owner's own dashboard, never on public profiles.
 
-| Source                   | Verbs (summary)                                                     |
-| ------------------------ | ------------------------------------------------------------------- |
-| `Possession`             | Collection/previous/moved; image uploads on feed (deletes hidden)   |
-| `CustomProduct`          | `custom_product_created` (may suppress duplicate collection line)   |
-| `Setup`                  | Created; public/private toggle (private toggle hidden from feed)    |
-| `SetupPossession`        | Product added/removed from setup (private setups omitted from feed) |
-| `EventAttendee` / cancel | Attendance and cancellation                                         |
-| `User`                   | Avatar and decorative image changes (hidden from feed)              |
-| `UserFollow`             | `followed_by_user` (dashboard only; hidden again on unfollow)       |
-
-Full verb list: `added_to_collection`, `added_to_previous`, `moved_to_previous`, `event_attendance`, `event_attendance_cancelled`, `setup_created`, `setup_made_public`, `setup_made_private`, `setup_product_added`, `setup_product_removed`, `custom_product_created`, `possession_image_uploaded`, `possession_image_deleted`, `avatar_uploaded`, `avatar_deleted`, `decorative_image_uploaded`, `decorative_image_deleted`, `followed_by_user`.
-
-**`hidden_at`** soft-hides rows. Some verbs are stored for auditing but excluded from the public feed (`FEED_HIDDEN_VERBS`); others appear only on the owner’s dashboard feed, never on public profiles (`PRIVATE_FEED_VERBS`, currently `followed_by_user`).
-
-### Timeline rules
-
-- Order by `occurred_at`, not display dates in metadata.
-- Respect setup visibility (public setups only; special case for setups deleted after being public).
-- Hide redundant private `setup_created` when a later public toggle exists.
-- Group contiguous similar items; dedupe consecutive duplicates.
+The timeline applies a handful of presentation rules on top of raw chronological order: respecting setup privacy, avoiding redundant entries when a later event supersedes an earlier one, and grouping contiguous similar items.
 
 A **backfill** task can rebuild activities from existing possessions, setups, RSVPs, and attachments where historical data allows.
 
@@ -205,33 +178,20 @@ A **backfill** task can rebuild activities from existing possessions, setups, RS
 
 ## Completeness and contribution queues
 
-Most catalog entries carry little more than a name and a brand, so _incomplete_ is the normal state rather than an error. The **`Completeness`** concern (included by `Brand`, `Product`, `ProductVariant`) describes how filled-in an entry is two ways: as **named gaps** (`missing_fields`, `missing_highlighted_attributes`) for prompts on entry pages, and as a **0–100 score** for ordering the queues.
-
-Including models declare `COMPLETENESS_WEIGHTS`, weighted by how many surfaces a field feeds rather than by feel:
-
-| Model            | Weights                                                                                                                                      |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Brand`          | description 3, sub_categories 3, country_code 2, discontinued 2, discontinued_year 1, founded_year 1, website 1, plus **has any products** 5 |
-| `Product`        | description 3, release_year 2, discontinued_year 1, plus **highlighted specs** 3                                                             |
-| `ProductVariant` | description 3, release_year 2, discontinued_year 1                                                                                           |
+Most catalog entries carry little more than a name and a brand, so _incomplete_ is the normal state rather than an error. The **`Completeness`** concern (included by `Brand`, `Product`, `ProductVariant`) describes how filled-in an entry is two ways: as **named gaps** for prompts on entry pages, and as a **0–100 score** for ordering the queues. Each including model weighs its own fields, roughly in proportion to how many surfaces a field feeds rather than by feel.
 
 Rules worth knowing:
 
-- **Inapplicable fields leave the denominator** rather than scoring as missing (`completeness_fields` override), so nothing is permanently capped below 100% for something nobody can fix. A brand still trading is asked for a website but not a discontinuation year, and vice versa—both weigh 1, so the denominator stays 14 either way and scores stay comparable.
-- **Highlighted custom attributes** are the app’s notion of a “key spec”. They score as one group (2 points for the fraction filled, plus a final point only once the set is closed) so categories with many and few applicable attributes remain comparable. Variants inherit the parent’s attributes and cannot edit them, so specs are not part of a variant’s own score.
-- `completeness_present?` is overridden where `.present?` is the wrong question—most notably a nullable boolean, where `false` is a real answer and only `nil` means “nobody has said”.
-- Arithmetic is `Rational`, not `Float`, to match the SQL side exactly.
+- **Inapplicable fields don't count against the score**, so nothing is permanently capped below 100% for something nobody can fix. A brand still trading is asked for a website but not a discontinuation year, and vice versa, and the two stay comparable.
+- **Highlighted custom attributes** are the app's notion of a "key spec." They're scored as one group so categories with many and few applicable attributes remain comparable. Variants inherit the parent's attributes and cannot edit them, so specs are not part of a variant's own score.
 
-**The score is computed twice**: in Ruby here, and in SQL so it can be sorted on—a **generated column on `brands`**, an **expression in the `contribute_product_items` view**. The two must agree; `CompletenessScoreTest` compares them for every fixture row. Change one and you must change both.
+**The score is computed twice**: once for display, and once so the database can sort and filter on it directly. The two are kept in sync by a dedicated test.
 
 ### Contribution queues
 
-**`ContributeController`** (`/contribute`) is a task board for contributors: lists of entries with one known, specific gap. It is read-only and `noindex`—every link leads into the existing brand or product edit forms.
+**`ContributeController`** is a task board for contributors: lists of entries each missing one specific, named gap. It is read-only and excluded from search indexing—every link leads into the existing brand or product edit forms.
 
-- `brands-without-products`, `incomplete-brands` (`?missing=` one of founded_year, description, sub_categories, country_code, discontinued, discontinued_year, website)
-- `incomplete-products` (`?missing=` one of release_year, description, discontinued_year, specs)
-
-Both are optionally scoped to a `Category` and ordered by **descending completeness**—the nearly finished entries first, so a contributor is handed a small, finishable job instead of a blank form.
+Queues exist for brands with no products, brands missing a specific field, and products missing a specific field. All are optionally scoped to a `Category` and ordered by **descending completeness**—the nearly finished entries first, so a contributor is handed a small, finishable job instead of a blank form.
 
 ## Cross-cutting concerns
 
@@ -241,9 +201,9 @@ Both are optionally scoped to a `Category` and ordered by **descending completen
 
 **Attachments** (Active Storage): possession and custom-product image galleries; user avatar and decorative banner; brand logos. Purges on possessions and profile images can emit activity rows.
 
-**App news** announcements can be dismissed per user (HABTM).
+**App news** announcements can be dismissed per user.
 
-**Statistics** aggregate a user’s possessions (current vs previous, costs, duration, categories) for dashboard and profile summaries. In the UI this section is called **Insights** (`/dashboard/insights`); the code keeps the statistics naming.
+**Statistics** aggregate a user's possessions (current vs previous, costs, duration, categories) for dashboard and profile summaries. In the UI this section is called **Insights**; the code keeps the statistics naming.
 
 **Security:** rate limits on auth, catalog writes, and follow/block mutations; content security policy; bot challenge on registration and password reset.
 
