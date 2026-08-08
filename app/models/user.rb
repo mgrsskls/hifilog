@@ -43,6 +43,20 @@ class User < ApplicationRecord
   has_many :blocked_by_users, through: :blocker_relationships, source: :blocker
 
   scope :visible_in_follow_feed, -> { where.not(profile_visibility: :hidden) }
+  scope :ordered_by_contribution_count, lambda {
+    joins('LEFT OUTER JOIN "versions" ON "versions"."whodunnit" = CAST("users"."id" AS varchar)')
+      .select('
+        users.id,
+        users.user_name,
+        users.profile_visibility,
+        users.created_at,
+        COUNT(DISTINCT versions.item_id) AS count
+      ')
+      .group('users.id, users.user_name, users.profile_visibility, users.created_at')
+      # Arel.sql keeps the SELECT alias; order(count: :desc) becomes
+      # ORDER BY "users"."count", which PostgreSQL treats as count(users).
+      .order(Arel.sql('count DESC, users.created_at ASC'))
+  }
 
   auto_strip_attributes :user_name, squish: true
 
