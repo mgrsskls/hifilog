@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BookmarkListsController < InheritedResources::Base
+class BookmarkListsController < ApplicationController
   include Bookmarks
 
   before_action :authenticate_user!
