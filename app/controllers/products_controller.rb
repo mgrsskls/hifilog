@@ -44,9 +44,6 @@ class ProductsController < ApplicationController
   end
 
   def create
-    custom_attributes = product_params[:custom_attributes]
-    convert_custom_attributes!(custom_attributes) if custom_attributes.present?
-
     @product = Product.new(product_params)
     brand = assign_brand_from_params(product_params)
 
@@ -81,9 +78,6 @@ class ProductsController < ApplicationController
 
   def update
     @product = Product.find(params[:id])
-
-    custom_attributes = product_update_params[:custom_attributes]
-    convert_custom_attributes!(custom_attributes) if custom_attributes.present?
 
     product_options_attributes = params[:product_options_attributes]
     if product_options_attributes.present?
@@ -168,32 +162,7 @@ class ProductsController < ApplicationController
                   ] }]
     )
 
-    permitted[:custom_attributes]&.each do |key, value|
-      active_record = CustomAttribute.find_by(label: key)
-
-      case active_record.input_type
-      when 'boolean'
-        permitted[:custom_attributes][key] = ActiveModel::Type::Boolean.new.cast(value)
-      when 'number'
-        case value['value']
-        when ActionController::Parameters, Hash
-          value['value'].to_hash.each do |val|
-            if val[1] == ''
-              permitted[:custom_attributes][key]['value'].delete(val[0])
-              permitted[:custom_attributes].delete(key) if permitted[:custom_attributes][key]['value'].empty?
-            else
-              permitted[:custom_attributes][key]['value'][val[0]] = val[1].to_f
-            end
-          end
-        else
-          if value['value'] == ''
-            permitted[:custom_attributes].delete(key)
-          else
-            permitted[:custom_attributes][key]['value'] = value['value'].to_f
-          end
-        end
-      end
-    end
+    coerce_custom_attributes!(permitted[:custom_attributes])
 
     permitted
   end
@@ -220,34 +189,40 @@ class ProductsController < ApplicationController
                 }]
     )
 
-    permitted[:custom_attributes]&.each do |key, value|
+    coerce_custom_attributes!(permitted[:custom_attributes])
+
+    permitted
+  end
+
+  # Casts each custom attribute's submitted string value to its CustomAttribute-defined
+  # type (boolean / number), dropping entries left blank rather than saving them as 0.
+  def coerce_custom_attributes!(custom_attributes)
+    custom_attributes&.each do |key, value|
       active_record = CustomAttribute.find_by(label: key)
 
       case active_record.input_type
       when 'boolean'
-        permitted[:custom_attributes][key] = ActiveModel::Type::Boolean.new.cast(value)
+        custom_attributes[key] = ActiveModel::Type::Boolean.new.cast(value)
       when 'number'
         case value['value']
         when ActionController::Parameters, Hash
-          value['value'].to_hash.each do |v|
-            if v[1] == ''
-              permitted[:custom_attributes][key]['value'].delete(v[0])
-              permitted[:custom_attributes].delete(key) if permitted[:custom_attributes][key]['value'].empty?
+          value['value'].to_hash.each do |val|
+            if val[1] == ''
+              custom_attributes[key]['value'].delete(val[0])
+              custom_attributes.delete(key) if custom_attributes[key]['value'].empty?
             else
-              permitted[:custom_attributes][key]['value'][v[0]] = v[1].to_f
+              custom_attributes[key]['value'][val[0]] = val[1].to_f
             end
           end
         else
           if value['value'] == ''
-            permitted[:custom_attributes].delete(key)
+            custom_attributes.delete(key)
           else
-            permitted[:custom_attributes][key]['value'] = value['value'].to_f
+            custom_attributes[key]['value'] = value['value'].to_f
           end
         end
       end
     end
-
-    permitted
   end
 
   def assign_brand_from_params(params)
@@ -277,26 +252,6 @@ class ProductsController < ApplicationController
         end
       elsif option.present?
         product_options << ProductOption.new(option:, model_no:)
-      end
-    end
-  end
-
-  def convert_custom_attributes!(custom_attributes)
-    custom_attributes.each do |key, value|
-      active_record = CustomAttribute.find_by(label: key)
-
-      case active_record.input_type
-      when 'boolean'
-        custom_attributes[key] = ActiveModel::Type::Boolean.new.cast(value)
-      when 'number'
-        case value['value']
-        when ActionController::Parameters, Hash
-          value['value'].to_hash.each do |val|
-            custom_attributes[key]['value'][val[0]] = val[1].to_f
-          end
-        else
-          custom_attributes[key]['value'] = value['value'].to_f
-        end
       end
     end
   end
