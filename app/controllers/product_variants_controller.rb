@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ProductVariantsController < ApplicationController
+  include FriendlyFinder
   include ProductCatalogShow
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
@@ -138,11 +139,10 @@ class ProductVariantsController < ApplicationController
   def find_product_and_variant
     @product = Product.includes(:brand, sub_categories: :category).friendly.find(params[:product_id])
     @product_variant = @product.product_variants.friendly.find(params[:id])
-    return if request.path == product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
 
-    redirect_to URI.parse(
+    redirect_to_canonical_path(
       product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
-    ).path, status: :moved_permanently and return
+    ) { nil }
   end
 
   def product_variant_params

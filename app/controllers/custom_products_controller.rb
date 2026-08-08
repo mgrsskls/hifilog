@@ -5,6 +5,8 @@ class CustomProductsController < ApplicationController
 
   before_action :authenticate_user!, except: [:show]
   before_action :set_menu, except: [:show]
+  before_action :set_show_user, only: [:show]
+  before_action :find_custom_product, only: [:show]
 
   def index
     page_title(CustomProduct.model_name.human.pluralize)
@@ -18,11 +20,6 @@ class CustomProductsController < ApplicationController
   end
 
   def show
-    @user = User.find_by('lower(user_name) = ?', params[:user_id].downcase)
-    raise ActiveRecord::RecordNotFound if @user.nil?
-
-    find_custom_product(params[:id], @user)
-
     possession = @user.possessions.find_by(custom_product_id: @custom_product.id)
     @possession = CustomProductPossessionPresenter.new(possession) if possession
     @render_possession_details = @possession && (
@@ -130,15 +127,18 @@ class CustomProductsController < ApplicationController
     @active_menu = :dashboard
   end
 
-  def find_custom_product(id, user)
-    @custom_product = user.custom_products.friendly.find(id)
+  def set_show_user
+    @user = User.find_by('lower(user_name) = ?', params[:user_id].downcase)
+    raise ActiveRecord::RecordNotFound if @user.nil?
+  end
 
-    return if request.path == user_custom_product_path(id: @custom_product.friendly_id,
-                                                       user_id: user.lowercase_user_name)
-
-    redirect_to URI.parse(
-      user_custom_product_path(id: @custom_product.friendly_id, user_id: user.lowercase_user_name)
-    ).path, status: :moved_permanently and return
+  def find_custom_product
+    @custom_product = find_resource(
+      @user.custom_products, :id,
+      path_helper: lambda do |custom_product|
+        user_custom_product_path(id: custom_product.friendly_id, user_id: @user.lowercase_user_name)
+      end
+    )
   end
 
   def custom_product_params

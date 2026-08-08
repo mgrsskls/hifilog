@@ -2,6 +2,7 @@
 
 class EventsController < ApplicationController
   include EventListing
+  include FriendlyFinder
 
   before_action :find_event, only: :show
 
@@ -60,15 +61,10 @@ a user-driven database for hi-fi products, brands and more.'
 
   def find_event
     year = params[:year].to_i
-    @event = Event.includes(event_attendees: :user)
-                  .where(calendar_year: year)
-                  .friendly
-                  .find(params[:slug])
-
-    canonical_path = URI.parse(event_path(year: @event.calendar_year, slug: @event.friendly_id)).path
-    return if request.path == canonical_path
-
-    redirect_to canonical_path, status: :moved_permanently and return
+    @event = find_resource(
+      Event.includes(event_attendees: :user).where(calendar_year: year), :slug,
+      path_helper: ->(event) { event_path(year: event.calendar_year, slug: event.friendly_id) }
+    )
   end
 
   # Global list of country codes for the filter dropdown, cached across requests.
