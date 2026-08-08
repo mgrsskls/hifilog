@@ -40,7 +40,8 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
           option: ''
         },
         1 => {
-          option: 'option2'
+          option: 'option2',
+          model_no: 'MN-2'
         }
       }
     }
@@ -64,6 +65,7 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
       post path, params: params_with_options
     end
     assert_equal 1, ProductVariant.last.product_options.count
+    assert_equal 'MN-2', ProductVariant.last.product_options.first.model_no
     assert_redirected_to product_variant_url(
       product_id: ProductVariant.last.product.friendly_id,
       id: 'name2'

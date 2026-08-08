@@ -5,6 +5,7 @@ class ProductsController < ApplicationController
   include ActiveSupport::NumberHelper
   include FriendlyFinder
   include ProductCatalogShow
+  include ProductOptionsAssignable
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update]
@@ -50,10 +51,7 @@ class ProductsController < ApplicationController
     product_options_attributes = params[:product_options_attributes]
 
     unless brand.save
-      if product_options_attributes.present?
-        process_product_options(@product,
-                                product_options_attributes)
-      end
+      assign_product_options(@product, product_options_attributes) if product_options_attributes.present?
       @categories = Category.includes([:sub_categories])
       @brand = brand
       render :new, status: :unprocessable_content and return
@@ -62,10 +60,7 @@ class ProductsController < ApplicationController
     @product.brand_id = brand.id
     @product.discontinued = brand.discontinued ? true : product_params[:discontinued]
 
-    if product_options_attributes.present?
-      process_product_options(@product,
-                              product_options_attributes)
-    end
+    assign_product_options(@product, product_options_attributes) if product_options_attributes.present?
 
     if @product.save
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
@@ -80,10 +75,7 @@ class ProductsController < ApplicationController
     @product = Product.find(params[:id])
 
     product_options_attributes = params[:product_options_attributes]
-    if product_options_attributes.present?
-      process_product_options(@product,
-                              product_options_attributes)
-    end
+    assign_product_options(@product, product_options_attributes) if product_options_attributes.present?
 
     if @product.update(product_update_params)
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
@@ -232,27 +224,6 @@ class ProductsController < ApplicationController
       Brand.find(brand_id)
     else
       Brand.new(params[:brand_attributes])
-    end
-  end
-
-  def process_product_options(product, options_attributes)
-    options_attributes.each_value do |attribute|
-      model_no = attribute[:model_no]
-      option = attribute[:option]
-      id = attribute[:id]
-      product_options = product.product_options
-
-      if id.present?
-        product_option = product_options.find(id)
-
-        if option.present? || model_no.present?
-          product_option.update(option:, model_no:)
-        else
-          product_option.delete
-        end
-      elsif option.present?
-        product_options << ProductOption.new(option:, model_no:)
-      end
     end
   end
 end

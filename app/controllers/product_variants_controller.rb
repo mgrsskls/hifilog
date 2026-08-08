@@ -3,6 +3,7 @@
 class ProductVariantsController < ApplicationController
   include FriendlyFinder
   include ProductCatalogShow
+  include ProductOptionsAssignable
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update]
@@ -41,27 +42,8 @@ class ProductVariantsController < ApplicationController
     @brand = @product.brand
     @product_variant.discontinued = @brand.discontinued ? true : product_variant_params[:discontinued]
 
-    product_variant_options = @product_variant.product_options
     product_options_attributes = params[:product_options_attributes]
-
-    if product_options_attributes.present?
-      product_options_attributes.each do |attribute|
-        attr = attribute[1]
-        option = attr[:option]
-        id = attr[:id]
-
-        if id.present?
-          product_variant_option = product_variant_options.find(id)
-          if option.present?
-            product_variant_option.update(option:)
-          else
-            product_variant_option.delete
-          end
-        elsif option.present?
-          product_variant_options << ProductOption.new(option:)
-        end
-      end
-    end
+    assign_product_options(@product_variant, product_options_attributes) if product_options_attributes.present?
 
     if @product_variant.save
       redirect_to product_variant_url(
@@ -77,30 +59,7 @@ class ProductVariantsController < ApplicationController
     @product_variant = ProductVariant.find(params[:id])
 
     product_options_attributes = params[:product_options_attributes]
-
-    if product_options_attributes.present?
-      variant_product_options = @product_variant.product_options
-      product_options_attributes.each do |attribute|
-        attr = attribute[1]
-        model_no = attr[:model_no]
-        option = attr[:option]
-        id = attr[:id]
-
-        if id.present?
-          variant_product_option = variant_product_options.find(id)
-
-          if option.present? || model_no.present?
-            variant_product_option.update(option:,
-                                          model_no:)
-          else
-            variant_product_option.delete
-          end
-        elsif option.present?
-          variant_product_options << ProductOption.new(option:,
-                                                       model_no:)
-        end
-      end
-    end
+    assign_product_options(@product_variant, product_options_attributes) if product_options_attributes.present?
 
     if @product_variant.update(product_variant_update_params)
       redirect_to URI.parse(
