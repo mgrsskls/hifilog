@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class StatisticsControllerTest < ActionDispatch::IntegrationTest
+class Dashboard::StatisticsControllerTest < ActionDispatch::IntegrationTest
   test 'current' do
     get dashboard_statistics_root_path
     assert_response :redirect

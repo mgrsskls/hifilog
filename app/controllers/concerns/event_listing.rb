@@ -2,7 +2,7 @@
 
 # Shared view-model building for the grouped event lists rendered by both the
 # public events pages (EventsController) and the dashboard "my events" pages
-# (UserController).
+# (Dashboard::EventsController).
 #
 # +load_events+ populates @events, @event_attendee_counts and @years from a base
 # relation, applying the optional +?country=+ filter and batching attendee counts

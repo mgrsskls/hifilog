@@ -51,21 +51,21 @@ Rails.application.routes.draw do
   post 'follow-notifications/unsubscribe', to: 'follow_notification_unsubscribes#create'
 
   scope '/dashboard', as: :dashboard do
-    root 'user#dashboard'
+    root 'dashboard/home#show'
     get 'products', to: 'possessions#current', as: :products
     get 'previous-products', to: 'possessions#previous', as: :prev_owneds
-    get 'events', to: 'user#events', as: :events
-    get 'events/past', to: 'user#past_events', as: :past_events
-    get 'bookmarks', to: 'user#bookmarks', as: :bookmarks
-    get 'bookmarks/:id', to: 'user#bookmarks', as: :bookmark_list
+    get 'events', to: 'dashboard/events#index', as: :events
+    get 'events/past', to: 'dashboard/events#past', as: :past_events
+    get 'bookmarks', to: 'dashboard/bookmarks#index', as: :bookmarks
+    get 'bookmarks/:id', to: 'dashboard/bookmarks#index', as: :bookmark_list
     get 'bookmarks/lists/new', to: 'bookmark_lists#new', as: :new_bookmark_list
     get 'bookmarks/lists/:id/edit', to: 'bookmark_lists#edit', as: :edit_bookmark_list
-    get 'contributions', to: 'user#contributions', as: :contributions
+    get 'contributions', to: 'dashboard/contributions#index', as: :contributions
     get 'custom-products', to: 'custom_products#index', as: :custom_products
     get 'custom-products/new', to: 'custom_products#new', as: :new_custom_product
     get 'custom-products/:id/edit', to: 'custom_products#edit', as: :edit_custom_product
-    get 'history', to: 'user#history', as: :history
-    get 'feed', to: 'user#feed', as: :feed
+    get 'history', to: 'dashboard/history#index', as: :history
+    get 'feed', to: 'dashboard/feed#index', as: :feed
     get 'settings/profile', to: 'settings/profiles#show', as: :profile_settings
     patch 'settings/profile', to: 'settings/profiles#update'
     get 'settings/notifications', to: 'settings/notifications#show', as: :notification_settings
@@ -74,9 +74,9 @@ Rails.application.routes.draw do
     get 'followers', to: 'user_follows#followers', as: :followers
     get 'blocked', to: 'user_blocks#index', as: :blocked
     scope 'insights', as: :statistics do
-      root 'statistics#current'
-      get 'total', to: 'statistics#total', as: :total
-      get 'yearly', to: 'statistics#yearly', as: :yearly
+      root 'dashboard/statistics#current'
+      get 'total', to: 'dashboard/statistics#total', as: :total
+      get 'yearly', to: 'dashboard/statistics#yearly', as: :yearly
     end
     get 'statistics', to: redirect('/dashboard/insights'), as: false
     get 'statistics/total', to: redirect('/dashboard/insights/total'), as: false
@@ -84,8 +84,8 @@ Rails.application.routes.draw do
     resources :setups, only: [:index, :show, :new, :edit]
     resources :notes, only: [:index, :show]
   end
-  get '/user/has', to: 'user#has', as: :has
-  get '/user/counts', to: 'user#counts', as: :counts
+  get '/user/has', to: 'dashboard/collection_status#show', as: :has
+  get '/user/counts', to: 'dashboard/collection_status#counts', as: :counts
 
   resources :bookmark_lists, only: [:create, :update, :destroy]
   resources :notes, only: [:create, :destroy, :update]
@@ -155,7 +155,7 @@ Rails.application.routes.draw do
 
   get '/search', to: "search#results"
 
-  root "application#index"
+  root "home#index"
 
   get '/sitemap', to: 'sitemap#show', as: :sitemap
   get '/feed.rss', to: 'feed#rss', as: :rss

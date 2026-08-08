@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StatisticsController < ApplicationController
+class Dashboard::StatisticsController < ApplicationController
   include ApplicationHelper
   include CurrentStatisticsOverview
 

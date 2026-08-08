@@ -3,18 +3,6 @@
 require 'test_helper'
 
 class ApplicationControllerTest < ActionDispatch::IntegrationTest
-  test 'index for logged out user' do
-    get root_url
-    assert_response :success
-  end
-
-  test 'index for logged in user redirects to dashboard' do
-    sign_in users(:one)
-    get root_url
-    assert_response :redirect
-    assert_redirected_to dashboard_root_path
-  end
-
   test 'home page records analytics for normal browser HTML responses' do
     capturing_active_analytics_requests do |hits|
       get root_url, headers: { 'User-Agent' => 'Mozilla/5.0 (compatible; TestBrowser/1.0)' }
