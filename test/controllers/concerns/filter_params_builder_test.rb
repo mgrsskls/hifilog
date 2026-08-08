@@ -105,16 +105,4 @@ class FilterParamsBuilderTest < ActiveSupport::TestCase
     assert_includes values, 'a'
     assert_includes values, 'b'
   end
-
-  test 'deep_except deletes nested Parameter keys safely' do
-    params = ActionController::Parameters.new(
-      product: { nested: { keep: '1', drop: '2' }, other: 'x' }
-    ).permit!
-
-    result = @harness.send(:deep_except, params, [:product, :nested, :drop])
-    nested = result[:product][:nested]
-
-    assert_equal '1', nested[:keep]
-    assert_not nested.key?(:drop)
-  end
 end

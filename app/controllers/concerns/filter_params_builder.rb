@@ -71,21 +71,4 @@ module FilterParamsBuilder
 
     result
   end
-
-  def deep_except(params, *paths)
-    filtered = params.deep_dup
-
-    paths.each do |keys|
-      current = filtered
-      keys[0..-2].each do |k|
-        if (current.respond_to?(:[]) && current[k].is_a?(ActionController::Parameters)) || current[k].is_a?(Hash)
-          current = current[k]
-        end
-      end
-
-      current.delete(keys.last) if current.respond_to?(:delete)
-    end
-
-    filtered
-  end
 end

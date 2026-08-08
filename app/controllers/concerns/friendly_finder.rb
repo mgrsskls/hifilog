@@ -14,12 +14,6 @@ module FriendlyFinder
     redirect_to_canonical_path(path_helper.call(resource)) { return resource }
   end
 
-  # Finds a record in a pre-scoped relation (e.g. user.setups) and 301-redirects stale slugs.
-  def find_scoped_resource(scope, id_param, path_helper:)
-    resource = scope.friendly.find(params[id_param])
-    redirect_to_canonical_path(path_helper.call(resource)) { return resource }
-  end
-
   private
 
   def redirect_to_canonical_path(canonical_url)
