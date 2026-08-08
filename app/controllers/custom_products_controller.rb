@@ -56,12 +56,6 @@ class CustomProductsController < ApplicationController
     @custom_product = current_user.custom_products.new custom_product_params
 
     if @custom_product.save
-      possession = Possession.new(
-        user: current_user,
-        custom_product: @custom_product
-      )
-      possession.save
-
       flash[:notice] = I18n.t(
         'custom_product.messages.created',
         name: @custom_product.name

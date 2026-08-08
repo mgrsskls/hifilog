@@ -24,6 +24,7 @@ class CustomProduct < ApplicationRecord
   validate :validate_image_content_type, :validate_image_file_size, on: :update
 
   after_commit :record_custom_product_user_activity, on: :create
+  after_commit :create_owner_possession, on: :create
 
   attr_accessor :delete_image
 
@@ -60,5 +61,9 @@ class CustomProduct < ApplicationRecord
 
   def record_custom_product_user_activity
     UserActivities::Recorder.custom_product_created(self)
+  end
+
+  def create_owner_possession
+    create_possession(user: user)
   end
 end

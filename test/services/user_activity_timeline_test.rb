@@ -241,7 +241,7 @@ class UserActivityTimelineTest < ActiveSupport::TestCase
         user: user,
         sub_categories: [sub_categories(:one)]
       )
-      Possession.create!(user: user, custom_product: cp, prev_owned: false)
+      cp.possession
     end
     possession.update!(
       prev_owned: true,
