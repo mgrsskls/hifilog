@@ -4,10 +4,9 @@ class NotesController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
 
   before_action :authenticate_user!
+  before_action :set_menu
 
   def index
-    @active_menu = :dashboard
-    @active_dashboard_menu = :notes
     @notes = current_user.notes.includes(product: :brand, product_variant: { product: :brand })
                          .order(updated_at: :desc, created_at: :desc).map do |note|
       if note.product_variant_id.present?
@@ -32,9 +31,6 @@ class NotesController < ApplicationController
   end
 
   def show
-    @active_menu = :dashboard
-    @active_dashboard_menu = :notes
-
     @note = current_user.notes.find(params[:id])
     @html = sanitize(
       Commonmarker.to_html(
@@ -94,6 +90,11 @@ class NotesController < ApplicationController
   end
 
   private
+
+  def set_menu
+    @active_menu = :dashboard
+    @active_dashboard_menu = :notes
+  end
 
   def save_note
     @product = @note.product

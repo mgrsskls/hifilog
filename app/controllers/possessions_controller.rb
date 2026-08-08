@@ -4,9 +4,9 @@ class PossessionsController < ApplicationController
   include Possessions
 
   before_action :authenticate_user!
+  before_action :set_menu
 
   def current
-    @active_menu = :dashboard
     page_title(I18n.t('headings.collection'))
     @active_dashboard_menu = :products
 
@@ -25,7 +25,6 @@ class PossessionsController < ApplicationController
   end
 
   def previous
-    @active_menu = :dashboard
     page_title(I18n.t('headings.prev_owneds'))
     @active_dashboard_menu = :prev_owneds
 
@@ -161,6 +160,10 @@ class PossessionsController < ApplicationController
   end
 
   private
+
+  def set_menu
+    @active_menu = :dashboard
+  end
 
   # Someone who has just added a piece of gear is the most likely person to know the details it
   # is still missing, and this is the moment they are looking at it.
