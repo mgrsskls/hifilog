@@ -2,6 +2,16 @@
 
 class UserBlocksController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_menu
+
+  def index
+    page_title(I18n.t('headings.blocked'))
+    @active_dashboard_menu = :blocked
+    @user_blocks = current_user.user_blocks
+                               .includes(blocked: { avatar_attachment: :blob })
+                               .joins(:blocked)
+                               .order(Arel.sql('LOWER(users.user_name) ASC'))
+  end
 
   def create
     blocked = User.find_by(id: params[:blocked_id])
@@ -31,6 +41,10 @@ class UserBlocksController < ApplicationController
   end
 
   private
+
+  def set_menu
+    @active_menu = :dashboard
+  end
 
   # url_from rejects external hosts, so a crafted redirect_to param falls back
   # to the default path instead of raising UnsafeRedirectError.

@@ -2,6 +2,25 @@
 
 class UserFollowsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_menu
+
+  def index
+    page_title(I18n.t('headings.following'))
+    setup_community_section(active_tab: :following)
+    @user_follows = current_user.user_follows
+                                .includes(:followed)
+                                .joins(:followed)
+                                .order(Arel.sql('LOWER(users.user_name) ASC'))
+  end
+
+  def followers
+    page_title(I18n.t('headings.followers'))
+    setup_community_section(active_tab: :followers)
+    @follower_relationships = current_user.follower_relationships
+                                          .includes(follower: { avatar_attachment: :blob })
+                                          .joins(:follower)
+                                          .order(Arel.sql('LOWER(users.user_name) ASC'))
+  end
 
   def create
     followed = User.find_by(id: params[:followed_id])
@@ -48,6 +67,17 @@ class UserFollowsController < ApplicationController
   end
 
   private
+
+  def set_menu
+    @active_menu = :dashboard
+  end
+
+  def setup_community_section(active_tab:)
+    @active_dashboard_menu = :community
+    @active_community_tab = active_tab
+    @following_count = current_user.user_follows.count
+    @followers_count = current_user.follower_relationships.count
+  end
 
   def redirect_path
     requested_redirect_path || followed_profile_path

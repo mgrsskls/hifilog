@@ -191,33 +191,6 @@ class UserController < ApplicationController
     @possessions = get_history_possessions(current_user.possessions)
   end
 
-  def following
-    setup_community_section(active_tab: :following)
-    page_title(I18n.t('headings.following'))
-    @user_follows = current_user.user_follows
-                                .includes(:followed)
-                                .joins(:followed)
-                                .order(Arel.sql('LOWER(users.user_name) ASC'))
-  end
-
-  def followers
-    setup_community_section(active_tab: :followers)
-    page_title(I18n.t('headings.followers'))
-    @follower_relationships = current_user.follower_relationships
-                                          .includes(follower: { avatar_attachment: :blob })
-                                          .joins(:follower)
-                                          .order(Arel.sql('LOWER(users.user_name) ASC'))
-  end
-
-  def blocked
-    page_title(I18n.t('headings.blocked'))
-    @active_dashboard_menu = :blocked
-    @user_blocks = current_user.user_blocks
-                               .includes(blocked: { avatar_attachment: :blob })
-                               .joins(:blocked)
-                               .order(Arel.sql('LOWER(users.user_name) ASC'))
-  end
-
   def has
     # 1. Load bookmarks into a Set of strings like "Brand:5" or "Product:12"
     # This makes lookups O(1) instead of searching the array every time!
@@ -378,13 +351,6 @@ class UserController < ApplicationController
   # independent of the current +?country=+ filter.
   def user_event_country_codes(all_events)
     all_events.map(&:country_code).uniq.sort
-  end
-
-  def setup_community_section(active_tab:)
-    @active_dashboard_menu = :community
-    @active_community_tab = active_tab
-    @following_count = current_user.user_follows.count
-    @followers_count = current_user.follower_relationships.count
   end
 
   def set_menu

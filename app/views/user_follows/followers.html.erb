@@ -7,10 +7,10 @@
     <h1><%= t('headings.followers') %></h1>
   </div>
 
-  <%= render "user/community/tabs",
+  <%= render "shared/community/tabs",
              active_tab: @active_community_tab,
              following_count: @following_count,
              followers_count: @followers_count %>
 
-  <%= render "user/community/followers_list", follower_relationships: @follower_relationships %>
+  <%= render "shared/community/followers_list", follower_relationships: @follower_relationships %>
 <% end %>

@@ -70,9 +70,9 @@ Rails.application.routes.draw do
     patch 'settings/profile', to: 'settings/profiles#update'
     get 'settings/notifications', to: 'settings/notifications#show', as: :notification_settings
     patch 'settings/notifications', to: 'settings/notifications#update'
-    get 'following', to: 'user#following', as: :following
-    get 'followers', to: 'user#followers', as: :followers
-    get 'blocked', to: 'user#blocked', as: :blocked
+    get 'following', to: 'user_follows#index', as: :following
+    get 'followers', to: 'user_follows#followers', as: :followers
+    get 'blocked', to: 'user_blocks#index', as: :blocked
     scope 'insights', as: :statistics do
       root 'statistics#current'
       get 'total', to: 'statistics#total', as: :total

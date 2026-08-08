@@ -3,6 +3,38 @@
 require 'test_helper'
 
 class UserFollowsControllerTest < ActionDispatch::IntegrationTest
+  test 'following' do
+    get dashboard_following_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_following_path
+    assert_response :success
+    assert_select 'h1', text: I18n.t('headings.following')
+    assert_select 'a.Sidebar-link[href=?][aria-current="true"]', dashboard_following_path
+    assert_select 'a.Sidebar-link[href=?][aria-current="false"]', dashboard_feed_path
+    assert_select 'nav .Tabs a[href=?][aria-current="true"]', dashboard_following_path
+    assert_select '.FollowingList-item', minimum: 1
+  end
+
+  test 'followers' do
+    get dashboard_followers_path
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+
+    sign_in users(:one)
+
+    get dashboard_followers_path
+    assert_response :success
+    assert_select 'h1', text: I18n.t('headings.followers')
+    assert_select 'a.Sidebar-link[href=?][aria-current="true"]', dashboard_following_path
+    assert_select 'nav .Tabs a[href=?][aria-current="true"]', dashboard_followers_path
+    assert_select '.FollowingList-item', minimum: 1
+    assert_match users(:visible).user_name, @response.body
+  end
+
   test 'create requires sign in' do
     followed = users(:visible)
     assert_no_difference 'UserFollow.count' do
