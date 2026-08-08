@@ -2,6 +2,7 @@
 
 class CustomProductsController < ApplicationController
   include FriendlyFinder
+  include ProfileVisibility
 
   before_action :authenticate_user!, except: [:show]
   before_action :set_menu, except: [:show]
@@ -29,11 +30,6 @@ class CustomProductsController < ApplicationController
     )
 
     @custom_product = CustomProductPresenter.new(@custom_product)
-
-    unless current_user == @user
-      redirect_path = redirect_if_unauthorized(@user, @custom_product)
-      return redirect_to redirect_path if redirect_path
-    end
 
     @setups = current_user.setups if @user == current_user
 
@@ -128,8 +124,7 @@ class CustomProductsController < ApplicationController
   end
 
   def set_show_user
-    @user = User.find_by('lower(user_name) = ?', params[:user_id].downcase)
-    raise ActiveRecord::RecordNotFound if @user.nil?
+    @user = find_viewable_user!(params[:user_id])
   end
 
   def find_custom_product
@@ -149,21 +144,5 @@ class CustomProductsController < ApplicationController
     end
 
     params.expect(custom_product: [:name, :description, :highlighted_image_id, { sub_category_ids: [], images: [] }])
-  end
-
-  def redirect_if_unauthorized(user, custom_product)
-    return if user.visible?
-
-    # if visited profile is not visible to logged out users and the current user is logged in
-    return if user.logged_in_only? && user_signed_in?
-
-    # if the visited profile is not visible to anyone and the visiting user is a different user
-    return root_url if user.hidden? && current_user != user
-
-    redir = user_custom_product_path(
-      id: custom_product.friendly_id,
-      user_id: user.user_name.downcase
-    )
-    new_user_session_url(redirect: URI.parse(redir).path)
   end
 end

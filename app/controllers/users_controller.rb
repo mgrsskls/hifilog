@@ -6,6 +6,7 @@ class UsersController < ApplicationController
   include Contributions
   include CurrentStatisticsOverview
   include FriendlyFinder
+  include ProfileVisibility
 
   helper UserActivityHelper
 
@@ -32,7 +33,6 @@ class UsersController < ApplicationController
 
   def show
     @user = setup_user_page
-    return unless @user
 
     @categories = []
     @sub_category = nil
@@ -52,7 +52,6 @@ class UsersController < ApplicationController
 
   def collection
     @user = setup_user_page
-    return unless @user
 
     if params[:setup].present?
       @setup = @user.setups.where(private: false).friendly.find(params[:setup])
@@ -85,7 +84,6 @@ class UsersController < ApplicationController
 
   def prev_owneds
     @user = setup_user_page
-    return unless @user
 
     all = PossessionPresenterService.map_to_presenters(
       possessions_for_user(possessions: @user.possessions.where(prev_owned: true))
@@ -108,7 +106,6 @@ class UsersController < ApplicationController
 
   def history
     @user = setup_user_page
-    return unless @user
 
     @possessions = history_possessions(@user.possessions)
     @heading = I18n.t('headings.history')
@@ -121,7 +118,6 @@ class UsersController < ApplicationController
 
   def contributions
     @user = setup_user_page
-    return unless @user
 
     data = PaperTrail::Version.where(whodunnit: @user.id)
                               .select(:item_id)
@@ -146,12 +142,7 @@ class UsersController < ApplicationController
   end
 
   def setup_user_page
-    user = User.find_by('lower(user_name) = ?', (params[:user_id].presence || params[:id]).downcase)
-
-    if user.nil? || (user.hidden? && current_user != user) || (user.logged_in_only? && !user_signed_in?)
-      render 'not_found', status: :not_found
-      return nil
-    end
+    user = find_viewable_user!(params[:user_id].presence || params[:id])
 
     page_title(ERB::Util.html_escape(user.user_name))
     @meta_desc = "The public profile of #{user.user_name} on hifilog.com — check out their hi-fi gear! " \

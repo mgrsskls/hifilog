@@ -103,19 +103,12 @@ class CustomProductsControllerTest < ActionDispatch::IntegrationTest
     # custom product belongs to hidden user
     user.update!(profile_visibility: 0)
     get user_custom_product_url(id: custom_product.friendly_id, user_id: custom_product.user.user_name.downcase)
-    assert_response :redirect
-    assert_redirected_to root_url
+    assert_response :not_found
 
     # custom product belongs to user only visible logged in
     user.update!(profile_visibility: 1)
     get user_custom_product_url(id: custom_product.friendly_id, user_id: custom_product.user.user_name.downcase)
-    assert_response :redirect
-    assert_redirected_to new_user_session_path(
-      redirect: user_custom_product_path(
-        id: custom_product.friendly_id,
-        user_id: custom_product.user.user_name.downcase
-      )
-    )
+    assert_response :not_found
 
     # … and user is the same
     sign_in user
