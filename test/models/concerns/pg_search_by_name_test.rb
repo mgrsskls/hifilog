@@ -22,4 +22,18 @@ class PgSearchByNameTest < ActiveSupport::TestCase
 
     assert_includes hits.map(&:slug), brands(:one).slug
   end
+
+  test 'search_by_name ignores punctuation in the query' do
+    hits = Brand.search_by_name('Z.M.F')
+
+    assert_includes hits.map(&:slug), brands(:two).slug
+  end
+
+  test 'search_by_name ignores punctuation in the indexed name' do
+    brand = Brand.create!(name: 'T.L.A.', slug: 't-l-a')
+
+    hits = Brand.search_by_name('TLA')
+
+    assert_includes hits.map(&:slug), brand.slug
+  end
 end

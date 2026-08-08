@@ -48,4 +48,13 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Feliks', res['query']
     assert_not_nil res['html']
   end
+
+  test 'search xhr ignores punctuation on both sides of the match' do
+    brand = Brand.create!(name: 'T.L.A.', slug: 't-l-a')
+
+    get search_path(query: 'TLA'), headers: { 'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest' }
+    assert_response :success
+    res = JSON.parse(@response.body)
+    assert_match brand.slug, res['html']
+  end
 end
