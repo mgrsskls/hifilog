@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class BrandsController < ApplicationController
-  include ApplicationHelper
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder

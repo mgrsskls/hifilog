@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Dashboard::HomeController < ApplicationController
-  include ApplicationHelper
   include CurrentStatisticsOverview
 
   before_action :authenticate_user!

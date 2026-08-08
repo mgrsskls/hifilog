@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ProductVariantsController < ApplicationController
-  include ApplicationHelper
   include ProductCatalogShow
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class PossessionsController < ApplicationController
-  include ApplicationHelper
   include Possessions
 
   before_action :authenticate_user!

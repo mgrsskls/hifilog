@@ -3,7 +3,6 @@
 class ProductsController < ApplicationController
   include ActionView::Helpers::NumberHelper
   include ActiveSupport::NumberHelper
-  include ApplicationHelper
   include FriendlyFinder
   include ProductCatalogShow
 

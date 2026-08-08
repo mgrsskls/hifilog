@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Dashboard::CollectionStatusController < ApplicationController
-  include ApplicationHelper
-
   before_action :authenticate_user!
 
   def show

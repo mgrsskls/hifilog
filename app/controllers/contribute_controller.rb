@@ -5,8 +5,6 @@
 # These are deliberately noindex — they are a task board, not content. They are also read-only;
 # every link leads into the existing brand / product edit forms.
 class ContributeController < ApplicationController
-  include ApplicationHelper
-
   BRAND_MISSING_FILTERS = %w[
     founded_year description sub_categories country_code discontinued discontinued_year website
   ].freeze
