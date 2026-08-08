@@ -9,11 +9,8 @@ class UserController < ApplicationController
 
   FEED_PAGE_SIZE = 50
 
-  before_action :authenticate_user!, except: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
-  skip_before_action :verify_authenticity_token, only: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
+  before_action :authenticate_user!
   before_action :set_menu
-  before_action :prevent_unsubscribe_hash_referrer_leak,
-                only: [:newsletter_unsubscribe, :follow_notification_unsubscribe]
 
   def dashboard
     page_title(I18n.t('dashboard'))
@@ -372,85 +369,7 @@ class UserController < ApplicationController
     }
   end
 
-  def newsletter_unsubscribe
-    @unsubscribe_hash = params[:hash]
-
-    if request.get?
-      @user = newsletter_unsubscribe_user
-      return
-    end
-
-    user = newsletter_unsubscribe_user
-
-    if user
-      user.update(receives_newsletter: false)
-      respond_to_newsletter_unsubscribe(:success)
-    else
-      respond_to_newsletter_unsubscribe(:invalid)
-    end
-  end
-
-  def follow_notification_unsubscribe
-    @unsubscribe_hash = params[:hash]
-
-    if request.get?
-      @user = follow_notification_unsubscribe_user
-      return
-    end
-
-    user = follow_notification_unsubscribe_user
-
-    if user
-      user.update(receives_follow_notifications: false)
-      respond_to_follow_notification_unsubscribe(:success)
-    else
-      respond_to_follow_notification_unsubscribe(:invalid)
-    end
-  end
-
   private
-
-  def prevent_unsubscribe_hash_referrer_leak
-    response.set_header('Referrer-Policy', 'no-referrer')
-  end
-
-  def newsletter_unsubscribe_user
-    hash_param = params[:hash].presence || request.query_parameters['hash'].presence
-    NewsletterUnsubscribeService.decode_token(hash_param)
-  end
-
-  def follow_notification_unsubscribe_user
-    hash_param = params[:hash].presence || request.query_parameters['hash'].presence
-    FollowNotificationUnsubscribeService.decode_token(hash_param)
-  end
-
-  def respond_to_newsletter_unsubscribe(result)
-    if one_click_unsubscribe_request?
-      return head :bad_request if result == :invalid
-
-      head :ok
-    elsif result == :success
-      redirect_to root_path, notice: I18n.t('newsletter.messages.unsubscribed')
-    else
-      redirect_to root_path, alert: I18n.t('newsletter.messages.invalid_unsubscribe_link')
-    end
-  end
-
-  def respond_to_follow_notification_unsubscribe(result)
-    if one_click_unsubscribe_request?
-      return head :bad_request if result == :invalid
-
-      head :ok
-    elsif result == :success
-      redirect_to root_path, notice: I18n.t('user_follow.notifications.unsubscribed')
-    else
-      redirect_to root_path, alert: I18n.t('user_follow.notifications.invalid_unsubscribe_link')
-    end
-  end
-
-  def one_click_unsubscribe_request?
-    params['List-Unsubscribe'] == 'One-Click'
-  end
 
   # Presenters for the "add bookmarks to this list" dialog. BookmarkPresenter touches
   # +bookmark.item+ (and +item.product+ for variants) in its constructor, so without

@@ -43,9 +43,12 @@ Rails.application.routes.draw do
 
   resource :privacy_policy_acceptance, only: %i[new create destroy]
 
-  match 'newsletters/unsubscribe', to: 'user#newsletter_unsubscribe', via: %i[get post], as: :newsletters_unsubscribe
-  match 'follow-notifications/unsubscribe', to: 'user#follow_notification_unsubscribe', via: %i[get post],
-                                            as: :follow_notifications_unsubscribe
+  # GET renders a confirmation page; POST (incl. RFC 8058 one-click) performs the unsubscribe.
+  get 'newsletters/unsubscribe', to: 'newsletter_unsubscribes#show', as: :newsletters_unsubscribe
+  post 'newsletters/unsubscribe', to: 'newsletter_unsubscribes#create'
+  get 'follow-notifications/unsubscribe', to: 'follow_notification_unsubscribes#show',
+                                          as: :follow_notifications_unsubscribe
+  post 'follow-notifications/unsubscribe', to: 'follow_notification_unsubscribes#create'
 
   scope '/dashboard', as: :dashboard do
     root 'user#dashboard'

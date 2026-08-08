@@ -152,7 +152,7 @@ Discussion text on a **product**, optionally scoped to a **variant** (one note p
 
 **`UserBlock`** (`blocker` → `blocked`) severs follow relationships in both directions on create. Blocks are not disclosed to the blocked user: the follow button stays visible and a follow attempt fails generically.
 
-The follow notification email carries a `List-Unsubscribe` header and an unsubscribe link backed by **`FollowNotificationUnsubscribeService`** (signed token, parallel to the newsletter flow).
+The follow notification email carries a `List-Unsubscribe` header and an unsubscribe link backed by **`FollowNotificationUnsubscribeService`** (signed token, parallel to the newsletter flow). The unsubscribe endpoints are public, token-authenticated controllers—**`FollowNotificationUnsubscribesController`** and **`NewsletterUnsubscribesController`**—that share the **`TokenUnsubscribe`** concern: `GET` renders a confirmation page without mutating, `POST` performs the unsubscribe and also answers RFC 8058 one-click (`List-Unsubscribe: One-Click`) requests. Because recipients may not be signed in, both are exempt from the privacy-policy gate.
 
 ## Authentication and admin
 

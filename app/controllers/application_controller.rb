@@ -131,22 +131,24 @@ class ApplicationController < ActionController::Base
 
   def skip_privacy_policy_enforcement?
     signing_out? ||
-      privacy_policy_exempt_controller? ||
-      newsletter_unsubscribe?
+      privacy_policy_exempt_controller?
   end
 
   def privacy_policy_exempt_controller?
     controller_path == 'privacy_policy_acceptances' ||
       controller_path == 'static' ||
-      devise_account_recovery_controller?
+      devise_account_recovery_controller? ||
+      unsubscribe_controller?
   end
 
   def devise_account_recovery_controller?
     %w[users/confirmations users/passwords users/unlocks].include?(controller_path)
   end
 
-  def newsletter_unsubscribe?
-    controller_path == 'user' && action_name == 'newsletter_unsubscribe'
+  # Token-based email unsubscribe endpoints: recipients may not be signed in,
+  # and the flow must stay reachable regardless of privacy-policy status.
+  def unsubscribe_controller?
+    %w[newsletter_unsubscribes follow_notification_unsubscribes].include?(controller_path)
   end
 
   def signing_out?
