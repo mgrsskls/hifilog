@@ -6,6 +6,7 @@ class UserController < ApplicationController
   include CurrentStatisticsOverview
   include HistoryHelper
   include Bookmarks
+  include EventListing
 
   FEED_PAGE_SIZE = 50
 
@@ -128,7 +129,7 @@ class UserController < ApplicationController
     user_events = current_user.events
 
     all_events = user_events.upcoming
-    get_events(all_events:, order: :asc)
+    load_events(all_events, order: :asc, country_codes: user_event_country_codes(all_events))
     @all_upcoming_events_count = all_events.size
     today = Time.zone.today
     @all_past_events_count = user_events
@@ -149,7 +150,7 @@ class UserController < ApplicationController
 
     all_events = user_events.where(end_date: ..today)
                             .or(Event.where(start_date: ..today, end_date: nil))
-    get_events(all_events:, order: :desc)
+    load_events(all_events, order: :desc, country_codes: user_event_country_codes(all_events))
     @all_upcoming_events_count = user_events.upcoming.size
     @all_past_events_count = all_events.size
     @empty_state_message = I18n.t('event_attendee.empty_states.user.past', path: past_events_path)
@@ -373,17 +374,10 @@ class UserController < ApplicationController
     end
   end
 
-  def get_events(all_events: [], order: :asc)
-    country_code = params[:country]
-    scoped = country_code.present? ? all_events.where(country_code:) : all_events
-    @events = scoped.order(start_date: order).to_a
-    ids = @events.map(&:id)
-    @event_attendee_counts = EventAttendee.counts_for(ids)
-    @years = @events.group_by { |event| event.start_date.year }
-                    .transform_values do |events_in_year|
-                      events_in_year.group_by { |event| event.start_date.month }
-                    end
-    @country_codes = all_events.map(&:country_code).uniq.sort
+  # Filter dropdown scoped to the countries the user actually has events in,
+  # independent of the current +?country=+ filter.
+  def user_event_country_codes(all_events)
+    all_events.map(&:country_code).uniq.sort
   end
 
   def setup_community_section(active_tab:)
