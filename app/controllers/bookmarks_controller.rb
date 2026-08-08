@@ -1,41 +1,21 @@
 # frozen_string_literal: true
 
 class BookmarksController < ApplicationController
+  # Checked in this order: a request only ever carries one of these ids.
+  BOOKMARKABLE_PARAMS = {
+    product_variant_id: ProductVariant,
+    product_id: Product,
+    event_id: Event,
+    brand_id: Brand
+  }.freeze
+
   before_action :authenticate_user!
 
   def create
-    if params[:product_variant_id].present?
-      @product_variant = ProductVariant.find(params[:product_variant_id])
-    elsif params[:product_id].present?
-      @product = Product.find(params[:product_id])
-    elsif params[:event_id].present?
-      @event = Event.find(params[:event_id])
-    elsif params[:brand_id].present?
-      @brand = Brand.find(params[:brand_id])
-    end
+    item = find_bookmarkable_item
+    assign_bookmarkable_item(item)
 
-    if @product_variant.present?
-      @bookmark = current_user.bookmarks.new(
-        item_id: @product_variant.id,
-        item_type: 'ProductVariant'
-      )
-    elsif @product.present?
-      @bookmark = current_user.bookmarks.new(
-        item_id: @product.id,
-        item_type: 'Product'
-      )
-    elsif @event.present?
-      @bookmark = current_user.bookmarks.new(
-        item_id: @event.id,
-        item_type: 'Event'
-      )
-    elsif @brand.present?
-      @bookmark = current_user.bookmarks.new(
-        item_id: @brand.id,
-        item_type: 'Brand'
-      )
-    end
-
+    @bookmark = current_user.bookmarks.new(item_id: item.id, item_type: item.class.name) if item
     flash[:alert] = I18n.t(:generic_error_message) unless @bookmark.save
 
     if @brand.present?
@@ -75,5 +55,25 @@ class BookmarksController < ApplicationController
     end
 
     redirect_to_safe_path(params[:redirect_to], fallback: dashboard_bookmarks_path)
+  end
+
+  private
+
+  def find_bookmarkable_item
+    BOOKMARKABLE_PARAMS.each do |param_key, model_class|
+      id = params[param_key]
+      return model_class.find(id) if id.present?
+    end
+
+    nil
+  end
+
+  def assign_bookmarkable_item(item)
+    case item
+    when ProductVariant then @product_variant = item
+    when Product then @product = item
+    when Event then @event = item
+    when Brand then @brand = item
+    end
   end
 end
