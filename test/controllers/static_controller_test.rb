@@ -33,8 +33,9 @@ class StaticControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  # Regression: these routes used to be constrained on the negotiated request format, so any
-  # client that did not negotiate to HTML fell through to the '*url' catch-all and got a 404.
+  # These routes must not be constrained on the negotiated request format: a client that
+  # does not negotiate to HTML must still hit them rather than falling through to the
+  # '*url' catch-all and getting a 404.
   test 'static pages render regardless of the Accept header' do
     paths = [
       changelog_path,

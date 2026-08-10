@@ -48,8 +48,8 @@ module CurrentStatisticsOverview
   end
 
   # Counts-only variant for the dashboard and the public profile, which render nothing
-  # but products_count, brands_count and spendings. Answers all three with aggregates so
-  # the page no longer loads (and preloads brand / variant / custom product for) every
+  # but products_count, brands_count and spendings. Answers all three with aggregates,
+  # avoiding a load of (and preload of brand / variant / custom product for) every
   # possession in the collection just to call +.size+ on the result.
   def load_current_statistics_summary(user = current_user, include_spendings: nil)
     return unless user

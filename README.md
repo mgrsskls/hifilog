@@ -69,7 +69,7 @@ Two accessors decide which form is rendered where:
 - **`Brand#display_name`** — `abbreviation` if there is one, otherwise `name`. This is the default. It is what product and variant titles use, what product slugs are built from, and what lists, breadcrumbs and nav links show wherever there is room for only one string.
 - **`Brand#seo_name`** — `"B&O (Bang & Olufsen)"` when an abbreviation exists, otherwise `name`. Used for the brand page title; the brand page `<h1>` renders the same pair as markup rather than a string.
 
-Where there is room for both — brands index rows, brand search results, the sitemap — the abbreviation leads and the full name follows it.
+Where there is room for both — brands index rows, brand search results, the sitemap — the abbreviation has priority, followed by `name`.
 
 Product titles and slugs are built from `Brand#display_name`, and nothing on `Product` notices a change to either brand column. So `Brand` has an `after_update` calling `Product.resync_slugs_for` whenever `name` **or** `abbreviation` changes (`brand_naming_changed?`); it re-slugs the brand's products and preserves the old slugs in `friendly_id_slugs` so they 301. Adding an abbreviation to an existing brand therefore moves every product URL under it, which is intended: the title moves too.
 
@@ -151,7 +151,7 @@ Discussion text on a **product**, optionally scoped to a **variant** (one note p
 **Profile visibility** (hidden, logged-in-only, visible) controls public discoverability and whether collection imagery from that user appears on catalog pages.
 
 - **Public profile**: overview (collection preview, statistics, upcoming events, activity feed), full collection, previous gear, history, contributions.
-- **Dashboard**: the signed-in owner's workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), and blocked users, alongside the Devise account form. The settings pages live under a dedicated **`Settings::`** namespace of controllers.
+- **Dashboard**: the signed-in owner's workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), and blocked users, alongside the Devise account form. The profile and notifications settings live under a dedicated **`Settings::`** namespace of controllers; blocked users has its own top-level controller.
 
 ## Following and blocking
 

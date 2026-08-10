@@ -185,9 +185,9 @@ class ProductItemsControllerTest < ActionDispatch::IntegrationTest
     assert_select '.CatalogueHub'
   end
 
-  # An applied filter must be visible. The fieldset previously keyed its open state and its
-  # "filter applied" marker off the country param alone, so a brand status filter was active but
-  # invisible: collapsed fieldset, no indicator.
+  # An applied filter must be visible: the fieldset's open state and its "filter applied"
+  # marker must reflect any active param in the group, not just country, otherwise a brand
+  # status filter is active but invisible — collapsed fieldset, no indicator.
   test 'brand status filter opens and flags the brands fieldset' do
     get products_url(brands: { status: 'discontinued' })
 

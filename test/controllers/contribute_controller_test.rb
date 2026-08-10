@@ -159,8 +159,9 @@ class ContributeControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # sub_category_names is no longer a column on the view — it is preloaded per page. Without this
-  # the controller could stop preloading and the only symptom would be an empty category badge.
+  # sub_category_names is preloaded per page rather than being a column on the view. Without
+  # this test, the controller could stop preloading it and the only symptom would be an empty
+  # category badge.
   test 'the products queue renders sub category names' do
     get contribute_incomplete_products_url
 
