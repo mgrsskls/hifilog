@@ -46,6 +46,7 @@ ActiveAdmin.register Brand do
       end
     end
     column :abbreviation
+    column :legal_name
     column :discontinued
     column :logo do |brand|
       if brand.logo.attached?
