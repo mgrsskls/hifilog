@@ -16,7 +16,7 @@ class ProductsController < ApplicationController
   def show
     assign_product_catalog_show_data(product: @product)
 
-    page_title([@product.brand&.name, @product.name].compact.join(' '), @product.meta_desc)
+    page_title(@product.display_name, @product.meta_desc)
   end
 
   def new
@@ -141,7 +141,8 @@ class ProductsController < ApplicationController
                   brand_attributes: [
                     :name,
                     :discontinued,
-                    :full_name,
+                    :abbreviation,
+                    :legal_name,
                     :website,
                     :country_code,
                     :founded_day,

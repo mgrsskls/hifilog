@@ -51,7 +51,7 @@ class ContributeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'brands without products shows an empty state when nothing matches' do
-    get contribute_brands_without_products_url
+    get contribute_brands_without_products_url(category: categories(:two).friendly_id)
 
     assert_response :success
     assert_select '.EmptyState'

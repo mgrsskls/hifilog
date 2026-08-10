@@ -1,5 +1,23 @@
 # Fixture slugs bypass FriendlyId callbacks; seed history so rename/redirect tests work.
 
+# Brands are unscoped. Without these, renaming a brand fixture makes its previous slug
+# unresolvable and the redirect tests 404 instead of 301 -- in production the row exists
+# because the brand was slugged through the model.
+brand_one:
+  slug: feliks-audio
+  sluggable_type: Brand
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+
+brand_two:
+  slug: zmf
+  sluggable_type: Brand
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+
+brand_three:
+  slug: brand-three
+  sluggable_type: Brand
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:three) %>
+
 setup_one:
   slug: one
   sluggable_type: Setup

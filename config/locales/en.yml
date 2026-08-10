@@ -16,8 +16,9 @@ en:
         discontinued_date: Date of discontinuation
         founded_date: Founded
         founded_year: Founded in year
-        full_name: Full / Company name
-        name: Name
+        abbreviation: Abbreviation
+        legal_name: Company name
+        name: Brand name
         website: Website
       custom_product:
         description: Description

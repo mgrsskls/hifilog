@@ -1,0 +1,46 @@
+<%#
+  Brand name + abbreviation, shared by brands/new, brands/edit and the inline add-brand
+  fieldset in the product form.
+
+  The abbreviation is only ever stored when it is *not* already inside the name -- "B&O",
+  not "Fezz" -- and Brand clears anything that is. That narrowing is what lets every display
+  site render it unconditionally: whatever is in the column is, by construction, something
+  the reader cannot already see in the name.
+
+  It is also why the field exists at all. A search for "fezz" already reaches the prefix
+  tier against "fezz audio" on `name` alone, so storing "Fezz" would change nothing; "B&O"
+  normalises to "bo", which "bang olufsen" neither starts with nor contains, so without this
+  column that brand cannot be found.
+%>
+<%
+  # Off by default: in the product form this whole fieldset lives inside a hidden container,
+  # and a `required` control in there blocks submission of the product itself.
+  required ||= false
+%>
+
+<div class="Form-field">
+  <%= f.label :name, class: "Form-label" %>
+  <%= f.text_field :name, required: required, placeholder: "e.g. Fezz Audio, DeVORE Fidelity, Bang & Olufsen", data: { brand_name_input: true } %>
+  <div class="BrandForm-duplicate" data-brand-duplicate hidden></div>
+</div>
+
+<div class="Form-field">
+  <div class="Form-label">
+    <%= f.label :abbreviation %>
+    <small><i>(<%= t(:optional) %>)</i></small>
+  </div>
+  <%= f.text_field :abbreviation, placeholder: "e.g. B&O, TAD", data: { brand_abbreviation_input: true } %>
+  <small>
+    Only if the brand name is often abbreviated or known by something that is <b>not</b> part of its name —
+    <i>B&amp;O</i> for <i>Bang &amp; Olufsen</i>, <i>TAD</i> for <i>Technical Audio Devices</i>.
+  </small>
+</div>
+
+<div class="Form-field">
+  <div class="Form-label">
+    <%= f.label :legal_name %>
+    <small><i>(<%= t(:optional) %>)</i></small>
+  </div>
+  <%= f.text_field :legal_name, placeholder: "e.g. Bang & Olufsen AS" %>
+  <small>Only if it differs from the brand name. Leave empty otherwise.</small>
+</div>

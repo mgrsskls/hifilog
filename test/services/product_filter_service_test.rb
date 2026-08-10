@@ -229,7 +229,10 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     result = ProductFilterService.new(filters: {}, brands: ordered_page).filter
     counted_brand_ids = result.products.except(:order).distinct.pluck(:brand_id)
 
-    assert_equal page_brand_ids.sort, counted_brand_ids.sort
+    # A brand can legitimately have zero products, so counted_brand_ids may be a
+    # strict subset of page_brand_ids. What matters is that no product leaks in
+    # from a brand outside the current page.
+    assert_empty counted_brand_ids - page_brand_ids
   end
 
   test 'counts_by_brand with sub_category matches product_items grouping and includes variants' do

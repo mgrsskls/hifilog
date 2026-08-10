@@ -26,10 +26,6 @@
 	display: grid;
 	grid-template-columns: auto 1fr;
 	gap: 0 0.5rem;
-
-	input {
-		transform: translateY(0.5rem);
-	}
 }
 
 .Options-item[hidden] {
@@ -51,6 +47,10 @@
 
 .EntityForm {
 	container: form / inline-size;
+
+	small {
+		margin-block-start: 0.5rem;
+	}
 }
 
 .EntityForm details:not(:last-child) {
@@ -239,4 +239,35 @@
 .ProductOptionsForm-button {
 	display: block;
 	margin-inline-start: auto;
+}
+
+/* Brand names: the duplicate warning and the product title
+   preview. See the Brand section of README.md. */
+
+.BrandForm-duplicate {
+	color: var(--color-invalid-copy);
+	background: var(--color-invalid-bg);
+	border-radius: var(--border-radius);
+	padding: 0.75rem 1rem;
+	margin-block-start: 0.75rem;
+	font-size: 0.875rem;
+}
+
+.BrandForm-duplicate[hidden] {
+	display: none;
+}
+
+.ProductForm-titlePreview {
+	color: var(--color-secondary);
+	display: block;
+	margin-block-start: 0.375rem;
+}
+
+.ProductForm-titlePreview[hidden] {
+	display: none;
+}
+
+/* The abbreviation next to a brand in the picker -- the reason that row matched. */
+.Options--brands label small {
+	color: var(--color-secondary);
 }

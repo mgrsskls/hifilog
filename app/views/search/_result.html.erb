@@ -8,20 +8,18 @@
           name = result.product_name
           path = product_path(result.product_slug)
       %>
-        <%= result.brand_name %> <%= link_to name, path %>
+        <%= result.brand_abbreviation || result.brand_name %> <%= link_to name, path %>
       <% elsif result.item_type == 'ProductVariant'
           name = "#{result.product_name} #{result.product_variant_name}"
           path = product_variant_path(id: result.product_variant_slug, product_id: result.product_slug)
       %>
-        <%= result.brand_name %> <%= link_to name, path %>
+        <%= result.brand_abbreviation || result.brand_name %> <%= link_to name, path %>
       <%  elsif result.item_type == 'Brand'
-          name = result.brand_name
-          full_name = result.brand_full_name.present? ? result.brand_full_name : nil
           path = brand_path(result.brand_slug)
       %>
-        <%= link_to name, path %>
-        <% if full_name %>
-          <span class="SearchResult-entityFullName"><%= full_name %></span>
+        <%= link_to result.brand_abbreviation || result.brand_name, path %>
+        <% if result.brand_abbreviation %>
+          <span class="SearchResult-entityFullName"><%= result.brand_name %></span>
         <% end %>
       <% end %>
     </div>

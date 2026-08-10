@@ -16,6 +16,9 @@ class BrandsController < ApplicationController
   before_action :load_brand_for_products_page, only: [:products]
   before_action :redirect_legacy_brand_products_category_query, only: [:products]
   before_action :ensure_brand_products_category_path!, only: [:products]
+  # Runs last of the :products chain -- it needs @category / @sub_category, which the
+  # action above resolves.
+  before_action :ensure_canonical_brand_products_slug!, only: [:products]
 
   # Presence of any of these means the brands list should be rendered
   HUB_BLOCKING_PARAMS = %w[sort page brands products].freeze
@@ -77,7 +80,12 @@ a user-driven database for hi-fi products and brands."
 
   def all
     respond_to do |format|
-      format.json { render json: { brands: Brand.select([:name, :id]).order('LOWER(name)') } }
+      # abbreviation rides along so the picker finds "Bang & Olufsen" when someone types
+      # "B&O" -- otherwise the "we could not find the brand" panel appears and they create a
+      # duplicate.
+      format.json do
+        render json: { brands: Brand.select([:id, :name, :abbreviation, :slug]).order('LOWER(name)') }
+      end
     end
   end
 
@@ -96,7 +104,7 @@ a user-driven database for hi-fi products and brands."
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @bookmark = current_user.bookmarks.find_by(item_id: brand_id, item_type: 'Brand') if user_signed_in?
 
-    page_title(@brand.name)
+    page_title(@brand.seo_name)
     set_meta_desc
   end
 
@@ -126,7 +134,7 @@ a user-driven database for hi-fi products and brands."
     @canonical_url = brand_products_index_canonical_url
     @products_query = params[:products][:query].strip if params.dig(:products, :query).present?
 
-    page_title("#{@brand.name} #{@sub_category&.name || Product.model_name.human.pluralize}")
+    page_title("#{@brand.display_name} #{@sub_category&.name || Product.model_name.human.pluralize}")
     set_meta_desc
   end
 
@@ -216,7 +224,8 @@ a user-driven database for hi-fi products and brands."
     params.expect(
       brand: [:name,
               :discontinued,
-              :full_name,
+              :abbreviation,
+              :legal_name,
               :website,
               :country_code,
               :founded_day,
@@ -337,6 +346,36 @@ a user-driven database for hi-fi products and brands."
     return head :not_found if invalid_category_path_resolution?(*pair)
 
     @category, @sub_category = pair
+  end
+
+  # #show gets this from FriendlyFinder, which #products cannot use: its canonical path also
+  # depends on the category segments, and those are only resolved by the before_action above.
+  #
+  # Without it, a brand whose slug changed (see BackfillBrandNamesFromFullName) answers its old
+  # products URL with a 200 rather than a redirect -- friendly_id's :history module resolves
+  # the superseded slug quite happily. The page is indexable, so that is duplicate content
+  # under two URLs instead of one page that has moved.
+  #
+  # Mirrors redirect_legacy_brand_products_category_query: same three path shapes, same
+  # merge_path_unaware_query so sort/page/filter params survive the redirect.
+  def ensure_canonical_brand_products_slug!
+    return unless request.get?
+    return if params[:brand_id] == @brand.friendly_id
+
+    extra = merge_path_unaware_query
+    target =
+      if @sub_category.present?
+        brand_brand_products_subcategory_path(@brand,
+                                              @sub_category.category.friendly_id,
+                                              @sub_category.friendly_id,
+                                              **extra)
+      elsif @category.present?
+        brand_brand_products_category_path(@brand, @category.friendly_id, **extra)
+      else
+        brand_products_path(brand_id: @brand.friendly_id, **extra)
+      end
+
+    redirect_to target, status: :moved_permanently
   end
 
   def brand_products_index_canonical_url

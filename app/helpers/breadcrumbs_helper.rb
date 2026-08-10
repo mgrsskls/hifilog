@@ -40,7 +40,7 @@ module BreadcrumbsHelper
       [
         [APP_NAME, root_url],
         [Brand.model_name.human.pluralize, brands_url],
-        [brand.name, canonical_url]
+        [brand.display_name, canonical_url]
       ]
     )
   end
@@ -49,7 +49,7 @@ module BreadcrumbsHelper
     crumbs = [
       [APP_NAME, root_url],
       [Brand.model_name.human.pluralize, brands_url],
-      [brand.name, brand_url(brand)],
+      [brand.display_name, brand_url(brand)],
       [Product.model_name.human.pluralize, canonical_url]
     ]
     if sub_category.present?
@@ -63,12 +63,12 @@ module BreadcrumbsHelper
   end
 
   def product_show_breadcrumb_json_ld(product:, canonical_url:)
-    schema_org_breadcrumb_list(product_detail_breadcrumb_crumbs(product, product.display_name, canonical_url))
+    schema_org_breadcrumb_list(product_detail_breadcrumb_crumbs(product, product.name, canonical_url))
   end
 
   def product_variant_show_breadcrumb_json_ld(product:, product_variant:, canonical_url:)
-    name = "#{product_variant.product.display_name} — #{product_variant.name_with_fallback}"
-    crumbs = product_detail_breadcrumb_crumbs(product, product.display_name, product_url(id: product.friendly_id))
+    name = "#{product_variant.product.name} — #{product_variant.name_with_fallback}"
+    crumbs = product_detail_breadcrumb_crumbs(product, product.name, product_url(id: product.friendly_id))
     crumbs << [name, canonical_url]
     schema_org_breadcrumb_list(crumbs)
   end
@@ -105,7 +105,7 @@ module BreadcrumbsHelper
       crumbs << [sub.category.name, products_category_url(sub.category.friendly_id)]
       crumbs << [sub.name, products_subcategory_url(sub.category.friendly_id, sub.friendly_id)]
     elsif product.brand
-      crumbs << [product.brand.name, brand_url(product.brand)]
+      crumbs << [product.brand.display_name, brand_url(product.brand)]
     end
     crumbs << [penultimate_name, penultimate_url]
     crumbs

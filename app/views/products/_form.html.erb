@@ -34,7 +34,7 @@
 <%= render "shared/product_form", f: f, entity: product, include_comment: include_comment, prefix: "product", brand: brand do %>
   <div class="Form-field">
     <h2><%= f.label :brand %></h2>
-    <input type="text" id="brand-filter" autocomplete="off" value="<%= brand.name %>"<%= " disabled" if brand.id.present? %> placeholder="Search for brand name…" aria-label="Brand name">
+    <input type="text" id="brand-filter" autocomplete="off" value="<%= brand.name %>" data-brand-abbreviation="<%= brand.abbreviation %>"<%= " disabled" if brand.id.present? %> placeholder="Search for brand name…" aria-label="Brand name">
   </div>
   <% unless brand && brand.id %>
     <% unless brand && brand.errors.any? %>
@@ -54,17 +54,7 @@
         <legend>Add new brand</legend>
         <%= f.fields_for :brand do |brand_form| %>
           <%= render "shared/flash_messages", messages: brand.errors.map { |error| ["alert", error.full_message] } if brand && brand.errors.any? %>
-          <div class="Form-field">
-            <%= brand_form.label :name, class: "Form-label" %>
-            <%= brand_form.text_field :name, placeholder: "Foo" %>
-          </div>
-
-          <div class="Form-field">
-            <%= brand_form.label :full_name, class: "Form-label" do %>
-              <%= Brand.human_attribute_name(:full_name) %> <small><i>(optional)</i></small>
-            <% end %>
-            <%= brand_form.text_field :full_name %>
-          </div>
+          <%= render "brands/name_fields", f: brand_form %>
 
           <div class="Form-field">
             <%= brand_form.label :website, class: "Form-label" do %>
@@ -99,7 +89,7 @@
             <%= brand_form.text_area :description %>
           </div>
 
-          <div class="Form-field Form-field--inline">
+          <div class="Form-field">
             <span class="Form-label"><%= t('symbols.product.discontinued') %></span>
             <div class="Form-options">
               <%= brand_form.radio_button :discontinued, 0, checked: brand.nil? || (brand.discontinued.nil? || brand.discontinued) == false %>
@@ -119,7 +109,11 @@
     <div>
       <div class="Form-field">
         <%= f.label :name, class: "Form-label h3" %>
-        <%= f.text_field :name, required: true, placeholder: "e.g. #{['Heresy IV', 'HE-1', 'Ongaku'].sample}" %>
+        <%= f.text_field :name, required: true, placeholder: "e.g. #{['Heresy IV', 'HE-1', 'Ongaku'].sample}", data: { product_name_input: true } %>
+        <%# Demonstrates the "product name only, no brand name" convention instead of just
+            stating it in a collapsed <details> nobody opens. Also doubles as the warning
+            when the brand name has been typed in here twice. %>
+        <small class="ProductForm-titlePreview" data-product-title-preview hidden></small>
       </div>
     </div>
 

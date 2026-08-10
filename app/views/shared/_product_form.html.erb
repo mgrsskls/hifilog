@@ -77,7 +77,7 @@
           </small>
         </p>
       <% else %>
-        <div class="Form-field Form-field--inline Entity-discontinued">
+        <div class="Form-field Entity-discontinued">
           <span class="Form-label"><%= t('symbols.product.discontinued') %></span>
           <div class="Form-options">
             <%= f.radio_button :discontinued, 0, checked: (entity.discontinued.nil? || entity.discontinued == false) %>
@@ -105,7 +105,7 @@
         </datalist>
       </div>
 
-      <div class="Form-field Form-field--inline Entity-discontinued">
+      <div class="Form-field Entity-discontinued">
         <span class="Form-label"><%= t('activerecord.attributes.product.diy_kit') %></span>
         <div class="Form-options">
           <% if prefix == "product_variant" %>

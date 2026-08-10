@@ -132,7 +132,7 @@ module ApplicationHelper
         }
       else
         {
-          brand_name: possession.product.brand.name,
+          brand_name: possession.product.brand.display_name,
           possession:
         }
       end

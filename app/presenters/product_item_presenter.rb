@@ -31,6 +31,10 @@ class ProductItemPresenter
     @object.product_id
   end
 
+  def brand_name
+    @object.brand_abbreviation || @object.brand_name
+  end
+
   def path
     if @object.item_type == 'ProductVariant'
       return product_variant_path(id: @object.variant_slug, product_id: @object.product_slug)

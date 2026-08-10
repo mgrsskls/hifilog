@@ -9,7 +9,8 @@ class ProductItem < ApplicationRecord
                       name: 'A',
                       variant_name: 'B',
                       model_no: 'B',
-                      brand_name: 'A'
+                      brand_name: 'A',
+                      brand_abbreviation: 'A'
                     })
 
   # product_options.product_item_id points at this view's synthetic UUID, so this association

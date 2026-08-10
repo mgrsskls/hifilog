@@ -12,13 +12,22 @@ class Brand < ApplicationRecord
   include DateFromComponents
   include PgSearchByName
 
-  pg_search_by_name(against: [:name, :full_name])
+  # legal_name is deliberately absent: pg_search concatenates every `against:` column into
+  # one string before computing trigram similarity, so a long formulaic value nobody types
+  # ("... Sp. z o.o.") would dilute the score of every query. It stays filterable through
+  # BrandFilterService, which does a plain contains match rather than a ranked one.
+  #
+  # abbreviation is here because nothing else in the row can match a query for it: "B&O"
+  # normalises to "bo", which "bang olufsen" neither starts with nor contains. (It is also a
+  # display value -- see #display_name -- but this scope is only about findability.)
+  pg_search_by_name(against: [:name, :abbreviation])
 
   nilify_blanks
 
   auto_strip_attributes :name, squish: true
   auto_strip_attributes :website, squish: true
-  auto_strip_attributes :full_name, squish: true
+  auto_strip_attributes :abbreviation, squish: true
+  auto_strip_attributes :legal_name, squish: true
   auto_strip_attributes :description
 
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
@@ -81,10 +90,13 @@ class Brand < ApplicationRecord
   scope :missing_sub_categories, -> { where(sub_categories_count: 0) }
   scope :incomplete, -> { where('brands.completeness < 100') }
 
+  before_validation :clear_abbreviation_when_contained_in_name
+
   before_save :clear_logo_when_remove_requested
   before_save :touch_updated_at_for_logo_change
 
   after_update :touch_products
+  after_update :resync_product_slugs, if: :brand_naming_changed?
   after_destroy :invalidate_cache
   after_save :recalculate_sub_categories_count!
   after_save :invalidate_cache
@@ -157,6 +169,14 @@ class Brand < ApplicationRecord
   end
 
   def display_name
+    return abbreviation if abbreviation.present?
+
+    name
+  end
+
+  def seo_name
+    return "#{abbreviation} (#{name})" if abbreviation.present?
+
     name
   end
 
@@ -176,9 +196,6 @@ class Brand < ApplicationRecord
     super || fallback_description
   end
 
-  # Moved here from BrandsController#set_meta_desc so that the copy is testable and shared by
-  # the show and products pages. A written description is used as-is; the generated summary
-  # gains a sentence about how much of the brand is actually catalogued.
   def meta_desc
     return truncate_meta(strip_tags(formatted_description)) if description.present?
 
@@ -186,7 +203,7 @@ class Brand < ApplicationRecord
     return meta_sentences(strip_tags(generated), meta_catalog_sentence) if generated.present?
 
     meta_sentences(
-      "#{name} #{discontinued? ? 'was' : 'is'} an audio hi-fi brand" \
+      "#{seo_name} #{discontinued? ? 'was' : 'is'} an audio hi-fi brand" \
       "#{" from #{country_name}" if country_name.present?}.",
       meta_catalog_sentence
     )
@@ -217,6 +234,12 @@ class Brand < ApplicationRecord
       name_end
       name_eq
       name_start
+      abbreviation
+      abbreviation_cont
+      abbreviation_eq
+      legal_name
+      legal_name_cont
+      legal_name_eq
       sub_categories_id
       sub_categories_id_eq
       logo_attachment_id_eq
@@ -254,6 +277,34 @@ class Brand < ApplicationRecord
     return '1 product is documented on HiFi Log.' if count == 1
 
     "#{count} products are documented on HiFi Log."
+  end
+
+  # An abbreviation whose every word already appears in the name adds nothing: search
+  # reaches the brand through `name` anyway ("fezz" already prefix-matches "fezz audio"),
+  # and showing it next to the name would just repeat what the reader can see.
+  #
+  # Cleared rather than rejected -- "Fezz" for "Fezz Audio" is a true statement, just not a
+  # useful one, so it earns no error. Clearing also keeps `abbreviation IS NULL` meaning
+  # exactly one thing, which is what lets every display site render it unconditionally.
+  #
+  # Tokenised with the same pattern RelevanceOrdering and pg_search normalise with, because
+  # the question being asked is precisely "would searching the name already find this?".
+  def clear_abbreviation_when_contained_in_name
+    return if abbreviation.blank? || name.blank?
+
+    self.abbreviation = nil if name_tokens.superset?(abbreviation_tokens)
+  end
+
+  def name_tokens
+    tokenize(name)
+  end
+
+  def abbreviation_tokens
+    tokenize(abbreviation)
+  end
+
+  def tokenize(value)
+    value.to_s.downcase.gsub(Regexp.new(RelevanceOrdering::STRIP_PATTERN), '').split.to_set
   end
 
   def clear_logo_when_remove_requested
@@ -314,6 +365,14 @@ class Brand < ApplicationRecord
     # rubocop:enable Style/RedundantReturn
   end
 
+  def brand_naming_changed?
+    saved_change_to_name? || saved_change_to_abbreviation?
+  end
+
+  def resync_product_slugs
+    Product.resync_slugs_for(self)
+  end
+
   def touch_products
     # rubocop:disable Rails/SkipsModelValidations
     products.touch_all
@@ -343,7 +402,7 @@ class Brand < ApplicationRecord
 
     sub_categories = self.sub_categories.sort_by(&:category).map { |cat| cat.name.downcase }
 
-    str = "<i>#{name}</i> #{discontinued? ? 'was' : 'is'} an audio brand"
+    str = "<i>#{seo_name}</i> #{discontinued? ? 'was' : 'is'} an audio brand"
 
     str += " from#{' the' if %w[BS KY CF KM CK CZ DO LA MV MH NL PH RU SC SB SY TC AE GB US UM].include?(country_code)} #{country_name}" if is_country_name_present
 

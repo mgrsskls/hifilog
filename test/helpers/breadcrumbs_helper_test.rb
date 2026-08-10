@@ -90,7 +90,7 @@ class BreadcrumbsHelperTest < ActionView::TestCase
     assert_equal category.name, elems[2]['name']
     assert_equal products_category_url(category.friendly_id), elems[2]['item']
     assert_equal sub.name, elems[3]['name']
-    assert_equal product.display_name, elems[4]['name']
+    assert_equal product.name, elems[4]['name']
     assert_equal canonical, elems[4]['item']
   end
 
@@ -103,7 +103,7 @@ class BreadcrumbsHelperTest < ActionView::TestCase
 
     elems = json['itemListElement']
     assert_equal 6, elems.size
-    assert_equal product.display_name, elems[4]['name']
+    assert_equal product.name, elems[4]['name']
     assert_equal product_url(id: product.friendly_id), elems[4]['item']
     assert_includes elems[5]['name'], variant.name
     assert_equal variant_url, elems[5]['item']

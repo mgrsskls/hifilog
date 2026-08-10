@@ -90,7 +90,7 @@ class ProductVariant < ApplicationRecord
   end
 
   def display_name
-    "#{product.brand.name} #{product.name} #{name_with_fallback}"
+    "#{product.brand.display_name} #{product.name} #{name_with_fallback}"
   end
 
   def path

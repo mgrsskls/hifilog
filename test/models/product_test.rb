@@ -22,6 +22,13 @@ class ProductTest < ActiveSupport::TestCase
     assert_equal 'Feliks Audio Elise', products(:one).display_name
   end
 
+  test 'display_name uses the brand abbreviation when there is one' do
+    product = Product.new(name: 'Beolab 90', brand: Brand.new(name: 'Bang & Olufsen', abbreviation: 'B&O'))
+
+    assert_equal 'B&O Beolab 90', product.display_name
+    assert_equal 'b-o-beolab-90', product.url_slug
+  end
+
   test 'url_slug' do
     assert_equal 'feliks-audio-elise', products(:one).url_slug
   end
@@ -159,7 +166,7 @@ class ProductTest < ActiveSupport::TestCase
 
     copy = product.meta_desc
     assert_includes copy, 'Descriptor Product'
-    assert_includes copy, product.brand.name
+    assert_includes copy, product.brand.display_name
     assert_includes copy, product.sub_categories.map(&:name).join(' / ')
   end
 
@@ -192,7 +199,7 @@ class ProductTest < ActiveSupport::TestCase
     product.update!(description: nil)
     product.brand.update!(country_code: nil)
 
-    assert_includes product.reload.meta_desc, product.brand.name
+    assert_includes product.reload.meta_desc, product.brand.display_name
     assert_not_includes product.meta_desc, ' from '
   end
 

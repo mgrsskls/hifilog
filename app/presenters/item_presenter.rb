@@ -7,8 +7,6 @@ class ItemPresenter
 
   attr_reader :object, :product, :product_variant
 
-  delegate :name, to: :brand, prefix: true
-
   def initialize(object, type = nil)
     @object = object
 
@@ -115,6 +113,10 @@ class ItemPresenter
 
   def delete_confirm_msg
     I18n.t('product.remove.confirm', name: display_name)
+  end
+
+  def brand_name
+    brand.display_name
   end
 
   delegate :brand, to: :@product

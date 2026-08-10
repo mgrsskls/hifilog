@@ -51,6 +51,19 @@ class BrandHelperTest < ActionView::TestCase
     assert_equal brand.name, json['name']
     assert_equal brand_url(brand), json['url']
     assert_equal 'Feliks summary line', json['description']
+    assert_nil json['alternateName']
+  end
+
+  test 'brand_show_json_ld lists abbreviation and registered company name as alternateName' do
+    brand = brands(:one)
+    brand.abbreviation = 'FA'
+    brand.legal_name = 'Feliks Audio Sp. z o.o.'
+    controller.params = ActionController::Parameters.new
+    replace_request_env!('https://www.example.com/brands/feliks-audio')
+
+    json = brand_show_json_ld(brand:, meta_desc: 'x')
+
+    assert_equal ['FA', 'Feliks Audio Sp. z o.o.'], json['alternateName']
   end
 
   test 'brand_show_json_ld sameAs uses normalized website URL when present' do

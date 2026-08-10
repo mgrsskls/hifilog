@@ -64,6 +64,116 @@ class BrandTest < ActiveSupport::TestCase
   test 'display_name' do
     brand = brands(:one)
     assert_equal brand.name, brand.display_name
+
+    brand = brands(:with_abbreviation)
+    assert_equal brand.abbreviation, brand.display_name
+  end
+
+  # The column only earns its keep for short forms search cannot reach through `name`.
+  # Anything already inside the name is cleared, which is what lets every display site
+  # render it without checking whether it would be a repetition.
+  test 'abbreviation is kept when it is not part of the name' do
+    brand = Brand.new(name: 'Bang & Olufsen', abbreviation: 'B&O')
+
+    assert_predicate brand, :valid?
+    assert_equal 'B&O', brand.abbreviation
+  end
+
+  test 'abbreviation identical to the name is cleared' do
+    brand = Brand.new(name: 'Fezz Audio', abbreviation: 'fezz audio')
+
+    assert_predicate brand, :valid?
+    assert_nil brand.abbreviation
+  end
+
+  test 'abbreviation that is a word of the name is cleared' do
+    brand = Brand.new(name: 'Fezz Audio', abbreviation: 'Fezz')
+
+    assert_predicate brand, :valid?
+    assert_nil brand.abbreviation, 'searching "Fezz" already finds "Fezz Audio" via name'
+  end
+
+  test 'abbreviation ignores punctuation when deciding redundancy' do
+    # "DeVORE" is a word of the name once punctuation and case are normalised the way
+    # search normalises them, so it adds nothing.
+    contained = Brand.new(name: 'DeVORE Fidelity', abbreviation: 'de-vore')
+    assert_predicate contained, :valid?
+    assert_nil contained.abbreviation
+
+    # "AAW" survives the same normalisation as a token of its own.
+    distinct = Brand.new(name: 'Advanced Acoustic Werkes', abbreviation: 'AAW')
+    assert_predicate distinct, :valid?
+    assert_equal 'AAW', distinct.abbreviation
+  end
+
+  # Product slugs embed the brand name, and nothing on Product notices a brand rename --
+  # see Product.resync_slugs_for.
+  test 'renaming a brand re-slugs its products' do
+    brand = brands(:one)
+    product = brand.products.first
+    previous_product_slug = product.slug
+
+    brand.update!(name: 'Renamed Audio')
+
+    assert_equal 'renamed-audio', brand.reload.slug
+    assert_equal product.normalize_friendly_id("Renamed Audio #{product.name}"),
+                 product.reload.slug
+    assert_not_equal previous_product_slug, product.slug
+  end
+
+  test 'a renamed brand leaves its products old slugs resolvable' do
+    brand = brands(:one)
+    product = brand.products.first
+    previous_product_slug = product.slug
+
+    brand.update!(name: 'Renamed Audio')
+
+    assert_equal product, Product.friendly.find(previous_product_slug)
+  end
+
+  test 'adding an abbreviation re-slugs the products' do
+    brand = brands(:one)
+    product = brand.products.first
+    previous_product_slug = product.slug
+
+    brand.update!(abbreviation: 'FA')
+
+    assert_equal product.normalize_friendly_id("FA #{product.name}"), product.reload.slug
+    assert_not_equal previous_product_slug, product.slug
+    assert_equal product, Product.friendly.find(previous_product_slug)
+  end
+
+  test 'removing an abbreviation re-slugs the products back to the brand name' do
+    brand = brands(:one)
+    brand.update!(abbreviation: 'FA')
+    product = brand.products.first
+
+    brand.update!(abbreviation: nil)
+
+    assert_equal product.normalize_friendly_id("#{brand.name} #{product.name}"),
+                 product.reload.slug
+  end
+
+  # The abbreviation is cleared by clear_abbreviation_when_contained_in_name here, so it
+  # never reaches the database -- and product slugs must not move on the strength of a value
+  # that was discarded.
+  test 'an abbreviation rejected as redundant leaves product slugs alone' do
+    brand = brands(:one)
+    slugs = brand.products.pluck(:slug)
+
+    brand.update!(abbreviation: brand.name.split.first)
+
+    assert_nil brand.reload.abbreviation
+    assert_equal slugs, brand.products.reload.pluck(:slug)
+  end
+
+  test 'editing a brand without touching its name or abbreviation leaves product slugs alone' do
+    brand = brands(:one)
+    slugs = brand.products.pluck(:slug)
+
+    brand.update!(country_code: 'PL')
+
+    assert_equal slugs, brand.products.reload.pluck(:slug)
   end
 
   test 'url' do

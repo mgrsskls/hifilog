@@ -3,13 +3,13 @@
 <ul>
   <% @brands.each do |brand| %>
     <li>
-      <%= link_to brand.name, brand_path(brand) %>
+      <%= link_to brand.abbreviation.present? ? "#{brand.abbreviation} (#{brand.name})" : brand.name, brand_path(brand) %>
 
       <ul>
         <% brand.products.each do |product| %>
           <li>
             <%= link_to product.name, product_path(product) %>
-            
+
             <ul>
               <% product.product_variants.each do |product_variant| %>
                 <li>

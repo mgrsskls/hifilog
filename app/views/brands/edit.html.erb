@@ -16,6 +16,26 @@
       <p>Thank you for contributing to HiFi&thinsp;Log!</p>
       <p>Please read the following instructions to make sure all brands are added properly:</p>
       <ul>
+        <li>
+          <b>Brand name</b> is how the manufacturer writes it themselves — on the product, the logo, the website header.
+          Not the shortest form and not the registered company name. For example <i>Fezz Audio</i>.
+        </li>
+        <li>
+          <b>Abbreviation</b> is only for brands commonly known by something that is <b>not</b> part of their name —
+          <i>B&amp;O</i> for <i>Bang &amp; Olufsen</i>, <i>AAW</i> for <i>Advanced Acoustic Werkes</i>. It exists so
+          those brands can be found when someone searches for the short form.
+          There is nothing to add for <i>Fezz Audio</i> or <i>DeVORE Fidelity</i>: searching <i>Fezz</i> or
+          <i>DeVORE</i> finds them through the brand name already, so anything already contained in the name is
+          discarded when you save.
+          There is also nothing to add when the brand name <i>is</i> the abbreviation and the letters only stand
+          for something historical — <i>KEF</i> was founded in the <i>Kent Engineering &amp; Foundry</i> buildings,
+          <i>NAD</i> for <i>New Acoustic Dimension</i>. Nobody calls them that, so it is a piece of history rather
+          than a name: leave this field empty and mention it in the description.
+        </li>
+        <li>
+          <b>Company name</b> is the legal entity, with its suffix — <i>Bang & Olufsen AS</i>
+          Leave it empty if it would just repeat the brand name.
+        </li>
         <li>Not all information has to be filled out right away. Fields marked with "optional" can be filled out later.</li>
         <li>Categories will be automatically assigned to a brand based on the products added to a brand. You can however assign categories to a brand on this page, so categories are already listed for a brand when they do not have products assigned to it yet.</li>
         <li>The description can contain any relevant information that is not discovered by the other fields.</li>
@@ -35,19 +55,8 @@
     <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } %>
   <% end %>
 
-  <%= form_for @brand, html: { class: "Form EntityForm", method: :put } do |f| %>
-    <div class="Form-field">
-      <%= f.label :name, class: "Form-label" %>
-      <%= f.text_field :name, required: true %>
-    </div>
-
-    <div class="Form-field">
-      <div class="Form-label">
-        <%= f.label :full_name %>
-        <small><i>(<%= t(:optional) %>)</i></small>
-      </div>
-      <%= f.text_field :full_name %>
-    </div>
+  <%= form_for @brand, html: { class: "Form EntityForm", method: :put, "data-url": all_brands_path, "data-brand-id": @brand.id } do |f| %>
+    <%= render "brands/name_fields", f: f, required: true %>
 
     <div class="Form-field">
       <div class="Form-label"><%= Category.model_name.human.pluralize %></div>
@@ -109,7 +118,7 @@
       </datalist>
     </div>
 
-    <div class="Form-field Form-field--inline Entity-discontinued">
+    <div class="Form-field Entity-discontinued">
       <span class="Form-label"><%= Brand.human_attribute_name(:discontinued) %></span>
       <div class="Form-options">
         <%= f.radio_button :discontinued, 0, checked: @brand.discontinued == false %>

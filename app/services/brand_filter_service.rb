@@ -5,7 +5,10 @@ class BrandFilterService
   include FilterableService
   include RelevanceOrdering
 
-  SEARCH_COLUMNS = ['brands.name', 'brands.full_name'].freeze
+  # legal_name is included here but not in Brand's pg_search scope: this is a plain
+  # contains filter, so an extra column costs nothing, whereas trigram ranking would be
+  # diluted by it. See the Brand section of README.md.
+  SEARCH_COLUMNS = ['brands.name', 'brands.abbreviation', 'brands.legal_name'].freeze
 
   Result = Struct.new(:brands)
 

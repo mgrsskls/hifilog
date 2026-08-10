@@ -18,7 +18,8 @@ module BrandHelper
       'url' => brand_url(brand)
     }
 
-    data['alternateName'] = brand.full_name if brand.full_name.present?
+    alternate_names = [brand.abbreviation, brand.legal_name].compact_blank
+    data['alternateName'] = alternate_names if alternate_names.any?
     data['description'] = meta_desc.squish if meta_desc.present?
 
     data['logo'] = schema_absolute_uri(cdn_image_url(brand.logo.variant(:thumb))) if brand.logo.attached?
@@ -85,11 +86,16 @@ module BrandHelper
   end
 
   def schema_org_brand_list_item(brand)
-    {
+    data = {
       '@type' => 'Brand',
       'name' => brand.name,
       'url' => brand_url(brand)
     }
+
+    alternate_names = [brand.abbreviation, brand.legal_name].compact_blank
+    data['alternateName'] = alternate_names if alternate_names.any?
+
+    data
   end
 
   def brand_show_schema_website_uri(website)

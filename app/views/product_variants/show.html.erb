@@ -10,7 +10,7 @@
     <div class="Product-details">
       <div class="Heading">
         <h1>
-          <a href="<%= brand_path(id: @product.brand.friendly_id) %>"><span><%= @product.brand.name %></span></a>
+          <a href="<%= brand_path(id: @product.brand.friendly_id) %>"><span><%= @product.brand.display_name %></span></a>
           <%= @product.name %>
           <span>&mdash; <%= @product_variant.name_with_fallback %></span>
           <% if @product_variant.model_no.present? %>

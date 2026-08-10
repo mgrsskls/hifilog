@@ -8,7 +8,7 @@ module ProductsHelper
 
   def product_show_json_ld(product:, meta_desc:, image_urls: nil)
     base_product_schema_hash(
-      name: product.display_name,
+      name: product.name,
       url: product_url(id: product.friendly_id),
       product_for_brand_categories: product,
       meta_desc:,
@@ -19,7 +19,7 @@ module ProductsHelper
 
   def product_variant_show_json_ld(product:, product_variant:, meta_desc:, image_urls: nil)
     base_product_schema_hash(
-      name: product_variant.display_name,
+      name: "#{product.name} #{product_variant.name_with_fallback}",
       url: product_variant_url(id: product_variant.friendly_id, product_id: product.friendly_id),
       product_for_brand_categories: product,
       meta_desc:,
@@ -28,7 +28,7 @@ module ProductsHelper
       sku: product_variant.model_no,
       is_variant_of: {
         '@type' => 'Product',
-        'name' => product.display_name,
+        'name' => product.name,
         'url' => product_url(id: product.friendly_id)
       }
     )
@@ -107,7 +107,7 @@ module ProductsHelper
   end
 
   def brand_products_item_list_name(brand:)
-    "#{brand.name} #{Product.model_name.human.pluralize}"
+    "#{brand.display_name} #{Product.model_name.human.pluralize}"
   end
 
   def products_index_item_list_name
@@ -155,15 +155,16 @@ module ProductsHelper
   end
 
   def schema_org_brand(product_item)
-    if product_item.brand
-      {
-        '@type' => 'Brand',
-        'name' => product_item.brand.name,
-        'url' => brand_url(product_item.brand)
-      }
-    elsif product_item.respond_to?(:brand_name) && product_item.brand_name.present?
-      { '@type' => 'Brand', 'name' => product_item.brand_name }
-    end
+    data = {
+      '@type' => 'Brand',
+      'name' => product_item.brand.name,
+      'url' => brand_url(product_item.brand)
+    }
+
+    alternate_names = [product_item.brand.abbreviation, product_item.brand.legal_name].compact_blank
+    data['alternateName'] = alternate_names if alternate_names.any?
+
+    data
   end
 
   def product_item_schema_url(product_item)

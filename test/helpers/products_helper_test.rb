@@ -115,7 +115,7 @@ class ProductsHelperTest < ActionView::TestCase
 
     assert_equal 'https://schema.org', json['@context']
     assert_equal 'Product', json['@type']
-    assert_equal product.display_name, json['name']
+    assert_equal product.name, json['name']
     assert_equal product_url(id: product.friendly_id), json['url']
     assert_equal 'Warm tube sound line', json['description']
     assert_equal 'Brand', json['brand']['@type']
@@ -167,12 +167,12 @@ class ProductsHelperTest < ActionView::TestCase
 
     assert_equal 'https://schema.org', json['@context']
     assert_equal 'Product', json['@type']
-    assert_equal variant.display_name, json['name']
+    assert_equal "#{product.name} #{variant.name_with_fallback}", json['name']
     assert_equal product_variant_url(id: variant.friendly_id, product_id: product.friendly_id), json['url']
     assert_equal 'Closed-back edition line', json['description']
     parent = json['isVariantOf']
     assert_equal 'Product', parent['@type']
-    assert_equal product.display_name, parent['name']
+    assert_equal product.name, parent['name']
     assert_equal product_url(id: product.friendly_id), parent['url']
     assert_equal 'ZMF-LTD-2024', json['sku']
     assert_equal 'Brand', json['brand']['@type']

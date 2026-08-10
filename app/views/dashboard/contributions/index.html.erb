@@ -44,7 +44,7 @@
           <% if @brands['create'] %>
             <ol>
               <% @brands['create'].each do |brand| %>
-                <li><%= link_to brand.name, brand %></li>
+                <li><%= link_to brand.display_name, brand %></li>
               <% end %>
             </ol>
           <% else %>
@@ -56,7 +56,7 @@
           <% if @brands['update'] %>
             <ol>
               <% @brands['update'].each do |brand| %>
-                <li><%= link_to brand.name, brand %></li>
+                <li><%= link_to brand.display_name, brand %></li>
               <% end %>
             </ol>
           <% else %>

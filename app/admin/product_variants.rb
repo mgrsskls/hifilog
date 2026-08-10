@@ -31,7 +31,7 @@ ActiveAdmin.register ProductVariant do
     selectable_column
     id_column
     column :product do |product_variant|
-      link_to "#{product_variant.product.brand.name} #{product_variant.product.name}", admin_product_path(product_variant.product)
+      link_to "#{product_variant.product.brand.display_name} #{product_variant.product.name}", admin_product_path(product_variant.product)
     end
     column :name
     column :description

@@ -8,8 +8,14 @@
 
         <div class="Entity-heading">
           <h1>
-            <%= @brand.name %>
-            <% if @brand.full_name %><span class="IndexPage-category"><%= @brand.full_name %></span><% end %>
+            <% if @brand.abbreviation.present? %>
+              <%= @brand.abbreviation %>
+              <span class="IndexPage-category">
+                <span class="u-hiddenVisually">(</span><%= @brand.name %><span class="u-hiddenVisually">)</span>
+              </span>
+            <% else %>
+              <%= @brand.name %>
+            <% end %>
           </h1>
         </div>
 
@@ -22,6 +28,10 @@
               <% if @brand.discontinued %>
                 <dt><%= t('status') %></dt>
                 <dd><span class="Symbol"><%= t('symbols.brand.discontinued') %></span></dd>
+              <% end %>
+              <% if @brand.legal_name.present? %>
+                <dt><%= Brand.human_attribute_name(:legal_name) %></dt>
+                <dd><%= @brand.legal_name %></dd>
               <% end %>
               <dt><%= Brand.human_attribute_name(:country_code) %></dt>
               <dd>

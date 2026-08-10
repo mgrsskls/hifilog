@@ -1,6 +1,6 @@
 <% content_for :header do %>
   <h1>
-    <span class="IndexPage-category"><%= @brand.name %></span>
+    <span class="IndexPage-category"><%= @brand.display_name %></span>
     <% if @sub_category.present? or @category.present? %>
       <%= (@sub_category.present? ? @sub_category : @category).name %>
     <% else %>

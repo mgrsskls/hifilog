@@ -68,7 +68,7 @@
         </ul>
         <h4><%= t('home.recently_added_heading') %></h4>
         <p>
-          <%= newest_brands.map { |brand| link_to brand.name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
+          <%= newest_brands.map { |brand| link_to brand.display_name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
         </p>
       </div>
     </div>

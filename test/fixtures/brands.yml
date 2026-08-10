@@ -25,3 +25,7 @@ three:
   sub_categories_count: 1
   sub_categories:
     - two
+with_abbreviation:
+  name: Brand With Abbreviation
+  abbreviation: bwa
+  slug: brand-with-abbreviation

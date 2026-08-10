@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_120400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -133,6 +133,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
   end
 
   create_table "brands", force: :cascade do |t|
+    t.citext "abbreviation"
     t.virtual "completeness", type: :integer, as: "(round(((100.0 * (((((((\nCASE\n    WHEN (products_count > 0) THEN 5\n    ELSE 0\nEND +\nCASE\n    WHEN (NULLIF(btrim(description), ''::text) IS NOT NULL) THEN 3\n    ELSE 0\nEND) +\nCASE\n    WHEN (sub_categories_count > 0) THEN 3\n    ELSE 0\nEND) +\nCASE\n    WHEN (NULLIF(btrim((country_code)::text), ''::text) IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN (discontinued IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN (founded_year IS NOT NULL) THEN 1\n    ELSE 0\nEND) +\nCASE\n    WHEN (discontinued IS TRUE) THEN\n    CASE\n        WHEN (discontinued_year IS NOT NULL) THEN 1\n        ELSE 0\n    END\n    WHEN (NULLIF(btrim((website)::text), ''::text) IS NOT NULL) THEN 1\n    ELSE 0\nEND))::numeric) / (17)::numeric)))::integer", stored: true
     t.string "country_code"
     t.datetime "created_at", null: false
@@ -145,6 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
     t.integer "founded_month"
     t.integer "founded_year"
     t.string "full_name"
+    t.string "legal_name"
     t.citext "name", null: false
     t.integer "products_count", default: 0, null: false
     t.citext "slug", null: false
@@ -154,6 +156,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
     t.index "\"left\"((name)::text, 1)", name: "index_brands_name_prefix"
     t.index "lower((name)::text)", name: "index_brands_on_lower_name"
     t.index "uuid_generate_v5(uuid_ns_dns(), ('brand-'::text || (id)::text))", name: "index_brands_on_search_uuid"
+    t.index ["abbreviation"], name: "index_brands_on_abbreviation_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["completeness"], name: "index_brands_on_completeness"
     t.index ["country_code"], name: "index_brands_on_country_code"
     t.index ["created_at"], name: "index_brands_on_created_at"
@@ -554,6 +557,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
       products.custom_attributes,
       products.brand_id,
       brands.name AS brand_name,
+      brands.abbreviation AS brand_abbreviation,
       'Product'::text AS item_type,
       products.created_at,
       products.updated_at,
@@ -620,6 +624,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
       products.custom_attributes,
       products.brand_id,
       brands.name AS brand_name,
+      brands.abbreviation AS brand_abbreviation,
       'ProductVariant'::text AS item_type,
       product_variants.created_at,
       product_variants.updated_at,
@@ -670,6 +675,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
       products.custom_attributes,
       products.brand_id,
       brands.name AS brand_name,
+      brands.abbreviation AS brand_abbreviation,
       'Product'::text AS item_type,
       products.created_at,
       products.updated_at,
@@ -699,6 +705,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
       products.custom_attributes,
       products.brand_id,
       brands.name AS brand_name,
+      brands.abbreviation AS brand_abbreviation,
       'ProductVariant'::text AS item_type,
       product_variants.created_at,
       product_variants.updated_at,
@@ -718,7 +725,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
       p.name AS product_name,
       NULL::text AS product_variant_name,
       b.name AS brand_name,
-      b.full_name AS brand_full_name,
+      b.abbreviation AS brand_abbreviation,
       p.model_no,
       p.slug AS product_slug,
       NULL::text AS product_variant_slug,
@@ -732,7 +739,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
       p.name AS product_name,
       pv.name AS product_variant_name,
       b.name AS brand_name,
-      b.full_name AS brand_full_name,
+      b.abbreviation AS brand_abbreviation,
       pv.model_no,
       p.slug AS product_slug,
       pv.slug AS product_variant_slug,
@@ -747,7 +754,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_120000) do
       NULL::text AS product_name,
       NULL::text AS product_variant_name,
       b.name AS brand_name,
-      b.full_name AS brand_full_name,
+      b.abbreviation AS brand_abbreviation,
       NULL::text AS model_no,
       NULL::text AS product_slug,
       NULL::text AS product_variant_slug,

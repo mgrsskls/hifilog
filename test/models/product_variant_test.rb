@@ -98,7 +98,7 @@ class ProductVariantTest < ActiveSupport::TestCase
     assert_includes copy, product.name
     assert_includes copy, product_variant.name_with_fallback
     assert_includes copy, product_variant.model_no
-    assert_includes copy, product.brand.name
+    assert_includes copy, product.brand.display_name
     assert_includes copy, 'Released in 2000.'
   end
 

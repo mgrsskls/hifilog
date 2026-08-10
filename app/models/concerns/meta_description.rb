@@ -41,9 +41,11 @@ module MetaDescription
   end
 
   def meta_maker
-    return brand.name if brand.country_code.blank?
+    brand_name = brand.display_name
 
-    "#{brand.name} from #{brand.country_name}"
+    return brand_name if brand.country_code.blank?
+
+    "#{brand_name} from #{brand.country_name}"
   end
 
   def meta_subject(*parts)

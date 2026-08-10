@@ -52,7 +52,7 @@ class BookmarkPresenter
   def display_name
     return @product_variant.display_name if @product_variant.present?
     return @product.display_name if @product.present?
-    return @brand.name if @brand.present?
+    return @brand.display_name if @brand.present?
     return @event.name if @event.present?
 
     nil

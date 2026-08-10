@@ -5,7 +5,7 @@
 <% end %>
 <%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
   <h1><span><%= t('headings.dashboard') %></span><%= ", #{current_user.user_name}" %>!</h1>
-  
+
   <% if @app_news.any? %>
     <details class="AppNews">
       <summary><%= t('app_news.heading') %></summary>
@@ -58,7 +58,7 @@
         <div class="UserDashboard-heading">
           <h2>New on HiFi&thinsp;Log</h2>
         </div>
-        
+
         <div class="UserDashboard-newestLists">
 
           <% if @newest_products.length > 0 %>
@@ -86,7 +86,7 @@
               <ol>
                 <% @newest_brands.first(5).each do |brand| %>
                   <li>
-                    <%= link_to brand.name, brand_path(id: brand.friendly_id) %>
+                    <%= link_to brand.display_name, brand_path(id: brand.friendly_id) %>
                   </li>
                 <% end %>
               </ol>
@@ -108,7 +108,7 @@
               </ol>
             </div>
           <% end %>
-          
+
           <div>
             <div class="UserDashboard-subHeading">
               <h3><%= User.model_name.human.pluralize %></h3>

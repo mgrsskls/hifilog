@@ -7,15 +7,28 @@ class ProductFilterService
 
   # People search either for the bare product name / model number or for
   # "brand + model", so both forms get to reach the exact/prefix tiers.
+  #
+  # Products are titled with Brand#display_name, so BRANDED_ABBREVIATION_SQL is the spelling
+  # people read off the page -- "B&O Beolab 90". BRANDED_NAME_SQL covers the other way someone
+  # might type it, using the brand's full name. The two collapse into the same string for
+  # every brand without an abbreviation, and `exact` entries are OR'd, so the duplicate costs
+  # one redundant comparison and nothing else.
   BRANDED_NAME_SQL = "COALESCE(product_items.brand_name, '') || ' ' || product_items.name"
+  BRANDED_ABBREVIATION_SQL =
+    "COALESCE(product_items.brand_abbreviation, product_items.brand_name, '') || ' ' || product_items.name"
   RELEVANCE_EXACT_COLUMNS = [
     'product_items.name',
     'product_items.variant_name',
     'product_items.model_no',
-    BRANDED_NAME_SQL
+    BRANDED_NAME_SQL,
+    BRANDED_ABBREVIATION_SQL
   ].freeze
+  # brand_abbreviation sits directly before `name` so the concatenated haystack contains
+  # "... bo mira ceti ..." as a contiguous substring, which is what the tier-2 contains test
+  # looks for when someone types the abbreviation and the model together.
   RELEVANCE_CONTAINS_COLUMNS = [
     'product_items.brand_name',
+    'product_items.brand_abbreviation',
     'product_items.name',
     'product_items.variant_name',
     'product_items.model_no'

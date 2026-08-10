@@ -6,13 +6,13 @@ class SearchController < ApplicationController
   MIN_CHARS = 2
 
   # Exact/prefix matches only count against the field that actually names the row: a
-  # brand's own name/full_name for a Brand row, the product's own name/variant/model_no
+  # brand's own name/abbreviation for a Brand row, the product's own name/variant/model_no
   # for a Product or ProductVariant row. Without this split, any product belonging to a
   # brand whose name exactly matches the query (e.g. "zmf") would tie the brand's own
   # row for the top tier, and often outrank it on the hand-picked sort.
   RELEVANCE_EXACT_COLUMNS = [
     "CASE WHEN search_results.item_type = 'Brand' THEN search_results.brand_name END",
-    "CASE WHEN search_results.item_type = 'Brand' THEN search_results.brand_full_name END",
+    "CASE WHEN search_results.item_type = 'Brand' THEN search_results.brand_abbreviation END",
     "CASE WHEN search_results.item_type != 'Brand' THEN search_results.product_name END",
     "CASE WHEN search_results.item_type != 'Brand' THEN search_results.product_variant_name END",
     "CASE WHEN search_results.item_type != 'Brand' THEN search_results.model_no END"
@@ -25,7 +25,7 @@ class SearchController < ApplicationController
     search_results.product_name
     search_results.product_variant_name
     search_results.brand_name
-    search_results.brand_full_name
+    search_results.brand_abbreviation
     search_results.model_no
   ].freeze
 

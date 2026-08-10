@@ -23,7 +23,7 @@ class Product < ApplicationRecord
 
   pg_search_by_name(
     against: { name: 'A', model_no: 'B' },
-    associated_against: { brand: [:name, :full_name] }
+    associated_against: { brand: [:name, :abbreviation] }
   )
 
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
@@ -75,8 +75,12 @@ class Product < ApplicationRecord
   after_create_commit :recalculate_brand_products_count
   after_destroy_commit :recalculate_products_count_after_destroy
 
+  # Brand#display_name, so the brand's abbreviation where it has one: "B&O Beolab 90". The
+  # brand's own pages lead with the same form; this is that rule applied in product context.
+  # #url_slug below is built from this, which is why Brand re-slugs its products whenever
+  # either of its name columns changes.
   def display_name
-    return "#{brand.name} #{name}" if brand
+    return "#{brand.display_name} #{name}" if brand
 
     name
   end
@@ -198,6 +202,49 @@ class Product < ApplicationRecord
 
   def should_generate_new_friendly_id?
     slug.blank? || name_changed? || model_no_changed?
+  end
+
+  # A product's slug is built from Brand#display_name plus the product name (see
+  # #display_name), but #should_generate_new_friendly_id? above only fires on the product's
+  # own name / model_no. So a change to either of the brand's name columns would otherwise
+  # leave every one of its products at a URL describing a title the page no longer shows --
+  # which is the part that matters; the redirect is the easy part. Called from Brand's
+  # after_update whenever `name` or `abbreviation` actually changed.
+  #
+  # Inline rather than queued: the app has no background job infrastructure, brand renames
+  # are rare, and each product costs one UPDATE.
+  #
+  # Brand.no_touching (not Product's) because `belongs_to :brand, touch: true` touches the
+  # *brand* record on save -- no_touching suppresses touches to the class it's called on, so
+  # it has to be scoped to the class being touched, not the class doing the saving. Otherwise
+  # this bounces a timestamp write back to the brand once per product, from inside the
+  # brand's own after_update callback.
+  #
+  # `save` rather than `save!`: a product that fails its own validations for unrelated
+  # reasons keeps its old slug, which still resolves through :history. Better that than a
+  # legitimate brand rename being blocked by stale data on one of its products.
+  def self.resync_slugs_for(brand)
+    Brand.no_touching do
+      brand.products.reload.find_each do |product|
+        next if product.slug == product.normalize_friendly_id(product.url_slug)
+
+        product.preserve_current_slug_in_history
+        product.slug = nil
+        product.save
+      end
+    end
+  end
+
+  # Products slugged before :history was in use have no friendly_id_slugs row for their
+  # current slug, and without one the old URL 404s the moment the slug changes instead of
+  # 301-ing through FriendlyFinder.
+  def preserve_current_slug_in_history
+    return if slug.blank?
+    return if FriendlyId::Slug.exists?(sluggable_type: 'Product', sluggable_id: id, slug:)
+
+    FriendlyId::Slug.create!(
+      sluggable_type: 'Product', sluggable_id: id, slug:, created_at: Time.current
+    )
   end
 
   private

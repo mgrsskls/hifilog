@@ -83,6 +83,40 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :moved_permanently
   end
 
+  # friendly_id's :history module keeps resolving a superseded slug, so without the
+  # redirect these would render 200 and put the same page under two indexable URLs.
+  test 'brand products redirects a superseded slug with 301' do
+    brand = brands(:one)
+    old_slug = brand.slug
+    brand.update!(name: 'Renamed Audio')
+
+    assert_not_equal old_slug, brand.reload.slug
+
+    get brand_products_url(old_slug)
+    assert_response :moved_permanently
+    assert_redirected_to brand_products_url(brand.friendly_id)
+  end
+
+  test 'brand products redirect keeps category segments and query params' do
+    brand = brands(:one)
+    old_slug = brand.slug
+    brand.update!(name: 'Renamed Audio')
+
+    get brand_brand_products_subcategory_url(old_slug, categories(:one).slug,
+                                             sub_categories(:one).slug, sort: 'name_desc')
+
+    assert_response :moved_permanently
+    assert_redirected_to brand_brand_products_subcategory_url(brand.reload.friendly_id,
+                                                              categories(:one).slug,
+                                                              sub_categories(:one).slug,
+                                                              sort: 'name_desc')
+  end
+
+  test 'brand products does not redirect when the slug is already canonical' do
+    get brand_products_url(brands(:one).friendly_id)
+    assert_response :success
+  end
+
   test 'products canonical url includes page when not on first page' do
     with_kaminari_per_page(5) do
       brand = brands(:one)

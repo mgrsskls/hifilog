@@ -58,6 +58,21 @@ flowchart TB
 
 **`Brand`** is the manufacturer or label (identity, country, lifecycle dates, description, optional logo). Brands link to subcategories and have many products. Catalog edits are versioned (see [Auditing](#auditing)).
 
+A brand carries three names, each with one job:
+
+- **`name`** — canonical identity, written the way the manufacturer writes it ("Bang & Olufsen"). Unique, and the `friendly_id` slug source. Used for JSON-LD `name` and wherever the brand has to be identified unambiguously.
+- **`abbreviation`** — optional short form the brand is known by that is **not** part of its name: "B&O" for "Bang & Olufsen". Anything already contained in `name` is cleared in a `before_validation`, because search reaches those through `name` anyway — "fezz" prefix-matches "fezz audio", while "B&O" normalises to "bo", which "bang olufsen" neither starts with nor contains. That narrowing is what lets every display site render it without checking for repetition: whatever survives is never already visible in the name. Catalog views expose it as `brand_abbreviation` so listings don't join.
+- **`legal_name`** — optional registered company name ("Bang & Olufsen A/S"). Shown in the facts list on the brand page; deliberately excluded from ranked search, since pg_search concatenates `against:` columns before computing trigram similarity and a long formulaic value dilutes every query.
+
+Two accessors decide which form is rendered where:
+
+- **`Brand#display_name`** — `abbreviation` if there is one, otherwise `name`. This is the default. It is what product and variant titles use, what product slugs are built from, and what lists, breadcrumbs and nav links show wherever there is room for only one string.
+- **`Brand#seo_name`** — `"B&O (Bang & Olufsen)"` when an abbreviation exists, otherwise `name`. Used for the brand page title; the brand page `<h1>` renders the same pair as markup rather than a string.
+
+Where there is room for both — brands index rows, brand search results, the sitemap — the abbreviation leads and the full name follows it.
+
+Product titles and slugs are built from `Brand#display_name`, and nothing on `Product` notices a change to either brand column. So `Brand` has an `after_update` calling `Product.resync_slugs_for` whenever `name` **or** `abbreviation` changes (`brand_naming_changed?`); it re-slugs the brand's products and preserves the old slugs in `friendly_id_slugs` so they 301. Adding an abbreviation to an existing brand therefore moves every product URL under it, which is intended: the title moves too.
+
 ## Product
 
 A product belongs to one brand, has many variants, options, possessions, notes, and can be bookmarked. It links to many subcategories.

@@ -16,7 +16,7 @@ class ProductVariantsController < ApplicationController
 
     assign_product_catalog_show_data(product: @product, product_variant: @product_variant)
 
-    page_title("#{@product.display_name} #{@product_variant.short_name}")
+    page_title(@product_variant.display_name)
     set_meta_desc
   end
 
