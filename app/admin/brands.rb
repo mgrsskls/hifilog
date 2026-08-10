@@ -33,18 +33,7 @@ ActiveAdmin.register Brand do
   index do
     selectable_column
     id_column
-    column "Name" do |brand|
-      extra = [
-        ("legal: #{brand.legal_name}" if brand.legal_name.present?),
-        ("full_name (unclassified): #{brand.full_name}" if brand.full_name.present?)
-      ].compact
-
-      if extra.any?
-        "#{ERB::Util.html_escape(brand.name)}<small><br>#{ERB::Util.html_escape(extra.join(' · '))}</small>".html_safe
-      else
-        brand.name
-      end
-    end
+    column :name
     column :abbreviation
     column :legal_name
     column :discontinued
