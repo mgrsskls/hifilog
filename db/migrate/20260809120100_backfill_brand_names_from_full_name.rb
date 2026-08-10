@@ -15,9 +15,10 @@
 # Only brands that actually have a `full_name` are loaded, so the model round-trip stays
 # cheap however large the catalogue gets.
 #
-# Whatever no rule can classify keeps its `full_name` and is listed at the end, to be sorted
-# out by hand in ActiveAdmin (which still shows and filters the column) before `full_name` is
-# dropped in a later release.
+# Whatever no rule can classify keeps its `full_name` and is listed at the end. That value is
+# then lost: RemoveFullNameFromBrands (20260809120500) drops the column right after this
+# migration runs, so there is no ActiveAdmin review step -- the printed list is the only
+# record of what could not be classified.
 class BackfillBrandNamesFromFullName < ActiveRecord::Migration[8.1]
   # Recognises a value that is a registered company name. Anchored to the end and to a word
   # boundary so "Audio Note (UK) Ltd" matches but "Agena Audio" does not match on the "ag".
@@ -140,8 +141,8 @@ class BackfillBrandNamesFromFullName < ActiveRecord::Migration[8.1]
 
     return say('No unclassified full_name values left.') if leftovers.empty?
 
-    say("#{leftovers.size} brand(s) still have a full_name that needs a human decision:")
+    say("#{leftovers.size} brand(s) had a full_name that could not be classified " \
+        '-- this value is about to be dropped:')
     leftovers.each { |id, name, full_name| say("  ##{id}  #{name}  ->  #{full_name}", true) }
-    say('Sort these out in ActiveAdmin before full_name is dropped.')
   end
 end

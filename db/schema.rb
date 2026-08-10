@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_120400) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_120500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -145,7 +145,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_120400) do
     t.integer "founded_day"
     t.integer "founded_month"
     t.integer "founded_year"
-    t.string "full_name"
     t.string "legal_name"
     t.citext "name", null: false
     t.integer "products_count", default: 0, null: false
@@ -162,7 +161,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_120400) do
     t.index ["created_at"], name: "index_brands_on_created_at"
     t.index ["discontinued"], name: "index_brands_on_discontinued"
     t.index ["founded_year", "founded_month", "founded_day"], name: "index_brands_on_founded_year_and_founded_month_and_founded_day"
-    t.index ["full_name"], name: "index_brands_on_full_name_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_brands_on_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "index_brands_on_name", unique: true
     t.index ["slug"], name: "index_brands_on_slug", unique: true

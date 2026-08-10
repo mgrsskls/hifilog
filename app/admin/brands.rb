@@ -1,5 +1,5 @@
 ActiveAdmin.register Brand do
-  permit_params :country_code, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :founded_day, :founded_month, :founded_year, :abbreviation, :full_name, :legal_name, :logo, :name, :remove_logo, :website, sub_category_ids: []
+  permit_params :country_code, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :founded_day, :founded_month, :founded_year, :abbreviation, :legal_name, :logo, :name, :remove_logo, :website, sub_category_ids: []
 
   menu priority: 2
 
@@ -12,7 +12,6 @@ ActiveAdmin.register Brand do
   remove_filter :founded_day
   remove_filter :founded_month
   remove_filter :founded_year
-  remove_filter :full_name
   remove_filter :legal_name
   remove_filter :pg_search_document
   remove_filter :products
@@ -24,11 +23,6 @@ ActiveAdmin.register Brand do
   action_item :add_product, only: :show do
     link_to 'Add Product', new_admin_product_path(product: { brand_id: @brand.id }), class: 'action-item-button'
   end
-
-  scope :all, default: true
-  # What the backfill migration could not classify. `full_name` is dropped once this scope
-  # is empty -- see db/migrate/20260809120100_backfill_brand_names_from_full_name.rb.
-  scope("Unclassified full_name") { |scope| scope.where.not(full_name: nil) }
 
   index do
     selectable_column
@@ -81,7 +75,6 @@ ActiveAdmin.register Brand do
       f.input :name, hint: "How the manufacturer writes it, e.g. “Fezz Audio”"
       f.input :abbreviation, hint: "Only if the brand is known by something that is not part of its name — “B&O” for “Bang & Olufsen”. Nothing to add for “Fezz Audio” (a search for “Fezz” finds it already, and values contained in the name are cleared on save), and nothing to add for “KEF” or “NAD”, where the letters are only historical — that belongs in the description."
       f.input :legal_name, hint: "Company name, e.g. “Bang & Olufsen AS”"
-      f.input :full_name, hint: "Deprecated, pending classification into short name / registered company name. Clear it once you have."
       f.input :website
       f.input :country_code
       f.li do

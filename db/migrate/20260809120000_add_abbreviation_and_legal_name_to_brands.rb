@@ -7,7 +7,7 @@
 #   legal_name    registered company name, e.g. "Bang & Olufsen AS"
 #
 # `full_name` is left in place; the follow-up migration classifies its values into the two
-# new columns, and it is dropped in a later release once the leftovers are reviewed.
+# new columns, and RemoveFullNameFromBrands (20260809120500) drops it once that has run.
 class AddAbbreviationAndLegalNameToBrands < ActiveRecord::Migration[8.1]
   def change
     # citext to match `name`, so abbreviation comparisons and lookups are case-insensitive
