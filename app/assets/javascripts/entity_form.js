@@ -301,7 +301,10 @@ function selectedBrandNameForms(form) {
 	const filter = form.querySelector("#brand-filter");
 
 	if (filter?.disabled) {
-		return { name: filter.value, abbreviation: filter.dataset.brandAbbreviation };
+		return {
+			name: filter.value,
+			abbreviation: filter.dataset.brandAbbreviation,
+		};
 	}
 
 	const checked = form.querySelector('[name="product[brand_id]"]:checked');
