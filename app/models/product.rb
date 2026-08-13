@@ -70,6 +70,12 @@ class Product < ApplicationRecord
   scope :missing_release_year, -> { where(release_year: nil) }
   scope :missing_description, -> { where(description: nil) }
 
+  # Every write path lands here -- the product form, ActiveAdmin, ProductConversionService, the
+  # console -- so units are normalised on the model rather than in the controller that happens
+  # to do the type coercion. Guarded on the change so an ordinary save that never touched the
+  # specs does not pay for a definitions lookup. See CustomAttribute.normalize_units.
+  before_save :normalize_custom_attribute_units, if: :custom_attributes_changed?
+
   after_commit :invalidate_cache
   after_commit :update_brand_sub_categories
   after_create_commit :recalculate_brand_products_count
@@ -102,22 +108,6 @@ class Product < ApplicationRecord
 
   def custom_attributes_resources
     CustomAttribute.where(label: custom_attributes&.keys).index_by(&:label)
-  end
-
-  def custom_attributes_list
-    return unless custom_attributes.present? && custom_attributes.any?
-
-    attributes = []
-    custom_attributes.each do |custom_attribute|
-      custom_attribute_resource = sub_categories.flat_map(&:custom_attributes).find do |sub_custom_attribute|
-        sub_custom_attribute.id == custom_attribute[0].to_i
-      end
-      if custom_attribute_resource
-        attributes.push I18n.t("custom_attributes.#{custom_attribute_resource.options[custom_attribute[1].to_s]}")
-      end
-    end
-
-    attributes.join(', ')
   end
 
   # One indexed join per call, memoised, and never called from the contribute queues (those
@@ -248,6 +238,10 @@ class Product < ApplicationRecord
   end
 
   private
+
+  def normalize_custom_attribute_units
+    self.custom_attributes = CustomAttribute.normalize_units(custom_attributes)
+  end
 
   # Mirrors the SQL in db/views/contribute_product_items_v01.sql: the key must exist and hold
   # something that is neither JSON null nor an empty string. `.present?` would disagree on a

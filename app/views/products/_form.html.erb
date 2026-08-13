@@ -151,7 +151,14 @@
 
   <div class="Form-field EntityForm-attributes">
     <h3><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h3>
-    <div class="Options EntityFormAttributes is-light">
+    <%#
+      The unit radios below are input semantics -- "the number I typed is in this unit" -- and
+      the server normalises whatever it receives into the canonical unit. Toggling one without
+      converting the number therefore redefines the value rather than restating it. This table
+      lets entity_form.js convert the displayed number on toggle, so the control means what it
+      looks like it means and the round trip is lossless. See CustomAttribute::UNIT_EQUIVALENTS.
+    %>
+    <div class="Options EntityFormAttributes is-light" data-unit-equivalents="<%= CustomAttribute::UNIT_EQUIVALENTS.to_json %>">
       <% CustomAttribute.all_cached.each do |custom_attribute| %>
         <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
           <% if custom_attribute.options&.any? %>

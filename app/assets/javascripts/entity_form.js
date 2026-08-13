@@ -35,6 +35,8 @@ if (form) {
 		});
 	}
 
+	setupUnitConversion(form.querySelector(".EntityFormAttributes"));
+
 	setupProductTitlePreview(form);
 
 	// The brand payload feeds two things now: the product form's brand picker, and the
@@ -103,6 +105,80 @@ function renderCustomAttributes(attributes, inputs) {
 
 		attribute.hidden =
 			filteredInputs.filter((input) => input.checked).length === 0;
+	});
+}
+
+/**
+ * Converts the number shown next to a unit radio when that radio changes.
+ *
+ * The radios declare the unit the typed number is in, and the server normalises whatever it
+ * receives into the canonical one. So switching kg to lb on a value nobody retyped does not
+ * relabel it, it redefines it: 0.907185 stops meaning 0.907185 kg and starts meaning 0.907185
+ * lb, which is stored as 0.411645 kg. Switching back does not undo that, it converts again, so
+ * every toggle loses a little more. Sitting beside the number -- and next to a show page that
+ * prints both readings -- the control reads as a display toggle, which is what this makes it.
+ */
+function setupUnitConversion(container) {
+	if (!container) return;
+
+	let equivalents;
+
+	try {
+		equivalents = JSON.parse(container.dataset.unitEquivalents || "{}");
+	} catch {
+		return;
+	}
+
+	container.querySelectorAll(".EntityForm-attribute").forEach((attribute) => {
+		const radios = attribute.querySelectorAll(
+			'input[type="radio"][name$="[unit]"]',
+		);
+
+		if (radios.length < 2) return;
+
+		// The unit in force before the current change, which is the one to convert from.
+		// Empty on a new product where nothing is selected yet: there is nothing to convert.
+		const checked = Array.from(radios).find((radio) => radio.checked);
+		attribute.dataset.unit = checked ? checked.value : "";
+
+		radios.forEach((radio) => {
+			radio.addEventListener("change", () => {
+				convertAttributeValues(
+					attribute,
+					attribute.dataset.unit,
+					radio.value,
+					equivalents,
+				);
+
+				attribute.dataset.unit = radio.value;
+			});
+		});
+	});
+}
+
+function convertAttributeValues(attribute, from, to, equivalents) {
+	if (!from || from === to) return;
+
+	const pair = equivalents[from];
+
+	// Two units on one attribute are not always a convertible pair: loudspeaker sensitivity
+	// offers dB@1W/1m and dB@2.83V/1m, which are two different measurements with no factor
+	// between them. Switching those relabels the number, because relabelling is all it can
+	// honestly mean.
+	if (!pair || pair[0] !== to) return;
+
+	// Matches both value shapes: `[...][value]` and, for an attribute with inputs, each
+	// `[...][value][w]`. The unit radios end in `[unit]`, so they are not caught here.
+	attribute.querySelectorAll('input[name*="[value]"]').forEach((input) => {
+		const value = Number.parseFloat(input.value);
+
+		if (Number.isNaN(value)) return;
+
+		// Eight decimals, matching CustomAttribute#convert_entry_value. The two have to agree:
+		// the server re-rounds whatever this submits, so a coarser rounding here would come
+		// back as 2.000001 lb for a value typed as 2, and a finer one would drift on the way
+		// back. At eight, toggling is exactly reversible however many times it is done.
+		input.value = String(Number((value * pair[1]).toFixed(8)));
 	});
 }
 

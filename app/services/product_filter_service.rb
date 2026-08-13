@@ -330,29 +330,19 @@ class ProductFilterService
     end
   end
 
+  # A submitted range arrives in whichever unit the filter's radio buttons were set to; values
+  # are stored in the metric one. Both ends move through CustomAttribute::UNIT_CONVERSIONS so
+  # adding a convertible unit is one entry there rather than a new branch in every place that
+  # knows about inches.
   def convert_values(unit, min, max)
     min = Float(min, exception: false)
     max = Float(max, exception: false)
 
-    case unit
-    when 'in'
-      min *= 2.54 if min.present?
-      max *= 2.54 if max.present?
-    when 'lb'
-      min *= 0.453592 if min.present?
-      max *= 0.453592 if max.present?
-    end
-
-    [min, max]
+    [CustomAttribute.in_canonical_unit(min, unit), CustomAttribute.in_canonical_unit(max, unit)]
   end
 
   def convert_unit(unit)
-    case unit
-    when 'in' then unit = 'cm'
-    when 'lb' then unit = 'kg'
-    end
-
-    unit
+    CustomAttribute.canonical_unit(unit)
   end
 
   def filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param)

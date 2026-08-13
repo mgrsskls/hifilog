@@ -1,8 +1,48 @@
 # frozen_string_literal: true
 
 class CustomAttribute < ApplicationRecord
-  VALID_UNITS = %w[in cm lb kg db w ohm hz db_1w_1m db_283v_1m db_mw].freeze
+  # Every entry needs a `custom_attribute_units` translation -- the views render units with
+  # `t()` and no default, exactly like labels. CustomAttributeTest asserts the two lists match,
+  # which works here (unlike labels) because both sides are code rather than data.
+  #
+  # Two units on one definition mean "the same quantity, other system", and the display and
+  # filter paths both assume they can convert between them: see UNIT_CONVERSIONS. A unit added
+  # here without a counterpart there can only ever be offered on its own.
+  VALID_UNITS = %w[
+    in cm mm ft m
+    lb kg g
+    db db_1w_1m db_283v_1m db_mw
+    w va v a mv ohm pf
+    hz khz
+    h mah percent bit um_mn
+  ].freeze
   VALID_INPUTS = %w[w h l min max].freeze
+
+  # Imperial unit => [the metric unit it is stored and compared in, multiplier].
+  #
+  # Filtering compares a submitted range against `custom_attributes -> label ->> 'unit'` after
+  # normalising both sides through this table, so the canonical unit is also the one a value
+  # has to be *stored* in to be findable at all. That is why the table is deliberately short:
+  # a unit only belongs here once something converts to it, and a definition may only offer
+  # two units when those two are a pair listed here.
+  #
+  # `mm` is therefore not paired with `in`: `in` already canonicalises to `cm`, so a definition
+  # offering millimetres and inches would store two incompatible spellings of the same
+  # measurement and match neither filter. Millimetre attributes offer millimetres only.
+  UNIT_CONVERSIONS = {
+    'in' => ['cm', 2.54],
+    'ft' => ['m', 0.3048],
+    'lb' => ['kg', 0.45359237]
+  }.freeze
+
+  # Both directions of UNIT_CONVERSIONS, as unit => [other unit, multiplier], so a display can
+  # show "1.2 kg / 2.65 lb" from either side without a second table drifting out of step with
+  # the first. It did drift: the show page and the changelog each carried their own pound
+  # factor of 0.454 while filtering used 0.45359237.
+  UNIT_EQUIVALENTS = UNIT_CONVERSIONS.each_with_object({}) do |(from, (to, factor)), acc|
+    acc[from] = [to, factor]
+    acc[to] = [from, 1.0 / factor]
+  end.freeze
 
   # after_commit ensures the DB transaction is finished before we clear cache
   after_commit :clear_cache
@@ -50,6 +90,70 @@ class CustomAttribute < ApplicationRecord
     else
       self.options = nil
     end
+  end
+
+  # The unit a value in `unit` is stored and compared in. Unconvertible units are their own
+  # canonical form, so callers never have to ask whether a unit is convertible first.
+  def self.canonical_unit(unit)
+    UNIT_CONVERSIONS.dig(unit.to_s, 0) || unit
+  end
+
+  # `value` expressed in canonical_unit(unit). nil passes through so a half-filled range
+  # ("under 3 kg", no minimum) stays half-filled rather than becoming 0.
+  def self.in_canonical_unit(value, unit)
+    return value if value.nil?
+
+    factor = UNIT_CONVERSIONS.dig(unit.to_s, 1)
+    factor ? value * factor : value
+  end
+
+  # [other unit, multiplier] when a unit has a counterpart in the other system, otherwise nil.
+  # Display sites use it to render both readings; nil means there is only one reading to show.
+  def self.equivalent_unit(unit)
+    UNIT_EQUIVALENTS[unit.to_s]
+  end
+
+  # Rewrites a product's whole `custom_attributes` hash so every numeric entry is expressed in
+  # its canonical unit.
+  #
+  # Filtering compares a submitted range against the stored `unit` string after normalising
+  # the range to the metric side of a pair, so a value stored as `{value: 2, unit: "lb"}` is
+  # not merely awkward -- it is unreachable. No weight filter can ever return it, in either
+  # unit, because nothing converts on read. Normalising on write makes "stored unit" and
+  # "canonical unit" the same thing everywhere downstream, which is what the filter already
+  # assumed.
+  #
+  # Idempotent: a canonical unit converts to itself, so re-saving an already normalised
+  # product is a no-op rather than a repeated multiplication.
+  def self.normalize_units(values)
+    return values if values.blank?
+
+    index = all_cached.index_by(&:label)
+
+    values.to_h do |label, entry|
+      definition = index[label]
+
+      [label, definition ? definition.normalized_entry(entry) : entry]
+    end
+  end
+
+  # One entry of that hash. Anything this does not recognise -- a non-numeric attribute, a
+  # missing or already-canonical unit, a value that is not a number -- is passed through
+  # untouched rather than guessed at.
+  def normalized_entry(entry)
+    return entry unless number_input_type?
+    return entry unless entry.is_a?(Hash)
+
+    unit = entry['unit'].presence || entry[:unit].presence
+    return entry if unit.blank?
+
+    canonical = self.class.canonical_unit(unit)
+    return entry if canonical == unit
+
+    converted = convert_entry_value(entry['value'] || entry[:value], unit)
+    return entry if converted.nil?
+
+    entry.merge('value' => converted, 'unit' => canonical)
   end
 
   def self.all_cached
@@ -169,6 +273,39 @@ class CustomAttribute < ApplicationRecord
   # simplecov:enable
 
   private
+
+  # A `number` attribute holds either a bare number or, when it declares `inputs`, one number
+  # per input. Rounding keeps the stored JSON readable and cannot lose anything a spec sheet
+  # carries -- display already truncates to four places.
+  #
+  # Eight rather than six, because this precision is also what the product form's unit toggle
+  # round-trips through: at six, 2 lb stores as 0.907185 kg and toggling back reads 2.000001,
+  # since 0.907185 kg genuinely is 2.000001 lb. Eight keeps the exact conversion, so the
+  # number a contributor typed is the number they see again. entity_form.js rounds to match.
+  #
+  # All inputs share one `unit`, so a multi-input value is converted all-or-nothing: if any
+  # input is not a number, none of them are, and nil bubbles up to normalized_entry so the
+  # entry -- unit included -- is left exactly as it arrived rather than half-converted under
+  # a unit that no longer matches the input that couldn't be converted.
+  def convert_entry_value(value, unit)
+    case value
+    when Hash, ActionController::Parameters
+      numbers = value.to_h.transform_values { |number| numeric(number) }
+      return nil if numbers.empty? || numbers.value?(nil)
+
+      numbers.transform_values { |number| self.class.in_canonical_unit(number, unit).round(8) }
+    else
+      number = numeric(value)
+
+      number ? self.class.in_canonical_unit(number, unit).round(8) : nil
+    end
+  end
+
+  def numeric(value)
+    return value if value.is_a?(Numeric)
+
+    Float(value.to_s, exception: false)
+  end
 
   # `options` is only guaranteed to be a Hash after before_save; validation can still see the
   # raw JSON string an assignment passed in. Anything that does not parse into a Hash has no

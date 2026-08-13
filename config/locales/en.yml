@@ -257,16 +257,33 @@ en:
     turntable_operation_type: Operation type
     weight: Weight
   custom_attribute_units:
+    a: A
+    bit: bit
     cm: cm
     db: dB
     db_1w_1m: dB @ 1W/1m
     db_283v_1m: dB @ 2.83V/1m
     db_mw: dB/mW
+    ft: ft
+    g: g
+    h: h
     hz: Hz
     in: in
     kg: kg
+    khz: kHz
     lb: lb
+    m: m
+    mah: mAh
+    mm: mm
+    mv: mV
     ohm: "&ohm;"
+    percent: "%"
+    pf: pF
+    # Literal µ rather than &micro;: safe_unit_entities allowlists &ohm; only, so an entity
+    # would render escaped in the changelog while working everywhere else.
+    um_mn: µm/mN
+    v: V
+    va: VA
     w: W
   custom_attributes:
     2_5_way: 2.5-way

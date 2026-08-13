@@ -1,22 +1,8 @@
-<%
-  def convert(unit)
-    case unit
-    when 'kg' then
-      multi = 1 / 0.454
-      other_unit = 'lb'
-    when 'lb' then
-      multi = 0.454
-      other_unit = 'kg'
-    when 'cm' then
-      multi = 1 / 2.54
-      other_unit = 'in'
-    when 'in' then
-      multi = 1 * 2.54
-      other_unit = 'cm'
-    end
-
-    [multi, other_unit]
-  end
+<%#
+  A second reading is shown only when the definition offers two units *and* the two are a
+  convertible pair (CustomAttribute::UNIT_EQUIVALENTS). Two units are not always a pair:
+  loudspeaker_sensitivity offers dB@1W/1m and dB@2.83V/1m, which are two different
+  measurements rather than two spellings of one, and there is no factor between them.
 %>
 <h2>Characteristics</h2>
 <dl class="Entity-section Data">
@@ -28,22 +14,19 @@
         <% if ca[1].is_a?(Hash) %>
           <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
           <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
+          <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
           <% if ca[1]['value'].is_a?(Hash) %>
             <% ca[1]['value'].each do |v| %>
               <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-              <% if active_record.units.size == 2 %>
-                <% multi, other_unit = convert(unit) %>
-                / <%= number_with_precision(v[1] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
+              <% if equivalent %>
+                / <%= number_with_precision(v[1] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= t("custom_attribute_units.#{equivalent[0]}").html_safe %>
               <% end %>
               <br>
             <% end %>
           <% elsif ca[1]['value'].present? %>
             <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-            <% if active_record.units.size == 2 %>
-              <% multi, other_unit = convert(unit) %>
-              <% if other_unit %>
-                / <%= number_with_precision(ca[1]['value'] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
-              <% end %>
+            <% if equivalent %>
+              / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= t("custom_attribute_units.#{equivalent[0]}").html_safe %>
             <% end %>
           <% else %>
             n/a

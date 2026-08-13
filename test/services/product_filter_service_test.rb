@@ -205,7 +205,10 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     product = products(:without_custom_attributes)
     product.update!(
       custom_attributes: {
-        'weight' => { 'value' => '0.907184', 'unit' => 'kg' }
+        # Exactly 2 lb at CustomAttribute::UNIT_CONVERSIONS' factor. The old inline 0.453592
+        # was truncated, so a value stored from an exact conversion fell just under the
+        # minimum this filter computes.
+        'weight' => { 'value' => '0.90718474', 'unit' => 'kg' }
       }
     )
 

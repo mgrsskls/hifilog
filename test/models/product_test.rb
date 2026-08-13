@@ -235,12 +235,25 @@ class ProductTest < ActiveSupport::TestCase
     assert_not_includes product.meta_desc, 'documented on HiFi Log'
   end
 
-  test 'custom attributes list translates stored option ids' do
-    product = products(:one)
-    option = custom_attributes(:one)
-    product.update!(custom_attributes: { option.id.to_s => '1' })
+  # The filter matches on the stored unit string, so a value saved in pounds would be
+  # unreachable by any weight filter. Normalising on the model rather than in the product form
+  # means ActiveAdmin, ProductConversionService and the console all get it too.
+  test 'saving rewrites a custom attribute value into its canonical unit' do
+    product = products(:without_custom_attributes)
 
-    assert_includes product.custom_attributes_list, I18n.t('custom_attributes.stereo')
+    product.update!(custom_attributes: { 'weight' => { 'value' => 2, 'unit' => 'lb' } })
+
+    assert_equal 'kg', product.reload.custom_attributes.dig('weight', 'unit')
+    assert_in_delta 0.90718474, product.custom_attributes.dig('weight', 'value'), 0.000001
+  end
+
+  test 'saving leaves a value already in its canonical unit untouched' do
+    product = products(:without_custom_attributes)
+    values = { 'weight' => { 'value' => 3.5, 'unit' => 'kg' } }
+
+    product.update!(custom_attributes: values)
+
+    assert_equal values, product.reload.custom_attributes
   end
 
   test 'custom attributes resources indexes definitions by label' do

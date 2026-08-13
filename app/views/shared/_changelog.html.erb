@@ -1,22 +1,7 @@
-<%
-  def convert(unit)
-    case unit
-    when 'kg' then
-      multi = 1 / 0.454
-      other_unit = 'lb'
-    when 'lb' then
-      multi = 0.454
-      other_unit = 'kg'
-    when 'cm' then
-      multi = 1 / 2.54
-      other_unit = 'in'
-    when 'in' then
-      multi = 1 * 2.54
-      other_unit = 'cm'
-    end
-
-    [multi, other_unit]
-  end
+<%#
+  Unit conversion lives on CustomAttribute (UNIT_EQUIVALENTS), not here: this partial and the
+  product show page each used to carry their own copy, and the two had drifted to different
+  pound factors from each other and from the filter.
 %>
 <% content_for :css do %>
   <%= stylesheet_link_tag "changelog" %>
@@ -67,22 +52,19 @@
                                         <% if ca[1].is_a?(Hash) %>
                                           <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
                                           <% translated_unit = safe_unit_entities(t("custom_attribute_units.#{unit}")) if unit.present? %>
+                                          <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
                                           <% if ca[1]['value'].is_a?(Hash) %>
                                             <% ca[1]['value'].each do |v| %>
                                               <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                              <% if active_record.units.size == 2 %>
-                                                <% multi, other_unit = convert(unit) %>
-                                                / <%= number_with_precision(v[1] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
+                                              <% if equivalent %>
+                                                / <%= number_with_precision(v[1] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
                                               <% end %>
                                               <br>
                                             <% end %>
                                           <% elsif ca[1]['value'].present? %>
                                             <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                            <% if active_record.units.size == 2 %>
-                                              <% multi, other_unit = convert(unit) %>
-                                              <% if other_unit %>
-                                                / <%= number_with_precision(ca[1]['value'] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
-                                              <% end %>
+                                            <% if equivalent %>
+                                                / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
                                             <% end %>
                                           <% else %>
                                             n/a
@@ -131,22 +113,19 @@
                                         <% if ca[1].is_a?(Hash) %>
                                           <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
                                           <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
+                                          <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
                                           <% if ca[1]['value'].is_a?(Hash) %>
                                             <% ca[1]['value'].each do |v| %>
                                               <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                              <% if active_record.units.size == 2 %>
-                                                <% multi, other_unit = convert(unit) %>
-                                                / <%= number_with_precision(v[1] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
+                                              <% if equivalent %>
+                                                / <%= number_with_precision(v[1] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
                                               <% end %>
                                               <br>
                                             <% end %>
                                           <% elsif ca[1]['value'].present? %>
                                             <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                            <% if active_record.units.size == 2 %>
-                                              <% multi, other_unit = convert(unit) %>
-                                              <% if other_unit %>
-                                                / <%= number_with_precision(ca[1]['value'] * multi, precision: 4, strip_insignificant_zeros: true) %> <%= other_unit %>
-                                              <% end %>
+                                            <% if equivalent %>
+                                                / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
                                             <% end %>
                                           <% else %>
                                             n/a
