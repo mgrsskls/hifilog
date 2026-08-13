@@ -27,7 +27,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
   test 'requires highlighted presence' do
     record = CustomAttribute.new(
-      label: 'unique_highlight_test_xyz',
+      label: 'amplifier_type',
       input_type: 'boolean'
     )
 
@@ -37,9 +37,81 @@ class CustomAttributeTest < ActiveSupport::TestCase
     assert record.errors.attribute_names.include?(:highlighted)
   end
 
+  # Every render site calls t("custom_attribute_labels.#{label}") without a default, so an
+  # untranslated label reaches the user as "translation missing" rather than degrading. These
+  # rows are admin-created data, so creation time is the only moment the check can happen.
+  test 'a label with no custom_attribute_labels translation is rejected' do
+    record = CustomAttribute.new(
+      label: 'no_such_label_in_the_locale_file',
+      highlighted: true,
+      input_type: 'boolean'
+    )
+
+    record.sub_categories << @sub_category
+
+    assert_not record.valid?
+    assert_includes record.errors[:label].join(' '), 'has no translation'
+  end
+
+  test 'every label the locale file defines is accepted' do
+    I18n.t('custom_attribute_labels').each_key do |label|
+      record = CustomAttribute.new(label: label.to_s, highlighted: true, input_type: 'boolean')
+      record.valid?
+
+      assert_empty record.errors[:label].grep(/has no translation/),
+                   "#{label} should be accepted but was not"
+    end
+  end
+
+  # The reverse direction, which is what caught `weight`, `dimensions` and `assembly`
+  # rendering as raw keys: a locale entry with no attribute behind it is harmless, an
+  # attribute with no locale entry is not. Fixtures stand in for the real definitions here.
+  test 'no persisted attribute is missing its translation' do
+    untranslated = CustomAttribute.all.reject { |record| I18n.exists?("custom_attribute_labels.#{record.label}") }
+
+    assert_empty untranslated.map(&:label)
+  end
+
+  test 'an option value with no custom_attributes translation is rejected' do
+    record = CustomAttribute.new(
+      label: 'amplifier_type',
+      highlighted: true,
+      input_type: 'option',
+      options: { '1' => 'solid_state', '2' => 'not_a_translated_option' }
+    )
+
+    record.sub_categories << @sub_category
+
+    assert_not record.valid?
+    assert_includes record.errors[:options].join(' '), 'not_a_translated_option'
+    assert_not_includes record.errors[:options].join(' '), 'solid_state'
+  end
+
+  test 'option values are still checked when options arrive as a JSON string' do
+    record = CustomAttribute.new(
+      label: 'amplifier_type',
+      highlighted: true,
+      input_type: 'option',
+      options: { '1' => 'not_a_translated_option' }.to_json
+    )
+
+    assert_not record.valid?
+    assert_includes record.errors[:options].join(' '), 'not_a_translated_option'
+  end
+
+  # Clearing options on a type switch happens before validation, so a boolean attribute is
+  # never rejected for options it is in the process of discarding.
+  test 'options left over from a previous input type do not fail validation' do
+    record = custom_attributes(:one)
+    record.options = { '1' => 'not_a_translated_option' }
+    record.input_type = 'boolean'
+
+    assert record.valid?, record.errors.full_messages.to_sentence
+  end
+
   test 'units_must_be_valid rejects unknown units' do
     record = CustomAttribute.new(
-      label: 'unique_units_xyz',
+      label: 'headphone_sensitivity',
       highlighted: true,
       input_type: 'number',
       units: %w[km]
@@ -52,7 +124,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
   test 'inputs_must_be_valid rejects unknown inputs via units error key' do
     record = CustomAttribute.new(
-      label: 'unique_inputs_xyz',
+      label: 'loudspeaker_recommended_amplifier_power',
       highlighted: true,
       input_type: 'number',
       inputs: %w[width]
@@ -65,7 +137,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
   test 'before_validation compacts blanks on units and inputs arrays' do
     record = CustomAttribute.new(
-      label: 'unique_compact_xyz',
+      label: 'frequency_response_range',
       highlighted: true,
       input_type: 'number',
       units: ['cm', nil, '', 'in'],
@@ -79,10 +151,10 @@ class CustomAttributeTest < ActiveSupport::TestCase
   end
 
   test 'before_save parses options when options is JSON string' do
-    parsed = { '1' => 'x' }
+    parsed = { '1' => 'optical' }
 
     record = CustomAttribute.new(
-      label: 'unique_json_options_xyz',
+      label: 'cartridge_type',
       highlighted: true,
       input_type: 'option',
       options: parsed.to_json
@@ -91,12 +163,12 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record.sub_categories << @sub_category
     record.save!
 
-    assert_equal parsed, CustomAttribute.find_by(label: 'unique_json_options_xyz').options
+    assert_equal parsed, CustomAttribute.find_by(label: 'cartridge_type').options
   end
 
   test 'before_save sets options to nil when options blank after cast' do
     record = CustomAttribute.new(
-      label: 'unique_nil_opts_xyz',
+      label: 'loudspeaker_bi_amping',
       highlighted: true,
       input_type: 'boolean',
       options: nil
@@ -105,7 +177,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record.sub_categories << @sub_category
     record.save!
 
-    assert_nil CustomAttribute.find_by(label: 'unique_nil_opts_xyz').options
+    assert_nil CustomAttribute.find_by(label: 'loudspeaker_bi_amping').options
   end
 
   test 'switching away from an option input type clears the options' do
@@ -119,7 +191,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = custom_attributes(:one)
     record.update!(input_type: 'options')
 
-    assert_equal({ '1' => 'stereo', '2' => 'dual-monow' }, record.reload.options)
+    assert_equal({ '1' => 'stereo', '2' => 'dual-mono' }, record.reload.options)
   end
 
   test 'switching away from the number input type clears units and inputs' do
@@ -136,7 +208,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record.input_type = nil
 
     assert record.valid?
-    assert_equal({ '1' => 'stereo', '2' => 'dual-monow' }, record.options)
+    assert_equal({ '1' => 'stereo', '2' => 'dual-mono' }, record.options)
   end
 
   test 'options_attributes= keeps existing ids and assigns new ones above the highest seen' do

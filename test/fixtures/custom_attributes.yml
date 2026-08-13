@@ -1,11 +1,14 @@
+# Labels and option values here are real ones, not placeholders: CustomAttribute validates
+# both against config/locales/en.yml, so a synthetic label like `number` would be a row the
+# application would refuse to save. Each fixture still exists to cover one input type.
 one:
   id: 1
-  label: amplifier_channel_type
+  label: channel_configuration
   highlighted: true
   input_type: option
   options:
     "1": stereo
-    "2": dual-monow
+    "2": dual-mono
   sub_categories:
     - one
 two:
@@ -21,18 +24,18 @@ two:
     - two
 three:
   id: 3
-  label: multiple_options
+  label: loudspeaker_driver_types
   highlighted: false
   input_type: options
   options:
-    "1": belt-drive
-    "2": direct-drive
+    "1": coaxial
+    "2": horn_loaded
   sub_categories:
     - one
     - two
 four:
   id: 4
-  label: number
+  label: weight
   highlighted: false
   input_type: number
   sub_categories:
@@ -40,7 +43,7 @@ four:
     - two
 five:
   id: 5
-  label: boolean
+  label: loudspeaker_bi_wiring
   highlighted: false
   input_type: boolean
   sub_categories:
@@ -48,7 +51,7 @@ five:
     - two
 six:
   id: 6
-  label: complex_number
+  label: dimensions
   highlighted: false
   input_type: number
   inputs:
@@ -56,8 +59,8 @@ six:
     - h
     - l
   units:
-    - unit1
-    - unit2
+    - cm
+    - in
   sub_categories:
     - one
     - two

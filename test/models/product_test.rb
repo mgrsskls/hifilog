@@ -248,7 +248,7 @@ class ProductTest < ActiveSupport::TestCase
 
     lookup = product.custom_attributes_resources
     assert_kind_of Hash, lookup
-    assert_predicate lookup['boolean'], :present?
+    assert_predicate lookup['loudspeaker_bi_wiring'], :present?
   end
 
   test 'invalidate cache callback clears aggregated counters' do

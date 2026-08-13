@@ -228,14 +228,16 @@ en:
     min: Minimum
     w: Width
   custom_attribute_labels:
-    amplifier_channel_type: Channel type
     amplifier_type: Amplifier type
+    assembly: Assembly
     cable_interconnect_type: Type
     cartridge_type: Type
-    enclosure_type: Enclosure type
+    channel_configuration: Channel configuration
+    dimensions: Dimensions
     frequency_response_range: Frequency Response Range
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
+    headphone_enclosure_type: Enclosure type
     headphone_sensitivity: Sensitivity
     loudspeaker_amplification_type: Amplification
     loudspeaker_bi_amping: Bi-Amping
@@ -243,19 +245,17 @@ en:
     loudspeaker_driver_configuration: Driver configuration
     loudspeaker_driver_types: Driver types
     loudspeaker_enclosure_type: Enclosure type
-    loudspeaker_frequency_response_range: Frequency Response Range
     loudspeaker_minimum_impedance: Minimum Impedance
-    loudspeaker_nominal_impedance: Nominal Impedance
     loudspeaker_peak_power: Peak Power
     loudspeaker_peak_spl: Peak SPL
     loudspeaker_recommended_amplifier_power: Recommended Amplifier Power
     loudspeaker_rms_power: RMS Power
     loudspeaker_sensitivity: Sensitivity
     nominal_impedance: Nominal Impedance
-    power_amplifier_channel_type: Channel type
-    turntable_cartridge_type: Cartridge type
+    supported_cartridge_types: Supported cartridge types
     turntable_drive_type: Drive type
     turntable_operation_type: Operation type
+    weight: Weight
   custom_attribute_units:
     cm: cm
     db: dB

@@ -35,7 +35,7 @@ class FilterParamsBuilderTest < ActiveSupport::TestCase
         diy_kit: '1',
         status: 'discontinued',
         query: '  zoom  ',
-        amplifier_channel_type: ['1']
+        channel_configuration: ['1']
       }
     ).permit!
 
@@ -45,7 +45,7 @@ class FilterParamsBuilderTest < ActiveSupport::TestCase
     assert_equal 'discontinued', filters[:status]
     assert_equal '  zoom  ', filters[:query]
     custom = filters[:custom].respond_to?(:stringify_keys) ? filters[:custom].stringify_keys : filters[:custom]
-    assert custom.key?('amplifier_channel_type')
+    assert custom.key?('channel_configuration')
   end
 
   test 'build_brand_filters rejects unknown country codes' do
@@ -99,7 +99,7 @@ class FilterParamsBuilderTest < ActiveSupport::TestCase
   end
 
   test 'flatten_query_values nests values from nested hashes' do
-    nested = ActionController::Parameters.new({ amplifier_channel_type: { nested: %w[a b] } }).permit!
+    nested = ActionController::Parameters.new({ channel_configuration: { nested: %w[a b] } }).permit!
     values = @harness.send(:flatten_query_values, nested)
 
     assert_includes values, 'a'

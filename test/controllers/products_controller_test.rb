@@ -246,8 +246,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
         discontinued: false,
         sub_category_ids: [sub_category.id],
         custom_attributes: {
-          'boolean' => 'true',
-          'number' => { 'value' => '42', 'unit' => 'cm' }
+          'loudspeaker_bi_wiring' => 'true',
+          'weight' => { 'value' => '42', 'unit' => 'cm' }
         },
         product_options_attributes: {}
       }
@@ -262,8 +262,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
 
     saved = Product.find_by!(name: 'Custom attributes product xyz')
-    assert_equal true, saved.custom_attributes['boolean']
-    assert_in_delta 42.0, saved.custom_attributes.dig('number', 'value')
+    assert_equal true, saved.custom_attributes['loudspeaker_bi_wiring']
+    assert_in_delta 42.0, saved.custom_attributes.dig('weight', 'value')
   ensure
     saved&.destroy
   end
@@ -337,8 +337,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
         discontinued: product.discontinued,
         sub_category_ids: product.sub_categories.map(&:id),
         custom_attributes: {
-          'boolean' => 'false',
-          'number' => { 'value' => '11', 'unit' => 'cm' }
+          'loudspeaker_bi_wiring' => 'false',
+          'weight' => { 'value' => '11', 'unit' => 'cm' }
         }
       }
     }
@@ -347,8 +347,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     product.reload
 
-    assert_equal false, product.custom_attributes['boolean']
-    assert_in_delta 11.0, product.custom_attributes.dig('number', 'value')
+    assert_equal false, product.custom_attributes['loudspeaker_bi_wiring']
+    assert_in_delta 11.0, product.custom_attributes.dig('weight', 'value')
   end
 
   test 'create mirrors brand discontinued flag onto the catalogue record when brand halted production' do

@@ -66,7 +66,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     product = products(:with_custom_attributes)
 
     result = ProductFilterService.new(
-      filters: { custom: { 'amplifier_channel_type' => '1' } },
+      filters: { custom: { 'channel_configuration' => '1' } },
       brands: [@brand]
     ).filter
 
@@ -77,7 +77,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     product = products(:with_custom_attributes)
 
     result = ProductFilterService.new(
-      filters: { custom: { 'boolean' => '1' } },
+      filters: { custom: { 'loudspeaker_bi_wiring' => '1' } },
       brands: [@brand]
     ).filter
 
@@ -88,7 +88,7 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     product = products(:with_custom_attributes)
 
     result = ProductFilterService.new(
-      filters: { custom: { 'multiple_options' => %w[1 2] } },
+      filters: { custom: { 'loudspeaker_driver_types' => %w[1 2] } },
       brands: [@brand]
     ).filter
 
@@ -99,12 +99,12 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     product = products(:without_custom_attributes)
     product.update!(
       custom_attributes: {
-        'number' => { 'value' => '5.0', 'unit' => 'cm' }
+        'weight' => { 'value' => '5.0', 'unit' => 'cm' }
       }
     )
 
     custom = {
-      'number' => ActiveSupport::HashWithIndifferentAccess.new(
+      'weight' => ActiveSupport::HashWithIndifferentAccess.new(
         min: '1',
         max: '10',
         unit: 'cm'
@@ -120,12 +120,12 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     product = products(:without_custom_attributes)
     product.update!(
       custom_attributes: {
-        'number' => { 'value' => '5.08', 'unit' => 'cm' }
+        'weight' => { 'value' => '5.08', 'unit' => 'cm' }
       }
     )
 
     custom = {
-      'number' => ActiveSupport::HashWithIndifferentAccess.new(
+      'weight' => ActiveSupport::HashWithIndifferentAccess.new(
         min: '2',
         max: '2',
         unit: 'in'
@@ -205,12 +205,12 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     product = products(:without_custom_attributes)
     product.update!(
       custom_attributes: {
-        'number' => { 'value' => '0.907184', 'unit' => 'kg' }
+        'weight' => { 'value' => '0.907184', 'unit' => 'kg' }
       }
     )
 
     custom = {
-      'number' => ActiveSupport::HashWithIndifferentAccess.new(
+      'weight' => ActiveSupport::HashWithIndifferentAccess.new(
         min: '2',
         max: '2',
         unit: 'lb'

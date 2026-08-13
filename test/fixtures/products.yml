@@ -32,16 +32,16 @@ with_custom_attributes:
   sub_categories:
     - one
   custom_attributes:
-    amplifier_channel_type: "1"
+    channel_configuration: "1"
     turntable_drive_type: "2"
-    multiple_options: ["1", "2"]
-    number: 1
-    boolean: true
-    complex_number:
+    loudspeaker_driver_types: ["1", "2"]
+    weight: 1
+    loudspeaker_bi_wiring: true
+    dimensions:
       values:
         w: 1
         h: 2
-      unit: unit1
+      unit: cm
 
 without_custom_attributes:
   name: without_custom_attributes

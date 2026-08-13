@@ -19,6 +19,8 @@ class CustomAttribute < ApplicationRecord
   validates :highlighted, presence: true
   validate :units_must_be_valid
   validate :inputs_must_be_valid
+  validate :label_must_be_translated
+  validate :option_values_must_be_translated
 
   before_validation do
     self.units = units.compact_blank if units.is_a?(Array)
@@ -102,6 +104,38 @@ class CustomAttribute < ApplicationRecord
     end
   end
 
+  # A label is not just an identifier, it is an i18n key: every surface that renders an
+  # attribute -- the product form, the filter sidebar, the spec list, the admin subcategory
+  # page -- calls `t("custom_attribute_labels.#{label}")` with no default, so a label with no
+  # translation behind it does not degrade, it prints "translation missing" to the user.
+  #
+  # Nothing else can catch that. The values are data rows created through ActiveAdmin, so a
+  # test cannot enumerate what production holds; the only moment the two can be compared is
+  # the moment the row is written. This does mean the translation has to be deployed before
+  # the attribute is created, which is the same order `available_option_keys` already imposes
+  # on option values.
+  def label_must_be_translated
+    return if label.blank?
+    return if I18n.exists?("custom_attribute_labels.#{label}")
+
+    errors.add(:label, "has no translation: add `#{label}` under `custom_attribute_labels` " \
+                       'in config/locales/en.yml first')
+  end
+
+  # The same guarantee one level down. The admin option editor offers a datalist of existing
+  # keys, but a datalist is a suggestion rather than a constraint, and a typo here is worse
+  # than a missing label: products store the option *id*, so the broken key is invisible in
+  # the data and only surfaces as a missing translation on every product that chose it.
+  def option_values_must_be_translated
+    missing = parsed_options.values.map(&:to_s).uniq.reject do |value|
+      value.blank? || I18n.exists?("custom_attributes.#{value}")
+    end
+    return if missing.empty?
+
+    errors.add(:options, 'have no translation under `custom_attributes` in ' \
+                         "config/locales/en.yml: #{missing.join(', ')}")
+  end
+
   def units_must_be_valid
     return if units.blank?
 
@@ -135,6 +169,19 @@ class CustomAttribute < ApplicationRecord
   # simplecov:enable
 
   private
+
+  # `options` is only guaranteed to be a Hash after before_save; validation can still see the
+  # raw JSON string an assignment passed in. Anything that does not parse into a Hash has no
+  # option values to check and is left to the column's own casting to reject.
+  def parsed_options
+    return options if options.is_a?(Hash)
+    return {} unless options.is_a?(String) && options.present?
+
+    parsed = JSON.parse(options)
+    parsed.is_a?(Hash) ? parsed : {}
+  rescue JSON::ParserError
+    {}
+  end
 
   def build_options_hash(pairs)
     known = (options.is_a?(Hash) ? options.keys : []) + pairs.map(&:first)

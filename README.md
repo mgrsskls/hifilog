@@ -104,6 +104,24 @@ A variant belongs to one product and has its own options, possessions, and notes
 
 **Values** are stored directly on the product as a flexible set of key/value pairs, keyed by attribute label. Variants do not store their own values; wherever custom attributes are displayed for a variant, the parent product's values are shown instead.
 
+### Naming a label
+
+A label is a **disambiguator, not a namespace**. The subcategory join already scopes an attribute to where it applies, so a prefix that only restates the category buys nothing and costs something real: it forks one specification into two filter facets holding the same numbers in the same unit, which can then never be compared. The label names the measurement.
+
+A prefix is only justified when two categories genuinely mean different things by the same word:
+
+- **Different unit** — `headphone_sensitivity` (dB/mW) against `loudspeaker_sensitivity` (dB@1W/1m). Not comparable, so they must not share a range filter.
+- **Different option set** — headphone enclosures (open / semi / closed) against speaker enclosures (sealed / ported / …).
+- **Different question** — `cartridge_type` asks what a thing _is_, `supported_cartridge_types` asks what it _accepts_.
+
+Where a prefix is warranted it comes from a closed list of **Category-level** words — `loudspeaker_`, `headphone_`, `turntable_`, `cartridge_`, `tonearm_`, `amplifier_`, `cable_`, `tube_`, `tape_` — never a subcategory name. Otherwise the bare term is used, chosen specifically enough that a future collision is unlikely (`bi_wiring`, not `wiring`).
+
+### Labels and option values are i18n keys
+
+Every surface that renders an attribute — product form, filter sidebar, spec list, the admin subcategory page — calls `t("custom_attribute_labels.#{label}")` **without a default**, so a label with no translation behind it does not degrade, it prints "translation missing" to the user. The same is true one level down for option values under `custom_attributes`, where a typo is worse still: products store the option _id_, so the broken key is invisible in the data and only surfaces on every product that chose it.
+
+Definitions are admin-created data rows, so no test can enumerate what production holds; the only moment the two can be compared is the moment the row is written. `CustomAttribute` therefore validates both directions of that mapping. The practical consequence is a deploy order: **the translation ships before the attribute is created**, which is the same order `available_option_keys` already imposes by offering the admin a datalist of keys the locale file defines.
+
 For the `option` and `options` input types, the definition's `options` is a JSON object mapping a **numeric id** to an **i18n key** under `custom_attributes` in the locale files. Products store the id, never the key — so a mislabelled option can be renamed without touching a single product row. The admin editor upholds that split: ids are assigned automatically (always above the highest ever used, so a deleted id is never handed out again) and are not editable, while the key is picked from a datalist of what the locale file already defines. Removing an option asks for confirmation and states how many products still point at it, counted by **`CustomAttribute#option_usage_counts`** — one aggregate query narrowed by the GIN index on `products.custom_attributes`, not one count per option.
 
 Exactly one shape of extra configuration applies per input type: `options` for `option`/`options`, `units` and `inputs` for `number`, neither for `boolean`. A `before_validation` clears whatever the current input type does not use, because the product form picks its control by inspecting `options` and then `inputs` rather than `input_type` — leftovers from a previous type would render the wrong widget. The admin form hides the group that doesn't apply and warns before a type switch discards anything.
