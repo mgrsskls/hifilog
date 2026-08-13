@@ -104,6 +104,10 @@ A variant belongs to one product and has its own options, possessions, and notes
 
 **Values** are stored directly on the product as a flexible set of key/value pairs, keyed by attribute label. Variants do not store their own values; wherever custom attributes are displayed for a variant, the parent product's values are shown instead.
 
+For the `option` and `options` input types, the definition's `options` is a JSON object mapping a **numeric id** to an **i18n key** under `custom_attributes` in the locale files. Products store the id, never the key — so a mislabelled option can be renamed without touching a single product row. The admin editor upholds that split: ids are assigned automatically (always above the highest ever used, so a deleted id is never handed out again) and are not editable, while the key is picked from a datalist of what the locale file already defines. Removing an option asks for confirmation and states how many products still point at it, counted by **`CustomAttribute#option_usage_counts`** — one aggregate query narrowed by the GIN index on `products.custom_attributes`, not one count per option.
+
+Exactly one shape of extra configuration applies per input type: `options` for `option`/`options`, `units` and `inputs` for `number`, neither for `boolean`. A `before_validation` clears whatever the current input type does not use, because the product form picks its control by inspecting `options` and then `inputs` rather than `input_type` — leftovers from a previous type would render the wrong widget. The admin form hides the group that doesn't apply and warns before a type switch discards anything.
+
 **`CustomProduct`** does not participate in this system at all.
 
 Filtering on catalog indexes uses the definitions applicable to the current category context.

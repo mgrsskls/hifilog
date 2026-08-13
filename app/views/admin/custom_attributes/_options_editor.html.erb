@@ -1,0 +1,74 @@
+<% rows = custom_attribute.options.presence || {} %>
+<% usage = custom_attribute.option_usage_counts %>
+<% available = CustomAttribute.available_option_keys %>
+
+<%= javascript_include_tag "admin_custom_attributes", type: "module" %>
+
+<fieldset class="mb-8" data-options-editor>
+  <legend class="font-bold text-xl">Options</legend>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    Each option has a numeric ID that products store, and a translation key that is
+    rendered to users. The ID is assigned automatically and never changes, so a key can
+    be corrected at any time without touching existing products. Pick an existing key
+    from the suggestions, or type a new one and add it to
+    <code>config/locales/*.yml</code> under <code>custom_attributes</code>.
+  </p>
+
+  <input type="hidden" name="custom_attribute[options_editor]" value="1">
+
+  <ul class="flex flex-col gap-2 mb-4" data-options-list>
+    <% rows.each do |id, key| %>
+      <li class="flex items-center gap-3" data-option-row>
+        <input type="hidden" name="custom_attribute[options_attributes][][key]" value="<%= id %>">
+        <span class="font-mono text-sm text-gray-500 w-10 shrink-0" data-option-id><%= id %></span>
+        <input
+          type="text"
+          class="grow"
+          list="custom-attribute-option-keys"
+          name="custom_attribute[options_attributes][][value]"
+          value="<%= key %>"
+          aria-label="Translation key for option <%= id %>"
+          data-option-value
+        >
+        <span class="text-sm text-gray-600 dark:text-gray-400 w-48 shrink-0" data-option-preview></span>
+        <button
+          type="button"
+          class="text-sm underline shrink-0"
+          data-option-remove
+          data-usage="<%= usage[id.to_s].to_i %>"
+        >Remove</button>
+      </li>
+    <% end %>
+  </ul>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4" data-options-empty<%= " hidden" if rows.any? %>>
+    No options yet.
+  </p>
+
+  <button type="button" class="underline" data-option-add>Add option</button>
+
+  <datalist id="custom-attribute-option-keys">
+    <% available.each do |key, translated| %>
+      <option value="<%= key %>"><%= translated %></option>
+    <% end %>
+  </datalist>
+
+  <template data-option-template>
+    <li class="flex items-center gap-3" data-option-row>
+      <input type="hidden" name="custom_attribute[options_attributes][][key]" value="">
+      <span class="font-mono text-sm text-gray-500 w-10 shrink-0" data-option-id>new</span>
+      <input
+        type="text"
+        class="grow"
+        list="custom-attribute-option-keys"
+        name="custom_attribute[options_attributes][][value]"
+        value=""
+        aria-label="Translation key for new option"
+        data-option-value
+      >
+      <span class="text-sm text-gray-600 dark:text-gray-400 w-48 shrink-0" data-option-preview></span>
+      <button type="button" class="text-sm underline shrink-0" data-option-remove data-usage="0">Remove</button>
+    </li>
+  </template>
+</fieldset>
