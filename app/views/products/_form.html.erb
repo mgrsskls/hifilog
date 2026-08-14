@@ -160,14 +160,25 @@
     %>
     <div class="Options EntityFormAttributes is-light" data-unit-equivalents="<%= CustomAttribute::UNIT_EQUIVALENTS.to_json %>">
       <% CustomAttribute.all_cached.each do |custom_attribute| %>
-        <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.sub_category_ids %>" hidden>
+        <%#
+          cached_sub_category_ids, not sub_category_ids: this renders every attribute on every
+          form load, and the association would be one query each.
+        %>
+        <div class="EntityForm-attribute" data-sub-category-ids="<%= custom_attribute.cached_sub_category_ids %>" hidden>
           <% if custom_attribute.options&.any? %>
+            <% option_scoped = custom_attribute.option_scoped? %>
             <div class="EntityFormAttribute-label">
               <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
             </div>
             <div class="EntityFormAttribute-options">
               <% custom_attribute.options.each do |option| %>
-                <div class="u-flex u-gap-sm u-alignCenter">
+                <%#
+                  Which subcategories offer this particular option, so entity_form.js can hide
+                  the ones the ticked categories do not offer -- a phono stage should not be
+                  asked about I2S. Emitted only when some subcategory actually narrows the list,
+                  since otherwise every option applies everywhere and there is nothing to filter.
+                %>
+                <div class="u-flex u-gap-sm u-alignCenter" <%= tag.attributes("data-option-sub-category-ids": custom_attribute.sub_category_ids_for_option(option[0]).to_json) if option_scoped %>>
                   <% if custom_attribute.input_type == 'options' %>
                     <input type="checkbox" name="<%= "product[custom_attributes][#{custom_attribute.label}][]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes[custom_attribute.label]&.include?(option[0]) %>>
                   <% else %>

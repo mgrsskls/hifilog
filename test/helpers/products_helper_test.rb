@@ -3,6 +3,25 @@
 require 'test_helper'
 
 class ProductsHelperTest < ActionView::TestCase
+  # nil is meaningful, not a fallback: CustomAttribute#options_for reads it as "no context to
+  # narrow by", which is the right answer for a page with no category.
+  test 'custom_attribute_option_scope_ids narrows to the sub category being browsed' do
+    sub_category = sub_categories(:one)
+
+    assert_equal [sub_category.id],
+                 custom_attribute_option_scope_ids(sub_category.category, sub_category)
+  end
+
+  test 'custom_attribute_option_scope_ids covers every sub category of a category' do
+    category = categories(:one)
+
+    assert_equal category.sub_category_ids, custom_attribute_option_scope_ids(category, nil)
+  end
+
+  test 'custom_attribute_option_scope_ids is nil without a category context' do
+    assert_nil custom_attribute_option_scope_ids(nil, nil)
+  end
+
   include ApplicationHelper
 
   delegate :params, to: :controller

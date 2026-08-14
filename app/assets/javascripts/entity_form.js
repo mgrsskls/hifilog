@@ -96,16 +96,43 @@ function renderDiscontinuedDate(form, inputs) {
 }
 
 function renderCustomAttributes(attributes, inputs) {
-	attributes.forEach((attribute) => {
-		const filteredInputs = Array.from(inputs).filter((checkbox) =>
-			JSON.parse(attribute.dataset.subCategoryIds).includes(
-				parseInt(checkbox.value, 10),
-			),
-		);
+	const checked = Array.from(inputs)
+		.filter((input) => input.checked)
+		.map((input) => parseInt(input.value, 10));
 
-		attribute.hidden =
-			filteredInputs.filter((input) => input.checked).length === 0;
+	attributes.forEach((attribute) => {
+		const applicable = JSON.parse(attribute.dataset.subCategoryIds);
+
+		attribute.hidden = !checked.some((id) => applicable.includes(id));
+
+		if (!attribute.hidden) renderAttributeOptions(attribute, checked);
 	});
+}
+
+/**
+ * Hides the options the ticked categories do not offer, so a phono stage is not asked about
+ * I2S. The visible set is the union across ticked categories rather than the intersection: a
+ * product in two categories genuinely is both, so an option either one offers is a real answer.
+ *
+ * An option that is already ticked is never hidden, whatever the categories say. The value is
+ * recorded data -- a phono stage really can have an unusual socket, and a category edited by
+ * mistake must not quietly drop an answer the contributor cannot see to restore.
+ *
+ * Options carry no data attribute at all unless some category narrows the list, in which case
+ * there is nothing to do here.
+ */
+function renderAttributeOptions(attribute, checked) {
+	attribute
+		.querySelectorAll("[data-option-sub-category-ids]")
+		.forEach((option) => {
+			const offeredIn = JSON.parse(option.dataset.optionSubCategoryIds);
+			const offered = checked.some((id) => offeredIn.includes(id));
+			const ticked = Array.from(option.querySelectorAll("input")).some(
+				(input) => input.checked,
+			);
+
+			option.hidden = !offered && !ticked;
+		});
 }
 
 /**

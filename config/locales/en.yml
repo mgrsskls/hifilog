@@ -226,8 +226,17 @@ en:
     l: Length
     max: Maximum
     min: Minimum
+    # Literal Ω rather than &ohm;: unlike custom_attribute_units, none of the sites that render
+    # an input mark the result html_safe, so an entity would show as its own source text.
+    ohm_2: Into 2 Ω
+    ohm_4: Into 4 Ω
+    ohm_8: Into 8 Ω
+    ohm_32: Into 32 Ω
+    ohm_300: Into 300 Ω
+    ohm_600: Into 600 Ω
     w: Width
   custom_attribute_labels:
+    amplifier_output_power: Output power (into speakers)
     amplifier_type: Amplifier type
     assembly: Assembly
     cable_interconnect_type: Type
@@ -235,10 +244,13 @@ en:
     channel_configuration: Channel configuration
     dimensions: Dimensions
     frequency_response_range: Frequency Response Range
+    headphone_amplifier_output_power: Output power (into headphones)
     headphone_connection_type: Connection
     headphone_driver_type: Driver type
     headphone_enclosure_type: Enclosure type
+    headphone_outputs: Headphone outputs
     headphone_sensitivity: Sensitivity
+    input_connectors: Inputs
     loudspeaker_amplification_type: Amplification
     loudspeaker_bi_amping: Bi-Amping
     loudspeaker_bi_wiring: Bi-Wiring
@@ -252,6 +264,8 @@ en:
     loudspeaker_rms_power: RMS Power
     loudspeaker_sensitivity: Sensitivity
     nominal_impedance: Nominal Impedance
+    output_connectors: Outputs
+    speaker_outputs: Speaker outputs
     supported_cartridge_types: Supported cartridge types
     turntable_drive_type: Drive type
     turntable_operation_type: Operation type
@@ -291,18 +305,29 @@ en:
     3_way: 3-way
     4_way: 4-way (and above)
     active: Active
+    aes_ebu: AES/EBU
     amt_tweeter: AMT Tweeter
     automatic: Automatic
     belt-drive: Belt Drive
+    binding_posts: Binding posts
+    bluetooth: Bluetooth
+    bnc: BNC
     closed_back: Closed-back
     coaxial: Coaxial
     direct-drive: Direct Drive
     dual-mono: Dual-Mono
     dynamic: Dynamic
     electrostatic: Electrostatic
+    ethernet: Ethernet
     full_range: Full-Range
+    hdmi: HDMI
+    hdmi_arc: HDMI ARC
     horn_loaded: Horn-loaded
     hybrid: Hybrid
+    i2s: I²S
+    jack_3_5mm: 3.5 mm jack
+    jack_4_4mm: 4.4 mm jack (Pentaconn)
+    jack_6_35mm: 6.35 mm jack
     manual: Manual
     mc: MC
     mm: MM
@@ -322,12 +347,19 @@ en:
     sealed: Sealed
     semi_open: Semi-open
     solid_state: Solid State
+    spdif_coaxial: S/PDIF Coaxial
+    speakon: Speakon
+    spring_clips: Spring clips
     stereo: Stereo
+    toslink: TOSLINK (optical)
     transmission_line: Transmission Line
     tube: Tube
+    usb_b: USB Type-B
+    usb_c: USB Type-C
     wired: Wired
     wireless: Wireless
     xlr: XLR
+    xlr_4pin: 4-pin XLR
     'yes': 'Yes'
   custom_product:
     delete:

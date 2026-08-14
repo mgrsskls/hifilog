@@ -25,7 +25,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
     assert dup.errors.attribute_names.include?(:label)
   end
 
-  test 'requires highlighted presence' do
+  test 'requires highlighted to be answered' do
     record = CustomAttribute.new(
       label: 'amplifier_type',
       input_type: 'boolean'
@@ -35,6 +35,22 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
     assert_not record.valid?
     assert record.errors.attribute_names.include?(:highlighted)
+  end
+
+  # The regression the old `presence: true` was: false is a real answer, not a blank one, and
+  # rejecting it made every attribute that is not a key spec unsaveable -- including through
+  # ActiveAdmin, where 13 of the 30 existing definitions could only be saved by ticking
+  # Highlighted.
+  test 'highlighted false is a valid answer' do
+    record = CustomAttribute.new(
+      label: 'amplifier_type',
+      highlighted: false,
+      input_type: 'boolean'
+    )
+
+    record.sub_categories << @sub_category
+
+    assert record.valid?, record.errors.full_messages.to_sentence
   end
 
   # Every render site calls t("custom_attribute_labels.#{label}") without a default, so an
@@ -271,6 +287,103 @@ class CustomAttributeTest < ActiveSupport::TestCase
     assert_equal once, CustomAttribute.normalize_units(once)
   end
 
+  # An attribute asks one question everywhere it applies, but not every answer applies
+  # everywhere: `input_connectors` is one question, and a phono stage answers it with RCA and
+  # XLR where a DAC answers it with USB and TOSLINK. The subset lives on the join row.
+  def link_between(attribute, sub_category)
+    CustomAttributeSubCategory.find_by!(custom_attribute: attribute, sub_category: sub_category)
+  end
+
+  test 'options_for returns everything while no sub category narrows the list' do
+    attribute = custom_attributes(:three)
+
+    assert_equal attribute.options, attribute.options_for([@sub_category.id])
+    assert_not_predicate attribute, :option_scoped?
+  end
+
+  test 'options_for narrows to a sub category subset' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, @sub_category).update!(option_ids: %w[1])
+
+    assert_equal({ '1' => 'coaxial' }, attribute.options_for([@sub_category.id]))
+    assert_predicate attribute, :option_scoped?
+  end
+
+  # A union, not an intersection: a product in two sub categories genuinely is both, so an
+  # option either one offers is a legitimate answer.
+  test 'options_for unions the subsets of several sub categories' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, sub_categories(:one)).update!(option_ids: %w[1])
+    link_between(attribute, sub_categories(:two)).update!(option_ids: %w[2])
+
+    scoped = attribute.options_for([sub_categories(:one).id, sub_categories(:two).id])
+
+    assert_equal %w[1 2], scoped.keys.sort
+  end
+
+  # Which is why leaving the subset unset is always safe: it means "everything applies here".
+  test 'an unscoped sub category widens the union back to every option' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, sub_categories(:one)).update!(option_ids: %w[1])
+
+    scoped = attribute.options_for([sub_categories(:one).id, sub_categories(:two).id])
+
+    assert_equal attribute.options, scoped
+  end
+
+  test 'options_for ignores sub categories the attribute does not apply to' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, @sub_category).update!(option_ids: %w[1])
+
+    assert_equal attribute.options, attribute.options_for([-1])
+  end
+
+  test 'options_for preserves the definition ordering' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, @sub_category).update!(option_ids: %w[2 1])
+
+    assert_equal attribute.options.keys, attribute.options_for([@sub_category.id]).keys
+  end
+
+  test 'sub_category_ids_for_option counts unscoped sub categories as offering everything' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, sub_categories(:one)).update!(option_ids: %w[1])
+
+    assert_equal [sub_categories(:one).id, sub_categories(:two).id].sort,
+                 attribute.sub_category_ids_for_option('1').sort
+    assert_equal [sub_categories(:two).id], attribute.sub_category_ids_for_option('2')
+  end
+
+  test 'an option id the attribute does not define is rejected on the join row' do
+    link = link_between(custom_attributes(:three), @sub_category)
+    link.option_ids = %w[99]
+
+    assert_not link.valid?
+    assert_match(/are not options of/, link.errors[:option_ids].join(' '))
+  end
+
+  # The join rows are written by HABTM -- `attribute.sub_categories = [...]` -- which never
+  # loads CustomAttributeSubCategory, so its own callback cannot be what keeps this fresh.
+  test 'saving an attribute invalidates the sub category scope map' do
+    with_memory_cache do
+      CustomAttribute.sub_category_scopes_cached
+
+      assert Rails.cache.exist?('custom_attribute_sub_category_scopes')
+
+      custom_attributes(:three).update!(highlighted: true)
+
+      assert_not Rails.cache.exist?('custom_attribute_sub_category_scopes')
+    end
+  end
+
+  def with_memory_cache
+    previous = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    yield
+  ensure
+    Rails.cache = previous
+  end
+
   test 'units_must_be_valid rejects unknown units' do
     record = CustomAttribute.new(
       label: 'headphone_sensitivity',
@@ -284,7 +397,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
     assert_match(/contain invalid values/, record.errors[:units].join(' '))
   end
 
-  test 'inputs_must_be_valid rejects unknown inputs via units error key' do
+  test 'inputs_must_be_valid rejects unknown inputs' do
     record = CustomAttribute.new(
       label: 'loudspeaker_recommended_amplifier_power',
       highlighted: true,
@@ -294,7 +407,29 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
     record.sub_categories << @sub_category
     assert_not record.valid?
-    assert_match(/contain invalid values/, record.errors[:units].join(' '))
+    assert_match(/contain invalid values/, record.errors[:inputs].join(' '))
+    assert_empty record.errors[:units]
+  end
+
+  # Amplifier power is quoted per load impedance, which is what these exist for. Kept as two
+  # sets rather than one of six: `inputs` is what the product form renders as fields, and a
+  # power amplifier should not be asked for its output into 300 ohms.
+  test 'impedance inputs are offerable and translated' do
+    %w[ohm_2 ohm_4 ohm_8 ohm_32 ohm_300 ohm_600].each do |input|
+      assert_includes CustomAttribute::VALID_INPUTS, input
+    end
+
+    record = CustomAttribute.new(
+      label: 'loudspeaker_recommended_amplifier_power',
+      highlighted: true,
+      input_type: 'number',
+      inputs: %w[ohm_8 ohm_4],
+      units: %w[w]
+    )
+
+    record.sub_categories << @sub_category
+
+    assert record.valid?, record.errors.full_messages.to_sentence
   end
 
   test 'before_validation compacts blanks on units and inputs arrays' do

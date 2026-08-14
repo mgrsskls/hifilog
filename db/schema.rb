@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -194,8 +194,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_130000) do
     t.index ["label"], name: "index_custom_attributes_on_label", unique: true
   end
 
-  create_table "custom_attributes_sub_categories", id: false, force: :cascade do |t|
+  create_table "custom_attributes_sub_categories", force: :cascade do |t|
     t.bigint "custom_attribute_id", null: false
+    t.text "option_ids", default: [], null: false, array: true
     t.bigint "sub_category_id", null: false
     t.index ["custom_attribute_id"], name: "index_custom_attributes_sub_categories_on_custom_attribute_id"
     t.index ["sub_category_id", "custom_attribute_id"], name: "idx_on_sub_category_id_custom_attribute_id_b00c6955d4", unique: true

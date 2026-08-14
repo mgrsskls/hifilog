@@ -16,7 +16,24 @@ class CustomAttribute < ApplicationRecord
     hz khz
     h mah percent bit um_mn
   ].freeze
-  VALID_INPUTS = %w[w h l min max].freeze
+  # Named facets of one measurement, sharing that measurement's unit: `w`/`h`/`l` are three
+  # dimensions in centimetres, `min`/`max` two ends of one range. The filter treats them the
+  # same way -- its own min/max per facet -- so a set of load impedances fits the pattern
+  # exactly: amplifier power is quoted per impedance, in watts either way.
+  #
+  # Speaker and headphone amplifiers keep separate sets rather than one list of six, because
+  # `inputs` is also what the product form renders as fields, and an attribute offering both
+  # would ask a power amplifier for its output into 300 ohms.
+  #
+  # Unlike units these need no translation to be *rendered* correctly in more than one place --
+  # but every render site calls `t()` with no default, so the same rule applies: nothing goes in
+  # here without a `custom_attribute_inputs` entry, and CustomAttributeTest asserts it.
+  VALID_INPUTS = %w[
+    w h l
+    min max
+    ohm_2 ohm_4 ohm_8
+    ohm_32 ohm_300 ohm_600
+  ].freeze
 
   # Imperial unit => [the metric unit it is stored and compared in, multiplier].
   #
@@ -56,7 +73,12 @@ class CustomAttribute < ApplicationRecord
   }, suffix: true
 
   validates :label, presence: true, uniqueness: true
-  validates :highlighted, presence: true
+  # `presence: true` cannot express "a boolean that must be answered": `false.present?` is
+  # false, so it rejected every attribute that is not a key spec -- 13 of the 30 that exist.
+  # Those rows predate the validation, which is why the catalogue is full of values the model
+  # would now refuse to save: any of them opened in ActiveAdmin could only be saved by ticking
+  # Highlighted. `inclusion` is the idiom that separates "false" from "unanswered".
+  validates :highlighted, inclusion: { in: [true, false] }
   validate :units_must_be_valid
   validate :inputs_must_be_valid
   validate :label_must_be_translated
@@ -160,6 +182,76 @@ class CustomAttribute < ApplicationRecord
     Rails.cache.fetch('all_custom_attributes') do
       all.to_a # .to_a executes the query and stores the array
     end
+  end
+
+  # { attribute_id => { sub_category_id => ["1", "2"] } }, where an empty array means every
+  # option of that attribute applies in that subcategory.
+  #
+  # One pluck for the whole join table, cached as plain data rather than as records: the product
+  # form renders every attribute on every load and would otherwise ask each one for its
+  # subcategories separately. It answers both questions at once -- which subcategories an
+  # attribute applies to (the keys) and which options apply in each (the values) -- so the form
+  # reads it instead of `sub_category_ids`.
+  def self.sub_category_scopes_cached
+    Rails.cache.fetch('custom_attribute_sub_category_scopes') do
+      CustomAttributeSubCategory
+        .pluck(:custom_attribute_id, :sub_category_id, :option_ids)
+        .each_with_object({}) do |(attribute_id, sub_category_id, ids), acc|
+        (acc[attribute_id] ||= {})[sub_category_id] =
+          ids
+      end
+    end
+  end
+
+  def self.clear_sub_category_scope_cache
+    Rails.cache.delete('custom_attribute_sub_category_scopes')
+  end
+
+  # The subcategories this attribute applies to, from the cached map rather than a query per
+  # attribute.
+  def cached_sub_category_ids
+    self.class.sub_category_scopes_cached.fetch(id, {}).keys
+  end
+
+  # The options to offer for something sitting in `sub_category_ids`.
+  #
+  # A union, not an intersection: a product in two subcategories is genuinely both, so an option
+  # either subcategory offers is a legitimate answer. An empty subset means "all of them", so
+  # one unscoped subcategory widens the union back to the full list -- which is what makes this
+  # safe to leave unset everywhere it does not matter.
+  #
+  # `select` rather than `slice`, so the definition's own ordering survives.
+  def options_for(sub_category_ids)
+    return options if options.blank?
+
+    scopes = self.class.sub_category_scopes_cached[id]
+    return options if scopes.blank?
+
+    subsets = Array(sub_category_ids).map(&:to_i).filter_map { |sub_category_id| scopes[sub_category_id] }
+    return options if subsets.empty? || subsets.any?(&:empty?)
+
+    allowed = subsets.flatten.uniq
+
+    # Not slice(*allowed): slice orders its result by the argument list, not by `options`'
+    # own key order, so it would return the scoping order (or, unioned, an arbitrary one)
+    # instead of the curated order the definition was written in.
+    # rubocop:disable Style/HashSlice
+    options.select { |key, _| allowed.include?(key) }
+    # rubocop:enable Style/HashSlice
+  end
+
+  # The subcategories in which a single option is offered, for the product form to serialise
+  # next to that option. A subcategory with no subset offers everything, so it counts.
+  def sub_category_ids_for_option(option_id)
+    self.class.sub_category_scopes_cached.fetch(id, {}).filter_map do |sub_category_id, ids|
+      sub_category_id if ids.empty? || ids.include?(option_id.to_s)
+    end
+  end
+
+  # True when at least one subcategory narrows this attribute's options, i.e. when the form has
+  # any reason to filter them client-side.
+  def option_scoped?
+    self.class.sub_category_scopes_cached.fetch(id, {}).any? { |_, ids| ids.present? }
   end
 
   # Every i18n key that may be used as an option value, as [key, translated label]
@@ -357,7 +449,11 @@ class CustomAttribute < ApplicationRecord
     self.class.send(:sanitize_sql_array, statement)
   end
 
+  # Both maps, because a HABTM write goes through this record rather than through
+  # CustomAttributeSubCategory: `attribute.sub_categories = [...]` inserts and deletes join rows
+  # directly, so the join model's own callback never runs for them.
   def clear_cache
     Rails.cache.delete('all_custom_attributes')
+    self.class.clear_sub_category_scope_cache
   end
 end

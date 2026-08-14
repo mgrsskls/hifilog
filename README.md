@@ -114,6 +114,16 @@ A prefix is only justified when two categories genuinely mean different things b
 - **Different option set** — headphone enclosures (open / semi / closed) against speaker enclosures (sealed / ported / …).
 - **Different question** — `cartridge_type` asks what a thing _is_, `supported_cartridge_types` asks what it _accepts_.
 
+**Option values follow the same rule one level down.** They too live in one flat namespace (`custom_attributes.*`), so a key is shared when two attributes mean the same thing by it and prefixed when they merely share a word. `rca` and `xlr` are shared by `cable_interconnect_type`, `input_connectors` and `output_connectors`, because an RCA socket is an RCA socket everywhere and should be spelled — and renamed — in one place. `coaxial` and `optical`, by contrast, already mean a loudspeaker driver topology and a cartridge type, so the connector lists say `spdif_coaxial` and `toslink`: reusing them would tie a speaker's drivers to a DAC's inputs and let a relabelling of one corrupt the other.
+
+**Which options apply is scoped per subcategory**, on the join row rather than the attribute. `input_connectors` is one question everywhere, but a phono stage answers it with RCA and XLR while a DAC answers it with USB, coaxial and TOSLINK — so `custom_attributes_sub_categories.option_ids` narrows the list, and an **empty array means all of them**, which is why leaving it unset is always safe. **`CustomAttributeSubCategory`** exists for that column only; the HABTM associations still own "which attributes apply here" and are untouched.
+
+Reading it is a **union**, not an intersection: a product in two subcategories genuinely is both, so an option either offers is a legitimate answer, and one unscoped subcategory widens the list back to everything. Because HABTM writes join rows without ever loading the join model, `CustomAttribute#clear_cache` is what invalidates the cached map, not the join model's own callback.
+
+The product form renders every attribute up front and shows them as subcategory checkboxes change, so scoping there is client-side: each option carries the subcategories offering it and `entity_form.js` unions across the ticked ones. **An option already ticked is never hidden** — the value is recorded data, and a category edited by mistake must not quietly drop an answer the contributor cannot see to restore. Scoping is therefore presentation-only and never a validation.
+
+A corollary worth stating, because it decides how many attributes exist: **don't split an attribute along a distinction its option values already carry.** `input_connectors` covers analogue and digital together — `rca` is analogue and `toslink` is digital, and the value says so — where separate `analog_inputs`/`digital_inputs` would duplicate that in the schema, force a boundary ruling on every ambiguous connector, and produce subcategory sets that get it wrong. The in/out split does earn its place: `rca` sits on both sides, so direction is genuinely not recoverable from the value.
+
 Where a prefix is warranted it comes from a closed list of **Category-level** words — `loudspeaker_`, `headphone_`, `turntable_`, `cartridge_`, `tonearm_`, `amplifier_`, `cable_`, `tube_`, `tape_` — never a subcategory name. Otherwise the bare term is used, chosen specifically enough that a future collision is unlikely (`bi_wiring`, not `wiring`).
 
 ### Labels and option values are i18n keys
@@ -122,7 +132,9 @@ Every surface that renders an attribute — product form, filter sidebar, spec l
 
 Definitions are admin-created data rows, so no test can enumerate what production holds; the only moment the two can be compared is the moment the row is written. `CustomAttribute` therefore validates both directions of that mapping. The practical consequence is a deploy order: **the translation ships before the attribute is created**, which is the same order `available_option_keys` already imposes by offering the admin a datalist of keys the locale file defines.
 
-Units and inputs need the same translations, but `VALID_UNITS` and `VALID_INPUTS` are closed constants rather than data, so a test enumerates them instead of a validation.
+Units and inputs need the same translations, but `VALID_UNITS` and `VALID_INPUTS` are closed constants rather than data, so a test enumerates them instead of a validation. One asymmetry to know: the sites rendering a **unit** mark the result html_safe (so `&ohm;` works), while the sites rendering an **input** do not — input labels use literal characters.
+
+**`inputs`** are named facets of one measurement sharing its unit: `w`/`h`/`l` are three dimensions in centimetres, `min`/`max` two ends of one range, and `ohm_8`/`ohm_4` two load impedances an amplifier's power is quoted into, in watts either way. The filter applies its own min/max per facet, so all three shapes behave the same. Speaker and headphone amplifier impedances are separate sets rather than one list of six, because `inputs` is also what the product form renders as fields.
 
 ### Units and conversion
 
@@ -141,6 +153,15 @@ Because reads never convert, **values are normalised on write**: `Product` runs 
 For the `option` and `options` input types, the definition's `options` is a JSON object mapping a **numeric id** to an **i18n key** under `custom_attributes` in the locale files. Products store the id, never the key — so a mislabelled option can be renamed without touching a single product row. The admin editor upholds that split: ids are assigned automatically (always above the highest ever used, so a deleted id is never handed out again) and are not editable, while the key is picked from a datalist of what the locale file already defines. Removing an option asks for confirmation and states how many products still point at it, counted by **`CustomAttribute#option_usage_counts`** — one aggregate query narrowed by the GIN index on `products.custom_attributes`, not one count per option.
 
 Exactly one shape of extra configuration applies per input type: `options` for `option`/`options`, `units` and `inputs` for `number`, neither for `boolean`. A `before_validation` clears whatever the current input type does not use, because the product form picks its control by inspecting `options` and then `inputs` rather than `input_type` — leftovers from a previous type would render the wrong widget. The admin form hides the group that doesn't apply and warns before a type switch discards anything.
+
+### Creating definitions in bulk
+
+Definitions are data and **ActiveAdmin is where they are edited**. `rake custom_attributes:define` exists only for the thing clicking is bad at: bringing a tranche of them into being identically across environments, from a diff someone can review. It matches by label and updates, so a re-run reports no changes.
+
+It is not a second source of truth. Two rules keep it from becoming one:
+
+- **Options are declared as i18n keys, never ids.** Existing keys are handed back to `options_attributes=` with the id they already hold, so a re-run cannot renumber the value products actually store. Dropping a key raises rather than removing an option products still point at — that confirmation belongs in the admin form, which can show the counts.
+- **Subcategories are referenced by slug, and an unresolved slug aborts the run.** A definition silently attached to fewer categories than intended is the failure this task exists to avoid.
 
 **`CustomProduct`** does not participate in this system at all.
 

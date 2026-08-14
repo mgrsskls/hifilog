@@ -2,6 +2,21 @@
 
 # rubocop:disable Metrics/ModuleLength
 module ProductsHelper
+  # Which sub categories the filter's option lists should be narrowed to, for
+  # CustomAttribute#options_for. A sub category answers for itself; a category answers for all
+  # of its sub categories; with neither there is no context to narrow by, and `nil` is exactly
+  # what options_for reads as "offer everything".
+  #
+  # A helper rather than the expression inline, because three filters need the same answer --
+  # the products catalogue, the brands catalogue and a brand's own products -- and the first
+  # version of this shipped in only one of them, so the other two went on offering a TOSLINK
+  # filter on pages where nothing could match it.
+  def custom_attribute_option_scope_ids(category, sub_category)
+    return [sub_category.id] if sub_category.present?
+
+    category&.sub_category_ids
+  end
+
   def products_index_item_list_json_ld(products:, canonical_url: nil)
     product_items_item_list_json_ld(products:, name: products_index_item_list_name, canonical_url:)
   end
