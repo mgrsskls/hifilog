@@ -129,6 +129,20 @@ function setupUnitConversion(container) {
 		return;
 	}
 
+	const decimalSeparator = localeDecimalSeparator();
+
+	// Rewrites what was typed into a form the server can read, before it is submitted.
+	container.querySelectorAll('input[name*="[value]"]').forEach((input) =>
+		input.addEventListener("change", () => {
+			const value = parseTypedNumber(input.value, decimalSeparator);
+
+			// Left as typed when it is not a number at all: the contributor should see
+			// their own input rather than have it silently rewritten or cleared. The
+			// controller drops an unreadable figure the way it drops a blank one.
+			if (!Number.isNaN(value)) input.value = String(value);
+		}),
+	);
+
 	container.querySelectorAll(".EntityForm-attribute").forEach((attribute) => {
 		const radios = attribute.querySelectorAll(
 			'input[type="radio"][name$="[unit]"]',
@@ -148,6 +162,7 @@ function setupUnitConversion(container) {
 					attribute.dataset.unit,
 					radio.value,
 					equivalents,
+					decimalSeparator,
 				);
 
 				attribute.dataset.unit = radio.value;
@@ -156,7 +171,13 @@ function setupUnitConversion(container) {
 	});
 }
 
-function convertAttributeValues(attribute, from, to, equivalents) {
+function convertAttributeValues(
+	attribute,
+	from,
+	to,
+	equivalents,
+	decimalSeparator,
+) {
 	if (!from || from === to) return;
 
 	const pair = equivalents[from];
@@ -170,7 +191,7 @@ function convertAttributeValues(attribute, from, to, equivalents) {
 	// Matches both value shapes: `[...][value]` and, for an attribute with inputs, each
 	// `[...][value][w]`. The unit radios end in `[unit]`, so they are not caught here.
 	attribute.querySelectorAll('input[name*="[value]"]').forEach((input) => {
-		const value = Number.parseFloat(input.value);
+		const value = parseTypedNumber(input.value, decimalSeparator);
 
 		if (Number.isNaN(value)) return;
 
@@ -180,6 +201,94 @@ function convertAttributeValues(attribute, from, to, equivalents) {
 		// back. At eight, toggling is exactly reversible however many times it is done.
 		input.value = String(Number((value * pair[1]).toFixed(8)));
 	});
+}
+
+/**
+ * The decimal separator of the page's locale. Intl has no parse API, so this is the standard
+ * way to get at it: format a number and read the decimal part back.
+ */
+function localeDecimalSeparator() {
+	const locale = document.documentElement.lang || navigator.language || "en";
+	const parts = new Intl.NumberFormat(locale).formatToParts(1.2);
+
+	return parts.find((part) => part.type === "decimal")?.value || ".";
+}
+
+/**
+ * Reads a number a contributor typed, whichever separator convention they used.
+ *
+ * `Number.parseFloat("0,5")` returns 0 rather than NaN, so nothing catches it and 0 is written
+ * to the catalogue as though it were a measurement. It also accepts "12abc" as 12. Someone
+ * typing a decimal comma has no way to tell either happened.
+ *
+ * Most of this is decided from the string alone, and only the genuinely ambiguous case falls
+ * back to the locale:
+ *
+ *   both separators present            the last one is the decimal, the other groups
+ *   one separator, appearing twice+    grouping
+ *   one separator, not followed by     decimal -- "0,5", "12,45", "1.2345"
+ *     exactly three digits
+ *   one separator, followed by         ambiguous: "1,234" is 1234 to an English reader and
+ *     exactly three digits             1.234 to a German one. The locale breaks the tie,
+ *                                      because guessing from the digits would just be the
+ *                                      same silent-wrong-number bug in a new costume.
+ *
+ * Returns NaN for anything that is not wholly a number, so a typo is rejected rather than
+ * truncated. That includes a repeated separator whose groups are not a real grouping --
+ * "12.3.4" is a mistyped decimal, not twelve-thousand-three-hundred-and-four, and reading it
+ * as the latter would be the same silent-wrong-number bug this function exists to prevent.
+ */
+function parseTypedNumber(text, decimalSeparator) {
+	const raw = String(text).replace(/[\s  ]/g, "");
+
+	if (raw === "") return Number.NaN;
+
+	const decimal = decimalSeparatorIn(raw, decimalSeparator);
+
+	if (decimal === INVALID_GROUPING) return Number.NaN;
+
+	const normalised = decimal
+		? raw.replaceAll(decimal === "," ? "." : ",", "").replace(decimal, ".")
+		: raw.replaceAll(",", "").replaceAll(".", "");
+
+	return /^-?\d+(\.\d+)?$/.test(normalised) ? Number(normalised) : Number.NaN;
+}
+
+const INVALID_GROUPING = "invalid-grouping";
+
+function decimalSeparatorIn(raw, decimalSeparator) {
+	const hasComma = raw.includes(",");
+	const hasDot = raw.includes(".");
+
+	if (hasComma && hasDot) {
+		return raw.lastIndexOf(",") > raw.lastIndexOf(".") ? "," : ".";
+	}
+
+	if (!hasComma && !hasDot) return null;
+
+	const separator = hasComma ? "," : ".";
+
+	// Repeated, so it can only be grouping: "1.234.567". Every group after the first must be
+	// exactly three digits, or this is a mistyped separator rather than a real grouping.
+	if (raw.indexOf(separator) !== raw.lastIndexOf(separator)) {
+		return isValidGrouping(raw, separator) ? null : INVALID_GROUPING;
+	}
+
+	const trailing = raw.slice(raw.lastIndexOf(separator) + 1);
+
+	if (trailing.length !== 3) return separator;
+
+	return decimalSeparator === separator ? separator : null;
+}
+
+function isValidGrouping(raw, separator) {
+	const groups = (raw.startsWith("-") ? raw.slice(1) : raw).split(separator);
+
+	return (
+		groups[0].length >= 1 &&
+		groups[0].length <= 3 &&
+		groups.slice(1).every((group) => group.length === 3)
+	);
 }
 
 function renderBrands(input, brands, addBrandForm) {

@@ -255,7 +255,9 @@ class CustomAttribute < ApplicationRecord
     cleaned_inputs = inputs.compact_blank
     invalid = cleaned_inputs - VALID_INPUTS
 
-    errors.add(:units, "contain invalid values: #{invalid.join(', ')}") if invalid.any?
+    # :inputs, not :units. The admin form renders each error beside its own field, so this
+    # reported a bad input against the units checkboxes -- pointing at the group that was fine.
+    errors.add(:inputs, "contain invalid values: #{invalid.join(', ')}") if invalid.any?
   end
 
   # simplecov:disable

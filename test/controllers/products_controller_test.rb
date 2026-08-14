@@ -268,6 +268,125 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     saved&.destroy
   end
 
+  # `to_f` read "0,5" as 0.0, so a contributor using a decimal comma silently wrote a measured
+  # zero. Unreadable is now treated as unanswered, which the completeness prompts ask about
+  # again instead of accepting.
+  test 'create drops a number it cannot read rather than storing it as zero' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Unreadable number product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'weight' => { 'value' => '0,5', 'unit' => 'kg' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    saved = Product.find_by!(name: 'Unreadable number product xyz')
+
+    assert_not saved.custom_attributes.key?('weight')
+  ensure
+    saved&.destroy
+  end
+
+  # Used to raise on `active_record.input_type`. A form rendered before a label was renamed
+  # submits exactly this, so it has to be an ignored key rather than a 500 -- and an ignored
+  # key nothing can interpret has no business being persisted either.
+  test 'create drops a custom attribute label no definition backs' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Unknown attribute product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'no_such_attribute' => { 'value' => '5', 'unit' => 'kg' },
+          'weight' => { 'value' => '3', 'unit' => 'kg' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    assert_response :redirect
+
+    saved = Product.find_by!(name: 'Unknown attribute product xyz')
+
+    assert_not saved.custom_attributes.key?('no_such_attribute')
+    assert_in_delta 3.0, saved.custom_attributes.dig('weight', 'value')
+  ensure
+    saved&.destroy
+  end
+
+  test 'create keeps only the readable inputs of a multi input number' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Partial dimensions product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'dimensions' => { 'value' => { 'w' => '10', 'h' => '', 'l' => 'tall' }, 'unit' => 'cm' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    saved = Product.find_by!(name: 'Partial dimensions product xyz')
+
+    assert_in_delta 10.0, saved.custom_attributes.dig('dimensions', 'value', 'w')
+    assert_equal %w[w], saved.custom_attributes.dig('dimensions', 'value').keys
+  ensure
+    saved&.destroy
+  end
+
+  # A custom_attributes key with no backing CustomAttribute definition -- crafted, or stale
+  # after a label rename -- used to reach `active_record.input_type` on nil and 500. It is now
+  # dropped rather than cast (see discard_unknown_custom_attributes!), so the rest of the
+  # submission still saves -- even when dropping leaves custom_attributes empty, as it does here.
+  test 'create does not error on a custom_attributes key with no matching definition' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Unknown custom attribute product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'not_a_real_attribute' => { 'value' => '1', 'unit' => 'kg' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    assert_response :redirect
+
+    saved = Product.find_by!(name: 'Unknown custom attribute product xyz')
+  ensure
+    saved&.destroy
+  end
+
   test 'create with invalid brand renders new with product_options applied to in-memory record' do
     sub_category_id = categories(:one).sub_categories.first.id
 
