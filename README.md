@@ -61,8 +61,8 @@ flowchart TB
 A brand carries three names, each with one job:
 
 - **`name`** — canonical identity, written the way the manufacturer writes it ("Bang & Olufsen"). Unique, and the `friendly_id` slug source. Used for JSON-LD `name` and wherever the brand has to be identified unambiguously.
-- **`abbreviation`** — optional short form the brand is known by that is **not** part of its name: "B&O" for "Bang & Olufsen". Anything already contained in `name` is cleared in a `before_validation`, because search reaches those through `name` anyway — "fezz" prefix-matches "fezz audio", while "B&O" normalises to "bo", which "bang olufsen" neither starts with nor contains. That narrowing is what lets every display site render it without checking for repetition: whatever survives is never already visible in the name. Catalog views expose it as `brand_abbreviation` so listings don't join.
-- **`legal_name`** — optional registered company name ("Bang & Olufsen A/S"). Shown in the facts list on the brand page; deliberately excluded from ranked search, since pg_search concatenates `against:` columns before computing trigram similarity and a long formulaic value dilutes every query.
+- **`abbreviation`** — optional short form the brand is known by that is **not** part of its name: "B&O" for "Bang & Olufsen". A `before_validation` clears anything already contained in `name`, so whatever survives is never already visible beside it and display sites need no repetition check. Catalog views expose it as `brand_abbreviation` so listings don't join.
+- **`legal_name`** — optional registered company name ("Bang & Olufsen A/S"). Shown in the facts list on the brand page and filterable, but excluded from ranked search.
 
 Two accessors decide which form is rendered where:
 
@@ -96,13 +96,24 @@ A variant belongs to one product and has its own options, possessions, and notes
 
 ## Product option
 
-`ProductOption` belongs to **either** a product **or** a variant (never both): structured spec lines (e.g. color, impedance). Possessions may optionally reference one to record the configuration the user actually has.
+`ProductOption` belongs to **either** a product **or** a variant (never both): one of the configurations that product is _sold in_ — colour, finish, cable length — each with its own optional `model_no`. Possessions may optionally reference one to record the configuration the user actually has.
+
+### Option or custom attribute?
+
+The two are easy to confuse, and the answer follows from who the value belongs to:
+
+- A **custom attribute** is one value true of _every unit_ of the product. Weight, impedance, driver type. It describes the model, and the catalogue filters on it.
+- A **product option** is one of several configurations the product is _sold in_, varying per purchased unit and usually carrying its own part number. Which one an owner has is recorded on their possession, not on the product.
+
+So a cable's conductor material is an attribute and its length is an option: the same cable at 1 m and 2 m is one model in two configurations, and forcing length into an attribute would mean either one length per product or a separate product per length. The same test puts loudspeaker finish and cable termination on the option side.
+
+Where a manufacturer genuinely sells the variants as distinct product lines rather than as configurations of one, a **`ProductVariant`** is the third answer — see [Product variant](#product-variant).
 
 ## Custom attributes (definitions vs values)
 
 **Definitions** (`CustomAttribute`) are reusable fields tied to subcategories: label, input type, options, units, highlighted flag. Definitions are cached globally.
 
-**Values** are stored directly on the product as a flexible set of key/value pairs, keyed by attribute label. Variants do not store their own values; wherever custom attributes are displayed for a variant, the parent product's values are shown instead.
+**Values** are stored directly on the product as a flexible set of key/value pairs, keyed by attribute label. Variants do not store their own values; wherever custom attributes are displayed for a variant, the parent product's values are shown instead. Filtering on catalog indexes uses the definitions applicable to the current category context. **`CustomProduct`** does not participate in this system at all.
 
 ### Naming a label
 
@@ -116,11 +127,9 @@ A prefix is only justified when two categories genuinely mean different things b
 
 **Option values follow the same rule one level down.** They too live in one flat namespace (`custom_attributes.*`), so a key is shared when two attributes mean the same thing by it and prefixed when they merely share a word. `rca` and `xlr` are shared by `cable_interconnect_type`, `input_connectors` and `output_connectors`, because an RCA socket is an RCA socket everywhere and should be spelled — and renamed — in one place. `coaxial` and `optical`, by contrast, already mean a loudspeaker driver topology and a cartridge type, so the connector lists say `spdif_coaxial` and `toslink`: reusing them would tie a speaker's drivers to a DAC's inputs and let a relabelling of one corrupt the other.
 
-**Which options apply is scoped per subcategory**, on the join row rather than the attribute. `input_connectors` is one question everywhere, but a phono stage answers it with RCA and XLR while a DAC answers it with USB, coaxial and TOSLINK — so `custom_attributes_sub_categories.option_ids` narrows the list, and an **empty array means all of them**, which is why leaving it unset is always safe. **`CustomAttributeSubCategory`** exists for that column only; the HABTM associations still own "which attributes apply here" and are untouched.
+**Which options apply is scoped per subcategory**, on the join row rather than the attribute: `input_connectors` is one question everywhere, but a phono stage answers it with RCA and XLR while a DAC answers it with USB, coaxial and TOSLINK. **`CustomAttributeSubCategory`** exists for that `custom_attributes_sub_categories.option_ids` column only; the HABTM associations still own "which attributes apply here" and are untouched. An empty array means all options, so leaving it unset is always safe, and the scope is read as a **union** across the product's subcategories rather than an intersection.
 
-Reading it is a **union**, not an intersection: a product in two subcategories genuinely is both, so an option either offers is a legitimate answer, and one unscoped subcategory widens the list back to everything. Because HABTM writes join rows without ever loading the join model, `CustomAttribute#clear_cache` is what invalidates the cached map, not the join model's own callback.
-
-The product form renders every attribute up front and shows them as subcategory checkboxes change, so scoping there is client-side: each option carries the subcategories offering it and `entity_form.js` unions across the ticked ones. **An option already ticked is never hidden** — the value is recorded data, and a category edited by mistake must not quietly drop an answer the contributor cannot see to restore. Scoping is therefore presentation-only and never a validation.
+Scoping is **presentation-only, never a validation**: the product form renders every attribute up front and narrows the visible options client-side in `entity_form.js`, and an option already ticked is never hidden.
 
 A corollary worth stating, because it decides how many attributes exist: **don't split an attribute along a distinction its option values already carry.** `input_connectors` covers analogue and digital together — `rca` is analogue and `toslink` is digital, and the value says so — where separate `analog_inputs`/`digital_inputs` would duplicate that in the schema, force a boundary ruling on every ambiguous connector, and produce subcategory sets that get it wrong. The in/out split does earn its place: `rca` sits on both sides, so direction is genuinely not recoverable from the value.
 
@@ -132,27 +141,23 @@ Every surface that renders an attribute — product form, filter sidebar, spec l
 
 Definitions are admin-created data rows, so no test can enumerate what production holds; the only moment the two can be compared is the moment the row is written. `CustomAttribute` therefore validates both directions of that mapping. The practical consequence is a deploy order: **the translation ships before the attribute is created**, which is the same order `available_option_keys` already imposes by offering the admin a datalist of keys the locale file defines.
 
-Units and inputs need the same translations, but `VALID_UNITS` and `VALID_INPUTS` are closed constants rather than data, so a test enumerates them instead of a validation. One asymmetry to know: the sites rendering a **unit** mark the result html_safe (so `&ohm;` works), while the sites rendering an **input** do not — input labels use literal characters.
+Units and inputs need the same translations, but `VALID_UNITS` and `VALID_INPUTS` are closed constants rather than data, so a test enumerates them instead of a validation.
 
-**`inputs`** are named facets of one measurement sharing its unit: `w`/`h`/`l` are three dimensions in centimetres, `min`/`max` two ends of one range, and `ohm_8`/`ohm_4` two load impedances an amplifier's power is quoted into, in watts either way. The filter applies its own min/max per facet, so all three shapes behave the same. Speaker and headphone amplifier impedances are separate sets rather than one list of six, because `inputs` is also what the product form renders as fields.
+**`inputs`** are named facets of one measurement sharing its unit: `w`/`h`/`l` are three dimensions in centimetres, `min`/`max` two ends of one range, `ohm_8`/`ohm_4` two load impedances an amplifier's power is quoted into. The filter applies its own min/max per facet, so all three shapes behave the same.
 
 ### Units and conversion
 
-Two units on one definition mean _the same quantity in the other system_, and both the filter and the display path assume they can convert between them. **`CustomAttribute::UNIT_CONVERSIONS`** is the single table saying which pairs those are and by what factor; `UNIT_EQUIVALENTS` derives the reverse direction so a display can show both readings from either side.
-
-That table is also what makes a unit _storable_: filtering normalises a submitted range to the metric half of a pair and then matches on the stored `unit` string, so the metric half is the only spelling a value can be found under. A unit therefore only belongs in `UNIT_CONVERSIONS` once something genuinely converts to it, and a definition may only offer two units when those two are a pair listed there. `mm` is deliberately not paired with `in` for that reason — `in` already canonicalises to `cm`.
+Two units on one definition mean _the same quantity in the other system_, and both the filter and the display path assume they can convert between them. **`CustomAttribute::UNIT_CONVERSIONS`** is the single table saying which pairs those are and by what factor; `UNIT_EQUIVALENTS` derives the reverse direction so a display can show both readings from either side. A definition may only offer two units when those two are a pair listed there, and a unit only belongs in the table once something genuinely converts to it.
 
 Two units are not always a pair: `loudspeaker_sensitivity` offers dB@1W/1m and dB@2.83V/1m, which are two different measurements with no factor between them, and the display shows a single reading.
 
-The product form's unit radios declare **the unit the typed number is in**, not a display preference — the server normalises whatever it receives. So `entity_form.js` converts the displayed number whenever a radio is toggled: without that, switching kg to lb on a value nobody retyped redefines it rather than restating it, and switching back converts again instead of undoing. The rounding on both sides is eight decimal places, and they have to agree — coarser and a value typed as `2` comes back as `2.000001`, finer and it drifts on each pass. Where two units are not a convertible pair, toggling relabels and leaves the number alone, because relabelling is all it can honestly mean. (The filter sidebar's unit radios are not touched: those numbers are the visitor's own query, not a stored value.)
+**Reads never convert, so values are normalised on write.** `Product` runs `CustomAttribute.normalize_units` before save, which makes "stored unit" and "canonical unit" the same thing everywhere downstream — filtering normalises a submitted range and then matches on the stored `unit` string. Normalisation sits on the model rather than in the product form so ActiveAdmin, `ProductConversionService` and the console are covered too. Values written before it existed were rewritten once by the `NormalizeStoredCustomAttributeUnits` migration.
 
-Typed figures are read with `parseTypedNumber`, not `parseFloat`. `parseFloat("0,5")` is `0` rather than `NaN`, so a contributor using a decimal comma wrote a measured zero that nobody could see was wrong; `"12abc"` became `12` the same way. The separator convention is inferred from the string where it can be (both separators present, a repeated separator, or a separator not followed by exactly three digits) and only the genuinely ambiguous `1,234` falls back to the page locale's separators, read out of `Intl.NumberFormat().formatToParts()`. The controller is the net for when the JS has not run: it parses with `Float(exception: false)` and drops an unreadable figure the way it drops a blank one, since absent gets asked about again where a zero looks answered.
+The product form's unit radios declare **the unit the typed number is in**, not a display preference, so `entity_form.js` converts the displayed number whenever a radio is toggled — and merely relabels where the two units are not a convertible pair. Typed figures are read through `parseTypedNumber` rather than `parseFloat`, which infers the decimal-separator convention instead of silently truncating; the controller re-parses server-side as the net for when the JS has not run. (The filter sidebar's unit radios are not touched: those numbers are the visitor's own query, not a stored value.)
 
-Because reads never convert, **values are normalised on write**: `Product` runs `CustomAttribute.normalize_units` before save whenever the specs changed, so a weight entered in pounds is stored in kilograms and "stored unit" and "canonical unit" mean the same thing everywhere downstream. It sits on the model rather than in the product form so ActiveAdmin, `ProductConversionService` and the console are covered too, and it is idempotent — a canonical unit converts to itself. Values written before it existed were rewritten once by `NormalizeStoredCustomAttributeUnits`, which finds them with a jsonpath predicate the GIN index can serve rather than scanning the catalogue.
+For the `option` and `options` input types, the definition's `options` is a JSON object mapping a **numeric id** to an **i18n key** under `custom_attributes` in the locale files. Products store the id, never the key — so a mislabelled option can be renamed without touching a single product row. The admin editor upholds that split: ids are assigned automatically, never reused, and are not editable, while the key is picked from a datalist of what the locale file already defines. Removing an option asks for confirmation and states how many products still point at it, counted in one aggregate query by **`CustomAttribute#option_usage_counts`**.
 
-For the `option` and `options` input types, the definition's `options` is a JSON object mapping a **numeric id** to an **i18n key** under `custom_attributes` in the locale files. Products store the id, never the key — so a mislabelled option can be renamed without touching a single product row. The admin editor upholds that split: ids are assigned automatically (always above the highest ever used, so a deleted id is never handed out again) and are not editable, while the key is picked from a datalist of what the locale file already defines. Removing an option asks for confirmation and states how many products still point at it, counted by **`CustomAttribute#option_usage_counts`** — one aggregate query narrowed by the GIN index on `products.custom_attributes`, not one count per option.
-
-Exactly one shape of extra configuration applies per input type: `options` for `option`/`options`, `units` and `inputs` for `number`, neither for `boolean`. A `before_validation` clears whatever the current input type does not use, because the product form picks its control by inspecting `options` and then `inputs` rather than `input_type` — leftovers from a previous type would render the wrong widget. The admin form hides the group that doesn't apply and warns before a type switch discards anything.
+Exactly one shape of extra configuration applies per input type: `options` for `option`/`options`, `units` and `inputs` for `number`, neither for `boolean`. A `before_validation` clears whatever the current input type does not use, since the product form picks its control by inspecting those fields rather than `input_type`.
 
 ### Creating definitions in bulk
 
@@ -160,12 +165,8 @@ Definitions are data and **ActiveAdmin is where they are edited**. `rake custom_
 
 It is not a second source of truth. Two rules keep it from becoming one:
 
-- **Options are declared as i18n keys, never ids.** Existing keys are handed back to `options_attributes=` with the id they already hold, so a re-run cannot renumber the value products actually store. Dropping a key raises rather than removing an option products still point at — that confirmation belongs in the admin form, which can show the counts.
+- **Options are declared as i18n keys, never ids**, so a re-run cannot renumber the value products actually store. Dropping a key raises rather than removing an option products still point at — that confirmation belongs in the admin form, which can show the counts.
 - **Subcategories are referenced by slug, and an unresolved slug aborts the run.** A definition silently attached to fewer categories than intended is the failure this task exists to avoid.
-
-**`CustomProduct`** does not participate in this system at all.
-
-Filtering on catalog indexes uses the definitions applicable to the current category context.
 
 ## Catalog row views (`ProductItem`, `ContributeProductItem`)
 
@@ -254,12 +255,9 @@ A **backfill** task can rebuild activities from existing possessions, setups, RS
 
 Most catalog entries carry little more than a name and a brand, so _incomplete_ is the normal state rather than an error. The **`Completeness`** concern (included by `Brand`, `Product`, `ProductVariant`) describes how filled-in an entry is two ways: as **named gaps** for prompts on entry pages, and as a **0–100 score** for ordering the queues. Each including model weighs its own fields, roughly in proportion to how many surfaces a field feeds rather than by feel.
 
-Rules worth knowing:
+**Inapplicable fields don't count against the score** — they leave the denominator rather than scoring as missing, so nothing is permanently capped below 100% for something nobody can fix. **Highlighted custom attributes** are the app's notion of a "key spec" and are scored as one group; variants inherit the parent's attributes and cannot edit them, so specs are not part of a variant's own score.
 
-- **Inapplicable fields don't count against the score**, so nothing is permanently capped below 100% for something nobody can fix. A brand still trading is asked for a website but not a discontinuation year, and vice versa, and the two stay comparable.
-- **Highlighted custom attributes** are the app's notion of a "key spec." They're scored as one group so categories with many and few applicable attributes remain comparable. Variants inherit the parent's attributes and cannot edit them, so specs are not part of a variant's own score.
-
-**The score is computed twice**: once for display, and once so the database can sort and filter on it directly. The two are kept in sync by a dedicated test.
+**The score is computed twice**: once in Ruby for display, and once in SQL (a generated column on `brands`, an expression in the `contribute_product_items` view) so the database can sort and filter on it directly. The two are kept in sync by a dedicated test.
 
 ### Contribution queues
 
@@ -269,17 +267,37 @@ Queues exist for brands with no products, brands missing a specific field, and p
 
 ## Cross-cutting concerns
 
-**Service objects** orchestrate catalog filtering, catalog detail (product/variant show) pages, statistics, caching of taxonomy/counts, possession→presenter selection, newsletter and follow-notification unsubscribe, and activity recording/backfill.
+**Service objects** hold orchestration and multi-model queries that belong to neither a model nor a controller:
+
+| Service                                                                        | Role                                                                                                                               |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **`ProductFilterService`**, **`BrandFilterService`**                           | Catalog and brand index filtering, sorting and name search, sharing `FilterableService`, `FilterConstants` and `RelevanceOrdering` |
+| **`ProductCatalogShowService`**                                                | Product and variant show-page context                                                                                              |
+| **`ProductConversionService`**                                                 | Converts a product into a variant of another product and back; never crosses brands                                                |
+| **`CollectionStatusQuery`**                                                    | Owned / previously owned / bookmarked state for a set of ids, in bulk, for the client-side collection buttons                      |
+| **`UserImagesQuery`**                                                          | Paginated community image feed across possessions and custom products                                                              |
+| **`StatisticsService`**                                                        | Collection aggregates for dashboard and profile                                                                                    |
+| **`CacheService`**                                                             | Taxonomy, counts and definition caches                                                                                             |
+| **`SitemapBuilder`**                                                           | Sitemap pages and their `lastmod` timestamps                                                                                       |
+| **`PossessionPresenterService`**                                               | Possession → presenter selection                                                                                                   |
+| **`NewsletterUnsubscribeService`**, **`FollowNotificationUnsubscribeService`** | Signed-token unsubscribe flows                                                                                                     |
+| **`UserActivities::Recorder`** / **`Backfill`**, **`UserActivityTimeline`**    | Activity write and read paths                                                                                                      |
+
+Controllers keep their shared behaviour in concerns rather than a base class — notably `FriendlyFinder` (slug lookup plus 301 on an old slug), `FilterParamsBuilder`, `ProductCatalogShow`, `ProfileVisibility`, `EventListing` and `TokenUnsubscribe`.
 
 **Caching** covers taxonomy menus, entity counts, custom attribute definitions, event counts, and some rendered legal or policy content.
 
 **Attachments** (Active Storage): possession and custom-product image galleries; user avatar and decorative banner; brand logos. Purges on possessions and profile images can emit activity rows.
 
-**App news** announcements can be dismissed per user.
+**App news** (`AppNews`) announcements can be dismissed per user, tracked by a join to `User`.
+
+**Newsletter** issues are authored in ActiveAdmin and sent to users who opted in, with a test-send path and the signed-token unsubscribe flow above.
+
+**Static pages** (`StaticController`) serve changelog, about, imprint, privacy policy and the calculators — currently the amplifier-to-headphone adapter resistor calculator. They touch no domain model.
 
 **Statistics** aggregate a user's possessions (current vs previous, costs, duration, categories) for dashboard and profile summaries. In the UI this section is called **Insights**; the code keeps the statistics naming.
 
-**Security:** rate limits on auth, catalog writes, and follow/block mutations; content security policy; bot challenge on registration and password reset.
+**Security:** Rack::Attack throttles on auth, catalog writes, bookmarks, notes, search and follow/block mutations; content security policy; Turnstile bot challenge on registration and password reset.
 
 ## Presenters
 
