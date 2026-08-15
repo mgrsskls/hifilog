@@ -308,12 +308,14 @@ en:
     aes_ebu: AES/EBU
     amt_tweeter: AMT Tweeter
     automatic: Automatic
+    balanced_armature: Balanced armature
     belt-drive: Belt Drive
     binding_posts: Binding posts
     bluetooth: Bluetooth
     bnc: BNC
     closed_back: Closed-back
     coaxial: Coaxial
+    din: DIN
     direct-drive: Direct Drive
     dual-mono: Dual-Mono
     dynamic: Dynamic
@@ -324,12 +326,16 @@ en:
     hdmi_arc: HDMI ARC
     horn_loaded: Horn-loaded
     hybrid: Hybrid
+    hybrid_driver: Hybrid (dynamic + balanced armature)
     i2s: I²S
+    idler_drive: Idler Drive
+    jack_2_5mm: 2.5 mm jack
     jack_3_5mm: 3.5 mm jack
     jack_4_4mm: 4.4 mm jack (Pentaconn)
     jack_6_35mm: 6.35 mm jack
     manual: Manual
     mc: MC
+    mi: MI (Moving Iron)
     mm: MM
     mm-mc: MM / MC
     mono: Mono
@@ -339,12 +345,12 @@ en:
     optical: Optical
     passive: Passive
     passive_radiator: Passive Radiator
-    planar: Planar Magnetic
     planar_magnetic: Planar Magnetic
     ported: Ported
     rca: RCA
     ribbon_tweeter: Ribbon Tweeter
     sealed: Sealed
+    semi_automatic: Semi-Automatic
     semi_open: Semi-open
     solid_state: Solid State
     spdif_coaxial: S/PDIF Coaxial
