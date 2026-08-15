@@ -61,8 +61,14 @@ class CustomAttribute < ApplicationRecord
     acc[to] = [from, 1.0 / factor]
   end.freeze
 
+  # The admin form posts { sub_category_id => [option ids] }. Applied after save rather than on
+  # assignment, because a subcategory ticked in the same submit has no join row to write to
+  # until the HABTM assignment has been persisted.
+  after_save :persist_option_scopes, if: -> { @option_scopes.present? }
   # after_commit ensures the DB transaction is finished before we clear cache
   after_commit :clear_cache
+
+  attr_writer :option_scopes
 
   has_and_belongs_to_many :sub_categories
   enum :input_type, {
@@ -399,6 +405,33 @@ class CustomAttribute < ApplicationRecord
     return value if value.is_a?(Numeric)
 
     Float(value.to_s, exception: false)
+  end
+
+  # Writes what the admin ticked onto the join rows.
+  #
+  # Every option ticked is stored as `[]`, not as the full list. The two mean the same thing
+  # today, but only the empty array keeps meaning "all of them" after a new option is added --
+  # so a subcategory nobody deliberately narrowed goes on offering everything, which is the rule
+  # the whole feature rests on. Saving the full list instead would quietly freeze that
+  # subcategory at today's options.
+  #
+  # A subcategory absent from the params is left alone rather than cleared: it was not on the
+  # form, which is the case for one ticked in this same submit.
+  def persist_option_scopes
+    submitted = @option_scopes
+    @option_scopes = nil
+
+    known = options&.keys || []
+
+    CustomAttributeSubCategory.where(custom_attribute_id: id).find_each do |link|
+      ids = submitted[link.sub_category_id.to_s]
+      next if ids.nil?
+
+      ids = Array(ids).map(&:to_s).compact_blank & known
+      ids = [] if ids.to_set == known.to_set
+
+      link.update!(option_ids: ids) unless link.option_ids.to_set == ids.to_set
+    end
   end
 
   # `options` is only guaranteed to be a Hash after before_save; validation can still see the

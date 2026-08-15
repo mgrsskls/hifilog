@@ -1,0 +1,70 @@
+<%
+  options = custom_attribute.options.presence || {}
+  sub_categories = custom_attribute.sub_categories.includes(:category).to_a.sort_by { |s| [s.category.name, s.name] }
+  current = if custom_attribute.persisted?
+    CustomAttributeSubCategory.where(custom_attribute_id: custom_attribute.id).pluck(:sub_category_id, :option_ids).to_h
+  else
+    {}
+  end
+%>
+
+<fieldset class="mb-8" data-option-scopes>
+  <legend class="font-bold text-xl">Options per category</legend>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    An attribute asks one question everywhere it applies, but not every answer applies
+    everywhere &mdash; a CD transport has no analogue output, a cartridge never connects by USB.
+    Untick the options a category cannot have and its forms and filters stop offering them.
+  </p>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    <b>Narrow only what is impossible, not what is merely uncommon.</b> An option nobody ticks
+    costs a slightly longer list; an option a category cannot show is a product nobody can
+    describe correctly. Leaving every option ticked is the safe default, and it also means a
+    category keeps offering options added later &mdash; a narrowed one does not.
+  </p>
+
+  <% if options.empty? %>
+    <p class="text-sm text-gray-600 dark:text-gray-400">This attribute has no options to narrow.</p>
+  <% elsif sub_categories.empty? %>
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      Pick categories below and save; the options for each will appear here afterwards.
+    </p>
+  <% else %>
+    <div class="overflow-x-auto">
+      <table class="text-sm">
+        <thead>
+          <tr>
+            <th class="text-left pr-4 pb-2">Category</th>
+            <% options.each do |id, key| %>
+              <th class="px-2 pb-2 font-normal whitespace-nowrap"><%= t("custom_attributes.#{key}", default: key) %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% sub_categories.each do |sub_category| %>
+            <% scoped = current[sub_category.id] || [] %>
+            <tr>
+              <th class="text-left pr-4 py-1 font-normal whitespace-nowrap">
+                <%= sub_category.category.name %> / <b><%= sub_category.name %></b>
+              </th>
+              <%# Keeps the key present when every box is unticked, so "nothing ticked" is still submitted. %>
+              <input type="hidden" name="custom_attribute[option_scopes][<%= sub_category.id %>][]" value="">
+              <% options.each do |id, key| %>
+                <td class="px-2 py-1 text-center">
+                  <input
+                    type="checkbox"
+                    name="custom_attribute[option_scopes][<%= sub_category.id %>][]"
+                    value="<%= id %>"
+                    aria-label="<%= "#{t("custom_attributes.#{key}", default: key)} applies to #{sub_category.name}" %>"
+                    <%= "checked" if scoped.empty? || scoped.include?(id) %>
+                  >
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</fieldset>

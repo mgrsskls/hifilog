@@ -1,7 +1,10 @@
 ActiveAdmin.register CustomAttribute do
+  # option_scopes is { sub_category_id => [option ids] }, so its keys are ids rather than a
+  # fixed list -- `{}` is how strong parameters permits a hash whose keys are not known ahead.
   permit_params :label, :highlighted, :input_type, :options_editor,
                 units: [], inputs: [], sub_category_ids: [],
-                options_attributes: [:key, :value]
+                options_attributes: [:key, :value],
+                option_scopes: {}
 
   config.filters = false
 
@@ -18,9 +21,15 @@ ActiveAdmin.register CustomAttribute do
       # Filled in by JS, and only while the pending input type would discard something.
       f.div "", "data-input-type-warning": "", class: "mb-4 text-sm font-bold", hidden: true
 
+      # Both live in the options group so they appear and disappear together with the input
+      # type, and the scope matrix is built from the options directly above it.
       f.div "data-field-group": "options" do
         f.template.render(
           partial: "admin/custom_attributes/options_editor",
+          locals: { custom_attribute: f.object }
+        )
+        f.template.render(
+          partial: "admin/custom_attributes/option_scopes",
           locals: { custom_attribute: f.object }
         )
       end

@@ -354,6 +354,44 @@ class CustomAttributeTest < ActiveSupport::TestCase
     assert_equal [sub_categories(:two).id], attribute.sub_category_ids_for_option('2')
   end
 
+  test 'option_scopes= narrows a sub category from the admin form' do
+    attribute = custom_attributes(:three)
+    attribute.option_scopes = { @sub_category.id.to_s => ['', '1'] }
+    attribute.save!
+
+    assert_equal %w[1], link_between(attribute, @sub_category).option_ids
+  end
+
+  # Storing the full list instead would freeze that sub category at today's options: the whole
+  # feature rests on an empty subset meaning "all of them", including ones added later.
+  test 'option_scopes= stores every option ticked as unset rather than as the full list' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, @sub_category).update!(option_ids: %w[1])
+
+    attribute.option_scopes = { @sub_category.id.to_s => ['', '1', '2'] }
+    attribute.save!
+
+    assert_empty link_between(attribute, @sub_category).option_ids
+  end
+
+  test 'option_scopes= leaves a sub category the form did not submit alone' do
+    attribute = custom_attributes(:three)
+    link_between(attribute, sub_categories(:two)).update!(option_ids: %w[2])
+
+    attribute.option_scopes = { sub_categories(:one).id.to_s => ['', '1'] }
+    attribute.save!
+
+    assert_equal %w[2], link_between(attribute, sub_categories(:two)).option_ids
+  end
+
+  test 'option_scopes= ignores ids the attribute does not define' do
+    attribute = custom_attributes(:three)
+    attribute.option_scopes = { @sub_category.id.to_s => ['', '1', '99'] }
+    attribute.save!
+
+    assert_equal %w[1], link_between(attribute, @sub_category).option_ids
+  end
+
   test 'an option id the attribute does not define is rejected on the join row' do
     link = link_between(custom_attributes(:three), @sub_category)
     link.option_ids = %w[99]
