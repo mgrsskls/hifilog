@@ -4,7 +4,7 @@ Architecture reference for the domain model, read-only SQL projections, and how 
 
 ## Conceptual overview
 
-The catalog is built around **brands** and **products**. A **product** is the canonical model for a piece of gear (name, brand, categories, base specs). A **product variant** is a distinct line under that product (different finish, revision, regional model, etc.) that can override some fields while still inheriting the rest from the parent product.
+The catalog is built around **brands** and **products**. A **product** is the canonical model for a piece of gear (name, brand, categories, base specs). A **product variant** is a smaller edition of that product under the same name (a special finish, a limited run, a regional model) that can override some fields while still inheriting the rest from the parent product. **A version whose specifications differ is a separate product, not a variant** — see [Product variant](#product-variant).
 
 **Possessions** represent a user's relationship to something in the catalog (or to a user-defined **custom product**): ownership, photos, purchase details, and optional links into **setups**. They always point at real database rows (`products`, `product_variants`, or `custom_products`), not at the unified listing abstraction.
 
@@ -82,6 +82,19 @@ The product holds shared identity: brand, name, slug, categorization, and shared
 ## Product variant
 
 A variant belongs to one product and has its own options, possessions, and notes. Where a variant doesn't override a field, it falls back to the parent product's value. Variants can also be bookmarked directly, alongside products, brands, and events.
+
+### A variant never has different specifications
+
+This is the rule the custom attribute design rests on, so it is worth stating as a prohibition rather than a description. A variant is a **smaller edition under the same name** — a finish, a limited run, a regional model number. Anything whose measured behaviour differs, a Mk II or a second impedance, is **a separate product**.
+
+Two consequences follow, and neither is a bug:
+
+- `product_items` projects `products.custom_attributes` onto variant rows as well as product rows. That is correct by construction: a variant shares its parent's specs because it is not allowed to have others. Filtering by a spec therefore returns the product _and_ its variants, which is the right answer.
+- Specs are excluded from a variant's completeness score, because there is nothing for a variant to fill in.
+
+The rule is not enforced anywhere, and it fails quietly when broken: a variant added for a second impedance will display and be filtered under the parent's impedance, and nothing distinguishes that from a correct row. The contribution guidelines state the rule (`app/views/product_variants/_form.html.erb`); the catalogue does not check it.
+
+Separating a Mk II into its own product also severs the link to what it replaced — there is no relationship between products today, so the two entries sit unrelated. That is the main pressure to bend the rule, and a lightweight succession link between products would relieve it without giving variants specs of their own.
 
 ## Catalog detail pages
 
