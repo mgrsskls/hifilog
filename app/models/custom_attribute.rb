@@ -291,6 +291,21 @@ class CustomAttribute < ApplicationRecord
     self.options = pairs.any? ? build_options_hash(pairs) : nil
   end
 
+  # How many products hold a value for each attribute, as { "weight" => 12 }.
+  #
+  # One pass over products rather than one query per attribute: `custom_attributes ? :label`
+  # would be index-assisted for a literal label, but not for a column reference, so asking per
+  # attribute would scan the table once per attribute instead of once in total. Only the admin
+  # index calls this, and it is the one place that wants the answer for every attribute at once.
+  def self.product_usage_counts
+    connection.select_rows(<<~SQL.squish).to_h { |label, total| [label, total.to_i] }
+      SELECT key, COUNT(*)
+      FROM products, LATERAL jsonb_object_keys(products.custom_attributes) AS key
+      WHERE products.custom_attributes IS NOT NULL
+      GROUP BY key
+    SQL
+  end
+
   # How many products currently reference each option id, as { "1" => 12 }.
   #
   # One aggregate query rather than one COUNT per option, and the WHERE narrows through
@@ -360,10 +375,15 @@ class CustomAttribute < ApplicationRecord
 
   # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
+    # input_type and highlighted are here so the admin index can sort on those columns; Ransack
+    # refuses any attribute not on this list, and a column it refuses is one that silently does
+    # nothing when clicked.
     %w[
       sub_categories
       sub_categories_id
       label
+      input_type
+      highlighted
     ]
   end
 

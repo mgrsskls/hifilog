@@ -55,20 +55,114 @@ ActiveAdmin.register CustomAttribute do
     f.submit
   end
 
+  # By label rather than by id: the list is read to find an attribute, not to see what was
+  # created most recently.
+  config.sort_order = "label_asc"
+
+  scope :all, default: true
+  scope("Key specs") { |scope| scope.where(highlighted: true) }
+  scope("Options") { |scope| scope.where(input_type: %w[option options]) }
+  scope("Measurements") { |scope| scope.where(input_type: "number") }
+
+  controller do
+    # Every row renders its categories and their parents, which is one query each without this.
+    def scoped_collection
+      super.includes(sub_categories: :category)
+    end
+  end
+
   index do
     selectable_column
-    column :id
-    column :label
-    column :input_type
-    column :highlighted
-    column "Options" do |custom_attribute|
-      next unless custom_attribute.options.present?
 
-      safe_join(custom_attribute.options.map { |id, key| "#{id}: #{t("custom_attributes.#{key}", default: key)}" }, tag.br)
+    # The rendered name is what a contributor sees and the label is what products store; both
+    # matter here, and a label with no translation is a bug that only shows up by looking.
+    column "Attribute", sortable: :label do |custom_attribute|
+      translated = t("custom_attribute_labels.#{custom_attribute.label}", default: nil)
+
+      safe_join([
+                  translated ? tag.b(translated) : tag.b("no translation", class: "text-red-600"),
+                  tag.div(custom_attribute.label, class: "font-mono text-xs text-gray-500")
+                ])
     end
-    column :sub_categories do |custom_attribute|
-      custom_attribute.sub_categories.map(&:name).join(", ")
+
+    column :input_type
+    column "Key spec", :highlighted
+
+    # What the product form will actually render: the choices for an option type, the units and
+    # fields for a measurement. A boolean has neither, and shows nothing.
+    column "Configuration" do |custom_attribute|
+      if custom_attribute.options.present?
+        safe_join(custom_attribute.options.map { |id, key| "#{id}: #{t("custom_attributes.#{key}", default: key)}" },
+                  tag.br)
+      elsif custom_attribute.number_input_type?
+        parts = []
+        # Unit translations carry entities such as &ohm;, and are our own locale content.
+        if custom_attribute.units.any?
+          parts << "<b>Units:</b> #{custom_attribute.units.map do |unit|
+            t("custom_attribute_units.#{unit}")
+          end.join(' / ')}".html_safe
+        end
+        if custom_attribute.inputs.any?
+          parts << "<b>Inputs:</b>".html_safe
+          parts << "<ol class='ps-3 list-decimal list-inside'>#{
+            custom_attribute.inputs.map do |input|
+              "<li>#{t("custom_attribute_inputs.#{input}")}</li>"
+            end.join
+          }</ol>".html_safe
+        end
+        safe_join(parts, tag.br)
+      end
     end
+
+    # Grouped by parent category, and for an option type each category names the options it
+    # actually offers -- a count alone says a category is narrowed without saying to what, which
+    # is the thing worth checking from a list.
+    #
+    # Narrowed options are rendered in the definition's own order rather than the stored array's,
+    # so the list reads the same here as on the product form.
+    column "Applies to" do |custom_attribute|
+      scopes = CustomAttribute.sub_category_scopes_cached.fetch(custom_attribute.id, {})
+      options = custom_attribute.options || {}
+
+      safe_join(
+        custom_attribute.sub_categories.group_by { |sub_category| sub_category.category.name }.sort.map do |name, subs|
+          rows = subs.sort_by(&:name).map do |sub_category|
+            narrowed = scopes[sub_category.id].presence
+            offered =
+              if options.empty?
+                nil
+              elsif narrowed&.any?
+                options.select { |id, _| narrowed.include?(id) }
+                       .values
+                       .map { |key| "<div class='ms-3'>#{t("custom_attributes.#{key}", default: key)}</div>" }
+                       .join
+                       .html_safe
+              end
+
+            tag.li(
+              safe_join([
+                tag.b(sub_category.name),
+                tag.div(offered)
+              ])
+            )
+          end
+
+          tag.div(
+            safe_join([
+                        tag.div(name),
+                        tag.ul(safe_join(rows), class: "mb-2 ml-3")
+                      ])
+          )
+        end
+      )
+    end
+
+    # Whether anyone has actually filled it in, which is the question the rollout keeps raising.
+    column "Products" do |custom_attribute|
+      @product_usage ||= CustomAttribute.product_usage_counts
+      @product_usage[custom_attribute.label].to_i
+    end
+
     actions
   end
 
