@@ -43,8 +43,8 @@ module EventsHelper
       'name' => event.name,
       'url' => events_url_for_schema(event, canonical_url:)
     }
-    item['startDate'] = event.start_date.iso8601 if event.start_date
-    item['endDate'] = event.end_date.iso8601 if event.end_date
+    item['startDate'] = event.start_date.iso8601
+    item['endDate'] = event.end_date ? event.end_date.iso8601 : event.start_date.iso8601
     if event.address.present? || event.country_code.present?
       pa = { '@type' => 'PostalAddress' }
       pa['streetAddress'] = event.address if event.address.present?
