@@ -5,11 +5,14 @@ class User < ApplicationRecord
 
   strip_attributes
 
+  # Public by default. Declared here rather than left to the column default alone, so the value a
+  # new record starts with -- and therefore the option preselected on the signup form -- is set by
+  # the application instead of by whether a migration has been run against the connected database.
   enum :profile_visibility, {
     hidden: 0,
     logged_in_only: 1,
     visible: 2
-  }
+  }, default: :visible, validate: true
 
   has_many :user_activities, dependent: :destroy
   has_many :possessions, dependent: :destroy
@@ -43,6 +46,12 @@ class User < ApplicationRecord
   has_many :blocked_by_users, through: :blocker_relationships, source: :blocker
 
   scope :visible_in_follow_feed, -> { where.not(profile_visibility: :hidden) }
+  # Publicly reachable profiles: visible AND confirmed. Confirmation matters because the record
+  # exists from the moment the signup form is submitted, while sign-in requires confirmation
+  # (allow_unconfirmed_access_for is off) -- so an unconfirmed account is always an empty shell,
+  # and often an abandoned or automated signup. Used for indexing; the per-request check lives in
+  # the ProfileVisibility concern.
+  scope :publicly_indexable, -> { where(profile_visibility: :visible).where.not(confirmed_at: nil) }
   scope :ordered_by_contribution_count, lambda {
     joins('LEFT OUTER JOIN "versions" ON "versions"."whodunnit" = CAST("users"."id" AS varchar)')
       .select('

@@ -56,6 +56,27 @@ class UserTest < ActiveSupport::TestCase
     assert user.visible?
   end
 
+  test 'a new user is visible by default' do
+    assert User.new.visible?
+  end
+
+  test 'an unknown profile_visibility is a validation error, not an exception' do
+    user = users(:one)
+    user.profile_visibility = 'everyone_everywhere'
+
+    assert_not user.valid?
+    assert_includes user.errors.attribute_names, :profile_visibility
+  end
+
+  test 'publicly_indexable covers visible confirmed users only' do
+    assert_includes User.publicly_indexable, users(:visible)
+    assert_not_includes User.publicly_indexable, users(:hidden)
+    assert_not_includes User.publicly_indexable, users(:logged_in_only)
+
+    users(:visible).update_columns(confirmed_at: nil) # rubocop:disable Rails/SkipsModelValidations
+    assert_not_includes User.publicly_indexable, users(:visible)
+  end
+
   test 'associations' do
     user = users(:one)
     assert_respond_to user, :possessions

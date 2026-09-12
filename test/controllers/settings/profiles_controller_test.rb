@@ -35,6 +35,19 @@ class Settings::ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert user.reload.hidden?
   end
 
+  test 'update profile settings rejects an unknown visibility instead of raising' do
+    user = users(:one)
+    original = user.profile_visibility
+    sign_in user
+
+    patch dashboard_profile_settings_path, params: {
+      user: { profile_visibility: 'everyone_everywhere', current_password: 'encrypted_password' }
+    }
+
+    assert_response :unprocessable_entity
+    assert_equal original, user.reload.profile_visibility
+  end
+
   test 'update profile settings rejects invalid current password' do
     user = users(:one)
     sign_in user

@@ -12,6 +12,19 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     assert_select 'a[href^="/brands/"]'
   end
 
+  test 'xml lists confirmed visible profiles only' do
+    confirmed = users(:visible)
+    unconfirmed = users(:with_everything)
+    unconfirmed.update_columns(profile_visibility: User.profile_visibilities[:visible], confirmed_at: nil) # rubocop:disable Rails/SkipsModelValidations
+
+    get sitemap_path(format: :xml)
+    assert_response :success
+
+    assert_includes response.body, user_url(confirmed.user_name.downcase).to_s
+    assert_not_includes response.body, user_url(unconfirmed.user_name.downcase).to_s
+    assert_not_includes response.body, user_url(users(:hidden).user_name.downcase).to_s
+  end
+
   test 'xml is a urlset with loc entries' do
     get sitemap_path(format: :xml)
     assert_response :success

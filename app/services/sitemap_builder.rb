@@ -34,7 +34,7 @@ class SitemapBuilder
       url: users_url,
       updated: User.maximum(:updated_at)
     }
-    User.where(profile_visibility: 2).find_each do |user|
+    User.publicly_indexable.find_each do |user|
       pages << {
         url: user_url(user.user_name.downcase),
         updated: user.updated_at

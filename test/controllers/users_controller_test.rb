@@ -110,6 +110,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get user_path(id: users(:logged_in_only).user_name)
     assert_response :not_found
 
+    unconfirmed = users(:visible)
+    unconfirmed.update_columns(confirmed_at: nil) # rubocop:disable Rails/SkipsModelValidations
+    get user_path(id: unconfirmed.user_name)
+    assert_response :not_found, 'an unconfirmed account has nothing to show and must not be public'
+
     get user_path(id: users(:one).user_name)
     assert_response :success
     assert_select 'h2', I18n.t('headings.activity')

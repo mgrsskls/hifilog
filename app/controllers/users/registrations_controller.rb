@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
-  # before_action :configure_sign_up_params, only: [:create]
+  before_action :configure_sign_up_params, only: [:create]
   skip_after_action :record_page_view
 
   # GET /resource/sign_up
@@ -66,10 +66,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
     edit_user_registration_path
   end
 
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_up_params
-  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
-  # end
+  # Profile visibility is offered on the signup form itself, so the choice is transparent at the
+  # moment the account is created rather than buried in settings. Out-of-range values are caught by
+  # the enum's `validate: true` on User, which turns them into a form error on every entry point
+  # instead of an ArgumentError from the setter -- so nothing needs scrubbing here.
+  def configure_sign_up_params
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:profile_visibility])
+  end
 
   # If you have extra params to permit, append them to the sanitizer.
   # def configure_account_update_params

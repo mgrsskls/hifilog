@@ -743,6 +743,8 @@ en:
     signup: Sign up
     privacy_policy: Privacy Policy
     privacy_policy_accept: I accept the
+    profile_visibility:
+      heading: Profile visibility
     privacy_policy_required: You must accept the Privacy Policy to sign up.
     turnstile_failed: We could not verify that you're human.
   privacy_policy_overlay:

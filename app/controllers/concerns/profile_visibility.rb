@@ -17,6 +17,10 @@ module ProfileVisibility
 
   def profile_viewable_by_current_user?(user)
     return true if current_user == user
+    # An unconfirmed account cannot sign in, so it has no collection, no activity and no
+    # contributions -- there is nothing to show and no owner who chose to show it. Treating it as
+    # not-found keeps abandoned and automated signups off the public site.
+    return false unless user.confirmed?
     return false if user.hidden?
     return false if user.logged_in_only? && !user_signed_in?
 

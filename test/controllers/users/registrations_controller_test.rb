@@ -26,6 +26,39 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_root_url
   end
 
+  test 'create honours the profile visibility chosen at signup' do
+    post user_registration_url, params: {
+      privacy_policy_accepted: '1',
+      user: {
+        user_name: 'hidden_user',
+        email: 'hidden@example.com',
+        password: 'passwordpassword',
+        password_confirmation: 'passwordpassword',
+        profile_visibility: 'hidden'
+      }
+    }
+    assert_response :redirect
+
+    assert_equal 'hidden', User.find_by!(email: 'hidden@example.com').profile_visibility
+  end
+
+  test 'create rejects an unknown profile visibility instead of raising' do
+    assert_no_difference -> { User.count } do
+      post user_registration_url, params: {
+        privacy_policy_accepted: '1',
+        user: {
+          user_name: 'bogus_user',
+          email: 'bogus@example.com',
+          password: 'passwordpassword',
+          password_confirmation: 'passwordpassword',
+          profile_visibility: 'everyone_everywhere'
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+  end
+
   test 'edit' do
     get edit_user_registration_url
     assert_response :redirect
@@ -54,6 +87,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     user = User.find_by!(email: 'mail@example.com')
     assert user.privacy_policy_accepted_at.present?
     assert_equal PrivacyPolicy::VERSION, user.privacy_policy_version
+    assert_equal 'visible', user.profile_visibility, 'profiles are public unless the user opts out at signup'
 
     sign_in users(:one)
 
