@@ -354,7 +354,7 @@
     </header>
     <main id="content">
       <%= render "shared/flash_messages", messages: flash if flash.any? %>
-      <% full_page_view = (params[:controller] == "application" && params[:action] == "index") ||
+      <% full_page_view = (params[:controller] == "home" && params[:action] == "index") ||
         (
           @user.present? &&
           params[:controller] == "users" &&

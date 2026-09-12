@@ -1,7 +1,3 @@
-.Home {
-	background: var(--color-bg2);
-}
-
 @layer {
 	.Home-section {
 		padding-block: clamp(3rem, 8vi, 8rem);
@@ -46,6 +42,10 @@
 .Home-content {
 	padding-block: clamp(3rem, 5vi, 6rem);
 	grid-area: copy;
+}
+
+.Home-introWrapper {
+	background: var(--color-bg2);
 }
 
 .Home-intro .AppName {
@@ -268,10 +268,6 @@
 
 	.Home-browseEvents {
 		grid-column: 3 / -3;
-	}
-
-	.Home-features {
-		padding-block: 6rem;
 	}
 
 	.Home-feature {

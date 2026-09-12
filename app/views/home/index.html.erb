@@ -2,155 +2,169 @@
   <%= stylesheet_link_tag "home" %>
 <% end %>
 
-<div class="Home">
-  <div class="Home-intro">
-    <h1 class="Home-content">
-      <%
-        products_rounded = round_up_or_down(products_count)
-        if products_rounded[:dir] == :down
-      %>
-        <%= t('home.intro_down', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
-      <% elsif products_rounded[:dir] == :eq %>
-        <%= t('home.intro_eq', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
-      <% else %>
-        <%= t('home.intro_up', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
-      <% end %>
-      <em>By music lovers &amp; audiophiles.<br>For music lovers &amp; audiophiles.</em>
-    </h1>
-    <picture class="Home-picture">
-      <source srcset="<%= asset_url "/home/01.avif" %>" type="image/avif">
-      <img src="<%= asset_url "/home/01.jpg" %>" aria-hidden="true" alt="" fetchpriority="high">
-    </picture>
-  </div>
-
-  <div class="Home-section Home-browse">
-    <div class="Home-sectionHeader">
-      <h2 class="LargeHeadline"><%= t('home.browse.heading') %></h2>
-      <p><%= t('home.browse.intro') %></p>
+<div class="Home-introWrapper">
+  <div class="Home">
+    <div class="Home-intro">
+      <h1 class="Home-content">
+        <%
+          products_rounded = round_up_or_down(products_count)
+          if products_rounded[:dir] == :down
+        %>
+          <%= t('home.intro_down', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
+        <% elsif products_rounded[:dir] == :eq %>
+          <%= t('home.intro_eq', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
+        <% else %>
+          <%= t('home.intro_up', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
+        <% end %>
+        <em>By music lovers &amp; audiophiles.<br>For music lovers &amp; audiophiles.</em>
+      </h1>
+      <picture class="Home-picture">
+        <source srcset="<%= asset_url "/home/01.avif" %>" type="image/avif">
+        <img src="<%= asset_url "/home/01.jpg" %>" aria-hidden="true" alt="" fetchpriority="high">
+      </picture>
     </div>
-    <div class="Home-browseSections">
-      <div class="Home-browseSection">
-        <h3><%= t('home.browse.products_heading') %></h3>
+  </div>
+</div>
+
+<div class="Home-section Home-browseWrapper">
+  <div class="Home">
+    <div class="Home-browse">
+      <div class="Home-sectionHeader">
+        <h2 class="LargeHeadline"><%= t('home.browse.heading') %></h2>
+        <p><%= t('home.browse.intro') %></p>
+      </div>
+      <div class="Home-browseSections">
+        <div class="Home-browseSection">
+          <h3><%= t('home.browse.products_heading') %></h3>
+          <ul>
+            <li>
+              … from specific categories, e.g. <%= link_to "Over-Ear Headphones", products_subcategory_path("headphones", "over-ear-headphones") %>, <%= link_to "Vacuum Tubes", products_category_path("vacuum-tubes") %> or <%= link_to "MC Cartridges", products_subcategory_path("analog", "cartridges", "attr[6][]" => 2) %>.
+            </li>
+            <li>
+              … that are <%= link_to "pre-assembled", products_path(products: { diy_kit: 0 }) %> or <%= link_to "DIY kits", products_path(products: { diy_kit: 1 }) %>.
+            </li>
+            <li>
+              … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:products_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:products_path] %>.
+            </li>
+            <li>
+              … that are <%= link_to "still in production", products_path({ products: { status: :continued } }) %> or <%= link_to "discontinued", products_path({ products: { status: :discontinued } }) %>.
+            </li>
+          </ul>
+          <h4><%= t('home.recently_added_heading') %></h4>
+          <p>
+            <%= newest_products.map { |product| link_to product.display_name, product.path }.join(", ").html_safe %>, …
+          </p>
+        </div>
+        <div class="Home-browseSection">
+          <h3><%= t('home.browse.brands_heading') %></h3>
+          <ul>
+            <li>
+              … with specific products, e.g. <%= link_to "Floorstanding Loudspeakers", brands_subcategory_path("loudspeakers", "floorstanding-loudspeakers") %>, <%= link_to "Integrated Tube Amplifiers", brands_subcategory_path("amplifiers", "integrated-amplifiers", "attr[4][]" => 2) %> or <%= link_to "Cables", brands_category_path("cables") %>.
+            </li>
+            <li>
+              … that produce <%= link_to "pre-assembled products", brands_path({ products: { diy_kit: 0 } }) %> or <%= link_to "DIY kits", brands_path({ products: { diy_kit: 1 } }) %>.
+            </li>
+            <li>
+              … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:brands_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:brands_path] %>.
+            </li>
+            <li>
+              … that are <%= link_to "still in business", brands_path({ brands: { status: :continued } }) %> or <%= link_to "out of business", brands_path({ brands: { status: :discontinued } }) %>.
+            </li>
+          </ul>
+          <h4><%= t('home.recently_added_heading') %></h4>
+          <p>
+            <%= newest_brands.map { |brand| link_to brand.display_name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
+          </p>
+        </div>
+      </div>
+      <div class="Home-browseEvents">
+        <h3><%= t('home.browse.events_heading') %></h3>
         <ul>
           <li>
-            … from specific categories, e.g. <%= link_to "Over-Ear Headphones", products_subcategory_path("headphones", "over-ear-headphones") %>, <%= link_to "Vacuum Tubes", products_category_path("vacuum-tubes") %> or <%= link_to "MC Cartridges", products_subcategory_path("analog", "cartridges", "attr[6][]" => 2) %>.
+            Browse <%= link_to "upcoming hi-fi events", events_path %> or <%= link_to "past hi-fi events", past_events_path %> and filter them by country or year.
           </li>
           <li>
-            … that are <%= link_to "pre-assembled", products_path(products: { diy_kit: 0 }) %> or <%= link_to "DIY kits", products_path(products: { diy_kit: 1 }) %>.
+            Bookmark events you want to keep an eye on.
           </li>
           <li>
-            … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:products_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:products_path] %>.
-          </li>
-          <li>
-            … that are <%= link_to "still in production", products_path({ products: { status: :continued } }) %> or <%= link_to "discontinued", products_path({ products: { status: :discontinued } }) %>.
+            Mark events you plan to attend or have attended.
           </li>
         </ul>
         <h4><%= t('home.recently_added_heading') %></h4>
         <p>
-          <%= newest_products.map { |product| link_to product.display_name, product.path }.join(", ").html_safe %>, …
+          <%= newest_events.map { |event| link_to event.name, event_path(slug: event.slug, year: event.calendar_year) }.join(", ").html_safe %>, …
         </p>
       </div>
-      <div class="Home-browseSection">
-        <h3><%= t('home.browse.brands_heading') %></h3>
-        <ul>
-          <li>
-            … with specific products, e.g. <%= link_to "Floorstanding Loudspeakers", brands_subcategory_path("loudspeakers", "floorstanding-loudspeakers") %>, <%= link_to "Integrated Tube Amplifiers", brands_subcategory_path("amplifiers", "integrated-amplifiers", "attr[4][]" => 2) %> or <%= link_to "Cables", brands_category_path("cables") %>.
-          </li>
-          <li>
-            … that produce <%= link_to "pre-assembled products", brands_path({ products: { diy_kit: 0 } }) %> or <%= link_to "DIY kits", brands_path({ products: { diy_kit: 1 } }) %>.
-          </li>
-          <li>
-            … from a specific country, e.g. <%= @brand_countries.first(@brand_countries.length - 1).map { |country| link_to country[:label], country[:brands_path] }.join(", ").html_safe %> or <%= link_to @brand_countries.last[:label], @brand_countries.last[:brands_path] %>.
-          </li>
-          <li>
-            … that are <%= link_to "still in business", brands_path({ brands: { status: :continued } }) %> or <%= link_to "out of business", brands_path({ brands: { status: :discontinued } }) %>.
-          </li>
-        </ul>
-        <h4><%= t('home.recently_added_heading') %></h4>
-        <p>
-          <%= newest_brands.map { |brand| link_to brand.display_name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
-        </p>
-      </div>
-    </div>
-    <div class="Home-browseEvents">
-      <h3><%= t('home.browse.events_heading') %></h3>
-      <ul>
-        <li>
-          Browse <%= link_to "upcoming hi-fi events", events_path %> or <%= link_to "past hi-fi events", past_events_path %> and filter them by country or year.
-        </li>
-        <li>
-          Bookmark events you want to keep an eye on.
-        </li>
-        <li>
-          Mark events you plan to attend or have attended.
-        </li>
-      </ul>
-      <h4><%= t('home.recently_added_heading') %></h4>
-      <p>
-        <%= newest_events.map { |event| link_to event.name, event_path(slug: event.slug, year: event.calendar_year) }.join(", ").html_safe %>, …
-      </p>
     </div>
   </div>
+</div>
 
-  <div class="Home-section Home-features is-dark">
-    <div class="Home-sectionHeader">
-      <h2 class="LargeHeadline"><%= t('home.collect.heading') %></h2>
-      <p><%= t('home.collect.intro') %></p>
-    </div>
-    <div class="Home-featuresContainer">
-      <div class="Home-feature">
-        <picture>
-          <source srcset="/home/screenshot-04.webp" type="image/webp">
-          <img src="/home/screenshot-04.png" width="2754" height="2112" alt="Screenshot showing the collection of a logged in hifilog user" loading="lazy">
-        </picture>
-        <div class="Rte">
-          <h3><%= t('home.collect.features.collection.heading') %></h3>
-          <p><%= t('home.collect.features.collection.text') %></p>
-        </div>
+<div class="Home-section Home-featuresWrapper is-dark">
+  <div class="Home">
+    <div class="Home-features">
+      <div class="Home-sectionHeader">
+        <h2 class="LargeHeadline"><%= t('home.collect.heading') %></h2>
+        <p><%= t('home.collect.intro') %></p>
       </div>
-      <div class="Home-feature">
-        <picture>
-          <source srcset="/home/screenshot-01.webp" type="image/webp">
-          <img src="/home/screenshot-01.png" width="2754" height="2112" alt="Screenshot showing insights of a logged in hifilog user" loading="lazy">
-        </picture>
-        <div class="Rte">
-          <h3><%= t('home.collect.features.insights.heading') %></h3>
-          <p><%= t('home.collect.features.insights.text') %></p>
+      <div class="Home-featuresContainer">
+        <div class="Home-feature">
+          <picture>
+            <source srcset="/home/screenshot-04.webp" type="image/webp">
+            <img src="/home/screenshot-04.png" width="2754" height="2112" alt="Screenshot showing the collection of a logged in hifilog user" loading="lazy">
+          </picture>
+          <div class="Rte">
+            <h3><%= t('home.collect.features.collection.heading') %></h3>
+            <p><%= t('home.collect.features.collection.text') %></p>
+          </div>
         </div>
-      </div>
-      <div class="Home-feature">
-        <picture>
-          <source srcset="/home/screenshot-02.webp" type="image/webp">
-          <img src="/home/screenshot-02.png" width="2754" height="2112" alt="Screenshot showing the profile page of a hifilog user" loading="lazy">
-        </picture>
-        <div class="Rte">
-          <h3><%= t('home.collect.features.profile.heading') %></h3>
-          <p><%= t('home.collect.features.profile.text') %></p>
+        <div class="Home-feature">
+          <picture>
+            <source srcset="/home/screenshot-01.webp" type="image/webp">
+            <img src="/home/screenshot-01.png" width="2754" height="2112" alt="Screenshot showing insights of a logged in hifilog user" loading="lazy">
+          </picture>
+          <div class="Rte">
+            <h3><%= t('home.collect.features.insights.heading') %></h3>
+            <p><%= t('home.collect.features.insights.text') %></p>
+          </div>
         </div>
-      </div>
-      <div class="Home-feature">
-        <picture>
-          <source srcset="/home/screenshot-03.webp" type="image/webp">
-          <img src="/home/screenshot-03.png" width="2754" height="2112" alt="Screenshot showing the product history of a logged in hifilog user" loading="lazy">
-        </picture>
-        <div class="Rte">
-          <h3><%= t('home.collect.features.history.heading') %></h3>
-          <p><%= t('home.collect.features.history.text') %></p>
+        <div class="Home-feature">
+          <picture>
+            <source srcset="/home/screenshot-02.webp" type="image/webp">
+            <img src="/home/screenshot-02.png" width="2754" height="2112" alt="Screenshot showing the profile page of a hifilog user" loading="lazy">
+          </picture>
+          <div class="Rte">
+            <h3><%= t('home.collect.features.profile.heading') %></h3>
+            <p><%= t('home.collect.features.profile.text') %></p>
+          </div>
+        </div>
+        <div class="Home-feature">
+          <picture>
+            <source srcset="/home/screenshot-03.webp" type="image/webp">
+            <img src="/home/screenshot-03.png" width="2754" height="2112" alt="Screenshot showing the product history of a logged in hifilog user" loading="lazy">
+          </picture>
+          <div class="Rte">
+            <h3><%= t('home.collect.features.history.heading') %></h3>
+            <p><%= t('home.collect.features.history.text') %></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="Home-section Home-signUp">
-    <div class="Home-sectionHeader">
-      <h2 class="LargeHeadline"><%= t('home.contribute.heading') %></h2>
-      <p><%= t('home.contribute.intro') %></p>
-    </div>
-    <div class="Rte">
-      <p><%= t('home.contribute.lead') %></p>
-      <p><%= t('home.contribute.mechanics') %></p>
-      <p><%= t('home.contribute.mission') %></p>
-      <p><%= t('home.contribute.cta_html', sign_up_path: new_user_registration_path) %></p>
+<div class="Home-section Home-signUpWrapper">
+  <div class="Home">
+    <div class="Home-signUp">
+      <div class="Home-sectionHeader">
+        <h2 class="LargeHeadline"><%= t('home.contribute.heading') %></h2>
+        <p><%= t('home.contribute.intro') %></p>
+      </div>
+      <div class="Rte">
+        <p><%= t('home.contribute.lead') %></p>
+        <p><%= t('home.contribute.mechanics') %></p>
+        <p><%= t('home.contribute.mission') %></p>
+        <p><%= t('home.contribute.cta_html', sign_up_path: new_user_registration_path) %></p>
+      </div>
     </div>
   </div>
 </div>
