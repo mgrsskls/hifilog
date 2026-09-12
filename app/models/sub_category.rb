@@ -17,6 +17,12 @@ class SubCategory < ApplicationRecord
 
   validates :name, uniqueness: { scope: :category }, presence: true
   validates :slug, uniqueness: { scope: :category }, presence: true
+  # Global, not scoped to category: RelatedProducts::Graph references sub categories by
+  # identifier alone, so two categories cannot both answer to "switches".
+  validates :identifier, presence: true, uniqueness: true
+  validate :identifier_must_not_change, on: :update
+
+  before_validation :assign_identifier, on: :create
 
   after_save :invalidate_cache
 
@@ -45,6 +51,33 @@ class SubCategory < ApplicationRecord
   end
 
   private
+
+  # Derived from the name on first save and never again. `slug` follows the name for URL and SEO
+  # reasons; `identifier` is what RelatedProducts::Graph points at, so it has to outlive renaming.
+  def assign_identifier
+    return if identifier.present?
+    return if name.blank?
+
+    base = name.parameterize
+    candidate = base
+    suffix = 2
+    while self.class.exists?(identifier: candidate)
+      candidate = "#{base}-#{suffix}"
+      suffix += 1
+    end
+    self.identifier = candidate
+  end
+
+  def identifier_must_not_change
+    return unless identifier_changed?
+
+    errors.add(
+      :identifier,
+      'cannot be changed. RelatedProducts::Graph references sub categories by identifier, so ' \
+      'changing it would silently empty every pairing edge that points here. Rename `name` ' \
+      'instead -- it is what readers see, and the slug follows it.'
+    )
+  end
 
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache

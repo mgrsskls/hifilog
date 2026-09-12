@@ -4,7 +4,7 @@ one:
   name: Feliks Audio
   slug: feliks-audio
   country_code: US
-  products_count: 10
+  products_count: 12
   sub_categories_count: 1
   sub_categories:
     - one
@@ -12,7 +12,7 @@ two:
   name: ZMF
   slug: zmf
   country_code: DE
-  products_count: 3
+  products_count: 5
   sub_categories_count: 1
   sub_categories:
     - two

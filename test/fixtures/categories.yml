@@ -7,3 +7,9 @@ one:
 two:
   name: Headphones
   slug: headphones
+
+# Related Products: tubes need a category of their own so a group heading resolves to a real
+# category index path rather than borrowing Amplifiers'.
+three:
+  name: Vacuum Tubes
+  slug: vacuum-tubes

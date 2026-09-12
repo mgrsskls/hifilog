@@ -61,6 +61,7 @@ class CustomAttribute < ApplicationRecord
     acc[to] = [from, 1.0 / factor]
   end.freeze
 
+  before_destroy :refuse_destroy_while_graph_references_label
   # The admin form posts { sub_category_id => [option ids] }. Applied after save rather than on
   # assignment, because a subcategory ticked in the same submit has no join row to write to
   # until the HABTM assignment has been persisted.
@@ -89,6 +90,13 @@ class CustomAttribute < ApplicationRecord
   validate :inputs_must_be_valid
   validate :label_must_be_translated
   validate :option_values_must_be_translated
+  # RelatedProducts::Graph names attributes and option keys as Ruby constants, so the database
+  # cannot enforce the reference. These three refuse the edits that would break it -- silently,
+  # were they allowed: a renamed label leaves a gate naming nothing, a removed option key leaves
+  # one that can never match. The graph is code, so the fix is always to change the graph first
+  # and deploy; the guard lifts by itself once the reference is gone.
+  validate :graph_must_not_lose_its_label, on: :update
+  validate :graph_must_not_lose_an_option_key, on: :update
 
   before_validation do
     self.units = units.compact_blank if units.is_a?(Array)
@@ -331,6 +339,49 @@ class CustomAttribute < ApplicationRecord
   # the moment the row is written. This does mean the translation has to be deployed before
   # the attribute is created, which is the same order `available_option_keys` already imposes
   # on option values.
+  def graph_must_not_lose_its_label
+    return unless label_changed?
+    return unless graph_gate_attributes.include?(label_was)
+
+    errors.add(
+      :label,
+      "cannot be renamed from \"#{label_was}\" while RelatedProducts::Graph gates on it. " \
+      'Change the gate in app/services/related_products/graph.rb first, then rename here.'
+    )
+  end
+
+  def graph_must_not_lose_an_option_key
+    return unless options_changed?
+
+    referenced = RelatedProducts::Graph.referenced_option_keys[label_was.presence || label]
+    return if referenced.blank?
+
+    removed = (referenced & Array((options_was || {}).values)) - Array((options || {}).values)
+    return if removed.empty?
+
+    errors.add(
+      :options,
+      "cannot drop #{removed.join(', ')} while RelatedProducts::Graph references " \
+      "#{'it'.pluralize(removed.size)}. A gate naming an option the definition no longer offers " \
+      'can never match. Remove the gate in app/services/related_products/graph.rb first.'
+    )
+  end
+
+  def refuse_destroy_while_graph_references_label
+    return unless graph_gate_attributes.include?(label)
+
+    errors.add(
+      :base,
+      "#{label} cannot be deleted while RelatedProducts::Graph gates on it. Remove the gate in " \
+      'app/services/related_products/graph.rb first.'
+    )
+    throw(:abort)
+  end
+
+  def graph_gate_attributes
+    RelatedProducts::Graph.gate_attributes
+  end
+
   def label_must_be_translated
     return if label.blank?
     return if I18n.exists?("custom_attribute_labels.#{label}")

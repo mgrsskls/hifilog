@@ -27,7 +27,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
   test 'requires highlighted to be answered' do
     record = CustomAttribute.new(
-      label: 'amplifier_type',
+      label: 'nominal_impedance',
       input_type: 'boolean'
     )
 
@@ -43,7 +43,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
   # Highlighted.
   test 'highlighted false is a valid answer' do
     record = CustomAttribute.new(
-      label: 'amplifier_type',
+      label: 'nominal_impedance',
       highlighted: false,
       input_type: 'boolean'
     )
@@ -90,7 +90,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
   test 'an option value with no custom_attributes translation is rejected' do
     record = CustomAttribute.new(
-      label: 'amplifier_type',
+      label: 'nominal_impedance',
       highlighted: true,
       input_type: 'option',
       options: { '1' => 'solid_state', '2' => 'not_a_translated_option' }
@@ -105,7 +105,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
   test 'option values are still checked when options arrive as a JSON string' do
     record = CustomAttribute.new(
-      label: 'amplifier_type',
+      label: 'nominal_impedance',
       highlighted: true,
       input_type: 'option',
       options: { '1' => 'not_a_translated_option' }.to_json
@@ -635,5 +635,54 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
     assert_kind_of Array, list
     assert_equal CustomAttribute.count, list.size
+  end
+  # RelatedProducts::Graph names attributes and option keys as Ruby constants, so nothing in the
+  # database can enforce the reference. These guards refuse the edits that would break it.
+  test 'a label the graph gates on cannot be renamed' do
+    attribute = custom_attributes(:seven)
+
+    assert_includes RelatedProducts::Graph.gate_attributes, 'amplifier_type'
+
+    attribute.label = 'turntable_drive_type'
+
+    assert_not attribute.valid?
+    assert_includes attribute.errors[:label].join, 'RelatedProducts::Graph'
+  end
+
+  test 'a label the graph does not gate on can be renamed' do
+    attribute = custom_attributes(:one)
+
+    assert_not_includes RelatedProducts::Graph.gate_attributes, attribute.label
+  end
+
+  test 'a label the graph gates on cannot be destroyed' do
+    attribute = custom_attributes(:seven)
+
+    assert_no_difference -> { CustomAttribute.count } do
+      assert_not attribute.destroy
+    end
+    assert_includes attribute.errors[:base].join, 'cannot be deleted'
+  end
+
+  test 'an option key the graph references cannot be removed' do
+    attribute = custom_attributes(:seven)
+
+    assert_includes RelatedProducts::Graph.referenced_option_keys['amplifier_type'], 'tube'
+
+    attribute.options = attribute.options.reject { |_id, key| key == 'tube' }
+
+    assert_not attribute.valid?
+    assert_includes attribute.errors[:options].join, 'tube'
+  end
+
+  test 'an option key the graph does not reference can be removed' do
+    attribute = custom_attributes(:seven)
+
+    assert_not_includes RelatedProducts::Graph.referenced_option_keys['amplifier_type'],
+                        'solid_state'
+
+    attribute.options = attribute.options.reject { |_id, key| key == 'solid_state' }
+
+    assert_predicate attribute, :valid?
   end
 end

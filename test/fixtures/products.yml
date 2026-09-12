@@ -135,3 +135,40 @@ discontinued:
     - one
   discontinued: true
   custom_attributes:
+
+# Related Products fixtures. Sub category one is Headphone Amplifiers, two is Over-Ear Headphones,
+# three is Pre-Amp / Driver Tubes -- a role-adjacent chain in the graph.
+tube_headphone_amp:
+  name: Tube Headphone Amp
+  brand: one
+  slug: tube-headphone-amp
+  sub_categories:
+    - one
+  custom_attributes:
+    amplifier_type: "2"
+
+solid_state_headphone_amp:
+  name: Solid State Headphone Amp
+  brand: one
+  slug: solid-state-headphone-amp
+  sub_categories:
+    - one
+  custom_attributes:
+    amplifier_type: "1"
+
+driver_tube:
+  name: Driver Tube
+  brand: two
+  slug: driver-tube
+  sub_categories:
+    - three
+  custom_attributes:
+
+wired_headphone:
+  name: Wired Headphone
+  brand: two
+  slug: wired-headphone
+  sub_categories:
+    - two
+  custom_attributes:
+    headphone_connection_type: "1"

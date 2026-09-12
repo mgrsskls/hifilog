@@ -559,6 +559,8 @@ en:
     new:
       heading: Add new version / update
       link: Add version / update
+  related_products:
+    heading: Related Products
   search: Search
   search_results:
     alert:

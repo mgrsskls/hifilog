@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -311,6 +311,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
     t.index ["user_id", "product_variant_id"], name: "index_possessions_on_user_id_and_product_variant_id"
   end
 
+  create_table "product_families", force: :cascade do |t|
+    t.bigint "brand_id", null: false
+    t.datetime "created_at", null: false
+    t.citext "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["brand_id", "name"], name: "index_product_families_on_brand_id_and_name", unique: true
+    t.index ["brand_id"], name: "index_product_families_on_brand_id"
+  end
+
   create_table "product_options", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "model_no"
@@ -338,6 +347,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
     t.integer "discontinued_month"
     t.integer "discontinued_year"
     t.boolean "diy_kit", default: false, null: false
+    t.boolean "limited_edition", default: false, null: false
     t.string "model_no"
     t.citext "name", default: ""
     t.decimal "price", precision: 12, scale: 4
@@ -374,6 +384,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
     t.citext "name", null: false
     t.decimal "price", precision: 12, scale: 4
     t.string "price_currency"
+    t.bigint "product_family_id"
     t.integer "release_day"
     t.integer "release_month"
     t.integer "release_year"
@@ -391,6 +402,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
     t.index ["model_no", "brand_id"], name: "index_products_on_model_no_and_brand_id", unique: true, where: "(model_no IS NOT NULL)"
     t.index ["model_no"], name: "index_products_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
+    t.index ["product_family_id"], name: "index_products_on_product_family_id"
     t.index ["release_year", "release_month", "release_day"], name: "idx_on_release_year_release_month_release_day_0fc6f07e1b"
     t.index ["slug"], name: "index_products_on_slug"
   end
@@ -424,12 +436,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
   create_table "sub_categories", force: :cascade do |t|
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
+    t.citext "identifier", null: false
     t.citext "name", null: false
     t.integer "order"
     t.citext "slug", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id", "name"], name: "index_sub_categories_category_id_name", unique: true
     t.index ["category_id", "slug"], name: "index_sub_categories_category_id_slug", unique: true
+    t.index ["identifier"], name: "index_sub_categories_on_identifier", unique: true
   end
 
   create_table "user_activities", force: :cascade do |t|
@@ -523,10 +537,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
   add_foreign_key "possessions", "product_variants"
   add_foreign_key "possessions", "products"
   add_foreign_key "possessions", "users"
+  add_foreign_key "product_families", "brands"
   add_foreign_key "product_options", "product_variants"
   add_foreign_key "product_options", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "brands"
+  add_foreign_key "products", "product_families", on_delete: :nullify
   add_foreign_key "setup_possessions", "possessions"
   add_foreign_key "setup_possessions", "setups"
   add_foreign_key "setups", "users"

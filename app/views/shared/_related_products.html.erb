@@ -1,0 +1,23 @@
+<%# Related Products: companions this product is compatible with. See docs/pairing-graph.md. %>
+<%# Renders nothing when no group yielded candidates -- a gate with no value fails closed. %>
+<% if groups.present? %>
+  <div class="Product-section Product-section--relatedProducts">
+    <h2><%= t('related_products.heading') %></h2>
+
+    <% groups.each do |group| %>
+      <% heading = related_products_group_heading(group) %>
+      <% next if heading.nil? %>
+      <h3>
+        <%= link_to heading[:name],
+            products_subcategory_path(category_slug: heading[:category_slug],
+                                      sub_category_slug: heading[:slug]) %>
+      </h3>
+
+      <%= render "shared/products_table",
+          products: group.items,
+          hide_category: true,
+          render_completeness: false
+      %>
+    <% end %>
+  </div>
+<% end %>

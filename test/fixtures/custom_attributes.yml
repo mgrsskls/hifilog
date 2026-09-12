@@ -64,3 +64,28 @@ six:
   sub_categories:
     - one
     - two
+
+# Related Products gate attributes. `highlighted` is false here although amplifier_type is
+# highlighted in production: highlighted attributes enter the completeness denominator, and
+# these fixtures exist to exercise gates, not to restate production's scoring.
+seven:
+  id: 7
+  label: amplifier_type
+  highlighted: false
+  input_type: option
+  options:
+    "1": solid_state
+    "2": tube
+    "3": hybrid
+  sub_categories:
+    - one
+eight:
+  id: 8
+  label: headphone_connection_type
+  highlighted: false
+  input_type: option
+  options:
+    "1": wired
+    "2": wireless
+  sub_categories:
+    - two

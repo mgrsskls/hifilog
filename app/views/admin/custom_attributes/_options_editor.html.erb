@@ -1,6 +1,9 @@
 <% rows = custom_attribute.options.presence || {} %>
 <% usage = custom_attribute.option_usage_counts %>
 <% available = CustomAttribute.available_option_keys %>
+<%# Option keys RelatedProducts::Graph gates on. The model refuses to drop one (a gate naming an
+    option the definition no longer offers can never match); this shows it before anyone tries. %>
+<% graph_keys = RelatedProducts::Graph.referenced_option_keys[custom_attribute.label].to_a %>
 
 <%= javascript_include_tag "admin_custom_attributes", type: "module" %>
 
@@ -32,12 +35,20 @@
           data-option-value
         >
         <span class="text-sm text-gray-600 dark:text-gray-400 w-48 shrink-0" data-option-preview></span>
-        <button
-          type="button"
-          class="text-sm underline shrink-0"
-          data-option-remove
-          data-usage="<%= usage[id.to_s].to_i %>"
-        >Remove</button>
+        <% graph_referenced = graph_keys.include?(key.to_s) %>
+        <% if graph_referenced %>
+          <span
+            class="text-sm text-gray-500 dark:text-gray-400 shrink-0"
+            title="RelatedProducts::Graph gates on this option key. Remove the gate in app/services/related_products/graph.rb first."
+          >Used by Related Products</span>
+        <% else %>
+          <button
+            type="button"
+            class="text-sm underline shrink-0"
+            data-option-remove
+            data-usage="<%= usage[id.to_s].to_i %>"
+          >Remove</button>
+        <% end %>
       </li>
     <% end %>
   </ul>

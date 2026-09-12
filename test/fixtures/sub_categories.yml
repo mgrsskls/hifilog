@@ -4,8 +4,18 @@ one:
   name: Headphone Amplifiers
   category: one
   slug: headphone-amplifiers
+  identifier: headphone-amplifiers
 
 two:
   name: Over-Ear Headphones
   category: two
   slug: over-ear-headphones
+  identifier: over-ear-headphones
+
+# Related Products: the graph pairs pre-amp / driver tubes with tube amplifiers, gated on
+# amplifier_type. This is the target side of that edge.
+three:
+  name: Pre-Amp / Driver Tubes
+  category: three
+  slug: pre-amp-driver-tubes
+  identifier: pre-amp-driver-tubes

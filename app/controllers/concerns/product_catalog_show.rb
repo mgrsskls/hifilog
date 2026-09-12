@@ -15,6 +15,7 @@ module ProductCatalogShow
     @images = data.fetch(:images)
     @contributors = data.fetch(:contributors)
     @custom_attributes = data[:custom_attributes]
+    @related_products = data.fetch(:related_products)
 
     return unless user_signed_in?
 

@@ -74,4 +74,34 @@ class CacheService
         .to_a
     end
   end
+
+  # Sub category id lookups for the "Related Products" block: the graph is authored in stable
+  # identifiers (see RelatedProducts::Graph) but the query needs ids, and every product page
+  # resolves up to eight targets. One pluck for the whole table, cached as plain data.
+  #
+  # Identifiers, not slugs: a slug follows the sub category's name and FriendlyId regenerates it
+  # on rename, which would silently empty every edge pointing at it.
+  def self.sub_category_ids_by_identifier
+    Rails.cache.fetch('/sub_category_ids_by_identifier') do
+      SubCategory.pluck(:identifier, :id).to_h
+    end
+  end
+
+  def self.sub_category_ids_for(identifiers)
+    map = sub_category_ids_by_identifier
+    Array(identifiers).filter_map { |identifier| map[identifier] }
+  end
+
+  # { sub_category_id => { name:, category_slug:, slug: } }, so a "Related Products" group heading can
+  # name and link its sub category without loading the record or its category.
+  def self.sub_category_headings
+    Rails.cache.fetch('/sub_category_headings') do
+      SubCategory
+        .joins(:category)
+        .pluck(:id, :name, 'categories.slug', :slug)
+        .each_with_object({}) do |(id, name, category_slug, slug), memo|
+          memo[id] = { name:, category_slug:, slug: }
+        end
+    end
+  end
 end

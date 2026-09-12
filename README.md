@@ -52,7 +52,12 @@ flowchart TB
 
 ## Taxonomy
 
-**`Category`** and **`SubCategory`** form the gear taxonomy. Products, brands, and custom products each link to many subcategories. **`CustomAttribute`** definitions are also scoped to subcategories so structured fields only apply where relevant. Category trees are cached for navigation.
+**`Category`** and **`SubCategory`** form the gear taxonomy. A sub category carries both a
+**`slug`** and an **`identifier`**: the slug is derived from `name` and FriendlyId regenerates it
+whenever the name changes, which is right for a URL and wrong for a reference. `identifier` is
+derived from the name once, on create, and then refuses to change — it is what
+[Related Products](#related-products) points at, so a display rename cannot silently empty a
+pairing edge. Products, brands, and custom products each link to many subcategories. **`CustomAttribute`** definitions are also scoped to subcategories so structured fields only apply where relevant. Category trees are cached for navigation.
 
 ## Brand
 
@@ -106,6 +111,108 @@ Separating a Mk II into its own product also severs the link to what it replaced
 - When the viewer is signed in: their **possession**, **bookmark**, **note**, and **setups** scoped to that product or variant.
 
 **`ProductCatalogShowService`** assembles this context for both show pages.
+
+## Related Products
+
+The **"Related Products"** block on product and variant show pages lists companions an entry is
+compatible with. It is a read-only projection over the existing catalogue — no new tables, no
+migration — and its authoring source and rationale live in `docs/pairing-graph.md`.
+
+Three stages, deliberately separate: **gate** (may this be shown at all), **score** (how good a
+suggestion is it), **assemble** (what the block contains).
+
+### The graph
+
+**`RelatedProducts::Graph`** is hand-authored Ruby constants. A **role** groups sub categories
+occupying the same position in a signal chain (`power_amp`, `headphone`, `cable_phono`); every sub
+category has exactly one. **Edges are directed** — an edge on role A pointing at B means "B may
+appear on A's page", and the reverse is a separate declaration, so a power cable belongs on an
+amplifier page while an amplifier does not belong on a power cable page. **Declaration order is
+priority.** Roles that only receive edges (cables, racks, isolation, power conditioning) declare
+none of their own.
+
+Roles are an authoring abstraction, not runtime data: nothing is stored, and the constants are
+cached only insofar as sub category ids are (`CacheService.sub_category_ids_for`).
+
+**Roles select; sub categories group.** A role pools candidates across all its sub categories,
+but the group the reader sees is labelled and linked by the sub category its items are actually
+in, and each role renders at most one group — the sub category holding its top-ranked candidate.
+Roles name no browsable page: a heading built from `integrated` ("Integrated Amplifiers &
+Receivers") could only link up to the whole Amplifiers category, promising phono stages and tuners
+the group does not contain. Grouping by sub category means every heading is exactly what is listed
+and links to a real index, at the cost of a role's other sub categories going unshown on that page.
+
+### Gates
+
+Edges may be conditional on custom attributes, in four shapes:
+
+| Shape              | Meaning                                     | Example                                                                                                                    |
+| ------------------ | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **source**         | the source product must hold a value        | power tubes appear on an amplifier only when `amplifier_type` is tube or hybrid                                            |
+| **target**         | candidates are narrowed                     | a step-up transformer page lists only `cartridge_type = mc`                                                                |
+| **cross match**    | source value must intersect candidate value | a cartridge appears on a phono stage only if its type is one that stage supports                                           |
+| **specialisation** | the value changes _which_ edges exist       | a passive loudspeaker wants a power amp and speaker cable; an active one wants a preamp, an interconnect and a power cable |
+
+Option values are declared as **i18n keys** and resolved to stored option ids at query time, so
+renaming an option cannot break a gate. `ProductVariant` carries no attributes of its own, so on a
+variant page every gate reads the parent product.
+
+Two failure modes, deliberately different: an attribute that **applies but is unfilled** fails
+**closed** — the edge does not render, because unfilled is not the same as known-not-to-match. An
+attribute **never attached to that sub category** is **inapplicable** and passes ungated: the
+question was never asked. This mirrors `Completeness`, where an inapplicable field leaves the
+denominator rather than scoring as missing. A consequence worth stating plainly: gate attribute
+coverage is currently low, so the block is absent on most pages, and those attributes are among
+the highest-value contribution targets on the site.
+
+A handful of edges ship **disabled** because no attribute can usefully express their gate.
+Headphone, digital and speaker cables have no connector or termination attribute on either side.
+Interconnects do have one, but at 0–1% coverage it closed the gate on every role the attributes
+apply to while leaving them ungated on the one role they are not attached to — so those edges are
+off until coverage is real. A third group (a DAC or streamer feeding a power amplifier or an active
+loudspeaker) assumes volume control that nothing records. An ungated suggestion is not a softer
+version of a gated one; it is advice to buy something that will not connect.
+
+Because the graph is Ruby constants, nothing in the database can enforce its references, so the
+models refuse the edits that would break them: a `SubCategory` identifier cannot change, and a
+`CustomAttribute` cannot be renamed or deleted — nor can an option key be removed — while a gate
+names it. `rake related_products:check` remains the backstop for what a guard cannot see, above all
+a sub category created without a role.
+
+Which roles are **consumables** — valves, cartridges, headphone cables, where being discontinued is
+normal and often desirable — is declared on the role itself, so the ordering rules read it from the
+graph rather than keeping their own list.
+
+### Ordering
+
+`discontinued` is not a compatibility fact and never filters: 58% of the catalogue is discontinued,
+and `products.discontinued` is `null: false`, so `false` means either "in production" or "nobody
+has said". Candidates are ordered by **completeness**, then **not-discontinued**, then a **stable
+hash of the source and candidate**, so one well-documented brand does not lead every page. The
+demotion applies only when the source itself is current, and consumable roles — valves, cartridges,
+headphone cables — are exempt, because NOS stock is the desirable end of those markets.
+
+Two set-level rules sit in Ruby rather than the ORDER BY: exactly one same-brand candidate is
+promoted on edges where components are designed as systems, and one still-in-production candidate
+is guaranteed where any exists. A discontinued base product with a current variant is displayed as
+that variant, and the swap happens before ordering so the row is ranked as the reader sees it.
+
+Co-occurrence across setups and possessions is the signal this ordering wants and does not yet
+have; `docs/pairing-graph.md` §7 records the intended weighting and why it is dormant.
+
+### Reading path
+
+**`RelatedProducts.for`** is the entry point, called from `ProductCatalogShowService`.
+**`Resolver`** turns the source product into ordered targets with resolved gates; **`Query`**
+fetches them, picks each target's strongest sub category, and assembles the groups in one round trip — a `UNION ALL` of one bounded subquery per target
+over `contribute_product_items` (which carries the completeness expression), with the gates built
+into SQL from `Resolver::Gate` rather than encoded as JSONB. Nothing is cached: a cached block would
+have to be invalidated by any edit to any product in a target sub category.
+
+`rake related_products:check` verifies the graph against a real catalogue — every sub category has a
+role, every gate names an attribute that exists, every option key is still offered. The fixture
+catalogue is far too small for those invariants to mean anything, and a sub category added in
+production is something no test can see.
 
 ## Product option
 
@@ -286,6 +393,7 @@ Queues exist for brands with no products, brands missing a specific field, and p
 | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | **`ProductFilterService`**, **`BrandFilterService`**                           | Catalog and brand index filtering, sorting and name search, sharing `FilterableService`, `FilterConstants` and `RelevanceOrdering` |
 | **`ProductCatalogShowService`**                                                | Product and variant show-page context                                                                                              |
+| **`RelatedProducts::Resolver`**, **`RelatedProducts::Query`**                  | "Related Products" targets, gates and candidate fetch (see [Related Products](#related-products))                                  |
 | **`ProductConversionService`**                                                 | Converts a product into a variant of another product and back; never crosses brands                                                |
 | **`CollectionStatusQuery`**                                                    | Owned / previously owned / bookmarked state for a set of ids, in bulk, for the client-side collection buttons                      |
 | **`UserImagesQuery`**                                                          | Paginated community image feed across possessions and custom products                                                              |

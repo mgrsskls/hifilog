@@ -20,7 +20,8 @@ class ProductCatalogShowService
   def call
     result = {
       images: community_gallery_images,
-      contributors: product_contributors
+      contributors: product_contributors,
+      related_products: related_products
     }
 
     result[:custom_attributes] = @product.custom_attributes_resources if @product.custom_attributes&.any?
@@ -36,6 +37,12 @@ class ProductCatalogShowService
   end
 
   private
+
+  # Compatible companions for this entry (docs/pairing-graph.md). Viewer-independent, so it sits
+  # outside the signed-in branch below.
+  def related_products
+    RelatedProducts.for(product: @product, product_variant: @product_variant)
+  end
 
   def community_gallery_images
     gallery_possessions.flat_map do |possession|
