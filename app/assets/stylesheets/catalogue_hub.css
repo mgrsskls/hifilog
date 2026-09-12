@@ -90,36 +90,20 @@
 			.fill-primary {
 				fill: #fff;
 
-				[data-theme="light"] & {
-					fill: #fff;
-				}
-
 				@media (prefers-color-scheme: dark) {
 					& {
 						fill: var(--color-blue-100);
 					}
-				}
-
-				[data-theme="dark"] & {
-					fill: var(--color-blue-100);
 				}
 			}
 
 			.fill-secondary {
 				fill: var(--color-blue-750);
 
-				[data-theme="light"] & {
-					fill: var(--color-blue-750);
-				}
-
 				@media (prefers-color-scheme: dark) {
 					& {
 						fill: var(--color-blue-500);
 					}
-				}
-
-				[data-theme="dark"] & {
-					fill: var(--color-blue-500);
 				}
 			}
 
@@ -131,6 +115,22 @@
 		a {
 			text-decoration: none;
 		}
+	}
+
+	[data-theme="light"] .CatalogueHub-categoryName svg .fill-primary {
+		fill: #fff;
+	}
+
+	[data-theme="dark"] .CatalogueHub-categoryName svg .fill-primary {
+		fill: var(--color-blue-100);
+	}
+
+	[data-theme="light"] .CatalogueHub-categoryName svg .fill-secondary {
+		fill: var(--color-blue-750);
+	}
+
+	[data-theme="dark"] .CatalogueHub-categoryName svg .fill-secondary {
+		fill: var(--color-blue-500);
 	}
 
 	.CatalogueHub-subCategories {
