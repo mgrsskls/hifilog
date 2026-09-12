@@ -59,11 +59,8 @@
 	outline-offset: 0.1875rem;
 }
 
-.AddEntityDialog-option {
-	label:hover,
-	input:focus ~ label {
-		background: var(--color-bg2);
-	}
+.AddEntityDialog-option :is(label:hover, input:focus ~ label) {
+	background: var(--color-bg2);
 }
 
 .AddEntityDialog-option :checked + label .AddEntityDialog-checkmark {
