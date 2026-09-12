@@ -1,4 +1,4 @@
-@layer {
+@layer components {
 	.Home-section {
 		padding-block: clamp(3rem, 8vi, 8rem);
 	}
