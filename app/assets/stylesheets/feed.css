@@ -140,6 +140,19 @@
 	}
 }
 
+.Feed-iconContainer--logo {
+	overflow: hidden;
+	padding: 0.1em;
+	background: var(--color-white);
+	box-sizing: border-box;
+}
+
+.Feed-brandLogo {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: contain;
+}
+
 .Feed-iconCheck {
 	inset-block-start: 0.15em;
 	inset-inline-end: 0.15em;

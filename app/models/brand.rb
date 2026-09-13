@@ -44,6 +44,9 @@ class Brand < ApplicationRecord
                           after_add: :recalculate_sub_categories_count!,
                           after_remove: :recalculate_sub_categories_count!
 
+  has_many :brand_follows, dependent: :destroy
+  has_many :followers, through: :brand_follows, source: :user
+
   has_one_attached :logo do |attachable|
     # Format conversion only — dimensions stay as uploaded (sizes are tuned in markup/CSS).
     attachable.variant :thumb, format: :webp
@@ -207,6 +210,38 @@ class Brand < ApplicationRecord
       "#{" from #{country_name}" if country_name.present?}.",
       meta_catalog_sentence
     )
+  end
+
+  FOLLOWERS_PREVIEW_LIMIT = 12
+
+  # Followers the viewer is allowed to see, newest follow first. Served by
+  # brand_follows (brand_id, created_at).
+  def visible_followers(viewer)
+    brand_follows
+      .joins(:user)
+      .merge(User.listable_for(viewer))
+      .includes(user: { avatar_attachment: :blob })
+      .order(created_at: :desc)
+  end
+
+  # The count of listed followers, not of rows. A number larger than the list would measure the
+  # hidden followers by subtraction, so it comes from the same scope the list does -- which is
+  # also why this cannot be a counter cache column: one column cannot hold two audience-dependent
+  # numbers.
+  def visible_followers_count(viewer)
+    Rails.cache.fetch(self.class.followers_count_cache_key(id, viewer), expires_in: 12.hours) do
+      brand_follows.joins(:user).merge(User.listable_for(viewer)).count
+    end
+  end
+
+  def self.followers_count_cache_key(brand_id, viewer)
+    "brands/#{brand_id}/followers_count/#{viewer.present? ? 'members' : 'public'}"
+  end
+
+  # Both audiences, because a follow changes both counts.
+  def self.flush_followers_count_cache(brand_id)
+    Rails.cache.delete(followers_count_cache_key(brand_id, nil))
+    Rails.cache.delete(followers_count_cache_key(brand_id, true))
   end
 
   def self.active_country_codes

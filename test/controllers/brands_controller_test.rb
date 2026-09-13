@@ -361,4 +361,11 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_select '.CatalogueHub', count: 0
     assert_select '.EntityList--brands'
   end
+  test 'the brand page shows a follow button and the follower strip' do
+    get brand_url(id: brands(:one).friendly_id)
+
+    assert_response :success
+    assert_select '.BrandFollow'
+    assert_select '.BrandFollowers'
+  end
 end

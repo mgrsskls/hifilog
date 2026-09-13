@@ -10,7 +10,8 @@
   <%= render "shared/community/tabs",
              active_tab: @active_community_tab,
              following_count: @following_count,
-             followers_count: @followers_count %>
+             followers_count: @followers_count,
+             brands_count: @brands_count %>
 
   <%= render "shared/community/following_list", user_follows: @user_follows %>
 <% end %>

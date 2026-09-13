@@ -36,10 +36,12 @@ flowchart TB
   User --> EventAttendee --> Event
   User -->|follower| UserFollow -->|followed| User
   User -->|blocker| UserBlock -->|blocked| User
+  User --> BrandFollow --> Brand
   subgraph readonly [Read-only projection]
     ProductItem["ProductItem (view)"]
     ContributeProductItem["ContributeProductItem (view)"]
     SearchResult["SearchResult (view)"]
+    BrandCatalogEvent["BrandCatalogEvent (view)"]
   end
   Product -.-> ProductItem
   ProductVariant -.-> ProductItem
@@ -48,6 +50,8 @@ flowchart TB
   Product -.-> SearchResult
   ProductVariant -.-> SearchResult
   Brand -.-> SearchResult
+  Product -.-> BrandCatalogEvent
+  ProductVariant -.-> BrandCatalogEvent
 ```
 
 ## Taxonomy
@@ -62,6 +66,8 @@ pairing edge. Products, brands, and custom products each link to many subcategor
 ## Brand
 
 **`Brand`** is the manufacturer or label (identity, country, lifecycle dates, description, optional logo). Brands link to subcategories and have many products. Catalog edits are versioned (see [Auditing](#auditing)).
+
+Brands can also be **followed** — see [Following brands](#following-brands).
 
 A brand carries three names, each with one job:
 
@@ -330,8 +336,8 @@ Discussion text on a **product**, optionally scoped to a **variant** (one note p
 
 **Profile visibility** (hidden, logged-in-only, visible) controls public discoverability and whether collection imagery from that user appears on catalog pages.
 
-- **Public profile**: overview (collection preview, statistics, upcoming events, activity feed), full collection, previous gear, history, contributions.
-- **Dashboard**: the signed-in owner's workspace—same domains plus a following-based activity feed, Community (following/followers), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), and blocked users, alongside the Devise account form. The profile and notifications settings live under a dedicated **`Settings::`** namespace of controllers; blocked users has its own top-level controller.
+- **Public profile**: overview (collection preview, statistics, upcoming events, activity feed, collection brands), full collection, previous gear, history, contributions, brands.
+- **Dashboard**: the signed-in owner's workspace—same domains plus a following-based activity feed, Community (following/followers/brands), and settings pages for profile (visibility, images), notifications (follow emails, newsletter), and blocked users, alongside the Devise account form. The profile and notifications settings live under a dedicated **`Settings::`** namespace of controllers; blocked users has its own top-level controller.
 
 ## Following and blocking
 
@@ -340,6 +346,53 @@ Discussion text on a **product**, optionally scoped to a **variant** (one note p
 **`UserBlock`** (`blocker` → `blocked`) severs follow relationships in both directions on create. Blocks are not disclosed to the blocked user: the follow button stays visible and a follow attempt fails generically.
 
 Follow notification emails support one-click unsubscribe, backed by **`FollowNotificationUnsubscribeService`** (signed token, parallel to the newsletter flow). The unsubscribe endpoints are public, token-authenticated controllers—**`FollowNotificationUnsubscribesController`** and **`NewsletterUnsubscribesController`**—that share the **`TokenUnsubscribe`** concern, separating a non-mutating confirmation step from the actual unsubscribe, and also supporting one-click unsubscribe requests initiated by mail clients. Because recipients may not be signed in, both are exempt from the privacy-policy gate.
+
+## Following brands
+
+**`BrandFollow`** (`user` → `brand`) subscribes a user to a brand's new catalog entries. It is
+thinner than `UserFollow` on purpose: a brand has no inbox and no block list, so a brand follow
+writes no activity row, sends no mail and can fail loudly rather than generically.
+
+A follow is not a bookmark. A bookmark files a brand (and can sit in a `BookmarkList`); a follow
+subscribes to what happens next. Both buttons are on the brand page and neither implies the
+other.
+
+**The events are derived, not stored.** **`BrandCatalogEvent`** is a read-only view that flattens
+products and variants into one row each (`brand_id`, `occurred_at`, and the ids needed to build a
+link). Writing a `UserActivity` row per follower would turn one contribution into as many inserts
+as the brand has followers and would leave stale rows behind whenever a product is deleted or
+re-branded; reading `created_at` needs no write path, no backfill and no cleanup job. A deleted
+product leaves the feed by itself and a re-branded product moves with its brand.
+
+**Read path.** Followed-brand entries appear only in the owner's dashboard feed, never on a
+public profile, and only from the moment the follow was created — the rule
+`UserActivityTimeline` already applies to followed users. `BRAND_EVENT_LOOKBACK` bounds how far
+back the query reaches. The feed has two sources and still paginates in the database: one
+`UNION ALL` over keys (activity id, event id, `occurred_at`) is paginated, and the page's rows are
+then loaded from each source by id. Rendering reuses the `Item` struct, so grouping collapses a
+run of same-day entries from one brand into a single row. A brand with a logo shows it in the
+row's icon slot; one without keeps the verb icon.
+
+On a single row the brand and the product form one link to the product page; on a grouped row the
+brand is the subject and links to the brand page. The verbs are `brand_product_listed` /
+`brand_variant_listed`, and the copy says _added to HiFi Log_ rather than _new_: the event is a contributor entering the thing into the catalog, not
+the brand releasing it. A brand announcing its own product would be a separate, authored source
+and needs its own verb.
+
+**Brand follows are public.** The brand page lists its followers and links to a full list
+(`brands#followers`). A profile does not list what its owner follows: its **Brands** section and
+`users#brands` page show the brands behind the owner's _current collection_ (on the overview,
+a grid of eight logo tiles ordered by how many of each they own, becoming
+seven plus a `+N` tile once there are more than eight; A-Z on the page), which is the profile's own subject — a follow is readable from the brand's follower
+list instead. Who is listed follows one rule, **`User.listable_for`** — the
+set-shaped twin of `ProfileVisibility#find_viewable_user!`: confirmed accounts only, `visible`
+always, `logged_in_only` to signed-in viewers, `hidden` never. The follower count is the count of
+_listed_ followers, not of rows — a larger number would measure the hidden followers by
+subtraction — which is why it is not a counter cache column but two cached integers per brand
+(one per audience), expired when a follow is created or destroyed. `UserBlock` is not applied to
+these lists: it severs follows and filters feeds, but it does not hide public pages.
+
+The design notes, including what was deliberately left out, are in `docs/brand-follows.md`.
 
 ## Authentication and admin
 
@@ -459,5 +512,7 @@ Presenters sit beside models and centralize display rules for templates.
 | `CustomAttribute`           | Yes       | Field definitions; values on `Product`                |
 | `UserActivity`              | Yes       | Social/history feed                                   |
 | `UserFollow`                | Yes       | Follower → followed relationship; drives feed & email |
+| `BrandFollow`               | Yes       | User → brand subscription; public on both sides       |
+| `BrandCatalogEvent`         | No (view) | Products/variants as feed events, by brand and date   |
 | `UserBlock`                 | Yes       | Blocker → blocked; severs follows both ways           |
 | `User`                      | Yes       | Account, visibility, policy acceptance, profile media |

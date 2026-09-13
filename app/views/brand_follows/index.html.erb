@@ -1,0 +1,56 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "following" %>
+  <%= stylesheet_link_tag "tabs" %>
+  <%= stylesheet_link_tag "entity" %>
+<% end %>
+<%= render layout: "shared/dashboard", locals: { active_dashboard_menu: @active_dashboard_menu } do %>
+  <div class="Heading">
+    <h1><%= t('headings.followed_brands') %></h1>
+  </div>
+
+  <%= render "shared/community/tabs",
+             active_tab: @active_community_tab,
+             following_count: @following_count,
+             followers_count: @followers_count,
+             brands_count: @brands_count %>
+
+  <% if @brand_follows.any? %>
+    <ul class="FollowingList">
+      <% @brand_follows.each do |brand_follow| %>
+        <% brand = brand_follow.brand %>
+        <li class="FollowingList-item u-flex u-alignCenter u-gap-md">
+          <% if brand.logo.attached? %>
+            <%= image_tag cdn_image_url(brand.logo.variant(:thumb)), alt: "", "aria-hidden": "true", loading: "lazy", width: 64, class: "FollowingList-logo" %>
+          <% end %>
+          <div class="FollowingList-info u-flexGrow">
+            <%= link_to brand.display_name, brand_path(id: brand.friendly_id) %>
+          </div>
+          <%= button_to t('brand_follow.unfollow'),
+                        brand_follow_path(brand_follow, redirect_to: dashboard_followed_brands_path),
+                        method: :delete,
+                        class: "Button Button--sm Button--secondary" %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <%= render "shared/empty_state", message: t('brand_follow.empty_state.no_followed_brands') %>
+
+    <%# A user who follows nothing is shown the brands they already collect -- otherwise the
+        feature is found only by people who happen to open a brand page. %>
+    <% if @suggested_brands.present? %>
+      <p><%= t('brand_follow.empty_state.suggestions_intro') %></p>
+      <ul class="FollowingList">
+        <% @suggested_brands.each do |brand| %>
+          <li class="FollowingList-item u-flex u-alignCenter u-gap-md">
+            <div class="FollowingList-info u-flexGrow">
+              <%= link_to brand.display_name, brand_path(id: brand.friendly_id) %>
+            </div>
+            <%= button_to t('brand_follow.follow'),
+                          brand_follows_path(brand_id: brand.id, redirect_to: dashboard_followed_brands_path),
+                          class: "Button Button--sm" %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>

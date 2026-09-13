@@ -70,7 +70,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get users_path
     assert_response :success
     assert_select '.Users .Users-follow form',
-                  text: /#{Regexp.escape(I18n.t('user_follow.unfollow'))}/,
+                  text: /#{Regexp.escape(I18n.t('user_follow.following'))}/,
                   minimum: 1
   end
 
@@ -358,7 +358,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     UserFollow.create!(follower: users(:one), followed: profile_user)
     get user_path(id: profile_user.user_name)
     assert_response :success
-    assert_select 'form', text: /#{Regexp.escape(I18n.t('user_follow.unfollow'))}/
+    assert_select 'form', text: /#{Regexp.escape(I18n.t('user_follow.following'))}/
   end
 
   test 'show hides follow button for users the viewer blocked' do
@@ -379,5 +379,110 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get user_path(id: profile_user.user_name)
     assert_response :success
     assert_select '.Profile-follow form', text: /#{Regexp.escape(I18n.t('user_follow.follow'))}/
+  end
+
+  # users(:one) currently owns a products(:one) -- brands(:one) -- and previously owned
+  # products(:two) -- brands(:two). Assertions are scoped to the brands list itself: the sitewide
+  # footer names every brand fixture regardless of this page's content.
+  test 'the brands page lists the brands behind the current collection only' do
+    get user_brands_url(user_id: users(:one).lowercase_user_name)
+
+    assert_response :success
+    assert_select '.EntityList--brands' do
+      assert_select 'a', text: brands(:one).display_name
+      assert_select 'a', { text: brands(:two).display_name, count: 0 }
+    end
+  end
+
+  test 'a followed brand alone does not put a brand on the profile' do
+    BrandFollow.create!(user: users(:one), brand: brands(:three))
+
+    get user_brands_url(user_id: users(:one).lowercase_user_name)
+
+    assert_response :success
+    assert_select '.EntityList--brands' do
+      assert_select 'a', { text: brands(:three).display_name, count: 0 }
+    end
+  end
+
+  test 'profile brands are hidden with the rest of a hidden profile' do
+    get user_brands_url(user_id: users(:hidden).lowercase_user_name)
+
+    assert_response :not_found
+  end
+
+  test 'nine brands show as seven tiles and one counting the rest' do
+    user = users(:without_anything)
+    9.times { |index| own_product_from_new_brand(user, index) }
+
+    get user_url(id: user.lowercase_user_name)
+
+    assert_response :success
+    assert_select '.BrandList .BrandList-link', count: 8
+    assert_select '.BrandList-link--more', text: /\+2/
+  end
+
+  # The grid holds eight, so eight brands fill it and the overflow tile would show less than the
+  # brand it replaced.
+  test 'eight brands fill the grid without an overflow tile' do
+    user = users(:without_anything)
+    8.times { |index| own_product_from_new_brand(user, index) }
+
+    get user_url(id: user.lowercase_user_name)
+
+    assert_response :success
+    assert_select '.BrandList .BrandList-link', count: 8
+    assert_select '.BrandList-link--more', count: 0
+  end
+
+  test 'fewer brands than the grid holds show no overflow tile' do
+    user = users(:without_anything)
+    3.times { |index| own_product_from_new_brand(user, index) }
+
+    get user_url(id: user.lowercase_user_name)
+
+    assert_response :success
+    assert_select '.BrandList .BrandList-link', count: 3
+    assert_select '.BrandList-link--more', count: 0
+  end
+
+  test 'the overview orders brands by how much of each the user owns' do
+    user = users(:without_anything)
+    many = own_product_from_new_brand(user, 0, possessions: 3)
+    few = own_product_from_new_brand(user, 1, possessions: 1)
+
+    get user_url(id: user.lowercase_user_name)
+
+    assert_response :success
+    links = css_select('.BrandList .BrandList-link').pluck('title')
+
+    assert_operator links.index(many.display_name), :<, links.index(few.display_name)
+  end
+
+  test 'the profile overview shows brand logos and links to the brands page' do
+    brands(:one).logo.attach(**one_by_one_png_upload(filename: 'overview-logo.png'))
+
+    get user_url(id: users(:one).lowercase_user_name)
+
+    assert_response :success
+    assert_select 'a[href=?]', user_brands_path(user_id: users(:one).lowercase_user_name)
+    assert_select '.BrandList-link--logo img.BrandList-logo', minimum: 1
+  end
+
+  private
+
+  # One brand with as many owned products as asked for, so the preview has something to order.
+  def own_product_from_new_brand(user, index, possessions: 1)
+    token = SecureRandom.hex(4)
+    brand = Brand.create!(name: "Preview #{index} #{token}", country_code: 'US', discontinued: false)
+    possessions.times do |n|
+      product = Product.create!(
+        name: "Preview #{index}-#{n} #{token}",
+        brand:,
+        sub_category_ids: [sub_categories(:one).id]
+      )
+      Possession.create!(user:, product:, prev_owned: false)
+    end
+    brand
   end
 end

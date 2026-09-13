@@ -109,9 +109,17 @@
         </div>
       <% end %>
 
+      <div class="Entity-action">
+        <%= render "shared/brand_follow_button", brand: @brand, brand_follow: @brand_follow, redirect_to: brand_path(id: @brand.friendly_id) %>
+      </div>
+
       <div class="Entity-action<%= " EntityPossession EntityPossession--bookmark" if @bookmark && current_user.bookmark_lists.length > 0 %>">
         <%= render "shared/bookmark_button", bookmark: @bookmark, delete_redirect_to: brand_path(id: @brand.friendly_id), create_bookmarks_path: bookmarks_path(brand_id: @brand.id), include_lists: true %>
       </div>
+
+      <hr>
+
+      <%= render "brands/followers_preview", brand: @brand, follows: @brand_followers, count: @brand_followers_count %>
 
       <hr>
 

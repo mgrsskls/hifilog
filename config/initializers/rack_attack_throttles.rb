@@ -96,7 +96,9 @@ end
 # 10. Follow and block mutations per IP
 Rack::Attack.throttle('follow_mutations/ip', limit: 60, period: 3600) do |req|
   if RackAttackThrottles.write_request?(req) &&
-     (req.path.start_with?('/user_follows') || req.path.start_with?('/user_blocks'))
+     (req.path.start_with?('/user_follows') ||
+       req.path.start_with?('/user_blocks') ||
+       req.path.start_with?('/brand_follows'))
     req.ip
   end
 end

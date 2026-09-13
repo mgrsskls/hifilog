@@ -346,4 +346,38 @@ class BrandTest < ActiveSupport::TestCase
 
     assert_predicate brand.logo, :attached?
   end
+
+  test 'visible_followers never lists a hidden follower' do
+    followers = brands(:one).visible_followers(users(:one)).map(&:user)
+
+    assert_not_includes followers, users(:hidden)
+  end
+
+  test 'visible_followers lists a logged_in_only follower only to a signed-in viewer' do
+    brand = brands(:one)
+
+    assert_not_includes brand.visible_followers(nil).map(&:user), users(:logged_in_only)
+    assert_includes brand.visible_followers(users(:one)).map(&:user), users(:logged_in_only)
+  end
+
+  test 'visible_followers_count matches the list it is shown beside' do
+    brand = brands(:one)
+
+    assert_equal brand.visible_followers(nil).count, brand.visible_followers_count(nil)
+    assert_equal brand.visible_followers(users(:one)).count, brand.visible_followers_count(users(:one))
+  end
+
+  test 'an unconfirmed follower is not listed' do
+    brand = brands(:two)
+    unconfirmed = users(:visible).dup
+    unconfirmed.assign_attributes(
+      email: "unconfirmed-#{SecureRandom.hex(4)}@example.com",
+      user_name: "unconfirmed#{SecureRandom.hex(4)}",
+      confirmed_at: nil
+    )
+    unconfirmed.save!(validate: false)
+    BrandFollow.create!(user: unconfirmed, brand:)
+
+    assert_not_includes brand.visible_followers(users(:one)).map(&:user), unconfirmed
+  end
 end

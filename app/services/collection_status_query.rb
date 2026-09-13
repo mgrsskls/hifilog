@@ -36,12 +36,14 @@ class CollectionStatusQuery
                     .joins(:product)
                     .where(products: { brand_id: brand_ids })
                     .pluck('products.brand_id', :prev_owned)
+    followed_brands = user.followed_brands.map(&:id)
 
     brand_ids.map do |brand_id|
       {
         id: brand_id,
         in_collection: poss_data.any? { |b_id, prev| b_id == brand_id && !prev },
         previously_owned: poss_data.any? { |b_id, prev| b_id == brand_id && prev },
+        following: followed_brands.include?(brand_id),
         bookmarked: bookmark_keys.include?("Brand:#{brand_id}")
       }
     end

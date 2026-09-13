@@ -18,11 +18,11 @@
     </ul>
   <% end %>
 
-  <div class="u-flex u-spaceBetween u-gap-lg u-mt-auto">
+  <div class="u-flex u-spaceBetween u-gap-sm u-gapX-md u-flexWrap u-mt-auto">
     <% if brand.country_name.present? %>
       <div class="EntityList-country u-flex u-gap-smd u-alignCenter">
         <img class="Flag" src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25">
-        <%= brand.country_name %>
+        <span><%= brand.country_name %></span>
       </div>
     <% end %>
 

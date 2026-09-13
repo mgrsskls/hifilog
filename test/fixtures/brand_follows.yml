@@ -1,0 +1,14 @@
+# Feliks Audio has one follower of each visibility, so the listing rules are covered by the
+# fixtures alone: visible is always listed, logged_in_only only to signed-in viewers, hidden
+# never.
+one_follows_feliks:
+  user: one
+  brand: one
+
+logged_in_only_follows_feliks:
+  user: logged_in_only
+  brand: one
+
+hidden_follows_feliks:
+  user: hidden
+  brand: one

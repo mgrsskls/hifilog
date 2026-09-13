@@ -1,10 +1,15 @@
 <% redirect_to ||= request.path %>
 <% if user_follow %>
-  <%= button_to user_follow_path(user_follow, redirect_to:), method: :delete, class: "Button Button--sm Button--secondary" do %>
-    <%= t('user_follow.unfollow') %>
+  <%# The label states what is true, the check marks it, and the title says what clicking does. %>
+  <%= button_to user_follow_path(user_follow, redirect_to:), method: :delete,
+                class: "Button Button--sm", "aria-pressed": "true",
+                title: t('user_follow.unfollow') do %>
+    <%= t('user_follow.following') %>
+    <%= render "shared/state_icon" %>
   <% end %>
 <% else %>
-  <%= button_to user_follows_path(followed_id: user.id, redirect_to:), class: "Button Button--sm" do %>
+  <%= button_to user_follows_path(followed_id: user.id, redirect_to:), class: "Button Button--sm Button--accent",
+                "aria-pressed": "false" do %>
     <%= t('user_follow.follow') %>
   <% end %>
 <% end %>

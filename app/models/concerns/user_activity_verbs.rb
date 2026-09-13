@@ -14,10 +14,21 @@ module UserActivityVerbs
     :setup_product_removed,
     :custom_product_created,
     :possession_image_uploaded,
-    :followed_by_user
+    :followed_by_user,
+    :brand_product_listed,
+    :brand_variant_listed
   ].freeze
 
   SETUP_PRODUCT_VERBS = [:setup_product_added, :setup_product_removed].freeze
+
+  # Catalog entries from a followed brand. These are not UserActivity verbs -- no row is ever
+  # written for them -- but the feed renders them through the same Item struct and helpers.
+  #
+  # "listed", not "added" or "new": the event is that a contributor entered the thing into
+  # HiFi Log, which says nothing about when the brand released it -- a decades-old amplifier is
+  # listed today just as often as this year's. A brand announcing its own product would be a
+  # different event and needs its own verb.
+  BRAND_VERBS = [:brand_product_listed, :brand_variant_listed].freeze
 
   module_function
 
@@ -27,6 +38,10 @@ module UserActivityVerbs
 
   def setup_product_verb?(verb)
     SETUP_PRODUCT_VERBS.include?(verb&.to_sym)
+  end
+
+  def brand_verb?(verb)
+    BRAND_VERBS.include?(verb&.to_sym)
   end
 
   def title_i18n_key(verb, event_past: nil)

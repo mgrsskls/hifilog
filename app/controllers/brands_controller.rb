@@ -103,6 +103,9 @@ a user-driven database for hi-fi products and brands."
     ", brand_id])
     @all_sub_categories_grouped ||= @brand.sub_categories.group_by(&:category).sort_by { |category| category[0].order }
     @bookmark = current_user.bookmarks.find_by(item_id: brand_id, item_type: 'Brand') if user_signed_in?
+    @brand_follow = current_user.brand_follows.find_by(brand_id:) if user_signed_in?
+    @brand_followers = @brand.visible_followers(current_user).limit(Brand::FOLLOWERS_PREVIEW_LIMIT).to_a
+    @brand_followers_count = @brand.visible_followers_count(current_user)
 
     page_title(@brand.seo_name)
     set_meta_desc

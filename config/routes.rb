@@ -71,6 +71,7 @@ Rails.application.routes.draw do
     get 'settings/notifications', to: 'settings/notifications#show', as: :notification_settings
     patch 'settings/notifications', to: 'settings/notifications#update'
     get 'following', to: 'user_follows#index', as: :following
+    get 'following/brands', to: 'brand_follows#index', as: :followed_brands
     get 'followers', to: 'user_follows#followers', as: :followers
     get 'blocked', to: 'user_blocks#index', as: :blocked
     scope 'insights', as: :statistics do
@@ -103,8 +104,8 @@ Rails.application.routes.draw do
     get '/setups/:setup', to: 'users#collection', as: :setup
     get '/history', to: 'users#history', as: :history
     get '/activity', to: 'users#activity'
-    get '/brands', to: 'users#brands'
     get '/contributions', to: 'users#contributions', as: :contributions
+    get '/brands', to: 'users#brands', as: :brands
   end
   post '/app_news/mark_as_read', to: 'app_news#mark_as_read'
 
@@ -144,6 +145,7 @@ Rails.application.routes.draw do
   get '/events/:year/:slug', to: 'events#show', as: :event
   resources :event_attendees, only: [:create, :destroy]
   resources :user_follows, only: [:create, :destroy]
+  resources :brand_follows, only: [:create, :destroy]
   resources :user_blocks, only: [:create, :destroy]
 
   # Contribution queues: entries with a known gap. Noindex, see ContributeController.

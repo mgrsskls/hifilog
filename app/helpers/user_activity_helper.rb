@@ -13,9 +13,23 @@ module UserActivityHelper
   def user_activity_item_title(item)
     if UserActivityVerbs.setup_product_verb?(item.verb&.to_sym)
       user_activity_setup_product_title(item)
+    elsif UserActivityVerbs.brand_verb?(item.verb&.to_sym)
+      user_activity_brand_title(item)
     else
       user_activity_simple_title(item)
     end
+  end
+
+  def user_activity_brand_link(item)
+    return h(item.brand_name) if item.brand_url.blank?
+
+    link_to(h(item.brand_name), item.brand_url)
+  end
+
+  # The brand is part of the linked title, so the sentence carries one link and it goes to the
+  # product. The separate brand link is for grouped rows, where the brand is the subject.
+  def user_activity_brand_title(item)
+    t(UserActivityVerbs.title_i18n_key(item.verb&.to_sym), link: user_activity_product_link(item)).html_safe
   end
 
   def user_activity_gallery_images(items)
@@ -45,6 +59,10 @@ module UserActivityHelper
       product_link = user_activity_product_link(sample)
       return t(key, count: group.items.size, product_link:).html_safe
     end
+    if UserActivityVerbs.brand_verb?(verb)
+      return t(key, count: group.items.size, brand_link: user_activity_brand_link(sample)).html_safe
+    end
+
     if UserActivityVerbs.setup_product_verb?(verb)
       setup_link =
         if sample.setup_url.present?

@@ -46,6 +46,19 @@
 
   <div class="Entity-sub">
     <div class="Entity-action">
+      <% attendee = user_signed_in? && @event.event_attendees.find { |a| a.user_id == current_user.id } %>
+      <% if attendee %>
+        <%= button_to event_attendee_path(id: attendee.id, past: @event.discontinued?), method: :delete, class: "Button Button--icon", "aria-pressed": true do %>
+          <%= @event.discontinued? ? "Attended" : "Attending" %>
+          <%= render "shared/state_icon" %>
+        <% end %>
+      <% else %>
+        <%= button_to event_attendees_path(event_id: @event.id, past: @event.discontinued?), class: "Button Button--accent" do %>
+          <%= @event.discontinued? ? 'Attended' : 'Attend' %>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="Entity-action">
       <%= render "shared/bookmark_button",
         bookmark: @bookmark,
         delete_redirect_to: event_path(year: @event.calendar_year, slug: @event.friendly_id),
@@ -55,23 +68,8 @@
 
     <hr>
 
-    <div class="Entity-action">
-      <div class="Event-attend">
-        <div class="u-flex u-gap-md u-alignCenter u-flexWrap">
-          <% attendee = user_signed_in? && @event.event_attendees.find { |a| a.user_id == current_user.id } %>
-          <% if attendee %>
-            <%= button_to event_attendee_path(id: attendee.id, past: @event.discontinued?), method: :delete, class: "Button Button--sm Button--accent Button--secondary Button--icon" do %>
-              <%= @event.discontinued? ? "You attended" : "You attend" %>
-              <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
-            <% end %>
-          <% else %>
-            <%= button_to event_attendees_path(event_id: @event.id, past: @event.discontinued?), class: "Button Button--sm Button--accent" do %>
-              <%= @event.discontinued? ? 'I attended' : 'Attend' %>
-            <% end %>
-          <% end %>
-          <span><%= @event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: @event.event_attendees.size) %></span>
-        </div>
-      </div>
+    <div class="Event-attend">
+      <p><%= @event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: @event.event_attendees.size) %></p>
     </div>
   </div>
 </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_12_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_13_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -130,6 +130,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_12_130000) do
     t.index ["item_id", "item_type"], name: "index_bookmarks_item_id_item_type"
     t.index ["user_id", "bookmark_list_id"], name: "index_bookmarks_on_user_id_and_bookmark_list_id"
     t.index ["user_id", "item_type", "item_id"], name: "index_bookmarks_on_user_item_type_and_item_id", unique: true
+  end
+
+  create_table "brand_follows", force: :cascade do |t|
+    t.bigint "brand_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["brand_id", "created_at"], name: "index_brand_follows_on_brand_id_and_created_at"
+    t.index ["user_id", "brand_id"], name: "index_brand_follows_on_user_id_and_brand_id", unique: true
   end
 
   create_table "brands", force: :cascade do |t|
@@ -365,6 +374,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_12_130000) do
     t.index ["model_no"], name: "index_product_variants_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name", "product_id", "model_no", "release_day", "release_month", "release_year"], name: "idx_on_name_product_id_model_no_release_day_release_7d3b57d931", unique: true
     t.index ["name"], name: "index_product_variants_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
+    t.index ["product_id", "created_at"], name: "index_product_variants_on_product_id_and_created_at"
     t.index ["product_id", "discontinued"], name: "index_product_variants_on_product_id_and_discontinued"
     t.index ["product_id", "diy_kit"], name: "index_product_variants_on_product_id_and_diy_kit"
     t.index ["release_year", "release_month", "release_day"], name: "idx_on_release_year_release_month_release_day_92cc125ce6"
@@ -392,6 +402,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_12_130000) do
     t.datetime "updated_at", null: false
     t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
     t.index "uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (id)::text))", name: "index_products_on_search_uuid"
+    t.index ["brand_id", "created_at"], name: "index_products_on_brand_id_and_created_at"
     t.index ["brand_id", "discontinued"], name: "index_products_on_brand_id_and_discontinued"
     t.index ["brand_id", "diy_kit"], name: "index_products_on_brand_id_and_diy_kit"
     t.index ["brand_id", "model_no"], name: "index_products_brand_id_model_no", unique: true
@@ -526,6 +537,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_12_130000) do
   add_foreign_key "bookmark_lists", "users"
   add_foreign_key "bookmarks", "bookmark_lists", on_delete: :nullify
   add_foreign_key "bookmarks", "users"
+  add_foreign_key "brand_follows", "brands"
+  add_foreign_key "brand_follows", "users"
   add_foreign_key "custom_products", "users"
   add_foreign_key "event_attendees", "events"
   add_foreign_key "event_attendees", "users"
@@ -553,6 +566,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_12_130000) do
   add_foreign_key "user_follows", "users", column: "followed_id"
   add_foreign_key "user_follows", "users", column: "follower_id"
 
+  create_view "brand_catalog_events", sql_definition: <<-SQL
+      SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,
+      'product'::text AS source,
+      products.id AS product_id,
+      NULL::bigint AS product_variant_id,
+      products.brand_id,
+      products.created_at AS occurred_at
+     FROM products
+  UNION ALL
+   SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (product_variants.id)::text)) AS id,
+      'product_variant'::text AS source,
+      product_variants.product_id,
+      product_variants.id AS product_variant_id,
+      products.brand_id,
+      product_variants.created_at AS occurred_at
+     FROM (product_variants
+       JOIN products ON ((products.id = product_variants.product_id)));
+  SQL
   create_view "contribute_product_items", sql_definition: <<-SQL
       SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,
       products.name,

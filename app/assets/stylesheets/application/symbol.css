@@ -52,12 +52,21 @@
 	fill: var(--color-bookmark-bg);
 }
 
-.IconSymbol--prevOwned {
-	border: 2px solid;
-	background: #eef0f1;
-	color: #526b7b;
+.IconSymbol--prevOwned,
+.IconSymbol--following {
+	border: 0.125rem solid;
 	border-radius: 50%;
 	font-weight: 700;
+}
+
+.IconSymbol--following {
+	background: hsl(260, 50%, 85%);
+	color: hsl(260, 34%, 25%);
+}
+
+.IconSymbol--prevOwned {
+	background: #eef0f1;
+	color: #526b7b;
 }
 
 @media (prefers-color-scheme: dark) {

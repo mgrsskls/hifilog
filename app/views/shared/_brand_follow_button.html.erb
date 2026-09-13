@@ -1,0 +1,24 @@
+<%# locals: brand, brand_follow, redirect_to (optional) %>
+<% redirect_to ||= request.path %>
+<div class="BrandFollow">
+  <% if !user_signed_in? %>
+    <%= link_to t('brand_follow.follow'),
+                new_user_session_path(redirect: brand_path(id: brand.friendly_id)),
+                class: "Button Button--center Button--accent",
+                rel: "nofollow" %>
+  <% elsif brand_follow %>
+    <%= button_to brand_follow_path(brand_follow, redirect_to:),
+                  method: :delete,
+                  class: "Button Button--center",
+                  "aria-pressed": "true",
+                  title: t('brand_follow.unfollow') do %>
+      <%= t('brand_follow.following') %>
+      <%= render "shared/state_icon" %>
+    <% end %>
+  <% else %>
+    <%= button_to t('brand_follow.follow'),
+                  brand_follows_path(brand_id: brand.id, redirect_to:),
+                  class: "Button Button--center Button--accent",
+                  "aria-pressed": "false" %>
+  <% end %>
+</div>

@@ -8,6 +8,7 @@ module UserActivityTimeline::ItemBuilders
   include SetupItems
   include EventItems
   include FollowItems
+  include BrandItems
 
   private
 

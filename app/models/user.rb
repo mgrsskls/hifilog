@@ -44,8 +44,21 @@ class User < ApplicationRecord
   has_many :blocker_relationships, class_name: 'UserBlock', foreign_key: :blocked_id, dependent: :destroy,
                                    inverse_of: :blocked
   has_many :blocked_by_users, through: :blocker_relationships, source: :blocker
+  has_many :brand_follows, dependent: :destroy
+  has_many :followed_brands, through: :brand_follows, source: :brand
 
   scope :visible_in_follow_feed, -> { where.not(profile_visibility: :hidden) }
+  # Set-shaped twin of ProfileVisibility#find_viewable_user!, for the places that list users on
+  # a public page rather than render one profile: brand follower lists today. Same enum, same
+  # confirmed clause, so the two cannot drift apart. A user who does not want to be listed has
+  # the control they already have -- profile visibility -- rather than a fourth privacy state
+  # that only one feature understands.
+  scope :listable_for, lambda { |viewer|
+    scope = where.not(confirmed_at: nil)
+    next scope.where(profile_visibility: :visible) if viewer.blank?
+
+    scope.where(profile_visibility: [:visible, :logged_in_only])
+  }
   # Publicly reachable profiles: visible AND confirmed. Confirmation matters because the record
   # exists from the moment the signup form is submitted, while sign-in requires confirmation
   # (allow_unconfirmed_access_for is off) -- so an unconfirmed account is always an empty shell,
@@ -92,6 +105,12 @@ class User < ApplicationRecord
 
   def collection_path
     user_collection_path(user_name.downcase)
+  end
+
+  def following_brand?(brand)
+    return false if brand.nil?
+
+    brand_follows.exists?(brand_id: brand.id)
   end
 
   def following?(other)

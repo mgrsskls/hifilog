@@ -16,3 +16,9 @@
 .FollowingList-info {
 	flex-grow: 1;
 }
+
+.FollowingList-logo {
+	block-size: auto;
+	inline-size: 4rem;
+	object-fit: contain;
+}

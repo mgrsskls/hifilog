@@ -77,6 +77,7 @@ class UserFollowsController < ApplicationController
     @active_community_tab = active_tab
     @following_count = current_user.user_follows.count
     @followers_count = current_user.follower_relationships.count
+    @brands_count = current_user.brand_follows.count
   end
 
   def redirect_path

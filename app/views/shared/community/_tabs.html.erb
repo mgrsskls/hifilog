@@ -10,5 +10,10 @@
                   dashboard_followers_path,
                   "aria-current": active_tab == :followers %>
     </li>
+    <li>
+      <%= link_to "#{t('headings.followed_brands')} <span>(#{brands_count})</span>".html_safe,
+                  dashboard_followed_brands_path,
+                  "aria-current": active_tab == :brands %>
+    </li>
   </ul>
 </nav>

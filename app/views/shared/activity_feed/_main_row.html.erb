@@ -31,6 +31,11 @@
         <%= render "shared/avatar", user: actor_user, size: 56 %>
       </span>
     <% end %>
+  <%# A brand speaks for itself: where it has a logo, that is a better marker than the verb icon. %>
+  <% elsif local_assigns[:actor_item]&.brand_logo %>
+    <div class="Feed-iconContainer Feed-iconContainer--logo" aria-hidden="true">
+      <%= image_tag cdn_image_url(actor_item.brand_logo.variant(:thumb)), alt: "", "aria-hidden": "true", loading: "lazy", class: "Feed-brandLogo" %>
+    </div>
   <% else %>
     <div class="Feed-iconContainer" aria-hidden="true">
       <%= user_activity_icon(verb, event_upcoming:) %>

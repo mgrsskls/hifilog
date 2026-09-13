@@ -1,17 +1,24 @@
 .Button,
 ::file-selector-button {
 	padding: var(--input-padding);
-	border-radius: var(--border-radius);
+	border-radius: 2em;
 	box-sizing: border-box;
 	background: var(--color-button-bg);
 	color: var(--color-button-copy);
 	box-shadow: 0.15rem 0.15rem 0.25rem var(--color-button-box-shadow);
 	text-decoration: none;
 	border: var(--border) transparent;
-	display: inline-flex;
-	gap: 0.5rem;
-	align-items: center;
 	white-space: nowrap;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	gap: 0.5rem;
+}
+
+.Button--center {
+	text-align: center;
 }
 
 .Button[aria-pressed="true"] {
@@ -21,6 +28,16 @@
 	background: var(--color-bookmark-bg);
 	border: var(--border);
 	font-weight: 600;
+}
+
+/* Scoped to the pressed state rather than to .Button, so buttons that merely contain an
+   IconSymbol (the filter status, for one) keep the size they have. */
+.Button[aria-pressed="true"] .IconSymbol {
+	--size: 1em;
+
+	block-size: var(--size);
+	inline-size: var(--size);
+	transform: scale(1.2);
 }
 
 .Button:disabled {
@@ -54,12 +71,6 @@
 .Button--sm {
 	padding: 0.6em 0.75em;
 	line-height: 1;
-
-	svg {
-		inline-size: 1em;
-		block-size: 1em;
-		scale: 1.2;
-	}
 }
 
 .TextButton {

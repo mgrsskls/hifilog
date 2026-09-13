@@ -95,6 +95,7 @@
 }
 
 .EntityListItem-wrapper {
+	container: wrapper / inline-size;
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
@@ -198,6 +199,13 @@
 .EntityList-productsCount,
 .EntityList-country {
 	font-size: 0.875rem;
+	white-space: nowrap;
+}
+
+@container wrapper (width < 16rem) {
+	.EntityList-country span {
+		display: none;
+	}
 }
 
 .EntityList-productsCount {

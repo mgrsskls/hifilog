@@ -37,6 +37,14 @@ class UserActivityTimeline
 
   GROUP_THRESHOLD = 3
 
+  # The logo rides along because the feed renders it in place of the verb icon wherever a brand
+  # has one.
+  BRAND_EVENT_PRELOADS = [{ brand: { logo_attachment: :blob } }, :product, :product_variant].freeze
+
+  # How far back followed-brand entries are read. A follow made years ago must not turn one feed
+  # page into a scan over the whole catalog.
+  BRAND_EVENT_LOOKBACK = 1.year
+
   Item = Struct.new(
     :verb,
     :logged_at,
@@ -57,6 +65,10 @@ class UserActivityTimeline
     :actor_user_name,
     :actor_profile_path,
     :actor_user,
+    :brand_id,
+    :brand_name,
+    :brand_url,
+    :brand_logo,
     keyword_init: true
   ) do
     def event_upcoming?
@@ -91,41 +103,120 @@ class UserActivityTimeline
 
   def self.new_for_following(viewer, time_zone: Time.zone, limit: nil)
     followed_ids = viewer.followed_users.visible_in_follow_feed.pluck(:id)
-    new(viewer, time_zone:, limit:, following_user_ids: [viewer.id] + followed_ids)
+    new(viewer, time_zone:, limit:, following_user_ids: [viewer.id] + followed_ids, include_brand_events: true)
   end
   private_class_method :new_for_following
 
-  # +following_user_ids+ marks a following feed: it lists whose activities to
-  # include (viewer first) and switches on actor display for every row.
-  def initialize(user, time_zone: Time.zone, limit: nil, following_user_ids: nil, public_profile_feed: false)
+  # +following_user_ids+ marks a following feed: it lists whose activities to include (viewer
+  # first) and switches on actor display for every row. +include_brand_events+ adds the viewer's
+  # own followed-brand entries -- their subscription, not anybody's activity, so it belongs to
+  # the dashboard feed only and never to a public profile.
+  # rubocop:disable Metrics/ParameterLists
+  def initialize(user, time_zone: Time.zone, limit: nil, following_user_ids: nil, public_profile_feed: false,
+                 include_brand_events: false)
     @user = user
     @viewer_id = user.id
     @user_ids = following_user_ids || [user.id]
     @multi_user = @user_ids.size > 1
     @show_actor = following_user_ids.present?
     @public_profile_feed = public_profile_feed
+    @include_brand_events = include_brand_events
     @time_zone = time_zone
     @limit = limit
   end
+  # rubocop:enable Metrics/ParameterLists
 
   def grouped_rows
-    rows = build_grouped_rows(flat_items(activities_for_timeline))
+    rows = build_grouped_rows(merged_flat_items(activities_for_timeline, brand_events_for_timeline))
     @limit ? rows.first(@limit) : rows
   end
 
-  # Paginates activities at the database level instead of loading the whole
-  # timeline. Grouping and deduping apply per page, so a cluster that spans a
-  # page boundary renders as separate (possibly ungrouped) rows on each page.
+  # Paginates at the database level instead of loading the whole timeline. The feed has two
+  # sources and both stay in the database: one UNION ALL over keys only -- (activity id, event
+  # id, occurred_at) -- is paginated, and the page's rows are then loaded from each source by id,
+  # so only the key query touches the full history.
+  #
+  # Grouping and deduping apply per page, so a cluster that spans a page boundary renders as
+  # separate (possibly ungrouped) rows on each page.
   def paginated_rows(page:, per:)
-    activities = timeline_activities_scope.page(page).per(per)
-    activities = timeline_activities_scope.page(1).per(per) if activities.out_of_range?
+    keys = feed_keys_scope.page(page).per(per)
+    keys = feed_keys_scope.page(1).per(per) if keys.out_of_range?
 
-    loaded = activities.to_a
-    preload_timeline_subjects!(loaded)
-    PaginatedFeed.new(rows: build_grouped_rows(flat_items(loaded)), activities:)
+    key_rows = keys.to_a
+    activities = activities_for_keys(key_rows)
+    brand_events = brand_events_for_keys(key_rows)
+
+    PaginatedFeed.new(rows: build_grouped_rows(merged_flat_items(activities, brand_events)), activities: keys)
   end
 
   private
+
+  # Items from both sources in one newest-first list. +flat_items+ has already sorted and deduped
+  # the activity side and +brand_items+ comes back chronological, so the index tie-break is what
+  # keeps equal timestamps in the order each source produced them.
+  def merged_flat_items(activities, brand_events)
+    items = flat_items(activities) + brand_items(brand_events)
+    items.each_with_index.sort_by { |item, index| [-item.logged_at.to_f, index] }.map(&:first)
+  end
+
+  def brand_events_for_timeline
+    return [] unless @include_brand_events
+
+    scope = brand_events_scope.chronological.includes(BRAND_EVENT_PRELOADS)
+    return scope.to_a unless @limit
+
+    capped = scope.limit(activities_fetch_limit)
+    capped_events = capped.to_a
+    return capped_events if capped_events.size < activities_fetch_limit
+
+    scope.to_a
+  end
+
+  def brand_events_scope
+    BrandCatalogEvent.where(occurred_at: BRAND_EVENT_LOOKBACK.ago..).followed_by(@viewer_id)
+  end
+
+  # Aliased AS user_activities so the model's table name matches the subquery and Kaminari can
+  # count and page it like any other relation. Rows from the brand side carry a NULL id.
+  def feed_keys_scope
+    UserActivity.unscoped
+                .select('user_activities.id', 'user_activities.event_id', 'user_activities.occurred_at')
+                .from(Arel.sql("(#{feed_keys_union_sql}) AS user_activities"))
+                # Ties are broken by the two ids so that paging is stable: without it, two rows
+                # sharing a timestamp could swap places between requests and one of them would
+                # appear twice or not at all across a page boundary.
+                .order(Arel.sql('occurred_at DESC, id DESC NULLS LAST, event_id DESC NULLS LAST'))
+  end
+
+  def feed_keys_union_sql
+    activity_keys = timeline_activities_scope.except(:includes, :order).select(
+      'user_activities.id AS id', 'NULL::uuid AS event_id', 'user_activities.occurred_at AS occurred_at'
+    )
+    return activity_keys.to_sql unless @include_brand_events
+
+    event_keys = brand_events_scope.select(
+      'NULL::bigint AS id', 'brand_catalog_events.id AS event_id', 'brand_catalog_events.occurred_at AS occurred_at'
+    )
+    "(#{activity_keys.to_sql}) UNION ALL (#{event_keys.to_sql})"
+  end
+
+  def activities_for_keys(key_rows)
+    ids = key_rows.filter_map(&:id)
+    return [] if ids.empty?
+
+    activities = UserActivity.where(id: ids).includes(:subject, :user).to_a
+    preload_timeline_subjects!(activities)
+    activities
+  end
+
+  def brand_events_for_keys(key_rows)
+    return [] unless @include_brand_events
+
+    ids = key_rows.filter_map { |row| row[:event_id] }
+    return [] if ids.empty?
+
+    BrandCatalogEvent.where(id: ids).includes(BRAND_EVENT_PRELOADS).to_a
+  end
 
   def build_grouped_rows(flat)
     rows = []
@@ -288,7 +379,8 @@ class UserActivityTimeline
         :_
       end
     user_scope = @multi_user ? (item.actor_user_id || 0) : :_
-    [day, cluster_verb, suffix, setup_scope, possession_scope, user_scope]
+    brand_scope = UserActivityVerbs.brand_verb?(item.verb) ? (item.brand_id || 0) : :_
+    [day, cluster_verb, suffix, setup_scope, possession_scope, user_scope, brand_scope]
   end
 
   def flat_items(activities)

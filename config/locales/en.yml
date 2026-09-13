@@ -404,6 +404,7 @@ en:
     product_variants: <p><b>There are no product updates or other versions yet for <i>%{name}</i>.<br></b> You can <a href="%{path}" rel="nofollow">add an update / another version here</a>.</p>
     products: "<p><b>No products found.</b></p>"
     products_filter: <p><b>There are no products yet based on your filter criteria.</b> You can <a href="%{path}" rel="nofollow">add a product here</a>.</p>
+    profile_brands: "<p><i>%{name}</i> has no products in their collection yet.</p>"
     public_profile: "<p><i>%{name}</i> has not added any products to their collection yet.</p>"
     public_profile_activity: "<p><i>%{name}</i> has no public activity to show yet.</p>"
     public_profile_history: "<p><i>%{name}</i> has not added enough information about their products yet.</p>"
@@ -437,7 +438,6 @@ en:
   headings:
     account: Account
     activity: Activity
-    brands: Brands
     changelog: Changelog
     collection: Collection
     contributions: Contributions
@@ -451,6 +451,8 @@ en:
     feed: Feed
     following: Following
     followers: Followers
+    followed_brands: Brands
+    brands: Brands
     blocked: Blocked users
     history: History
     home: Home
@@ -466,6 +468,9 @@ en:
     your_insights: Your Insights
   overview:
     view_all: View all
+    more_brands:
+      one: 1 more brand
+      other: "%{count} more brands"
   home:
     browse:
       brands_heading: Brands
@@ -609,9 +614,10 @@ en:
       discontinued: Out of business
       in_your_collection: In my collection
       prev_owned: Previously owned
+      following: Following
     event:
-      in_your_collection: You attend
-      prev_owned: You attended
+      in_your_collection: Attending
+      prev_owned: Attended
     in_your_bookmarks: Bookmarked
     product:
       continued: In production
@@ -621,6 +627,8 @@ en:
   user_follow:
     follow: Follow
     following: Following
+    # The action, not the state: the title of the pressed button and the label in the dashboard
+    # lists, where every row would otherwise read "Following" and none would say what it does.
     unfollow: Unfollow
     remove_follower: Remove
     block: Block
@@ -648,6 +656,22 @@ en:
       body_html: "%{follower_link} is now following you."
       body_text: "%{follower_name} is now following you. View their profile: %{profile_url}"
       body_text_without_profile: "%{follower_name} is now following you."
+  brand_follow:
+    follow: Follow
+    following: Following
+    unfollow: Unfollow
+    followers_heading: Followers
+    followers_count:
+      one: 1 follower
+      other: "%{count} followers"
+      zero: No followers yet
+    messages:
+      followed: "You are now following %{name}."
+      unfollowed: "You unfollowed %{name}."
+    empty_state:
+      no_followed_brands: You do not follow any brands yet. Visit a brand page to follow it.
+      no_followers: No one follows this brand yet.
+      suggestions_intro: "You own products from these brands:"
   user_activity:
     image_gallery:
       open_image: "Open image %{index} of %{count}"
@@ -666,6 +690,8 @@ en:
       summary_setup_product_removed_html: "Removed <b>%{count}</b> products from their listening setup %{setup_link}"
       summary_event_attendance_cancelled_html: "No longer attends <b>%{count}</b> events"
       summary_possession_image_uploaded_html: "Added <b>%{count}</b> photos to %{product_link}"
+      summary_brand_product_listed_html: "<b>%{count}</b> %{brand_link} products were added to HiFi Log"
+      summary_brand_variant_listed_html: "<b>%{count}</b> %{brand_link} versions were added to HiFi Log"
     meta:
       logged: "%{datetime}"
       owned_until: "Owned until %{to}"
@@ -684,6 +710,8 @@ en:
       event_attendance_cancelled_html: "No longer attends %{link}"
       possession_image_uploaded_html: "Added a photo to %{link}"
       followed_by_user_html: "%{link} started following you"
+      brand_product_listed_html: "%{link} was added to HiFi Log"
+      brand_variant_listed_html: "%{link} was added to HiFi Log"
   user:
     notification_settings:
       updated: Your notification settings have been saved.

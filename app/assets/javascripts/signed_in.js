@@ -103,6 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
 								!item.previously_owned;
 							el.querySelector('[data-symbol="bookmarked"]').hidden =
 								!item.bookmarked;
+							el.querySelector('[data-symbol="following"]').hidden =
+								!item.following;
 						});
 					}
 				}

@@ -1,0 +1,24 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "following" %>
+<% end %>
+
+<%= render "shared/back_link", path: brand_path(id: @brand.friendly_id) %>
+
+<h1><%= t('brand_follow.followers_heading') %> <span><%= @brand.display_name %></span></h1>
+
+<% if @brand_follows.any? %>
+  <ul class="FollowingList">
+    <% @brand_follows.each do |brand_follow| %>
+      <% follower = brand_follow.user %>
+      <li class="FollowingList-item u-flex u-alignCenter u-gap-md">
+        <%= render "shared/avatar", user: follower, size: 64 %>
+        <div class="FollowingList-info u-flexGrow">
+          <%= link_to follower.user_name, follower.profile_path %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+  <%= paginate @brand_follows %>
+<% else %>
+  <%= render "shared/empty_state", message: t('brand_follow.empty_state.no_followers') %>
+<% end %>

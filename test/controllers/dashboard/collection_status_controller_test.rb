@@ -26,8 +26,10 @@ class Dashboard::CollectionStatusControllerTest < ActionDispatch::IntegrationTes
 
     res = JSON.parse(@response.body)
     assert_equal [
-      { 'id' => brands(:one).id, 'in_collection' => true, 'previously_owned' => false, 'bookmarked' => true },
-      { 'id' => brands(:two).id, 'in_collection' => false, 'previously_owned' => true, 'bookmarked' => false }
+      { 'id' => brands(:one).id, 'in_collection' => true, 'previously_owned' => false, 'following' => true,
+        'bookmarked' => true },
+      { 'id' => brands(:two).id, 'in_collection' => false, 'previously_owned' => true, 'following' => false,
+        'bookmarked' => false }
     ], res['brands']
     assert_equal [
       { 'id' => products(:one).id, 'in_collection' => true, 'previously_owned' => false, 'bookmarked' => true },
