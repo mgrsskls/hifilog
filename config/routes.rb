@@ -165,7 +165,6 @@ Rails.application.routes.draw do
 
   html_only = { defaults: { format: :html }, constraints: { format: 'html' } }
 
-  get '/changelog', to: 'static#changelog', **html_only
   get '/about', to: 'static#about', **html_only
   get '/privacy-policy', to: 'static#privacy_policy', **html_only
   get '/imprint', to: 'static#imprint', **html_only

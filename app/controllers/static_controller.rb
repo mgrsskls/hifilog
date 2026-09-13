@@ -5,16 +5,6 @@ class StaticController < ApplicationController
 
   content_security_policy false, only: [:amp_to_headphone_calculator]
 
-  def changelog
-    @html = Rails.cache.fetch('/static/changelog/v1') do
-      markdown_to_html Rails.root.join('CHANGELOG.md').read
-    end
-    page_title('Changelog')
-    @no_index = true
-
-    render 'static'
-  end
-
   def about
     @html = Rails.cache.fetch('/static/about/v1') do
       markdown_to_html Rails.root.join('static/about.md').read

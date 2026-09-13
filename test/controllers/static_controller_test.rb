@@ -3,11 +3,6 @@
 require 'test_helper'
 
 class StaticControllerTest < ActionDispatch::IntegrationTest
-  test 'changelog' do
-    get changelog_path
-    assert_response :success
-  end
-
   test 'about' do
     get about_path
     assert_response :success
@@ -38,7 +33,6 @@ class StaticControllerTest < ActionDispatch::IntegrationTest
   # '*url' catch-all and getting a 404.
   test 'static pages render regardless of the Accept header' do
     paths = [
-      changelog_path,
       about_path,
       imprint_path,
       privacy_policy_path,
