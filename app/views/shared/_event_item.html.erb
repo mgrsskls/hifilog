@@ -21,7 +21,7 @@
 <% end %>
 
 <% content = capture do %>
-  <div class="u-flex u-spaceBetween u-gap-lg u-mt-auto">
+  <div class="u-flex u-spaceBetween u-flexWrap u-gap-sm u-gapX-md u-mt-auto">
     <% if event.country_code.present? %>
       <div class="EntityList-country u-flex u-gap-smd u-alignCenter">
         <% country_name = country_name_from_country_code(event.country_code) %>
