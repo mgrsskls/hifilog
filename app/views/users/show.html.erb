@@ -27,6 +27,41 @@
             user: @user
           ) %>
 
+      <div class="UserProfile-brands">
+        <%= render "shared/overview/section_heading",
+            heading: t('headings.brands'),
+            heading_class: "UserProfile-heading",
+            view_all_path: user_brands_path(user_id: @user.lowercase_user_name) %>
+        <% if @collection_brands.any? %>
+          <ul class="BrandList">
+            <% @collection_brands.each do |brand| %>
+              <li>
+                <%# The logo is the brand's own mark; the name carries it where there is none. %>
+                <%= link_to brand_path(id: brand.friendly_id), class: "BrandList-link#{" BrandList-link--logo" if brand.logo.attached?}", title: brand.display_name do %>
+                  <% if brand.logo.attached? %>
+                    <%= image_tag cdn_image_url(brand.logo.variant(:thumb)), alt: brand.display_name, loading: "lazy", class: "BrandList-logo" %>
+                  <% else %>
+                    <span class="BrandList-name"><%= brand.display_name %></span>
+                  <% end %>
+                <% end %>
+              </li>
+            <% end %>
+            <% if @collection_brands_remainder > 0 %>
+              <li>
+                <%= link_to user_brands_path(user_id: @user.lowercase_user_name),
+                            class: "BrandList-link BrandList-link--more",
+                            title: t('overview.more_brands', count: @collection_brands_remainder) do %>
+                  <span aria-hidden="true">+<%= @collection_brands_remainder %></span>
+                  <span class="u-hiddenVisually"><%= t('overview.more_brands', count: @collection_brands_remainder) %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <%= render "shared/empty_state", message: t('empty_state.profile_brands', name: h(@user.user_name)) %>
+        <% end %>
+      </div>
+
       <%= render "shared/overview/events_section",
           section_class: "UserProfile-events",
           heading_class: "UserProfile-heading",

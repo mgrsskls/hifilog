@@ -10,6 +10,22 @@ class UsersController < ApplicationController
 
   helper UserActivityHelper
 
+  # The grid holds eight tiles. Eight brands fill it exactly, so the overflow tile only earns its
+  # place from the ninth on -- spending one of eight slots to say "+1" would show less than
+  # simply showing that brand.
+  COLLECTION_BRANDS_GRID_SIZE = 8
+  COLLECTION_BRANDS_PREVIEW_LIMIT = 7
+
+  COLLECTION_BRAND_SQL = <<~SQL.squish
+    EXISTS (
+      SELECT 1 FROM products
+      JOIN possessions ON possessions.product_id = products.id
+      WHERE products.brand_id = brands.id
+        AND possessions.user_id = :user_id
+        AND possessions.prev_owned = FALSE
+    )
+  SQL
+
   def index
     page_title(User.model_name.human.pluralize)
     @meta_desc = 'See all users of hifilog.com with public profiles and how much they contributed. ' \
@@ -32,6 +48,7 @@ class UsersController < ApplicationController
     @events = @user.events.upcoming.order(start_date: :asc).to_a
     @event_attendee_counts = EventAttendee.counts_for(@events.map(&:id))
     @collection = load_collection_preview(@user, limit: 6)
+    @collection_brands, @collection_brands_remainder = collection_brands_preview
 
     @heading = I18n.t('headings.overview')
     page_title("#{@user.user_name} — #{@heading}")
@@ -103,6 +120,16 @@ class UsersController < ApplicationController
     redirect_to user_path(id: user_name), status: :moved_permanently
   end
 
+  def brands
+    @user = setup_user_page
+
+    brands = collection_brands_scope
+    @brands = brands.page(params[:page])
+    @brands = brands.page(1) if @brands.out_of_range?
+
+    @heading = I18n.t('headings.brands')
+  end
+
   def contributions
     @user = setup_user_page
 
@@ -121,6 +148,46 @@ class UsersController < ApplicationController
   end
 
   private
+
+  # The brands behind the current collection -- what this person actually has in the rack, which
+  # is what a reader of the profile is after. Previously owned gear is left out for the same
+  # reason it has its own page. No extra visibility gate is needed: the whole profile is already
+  # behind find_viewable_user!, so a hidden profile 404s with its brands inside it.
+  #
+  # EXISTS rather than a join and DISTINCT: a join multiplies the brand by every matching
+  # possession, and PostgreSQL rejects SELECT DISTINCT ordered by LOWER(brands.name) unless that
+  # expression is also selected. EXISTS keeps one row per brand and stops at the first match.
+  def collection_brands_scope
+    Brand.where(COLLECTION_BRAND_SQL, user_id: @user.id)
+         .with_attached_logo
+         .order(Arel.sql('LOWER(brands.name) ASC'))
+  end
+
+  # The overview shows the brands this person owns most of, not the first eight alphabetically --
+  # a preview cut at "B" would say nothing about the collection. The full page stays A-Z, where
+  # finding a particular brand is the point.
+  #
+  # Reads one brand more than the grid holds, which answers "is there an overflow?" without a
+  # count query: fewer than that and everything fits, so nothing else has to be asked.
+  def collection_brands_preview
+    brands = collection_brands_by_owned_count(COLLECTION_BRANDS_GRID_SIZE + 1)
+    return [brands, 0] if brands.size <= COLLECTION_BRANDS_GRID_SIZE
+
+    [brands.first(COLLECTION_BRANDS_PREVIEW_LIMIT),
+     collection_brands_scope.count - COLLECTION_BRANDS_PREVIEW_LIMIT]
+  end
+
+  # GROUP BY the primary key lets PostgreSQL select and order by the other brand columns without
+  # repeating them.
+  def collection_brands_by_owned_count(limit)
+    Brand.joins(products: :possessions)
+         .where(possessions: { user_id: @user.id, prev_owned: false })
+         .group('brands.id')
+         .with_attached_logo
+         .order(Arel.sql('COUNT(possessions.id) DESC, LOWER(brands.name) ASC'))
+         .limit(limit)
+         .to_a
+  end
 
   def prepare_follow_state_for_index
     user_ids = @users_by_products.map(&:id)

@@ -1,0 +1,17 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "entity" %>
+<% end %>
+
+<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, render_headline: true } do %>
+  <% if @brands.any? %>
+    <p><i><%= @user.user_name %></i> owns products from the following brands:</p>
+    <%= render "shared/brands_table",
+      brands: @brands,
+      category: nil,
+      sub_category: nil,
+      product_counts: {} %>
+    <%= paginate @brands %>
+  <% else %>
+    <%= render "shared/empty_state", message: t('empty_state.profile_brands', name: h(@user.user_name)) %>
+  <% end %>
+<% end %>

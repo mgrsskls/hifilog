@@ -259,3 +259,49 @@
 		}
 	}
 }
+
+.UserProfile-brands {
+	margin-block-start: 2rem;
+}
+
+.BrandList {
+	list-style: "";
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 7rem), 1fr));
+	gap: 0.5rem;
+
+	li {
+		display: block;
+		padding: 0;
+	}
+}
+
+.BrandList-link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	aspect-ratio: 3/2;
+	padding: 0.5rem;
+	block-size: 100%;
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	background: var(--color-bg2);
+	box-sizing: border-box;
+	text-align: center;
+}
+
+.BrandList-link--logo {
+	background: var(--color-white);
+}
+
+.BrandList-link--more {
+	font-weight: bold;
+}
+
+.BrandList-logo {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: contain;
+}

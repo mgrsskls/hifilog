@@ -359,7 +359,7 @@
           @user.present? &&
           params[:controller] == "users" &&
           (
-            ["show", "collection", "prev_owneds", "history", "contributions", "activity"].include?(params[:action])
+            ["show", "collection", "prev_owneds", "history", "contributions", "activity", "brands"].include?(params[:action])
           )
         ) %>
       <% if full_page_view && response.status != 404 %>
