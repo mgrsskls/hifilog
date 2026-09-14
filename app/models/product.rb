@@ -270,8 +270,9 @@ class Product < ApplicationRecord
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache
     # rubocop:enable Naming/PredicateMethod
-    Rails.cache.delete('/newest_products')
-    Rails.cache.delete('/products_count')
+    Rails.cache.delete_multi(
+      ['/newest_products', '/newest_product_item_refs', '/products_count', '/home/totals']
+    )
 
     # recommended to return true, as Rails.cache.delete will return false
     # if no cache is found and break the callback chain.

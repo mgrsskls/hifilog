@@ -417,7 +417,7 @@ class Brand < ApplicationRecord
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache
     # rubocop:enable Naming/PredicateMethod
-    Rails.cache.delete_multi(['/newest_brands', '/brands_count'])
+    Rails.cache.delete_multi(['/newest_brands', '/brands_count', '/home/totals'])
 
     # recommended to return true, as Rails.cache.delete will return false
     # if no cache is found and break the callback chain.

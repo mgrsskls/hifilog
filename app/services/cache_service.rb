@@ -25,6 +25,12 @@ class CacheService
     end
   end
 
+  def self.users_count
+    Rails.cache.fetch('/users_count') do
+      User.count
+    end
+  end
+
   def self.newest_users
     Rails.cache.fetch('/newest_users') do
       User.order(created_at: :desc).limit(5).to_a
@@ -59,9 +65,39 @@ class CacheService
     end
   end
 
+  # Identifiers of the most recently added catalogue rows, as [item_type, id] pairs.
+  #
+  # The home page renders these as cards, which needs the product_items view, not the products and
+  # product_variants tables. Ordering the view itself by created_at would materialise the whole
+  # union, so the order is taken from the base tables (both have a created_at index) and the view
+  # is then read by those identifiers. Only the identifiers are cached: they are plain data, they
+  # stay valid until a product is added, and they fit any cache store. One fixed length is cached
+  # and callers take the first n they need, so there is a single key to expire.
+  NEWEST_PRODUCT_ITEM_REFS_LIMIT = 10
+
+  def self.newest_product_item_refs
+    Rails.cache.fetch('/newest_product_item_refs') do
+      limit = NEWEST_PRODUCT_ITEM_REFS_LIMIT
+      p_sql = Product.select("id, created_at, 'Product' as item_type").order(created_at: :desc).limit(limit).to_sql
+      v_sql = ProductVariant
+              .select("id, created_at, 'ProductVariant' as item_type")
+              .order(created_at: :desc).limit(limit)
+              .to_sql
+
+      combined_sql = "(#{p_sql}) UNION (#{v_sql}) ORDER BY created_at DESC LIMIT #{limit}"
+      ActiveRecord::Base.connection.execute(combined_sql).map { |row| [row['item_type'], row['id']] }
+    end
+  end
+
   def self.newest_brands
     Rails.cache.fetch('/newest_brands') do
       Brand.order(created_at: :desc).limit(10).to_a
+    end
+  end
+
+  def self.events_count
+    Rails.cache.fetch('/events_count') do
+      Event.count
     end
   end
 

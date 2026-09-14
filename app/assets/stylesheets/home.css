@@ -1,9 +1,6 @@
 @layer components {
 	.Home-section {
 		padding-block: clamp(3rem, 8vi, 8rem);
-	}
-
-	.Home-section:not(.is-dark) {
 		background: var(--color-bg-main);
 	}
 
@@ -11,11 +8,24 @@
 		background: var(--color-blue-125);
 	}
 
+	.Home-section--light {
+		background: var(--color-bg2);
+	}
+
 	.Home-sectionHeader {
 		grid-column: 3 / -3;
-		padding-block-end: 4rem;
-		border-block-end: 0.5rem dotted var(--color-transparency-15);
 		margin-block-end: 4rem;
+
+		&:not(.Home-sectionHeader--sm) {
+			padding-block-end: 4rem;
+			border-block-end: 0.5rem dotted var(--color-transparency-15);
+		}
+
+		&:is(.Home + .Home .Home-sectionHeader--sm) {
+			margin-block-start: 4.6rem;
+			border-block-start: 0.5rem dotted var(--color-transparency-15);
+			padding-block-start: 4rem;
+		}
 
 		h2 {
 			font-size: clamp(3.6rem, 10vi, 6.4rem);
@@ -31,6 +41,10 @@
 			line-height: 1.5;
 			margin-block: 1rem 0;
 		}
+	}
+
+	.Home-sectionHeader--sm h2 {
+		font-size: clamp(2.4rem, 8vi, 4.8rem);
 	}
 
 	.Home h3 {
@@ -91,7 +105,6 @@
 
 .Home-browse {
 	padding-inline: 2rem;
-	background: var(--color-bg-main);
 }
 
 .Home-browse :is(ul, ol) {
@@ -105,10 +118,6 @@
 
 .Home-browse a {
 	font-weight: 600;
-}
-
-.Home-browseEvents ul li + li {
-	margin-block-start: 1em;
 }
 
 .Home-feature p {
@@ -189,7 +198,11 @@
 		block-size: 100%;
 	}
 
-	.Home-browse {
+	.Home-browse,
+	.Home-justAdded,
+	.Home-photos,
+	.Home-events,
+	.Home-numbers {
 		grid-column: 1 / -1;
 	}
 
@@ -273,5 +286,283 @@
 	.Home-feature {
 		grid-column: 3 / -3;
 		gap: 4rem;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+   Live blocks: what was added last, photos from collections, what is coming up,
+   what was edited, and the totals. Each one is skipped by the template when it
+   has nothing to show, so none of these rules needs an empty state.
+   --------------------------------------------------------------------------- */
+
+.Home-sectionLink {
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* "Just added" cards. Same shape as the catalogue list item, without the
+   collection symbols and completeness bar, which say nothing to a logged out
+   visitor. */
+
+.HomeCards {
+	--spacing-inline: 1rem;
+
+	list-style: "";
+	padding: 0;
+	margin: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+	gap: 1.5rem;
+}
+
+.HomeCard {
+	display: flex;
+	flex-direction: column;
+	padding: var(--spacing-inline);
+	background: var(--color-bg3);
+	border: 0.0625rem solid var(--color-transparency-10);
+	border-radius: var(--border-radius);
+	container-type: inline-size;
+}
+
+.HomeCard-image {
+	--radius: calc(var(--border-radius) - 0.0625rem);
+
+	display: block;
+	position: relative;
+	inline-size: calc(100% + 2 * var(--spacing-inline));
+	max-inline-size: none;
+	aspect-ratio: 3 / 2;
+	margin: calc(-1 * var(--spacing-inline));
+	margin-block-end: 1rem;
+	background-color: var(--color-bg-card-image);
+	border-start-start-radius: var(--radius);
+	border-start-end-radius: var(--radius);
+	overflow: hidden;
+}
+
+.HomeCard-image:not(:has(img))[data-name]::before {
+	content: attr(data-name);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	position: absolute;
+	inset: 0;
+	padding: 5cqi;
+	box-sizing: border-box;
+	font-weight: 600;
+	font-size: min(10cqi, 1.6rem);
+	line-height: 1.2;
+	color: var(--color-text-card-image);
+}
+
+.HomeCard-img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+}
+
+/* A logo is artwork on a white ground, not a photograph: show all of it. */
+.HomeCard-img--logo {
+	object-fit: contain;
+	background: #fff;
+	padding: 1rem;
+	box-sizing: border-box;
+}
+
+.HomeCard-stamp {
+	position: absolute;
+	inset-block-start: 0.5rem;
+	inset-inline-start: 0.5rem;
+	padding: 0.1rem 0.5rem;
+	font-size: 0.875rem;
+	border-radius: var(--border-radius);
+	background: hsl(var(--hue) 30% 12.5% / 0.8);
+	color: var(--color-blue-950);
+}
+
+.HomeCard-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	flex: 1;
+}
+
+.HomeCard-kicker {
+	font-size: 1.2rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--color-secondary);
+}
+
+.HomeCard-name {
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.HomeCard-meta {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-block-start: auto;
+	padding-block-start: 0.75rem;
+	color: var(--color-secondary);
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+/* Photos from public collections */
+
+.HomeMosaic {
+	list-style: "";
+	padding: 0;
+	margin: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+	gap: 0.75rem;
+}
+
+.HomeMosaic-item:first-child {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+
+.HomeMosaic-link {
+	display: block;
+	position: relative;
+	block-size: 100%;
+	aspect-ratio: 1;
+	border-radius: var(--border-radius);
+	overflow: hidden;
+	background: var(--color-bg-card-image);
+}
+
+.HomeMosaic-link img {
+	inline-size: 100%;
+	block-size: 100%;
+	object-fit: cover;
+}
+
+.HomeMosaic-caption {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: 0;
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 1.5rem 0.75rem 0.5rem;
+	background: linear-gradient(transparent, hsl(var(--hue) 30% 10% / 0.85));
+	color: var(--color-blue-950);
+	font-size: 1.2rem;
+	line-height: 1.4;
+}
+
+.HomeMosaic-title {
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.HomeMosaic-user {
+	white-space: nowrap;
+}
+
+/* Last edits, inside the Contribute section */
+
+.Home-edits {
+	margin-block-start: 3rem;
+}
+
+.HomeEdits {
+	list-style: "";
+	padding: 0;
+	margin: 1rem 0 0;
+	display: grid;
+}
+
+.HomeEdits-item {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0 1rem;
+	padding-block: 0.75rem;
+	border-block-end: var(--border-extra-light);
+	font-size: 1.4rem;
+	line-height: 1.5;
+}
+
+.HomeEdits-item:last-child {
+	border-block-end: 0;
+}
+
+.HomeEdits-when {
+	color: var(--color-secondary);
+	font-variant-numeric: tabular-nums;
+}
+
+@media (width >= 30rem) {
+	.HomeEdits-item {
+		grid-template-columns: 9rem minmax(0, 1fr);
+	}
+}
+
+/* Totals, above the footer */
+
+.HomeNumbers {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+	gap: 2rem 1rem;
+	margin: 0;
+	text-align: center;
+}
+
+.HomeNumbers-item {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.HomeNumbers-value {
+	margin: 0;
+	font-size: clamp(2.4rem, 5vi, 3.6rem);
+	font-weight: 700;
+	line-height: 1.1;
+	font-variant-numeric: tabular-nums;
+	color: var(--color-copy);
+}
+
+.HomeNumbers-label {
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	font-size: 1.2rem;
+	color: var(--color-secondary);
+}
+
+/* Section wrappers share the padding of the browse section */
+
+.Home-justAdded,
+.Home-photos,
+.Home-events,
+.Home-numbers {
+	padding-inline: 2rem;
+}
+
+@media (width >= 62rem) {
+	.Home-justAdded,
+	.Home-photos,
+	.Home-events,
+	.Home-numbers {
+		display: grid;
+		grid-template-columns: subgrid;
+	}
+
+	.HomeCards,
+	.HomeMosaic,
+	.Home-events .EntityList {
+		grid-column: 3 / -3;
+	}
+
+	.HomeNumbers {
+		grid-column: 3 / -3;
 	}
 }

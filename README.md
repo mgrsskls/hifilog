@@ -304,6 +304,8 @@ Both models are read-only and share **`CatalogueProductRow`**, a concern coverin
 
 Use **Product** / **ProductVariant** to mutate data; use **ProductItem** for catalog listing and filters, **ContributeProductItem** for the contribution queues.
 
+Neither view is ordered by `created_at`: that materialises the whole union. Where a "newest entries" list is needed, `CacheService.newest_product_item_refs` takes the order from `products` and `product_variants` (both have a `created_at` index), caches the resulting `[item_type, id]` pairs, and the view is then read by those identifiers.
+
 ## Possession
 
 A **user-owned instance** of catalog or custom gear, optionally tied to a `ProductOption`. Images attach to the possession. Product pages and base-product list thumbnails use possessions with no linked variant; variant surfaces use that variant's possessions.
@@ -438,6 +440,21 @@ Most catalog entries carry little more than a name and a brand, so _incomplete_ 
 
 Queues exist for brands with no products, brands missing a specific field, and products missing a specific field. All are optionally scoped to a `Category` and ordered by **descending completeness**—the nearly finished entries first, so a contributor is handed a small, finishable job instead of a blank form.
 
+## Home page
+
+The home page is for logged-out visitors only—a signed-in user is redirected to their dashboard. It keeps three authored sections (**Discover**, **Collect**, **Contribute**) and puts live blocks around them, so the page shows the database moving instead of describing it:
+
+| Block                  | Source                                                              | Position                 |
+| ---------------------- | ------------------------------------------------------------------- | ------------------------ |
+| Pulse line             | counts of the last seven days                                       | under the intro headline |
+| **Just added**         | newest `product_items` rows and brands, merged by date              | above Discover           |
+| **Seen in real rooms** | newest photos from publicly indexable collections                   | above Collect            |
+| **Coming up**          | `Event.upcoming`, with attendee counts                              | below Collect            |
+| **Last edits**         | newest `PaperTrail::Version` rows for brands, products and variants | inside Contribute        |
+| Totals                 | catalog counts plus photos and countries                            | above the footer         |
+
+All six come from **`HomeHighlights`**, which returns plain structs rather than models so the partials carry no model knowledge. Two rules hold for every block: it never orders a large table on an unindexed column (see `AddHomeHighlightIndexes`, and the identifier cache above for the catalog views), and it may return nothing—the template then skips that section rather than render an empty heading. Photos obey the same visibility rule as catalog thumbnails: publicly indexable profiles only, and a photo links to the catalog entry, never to its owner.
+
 ## Cross-cutting concerns
 
 **Service objects** hold orchestration and multi-model queries that belong to neither a model nor a controller:
@@ -452,6 +469,7 @@ Queues exist for brands with no products, brands missing a specific field, and p
 | **`UserImagesQuery`**                                                          | Paginated community image feed across possessions and custom products                                                              |
 | **`StatisticsService`**                                                        | Collection aggregates for dashboard and profile                                                                                    |
 | **`CacheService`**                                                             | Taxonomy, counts and definition caches                                                                                             |
+| **`HomeHighlights`**                                                           | The live blocks of the home page: newest entries, photos, upcoming events, latest edits, counts                                    |
 | **`SitemapBuilder`**                                                           | Sitemap pages and their `lastmod` timestamps                                                                                       |
 | **`PossessionPresenterService`**                                               | Possession → presenter selection                                                                                                   |
 | **`NewsletterUnsubscribeService`**, **`FollowNotificationUnsubscribeService`** | Signed-token unsubscribe flows                                                                                                     |
@@ -459,7 +477,7 @@ Queues exist for brands with no products, brands missing a specific field, and p
 
 Controllers keep their shared behaviour in concerns rather than a base class — notably `FriendlyFinder` (slug lookup plus 301 on an old slug), `FilterParamsBuilder`, `ProductCatalogShow`, `ProfileVisibility`, `EventListing` and `TokenUnsubscribe`.
 
-**Caching** covers taxonomy menus, entity counts, custom attribute definitions, event counts, and some rendered legal or policy content.
+**Caching** covers taxonomy menus, entity counts, custom attribute definitions, event counts, the identifiers of the newest catalog entries, the home page counts, and some rendered legal or policy content.
 
 **Attachments** (Active Storage): possession and custom-product image galleries; user avatar and decorative banner; brand logos. Purges on possessions and profile images can emit activity rows.
 

@@ -472,12 +472,24 @@ en:
       one: 1 more brand
       other: "%{count} more brands"
   home:
+    ago: "%{time} ago"
     browse:
       brands_heading: Brands
-      events_heading: Events & Shows
       heading: Discover.
       intro: Browse through hi-fi products and brands & discover whatever you are looking for.
       products_heading: Products
+    events:
+      heading: Coming up.
+      intro: Upcoming Hi-fi events — worldwide.
+    just_added:
+      heading: Just added.
+      intro: The newest products and brands on HiFi&thinsp;Log.
+    numbers:
+      brands: Brands
+      categories: Categories
+      events: Events
+      products: Products
+      users: Users
     collect:
       features:
         collection:
@@ -495,17 +507,14 @@ en:
       heading: Collect.
       intro: Create your own profile & collect all your gear — previous, current and future.
     contribute:
-      cta_html: Start with one entry — <a href="%{sign_up_path}">create an account</a> and add the first thing you go looking for and cannot find.
+      cta_html: HiFi&thinsp;Log is built by its users to offer unbiased information about all hi-fi gear. Help build the world's most complete hi-fi database — <a href="%{sign_up_path}">create an account</a> and add your first piece of gear.
       heading: Contribute.
-      intro: Log any product you own, used to own, or have your eye on. Know a brand well? Fill in the gaps.
-      lead: You go to add the amplifier you just bought, and it is not in the database yet. So you add it — and it is there for the next person who goes looking.
-      mechanics: Every brand and product can be edited by anyone with an account, and every change is recorded in the entry's changelog, so a mistake can always be seen and corrected. You do not have to be certain to be useful.
-      mission: There are already plenty of places for brands to promote themselves. What has been missing is a place built by its users, where anyone can find unbiased information about all hi-fi gear and not just the most marketed. Every entry added takes it a little closer to being the world's most complete hi-fi database.
+      intro: Add any product you own, used to own, or have your eye on. Know a brand well? Fill in the gaps.
+      lead: Add missing gear to the database so it is ready for the next person looking for it. Every brand and product can be updated by anyone with an account, with a complete changelog tracking every edit so mistakes can easily be corrected.
     intro_down: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with over <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     intro_eq: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     intro_up: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     recently_added: Recently added to HiFi Log
-    recently_added_heading: Recently added
   meta_description: "<em>HiFi Log</em> is a user-driven database for hi-fi products and brands. Users can create their own collection and keep track of their past gear."
   newsletter:
     messages:

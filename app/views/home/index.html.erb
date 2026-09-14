@@ -5,19 +5,21 @@
 <div class="Home-introWrapper">
   <div class="Home">
     <div class="Home-intro">
-      <h1 class="Home-content">
-        <%
-          products_rounded = round_up_or_down(products_count)
-          if products_rounded[:dir] == :down
-        %>
-          <%= t('home.intro_down', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
-        <% elsif products_rounded[:dir] == :eq %>
-          <%= t('home.intro_eq', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
-        <% else %>
-          <%= t('home.intro_up', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
-        <% end %>
-        <em>By music lovers &amp; audiophiles.<br>For music lovers &amp; audiophiles.</em>
-      </h1>
+      <div class="Home-content">
+        <h1>
+          <%
+            products_rounded = round_up_or_down(products_count)
+            if products_rounded[:dir] == :down
+          %>
+            <%= t('home.intro_down', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
+          <% elsif products_rounded[:dir] == :eq %>
+            <%= t('home.intro_eq', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
+          <% else %>
+            <%= t('home.intro_up', products_count: number_with_delimiter(products_rounded[:value]), products_path: products_path, brands_count: brands_count, brands_path: brands_path).html_safe %>
+          <% end %>
+          <em>By music lovers &amp; audiophiles.<br>For music lovers &amp; audiophiles.</em>
+        </h1>
+      </div>
       <picture class="Home-picture">
         <source srcset="<%= asset_url "/home/01.avif" %>" type="image/avif">
         <img src="<%= asset_url "/home/01.jpg" %>" aria-hidden="true" alt="" fetchpriority="high">
@@ -26,7 +28,43 @@
   </div>
 </div>
 
-<div class="Home-section Home-browseWrapper">
+<div class="Home-section Home-justAddedWrapper">
+  <div class="Home">
+    <div class="Home-justAdded">
+      <div class="Home-sectionHeader Home-sectionHeader--sm">
+        <div>
+          <h2 class="LargeHeadline">
+            <%= t('home.just_added.heading') %>
+          </h2>
+          <p><%= t('home.just_added.intro').html_safe %></p>
+        </div>
+      </div>
+      <ol class="HomeCards">
+        <%= render partial: "home/entry_card", collection: @just_added, as: :entry %>
+      </ol>
+    </div>
+  </div>
+
+  <div class="Home">
+    <div class="Home-events">
+      <div class="Home-sectionHeader Home-sectionHeader--sm">
+        <div>
+          <h2 class="LargeHeadline"><%= t('home.events.heading') %></h2>
+          <p><%= t('home.events.intro') %></p>
+        </div>
+      </div>
+      <ol class="EntityList EntityList--events">
+        <% @events.each do |event| %>
+          <li class="EntityList-item">
+            <%= render "shared/event_item", event: event, date_format: :full, attendee_counts: @event_attendee_counts %>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<div class="Home-section Home-browseWrapper Home-section--light">
   <div class="Home">
     <div class="Home-browse">
       <div class="Home-sectionHeader">
@@ -50,10 +88,6 @@
               … that are <%= link_to "still in production", products_path({ products: { status: :continued } }) %> or <%= link_to "discontinued", products_path({ products: { status: :discontinued } }) %>.
             </li>
           </ul>
-          <h4><%= t('home.recently_added_heading') %></h4>
-          <p>
-            <%= newest_products.map { |product| link_to product.display_name, product.path }.join(", ").html_safe %>, …
-          </p>
         </div>
         <div class="Home-browseSection">
           <h3><%= t('home.browse.brands_heading') %></h3>
@@ -71,29 +105,7 @@
               … that are <%= link_to "still in business", brands_path({ brands: { status: :continued } }) %> or <%= link_to "out of business", brands_path({ brands: { status: :discontinued } }) %>.
             </li>
           </ul>
-          <h4><%= t('home.recently_added_heading') %></h4>
-          <p>
-            <%= newest_brands.map { |brand| link_to brand.display_name, brand_path(id: brand.friendly_id) }.join(", ").html_safe %>, …
-          </p>
         </div>
-      </div>
-      <div class="Home-browseEvents">
-        <h3><%= t('home.browse.events_heading') %></h3>
-        <ul>
-          <li>
-            Browse <%= link_to "upcoming hi-fi events", events_path %> or <%= link_to "past hi-fi events", past_events_path %> and filter them by country or year.
-          </li>
-          <li>
-            Bookmark events you want to keep an eye on.
-          </li>
-          <li>
-            Mark events you plan to attend or have attended.
-          </li>
-        </ul>
-        <h4><%= t('home.recently_added_heading') %></h4>
-        <p>
-          <%= newest_events.map { |event| link_to event.name, event_path(slug: event.slug, year: event.calendar_year) }.join(", ").html_safe %>, …
-        </p>
       </div>
     </div>
   </div>
@@ -161,10 +173,23 @@
       </div>
       <div class="Rte">
         <p><%= t('home.contribute.lead') %></p>
-        <p><%= t('home.contribute.mechanics') %></p>
-        <p><%= t('home.contribute.mission') %></p>
         <p><%= t('home.contribute.cta_html', sign_up_path: new_user_registration_path) %></p>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="Home-section Home-numbersWrapper Home-section--light">
+  <div class="Home">
+    <div class="Home-numbers">
+      <dl class="HomeNumbers">
+        <% @totals.each do |key, value| %>
+          <div class="HomeNumbers-item">
+            <dt class="HomeNumbers-label"><%= t("home.numbers.#{key}") %></dt>
+            <dd class="HomeNumbers-value"><%= number_with_delimiter(value) %></dd>
+          </div>
+        <% end %>
+      </dl>
     </div>
   </div>
 </div>
