@@ -138,8 +138,11 @@
 	margin-block-start: 1rem;
 }
 
-.Entity-action button {
-	inline-size: 100%;
+.Entity-action {
+	button,
+	.Button {
+		inline-size: 100%;
+	}
 }
 
 @media (width < 48rem) {

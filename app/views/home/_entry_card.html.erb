@@ -1,0 +1,33 @@
+<%#
+  One card in the "Just added" band: a product, a variant or a brand, built from a
+  HomeHighlights::Entry. Deliberately not shared/_entity_list_item — that card carries the
+  collection symbols, bookmark hooks and completeness bar of the catalogue lists, none of which
+  mean anything to a logged out visitor.
+%>
+<li class="HomeCard HomeCard--<%= entry.kind %>">
+  <div class="HomeCard-image" data-name="<%= entry.title %>">
+    <% if entry.image %>
+      <%= image_tag cdn_image_url(entry.image.variant(:thumb)),
+            class: "HomeCard-img HomeCard-img--#{entry.image_kind}",
+            alt: "",
+            "aria-hidden": "true",
+            loading: "lazy",
+            width: 640,
+            height: 427 %>
+    <% end %>
+    <% if entry.created_at %>
+      <span class="HomeCard-stamp">
+        <time datetime="<%= format_iso_datetime(entry.created_at) %>">
+          <%= t('home.ago', time: time_ago_in_words(entry.created_at)) %>
+        </time>
+      </span>
+    <% end %>
+  </div>
+  <div class="HomeCard-body">
+    <%= link_to "#{entry.subtitle} #{entry.title}", entry.path, class: "HomeCard-name" %>
+    <span class="HomeCard-meta">
+      <span><%= entry.meta %></span>
+      <% if entry.detail %><span><%= entry.detail %></span><% end %>
+    </span>
+  </div>
+</li>

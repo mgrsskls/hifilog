@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_13_120200) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_13_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -312,6 +312,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_13_120200) do
     t.bigint "product_variant_id"
     t.integer "purchase_condition"
     t.bigint "user_id", null: false
+    t.index ["created_at"], name: "index_possessions_on_created_at", order: "DESC NULLS LAST"
     t.index ["custom_product_id"], name: "index_possessions_on_custom_product_id", unique: true
     t.index ["product_id", "product_variant_id", "user_id"], name: "idx_on_product_id_product_variant_id_user_id_bdd46f0681"
     t.index ["product_variant_id"], name: "index_possessions_product_variant_id"
@@ -529,6 +530,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_13_120200) do
     t.text "object"
     t.text "object_changes"
     t.string "whodunnit"
+    t.index ["created_at"], name: "index_versions_on_created_at"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 

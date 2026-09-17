@@ -252,6 +252,7 @@ class User < ApplicationRecord
   # rubocop:disable Naming/PredicateMethod
   def invalidate_cache
     # rubocop:enable Naming/PredicateMethod
+    Rails.cache.delete('/users_count')
     Rails.cache.delete('/newest_users')
 
     # recommended to return true, as Rails.cache.delete will return false
