@@ -11,7 +11,7 @@
       <div class="EntityListItem">
         <div class="EntityList-name">
           <div class="u-flex u-gap-md u-alignCenter">
-            <% if user["profile_visibility"] == "hidden" %>
+            <% if user["profile_visibility"] == "hidden" || (user["profile_visibility"] == "logged_in_only" && !user_signed_in?) %>
               <div class="u-flex u-gap-md u-alignCenter u-flexGrow">
                 <%= render "shared/avatar", user: user, size: 64 %>
                 <b><%= user["user_name"] %></b>
