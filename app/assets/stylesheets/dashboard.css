@@ -3,7 +3,7 @@
 }
 
 @media (width < 48rem) {
-	.Dashboard-menu {
+	.Dashboard-menu:not(.Dashboard-menu--profile) {
 		display: none;
 	}
 

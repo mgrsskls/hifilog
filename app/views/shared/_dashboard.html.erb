@@ -3,7 +3,7 @@
 <% end %>
 <div class="Dashboard">
   <div class="Dashboard-menu">
-    <nav aria-label="<%= t('headings.dashboard') %>">
+    <nav aria-label="Account">
       <a href="<%= current_user.profile_path %>" class="Dashboard-userName<%= " Dashboard-userName--sm" if current_user.user_name.size > 10 %> u-flex u-alignCenter u-gap-md">
         <%= render "shared/avatar", user: current_user, size: 48 %>
         <div class="Dashboard-userNameContent">

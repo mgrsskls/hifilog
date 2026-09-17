@@ -28,10 +28,6 @@ class User < ApplicationRecord
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_fill: [320, 320], format: :webp
   end
-  has_one_attached :decorative_image do |attachable|
-    attachable.variant :thumb, resize_to_fill: [193, 40], format: :webp
-    attachable.variant :large, resize_to_fill: [1512, 314], format: :webp
-  end
   has_many :event_attendees, dependent: :destroy
   has_many :events, through: :event_attendees
   has_many :user_follows, foreign_key: :follower_id, dependent: :destroy, inverse_of: :follower
@@ -88,7 +84,6 @@ class User < ApplicationRecord
   validates :unlock_token, uniqueness: true, allow_nil: true
   validates :user_name, presence: true, uniqueness: { case_sensitive: false }
   validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
-  validate :validate_decorative_image_content_type, :validate_decorative_image_file_size, on: :update
 
   after_commit :invalidate_cache
   after_commit :record_profile_image_upload_activities, on: :update
@@ -147,13 +142,6 @@ class User < ApplicationRecord
     avatar.purge
   end
 
-  def purge_decorative_image!
-    return unless decorative_image.attached?
-
-    UserActivities::Recorder.decorative_image_deleted(self, image_attachment: decorative_image.attachment)
-    decorative_image.purge
-  end
-
   def lowercase_user_name
     user_name.downcase
   end
@@ -189,43 +177,15 @@ class User < ApplicationRecord
     errors.add(:avatar_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
   end
 
-  def validate_decorative_image_content_type
-    return unless decorative_image.attachment
-
-    unless [
-      'image/jpeg',
-      'image/webp',
-      'image/png',
-      'image/gif'
-    ].include?(decorative_image.attachment.blob.content_type)
-      errors.add(
-        :decorative_image_content_type,
-        'has the wrong file type. Please upload only .jpg, .webp, .png or .webp files.'
-      )
-    end
-  end
-
-  def validate_decorative_image_file_size
-    return unless decorative_image.attachment
-    return if decorative_image.attachment.blob.byte_size < 5_000_000
-
-    errors.add(:decorative_image_file_size, 'is too big. Please use a file with a maximum of 5 MB.')
-  end
-
   def capture_profile_image_attachment_ids_before_assign(new_attributes)
     attrs = new_attributes.stringify_keys
     @avatar_attachment_id_before_save = avatar.attachment&.id if attrs.key?('avatar')
-    return unless attrs.key?('decorative_image')
-
-    @decorative_image_attachment_id_before_save = decorative_image.attachment&.id
   end
 
   def record_profile_image_upload_activities
     record_profile_image_changes(:avatar, @avatar_attachment_id_before_save)
-    record_profile_image_changes(:decorative_image, @decorative_image_attachment_id_before_save)
   ensure
     @avatar_attachment_id_before_save = nil
-    @decorative_image_attachment_id_before_save = nil
   end
 
   def record_profile_image_changes(attachment_name, before_id)

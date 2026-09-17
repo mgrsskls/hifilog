@@ -194,21 +194,6 @@ class UserActivitiesRecorderTest < ActiveSupport::TestCase
     end
   end
 
-  test 'decorative_image_uploaded creates activity with user subject' do
-    user = users(:without_anything)
-    user.update!(decorative_image: one_by_one_png_upload(filename: 'banner.png'))
-    attachment = user.decorative_image.attachment
-    UserActivity.where(user: user, subject: user, verb: 'decorative_image_uploaded').delete_all
-
-    assert_difference(-> { UserActivity.where(verb: 'decorative_image_uploaded', subject: user).count }, 1) do
-      UserActivities::Recorder.decorative_image_uploaded(user, image_attachment: attachment)
-    end
-
-    act = UserActivity.find_by!(user: user, subject: user, verb: 'decorative_image_uploaded')
-    assert_equal user.user_name, act.metadata['display_name']
-    assert_equal attachment.id, act.metadata['image_attachment_id'].to_i
-  end
-
   test 'custom_product_created skips when user missing' do
     cp = CustomProduct.new(name: 'orphan')
 

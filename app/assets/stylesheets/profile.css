@@ -4,60 +4,33 @@
 	h1 {
 		color: var(--color-white);
 	}
-
-	.Sidebar {
-		li {
-			padding-block: 0.05rem;
-
-			ul {
-				padding-block-start: 0.5rem;
-			}
-		}
-	}
-}
-
-.Profile-header {
-	background: var(--color-blue-175);
-	position: relative;
 }
 
 .Profile-follow {
-	position: absolute;
-	inset-block-end: var(--page-spacing);
-	inset-inline-end: var(--page-spacing);
-}
+	button {
+		inline-size: 100%;
+	}
 
-.Profile-headerImage {
-	block-size: 100%;
-	inline-size: 100%;
-	object-fit: cover;
+	@media (width < 48rem) {
+		margin-block-start: 1rem;
+		margin-inline: var(--page-spacing);
+	}
+
+	@media (width >= 48rem) {
+		margin-block-start: 2rem;
+
+		button {
+			inline-size: 100%;
+		}
+	}
 }
 
 .Profile-main {
 	container: profile-main / inline-size;
 }
 
-@media (width < 84.5rem) {
-	.Profile-header {
-		aspect-ratio: 4;
-	}
-}
-
-@media (width >= 84.5rem) {
-	.Profile-header {
-		aspect-ratio: initial;
-		block-size: 19.625rem;
-		max-inline-size: 94.5rem;
-		margin-inline: auto;
-	}
-
-	.Profile-header:not(:has(img)) {
-		block-size: 10rem;
-	}
-}
-
 @media (width < 48rem) {
-	.Profile-meta {
+	.Dashboard-menu--profile {
 		margin-inline: calc(-1 * var(--page-spacing));
 
 		.Sidebar {
@@ -156,8 +129,6 @@
 		position: sticky;
 		inset-block-start: 6rem;
 		margin-block-start: calc(-1 * 16rem / 2 - var(--gap));
-		outline: 0.5rem solid var(--color-bg-main);
-		border-radius: var(--border-radius);
 	}
 
 	.Profile-products {

@@ -1,7 +1,7 @@
 <% content_for :css do %>
   <%= stylesheet_link_tag "numbers" %>
 <% end %>
-<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category } do %>
+<%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category, render_headline: true } do %>
   <div class="DashboardStatsWrapper">
     <div class="DashboardStats">
       <div class="DashboardNumbersWrapper">

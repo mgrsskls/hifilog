@@ -21,15 +21,13 @@ class UserImagesQueryTest < ActiveSupport::TestCase
     assert_equal 2, possession_row.images.size
   end
 
-  test 'returns avatar and decorative image rows' do
+  test 'returns avatar rows' do
     user = users(:without_anything)
     user.update!(avatar: one_by_one_png_upload(filename: 'avatar.png'))
-    user.update!(decorative_image: one_by_one_png_upload(filename: 'header.png'))
 
     rows = UserImagesQuery.call(page: 1)
     types_for_user = rows.select { |row| row.user.id == user.id }.map(&:type)
 
     assert_includes types_for_user, 'avatar'
-    assert_includes types_for_user, 'decorative_image'
   end
 end

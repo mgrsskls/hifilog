@@ -79,23 +79,6 @@ class Settings::ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert UserActivity.exists?(user: user, subject: user, verb: 'avatar_deleted')
   end
 
-  test 'update profile settings with delete_decorative_image purges header image' do
-    user = users(:one)
-    sign_in user
-    user.update!(decorative_image: one_by_one_png_upload(filename: 'remove-header.png'))
-    UserActivity.where(user: user, subject: user, verb: 'decorative_image_deleted').delete_all
-
-    assert_difference(-> { UserActivity.where(verb: 'decorative_image_deleted', subject: user).count }, 1) do
-      patch dashboard_profile_settings_path, params: {
-        user: { profile_visibility: user.profile_visibility, current_password: 'encrypted_password' },
-        delete_decorative_image: true
-      }
-    end
-
-    assert_redirected_to dashboard_profile_settings_path
-    assert_not user.reload.decorative_image.attached?
-  end
-
   test 'update profile settings does not delete avatar when password is invalid' do
     user = users(:one)
     sign_in user

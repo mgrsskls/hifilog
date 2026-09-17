@@ -75,24 +75,6 @@ class UserActivities::Recorder
       )
     end
 
-    def decorative_image_uploaded(user, occurred_at: Time.current, image_attachment: nil, image_attachment_id: nil)
-      record_user_profile_image_activity!(
-        user,
-        verb: 'decorative_image_uploaded',
-        occurred_at:,
-        attachment: image_attachment || image_attachment_id
-      )
-    end
-
-    def decorative_image_deleted(user, occurred_at: Time.current, image_attachment: nil, image_attachment_id: nil)
-      record_user_profile_image_activity!(
-        user,
-        verb: 'decorative_image_deleted',
-        occurred_at:,
-        attachment: image_attachment || image_attachment_id
-      )
-    end
-
     def user_profile_image_activity_exists?(user_id:, user:, verb:, image_attachment_id:)
       return false if image_attachment_id.blank?
 

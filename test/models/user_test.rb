@@ -165,46 +165,4 @@ class UserTest < ActiveSupport::TestCase
     assert_equal attachment_id, act.metadata['image_attachment_id'].to_i
     assert_not user.reload.avatar.attached?
   end
-
-  test 'attaching decorative_image records decorative_image_uploaded activity' do
-    user = users(:one)
-    user.decorative_image.purge if user.decorative_image.attached?
-
-    assert_difference(-> { UserActivity.where(verb: 'decorative_image_uploaded', subject: user).count }, 1) do
-      user.update!(decorative_image: one_by_one_png_upload(filename: 'banner.png'))
-    end
-
-    attachment_id = user.decorative_image.attachment.id
-    act = UserActivity.find_by!(user: user, subject: user, verb: 'decorative_image_uploaded')
-    assert_equal attachment_id, act.metadata['image_attachment_id'].to_i
-  end
-
-  test 'purge_decorative_image! records decorative_image_deleted activity' do
-    user = users(:one)
-    user.update!(decorative_image: one_by_one_png_upload(filename: 'remove-banner.png'))
-    attachment_id = user.decorative_image.attachment.id
-    UserActivity.where(user: user, subject: user, verb: 'decorative_image_deleted').delete_all
-
-    assert_difference(-> { UserActivity.where(verb: 'decorative_image_deleted', subject: user).count }, 1) do
-      user.purge_decorative_image!
-    end
-
-    act = UserActivity.find_by!(user: user, subject: user, verb: 'decorative_image_deleted')
-    assert_equal attachment_id, act.metadata['image_attachment_id'].to_i
-    assert_not user.reload.decorative_image.attached?
-  end
-
-  test 'rejects non image decorative uploads on update validation' do
-    user = users(:one)
-    user.decorative_image.attach(
-      io: StringIO.new('not an image'),
-      filename: 'banner.txt',
-      content_type: 'text/plain'
-    )
-
-    assert_not user.valid?(:update)
-    assert user.errors[:decorative_image_content_type].present?
-  ensure
-    user.decorative_image.purge if user.decorative_image.attached?
-  end
 end

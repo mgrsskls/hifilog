@@ -354,14 +354,7 @@
     </header>
     <main id="content">
       <%= render "shared/flash_messages", messages: flash if flash.any? %>
-      <% full_page_view = (params[:controller] == "home" && params[:action] == "index") ||
-        (
-          @user.present? &&
-          params[:controller] == "users" &&
-          (
-            ["show", "collection", "prev_owneds", "history", "contributions", "activity", "brands"].include?(params[:action])
-          )
-        ) %>
+      <% full_page_view = (params[:controller] == "home" && params[:action] == "index") %>
       <% if full_page_view && response.status != 404 %>
         <%= yield %>
       <% else %>

@@ -67,15 +67,6 @@ class UserImagesQuery
         FROM active_storage_attachments
         WHERE record_type = 'User' AND name = 'avatar'
       )
-      UNION ALL
-      (
-        SELECT
-          'decorative_image' AS row_type,
-          record_id,
-          created_at AS uploaded_at
-        FROM active_storage_attachments
-        WHERE record_type = 'User' AND name = 'decorative_image'
-      )
     SQL
   end
 
@@ -101,8 +92,7 @@ class UserImagesQuery
     ).index_by { |possession| possession.id.to_s }
 
     users = User.where(id: user_ids).includes(
-      avatar_attachment: :blob,
-      decorative_image_attachment: :blob
+      avatar_attachment: :blob
     ).index_by { |user| user.id.to_s }
 
     raw_rows.filter_map do |row|
@@ -111,8 +101,6 @@ class UserImagesQuery
         possession_row(possessions[row['record_id'].to_s], row['uploaded_at'])
       when 'avatar'
         avatar_row(users[row['record_id'].to_s], row['uploaded_at'])
-      when 'decorative_image'
-        decorative_image_row(users[row['record_id'].to_s], row['uploaded_at'])
       end
     end
   end
@@ -140,18 +128,6 @@ class UserImagesQuery
       record: user,
       user: user,
       images: [user.avatar],
-      uploaded_at: uploaded_at
-    )
-  end
-
-  def decorative_image_row(user, uploaded_at)
-    return unless user&.decorative_image&.attached?
-
-    Row.new(
-      type: 'decorative_image',
-      record: user,
-      user: user,
-      images: [user.decorative_image],
       uploaded_at: uploaded_at
     )
   end

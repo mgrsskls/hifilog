@@ -20,7 +20,6 @@ class UserActivities::Backfill
         user.setup_possessions.find_each { |sp| backfill_setup_product_added(sp) }
         user.event_attendees.find_each { |ea| UserActivities::Recorder.event_attendance(ea) }
         backfill_user_profile_image_upload(user, attachment_name: :avatar) if user.avatar.attached?
-        backfill_user_profile_image_upload(user, attachment_name: :decorative_image) if user.decorative_image.attached?
       end
     end
 

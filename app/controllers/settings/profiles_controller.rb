@@ -17,7 +17,6 @@ class Settings::ProfilesController < ApplicationController
     end
 
     current_user.purge_avatar! if params[:delete_avatar]
-    current_user.purge_decorative_image! if params[:delete_decorative_image]
 
     redirect_to dashboard_profile_settings_path, notice: t('user.profile_settings.updated')
   end
@@ -32,6 +31,6 @@ class Settings::ProfilesController < ApplicationController
   end
 
   def profile_settings_params
-    params.expect(user: [:profile_visibility, :avatar, :decorative_image, :current_password])
+    params.expect(user: [:profile_visibility, :avatar, :current_password])
   end
 end

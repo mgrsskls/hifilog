@@ -12,7 +12,6 @@ ActiveAdmin.register_page 'User Images' do
           case row.type
           when 'possession' then status_tag('Possession')
           when 'avatar' then status_tag('Avatar')
-          when 'decorative_image' then status_tag('Decorative image')
           end
         end
 
@@ -35,8 +34,6 @@ ActiveAdmin.register_page 'User Images' do
             link_to name, admin_possession_path(possession)
           when 'avatar'
             'Avatar'
-          when 'decorative_image'
-            'Decorative image'
           end
         end
 

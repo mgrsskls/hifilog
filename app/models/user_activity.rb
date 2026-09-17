@@ -17,8 +17,6 @@ class UserActivity < ApplicationRecord
     possession_image_deleted
     avatar_uploaded
     avatar_deleted
-    decorative_image_uploaded
-    decorative_image_deleted
     followed_by_user
   ].freeze
 
@@ -31,8 +29,6 @@ class UserActivity < ApplicationRecord
     possession_image_deleted
     avatar_uploaded
     avatar_deleted
-    decorative_image_uploaded
-    decorative_image_deleted
   ].freeze
 
   belongs_to :user

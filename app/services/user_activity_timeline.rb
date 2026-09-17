@@ -22,7 +22,7 @@
 #   +recorded_while_setup_private+ which +before_destroy+ metadata snapshots do not overwrite).
 # - +possession_image_uploaded+ groups only within the same possession (+cluster_key+ includes +possession_id+);
 #   each upload is a separate row (dedupe includes +image_attachment_id+). Thumbnails render on the feed.
-# - +setup_made_private+, +possession_image_deleted+, and profile image verbs (+avatar_*+, +decorative_image_*+)
+# - +setup_made_private+, +possession_image_deleted+, and profile image verbs (+avatar_*+)
 #   are stored but never rendered on the feed.
 # - Only +setup_made_public+ / +setup_created+ setup lines appear when the setup is currently public or was
 #   public when destroyed.
