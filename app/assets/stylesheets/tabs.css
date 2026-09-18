@@ -24,10 +24,13 @@
 	border-color: transparent;
 }
 
-.Tabs [aria-current="true"] {
-	border-block-end-color: var(--color-bg-main);
-	font-weight: 600;
-	position: relative;
+.Tabs {
+	[aria-current="true"],
+	[aria-current="page"] {
+		border-block-end-color: var(--color-bg-main);
+		font-weight: 600;
+		position: relative;
+	}
 }
 
 .Tabs span {

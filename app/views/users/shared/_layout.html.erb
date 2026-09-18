@@ -3,12 +3,11 @@
 
 <% content_for :preloading do %>
   <% if user.avatar.attached? && current_user != user %>
-    <link rel="preload" href="<%= cdn_image_url(user.avatar.variant(:thumb)) %>" as="image" type="image/webp">
+    <link rel="preload" href="<%= cdn_image_url(user.avatar.variant(:profile)) %>" as="image" type="image/webp">
   <% end %>
 <% end %>
 
 <% content_for :css do %>
-  <%= stylesheet_link_tag "dashboard" %>
   <%= stylesheet_link_tag "profile" %>
 <% end %>
 
@@ -18,94 +17,91 @@
   </p>
 <% end %>
 
-<div class="Dashboard">
-  <div class="Dashboard-menu Dashboard-menu--profile">
-    <div class="Sidebar">
-      <div class="Sidebar-header">
-        <figure class="Sidebar-userName">
-          <%= render "shared/avatar", user: user, size: 48 %>
-          <figcaption class="is-dark">
-            <h1><%= user.user_name %></h1>
-            <small>
-              <b>Member since</b> <time datetime="<%= format_iso_datetime user.created_at %>" title="<%= user.created_at.strftime("%B %d, %Y") %>"><%= format_date(user.created_at).html_safe %></time>
-            </small>
-          </figcaption>
-        </figure>
-        <button class="Sidebar-toggle" aria-expanded="false">
-          Menu
-          <svg aria-label="Open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
-          <svg aria-label="Close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+<div class="Profile">
+  <div class="Profile-header is-dark">
+    <div class="Profile-headerInner">
+      <h1><%= user.user_name %></h1>
+
+      <small>
+        <b>Member since</b> <time datetime="<%= format_iso_datetime user.created_at %>" title="<%= user.created_at.strftime("%B %d, %Y") %>"><%= format_date(user.created_at).html_safe %></time>
+      </small>
+
+      <div class="Profile-image">
+        <%= render "shared/avatar", user: user, size: 48 %>
       </div>
-      <nav>
-        <ul class="Sidebar-menu" id="sidebar-menu">
-          <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
-            <div>
-              <%= link_to user.profile_path, "aria-current": request.path == user.profile_path ? "page" : "false", class: "Sidebar-link" do %>
-                <b>Overview</b>
-              <% end %>
-            </div>
-          </li>
-          <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
-            <div>
-              <%= link_to user.collection_path, "aria-current": request.path == user.collection_path ? "page" : "false", class: "Sidebar-link" do %>
-                <b><%= t('headings.current_products') %></b>
-              <% end %>
-            </div>
-            <% setups = user.setups.where(private: false) %>
-            <% if setups.any? %>
-              <ul>
-                <% setups.each do |setup| %>
-                  <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
-                    <%= link_to setup.name, user_setup_path(user_id: user.lowercase_user_name, setup: setup.friendly_id), "aria-current": request.path == user_setup_path(user_id: user.lowercase_user_name, setup: setup.friendly_id) ? "page" : "false", class: "Sidebar-link" %>
-                  </li>
-                <% end %>
-              </ul>
-            <% end %>
-          </li>
-          <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
-            <div>
-              <%= link_to user_previous_products_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_previous_products_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
-                <b><%= t('headings.prev_owneds') %></b>
-              <% end %>
-            </div>
-          </li>
-          <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
-            <div>
-              <%= link_to user_history_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_history_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
-                <b><%= t('headings.history') %></b>
-              <% end %>
-            </div>
-          </li>
-          <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
-            <div>
-              <%= link_to user_brands_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_brands_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
-                <b><%= t('headings.brands') %></b>
-              <% end %>
-            </div>
-          </li>
-          <li class="Sidebar-separator">
-            <div>
-              <%= link_to user_contributions_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_contributions_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
-                <b><%= t('headings.contributions') %></b>
-              <% end %>
-            </div>
-          </li>
-        </ul>
-      </nav>
+
+      <% if user_signed_in? && current_user != user && !current_user.blocked?(user) %>
+        <div class="Profile-follow">
+          <%= render "shared/follow_button", user: current_user, user_follow: user %>
+        </div>
+      <% end %>
     </div>
-    <% if user_signed_in? && current_user != user && !current_user.blocked?(user) %>
-      <div class="Profile-follow">
-        <%= render "shared/follow_button", user: current_user, user_follow: user %>
+  </div>
+  <div class="Profile-menu">
+    <div class="Sidebar-header">
+      <div class="Sidebar-userName">
+        <%= render "shared/avatar", user: user, size: 360, variant: :profile %>
       </div>
-    <% end %>
+    </div>
+    <nav>
+      <ul class="Sidebar-menu" id="sidebar-menu">
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <%= link_to user.profile_path, "aria-current": request.path == user.profile_path ? "page" : "false", class: "Sidebar-link" do %>
+              <b>Overview</b>
+            <% end %>
+          </div>
+        </li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <%= link_to user.collection_path, "aria-current": request.path == user.collection_path ? "page" : "false", class: "Sidebar-link" do %>
+              <b><%= t('headings.current_products') %></b>
+            <% end %>
+          </div>
+          <% setups = user.setups.where(private: false) %>
+          <% if setups.any? %>
+            <ul>
+              <% setups.each do |setup| %>
+                <li class="Sidebar-menuItem Sidebar-menuItem--lvl2">
+                  <%= link_to setup.name, user_setup_path(user_id: user.lowercase_user_name, setup: setup.friendly_id), "aria-current": request.path == user_setup_path(user_id: user.lowercase_user_name, setup: setup.friendly_id) ? "page" : "false", class: "Sidebar-link" %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <%= link_to user_previous_products_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_previous_products_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
+              <b><%= t('headings.prev_owneds') %></b>
+            <% end %>
+          </div>
+        </li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <%= link_to user_history_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_history_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
+              <b><%= t('headings.history') %></b>
+            <% end %>
+          </div>
+        </li>
+        <li class="Sidebar-menuItem Sidebar-menuItem--lvl1">
+          <div>
+            <%= link_to user_brands_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_brands_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
+              <b><%= t('headings.brands') %></b>
+            <% end %>
+          </div>
+        </li>
+        <li>
+          <div>
+            <%= link_to user_contributions_path(user_id: user.lowercase_user_name), "aria-current": request.path == user_contributions_path(user_id: user.lowercase_user_name) ? "page" : "false", class: "Sidebar-link" do %>
+              <b><%= t('headings.contributions') %></b>
+            <% end %>
+          </div>
+        </li>
+      </ul>
+    </nav>
   </div>
 
-  <div class="Dashboard-products">
+  <div class="Profile-content">
     <% if render_headline %>
       <div class="Heading">
         <h2><%= heading %></h2>
@@ -115,9 +111,6 @@
       </div>
     <% end %>
 
-    <div class="Profile-main">
-      <%= yield %>
-    </div>
-
+    <%= yield %>
   </div>
 </div>

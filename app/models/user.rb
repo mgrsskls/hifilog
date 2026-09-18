@@ -27,6 +27,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :app_news
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_fill: [320, 320], format: :webp
+    attachable.variant :profile, resize_to_fill: [720, 720], format: :webp
   end
   has_many :event_attendees, dependent: :destroy
   has_many :events, through: :event_attendees
