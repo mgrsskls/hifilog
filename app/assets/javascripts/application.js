@@ -6,7 +6,7 @@ import "./_search.js";
 
 	const eventsFilter = document.querySelectorAll(".events-filter");
 	const headerToggle = document.querySelector(".Header-toggle");
-	const sidebarToggle = document.querySelector(".Sidebar-toggle");
+	const profileMenu = document.querySelector(".Profile-menu");
 	const menuButtons = document.querySelectorAll("button.MenuMain-link");
 	const filterOpen = document.querySelector(".Filter-open");
 	const filterClose = document.querySelector(".Filter-close");
@@ -19,6 +19,20 @@ import "./_search.js";
 	const sortSelect = document.querySelector("#sort-select");
 	const selectCategory = document.querySelector(".SelectCategory");
 	const searchFilterForm = document.getElementById("search-filter");
+
+	if (profileMenu) {
+		const mq = window.matchMedia("(width < 48rem)");
+
+		if (mq.matches) {
+			profileMenu
+				.querySelector('[aria-current="true"], [aria-current="page"]')
+				?.scrollIntoView({
+					container: "nearest",
+					inline: "center",
+				});
+			window.scrollTo(0, 0);
+		}
+	}
 
 	if (searchFilterForm) {
 		const button = searchFilterForm.querySelector("button");
@@ -68,10 +82,6 @@ import "./_search.js";
 
 	if (headerToggle) {
 		headerToggle.addEventListener("click", onMenuToggle);
-	}
-
-	if (sidebarToggle) {
-		sidebarToggle.addEventListener("click", onSidebarToggle);
 	}
 
 	if (filterOpen) {
@@ -197,16 +207,6 @@ import "./_search.js";
 		} else {
 			button.setAttribute("aria-expanded", "false");
 			window.requestAnimationFrame(() => window.scrollTo(0, scrollY));
-		}
-	}
-
-	function onSidebarToggle({ currentTarget: button }) {
-		const shouldOpen = button.getAttribute("aria-expanded") === "false";
-
-		if (shouldOpen) {
-			button.setAttribute("aria-expanded", "true");
-		} else {
-			button.setAttribute("aria-expanded", "false");
 		}
 	}
 

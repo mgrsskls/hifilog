@@ -25,7 +25,7 @@ class Settings::ProfilesController < ApplicationController
 
   def set_page_context
     @active_menu = :dashboard
-    @active_dashboard_menu = :profile
+    @active_dashboard_menu = :profile_settings
     @user = current_user
     page_title(I18n.t('headings.profile'))
   end

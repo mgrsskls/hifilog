@@ -1,139 +1,239 @@
-.Profile {
-	padding-block-end: 4rem;
+.Profile-header {
+	background: var(--color-blue-150);
+
+	@media (prefers-color-scheme: dark) {
+		background: var(--color-blue-125);
+	}
 
 	h1 {
 		color: var(--color-white);
+		grid-area: name;
+	}
+
+	small {
+		grid-area: date;
+		line-height: 1.2;
+		margin-block-start: 0.1rem;
+	}
+
+	.Profile-follow {
+		grid-area: follow;
 	}
 }
 
-.Profile-follow {
-	button {
-		inline-size: 100%;
+html[data-theme="dark"] {
+	.Profile-header {
+		background: var(--color-blue-125);
 	}
-
-	@media (width < 48rem) {
-		margin-block-start: 1rem;
-		margin-inline: var(--page-spacing);
-	}
-
-	@media (width >= 48rem) {
-		margin-block-start: 2rem;
-
-		button {
-			inline-size: 100%;
-		}
-	}
-}
-
-.Profile-main {
-	container: profile-main / inline-size;
 }
 
 @media (width < 48rem) {
-	.Dashboard-menu--profile {
+	.Profile {
+		padding-block-end: 2rem;
+	}
+
+	.Profile-header,
+	.Profile-menu {
 		margin-inline: calc(-1 * var(--page-spacing));
+	}
 
-		.Sidebar {
-			background: var(--color-blue-125);
+	.Profile-header {
+		padding-inline: var(--page-spacing);
+		padding-block: 0.75rem;
+	}
 
-			a {
-				color: var(--color-header-copy);
+	.Profile-headerInner {
+		display: grid;
+		grid-template:
+			"image name follow"
+			"image date follow" / auto 1fr auto;
+		gap: 0 1rem;
+		align-items: center;
 
-				&[aria-current="page"] {
-					color: var(--color-white);
-				}
-			}
+		h1 {
+			font-size: clamp(1.2rem, 5vi, 1.5rem);
+		}
+	}
 
-			nav {
+	.Profile-image {
+		grid-area: image;
+	}
+
+	.Profile-menu {
+		border-block-end: var(--border) var(--border-light);
+
+		nav {
+			inline-size: 100vi;
+			overflow-x: auto;
+			padding-inline-end: var(--page-spacing);
+			box-sizing: border-box;
+			mask-image: linear-gradient(
+				to right,
+				transparent 0%,
+				var(--color-bg-main) 2rem,
+				var(--color-bg-main) calc(100% - 2rem),
+				transparent 100%
+			);
+			border-block-end: var(--border-light);
+		}
+
+		.Sidebar-menu {
+			padding-inline: calc(1.5 * var(--page-spacing));
+			padding-block: 1rem;
+			display: flex;
+			flex-direction: row;
+			white-space: nowrap;
+			gap: 0.25rem;
+
+			ul {
 				display: none;
 			}
 
-			&:has(.Sidebar-toggle[aria-expanded="true"]) nav {
-				display: block;
+			li {
+				margin: 0;
+				padding: 0;
+
+				&:last-child {
+					padding-inline-end: var(--page-spacing);
+				}
+			}
+
+			div {
+				margin: 0;
+				padding: 0.25rem 0.5rem;
+			}
+		}
+
+		.Sidebar-menuItem--lvl1
+			> div:has(
+				> .Sidebar-link:is([aria-current="true"], [aria-current="page"])
+			),
+		.Sidebar-menuItem--lvl2:has(
+			> .Sidebar-link:is([aria-current="true"], [aria-current="page"])
+		) {
+			background-color: var(--color-blue-750);
+		}
+
+		a {
+			&[aria-current="page"] {
+				color: var(--color-blue-150);
 			}
 		}
 
 		.Sidebar-header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			gap: 1rem;
-			background: var(--color-blue-125);
-			padding: var(--page-spacing);
-		}
-
-		.Sidebar-userName {
-			display: flex;
-			margin: 0;
-			display: flex;
-			gap: 0.75rem;
-			align-items: center;
-			background: none;
-			padding: 0;
-			appearance: none;
-		}
-
-		.Sidebar-toggle {
-			display: flex;
-			gap: 0.375em;
-			align-items: center;
-			box-sizing: border-box;
-			background: var(--color-button-bg);
-			border-radius: calc(var(--border-radius));
-			color: #fff;
-			padding: 0.375em;
-			font-size: 0.875em;
-			font-weight: 600;
-
-			svg {
-				transition: all 0.15s ease;
-				fill: currentColor;
-			}
-
-			&[aria-expanded="true"] svg:nth-child(1) {
-				display: none;
-			}
-
-			&[aria-expanded="false"] svg:nth-child(2) {
-				display: none;
-			}
-		}
-
-		.Sidebar-menu {
-			color: var(--color-accent-on-dark);
+			display: none;
 		}
 	}
 
-	.Profile-products {
+	.Profile-content {
 		margin-block-start: 1.5rem;
 	}
 }
 
 @media (width >= 48rem) {
 	.Profile {
-		--gap: clamp(2rem, 4vi, 4rem);
+		display: grid;
+		grid-template:
+			"menu header"
+			"menu content" 1fr / var(--sidebar-size) 1fr;
+		align-items: start;
+		gap: 0 var(--page-spacing);
+
+		.Sidebar-toggle {
+			display: none;
+		}
+
+		.Sidebar-userName {
+			margin: -2rem calc(-1 * var(--page-spacing)) 1.5rem;
+
+			.Avatar {
+				border-radius: 0;
+			}
+		}
+
+		.Sidebar-userName .Avatar {
+			--size: 272 !important;
+
+			inline-size: 100%;
+		}
+
+		.Sidebar-userName picture {
+			display: block;
+			inline-size: 100%;
+		}
+
+		.Sidebar-userName img {
+			aspect-ratio: 1;
+			block-size: auto;
+			inline-size: 100%;
+		}
+	}
+
+	.Profile-header {
+		grid-area: header;
+		margin-inline: calc(-1 * var(--page-spacing));
+		padding-block: 0.75rem;
+		padding-inline: var(--page-spacing);
+		container: profile-header / inline-size;
+	}
+
+	.Profile-headerInner {
+		@container profile-header (width < 42rem) {
+			display: grid;
+			grid-template:
+				"name follow"
+				"date follow" / 1fr auto;
+			align-items: center;
+		}
+
+		@container profile-header (width >= 42rem) {
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 1rem;
+
+			small {
+				margin-inline-start: auto;
+			}
+		}
+
+		h1 {
+			font-size: 1.8rem;
+		}
+	}
+
+	.Profile-image {
+		display: none;
+	}
+
+	.Profile-menu {
+		--top: var(--header-height);
+
+		position: sticky;
+		inset-block-start: var(--top);
+		block-size: calc(100dvb - var(--top));
+		overflow-y: auto;
+		padding-block: 2rem;
+		padding-inline: var(--page-spacing);
+		margin-inline-start: calc(var(--page-spacing) * -1);
+		box-sizing: border-box;
+		border-inline-end: var(--border-light);
+		display: flex;
+		flex-direction: column;
+		grid-area: menu;
 	}
 
 	.Profile-content {
-		display: flex;
-		flex-wrap: wrap;
+		grid-area: content;
+		padding-block: 2.5rem 4rem;
 		align-items: start;
-		gap: clamp(2rem, 4vi, 4rem);
-		padding-block-start: var(--gap);
-		scroll-margin-block-start: var(--header-height);
 	}
+}
 
-	.Profile-meta {
-		flex: 1;
-		min-inline-size: 16rem;
-		position: sticky;
-		inset-block-start: 6rem;
-		margin-block-start: calc(-1 * 16rem / 2 - var(--gap));
-	}
-
-	.Profile-products {
-		flex: 4;
-	}
+.Profile-content {
+	container: profile-main / inline-size;
+	inline-size: 100%;
 }
 
 .ProfilePossessions {
