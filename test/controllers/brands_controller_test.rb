@@ -211,6 +211,39 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'similar lists similar brands with the brand in the sidebar and is noindex' do
+    source, candidates = similar_brands_catalogue(2)
+
+    get brand_similar_url(brand_id: source.friendly_id)
+
+    assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+    assert_select 'h1', text: source.display_name
+    assert_select '.IndexPage-header .IndexPage-details dl.Data'
+    assert_select '.IndexPage-content h2', text: I18n.t('similar_brands.heading')
+    assert_select '.EntityList--brands > li', count: candidates.size
+  end
+
+  test 'similar returns 404 for an unknown brand' do
+    get brand_similar_url(brand_id: 'no-such-brand')
+
+    assert_response :not_found
+  end
+
+  test 'show links to all similar brands only when there are more than the block shows' do
+    source, = similar_brands_catalogue(SimilarBrands::LIMIT)
+
+    get brand_url(id: source.friendly_id)
+
+    assert_select '.Entity-section--similarBrands .EntityList--brands > li', count: SimilarBrands::LIMIT
+    assert_select 'a[href=?]', brand_similar_path(source), count: 0
+
+    similar_brands_candidate(source.products.first.sub_categories, 'Extra')
+    get brand_url(id: source.friendly_id)
+
+    assert_select 'a[href=?]', brand_similar_path(source)
+  end
+
   test 'changelog returns 404 for an unknown brand' do
     get brand_changelog_url(brand_id: 'no-such-brand')
 
@@ -367,5 +400,23 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select '.BrandFollow'
     assert_select '.AvatarPreview'
+  end
+
+  private
+
+  # A source brand and `count` candidate brands with one product each in a sub category of their
+  # own, so that the fixture catalogue adds no candidates. The test cache is a null_store.
+  def similar_brands_catalogue(count)
+    sub_categories = [SubCategory.create!(name: "Similar #{SecureRandom.hex(4)}", category: categories(:one))]
+
+    [similar_brands_candidate(sub_categories, 'Source'),
+     Array.new(count) { |index| similar_brands_candidate(sub_categories, "Candidate #{index}") }]
+  end
+
+  def similar_brands_candidate(sub_categories, name)
+    token = SecureRandom.hex(4)
+    brand = Brand.create!(name: "#{name} #{token}", discontinued: false)
+    Product.create!(name: "#{name} #{token}", brand:, sub_categories:)
+    brand
   end
 end

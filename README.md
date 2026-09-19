@@ -212,6 +212,62 @@ so a changed name or image of a candidate shows immediately. A new or changed ca
 an existing list when the cache entry expires. When you change the scoring, increase
 `CACHE_VERSION`.
 
+## Similar Brands
+
+The **"Similar Brands"** block on the brand show page lists brands that make the same kind of
+products. It works like [Similar Products](#similar-products): the same list layout, the same number
+of items (`SimilarBrands::LIMIT`), a **"View all"** link when there are more candidates, and a full,
+paginated list at `/brands/:brand_id/similar` (`BrandsController#similar`). That page has the brand
+in the sidebar (the partial `brands/_data`, which the show page also uses), is `noindex, follow`, and
+shows only the headline on viewports narrower than 48rem.
+
+A brand has little data of its own, so most of the signal comes from its **products**. A candidate
+must have at least one product in a sub category of the brand. Its profile uses only these
+products: a turntable maker is compared on turntables, also when the candidate makes amplifiers
+too.
+
+### Ranking
+
+The score is the sum of these parts. The weights are in **`SimilarBrands::Weights`**.
+
+| Part                     | Points                                                                                                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sub category profile** | `100 * Σ min(share of the brand, share of the candidate)` over the sub categories of the brand. A share is the part of all products of a brand in one sub category. |
+| **Active period**        | `20 * shared years / all years`. A brand is active from its founded year to its discontinued year, or to this year. An unknown start or end gives 0.                |
+| **Country**              | 15 for the same country                                                                                                                                             |
+| **Price level**          | 10 for the same band of the median product price, 5 for the next band. Same bands as for products, same currency only.                                              |
+| **Attributes**           | For each attribute in `SimilarProducts::Weights::ATTRIBUTES`: `weight * the part of the candidate's products with the most frequent value of the brand`             |
+
+When the scores are equal, the same discontinued status comes first, then the brand with more
+products, then the brand id. Candidates with less than `MIN_SCORE` (10) are not shown. The share
+makes a specialist rank above a generalist: a brand with 1 turntable in 16 products gets only
+6.25 points for a turntable maker.
+
+### Reading path
+
+**`SimilarBrands.for`** gives the block and **`SimilarBrands.page`** gives one page of the full list.
+**`SimilarBrands::Query`** works in two steps:
+
+1. Ruby reads the profile of the brand from its own products: the share in each sub category, the
+   most frequent value of each weighted attribute, and the median price in its most frequent
+   currency.
+2. One SQL statement makes the same profile for all candidate brands, calculates the scores, and
+   sends back only the ids of the requested rows and the number of all candidates.
+
+The index on `products_sub_categories.sub_category_id` finds the products. The work depends on the
+number of products in the sub categories of the brand. For reference, with 200,000 products: a
+brand in one sub category takes approximately 70 ms, a brand in all sub categories approximately
+700 ms (it reads the whole catalogue). The number of all products of a candidate is counted, not
+read from `brands.products_count`, because that column also counts variants.
+
+The ranked ids and the total are **cached** for 24 hours, one entry for each page. The key contains
+the brand (`cache_key_with_version`), the limit, the offset and `SimilarBrands::CACHE_VERSION`. A
+product change touches its brand (`belongs_to :brand, touch: true`), so a change of the brand's own
+products makes a new key. A change of a candidate gets into existing lists when the entry expires.
+
+**`SimilaritySql`** (`app/services/concerns`) holds the SQL parts that both queries use: attribute
+values as JSON arrays, price bands and quoting.
+
 ## Related Products
 
 The **"Related Products"** block on product and variant show pages lists companions an entry is
@@ -558,6 +614,7 @@ All six come from **`HomeHighlights`**, which returns plain structs rather than 
 | **`ProductFilterService`**, **`BrandFilterService`**                           | Catalog and brand index filtering, sorting and name search, sharing `FilterableService`, `FilterConstants` and `RelevanceOrdering` |
 | **`ProductCatalogShowService`**                                                | Product and variant show-page context                                                                                              |
 | **`SimilarProducts`**, **`SimilarProducts::Query`**                            | "Similar Products" ranking, pagination and cache (see [Similar Products](#similar-products))                                       |
+| **`SimilarBrands`**, **`SimilarBrands::Query`**                                | "Similar Brands" ranking, pagination and cache (see [Similar Brands](#similar-brands))                                             |
 | **`RelatedProducts::Resolver`**, **`RelatedProducts::Query`**                  | "Related Products" targets, gates and candidate fetch (see [Related Products](#related-products))                                  |
 | **`ProductConversionService`**                                                 | Converts a product into a variant of another product and back; never crosses brands                                                |
 | **`CollectionStatusQuery`**                                                    | Owned / previously owned / bookmarked state for a set of ids, in bulk, for the client-side collection buttons                      |

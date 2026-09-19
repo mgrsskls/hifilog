@@ -17,6 +17,8 @@
 #
 # `@>` is used, and not `?`: `?` is the bind placeholder of Rails.
 class SimilarProducts::Query
+  include SimilaritySql
+
   W = SimilarProducts::Weights
 
   NUMBER_PATTERN = '^-?[0-9]+(\.[0-9]+)?$'
@@ -148,16 +150,8 @@ class SimilarProducts::Query
     end
   end
 
-  def categorical_values(value)
-    values = Array.wrap(value).select { |item| item.is_a?(String) || item == true || item == false }
-    values.reject { |item| item == '' }.uniq
-  end
-
   def candidate_array(label)
-    value = "p.custom_attributes -> #{quote(label)}"
-    "(CASE WHEN jsonb_typeof(#{value}) = 'array' THEN #{value} " \
-      "WHEN jsonb_typeof(#{value}) IN ('string', 'boolean') THEN jsonb_build_array(#{value}) " \
-      "ELSE '[]'::jsonb END)"
+    json_array_sql("p.custom_attributes -> #{quote(label)}")
   end
 
   # Full points when the values of both sides are in the same class. When the product has a
@@ -206,30 +200,10 @@ class SimilarProducts::Query
 
   # ------------------------------------------------------------------------------ Price
 
-  # Log-scale bands, only in the same currency. Prices of different currencies and eras are not
-  # converted: the result would not be more correct than no comparison.
-  #
-  # The band limits are calculated here, so the database only compares numbers. `log()` on a
-  # numeric column is slow when it runs for each candidate.
   def price_term
-    band = price_band(@product.price)
-    currency = @product.price_currency.presence
-    return '0' if band.nil? || currency.nil?
-
-    same = "p.price >= #{band_limit(band)} AND p.price < #{band_limit(band + 1)}"
-    near = "p.price >= #{band_limit(band - 1)} AND p.price < #{band_limit(band + 2)}"
-    "(CASE WHEN p.price_currency <> #{quote(currency)} THEN 0 " \
-      "WHEN #{same} THEN #{W::PRICE_WEIGHT} WHEN #{near} THEN #{W::PRICE_WEIGHT / 2.0} ELSE 0 END)"
-  end
-
-  def price_band(price)
-    return nil if price.nil? || price <= 0
-
-    (Math.log10(price.to_f) / W::PRICE_BAND_WIDTH).floor
-  end
-
-  def band_limit(band)
-    (10**(band * W::PRICE_BAND_WIDTH)).round(4)
+    price_band_sql(columns: { price: 'p.price', currency: 'p.price_currency' },
+                   price: @product.price, currency: @product.price_currency,
+                   weight: W::PRICE_WEIGHT, width: W::PRICE_BAND_WIDTH)
   end
 
   # ------------------------------------------------------------------------------ Tiebreakers
@@ -242,15 +216,5 @@ class SimilarProducts::Query
     return 'NULL::int' if @product.release_year.nil?
 
     "abs(p.release_year - #{@product.release_year.to_i})"
-  end
-
-  # ------------------------------------------------------------------------------ Helpers
-
-  def id_array(ids)
-    "ARRAY[#{ids.join(', ')}]::bigint[]"
-  end
-
-  def quote(value)
-    ActiveRecord::Base.connection.quote(value)
   end
 end

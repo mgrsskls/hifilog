@@ -612,6 +612,9 @@ en:
     validation:
       private:
         selected: must be selected.
+  similar_brands:
+    empty_state: No similar brands found.
+    heading: Similar Brands
   similar_products:
     empty_state: No similar products found.
     heading: Similar Products

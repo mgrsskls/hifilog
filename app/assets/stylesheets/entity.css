@@ -37,10 +37,6 @@
 	inline-size: 35%;
 	box-sizing: border-box;
 
-	a {
-		word-break: break-word;
-	}
-
 	&:not(:only-child) {
 		margin-block-end: 2rem;
 

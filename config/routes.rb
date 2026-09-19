@@ -121,6 +121,7 @@ Rails.application.routes.draw do
     get 'products/c/:category_slug', action: :products, as: :brand_products_category
     get 'products', action: :products
     get 'changelog', action: :changelog
+    get 'similar', action: :similar
   end
 
   # Product catalog (/products[/c/…]) — must be before resources :products

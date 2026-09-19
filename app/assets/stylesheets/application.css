@@ -359,6 +359,10 @@
 		color: var(--color-accent);
 	}
 
+	.Data a {
+		word-break: break-word;
+	}
+
 	.Data a:is([aria-current="true"], [aria-current="page"]) {
 		font-weight: 600;
 	}

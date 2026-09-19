@@ -1,0 +1,32 @@
+<%# The full "Similar Brands" list of a brand. See README, "Similar Brands". %>
+<%# Same layout as brands#products: the sidebar shows the brand, the content shows the list. The brand
+    data is hidden on viewports < 48rem (.IndexPage-details), and only the headline is shown. %>
+<% content_for :header do %>
+  <h1><%= @brand.display_name %></h1>
+<% end %>
+
+<% content_for :actions do %>
+  <b>
+    <a href="<%= brand_path(id: @brand.friendly_id) %>">
+      &larr; <span><%= t('back') %></span>
+    </a>
+  </b>
+<% end %>
+
+<% content_for :filter do %>
+  <div class="IndexPage-details">
+    <%= render "brands/data", brand: @brand %>
+  </div>
+<% end %>
+
+<% content_for :table do %>
+  <%= render "shared/brands_table", brands: @brands, category: nil, sub_category: nil, product_counts: nil %>
+<% end %>
+
+<%= render "shared/index_page",
+  records: @brands,
+  empty_state_message: t('similar_brands.empty_state'),
+  entry_name: Brand.model_name.human.downcase,
+  type: :brand,
+  table_heading: t('similar_brands.heading')
+%>

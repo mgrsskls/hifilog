@@ -8,7 +8,7 @@ class BrandsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update]
-  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog]
+  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog, :similar]
   before_action :set_active_menu
   before_action :find_brand, only: [:show]
   before_action :redirect_legacy_category_query_to_brands_path, only: [:index]
@@ -106,9 +106,21 @@ a user-driven database for hi-fi products and brands."
     @brand_follow = current_user.brand_follows.find_by(brand_id:) if user_signed_in?
     @brand_followers = @brand.visible_followers(current_user).limit(Brand::FOLLOWERS_PREVIEW_LIMIT).to_a
     @brand_followers_count = @brand.visible_followers_count(current_user)
+    @similar_brands = SimilarBrands.for(brand: @brand)
 
     page_title(@brand.seo_name)
     set_meta_desc
+  end
+
+  # The full, paginated "Similar Brands" list (README, "Similar Brands"). The page is noindex: its
+  # content is a list of other catalogue pages, ordered for this brand.
+  def similar
+    @brand = find_resource(Brand, :brand_id, path_helper: ->(brand) { brand_similar_path(brand) })
+    return if @brand.nil?
+
+    @brands = SimilarBrands.page(brand: @brand, page: params[:page])
+
+    page_title("#{I18n.t('similar_brands.heading')} — #{@brand.display_name}")
   end
 
   def products

@@ -272,6 +272,8 @@ class Brand < ApplicationRecord
       abbreviation
       abbreviation_cont
       abbreviation_eq
+      brand_follows_id_eq
+      followers_id_eq
       legal_name
       legal_name_cont
       legal_name_eq
@@ -292,7 +294,7 @@ class Brand < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[]
+    %w[brand_follows followers]
   end
   # simplecov:enable
 
