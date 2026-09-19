@@ -7,59 +7,57 @@
 <% end %>
 <div class="Entity">
   <div class="Entity-main">
-    <div class="Product-details">
-      <div class="Heading">
-        <h1>
-          <%= @custom_product.display_name %>
-        </h1>
-      </div>
+    <div class="Heading">
+      <h1>
+        <%= @custom_product.display_name %>
+      </h1>
+    </div>
 
-      <div class="Entity-content">
-        <% if @custom_product.images.attached? %>
-          <ul class="Entity-image ImageLightbox ImageGallery">
+    <div class="Entity-section Entity-content">
+      <% if @custom_product.images.attached? %>
+        <ul class="Entity-image ImageLightbox ImageGallery">
+          <li class="ImageLightbox-item">
+            <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @custom_product.highlighted_image.id %>">
+              <picture>
+                <%= image_tag cdn_image_url(@custom_product.highlighted_image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+              </picture>
+            </button>
+            <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= @custom_product.highlighted_image.id %>">
+              <picture>
+                <%= image_tag cdn_image_url(@custom_product.highlighted_image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+              </picture>
+            </dialog>
+          </li>
+          <% @custom_product.images.reject { |image| image.id == @custom_product.highlighted_image.id }.each do |image| %>
             <li class="ImageLightbox-item">
-              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= @custom_product.highlighted_image.id %>">
+              <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
                 <picture>
-                  <%= image_tag cdn_image_url(@custom_product.highlighted_image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
+                  <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
                 </picture>
               </button>
-              <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= @custom_product.highlighted_image.id %>">
+              <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
                 <picture>
-                  <%= image_tag cdn_image_url(@custom_product.highlighted_image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
+                  <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
                 </picture>
               </dialog>
             </li>
-            <% @custom_product.images.reject { |image| image.id == @custom_product.highlighted_image.id }.each do |image| %>
-              <li class="ImageLightbox-item">
-                <button class="ImageLightbox-thumb ImageGallery-thumb" aria-controls="image-dialog-<%= image.id %>">
-                  <picture>
-                    <%= image_tag cdn_image_url(image.variant(:thumb)), "aria-hidden": "true", alt: "" %>
-                  </picture>
-                </button>
-                <dialog class="ImageLightbox-dialog ImageGallery-dialog" id="image-dialog-<%= image.id %>">
-                  <picture>
-                    <%= image_tag cdn_image_url(image.variant(:large)), "aria-hidden": "true", alt: "", loading: "lazy" %>
-                  </picture>
-                </dialog>
-              </li>
-            <% end %>
-          </ul>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <div class="Entity-text">
+        <% if @custom_product.description.present? %>
+          <div class="Entity-section Rte">
+            <%= @custom_product.formatted_description %>
+          </div>
         <% end %>
 
-        <div class="Entity-text">
-          <% if @custom_product.description.present? %>
-            <div class="Entity-section Rte">
-              <%= @custom_product.formatted_description %>
-            </div>
-          <% end %>
-
-          <dl class="Entity-section Data">
-            <dt><%= Category.model_name.human %></dt>
-            <dd>
-              <%= sub_category_links(@custom_product) %>
-            </dd>
-          </dl>
-        </div>
+        <dl class="Entity-section Data">
+          <dt><%= Category.model_name.human %></dt>
+          <dd>
+            <%= sub_category_links(@custom_product) %>
+          </dd>
+        </dl>
       </div>
     </div>
   </div>

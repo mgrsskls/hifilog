@@ -4,44 +4,46 @@
   loudspeaker_sensitivity offers dB@1W/1m and dB@2.83V/1m, which are two different
   measurements rather than two spellings of one, and there is no factor between them.
 %>
-<% css_class ||= "Entity-section Data" %>
-<h2>Characteristics</h2>
-<dl class="<%= css_class %>">
-  <% Array(attributes).sort.each do |ca| %>
-    <% active_record = custom_attributes[ca[0]] %>
-    <% if active_record.present? %>
-      <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
-      <dd>
-        <% if ca[1].is_a?(Hash) %>
-          <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
-          <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
-          <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
-          <% if ca[1]['value'].is_a?(Hash) %>
-            <% ca[1]['value'].each do |v| %>
-              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-              <% if equivalent %>
-                / <%= number_with_precision(v[1] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= t("custom_attribute_units.#{equivalent[0]}").html_safe %>
+<% css_class ||= "Data" %>
+<div class="Entity-section">
+  <h2>Characteristics</h2>
+  <dl class="<%= css_class %>">
+    <% Array(attributes).sort.each do |ca| %>
+      <% active_record = custom_attributes[ca[0]] %>
+      <% if active_record.present? %>
+        <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
+        <dd>
+          <% if ca[1].is_a?(Hash) %>
+            <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
+            <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
+            <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
+            <% if ca[1]['value'].is_a?(Hash) %>
+              <% ca[1]['value'].each do |v| %>
+                <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
+                <% if equivalent %>
+                  / <%= number_with_precision(v[1] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= t("custom_attribute_units.#{equivalent[0]}").html_safe %>
+                <% end %>
+                <br>
               <% end %>
-              <br>
+            <% elsif ca[1]['value'].present? %>
+              <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
+              <% if equivalent %>
+                / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= t("custom_attribute_units.#{equivalent[0]}").html_safe %>
+              <% end %>
+            <% else %>
+              n/a
             <% end %>
-          <% elsif ca[1]['value'].present? %>
-            <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-            <% if equivalent %>
-              / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= t("custom_attribute_units.#{equivalent[0]}").html_safe %>
+          <% elsif ca[1].is_a?(Array) %>
+            <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
+          <% else %>
+            <% if active_record[:input_type] == 'boolean' %>
+              <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
+            <% else %>
+              <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
             <% end %>
-          <% else %>
-            n/a
           <% end %>
-        <% elsif ca[1].is_a?(Array) %>
-          <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
-        <% else %>
-          <% if active_record[:input_type] == 'boolean' %>
-            <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
-          <% else %>
-            <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
-          <% end %>
-        <% end %>
-      </dd>
+        </dd>
+      <% end %>
     <% end %>
-  <% end %>
-</dl>
+  </dl>
+</div>

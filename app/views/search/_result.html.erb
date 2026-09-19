@@ -9,11 +9,21 @@
           path = product_path(result.product_slug)
       %>
         <%= result.brand_abbreviation || result.brand_name %> <%= link_to name, path %>
+        <% if result.series_name.present? %>
+          <span class="SearchResult-entityFullName"><%= result.series_name %></span>
+        <% end %>
       <% elsif result.item_type == 'ProductVariant'
           name = "#{result.product_name} #{result.product_variant_name}"
           path = product_variant_path(id: result.product_variant_slug, product_id: result.product_slug)
       %>
         <%= result.brand_abbreviation || result.brand_name %> <%= link_to name, path %>
+        <% if result.series_name.present? %>
+          <span class="SearchResult-entityFullName"><%= result.series_name %></span>
+        <% end %>
+      <% elsif result.item_type == 'ProductSeries'
+          path = brand_series_path(brand_id: result.brand_slug, id: result.series_slug)
+      %>
+        <%= result.brand_abbreviation || result.brand_name %> <%= link_to result.series_name, path %>
       <%  elsif result.item_type == 'Brand'
           path = brand_path(result.brand_slug)
       %>
@@ -27,6 +37,8 @@
       <small><%= Product.model_name.human %></small>
     <% elsif result.item_type == 'Brand' %>
       <small><%= Brand.model_name.human %></small>
+    <% elsif result.item_type == 'ProductSeries' %>
+      <small><%= ProductSeries.model_name.human %></small>
     <% end %>
   </div>
 </article>

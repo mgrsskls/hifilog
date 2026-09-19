@@ -230,6 +230,22 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test 'show lists the newest products of the brand after the categories' do
+    brand = Brand.create!(name: "Newest Products #{SecureRandom.hex(3)}", discontinued: false)
+    products = Array.new(9) do |index|
+      Product.create!(name: "Newest #{index} #{SecureRandom.hex(3)}", brand:, release_year: 2000 + index,
+                      sub_categories: [sub_categories(:one)])
+    end
+
+    get brand_path(id: brand.friendly_id)
+
+    assert_response :success
+    section = css_select('.Entity-section--products').first.to_html
+    # 9 products: the newest 7, then "+2" instead of the eighth.
+    products.last(8).each { |product| assert_includes section, product.name }
+    products.first(1).each { |product| assert_not_includes section, product.name }
+  end
+
   test 'show links to all similar brands only when there are more than the block shows' do
     source, = similar_brands_catalogue(SimilarBrands::LIMIT)
 

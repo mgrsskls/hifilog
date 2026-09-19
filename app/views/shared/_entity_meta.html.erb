@@ -1,0 +1,34 @@
+<%# The meta block of a catalog entry: completeness prompt, "Edit" and "Changelog" links, and the
+    contributors. Used on the brand, product, variant and product series pages, so that all of them
+    look the same.
+    locals:
+      edit_path      - the edit page. Signed-out visitors go through sign-in first.
+      changelog_path - the changelog page.
+      contributors   - rows with "user_name" and "profile_visibility" (see #contributor_links).
+      record         - optional. An entry with Completeness; shows the "still missing" prompt.
+      extra_links    - optional. More <li> items for the link list, as captured HTML.
+      separated      - optional, default true. false removes the spacing and the border above the
+                       block, for a page where it does not follow other sidebar content. %>
+<% record ||= nil %>
+<% extra_links ||= nil %>
+<% separated = true if local_assigns[:separated].nil? %>
+<div class="Entity-meta<%= " Entity-meta--flush" unless separated %>">
+  <% if record %>
+    <%= render "shared/incomplete_entry", record:, edit_path: %>
+  <% end %>
+
+  <ul class="Entity-metaLinks MetaLinks">
+    <li>
+      <%= link_to t('edit'), user_signed_in? ? edit_path : new_user_session_path(redirect: edit_path), rel: "nofollow" %>
+    </li>
+    <%= extra_links %>
+    <li>
+      <%= link_to t('headings.changelog'), changelog_path, rel: "nofollow" %>
+    </li>
+  </ul>
+
+  <dl>
+    <dt><%= t('headings.contributors') %></dt>
+    <dd><%= contributor_links(contributors) %></dd>
+  </dl>
+</div>

@@ -39,7 +39,7 @@
           <% changelog = deserialize_changelog(version.object_changes) %>
           <ul>
             <% changelog.each do |change| %>
-              <% unless change[0] == "slug" %>
+              <% unless %w[slug products_count].include?(change[0]) %>
                 <% before = capture do %>
                             <% if change[0] == "custom_attributes" %>
                               <% if change[1][0].present? %>
@@ -87,6 +87,8 @@
                               <% end %>
                             <% elsif change[0] == "brand_id" && change[1][0].present? %>
                               <%= changelog_brand_name(change[1][0]) %>
+                            <% elsif change[0] == "product_series_id" && change[1][0].present? %>
+                              <%= changelog_series_name(change[1][0]) %>
                             <% elsif change[0] == "country_code" && change[1][0].present? %>
                               <%= country_name_from_country_code(change[1][0]) %>
                             <% elsif !change[1][0].nil? %>
@@ -148,6 +150,8 @@
                               <% end %>
                             <% elsif change[0] == "brand_id" && change[1][1].present? %>
                               <%= changelog_brand_name(change[1][1]) %>
+                            <% elsif change[0] == "product_series_id" && change[1][1].present? %>
+                              <%= changelog_series_name(change[1][1]) %>
                             <% elsif change[0] == "country_code" && change[1][1].present? %>
                               <%= country_name_from_country_code(change[1][1]) %>
                             <% elsif !change[1][1].nil? %>

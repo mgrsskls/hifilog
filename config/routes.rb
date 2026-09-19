@@ -122,6 +122,12 @@ Rails.application.routes.draw do
     get 'products', action: :products
     get 'changelog', action: :changelog
     get 'similar', action: :similar
+    # Product series (docs/product-series.md). "series" is uncountable in Rails, so the helpers are
+    # brand_series_index_path(brand) for the list and brand_series_path(brand, series) for one
+    # series. The index answers JSON only: the series field of the product form reads it.
+    resources :series, controller: 'product_series', only: [:index, :show, :new, :create, :edit, :update] do
+      get 'changelog', action: :changelog
+    end
   end
 
   # Product catalog (/products[/c/…]) — must be before resources :products

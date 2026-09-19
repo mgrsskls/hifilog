@@ -12,8 +12,12 @@
   <a href="<%= path %>" class="EntityListItem-name">
     <%= name %>
   </a>
-  <% if model_no.present? || variant_name.present? %>
+  <% if model_no.present? || variant_name.present? || item.respond_to?(:series_name) && item.series_name.present? %>
     <span class="EntityListItem-modelName">
+      <% if item.respond_to?(:series_name) && item.series_name.present? %>
+        <span class="u-hiddenVisually"><%= ProductSeries.model_name.human %>:</span>
+        <%= item.series_name %><% if variant_name.present? && model_no.present? %>&middot;<% end %>
+      <% end %>
       <%= variant_name if variant_name.present? %>
       <% if variant_name.present? && model_no.present? %>&middot;<% end %>
       <%= model_no if model_no.present? %>

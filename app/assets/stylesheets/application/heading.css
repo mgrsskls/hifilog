@@ -6,6 +6,10 @@
 	gap: 2rem;
 }
 
+.BackLink + .Heading {
+	margin-block-start: 1rem;
+}
+
 .Heading:has(h1) {
 	margin-block-end: clamp(1.5rem, 4vi, 2.5rem);
 }
@@ -52,4 +56,11 @@
 	font-weight: 600;
 	text-decoration: none;
 	font-size: 0.875em;
+}
+
+/* Product series line under a product <h1> (docs/product-series.md). */
+.Heading-subline {
+	flex: 0 0 100%;
+	margin-block: -1.5rem 0;
+	font-size: 0.9375rem;
 }

@@ -1,17 +1,20 @@
 <%# Similar Brands: brands that make the same kind of products. See README, "Similar Brands". %>
 <%# path: the full list. Renders nothing when no candidate has the minimum score. "View all" shows only when the full list has more items. %>
 <% if similar.items.present? %>
-  <div class="Entity-section Entity-section--similarBrands">
-    <%= render "shared/overview/section_heading",
-        heading: t('similar_brands.heading'),
-        heading_class: nil,
-        view_all_path: (path if similar.total_count > similar.items.size) %>
-
+  <%
+    view_all_path ||= nil
+    view_all_label = t('similar_brands.view_all')
+  %>
+  <%= render "shared/entity_section",
+      heading: t('similar_brands.heading'),
+      section_class: "Entity-section--similarBrands",
+      view_all_path: (view_all_path if similar.total_count > similar.items.size),
+      view_all_label: do %>
     <%= render "shared/brands_table",
         brands: similar.items,
         category: nil,
         sub_category: nil,
         product_counts: nil
     %>
-  </div>
+  <% end %>
 <% end %>

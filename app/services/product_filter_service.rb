@@ -36,10 +36,15 @@ class ProductFilterService
 
   Result = Struct.new(:products)
 
-  def initialize(filters: {}, brand_filters: {}, brands: [], category: nil, sub_category: nil)
+  # series: a ProductSeries (its products only), :none (products without a series) or nil (no
+  # restriction). See docs/product-series.md.
+  # rubocop:disable Metrics/ParameterLists
+  def initialize(filters: {}, brand_filters: {}, brands: [], category: nil, sub_category: nil, series: nil)
+    # rubocop:enable Metrics/ParameterLists
     @filters = filters
     @category = category
     @sub_category = sub_category
+    @series_id = series_id_for(series)
     @brands = brands
     @products = products_scope_for(brands)
     @brand_filters = brand_filters
@@ -53,6 +58,7 @@ class ProductFilterService
     return @filter if defined?(@filter)
 
     products = @products
+    products = products.where(product_series_id: @series_id) unless @series_id == :any
 
     if @sub_category
       # Plucked ids (not a JOIN or IN-subquery) so Postgres can push the filter into the
@@ -163,11 +169,13 @@ class ProductFilterService
 
     products = Product.all
     products = products.where(brand_id: brand_ids) unless brand_ids.nil?
+    products = products.where(product_series_id: @series_id) unless @series_id == :any
     products = scope_products_by_taxonomy(products)
     products = apply_base_table_filters(products)
 
     variants = ProductVariant.joins(:product)
     variants = variants.where(products: { brand_id: brand_ids }) unless brand_ids.nil?
+    variants = variants.where(products: { product_series_id: @series_id }) unless @series_id == :any
     variants = scope_variants_by_taxonomy(variants)
     variants = apply_base_table_filters(variants, variants: true)
 
@@ -211,6 +219,16 @@ class ProductFilterService
       )
     else
       variants
+    end
+  end
+
+  # :any = no restriction, nil = products without a series, an id = the products of that series.
+  def series_id_for(series)
+    case series
+    when nil then :any
+    when :none then nil
+    when ProductSeries then series.id
+    else series
     end
   end
 

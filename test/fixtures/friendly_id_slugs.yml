@@ -77,3 +77,21 @@ product_variant_three:
   sluggable_type: ProductVariant
   sluggable_id: <%= ActiveRecord::FixtureSet.identify(:three) %>
   scope: product_id:<%= ActiveRecord::FixtureSet.identify(:with_variants) %>
+
+product_series_evolution:
+  slug: evolution
+  sluggable_type: ProductSeries
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:evolution) %>
+  scope: brand_id:<%= ActiveRecord::FixtureSet.identify(:one) %>
+
+product_series_legacy:
+  slug: legacy
+  sluggable_type: ProductSeries
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:legacy) %>
+  scope: brand_id:<%= ActiveRecord::FixtureSet.identify(:one) %>
+
+product_series_heritage:
+  slug: heritage
+  sluggable_type: ProductSeries
+  sluggable_id: <%= ActiveRecord::FixtureSet.identify(:heritage) %>
+  scope: brand_id:<%= ActiveRecord::FixtureSet.identify(:two) %>

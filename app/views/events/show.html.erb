@@ -4,43 +4,41 @@
 
 <div class="Entity">
   <div class="Entity-main">
-    <div class="Product-details">
-      <div class="Entity-heading">
-        <h1><%= @event.name %></h1>
-      </div>
+    <div class="Entity-heading">
+      <h1><%= @event.name %></h1>
+    </div>
 
-      <div class="Entity-section">
-        <dl class="Data">
-          <dt><%= Event.human_attribute_name(:dates) %></dt>
+    <div class="Entity-section">
+      <dl class="Data">
+        <dt><%= Event.human_attribute_name(:dates) %></dt>
+        <dd>
+          <span class="Event-days">
+            <%= humanize_date_range(@event.start_date, @event.end_date) %>
+          </span>
+        </dd>
+        <% if @event.country_code.present? %>
+          <dt><%= Event.human_attribute_name(:country_code) %></dt>
           <dd>
-            <span class="Event-days">
-              <%= humanize_date_range(@event.start_date, @event.end_date) %>
-            </span>
+            <div class="u-flex u-alignCenter u-gap-smd">
+              <% country_name = country_name_from_country_code(@event.country_code) %>
+              <img class="Flag" src="/flags/<%= @event.country_code.downcase %>.svg" alt="Flag of <%= country_name %>" title="<%= country_name %>" loading="lazy" width="25">
+              <%= country_name %>
+            </div>
           </dd>
-          <% if @event.country_code.present? %>
-            <dt><%= Event.human_attribute_name(:country_code) %></dt>
-            <dd>
-              <div class="u-flex u-alignCenter u-gap-smd">
-                <% country_name = country_name_from_country_code(@event.country_code) %>
-                <img class="Flag" src="/flags/<%= @event.country_code.downcase %>.svg" alt="Flag of <%= country_name %>" title="<%= country_name %>" loading="lazy" width="25">
-                <%= country_name %>
-              </div>
-            </dd>
-          <% end %>
-          <% if @event.address.present? %>
-            <dt><%= Event.human_attribute_name(:address) %></dt>
-            <dd>
-              <address>
-                <%= simple_format(@event.address, class: "u-mb-0") %>
-              </address>
-            </dd>
-          <% end %>
-          <% if @event.url.present? %>
-            <dt><%= Event.human_attribute_name(:url) %></dt>
-            <dd><%= link_to @event.url, @event.url, rel: "noreferrer noopener" %></dd>
-          <% end %>
-        </dl>
-      </div>
+        <% end %>
+        <% if @event.address.present? %>
+          <dt><%= Event.human_attribute_name(:address) %></dt>
+          <dd>
+            <address>
+              <%= simple_format(@event.address, class: "u-mb-0") %>
+            </address>
+          </dd>
+        <% end %>
+        <% if @event.url.present? %>
+          <dt><%= Event.human_attribute_name(:url) %></dt>
+          <dd><%= link_to @event.url, @event.url, rel: "noreferrer noopener" %></dd>
+        <% end %>
+      </dl>
     </div>
   </div>
 

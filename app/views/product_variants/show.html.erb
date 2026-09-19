@@ -7,91 +7,91 @@
 <% end %>
 <div class="Entity">
   <div class="Entity-main">
-    <div class="Product-details">
-      <div class="Heading">
-        <h1>
-          <a href="<%= brand_path(id: @product.brand.friendly_id) %>"><span><%= @product.brand.display_name %></span></a>
-          <%= @product.name %>
-          <span>&mdash; <%= @product_variant.name_with_fallback %></span>
-          <% if @product_variant.model_no.present? %>
-            <small><%= @product_variant.model_no %></small>
-          <% end %>
-        </h1>
-        <% if @product_variant.discontinued? %>
-          <span class="Symbol"><%= t('symbols.product.discontinued') %></span>
+    <div class="Heading">
+      <h1>
+        <a href="<%= brand_path(id: @product.brand.friendly_id) %>"><span><%= @product.brand.display_name %></span></a>
+        <%= @product.name %>
+        <span>&mdash; <%= @product_variant.name_with_fallback %></span>
+        <% if @product_variant.model_no.present? %>
+          <small><%= @product_variant.model_no %></small>
         <% end %>
-      </div>
+      </h1>
+      <% if @product_variant.discontinued? %>
+        <span class="Symbol"><%= t('symbols.product.discontinued') %></span>
+      <% end %>
+      <%= product_series_subline(@product) %>
+    </div>
 
-      <div class="Entity-content">
-        <%= render "shared/entity_image_gallery", images: @images %>
+    <div class="Entity-section Entity-content">
+      <%= render "shared/entity_image_gallery", images: @images %>
 
-        <div class="Entity-text">
-          <% if @product_variant.description.present? %>
-            <div class="Entity-section Rte">
-              <%= @product_variant.formatted_description %>
-            </div>
+      <div class="Entity-text">
+        <% if @product_variant.description.present? %>
+          <div class="Entity-section Rte">
+            <%= @product_variant.formatted_description %>
+          </div>
+        <% end %>
+
+        <dl class="Entity-section Data">
+          <dt><%= Category.model_name.human %></dt>
+          <dd>
+            <%= sub_category_links(@product) %>
+          </dd>
+          <% if @product.product_series %>
+            <dt><%= ProductSeries.model_name.human %></dt>
+            <dd><%= link_to @product.product_series.name, @product.product_series.path %></dd>
           <% end %>
-
-          <dl class="Entity-section Data">
-            <dt><%= Category.model_name.human %></dt>
-            <dd>
-              <%= sub_category_links(@product) %>
-            </dd>
-            <dt><%= Product.human_attribute_name(:release_date) %></dt>
-            <dd>
-              <% if @product_variant.release_date.present? %>
-                <time datetime="<%= @product_variant.release_date %>"><%= sanitize @product_variant.formatted_release_date %></time>
-              <% else %>
-                -
-              <% end %>
-            </dd>
-            <% if @product_variant.discontinued? %>
-              <dt><%= t('discontinued') %></dt>
-              <dd>
-                <% if @product_variant.discontinued_date.present? %>
-                  <time datetime="<%= @product_variant.discontinued_date %>"><%= sanitize @product_variant.formatted_discontinued_date %></time>
-                <% else %>
-                  -
-                <% end %>
-              </dd>
+          <dt><%= Product.human_attribute_name(:release_date) %></dt>
+          <dd>
+            <% if @product_variant.release_date.present? %>
+              <time datetime="<%= @product_variant.release_date %>"><%= sanitize @product_variant.formatted_release_date %></time>
+            <% else %>
+              -
             <% end %>
-            <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
+          </dd>
+          <% if @product_variant.discontinued? %>
+            <dt><%= t('discontinued') %></dt>
             <dd>
-              <% if @product_variant.price.present? %>
-                <%= display_price(@product_variant.price, @product_variant.price_currency) %>
+              <% if @product_variant.discontinued_date.present? %>
+                <time datetime="<%= @product_variant.discontinued_date %>"><%= sanitize @product_variant.formatted_discontinued_date %></time>
               <% else %>
                 -
               <% end %>
             </dd>
-          </dl>
-
-          <%= render "shared/product_custom_attributes", attributes: @product.custom_attributes, custom_attributes: @custom_attributes if @product.custom_attributes&.any? %>
-
-          <% if @product_variant.product_options.any? %>
-            <div class="Product-section">
-              <h2><%= Product.human_attribute_name(:product_options) %></h2>
-              <ul>
-                <% @product_variant.product_options.order(:option).each do |option| %>
-                  <li>
-                    <%= option[:option] %>
-                    <% if option[:model_no].present? %>
-                      <br><small><%= option[:model_no] %></small>
-                    <% end %>
-                  </li>
-                <% end %>
-              </ul>
-            </div>
           <% end %>
-        </div>
-      </div>
+          <dt><%= Product.human_attribute_name(:price) %><sup>1</sup></dt>
+          <dd>
+            <% if @product_variant.price.present? %>
+              <%= display_price(@product_variant.price, @product_variant.price_currency) %>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </dl>
 
-      <div class="Product-section">
-        <%= render "shared/product_variants", product: @product_variant.product, current: @product_variant %>
+        <%= render "shared/product_custom_attributes", attributes: @product.custom_attributes, custom_attributes: @custom_attributes if @product.custom_attributes&.any? %>
+
+        <% if @product_variant.product_options.any? %>
+          <div class="Product-section">
+            <h2><%= Product.human_attribute_name(:product_options) %></h2>
+            <ul>
+              <% @product_variant.product_options.order(:option).each do |option| %>
+                <li>
+                  <%= option[:option] %>
+                  <% if option[:model_no].present? %>
+                    <br><small><%= option[:model_no] %></small>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
       </div>
     </div>
 
+    <%= render "shared/product_variants", product: @product_variant.product, current: @product_variant %>
+    <%= render "shared/series_products", series_products: @series_products %>
     <%= render "shared/similar_products", similar: @similar_products, path: product_variant_similar_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) %>
-
     <%= render "shared/related_products", groups: @related_products %>
 
     <ol class="Footnotes">
@@ -118,28 +118,11 @@
       <dd><%= t('amount_users', count: @product_variant.users.size) %></dd>
     </dl>
 
-    <div class="Entity-meta">
-      <%= render "shared/incomplete_entry",
-        record: @product_variant,
-        edit_path: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
-      %>
-
-      <ul class="Entity-metaLinks MetaLinks">
-        <li>
-          <%= link_to t('edit'), user_signed_in? ? product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) : new_user_session_path(redirect: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)), rel: "nofollow" %>
-        </li>
-        <li>
-          <%= link_to t('headings.changelog'), product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id), rel: "nofollow" %>
-        </li>
-      </ul>
-      <dl>
-        <dt><%= t('headings.contributors') %></dt>
-        <dd>
-          <%= @contributors.any? ? safe_join(@contributors.map { |c| c["profile_visibility"] != 0 ? link_to(c["user_name"], user_path(id: c["user_name"].downcase)) : h(c["user_name"]) }, ", ") : "hifilog.com" %>
-          </ul>
-        </dd>
-      </dl>
-    </div>
+    <%= render "shared/entity_meta",
+      record: @product_variant,
+      edit_path: product_edit_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id),
+      changelog_path: product_variant_changelog_path(product_id: @product.friendly_id, id: @product_variant.friendly_id),
+      contributors: @contributors %>
   </div>
 </div>
 

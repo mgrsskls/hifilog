@@ -1,0 +1,64 @@
+<% content_for :header do %>
+  <h1>
+    <a href="<%= brand_path(id: @brand.friendly_id) %>">
+      <%= @brand.display_name %>
+    </a>
+    <span><%= @series.name %> series</span>
+  </h1>
+<% end %>
+
+<% content_for :filter do %>
+  <div class="SeriesDetails">
+    <%#= render "product_series/data", series: @series, stats: @stats, sub_categories_grouped: @sub_categories_grouped %>
+
+    <% if @series.formatted_description.present? %>
+      <div class="Rte">
+        <%= @series.formatted_description %>
+      </div>
+    <% end %>
+
+    <%= render "shared/entity_meta",
+      edit_path: edit_brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id),
+      changelog_path: brand_series_changelog_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id),
+      contributors: @contributors,
+      separated: false %>
+  </div>
+
+  <%= render "shared/filter",
+    reset_path: @series.path,
+    query: @products_query,
+    type: :brand_products,
+    custom_attributes: nil,
+    filter_applied: @filter_applied %>
+<% end %>
+
+<% content_for :sort do %>
+  <% sort = params[:sort].presence || "release_date_asc" %>
+  <label for="sort-select">Sort</label>
+  <select name="sort" id="sort-select">
+    <option value="release_date_asc"<%= " selected" if sort == "release_date_asc" %>><%= t('sort_by.release_date_asc') %></option>
+    <option value="release_date_desc"<%= " selected" if sort == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
+    <option value="name_asc"<%= " selected" if sort == "name_asc" %>><%= t('sort_by.name_asc') %></option>
+    <option value="name_desc"<%= " selected" if sort == "name_desc" %>><%= t('sort_by.name_desc') %></option>
+  </select>
+<% end %>
+
+<% content_for :table do %>
+  <%= render "shared/products_table",
+    products: @products,
+    hide_brand: true
+  %>
+<% end %>
+
+<% new_product_target = new_product_path(brand_id: @brand.id, series: @series.slug) %>
+<%= render "shared/index_page",
+  records: @products,
+  empty_state_message: t('product_series.empty_state_html',
+    assign_path: edit_brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id, anchor: 'products'),
+    new_product_path: user_signed_in? ? new_product_target : new_user_session_path(redirect: new_product_target)),
+  type: :product,
+  table_heading: Product.model_name.human.pluralize
+%>
+
+<%= json_ld_script_tag(product_series_breadcrumb_json_ld(series: @series, canonical_url: @canonical_url)) %>
+<%= json_ld_script_tag(product_series_item_list_json_ld(series: @series, products: @products, canonical_url: @canonical_url)) %>

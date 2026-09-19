@@ -17,6 +17,7 @@ module ProductCatalogShow
     @custom_attributes = data[:custom_attributes]
     @similar_products = data.fetch(:similar_products)
     @related_products = data.fetch(:related_products)
+    @series_products = data[:series_products]
 
     return unless user_signed_in?
 

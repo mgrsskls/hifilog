@@ -1,0 +1,12 @@
+<div class="Form Form--centered">
+  <%= render "shared/back_link", path: brand_path(id: @brand.friendly_id) %>
+  <div class="Heading">
+    <h1><%= t('product_series.new.heading', brand: @brand.display_name) %></h1>
+  </div>
+
+  <%= render "product_series/form",
+    series: @series,
+    brand: @brand,
+    url: brand_series_index_path(brand_id: @brand.friendly_id),
+    method: :post %>
+</div>

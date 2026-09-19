@@ -10,6 +10,10 @@
   <dd>
     <%= sub_category_links(product) %>
   </dd>
+  <% if product.product_series %>
+    <dt><%= ProductSeries.model_name.human %></dt>
+    <dd><%= link_to product.product_series.name, product.product_series.path %></dd>
+  <% end %>
   <dt><%= Product.human_attribute_name(:release_date) %></dt>
   <dd>
     <% if record.release_date.present? %>

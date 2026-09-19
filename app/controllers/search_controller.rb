@@ -13,9 +13,16 @@ class SearchController < ApplicationController
   RELEVANCE_EXACT_COLUMNS = [
     "CASE WHEN search_results.item_type = 'Brand' THEN search_results.brand_name END",
     "CASE WHEN search_results.item_type = 'Brand' THEN search_results.brand_abbreviation END",
-    "CASE WHEN search_results.item_type != 'Brand' THEN search_results.product_name END",
-    "CASE WHEN search_results.item_type != 'Brand' THEN search_results.product_variant_name END",
-    "CASE WHEN search_results.item_type != 'Brand' THEN search_results.model_no END"
+    "CASE WHEN search_results.item_type NOT IN ('Brand', 'ProductSeries') THEN search_results.product_name END",
+    "CASE WHEN search_results.item_type NOT IN ('Brand', 'ProductSeries') THEN " \
+    'search_results.product_variant_name END',
+    "CASE WHEN search_results.item_type NOT IN ('Brand', 'ProductSeries') THEN search_results.model_no END",
+    # A series row is named by its series name, alone or after the brand ("klipsch heritage").
+    "CASE WHEN search_results.item_type = 'ProductSeries' THEN search_results.series_name END",
+    "CASE WHEN search_results.item_type = 'ProductSeries' THEN " \
+    "COALESCE(search_results.brand_abbreviation, search_results.brand_name) || ' ' || search_results.series_name END",
+    "CASE WHEN search_results.item_type = 'ProductSeries' THEN " \
+    "search_results.brand_name || ' ' || search_results.series_name END"
   ].freeze
 
   # The broader "does this row mention the query anywhere" check, and the closeness
@@ -26,6 +33,7 @@ class SearchController < ApplicationController
     search_results.product_variant_name
     search_results.brand_name
     search_results.brand_abbreviation
+    search_results.series_name
     search_results.model_no
   ].freeze
 

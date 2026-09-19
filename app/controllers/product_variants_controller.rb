@@ -16,7 +16,7 @@ class ProductVariantsController < ApplicationController
 
     assign_product_catalog_show_data(product: @product, product_variant: @product_variant)
 
-    page_title(@product_variant.display_name)
+    page_title(@product_variant.qualified_name)
     set_meta_desc
   end
 
@@ -106,7 +106,8 @@ class ProductVariantsController < ApplicationController
   end
 
   def find_product_and_variant
-    @product = Product.includes(:brand, sub_categories: :category).friendly.find(params[:product_id])
+    @product = Product.includes(:brand, { sub_categories: :category }, { product_series: :brand })
+                      .friendly.find(params[:product_id])
     @product_variant = @product.product_variants.friendly.find(params[:id])
 
     redirect_to_canonical_path(canonical_variant_path) { nil }

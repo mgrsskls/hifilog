@@ -1,0 +1,20 @@
+# Product series (docs/product-series.md). No fixture product is in a series, so the slugs and
+# counts that other tests read stay the same. Tests assign products to these series themselves.
+
+evolution:
+  brand: one
+  name: Evolution
+  slug: evolution
+  products_count: 0
+
+legacy:
+  brand: one
+  name: Legacy
+  slug: legacy
+  products_count: 0
+
+heritage:
+  brand: two
+  name: Heritage
+  slug: heritage
+  products_count: 0

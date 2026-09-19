@@ -16,7 +16,8 @@ class ProductsController < ApplicationController
   def show
     assign_product_catalog_show_data(product: @product)
 
-    page_title(@product.display_name, @product.meta_desc)
+    # The series is not in the visible title, so the <title> carries it (docs/product-series.md).
+    page_title(@product.qualified_name, @product.meta_desc)
   end
 
   def new
@@ -35,6 +36,7 @@ class ProductsController < ApplicationController
 
     @product.brand_id = brand_id
     @brand = Brand.find(brand_id)
+    preselect_product_series
   end
 
   def edit
@@ -115,7 +117,8 @@ class ProductsController < ApplicationController
 
   def find_product
     @product = find_resource(
-      Product.includes(:brand, :sub_categories), :id, path_helper: ->(product) { product_path(product) }
+      Product.includes(:brand, :sub_categories, product_series: :brand), :id,
+      path_helper: ->(product) { product_path(product) }
     )
   end
 
@@ -151,6 +154,7 @@ class ProductsController < ApplicationController
                 :description,
                 :price,
                 :price_currency,
+                :product_series_name,
                 { custom_attributes: {},
                   sub_category_ids: [],
                   product_options_attributes: {},
@@ -191,6 +195,7 @@ class ProductsController < ApplicationController
                 :description,
                 :price,
                 :price_currency,
+                :product_series_name,
                 :comment,
                 {
                   custom_attributes: {},
@@ -276,6 +281,15 @@ class ProductsController < ApplicationController
   # number. Blank included, which is why the caller needs no separate blank branch.
   def numeric_param(value)
     Float(value.to_s, exception: false)
+  end
+
+  # new_product_path(brand_id:, series: <slug>) preselects a series, for the links on the series
+  # page. An unknown slug is ignored.
+  def preselect_product_series
+    return if params[:series].blank?
+
+    series = @brand.product_series.find_by(slug: params[:series])
+    @product.product_series_name = series.name if series
   end
 
   def assign_brand_from_params(params)

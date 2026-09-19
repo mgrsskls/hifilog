@@ -197,4 +197,16 @@ class ProductConversionServiceTest < ActiveSupport::TestCase
     assert_equal 'Elise', product.name
     assert_predicate product.slug, :present?
   end
+
+  test 'a variant converted into a product keeps the series of its old parent' do
+    variant = product_variants(:one)
+    parent = variant.product
+    series = ProductSeries.create!(brand: parent.brand, name: "Converted #{SecureRandom.hex(3)}")
+    parent.update!(product_series: series)
+
+    product = ProductConversionService.to_product(variant, sub_category_ids: parent.sub_category_ids)
+
+    assert_equal series, product.product_series
+    assert_includes product.slug, series.name.parameterize
+  end
 end

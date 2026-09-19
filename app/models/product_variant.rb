@@ -89,8 +89,17 @@ class ProductVariant < ApplicationRecord
     name_with_fallback
   end
 
+  # The title of the product, then the variant name. Built from Product#display_name, so the
+  # title rule is in one place.
   def display_name
-    "#{product.brand.display_name} #{product.name} #{name_with_fallback}"
+    "#{product.display_name} #{name_with_fallback}"
+  end
+
+  # See Product#qualified_name. "Fezz Audio Omega Lupi Black Edition (Evolution series)".
+  def qualified_name
+    return display_name if product.product_series.nil?
+
+    "#{display_name} (#{product.product_series.label})"
   end
 
   def path

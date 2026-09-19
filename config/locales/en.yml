@@ -50,7 +50,13 @@ en:
         price: Price
         price_currency: Currency
         product_options: Options
+        product_series: Series
+        product_series_name: Series
         release_date: Released
+      product_series:
+        brand: Brand
+        description: Description
+        name: Series name
       setup:
         name: Name
         private: Visibility
@@ -97,6 +103,9 @@ en:
       product:
         one: Product
         other: Products
+      product_series:
+        one: Series
+        other: Series
       setup:
         one: Setup
         other: Setups
@@ -116,6 +125,17 @@ en:
             logo:
               invalid_content_type: must be JPG, PNG, GIF, or WebP.
               too_large: must be 5 MB or smaller.
+        product:
+          attributes:
+            name:
+              taken_in_series: is already used by a product of this brand in the same series (or with no series). Select the series of the product, or add a model number.
+              contains_series_name: 'must not contain the series name "%{series}". The series is shown separately.'
+            product_series:
+              other_brand: must be a series of the same brand
+        product_series:
+          attributes:
+            name:
+              starts_with_brand_name: 'must not start with the brand name. Write "Heritage", not "%{brand} Heritage".'
         user_follow:
           attributes:
             followed:
@@ -162,6 +182,8 @@ en:
       label: Edit
   brand:
     founded: Founded
+    product_series_id: Series
+    view_all_products: View all products
     hub:
       browse_heading: Browse by category
       contribute_heading: Something missing?
@@ -586,6 +608,45 @@ en:
     new:
       heading: Add new version / update
       link: Add version / update
+  product_series:
+    brand_section:
+      heading: Product series
+      series_heading: "%{series} series"
+      view_all: View all %{series} products
+    assign:
+      currently_in: now in the %{series}
+      empty_state: <p><b>No products match.</b></p>
+      intro: Check the products of %{brand} that are part of the %{series}. Only the products on this page change when you save, so save before you go to another page.
+      move_note: A product can only be in one series. When you check a product that is in a different series, it moves to this series.
+      saved:
+        one: 1 product was changed.
+        other: "%{count} products were changed."
+      series_saved: The series has been saved.
+      where_none: with no series
+      where_series: in the %{series}
+      search_placeholder: Name or model number
+      skipped_conflict_html: "<b>%{name}</b> was not changed: %{link} %{where} already has this name. Give one of them a model number, or put the other one in a series."
+      skipped_invalid_html: "<b>%{name}</b> was not changed: %{errors}"
+      too_many: Please change at most %{max} products at one time.
+    edit:
+      submit: Save
+    empty_state_html: <p><b>No products have been added to this series yet.</b></p><p>You can <a href="%{assign_path}" rel="nofollow">add products of the brand to this series</a> or <a href="%{new_product_path}" rel="nofollow">add a new product</a>.</p>
+    filter:
+      none: No series
+    form:
+      from_product: from the product
+      hint: Select a series of the brand, or type a new name to create one. Leave empty if the product is in no series.
+    guidelines:
+      summary: Please read before you add or edit a series
+    label_suffix: series
+    more_from_series: More from the %{series}
+    new:
+      assign_products: Select the products of the series after saving
+      heading: Add series to %{brand}
+      link: Add series
+      submit: Save
+    present: present
+    years: Years
   related_products:
     heading: Related Products
   search: Search
@@ -620,6 +681,7 @@ en:
   similar_brands:
     empty_state: No similar brands found.
     heading: Similar Brands
+    view_all: View all similar brands
   similar_products:
     empty_state: No similar products found.
     heading: Similar Products

@@ -1,0 +1,51 @@
+<%# The products of the brand, with a checkbox each, in the edit form of a product series. A checked
+    box means "in this series". Only the products on the current page change when the form is sent
+    (product_ids[] lists them). The search field belongs to the separate GET form
+    #series-products-search (edit.html.erb), because a form can not contain a form.
+    locals: series, products (a Kaminari page), query, selected_ids (nil, or the ids the user
+    checked before a failed submit), form_id (the slug of the series in the database) %>
+<fieldset class="Form-field" id="products">
+  <legend class="Form-label h3"><%= Product.model_name.human.pluralize %></legend>
+  <p><small><%= t('product_series.assign.intro', brand: series.brand.display_name, series: series.label) %></small></p>
+
+  <div class="u-flex u-gap-md u-alignCenter">
+    <label for="series-products-query" class="u-hiddenVisually"><%= t('search') %></label>
+    <input type="search" id="series-products-query" name="query" value="<%= query %>" form="series-products-search"
+           placeholder="<%= t('product_series.assign.search_placeholder') %>">
+    <button class="Button Button--secondary" type="submit" form="series-products-search"><%= t('search') %></button>
+  </div>
+
+  <% if products.any? %>
+    <ul class="Options is-light u-flex u-flexColumn u-gap-sm u-mt-lg">
+      <% products.each do |product| %>
+        <%
+          checked = selected_ids ? selected_ids.include?(product.id) : product.product_series_id == series.id
+          other_series = product.product_series if product.product_series_id.present? && product.product_series_id != series.id
+        %>
+        <li class="Options-item">
+          <%= hidden_field_tag "product_ids[]", product.id, id: nil %>
+          <%= check_box_tag "selected_ids[]", product.id, checked, id: "series-product-#{product.id}" %>
+          <label for="series-product-<%= product.id %>">
+            <%= product.name %>
+            <% if product.model_no.present? %><small><%= product.model_no %></small><% end %>
+            <% if other_series %>
+              <small><i><%= t('product_series.assign.currently_in', series: other_series.label) %></i></small>
+            <% end %>
+          </label>
+        </li>
+      <% end %>
+    </ul>
+
+    <p><small><%= t('product_series.assign.move_note') %></small></p>
+
+    <%# Links to the edit page, also after a failed submit (a PATCH to the series URL). The form
+        values are left out of the links. %>
+    <%= paginate products, params: {
+          action: 'edit', id: form_id, query:, anchor: 'products',
+          product_series: nil, product_ids: nil, selected_ids: nil, _method: nil,
+          authenticity_token: nil, commit: nil
+        } %>
+  <% else %>
+    <%= render "shared/empty_state", message: t('product_series.assign.empty_state') %>
+  <% end %>
+</fieldset>

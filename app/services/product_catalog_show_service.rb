@@ -22,7 +22,8 @@ class ProductCatalogShowService
       images: community_gallery_images,
       contributors: product_contributors,
       similar_products: similar_products,
-      related_products: related_products
+      related_products: related_products,
+      series_products: SeriesProducts.for(product: @product)
     }
 
     result[:custom_attributes] = @product.custom_attributes_resources if @product.custom_attributes&.any?

@@ -246,7 +246,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get product_url(id: source.friendly_id)
 
-    assert_select '.Product-section--similarProducts .EntityList--products > li', count: SimilarProducts::LIMIT
+    assert_select '.Entity-section--similarProducts .EntityList--products > li', count: SimilarProducts::LIMIT
     assert_select 'a[href=?]', product_similar_path(product_id: source.friendly_id), count: 0
 
     # One more candidate than the block shows. The test cache is a null_store, so no cache

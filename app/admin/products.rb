@@ -1,5 +1,5 @@
 ActiveAdmin.register Product do
-  permit_params :brand_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :model_no, :price_currency, :price, :release_day, :release_month, :release_year, sub_category_ids: []
+  permit_params :brand_id, :product_series_id, :description, :discontinued_day, :discontinued_month, :discontinued_year, :discontinued, :discontinued, :diy_kit, :name, :model_no, :price_currency, :price, :release_day, :release_month, :release_year, sub_category_ids: []
 
   menu priority: 3
 
@@ -24,6 +24,7 @@ ActiveAdmin.register Product do
   remove_filter :slugs
   remove_filter :users
   remove_filter :versions
+  # product_series stays as a default filter (Product.ransackable_associations).
 
   action_item :add_variant, only: :show do
     link_to 'Add Variant', new_admin_product_variant_path(product_variant: { product_id: @product.id }), class: 'action-item-button'
@@ -48,11 +49,58 @@ ActiveAdmin.register Product do
     end
   end
 
+  # Bulk assign (docs/product-series.md). The select lists "Brand Series" for all series. All
+  # selected products must have the brand of the series; otherwise nothing is changed.
+  batch_action :assign_to_series, form: -> {
+    { product_series_id: ProductSeries.includes(:brand).map { |series| [series.display_name, series.id] }.sort_by(&:first) }
+  } do |ids, inputs|
+    series = ProductSeries.find(inputs[:product_series_id])
+    products = Product.where(id: ids).to_a
+    mismatched = products.reject { |product| product.brand_id == series.brand_id }
+
+    if mismatched.any?
+      redirect_to collection_path,
+                  alert: "Nothing was changed. These products are not by #{series.brand.display_name}: " \
+                         "#{mismatched.map(&:display_name).join(', ')}"
+    else
+      failed = nil
+      ActiveRecord::Base.transaction do
+        products.each do |product|
+          product.product_series = series
+          next if product.save
+
+          failed = product
+          raise ActiveRecord::Rollback
+        end
+      end
+
+      if failed
+        redirect_to collection_path, alert: "Nothing was changed. #{failed.display_name}: #{failed.errors.full_messages.to_sentence}"
+      else
+        redirect_to collection_path, notice: "#{products.size} product(s) assigned to #{series.display_name}."
+      end
+    end
+  end
+
+  batch_action :remove_from_series do |ids|
+    products = Product.where(id: ids).where.not(product_series_id: nil).to_a
+    ActiveRecord::Base.transaction do
+      products.each { |product| product.update!(product_series: nil) }
+    end
+    redirect_to collection_path, notice: "#{products.size} product(s) removed from their series."
+  end
+
   form do |f|
     f.inputs do
       f.input :name
       f.input :model_no
       f.input :brand
+      # Only the series of the product's brand. A new product gets its series after the brand is
+      # saved. A brand change clears a series of the old brand (Product#clear_product_series_of_other_brand).
+      if f.object.brand_id.present?
+        f.input :product_series, collection: ProductSeries.where(brand_id: f.object.brand_id).order(:name).pluck(:name, :id),
+                                 include_blank: "No series"
+      end
       f.input :release_day
       f.input :release_month
       f.input :release_year
@@ -83,6 +131,7 @@ ActiveAdmin.register Product do
       row :created_at
       row :updated_at
       row :brand
+      row :product_series
       row :discontinued
       row :diy_kit
       row :description
@@ -101,6 +150,7 @@ ActiveAdmin.register Product do
     column :name
     column :model_no
     column :brand
+    column :product_series
     column "Price", sortable: :price do |entity|
       "#{entity.price} #{entity.price_currency}"
     end

@@ -32,6 +32,13 @@
 <% end %>
 
 <%= render "shared/product_form", f: f, entity: product_variant, include_comment: include_comment, prefix: "product_variant", brand: brand do %>
+  <%# A variant has no series of its own; it uses the series of its product (docs/product-series.md). %>
+  <% if product_variant.product&.product_series %>
+    <div class="Form-field">
+      <span class="Form-label"><%= ProductSeries.model_name.human %></span>
+      <p><%= product_variant.product.product_series.name %> <small><i>(<%= t('product_series.form.from_product') %>)</i></small></p>
+    </div>
+  <% end %>
   <div class="Form-grid u-gap-lg">
     <div>
       <div class="Form-field">

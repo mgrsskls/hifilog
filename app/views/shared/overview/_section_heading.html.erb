@@ -1,6 +1,15 @@
+<%
+  view_all_path ||= nil
+  view_all_label ||= t('overview.view_all')
+  heading_class ||= nil
+%>
 <div class="Heading <%= heading_class %>">
   <h2><%= heading %></h2>
-  <% if local_assigns[:view_all_path] %>
-    <%= link_to t('overview.view_all'), view_all_path %>
+  <% if view_all_path %>
+    <div class="MoreLink MoreLink--lg">
+      <%= link_to view_all_path do %>
+        <span><%= view_all_label %></span> &rarr;
+      <% end %>
+    </div>
   <% end %>
 </div>

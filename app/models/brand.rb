@@ -36,6 +36,8 @@ class Brand < ApplicationRecord
   extend FriendlyId
 
   has_many :products, -> { order(name: :asc) }, dependent: :destroy, inverse_of: :brand
+  # After :products, so the products are deleted first. See docs/product-series.md.
+  has_many :product_series, dependent: :destroy, inverse_of: :brand
   # A join table has no counter cache option, and the callbacks below only fire for changes made
   # through the association on a record that already exists — `sub_category_ids=` on a new record
   # runs them before there is a row to update. `after_save` catches that case (and any other path

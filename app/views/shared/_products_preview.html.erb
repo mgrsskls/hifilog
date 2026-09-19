@@ -1,0 +1,10 @@
+<%# A short product list, at most +limit+ entries. Used on the brand page (docs/product-series.md,
+    "Brand page").
+    locals:
+      products - ProductItem rows
+      %>
+<%= render "shared/products_table",
+    products:,
+    hide_brand: true,
+    render_completeness: false
+%>

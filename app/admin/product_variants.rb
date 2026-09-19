@@ -34,6 +34,9 @@ ActiveAdmin.register ProductVariant do
       link_to "#{product_variant.product.brand.display_name} #{product_variant.product.name}", admin_product_path(product_variant.product)
     end
     column :name
+    column "Series" do |product_variant|
+      product_variant.product.product_series&.name
+    end
     column :description
     column "Price", sortable: :price do |entity|
       "#{entity.price} #{entity.price_currency}"

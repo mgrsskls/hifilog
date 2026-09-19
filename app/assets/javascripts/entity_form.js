@@ -39,6 +39,8 @@ if (form) {
 
 	setupProductTitlePreview(form);
 
+	setupProductSeriesField(form);
+
 	// The brand payload feeds two things now: the product form's brand picker, and the
 	// duplicate warning on the brand forms. Gate the fetch on data-url rather than on the
 	// picker markup, so the brand forms get it too, and only fetch when something needs it.
@@ -490,6 +492,13 @@ function renderProductTitlePreview(form) {
 	const repeats = [brand.name, brand.abbreviation].some(
 		(value) => value && productNameLower.startsWith(`${value.toLowerCase()} `),
 	);
+	const seriesName = selectedSeriesName(form);
+	const repeatsSeries = Boolean(
+		seriesName &&
+		productNameLower !== seriesName.toLowerCase() &&
+		(productNameLower.startsWith(`${seriesName.toLowerCase()} `) ||
+			productNameLower.endsWith(` ${seriesName.toLowerCase()}`)),
+	);
 
 	target.replaceChildren();
 	target.appendChild(
@@ -504,7 +513,84 @@ function renderProductTitlePreview(form) {
 	strong.textContent = `${brandName} ${productName}`;
 	target.appendChild(strong);
 
+	// The series is not part of the title (docs/product-series.md). It is shown on its own line
+	// under the title, so it must not be typed into the product name as well.
+	if (seriesName) {
+		target.appendChild(
+			document.createTextNode(
+				repeatsSeries
+					? ` \u2014 please remove \u201c${seriesName}\u201d from the name: the series is shown separately.`
+					: `, in the ${seriesName} series`,
+			),
+		);
+	}
+
 	target.hidden = false;
+}
+
+function selectedSeriesName(form) {
+	return form.querySelector("[data-product-series-input]")?.value.trim() || "";
+}
+
+/**
+ * The series field of the product form: a text input with a <datalist> of the series of the
+ * selected brand. The user selects a series or types a new name; the server creates a new
+ * series for a new name (Product#product_series_name=). When the brand changes, the list is
+ * loaded for the new brand and the field is cleared, because a series belongs to one brand.
+ */
+function setupProductSeriesField(form) {
+	const field = form.querySelector("[data-product-series-field]");
+	const seriesInput = field?.querySelector("[data-product-series-input]");
+	const list = field?.querySelector("datalist");
+
+	if (!field || !seriesInput || !list) return;
+
+	seriesInput.addEventListener("input", () => renderProductTitlePreview(form));
+
+	// Delegated: the brand radios are built from the fetched payload, long after this runs.
+	form.addEventListener("change", ({ target }) => {
+		if (target.name !== "product[brand_id]") return;
+
+		seriesInput.value = "";
+		renderProductTitlePreview(form);
+		loadSeriesOptions(field, list, target.value);
+	});
+
+	// A new brand (typed into the "Add new brand" fields) has no series yet.
+	form
+		.querySelector("[data-brand-name-input]")
+		?.addEventListener("input", () => {
+			if (!form.querySelector('[name="product[brand_id]"]:checked')) {
+				list.replaceChildren();
+			}
+		});
+}
+
+function loadSeriesOptions(field, list, brandId) {
+	list.replaceChildren();
+
+	if (!brandId || !field.dataset.seriesUrl) return;
+
+	const headers = new Headers();
+	headers.append("Accept", "application/json");
+
+	fetch(
+		field.dataset.seriesUrl.replace("__BRAND__", encodeURIComponent(brandId)),
+		{
+			headers,
+		},
+	)
+		.then((res) => (res.ok ? res.json() : { series: [] }))
+		.then(({ series }) => {
+			(series || []).forEach(({ name }) => {
+				const option = document.createElement("option");
+				option.value = name;
+				list.appendChild(option);
+			});
+		})
+		.catch(() => {
+			// The field still works without suggestions: a typed name selects or creates a series.
+		});
 }
 
 // Returns { name, abbreviation } for whichever brand is currently selected, so callers can

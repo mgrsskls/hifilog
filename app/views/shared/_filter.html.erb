@@ -242,6 +242,19 @@
           </select>
         </div>
 
+        <% if local_assigns[:series_options].present? %>
+          <div class="Filter-section">
+            <label for="filter-series" class="Filter-label"><%= ProductSeries.model_name.human %></label>
+            <select class="Filter-input" name="series" id="filter-series">
+              <option value=""<%= ' selected'.html_safe if params[:series].blank? %>><%= t("filter.all") %></option>
+              <% series_options.each do |series| %>
+                <option value="<%= series.slug %>"<%= ' selected'.html_safe if params[:series] == series.slug %>><%= series.name %></option>
+              <% end %>
+              <option value="none"<%= ' selected'.html_safe if params[:series] == "none" %>><%= t("product_series.filter.none") %></option>
+            </select>
+          </div>
+        <% end %>
+
         <% if type == :brands %>
           <%= country_filter %>
         <% end %>

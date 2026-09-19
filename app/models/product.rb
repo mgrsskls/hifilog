@@ -23,13 +23,19 @@ class Product < ApplicationRecord
 
   pg_search_by_name(
     against: { name: 'A', model_no: 'B' },
-    associated_against: { brand: [:name, :abbreviation] }
+    associated_against: { brand: [:name, :abbreviation], product_series: [:name] }
   )
 
   has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
   attr_accessor :comment
+  # See the uniqueness validation of `name` below and ProductSeriesAssignment.
+  attr_accessor :skip_name_uniqueness
 
   belongs_to :brand, touch: true
+  # Optional: most products are in no series. touch: true expires the series page caches, and the
+  # series touches its brand in turn. See docs/product-series.md.
+  belongs_to :product_series, optional: true, touch: true, counter_cache: :products_count,
+                              inverse_of: :products
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories,
                                            after_add: :recalculate_completeness!,
                                            after_remove: :recalculate_completeness!
@@ -53,6 +59,18 @@ class Product < ApplicationRecord
             uniqueness: { scope: :brand_id, allow_nil: true },
             allow_nil: true
   validates :sub_categories, presence: true
+  # Two products with the same name are valid in two series (Fezz "Omega Lupi" in Evolution and in
+  # Legacy): the series tells them apart in the slug and in the lists. Checked only when one of
+  # the four values changes, so an old duplicate does not block an unrelated edit. A NULL series
+  # is one group of its own.
+  #
+  # ProductSeriesAssignment sets #skip_name_uniqueness for the products of one submit: it checks
+  # the same rule on the end state of all of them, before it writes the first one.
+  validates :name,
+            uniqueness: { scope: [:brand_id, :product_series_id, :model_no], message: :taken_in_series },
+            if: :series_identity_changed?
+  validate :product_series_of_same_brand
+  validate :name_does_not_repeat_series_name
   validates :price,
             numericality: true,
             comparison: { greater_than: 0 },
@@ -70,8 +88,23 @@ class Product < ApplicationRecord
   COMPLETENESS_SPECS_WEIGHT = 3
 
   scope :missing_release_year, -> { where(release_year: nil) }
+
+  # Newest release first. Products without a release date come after the ones with a date, the
+  # most recently added first. A date with only a year comes after the dates with a month in the
+  # same year. index_products_on_brand_newest_first has the same order, so the brand page reads
+  # the first rows of a brand without a sort step.
+  NEWEST_FIRST_ORDER_SQL = 'products.release_year DESC NULLS LAST, products.release_month DESC NULLS LAST, ' \
+                           'products.release_day DESC NULLS LAST, products.created_at DESC, products.id DESC'
+  scope :newest_first, -> { reorder(Arel.sql(NEWEST_FIRST_ORDER_SQL)) }
   scope :missing_description, -> { where(description: nil) }
 
+  # Series from the product form: a name, not an id (see #product_series_name=).
+  # prepend: true, because FriendlyId builds the slug in its own before_validation callback, and
+  # the slug contains the series. These three must run first.
+  before_validation :preserve_slug_for_series_change, prepend: true, if: :series_changed_for_slug?
+  before_validation :clear_product_series_of_other_brand, prepend: true, if: -> { persisted? && brand_id_changed? }
+  before_validation :assign_product_series_from_name, prepend: true, if: -> { @product_series_name_assigned }
+  after_validation :merge_new_product_series_errors
   # Every write path lands here -- the product form, ActiveAdmin, ProductConversionService, the
   # console -- so units are normalised on the model rather than in the controller that happens
   # to do the type coercion. Guarded on the change so an ordinary save that never touched the
@@ -94,11 +127,37 @@ class Product < ApplicationRecord
     name
   end
 
+  # The title plus the series, for plain text where the series can not be shown on its own line:
+  # the <title> element, <select> options, ActiveAdmin, alt text. "Fezz Audio Omega Lupi
+  # (Evolution series)". The visible <h1> uses #display_name and shows the series under it.
+  def qualified_name
+    return display_name if product_series.nil?
+
+    "#{display_name} (#{product_series.label})"
+  end
+
+  # The series name is part of the slug, not of the title: two products with the same name in two
+  # series must have two URLs, and the result must not depend on which one was added first.
+  # "fezz-audio-evolution-omega-lupi". See docs/product-series.md, "Product name, title and slug".
   def url_slug
     return if display_name.blank?
-    return "#{display_name} #{model_no}".parameterize if model_no.present?
 
-    display_name.parameterize
+    [brand&.display_name, product_series&.name, name, model_no].compact_blank.join(' ').parameterize
+  end
+
+  # The value of the series field in the product form.
+  def product_series_name
+    return @product_series_name if @product_series_name_assigned
+
+    product_series&.name
+  end
+
+  # The product form sends the series as a name, so that one field can select an existing series
+  # or create a new one. An empty value removes the series. The name is resolved in
+  # #assign_product_series_from_name, when the brand is known.
+  def product_series_name=(value)
+    @product_series_name = value
+    @product_series_name_assigned = true
   end
 
   def path
@@ -183,18 +242,26 @@ class Product < ApplicationRecord
       name_end
       name_eq
       name_start
+      product_series_id
+      product_series_id_eq
       sub_categories_id
       sub_categories_id_eq
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[]
+    %w[product_series]
   end
   # simplecov:enable
 
   def should_generate_new_friendly_id?
-    slug.blank? || name_changed? || model_no_changed?
+    slug.blank? || name_changed? || model_no_changed? || series_changed_for_slug?
+  end
+
+  # A new series from the product form has no id yet, so product_series_id alone does not show
+  # the change.
+  def series_changed_for_slug?
+    product_series_id_changed? || product_series&.new_record? || false
   end
 
   # A product's slug is built from Brand#display_name plus the product name (see
@@ -217,13 +284,22 @@ class Product < ApplicationRecord
   # reasons keeps its old slug, which still resolves through :history. Better that than a
   # legitimate brand rename being blocked by stale data on one of its products.
   def self.resync_slugs_for(brand)
-    Brand.no_touching do
-      brand.products.reload.find_each do |product|
-        next if product.slug == product.normalize_friendly_id(product.url_slug)
+    resync_slugs(brand.products.reload)
+  end
 
-        product.preserve_current_slug_in_history
-        product.slug = nil
-        product.save
+  # Same as .resync_slugs_for, for any set of products. ProductSeries calls it after a rename and
+  # after a delete, because the series name is part of the slug. ProductSeries.no_touching for the
+  # same reason as Brand.no_touching above: `belongs_to :product_series, touch: true`.
+  def self.resync_slugs(products)
+    Brand.no_touching do
+      ProductSeries.no_touching do
+        products.find_each do |product|
+          next if product.slug == product.normalize_friendly_id(product.url_slug)
+
+          product.preserve_current_slug_in_history
+          product.slug = nil
+          product.save
+        end
       end
     end
   end
@@ -286,6 +362,84 @@ class Product < ApplicationRecord
   end
 
   private
+
+  # A new series has no products yet, so there is nothing to compare with.
+  def series_identity_changed?
+    return false if skip_name_uniqueness
+    return false if product_series&.new_record?
+
+    new_record? || name_changed? || model_no_changed? || product_series_id_changed? || brand_id_changed?
+  end
+
+  def product_series_of_same_brand
+    return if product_series.nil? || brand.nil?
+    return if product_series.brand_id.nil? || product_series.brand_id == brand_id
+
+    errors.add(:product_series, :other_brand)
+  end
+
+  # "Omega Lupi" in the series "Evolution", not "Evolution Omega Lupi": the series is stored one
+  # time, on the series. Checked on word boundaries at the start and at the end. A name that is
+  # the series name and nothing else is allowed.
+  def name_does_not_repeat_series_name
+    return if product_series.nil? || name.blank?
+
+    series_name = product_series.name.to_s.squish
+    return if series_name.blank? || name.casecmp?(series_name)
+
+    escaped = Regexp.escape(series_name)
+    return unless name.match?(/\A#{escaped}\s/i) || name.match?(/\s#{escaped}\z/i)
+
+    errors.add(:name, :contains_series_name, series: series_name)
+  end
+
+  # The brand of a new product can be new too (inline brand in the product form), so a series is
+  # only looked up when the brand is saved. Otherwise the series is new as well.
+  def assign_product_series_from_name
+    @product_series_name_assigned = false
+    series_name = @product_series_name.to_s.squish
+
+    if series_name.blank?
+      self.product_series = nil
+      return
+    end
+
+    return if brand.nil?
+
+    existing = brand.persisted? ? ProductSeries.find_by(brand_id: brand.id, name: series_name) : nil
+    self.product_series = existing || ProductSeries.new(brand:, name: series_name)
+  end
+
+  def clear_product_series_of_other_brand
+    return if product_series.nil? || product_series.brand_id == brand_id
+    return if product_series.new_record? && product_series.brand.equal?(brand)
+
+    self.product_series = nil
+  end
+
+  # FriendlyId :history keeps the old slug only when a history row exists for it (see
+  # #preserve_current_slug_in_history). The slug is read from the database, because FriendlyId can
+  # have changed the attribute already.
+  def preserve_slug_for_series_change
+    return unless persisted?
+
+    current = attribute_in_database(:slug)
+    return if current.blank?
+    return if FriendlyId::Slug.exists?(sluggable_type: 'Product', sluggable_id: id, slug: current)
+
+    FriendlyId::Slug.create!(sluggable_type: 'Product', sluggable_id: id, slug: current, created_at: Time.current)
+  end
+
+  # A new series from the product form is saved with the product. Its own errors ("must not start
+  # with the brand name") are more useful than the generic "Product series is invalid".
+  def merge_new_product_series_errors
+    return unless product_series&.new_record? && product_series.errors.any?
+
+    errors.delete(:product_series)
+    product_series.errors.each do |error|
+      errors.add(:product_series_name, error.message)
+    end
+  end
 
   def normalize_custom_attribute_units
     self.custom_attributes = CustomAttribute.normalize_units(custom_attributes)

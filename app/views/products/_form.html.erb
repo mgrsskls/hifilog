@@ -11,6 +11,7 @@
         <li>Please only add the product name, not the brand name, in the field "Name". The brand name will be added automatically.</li>
         <li>Not all information has to be filled out right away. Fields marked with "optional" can be filled out later.</li>
         <li>You can assign multiple categories to a product, for example "Over-Ear Headphones" + "Noise Cancelling Headphones".</li>
+        <li>If the product is part of a named product line of the brand (a series, for example <i>Heritage</i> by Klipsch), select or type the series. Do not add the series name to the product name: the series is shown separately. This is optional.</li>
         <li>If you for example only know the year (or year and month) when a product has been released or discontinued, you can omit the other fields.</li>
         <li>The description can contain any relevant information that is not covered by the other fields.</li>
         <li>
@@ -102,6 +103,25 @@
       </fieldset>
     </div>
   <% end %>
+
+  <%# Product series (docs/product-series.md). One field for both: select a series of the brand from
+      the list, or type a new name to create one. entity_form.js loads the list when the brand
+      changes. %>
+  <div class="Form-field" data-product-series-field data-series-url="<%= brand_series_index_path(brand_id: '__BRAND__', format: :json) %>">
+    <%= f.label :product_series_name, class: "Form-label" do %>
+      <%= ProductSeries.model_name.human %> <small><i>(<%= t('optional') %>)</i></small>
+    <% end %>
+    <%= f.text_field :product_series_name, list: "product-series-options", autocomplete: "off",
+                     placeholder: "e.g. Heritage", data: { product_series_input: true } %>
+    <datalist id="product-series-options">
+      <% if brand&.persisted? %>
+        <% brand.product_series.order(:name).each do |series| %>
+          <option value="<%= series.name %>"></option>
+        <% end %>
+      <% end %>
+    </datalist>
+    <small><%= t('product_series.form.hint') %></small>
+  </div>
 
   <h2>Product</h2>
 

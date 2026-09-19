@@ -72,6 +72,17 @@ class SitemapBuilder
       }
     end
 
+    # Series pages with products (docs/product-series.md). An empty series page is noindex.
+    ProductSeries.where('products_count > 0')
+                 .includes(:brand)
+                 .select(:id, :slug, :brand_id, :updated_at)
+                 .find_each do |series|
+      pages << {
+        url: brand_series_url(brand_id: series.brand.friendly_id, id: series.friendly_id),
+        updated: series.updated_at
+      }
+    end
+
     pages << {
       url: products_url,
       updated: [@product_updated_at, @product_variant_updated_at].compact.max

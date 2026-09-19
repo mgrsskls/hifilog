@@ -97,12 +97,39 @@ module ApplicationHelper
     PaperTrail::Serializers::YAML.load(changes)
   end
 
+  # The contributors of a catalog entry, from the versions of the entry: each name links to the
+  # profile, except for a hidden profile, which shows the name only. With no contributors, the
+  # entry came from the site itself.
+  #
+  # The rows come from two sources: User.find_by_sql (brands, series) casts profile_visibility
+  # through the enum ("hidden"), exec_query (products) gives the raw integer (0). Both mean hidden.
+  HIDDEN_PROFILE_VISIBILITIES = [0, 'hidden'].freeze
+
+  def contributor_links(contributors)
+    return 'hifilog.com' if contributors.blank?
+
+    safe_join(
+      contributors.map do |contributor|
+        name = contributor['user_name']
+        next name if HIDDEN_PROFILE_VISIBILITIES.include?(contributor['profile_visibility'])
+
+        link_to(name, user_path(id: name.downcase))
+      end,
+      ', '
+    )
+  end
+
   # A changelog row describes historical state, so it can reference a brand that no longer
   # exists: ActiveAdmin permits reassigning a product's brand_id, and the old brand can be
   # deleted afterwards while the product itself survives under its new one. `Brand.find` would
   # then raise RecordNotFound part-way through rendering and take the whole changelog down.
   def changelog_brand_name(brand_id)
     Brand.find_by(id: brand_id)&.name || tag.i('Deleted')
+  end
+
+  # Same reason as #changelog_brand_name: a series can be deleted after the change was made.
+  def changelog_series_name(series_id)
+    ProductSeries.find_by(id: series_id)&.name || tag.i('Deleted')
   end
 
   def filter_versions(versions)

@@ -89,6 +89,9 @@ class ProductConversionService
     ActiveRecord::Base.transaction do
       product = Product.new(shared_attributes)
       product.brand_id = @record.product.brand_id
+      # Same brand, so the series of the old parent is valid. A variant has no series of its own;
+      # it was in this series through its parent (docs/product-series.md).
+      product.product_series_id = @record.product.product_series_id
       product.sub_category_ids = Array(sub_category_ids).compact_blank
       product.custom_attributes = custom_attributes.presence
       product.name = name.presence || @record.name

@@ -4,60 +4,65 @@
 
   <div class="Entity">
     <div class="Entity-main">
-      <div class="Product-details">
 
-        <div class="Entity-heading">
-          <h1>
-            <% if @brand.abbreviation.present? %>
-              <%= @brand.abbreviation %>
-              <span class="Entity-headingSubname">
-                <span class="u-hiddenVisually">(</span><%= @brand.name %><span class="u-hiddenVisually">)</span>
-              </span>
-            <% else %>
-              <%= @brand.name %>
-            <% end %>
-          </h1>
-        </div>
-
-        <div class="Entity-section">
-          <div class="Entity-data Entity-data--brand">
-            <% if @brand.logo.attached? %>
-              <%= image_tag cdn_image_url(@brand.logo.variant(:thumb)), alt: "", "aria-hidden": "true", loading: "lazy", class: "Entity-data-logo", width: 640, height: 427 %>
-            <% end %>
-            <%= render "brands/data", brand: @brand %>
-          </div>
-          <% if @brand.formatted_description.present? %>
-            <div class="Rte">
-              <%= @brand.formatted_description %>
-            </div>
-          <% end %>
-        </div>
-
-        <div class="Entity-heading">
-          <h2>
-            <%= Product.model_name.human.pluralize %>
-          </h2>
-          <a href="<%= brand_products_path(brand_id: @brand.friendly_id) %>"><b>Show all products</b></a>
-        </div>
-
-        <div class="Entity-section">
-          <% if @all_sub_categories_grouped.any? %>
-            <dl class="Data">
-              <% @all_sub_categories_grouped.each do |section| %>
-                <dt><%= section[0].name %></dt>
-                <dd><%= section[1].map { |c| link_to c.name, brand_brand_products_subcategory_path(@brand, section[0].friendly_id, c.friendly_id) }.join(", ").html_safe %></dd>
-              <% end %>
-            </dl>
+      <div class="Entity-heading">
+        <h1>
+          <% if @brand.abbreviation.present? %>
+            <%= @brand.abbreviation %>
+            <span class="Entity-headingSubname">
+              <span class="u-hiddenVisually">(</span><%= @brand.name %><span class="u-hiddenVisually">)</span>
+            </span>
           <% else %>
-            <div class="EmptyState">
-              <p><b>No categories or products have been added to <i><%= @brand.name %></i> yet.</b></p>
-              <p>You can <a href="<%= edit_brand_path(id: @brand.friendly_id) %>">edit information</a> about <i><%= @brand.name %></i> or <a href="<%= new_product_path(brand_id: @brand.id) %>">add products</a>.</p>
+            <%= @brand.name %>
+          <% end %>
+        </h1>
+      </div>
+
+      <div class="Entity-section">
+        <div class="Entity-data Entity-data--brand">
+          <% if @brand.logo.attached? %>
+            <%= image_tag cdn_image_url(@brand.logo.variant(:thumb)), alt: "", "aria-hidden": "true", loading: "lazy", class: "Entity-data-logo", width: 640, height: 427 %>
+          <% end %>
+          <%= render "brands/data", brand: @brand %>
+        </div>
+        <% if @brand.formatted_description.present? %>
+          <div class="Rte">
+            <%= @brand.formatted_description %>
+          </div>
+        <% end %>
+      </div>
+
+
+      <%= render "shared/entity_section",
+          heading: Product.model_name.human.pluralize,
+          section_class: "Entity-section--products",
+          view_all_path: (brand_products_path(brand_id: @brand.friendly_id) if @all_sub_categories_grouped.any?),
+          view_all_label: t('brand.view_all_products') do %>
+        <% if @all_sub_categories_grouped.any? %>
+          <dl class="Data">
+            <% @all_sub_categories_grouped.each do |section| %>
+              <dt><%= section[0].name %></dt>
+              <dd><%= section[1].map { |c| link_to c.name, brand_brand_products_subcategory_path(@brand, section[0].friendly_id, c.friendly_id) }.join(", ").html_safe %></dd>
+            <% end %>
+          </dl>
+
+          <% if @latest_products.items.any? %>
+            <div class="u-mt-lg">
+              <%= render "shared/products_preview",
+                  products: @latest_products.items
+              %>
             </div>
           <% end %>
-        </div>
+        <% else %>
+          <div class="EmptyState">
+            <p><b>No categories or products have been added to <i><%= @brand.name %></i> yet.</b></p>
+            <p>You can <a href="<%= edit_brand_path(id: @brand.friendly_id) %>">edit information</a> about <i><%= @brand.name %></i> or <a href="<%= new_product_path(brand_id: @brand.id) %>">add products</a>.</p>
+          </div>
+        <% end %>
+      <% end %>
 
-        <%= render "shared/similar_brands", similar: @similar_brands, path: brand_similar_path(@brand) %>
-      </div>
+      <%= render "brands/product_series", brand: @brand, series_products: @series_products %>
+      <%= render "shared/similar_brands", similar: @similar_brands, view_all_path: brand_similar_path(@brand) %>
     </div>
 
     <div class="Entity-sub">
@@ -90,28 +95,17 @@
         <dd><%= t('amount_users', count: User.joins(:products).where(products: { brand_id: @brand.id }).distinct.size) %></dd>
       </dl>
 
-      <div class="Entity-meta">
-        <%= render "shared/incomplete_entry",
-          record: @brand,
-          edit_path: edit_brand_path(id: @brand.friendly_id)
-        %>
-
-        <ul class="Entity-metaLinks MetaLinks">
-          <li>
-            <%= link_to t('edit'), user_signed_in? ? edit_brand_path(id: @brand.friendly_id) : new_user_session_path(redirect: edit_brand_path(id: @brand.friendly_id)), rel: "nofollow" %>
-          </li>
-          <li>
-            <%= link_to t('headings.changelog'), brand_changelog_path(@brand), rel: "nofollow" %>
-          </li>
-        </ul>
-
-        <dl>
-          <dt><%= t('headings.contributors') %></dt>
-          <dd>
-            <%= @contributors.any? ? safe_join(@contributors.map { |c| c["profile_visibility"] != 0 ? link_to(c["user_name"], user_path(id: c["user_name"].downcase)) : c["user_name"] }, ", ") : "hifilog.com" %>
-          </dd>
-        </dl>
-      </div>
+      <% extra_links = capture do %>
+        <li>
+          <%= link_to t('product_series.new.link'), user_signed_in? ? new_brand_series_path(brand_id: @brand.friendly_id) : new_user_session_path(redirect: new_brand_series_path(brand_id: @brand.friendly_id)), rel: "nofollow" %>
+        </li>
+      <% end %>
+      <%= render "shared/entity_meta",
+        record: @brand,
+        edit_path: edit_brand_path(id: @brand.friendly_id),
+        changelog_path: brand_changelog_path(@brand),
+        contributors: @contributors,
+        extra_links: extra_links %>
     </div>
   </div>
 

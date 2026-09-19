@@ -9,6 +9,7 @@
 @import url("./application/contribute.css") layer(components);
 @import url("./application/empty_state.css") layer(components);
 @import url("./application/entity_list.css") layer(components);
+@import url("./application/entity_meta.css") layer(components);
 @import url("./application/filter.css") layer(components);
 @import url("./application/flash_messages.css") layer(components);
 @import url("./application/footer.css") layer(components);
@@ -442,5 +443,33 @@
 	.Dialog--sm {
 		inline-size: calc(100vi - var(--page-spacing));
 		max-inline-size: 80ch;
+	}
+
+	.MoreLink {
+		a {
+			text-decoration: none;
+			font-weight: 500;
+
+			span {
+				text-decoration: underline;
+				text-underline-offset: var(--underline-offset);
+				text-decoration-thickness: var(--underline-width);
+			}
+		}
+	}
+
+	.MoreLink--lg {
+		@container section (width < 48rem) {
+			display: none;
+		}
+	}
+
+	.MoreLink--sm {
+		margin-block-start: 1.5rem;
+		text-align: end;
+
+		@container section (width >= 48rem) {
+			display: none;
+		}
 	}
 }

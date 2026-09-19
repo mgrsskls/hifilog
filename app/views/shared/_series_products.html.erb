@@ -1,0 +1,15 @@
+<%# "More from this series": other products of the same series (docs/product-series.md).
+    Renders nothing when the product has no series or is the only product of its series. %>
+<% if series_products&.items.present? %>
+  <% series = series_products.series %>
+  <%= render "shared/entity_section",
+      heading: t('product_series.more_from_series', series: series.label),
+      section_class: "Entity-section--seriesProducts",
+      view_all_path: (series.path if series_products.total_count > series_products.items.size) do %>
+    <%= render "shared/products_table",
+        products: series_products.items,
+        hide_brand: true,
+        render_completeness: false
+    %>
+  <% end %>
+<% end %>

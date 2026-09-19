@@ -16,6 +16,8 @@ flowchart TB
   SubCategory --> Product
   SubCategory --> CustomAttribute
   Brand --> Product
+  Brand --> ProductSeries
+  ProductSeries -.->|optional| Product
   Product --> ProductVariant
   Product --> ProductOption
   ProductVariant --> ProductOption
@@ -90,6 +92,54 @@ A product belongs to one brand, has many variants, options, possessions, notes, 
 
 The product holds shared identity: brand, name, slug, categorization, and shared metadata. Options declared directly on the product represent product-level specs, as distinct from options declared on a specific variant.
 
+## Product series
+
+A **`ProductSeries`** is a named product line of one brand ("Klipsch Heritage", "Fezz
+Evolution"). A product has zero or one series (`products.product_series_id`, nullable). A variant
+has no series of its own: it uses the series of its product, in the same way as it uses the brand.
+Series are flat (no parent series). The design and the decisions are in `docs/product-series.md`.
+
+**The name is stored one time, on the series.** It is not part of `products.name` and not part of
+the visible title:
+
+- `Product#display_name` ("Fezz Audio Omega Lupi") is the `<h1>`, the JSON-LD name and the list title.
+- `Product#qualified_name` ("Fezz Audio Omega Lupi (Evolution series)") is for plain text: the
+  `<title>` element, ActiveAdmin, alt text. `ProductVariant#qualified_name` is the same for variants.
+- `Product#url_slug` is brand + series + name + model no.: `fezz-audio-evolution-omega-lupi`.
+- `ProductSeries#label` gives "Evolution series", or "800 Series" for a name that already ends
+  with "series".
+
+Two products with the same name are valid in two series; `name` + `model_no` is unique within
+brand + series (a model validation, checked only when one of these values changes). A product
+name must not start or end with the name of its series. The product page shows the series as a
+linked line under the `<h1>`, as a row in the product data, and in a **"More from this series"**
+block (`SeriesProducts`); list rows show the series name after the title (`product_items.series_name`).
+
+**Slugs follow the series.** Setting, changing or removing the series of a product, and renaming a
+series, re-slugs the products (`Product.resync_slugs`, the same path as a brand rename). The old
+slug stays in `friendly_id_slugs`, so it answers with a 301.
+
+**Derived values are not stored.** Years, discontinued status and categories of a series come from
+its products: `ProductSeries#stats` is one grouped query over the products of the series.
+`products_count` is a counter cache of base products.
+
+**Pages and editing.** The series page is `/brands/:brand_id/series/:id` (`ProductSeriesController`;
+"series" is uncountable, so the helpers are `brand_series_index_path` and `brand_series_path`). It
+lists the products in release order with the brand products filter, and is `noindex` while the
+series is empty. The brand page links the series of the brand and shows the newest products of
+the brand (8) and of each series (4) (`BrandLatestProducts`; newest release first, then undated products by
+the date they were added), and the brand products page can
+filter by series (`?series=<slug>` or `?series=none`). Signed-in users create and edit series. The
+edit page of a series also lists the products of the brand with a checkbox each (50 per page, with
+a search); one submit saves the series and the checked products in one transaction
+(`ProductSeriesAssignment`: the name clash is looked for in the end state, and a product that can
+not change is reported and left as it is). A product also
+gets its series in the product form, where one field selects an existing series or creates a new
+one (`Product#product_series_name=`).
+Only admins delete a series; the products keep existing without a series. Series are versioned with
+PaperTrail. A series can not be followed or bookmarked: a user who follows the brand already gets
+every new product of its series in the feed (see [Following brands](#following-brands)).
+
 ## Product variant
 
 A variant belongs to one product and has its own options, possessions, and notes. Where a variant doesn't override a field, it falls back to the parent product's value. Variants can also be bookmarked directly, alongside products, brands, and events.
@@ -115,9 +165,15 @@ Separating a Mk II into its own product also severs the link to what it replaced
 - **Contributors** from version history on the parent product.
 - **Custom attributes** from the product (variants surface the parent's attribute set).
 - **Similar products** and **related products** (see the two sections below).
+- **More from this series**: the other products of the product's series (`SeriesProducts`, see [Product series](#product-series)).
 - When the viewer is signed in: their **possession**, **bookmark**, **note**, and **setups** scoped to that product or variant.
 
 **`ProductCatalogShowService`** assembles this context for both show pages.
+
+The meta block at the end of the sidebar (completeness prompt, "Edit" and "Changelog" links,
+contributors) is one partial, **`shared/_entity_meta`**, for the brand, product, variant and
+product series pages. `ApplicationHelper#contributor_links` renders the contributors; a hidden
+profile shows the name without a link.
 
 ## Similar Products
 
@@ -150,7 +206,7 @@ phono stage for a turntable). A similar product replaces it (another turntable).
 
 A candidate must have at least one sub category in common with the product. The product itself is
 not a candidate. There are no other exclusions: the block does not remove products from the same
-brand, the same product family, or the "Related Products" block. Candidates are base products only,
+brand, the same product series, or the "Related Products" block. Candidates are base products only,
 not variants.
 
 A variant page shows the list of its parent product. Variants have no custom attributes of their
@@ -570,11 +626,11 @@ A **backfill** task can rebuild activities from existing possessions, setups, RS
 
 ## Search
 
-**`SearchResult`** is a read-only view unioning products, variants, and brands with a unified name/slug shape for global search. **`ProductItem`** powers catalog browsing and category filters—separate concern from site-wide search.
+**`SearchResult`** is a read-only view unioning products, variants, brands and product series with a unified name/slug shape for global search. Product and variant rows carry the name of their series (`series_name`), so a query with the series name finds a product although the series is not part of its name. **`ProductItem`** powers catalog browsing and category filters—separate concern from site-wide search.
 
 ## Auditing
 
-**PaperTrail** versions **products**, **variants**, and **brands**. Per-record changelogs and a contributions summary show who edited the catalog over time.
+**PaperTrail** versions **products**, **variants**, **brands**, and **product series**. Per-record changelogs and a contributions summary show who edited the catalog over time.
 
 ## Completeness and contribution queues
 
@@ -812,6 +868,9 @@ refuses to run in production.
 | **`UserImagesQuery`**                                                          | Paginated community image feed across possessions and custom products                                                              |
 | **`StatisticsService`**                                                        | Collection aggregates for dashboard and profile                                                                                    |
 | **`CacheService`**                                                             | Taxonomy, counts and definition caches                                                                                             |
+| **`SeriesProducts`**                                                           | "More from this series" on product and variant pages (see [Product series](#product-series))                                       |
+| **`ProductSeriesAssignment`**                                                  | One submit of the series edit form: the series and the product checkboxes                                                          |
+| **`BrandLatestProducts`**                                                      | The newest products of a brand and of each of its series, for the brand page                                                       |
 | **`HomeHighlights`**                                                           | The live blocks of the home page: newest entries, photos, upcoming events, latest edits, counts                                    |
 | **`SitemapBuilder`**                                                           | Sitemap pages and their `lastmod` timestamps                                                                                       |
 | **`PossessionPresenterService`**                                               | Possession → presenter selection                                                                                                   |
@@ -866,6 +925,7 @@ Presenters sit beside models and centralize display rules for templates.
 | `Product`                   | Yes       | Shared catalog identity                                            |
 | `ProductVariant`            | Yes       | Variant-specific overrides                                         |
 | `ProductItem`               | No (view) | Unified catalog rows                                               |
+| `ProductSeries`             | Yes       | Optional named product line of one brand                           |
 | `ContributeProductItem`     | No (view) | Same rows plus completeness/specs, for contribute                  |
 | `SearchResult`              | No (view) | Global search rows                                                 |
 | `Possession`                | Yes       | Ownership, photos, setups; current vs previous                     |

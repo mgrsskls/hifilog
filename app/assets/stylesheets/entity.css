@@ -26,10 +26,6 @@
 	}
 }
 
-.Entity-section:has(.Entity-data) {
-	container: section / inline-size;
-}
-
 .Entity-data {
 	container: data / inline-size;
 	padding: 1rem 1.25rem;
@@ -120,8 +116,16 @@
 	margin-block-start: 1em;
 }
 
-.Entity-section:not(:last-child) {
-	margin-block-end: var(--spacing);
+.Entity-section {
+	container: section / inline-size;
+
+	h2 {
+		margin-block-start: 0;
+	}
+}
+
+.Entity-section + .Entity-section {
+	margin-block-start: 2.5rem;
 }
 
 .Entity-section::after {
@@ -167,16 +171,6 @@
 		box-sizing: border-box;
 		margin-inline-start: -0.0625rem;
 	}
-}
-
-.Entity-meta {
-	margin-block-start: 1.5rem;
-	padding-block-start: 1.5rem;
-	border-block-start: var(--border-light);
-}
-
-.Entity-metaLinks + dl {
-	margin-block-start: 1.5rem;
 }
 
 .Footnotes {

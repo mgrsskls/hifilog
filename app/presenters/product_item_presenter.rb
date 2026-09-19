@@ -19,6 +19,12 @@ class ProductItemPresenter
     @object.completeness if @object.has_attribute?(:completeness)
   end
 
+  # The series label that list rows show after the title (docs/product-series.md). Only
+  # product_items carries the column; contribute_product_items rows answer nil.
+  def series_name
+    @object.series_name if @object.has_attribute?(:series_name)
+  end
+
   def display_name
     return "#{@object.name} #{@object.variant_name}" if @object.item_type == 'ProductVariant'
 

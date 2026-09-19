@@ -1,0 +1,13 @@
+<% if series_products.present? %>
+  <% series_products.each do |preview| %>
+    <%= render "shared/entity_section",
+        heading: t('product_series.brand_section.series_heading', series: preview.series.name),
+        section_class: "Entity-section--productSeries",
+        view_all_path: brand_series_path(brand_id: brand.friendly_id, id: preview.series.friendly_id),
+        view_all_label: t('product_series.brand_section.view_all', series: preview.series.name) do %>
+      <%= render "shared/products_preview",
+          products: preview.items
+      %>
+    <% end %>
+  <% end %>
+<% end %>

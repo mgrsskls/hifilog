@@ -107,6 +107,9 @@ a user-driven database for hi-fi products and brands."
     @brand_followers = @brand.visible_followers(current_user).limit(Brand::FOLLOWERS_PREVIEW_LIMIT).to_a
     @brand_followers_count = @brand.visible_followers_count(current_user)
     @similar_brands = SimilarBrands.for(brand: @brand)
+    @product_series = @brand.product_series.order(:name).select(:id, :name, :slug, :products_count).to_a
+    @latest_products = BrandLatestProducts.products(brand: @brand)
+    @series_products = BrandLatestProducts.by_series(brand: @brand, series: @product_series)
 
     page_title(@brand.seo_name)
     set_meta_desc
@@ -126,14 +129,18 @@ a user-driven database for hi-fi products and brands."
   def products
     # @brand from load_brand_for_products_page; @category, @sub_category from ensure_brand_products_category_path!
     @custom_attributes = extract_custom_attributes(@category, @sub_category)
+    @series_options = @brand.product_series.where('products_count > 0').order(:name).to_a
+    @series_filter = series_filter
     @filter_applied = active_show_product_filters
+    @filter_applied = @filter_applied.merge(series: params[:series]) if @series_filter
     @meta_robots = 'noindex, follow' if @filter_applied.except(:category, :sub_category).present?
 
     filter_service = ProductFilterService.new(
       filters: active_show_product_filters,
       brands: [@brand],
       category: @category,
-      sub_category: @sub_category
+      sub_category: @sub_category,
+      series: @series_filter
     )
     filter = filter_service.filter
 
@@ -393,7 +400,22 @@ a user-driven database for hi-fi products and brands."
     redirect_to target, status: :moved_permanently
   end
 
+  # ?series=<slug> or ?series=none (docs/product-series.md). An unknown slug is ignored.
+  def series_filter
+    value = params[:series].to_s
+    return nil if value.blank?
+    return :none if value == 'none'
+
+    @series_options.find { |series| series.slug.casecmp?(value) }
+  end
+
   def brand_products_index_canonical_url
+    # The series page is the canonical page of "the products of one series".
+    if @series_filter.is_a?(ProductSeries) && @category.blank? && @sub_category.blank? &&
+       @filter_applied.except(:series, :sort).blank?
+      return @series_filter.url
+    end
+
     opts = @products.current_page > 1 ? { page: @products.current_page } : {}
     if @sub_category.present?
       brand_brand_products_subcategory_url(

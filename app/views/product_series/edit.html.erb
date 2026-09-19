@@ -1,0 +1,31 @@
+<%# Edit a product series: name, description, and the products of the brand that are in the series.
+    One submit saves all of them. See docs/product-series.md. %>
+<%# The slug in the database: after a failed submit, @series can hold a new, unsaved slug. %>
+<% form_id = @series.slug_in_database || @series.friendly_id %>
+<div class="Form Form--centered">
+  <%= render "shared/back_link", path: brand_series_path(brand_id: @brand.friendly_id, id: form_id) %>
+  <div class="Heading">
+    <h1><%= t('edit') %> <span><%= @series.display_name %></span></h1>
+  </div>
+
+  <% products_fields = capture do %>
+    <%= render "product_series/products_fields",
+      series: @series,
+      products: @products,
+      query: @query,
+      selected_ids: @selected_ids,
+      form_id: %>
+  <% end %>
+
+  <%= render "product_series/form",
+    series: @series,
+    brand: @brand,
+    url: brand_series_path(brand_id: @brand.friendly_id, id: form_id),
+    method: :patch,
+    extra_fields: products_fields %>
+
+  <%# The search of the product list. Its field is in the form above (form="series-products-search"). %>
+  <%= form_tag edit_brand_series_path(brand_id: @brand.friendly_id, id: form_id, anchor: 'products'),
+               method: :get, id: "series-products-search" do %>
+  <% end %>
+</div>

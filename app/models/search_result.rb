@@ -12,6 +12,7 @@ class SearchResult < ApplicationRecord
                       product_variant_name: 'A',
                       brand_name: 'A',
                       brand_abbreviation: 'A',
+                      series_name: 'A',
                       model_no: 'B'
                     })
 
