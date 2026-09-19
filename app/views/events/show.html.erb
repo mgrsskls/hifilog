@@ -68,8 +68,6 @@
 
     <hr>
 
-    <div class="Event-attend">
-      <p><%= @event.event_attendees.size %> <%= t("activerecord.models.event_attendee", count: @event.event_attendees.size) %></p>
-    </div>
+    <%= render "events/attendees_preview", event: @event, attendees: @event_attendees, count: @event_attendees_count %>
   </div>
 </div>

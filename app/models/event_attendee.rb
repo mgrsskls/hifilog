@@ -7,6 +7,7 @@ class EventAttendee < ApplicationRecord
   before_destroy :stash_event_for_attendance_cancel_activity
   after_commit :record_event_attendance_user_activity, on: :create
   after_destroy_commit :record_event_attendance_cancelled_user_activity
+  after_commit :flush_attendees_count_cache, on: [:create, :destroy]
 
   validates :user, uniqueness: { scope: :event }
 
@@ -35,6 +36,10 @@ class EventAttendee < ApplicationRecord
 
   def stash_event_for_attendance_cancel_activity
     @cancel_event_for_activity = event
+  end
+
+  def flush_attendees_count_cache
+    Event.flush_attendees_count_cache(event_id)
   end
 
   def record_event_attendance_cancelled_user_activity

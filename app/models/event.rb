@@ -21,6 +21,36 @@ class Event < ApplicationRecord
     where(start_date: Date.new(year.to_i, 1, 1)..Date.new(year.to_i, 12, 31))
   }
 
+  ATTENDEES_PREVIEW_LIMIT = 12
+
+  # Attendees the viewer is allowed to see, newest RSVP first. Served by
+  # event_attendees (event_id, created_at).
+  def visible_attendees(viewer)
+    event_attendees
+      .joins(:user)
+      .merge(User.listable_for(viewer))
+      .includes(user: { avatar_attachment: :blob })
+      .order(created_at: :desc)
+  end
+
+  # The count of listed attendees, not of rows. See Brand#visible_followers_count for why this
+  # cannot be a counter cache column: one column cannot hold two audience-dependent numbers.
+  def visible_attendees_count(viewer)
+    Rails.cache.fetch(self.class.attendees_count_cache_key(id, viewer), expires_in: 12.hours) do
+      event_attendees.joins(:user).merge(User.listable_for(viewer)).count
+    end
+  end
+
+  def self.attendees_count_cache_key(event_id, viewer)
+    "events/#{event_id}/attendees_count/#{viewer.present? ? 'members' : 'public'}"
+  end
+
+  # Both audiences, because an RSVP changes both counts.
+  def self.flush_attendees_count_cache(event_id)
+    Rails.cache.delete(attendees_count_cache_key(event_id, nil))
+    Rails.cache.delete(attendees_count_cache_key(event_id, true))
+  end
+
   def self.available_past_years
     # Pluck only years from past events for the filter menu
     past.pluck(:start_date).compact.map(&:year).uniq.sort.reverse

@@ -1,0 +1,6 @@
+<%# locals: event, attendees, count %>
+<%= render "shared/people_preview",
+            heading: t('event_attendee.attendees_heading'),
+            people: attendees.map(&:user),
+            count_label: t('event_attendee.attendees_count', count:),
+            empty_label: t('event_attendee.empty_state.no_attendees') %>

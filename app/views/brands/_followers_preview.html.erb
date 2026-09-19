@@ -1,22 +1,6 @@
 <%# locals: brand, follows, count %>
-<div class="BrandFollowers">
-  <h2 class="BrandFollowers-heading"><%= t('brand_follow.followers_heading') %></h2>
-  <% if follows.any? %>
-    <ul class="BrandFollowers-list">
-      <% follows.each do |follow| %>
-        <% follower = follow.user %>
-        <li>
-          <%= link_to follower.profile_path, title: follower.user_name do %>
-            <%= render "shared/avatar", user: follower, size: 40 %>
-            <span class="u-hiddenVisually"><%= follower.user_name %></span>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-    <p class="BrandFollowers-count">
-      <%= t('brand_follow.followers_count', count:) %>
-    </p>
-  <% else %>
-    <p class="BrandFollowers-count"><%= t('brand_follow.empty_state.no_followers') %></p>
-  <% end %>
-</div>
+<%= render "shared/people_preview",
+            heading: t('brand_follow.followers_heading'),
+            people: follows.map(&:user),
+            count_label: t('brand_follow.followers_count', count:),
+            empty_label: t('brand_follow.empty_state.no_followers') %>

@@ -1,0 +1,20 @@
+<%# locals: heading, people, count_label, empty_label, avatar_size (optional) %>
+<% avatar_size ||= 40 %>
+<div class="AvatarPreview">
+  <h2 class="AvatarPreview-heading"><%= heading %></h2>
+  <% if people.any? %>
+    <ul class="AvatarPreview-list">
+      <% people.each do |person| %>
+        <li>
+          <%= link_to person.profile_path, title: person.user_name do %>
+            <%= render "shared/avatar", user: person, size: avatar_size %>
+            <span class="u-hiddenVisually"><%= person.user_name %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <p class="AvatarPreview-count"><%= count_label %></p>
+  <% else %>
+    <p class="AvatarPreview-count"><%= empty_label %></p>
+  <% end %>
+</div>

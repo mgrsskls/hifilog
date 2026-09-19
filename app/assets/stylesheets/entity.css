@@ -321,13 +321,13 @@ html:where([data-theme="light"]) .EntityPossession--bookmark {
 	color: var(--color-text-light);
 }
 
-.BrandFollowers-heading {
+.AvatarPreview-heading {
 	font-size: 1rem;
 	margin-block-end: 0.5rem;
 	color: var(--color-secondary);
 }
 
-.BrandFollowers-list {
+.AvatarPreview-list {
 	list-style: "";
 	margin: 0 0 0.5rem;
 	padding: 0;
@@ -340,6 +340,6 @@ html:where([data-theme="light"]) .EntityPossession--bookmark {
 	}
 }
 
-.BrandFollowers-count {
+.AvatarPreview-count {
 	margin-block: 0 0.5rem;
 }

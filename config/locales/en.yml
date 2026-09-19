@@ -423,11 +423,18 @@ en:
     user_product_history: "<p><b>You have not added any products to your collection yet.</b></p><p>After adding products to your collection or to your list of previous products, you can add the dates you owned the products. They will then appear in your product history.</p>"
     user_products: <p><b>You have not added any products to your collection yet.</b></p><p>You can search for products via the search at the top of the page, the <a href="%{brands_path}">brands</a> or simply by browsing through all <a href="%{products_path}">products</a>. On each product page you can then add it to your collection.</p>
   event_attendee:
+    attendees_heading: Attendees
+    attendees_count:
+      one: 1 attendee
+      other: "%{count} attendees"
+      zero: No attendees yet
     empty_states:
       index: There are no upcoming events.
       user:
         past: You haven't visited any <a href="%{path}">events</a> yet.
         upcoming: You don't have any upcoming <a href="%{path}">events</a>.
+    empty_state:
+      no_attendees: No one is attending this event yet.
     messages:
       destroyed:
         past: You removed <i>%{name}</i> from your past events.

@@ -366,6 +366,6 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select '.BrandFollow'
-    assert_select '.BrandFollowers'
+    assert_select '.AvatarPreview'
   end
 end

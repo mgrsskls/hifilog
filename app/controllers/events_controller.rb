@@ -22,6 +22,8 @@ a user-driven database for hi-fi products, brands and more.'
 
   def show
     @bookmark = current_user.bookmarks.find_by(item_id: @event.id, item_type: 'Event') if user_signed_in?
+    @event_attendees = @event.visible_attendees(current_user).limit(Event::ATTENDEES_PREVIEW_LIMIT).to_a
+    @event_attendees_count = @event.visible_attendees_count(current_user)
 
     page_title(@event.name)
     @meta_desc = "#{@event.name} — hi-fi event on HiFi Log, a user-driven database for hi-fi products, brands and more."
