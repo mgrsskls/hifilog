@@ -114,9 +114,81 @@ Separating a Mk II into its own product also severs the link to what it replaced
 - A **community image gallery** from possessions owned by users whose profiles allow catalog imagery (public always; logged-in-only when the viewer is signed in). Base-product pages use possessions with no variant; variant pages use that variant's possessions.
 - **Contributors** from version history on the parent product.
 - **Custom attributes** from the product (variants surface the parent's attribute set).
+- **Similar products** and **related products** (see the two sections below).
 - When the viewer is signed in: their **possession**, **bookmark**, **note**, and **setups** scoped to that product or variant.
 
 **`ProductCatalogShowService`** assembles this context for both show pages.
+
+## Similar Products
+
+The **"Similar Products"** block on product and variant show pages lists products that fill the
+same role as the entry: other products that a user can compare with it. It is shown above
+"Related Products" and uses the same list layout. It shows `RelatedProducts::Query::PER_GROUP`
+items, the same number as one group of "Related Products". When no candidate has the minimum
+score, the block is not shown.
+
+"Similar" and "related" are different questions. A related product connects to the entry (a
+phono stage for a turntable). A similar product replaces it (another turntable).
+
+### Candidates
+
+A candidate must have at least one sub category in common with the product. The product itself is
+not a candidate. There are no other exclusions: the block does not remove products from the same
+brand, the same product family, or the "Related Products" block. Candidates are base products only,
+not variants.
+
+A variant page shows the list of its parent product. Variants have no custom attributes of their
+own, so a list for each variant would be almost the same list.
+
+### Ranking
+
+Candidates with exactly the same sub categories always come first. In each of these two groups,
+the **score** sets the order. The score is the sum of these parts:
+
+| Part                       | Points                                                                                              |
+| -------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Sub category overlap**   | `100 * shared / all` (Jaccard index) of the sub categories of both products                         |
+| **Categorical attributes** | `weight * shared / all` of the values of both products, for option, options and boolean attributes  |
+| **Numeric classes**        | `weight` when both values are in the same class, for example output power < 25 W, 25–100 W, > 100 W |
+| **Price band**             | 2 for the same band, 1 for the next band. Bands are approximately x3 wide. Same currency only.      |
+
+When the scores are equal, these values set the order:
+
+1. The same discontinued status as the product.
+2. The smallest difference in release year. A missing year comes last.
+3. The product id, so that the order is always the same.
+
+A missing value on one side gives 0 points, not a penalty. Thus, a candidate with more data can
+get more points. The brand does not change the score.
+
+**`SimilarProducts::Weights`** holds all tuning values as Ruby constants: the weight of each
+attribute label (3 = defines what the product is, 2 = important, 1 = small detail, not listed =
+ignored), the numeric classes, the price band width and the minimum score. Dimensions, weight and
+sensitivity are not used, because they are too specific to a single product. A test makes sure
+that each label in the weights exists.
+
+### Reading path
+
+**`SimilarProducts.for`** is the entry point, called from `ProductCatalogShowService`.
+**`SimilarProducts::Query`** calculates the score of all candidates in one SQL statement and sends
+back only the ids of the best rows:
+
+- The index on `products_sub_categories.sub_category_id` finds the candidates. Thus, the work
+  depends on the size of the sub categories of the product, not on the size of the catalogue.
+- The values of the product are constants in the SQL. The query has one term for each attribute
+  that the product has.
+- Nested subqueries with `OFFSET 0` make sure that PostgreSQL calculates each attribute array one
+  time per row.
+- Price bands are compared with limits calculated in Ruby. `log()` on a numeric column is slow.
+- The uuid of a `ProductItem` is calculated only for the rows in the result.
+
+For reference: 5,000 candidates take approximately 40 ms, 30,000 candidates approximately 180 ms.
+
+The ranked ids are **cached** for 24 hours. The key contains the product (`cache_key_with_version`),
+its sub category ids and `SimilarProducts::CACHE_VERSION`. The records are loaded on each request,
+so a changed name or image of a candidate shows immediately. A new or changed candidate gets into
+an existing list when the cache entry expires. When you change the scoring, increase
+`CACHE_VERSION`.
 
 ## Related Products
 
@@ -463,6 +535,7 @@ All six come from **`HomeHighlights`**, which returns plain structs rather than 
 | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | **`ProductFilterService`**, **`BrandFilterService`**                           | Catalog and brand index filtering, sorting and name search, sharing `FilterableService`, `FilterConstants` and `RelevanceOrdering` |
 | **`ProductCatalogShowService`**                                                | Product and variant show-page context                                                                                              |
+| **`SimilarProducts`**, **`SimilarProducts::Query`**                            | "Similar Products" ranking and cache (see [Similar Products](#similar-products))                                                   |
 | **`RelatedProducts::Resolver`**, **`RelatedProducts::Query`**                  | "Related Products" targets, gates and candidate fetch (see [Related Products](#related-products))                                  |
 | **`ProductConversionService`**                                                 | Converts a product into a variant of another product and back; never crosses brands                                                |
 | **`CollectionStatusQuery`**                                                    | Owned / previously owned / bookmarked state for a set of ids, in bulk, for the client-side collection buttons                      |

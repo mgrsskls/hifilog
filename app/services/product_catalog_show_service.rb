@@ -21,6 +21,7 @@ class ProductCatalogShowService
     result = {
       images: community_gallery_images,
       contributors: product_contributors,
+      similar_products: similar_products,
       related_products: related_products
     }
 
@@ -37,6 +38,12 @@ class ProductCatalogShowService
   end
 
   private
+
+  # Products that fill the same role as this entry (README, "Similar Products"). A variant page
+  # shows the list of its parent product.
+  def similar_products
+    SimilarProducts.for(product: @product)
+  end
 
   # Compatible companions for this entry (docs/pairing-graph.md). Viewer-independent, so it sits
   # outside the signed-in branch below.

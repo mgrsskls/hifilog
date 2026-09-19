@@ -38,6 +38,15 @@ class ProductCatalogShowServiceTest < ActiveSupport::TestCase
     assert_kind_of ActiveRecord::Result, data.fetch(:contributors)
   end
 
+  test 'a variant page shows the similar products of its parent product' do
+    product = products(:with_variants)
+
+    product_data = ProductCatalogShowService.new(product:).call
+    variant_data = ProductCatalogShowService.new(product:, product_variant: product_variants(:one)).call
+
+    assert_equal product_data.fetch(:similar_products).map(&:id), variant_data.fetch(:similar_products).map(&:id)
+  end
+
   test 'custom attributes use product custom_attributes_resources' do
     product = products(:with_custom_attributes)
 

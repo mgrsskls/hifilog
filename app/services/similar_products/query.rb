@@ -1,0 +1,242 @@
+# frozen_string_literal: true
+
+# Finds and ranks the products that are most similar to one product. The weights are in
+# SimilarProducts::Weights. See README, section "Similar Products".
+#
+# The query does all the scoring in the database and sends back only the top rows. It does not
+# load candidates into Ruby.
+#
+# Candidates are only products that have at least one sub category in common with the product.
+# The index on products_sub_categories.sub_category_id finds them. Thus, the number of rows
+# that the query must score is the size of the sub categories of the product, not the size of
+# the catalogue.
+#
+# The values of the product are known before the query starts. Thus, the query contains them as
+# constants, and it has one term for each attribute that the product has. An attribute that the
+# product does not have does not make the query longer.
+#
+# `@>` is used, and not `?`: `?` is the bind placeholder of Rails.
+class SimilarProducts::Query
+  W = SimilarProducts::Weights
+
+  NUMBER_PATTERN = '^-?[0-9]+(\.[0-9]+)?$'
+  ORDER = 'scored.exact_match DESC, scored.score DESC, scored.status_match DESC, ' \
+          'scored.year_distance ASC NULLS LAST, scored.id ASC'
+
+  def initialize(product:, sub_category_ids:, limit:)
+    @product = product
+    @sub_category_ids = sub_category_ids.map(&:to_i).uniq
+    @limit = limit.to_i
+  end
+
+  # Returns the ProductItem ids (uuid strings) of the best candidates, best first.
+  def call
+    return [] if @sub_category_ids.empty? || @limit <= 0
+
+    ActiveRecord::Base.connection.exec_query(sql).rows.flatten
+  end
+
+  private
+
+  # Steps:
+  #   shared: the candidates, with the number of sub categories they share with the product
+  #   scored: the score and the tiebreakers of each candidate. `totals` is the number of all sub
+  #           categories of the candidate. The index on (product_id, sub_category_id) gives it
+  #           without a read of the table.
+  #   top:    the best rows
+  # The uuid is calculated only for the rows in `top`. For all candidates, it is too slow.
+  def sql
+    <<~SQL.squish
+      WITH shared AS (
+        SELECT psc.product_id, count(*) AS shared_count
+        FROM products_sub_categories psc
+        WHERE psc.sub_category_id = ANY(#{id_array(@sub_category_ids)})
+          AND psc.product_id <> #{@product.id.to_i}
+        GROUP BY psc.product_id
+      ),
+      scored AS (
+        SELECT p.id,
+               (totals.total_count = shared.shared_count
+                 AND shared.shared_count = #{@sub_category_ids.size}) AS exact_match,
+               (#{sub_category_term} + attributes.points#{numeric_terms.map { |term| " + #{term}" }.join}
+                 + #{price_term}) AS score,
+               #{status_tiebreaker} AS status_match,
+               #{year_tiebreaker} AS year_distance
+        FROM shared
+        JOIN products p ON p.id = shared.product_id
+        JOIN LATERAL (
+          SELECT count(*) AS total_count
+          FROM products_sub_categories all_psc
+          WHERE all_psc.product_id = p.id
+        ) totals ON TRUE
+        CROSS JOIN LATERAL (#{categorical_sql}) attributes
+        OFFSET 0
+      ),
+      top AS (
+        SELECT * FROM scored
+        WHERE scored.score >= #{W::MIN_SCORE}
+        ORDER BY #{ORDER}
+        LIMIT #{@limit}
+      )
+      SELECT uuid_generate_v5(uuid_ns_dns(), 'product-' || scored.id::text)::text AS item_id
+      FROM top scored
+      ORDER BY #{ORDER}
+    SQL
+  end
+
+  # ------------------------------------------------------------------------------ Sub categories
+
+  # Jaccard index: shared / (all sub categories of the product and the candidate together).
+  def sub_category_term
+    "(#{W::SUB_CATEGORY_WEIGHT}::float8 * shared.shared_count / " \
+      "(#{@sub_category_ids.size} + totals.total_count - shared.shared_count))"
+  end
+
+  # ------------------------------------------------------------------------------ Attributes
+
+  def source_attributes
+    @source_attributes ||= @product.custom_attributes.is_a?(Hash) ? @product.custom_attributes : {}
+  end
+
+  # For option, options and boolean attributes. Both sides are made into a JSON array: an
+  # option attribute keeps one value, an options attribute keeps an array. Then the points are
+  # weight * shared / (all values of both).
+  #
+  # Three levels, so that the database calculates each array and each count one time per row:
+  #   1. `arrays`:  the candidate value of each attribute as an array
+  #   2. `matches`: the number of values that the candidate and the product have in common
+  #   3. the points
+  # `OFFSET 0` prevents that PostgreSQL merges the levels into one expression. If it merges
+  # them, it copies the array expression into each place that uses it and calculates it again.
+  def categorical_sql
+    attributes = categorical_attributes
+    return 'SELECT 0::float8 AS points' if attributes.empty?
+
+    arrays = attributes.each_with_index.map { |(label, _, _), index| "#{candidate_array(label)} AS a#{index}" }
+    matches = attributes.each_with_index.map do |(_, _, values), index|
+      shared = values.map { |value| "(a#{index} @> #{quote([value].to_json)}::jsonb)::int" }.join(' + ')
+      "a#{index}, (#{shared}) AS m#{index}"
+    end
+    points = attributes.each_with_index.map do |(_, weight, values), index|
+      union = "#{values.size} + jsonb_array_length(a#{index}) - m#{index}"
+      "COALESCE(#{weight}::float8 * m#{index} / NULLIF(#{union}, 0), 0)"
+    end
+
+    "SELECT #{points.join(' + ')} AS points FROM (SELECT #{matches.join(', ')} " \
+      "FROM (SELECT #{arrays.join(', ')} OFFSET 0) arrays OFFSET 0) matches"
+  end
+
+  # [label, weight, values] for each weighted attribute that the product has a value for.
+  def categorical_attributes
+    W::ATTRIBUTES.filter_map do |label, weight|
+      values = categorical_values(source_attributes[label])
+      [label, weight, values] if values.any?
+    end
+  end
+
+  def categorical_values(value)
+    values = Array.wrap(value).select { |item| item.is_a?(String) || item == true || item == false }
+    values.reject { |item| item == '' }.uniq
+  end
+
+  def candidate_array(label)
+    value = "p.custom_attributes -> #{quote(label)}"
+    "(CASE WHEN jsonb_typeof(#{value}) = 'array' THEN #{value} " \
+      "WHEN jsonb_typeof(#{value}) IN ('string', 'boolean') THEN jsonb_build_array(#{value}) " \
+      "ELSE '[]'::jsonb END)"
+  end
+
+  # Full points when the values of both sides are in the same class. When the product has a
+  # unit, the candidate must have the same unit. Units are kept in their canonical form (see
+  # CustomAttribute::UNIT_CONVERSIONS), so a text comparison is sufficient.
+  def numeric_terms
+    W::NUMERIC_CLASSES.filter_map do |label, config|
+      source = numeric_source(label, config)
+      next if source.nil?
+
+      value_text = candidate_number_text(label, config[:input])
+      value = "(CASE WHEN #{value_text} ~ #{quote(NUMBER_PATTERN)} THEN (#{value_text})::numeric END)"
+      limits = "ARRAY[#{config[:limits].join(', ')}]::numeric[]"
+
+      "(CASE WHEN width_bucket(#{value}, #{limits}) = #{source[:bucket]}#{unit_sql(label, source[:unit])} " \
+        "THEN #{config[:weight]} ELSE 0 END)"
+    end
+  end
+
+  def unit_sql(label, unit)
+    return '' if unit.nil?
+
+    " AND p.custom_attributes -> #{quote(label)} ->> 'unit' = #{quote(unit)}"
+  end
+
+  def numeric_source(label, config)
+    entry = source_attributes[label]
+    return nil unless entry.is_a?(Hash)
+
+    raw = entry['value']
+    # An attribute with inputs keeps a value for each input: { "ohm_8" => 50, "ohm_4" => 80 }.
+    if config[:input]
+      raw = raw.is_a?(Hash) ? raw[config[:input]] : nil
+    end
+    number = Float(raw.to_s, exception: false)
+    return nil if number.nil?
+
+    { bucket: config[:limits].count { |limit| number >= limit }, unit: entry['unit'].presence }
+  end
+
+  def candidate_number_text(label, input)
+    return "(p.custom_attributes -> #{quote(label)} -> 'value' ->> #{quote(input)})" if input
+
+    "(p.custom_attributes -> #{quote(label)} ->> 'value')"
+  end
+
+  # ------------------------------------------------------------------------------ Price
+
+  # Log-scale bands, only in the same currency. Prices of different currencies and eras are not
+  # converted: the result would not be more correct than no comparison.
+  #
+  # The band limits are calculated here, so the database only compares numbers. `log()` on a
+  # numeric column is slow when it runs for each candidate.
+  def price_term
+    band = price_band(@product.price)
+    currency = @product.price_currency.presence
+    return '0' if band.nil? || currency.nil?
+
+    same = "p.price >= #{band_limit(band)} AND p.price < #{band_limit(band + 1)}"
+    near = "p.price >= #{band_limit(band - 1)} AND p.price < #{band_limit(band + 2)}"
+    "(CASE WHEN p.price_currency <> #{quote(currency)} THEN 0 " \
+      "WHEN #{same} THEN #{W::PRICE_WEIGHT} WHEN #{near} THEN #{W::PRICE_WEIGHT / 2.0} ELSE 0 END)"
+  end
+
+  def price_band(price)
+    return nil if price.nil? || price <= 0
+
+    (Math.log10(price.to_f) / W::PRICE_BAND_WIDTH).floor
+  end
+
+  def band_limit(band)
+    (10**(band * W::PRICE_BAND_WIDTH)).round(4)
+  end
+
+  # ------------------------------------------------------------------------------ Tiebreakers
+
+  def status_tiebreaker
+    "(p.discontinued = #{@product.discontinued ? 'TRUE' : 'FALSE'})::int"
+  end
+
+  def year_tiebreaker
+    return 'NULL::int' if @product.release_year.nil?
+
+    "abs(p.release_year - #{@product.release_year.to_i})"
+  end
+
+  # ------------------------------------------------------------------------------ Helpers
+
+  def id_array(ids)
+    "ARRAY[#{ids.join(', ')}]::bigint[]"
+  end
+
+  def quote(value)
+    ActiveRecord::Base.connection.quote(value)
+  end
+end

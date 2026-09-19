@@ -612,6 +612,8 @@ en:
     validation:
       private:
         selected: must be selected.
+  similar_products:
+    heading: Similar Products
   skip_to_main_content: Skip to main content
   sort_by:
     added_asc: 'Added: Oldest first'

@@ -1,0 +1,12 @@
+<%# Similar Products: products that fill the same role as this product. See README, "Similar Products". %>
+<%# Renders nothing when no candidate has the minimum score. %>
+<% if products.present? %>
+  <div class="Product-section Product-section--similarProducts">
+    <h2><%= t('similar_products.heading') %></h2>
+
+    <%= render "shared/products_table",
+        products: products,
+        render_completeness: false
+    %>
+  </div>
+<% end %>
