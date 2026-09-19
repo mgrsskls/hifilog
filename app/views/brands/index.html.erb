@@ -1,9 +1,7 @@
 <% content_for :header do %>
   <h1>
     <% if @sub_category.present? or @category.present? %>
-      <span class="IndexPage-category">
-        <%= Brand.model_name.human.pluralize %><span class="u-hiddenVisually">:</span></span>
-        <%= (@sub_category.present? ? @sub_category : @category).name %>
+      <%= (@sub_category.present? ? @sub_category : @category).name %>
     <% else %>
       <%= Brand.model_name.human.pluralize %>
     <% end %>
@@ -16,8 +14,7 @@
 
 <% content_for :sort do %>
   <input type="hidden" name="country" value="<%= params[:country] %>">
-  <label for="sort-select"><%= t('sort_by.label') %></label>
-  <select name="sort" id="sort-select">
+  <select name="sort" id="sort-select" aria-label="<%= t('sort_by.label') %>">
     <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
     <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
     <option value="added_desc"<%= " selected" if params[:sort] == "added_desc" %>><%= t('sort_by.added_desc') %></option>
@@ -42,7 +39,12 @@
   category: @category,
   sub_category: @sub_category,
   filter_applied: @filter_applied,
-  type: :brand
+  type: :brand,
+  table_heading: (Brand.model_name.human.pluralize if @category.present?),
+  add_link_label: t('brand.new.link'),
+  add_link_target: user_signed_in? ?
+    new_brand_path(sub_category: @sub_category&.slug) :
+    new_user_session_path(redirect: new_brand_path(sub_category: @sub_category&.slug))
 %>
 
 <%= json_ld_script_tag(brands_catalogue_breadcrumb_json_ld(

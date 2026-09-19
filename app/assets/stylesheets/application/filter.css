@@ -114,7 +114,6 @@ html:where([data-theme="dark"]) .Filter-input {
 
 .FilterInfo {
 	line-height: 1.2;
-	text-align: center;
 	margin-block: 0;
 }
 

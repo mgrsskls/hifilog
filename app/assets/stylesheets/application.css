@@ -117,12 +117,15 @@
 	}
 
 	h1 small,
-	.IndexPage-category {
-		font-size: 1rem;
+	.Entity-headingSubname {
 		font-weight: 500;
 		line-height: 1.5;
 		display: block;
 		color: var(--color-secondary);
+	}
+
+	h1 small {
+		font-size: 1rem;
 	}
 
 	h1:has(small, span[class]) {
@@ -130,7 +133,7 @@
 		flex-direction: column;
 	}
 
-	.IndexPage-category {
+	.Entity-headingSubname {
 		font-size: 1.2rem;
 	}
 

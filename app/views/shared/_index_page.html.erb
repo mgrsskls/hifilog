@@ -16,27 +16,29 @@
   </div>
   <div class="IndexPage-content">
     <% if table_heading %>
-      <h2><%= table_heading %></h2>
+      <div class="IndexPage-tableHeader">
+        <h2><%= table_heading %></h2>
+      </div>
     <% end %>
-    <% if records.length > 0 %>
-      <div class="u-breakpoint u-breakpoint--l">
-        <div class="IndexPage-contentHeader">
-          <p class="FilterInfo">
-            <small><%= page_entries_info records, entry_name: local_assigns[:entry_name] %></small>
-          </p>
-          <% if yield(:sort).present? %>
-            <form class="u-flex u-alignCenter u-gap-md">
-              <%= hidden_fields_for_params(params.except(:order, :controller, :action, :category_slug, :sub_category_slug)) %>
-              <%= yield :sort %>
-            </form>
-          <% end %>
-        </div>
+    <div class="u-breakpoint u-breakpoint--l">
+      <div class="IndexPage-contentHeader">
+        <p class="FilterInfo">
+          <small><%= page_entries_info records, entry_name: local_assigns[:entry_name] %></small>
+        </p>
+        <% if yield(:sort).present? %>
+          <form class="u-flex u-alignCenter u-gap-md">
+            <%= hidden_fields_for_params(params.except(:order, :controller, :action, :category_slug, :sub_category_slug)) %>
+            <%= yield :sort %>
+          </form>
+        <% end %>
+      </div>
+      <% if records.length > 0 %>
         <%= yield :table %>
         <%= paginate records %>
-      </div>
-    <% else %>
-      <%= render "shared/empty_state", message: empty_state_message %>
-    <% end %>
+      <% else %>
+        <%= render "shared/empty_state", message: empty_state_message %>
+      <% end %>
+    </div>
 
     <%= render "shared/symbols_legend", type: %>
   </div>

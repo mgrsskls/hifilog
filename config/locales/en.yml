@@ -2,8 +2,13 @@
 en:
   helpers:
     page_entries_info:
+      one_page:
+        display_entries:
+          zero: "No entries found"
+          one: "<b>1</b> entry"
+          other: "<b>%{count}</b> entries"
       more_pages:
-        display_entries: "Displaying <b>%{first}–%{last}</b> of <b>%{total}</b> in total"
+        display_entries: '<b>%{first}–%{last}</b> of <b>%{total}</b>'
   active: Active
   activerecord:
     attributes:

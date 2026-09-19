@@ -1,9 +1,6 @@
 <% content_for :header do %>
   <h1>
-    <span class="IndexPage-category">
-      <%= t('contribute.index.heading') %><span class="u-hiddenVisually">:</span>
-    </span>
-    <%= t('contribute.incomplete_brands.heading') %>
+    <%= t('contribute.index.heading') %>
   </h1>
 <% end %>
 
@@ -72,5 +69,6 @@
   category: @category,
   sub_category: nil,
   empty_state_message: t('empty_state.contribute_brands', path: new_brand_path),
-  type: :brand
+  type: :brand,
+  table_heading: t('contribute.incomplete_brands.heading')
 %>

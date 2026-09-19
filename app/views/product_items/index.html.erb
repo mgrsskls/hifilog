@@ -1,9 +1,7 @@
 <% content_for :header do %>
   <h1>
     <% if current_sub_category.present? or current_category.present? %>
-      <span class="IndexPage-category">
-        <%= Product.model_name.human.pluralize %><span class="u-hiddenVisually">:</span></span>
-        <%= (current_sub_category.present? ? current_sub_category : current_category).name %>
+      <%= (current_sub_category.present? ? current_sub_category : current_category).name %>
     <% else %>
       <%= Product.model_name.human.pluralize %>
     <% end %>
@@ -15,8 +13,7 @@
 <% end %>
 
 <% content_for :sort do %>
-  <label for="sort-select">Sort</label>
-  <select name="sort" id="sort-select">
+  <select name="sort" id="sort-select" aria-label="<%= t('sort_by.label') %>">
     <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
     <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
     <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
@@ -37,7 +34,12 @@
   empty_state_message: t('empty_state.products_filter', path: new_product_path),
   category: current_category,
   sub_category: current_sub_category,
-  type: :product
+  type: :product,
+  table_heading: (Product.model_name.human.pluralize if @category.present?),
+  add_link_label: t('product.new.link'),
+  add_link_target: user_signed_in? ?
+    new_product_path(sub_category: @sub_category&.slug) :
+    new_user_session_path(redirect: new_product_path(sub_category: @sub_category&.slug))
 %>
 
 <%= json_ld_script_tag(products_catalogue_breadcrumb_json_ld(

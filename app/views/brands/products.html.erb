@@ -1,11 +1,6 @@
 <% content_for :header do %>
   <h1>
-    <span class="IndexPage-category"><%= @brand.display_name %></span>
-    <% if @sub_category.present? or @category.present? %>
-      <%= (@sub_category.present? ? @sub_category : @category).name %>
-    <% else %>
-      <%= Product.model_name.human.pluralize %>
-    <% end %>
+    <%= @brand.display_name %>
   </h1>
 <% end %>
 
@@ -15,9 +10,6 @@
         &larr; <span>Back</span>
       </a>
     </b>
-    <%= link_to user_signed_in? ? new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug)), rel: "nofollow" do %>
-      <span><%= t('product.new.link') %></span>
-    <% end %>
 <% end %>
 
 <% content_for :filter do %>
@@ -25,8 +17,7 @@
 <% end %>
 
 <% content_for :sort do %>
-  <label for="sort-select">Sort</label>
-  <select name="sort" id="sort-select">
+  <select name="sort" id="sort-select" aria-label="<%= t('sort_by.label') %>">
     <option value="name_asc"<%= " selected" if params[:sort] == "name_asc" %>><%= t('sort_by.name_asc') %></option>
     <option value="name_desc"<%= " selected" if params[:sort] == "name_desc" %>><%= t('sort_by.name_desc') %></option>
     <option value="release_date_desc"<%= " selected" if params[:sort] == "release_date_desc" %>><%= t('sort_by.release_date_desc') %></option>
@@ -43,7 +34,12 @@
   empty_state_message: t('empty_state.cta', name: h(@brand.name), path: user_signed_in? ? new_product_path(brand_id: @brand.id) : new_user_session_path(redirect: new_product_path(brand_id: @brand.id))),
   category: @category,
   sub_category: @sub_category,
-  type: :product
+  type: :product,
+  table_heading: @sub_category.present? ? @sub_category.name : Product.model_name.human.pluralize,
+  add_link_target: user_signed_in? ?
+    new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug) :
+    new_user_session_path(redirect: new_product_path(brand_id: @brand.id, sub_category: @sub_category&.slug)),
+  add_link_label: t('product.new.link')
 %>
 
 <%= json_ld_script_tag(brand_products_breadcrumb_json_ld(
