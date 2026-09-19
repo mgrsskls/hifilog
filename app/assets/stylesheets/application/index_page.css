@@ -4,6 +4,10 @@
 
 .IndexPage-header {
 	grid-area: header;
+
+	h2 {
+		font-size: 1.2rem;
+	}
 }
 
 .IndexPage-headerFilter :is(h1, h2) {
@@ -11,7 +15,11 @@
 }
 
 .IndexPage-filter {
-	margin-block-start: 2rem;
+	margin-block-start: 1rem;
+
+	&:not(:has(.Filter-actions)) {
+		margin-block-end: 2rem;
+	}
 }
 
 .IndexPage-actions {
@@ -41,6 +49,10 @@
 
 .IndexPage-content {
 	grid-area: content;
+
+	h2 {
+		margin-block-start: 0;
+	}
 }
 
 .IndexPage-contentHeader {
@@ -62,11 +74,16 @@
 }
 
 @media (width < 48rem) {
+	/* Sidebar content that is not a filter: on small viewports only the headline is shown. */
+	.IndexPage-filter:has(.IndexPage-details) {
+		display: none;
+	}
+
 	.IndexPage {
 		grid-template:
 			"header"
 			"content";
-		gap: 2rem;
+		gap: 1rem 2rem;
 		padding-block: 2rem;
 
 		&:has(.IndexPage-actions) {

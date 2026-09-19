@@ -206,6 +206,57 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'similar lists similar products with pagination and is noindex' do
+    source, candidates = similar_products_catalogue(SimilarProducts::PER_PAGE + 1)
+
+    get product_similar_url(product_id: source.friendly_id)
+
+    assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+    assert_select 'h1', text: source.display_name
+    assert_select '.IndexPage-content h2', text: I18n.t('similar_products.heading')
+    assert_select '.IndexPage-header .IndexPage-details dl.Data'
+    assert_select '.IndexPage-header a[href=?]', product_path(id: source.friendly_id)
+    assert_select '.EntityList--products > li', count: SimilarProducts::PER_PAGE
+    assert_select 'a[href=?]', product_similar_path(product_id: source.friendly_id, page: 2)
+
+    get product_similar_url(product_id: source.friendly_id, page: 2)
+
+    assert_response :success
+    assert_select '.EntityList--products > li', count: candidates.size - SimilarProducts::PER_PAGE
+  end
+
+  test 'similar shows an empty state when nothing matches' do
+    source, = similar_products_catalogue(0)
+
+    get product_similar_url(product_id: source.friendly_id)
+
+    assert_response :success
+    assert_select '.EntityList--products', count: 0
+  end
+
+  test 'similar returns 404 for an unknown product' do
+    get product_similar_url(product_id: 'no-such-product')
+
+    assert_response :not_found
+  end
+
+  test 'show links to all similar products only when there are more than the block shows' do
+    source, = similar_products_catalogue(SimilarProducts::LIMIT)
+
+    get product_url(id: source.friendly_id)
+
+    assert_select '.Product-section--similarProducts .EntityList--products > li', count: SimilarProducts::LIMIT
+    assert_select 'a[href=?]', product_similar_path(product_id: source.friendly_id), count: 0
+
+    # One more candidate than the block shows. The test cache is a null_store, so no cache
+    # entry hides it.
+    Product.create!(name: "Extra #{SecureRandom.hex(4)}", brand: brands(:one), sub_categories: source.sub_categories)
+    get product_url(id: source.friendly_id)
+
+    assert_select 'a[href=?]', product_similar_path(product_id: source.friendly_id)
+  end
+
   # Regression: ApplicationController#not_found used to re-render the changelog template for a
   # missing record, which blew up on the nil @product instead of returning a 404.
   test 'changelog returns 404 for an unknown product' do
@@ -514,5 +565,17 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_content
+  end
+
+  private
+
+  # A source product and `count` candidates in a sub category of their own, so that the fixture
+  # catalogue adds no candidates.
+  def similar_products_catalogue(count)
+    token = SecureRandom.hex(4)
+    sub_category = SubCategory.create!(name: "Similar #{token}", category: categories(:one))
+    create = ->(name) { Product.create!(name: "#{name} #{token}", brand: brands(:one), sub_categories: [sub_category]) }
+
+    [create.call('Source'), Array.new(count) { |index| create.call("Candidate #{index}") }]
   end
 end

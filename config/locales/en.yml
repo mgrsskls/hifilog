@@ -613,6 +613,7 @@ en:
       private:
         selected: must be selected.
   similar_products:
+    empty_state: No similar products found.
     heading: Similar Products
   skip_to_main_content: Skip to main content
   sort_by:

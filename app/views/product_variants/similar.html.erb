@@ -1,0 +1,4 @@
+<%= render "shared/similar_products_page",
+    product: @product,
+    record: @product_variant,
+    back_path: product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) %>

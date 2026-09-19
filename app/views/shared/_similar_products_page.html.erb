@@ -1,0 +1,41 @@
+<%#
+  The full "Similar Products" list of a product or a variant. See README, "Similar Products".
+  Same layout as brands#products: the sidebar shows the entry, the content shows the list.
+
+  product:   the product. Its sub categories and custom attributes are shown.
+  record:    the product or the variant. Its name, dates and price are shown.
+  back_path: the show page of the record
+%>
+<% content_for :header do %>
+  <h1><%= record.display_name %></h1>
+<% end %>
+
+<% content_for :actions do %>
+  <b>
+    <a href="<%= back_path %>">
+      &larr; <span><%= t('back') %></span>
+    </a>
+  </b>
+<% end %>
+
+<%# The product data is shown only in the sidebar. On viewports < 48rem it is hidden (see
+    .IndexPage-details), and only the headline is shown. %>
+<% content_for :filter do %>
+  <div class="IndexPage-details">
+    <%= render "products/data", product:, record: %>
+
+    <%= render "shared/product_custom_attributes", attributes: product.custom_attributes, custom_attributes: @custom_attributes, css_class: "Data Data--stacked" if product.custom_attributes&.any? %>
+  </div>
+<% end %>
+
+<% content_for :table do %>
+  <%= render "shared/products_table", products: @products, render_completeness: false %>
+<% end %>
+
+<%= render "shared/index_page",
+  records: @products,
+  empty_state_message: t('similar_products.empty_state'),
+  entry_name: Product.model_name.human.downcase,
+  type: :product,
+  table_heading: t('similar_products.heading')
+%>

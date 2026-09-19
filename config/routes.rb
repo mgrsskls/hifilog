@@ -131,12 +131,14 @@ Rails.application.routes.draw do
   # /products/:id (resource CRUD…)
   resources :products, only: [:show, :new, :create, :edit, :update] do
     get '/changelog', action: :changelog
+    get '/similar', action: :similar
     get '/notes', to: 'notes#new', as: :new_notes
     resources :product_variants, only: [:create, :update]
     get '/variants/new', to: 'product_variants#new'
     get '/v/:id', to: 'product_variants#show', as: :variant
     get '/v/:id/edit', to: 'product_variants#edit', as: :edit_variant
     get '/v/:id/changelog', to: 'product_variants#changelog', as: :variant_changelog
+    get '/v/:id/similar', to: 'product_variants#similar', as: :variant_similar
     get '/v/:id/notes', to: 'notes#new', as: :new_variant_notes
   end
 

@@ -1,3 +1,4 @@
+<% table_heading ||= nil %>
 <div class="IndexPage" id="list">
   <div class="IndexPage-header">
     <div class="IndexPage-headerFilter">
@@ -14,11 +15,14 @@
     </div>
   </div>
   <div class="IndexPage-content">
+    <% if table_heading %>
+      <h2><%= table_heading %></h2>
+    <% end %>
     <% if records.length > 0 %>
       <div class="u-breakpoint u-breakpoint--l">
         <div class="IndexPage-contentHeader">
           <p class="FilterInfo">
-            <small><%= page_entries_info records %></small>
+            <small><%= page_entries_info records, entry_name: local_assigns[:entry_name] %></small>
           </p>
           <% if yield(:sort).present? %>
             <form class="u-flex u-alignCenter u-gap-md">

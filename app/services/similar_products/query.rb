@@ -23,17 +23,23 @@ class SimilarProducts::Query
   ORDER = 'scored.exact_match DESC, scored.score DESC, scored.status_match DESC, ' \
           'scored.year_distance ASC NULLS LAST, scored.id ASC'
 
-  def initialize(product:, sub_category_ids:, limit:)
+  # ids:         the ProductItem ids (uuid strings) of the requested rows, best first
+  # total_count: the number of all candidates with the minimum score
+  Result = Struct.new(:ids, :total_count, keyword_init: true)
+  EMPTY = Result.new(ids: [], total_count: 0).freeze
+
+  def initialize(product:, sub_category_ids:, limit:, offset: 0)
     @product = product
     @sub_category_ids = sub_category_ids.map(&:to_i).uniq
     @limit = limit.to_i
+    @offset = [offset.to_i, 0].max
   end
 
-  # Returns the ProductItem ids (uuid strings) of the best candidates, best first.
   def call
-    return [] if @sub_category_ids.empty? || @limit <= 0
+    return EMPTY if @sub_category_ids.empty? || @limit <= 0
 
-    ActiveRecord::Base.connection.exec_query(sql).rows.flatten
+    row = ActiveRecord::Base.connection.exec_query(sql).first
+    Result.new(ids: row['ids'].to_s.split(','), total_count: row['total_count'].to_i)
   end
 
   private
@@ -43,8 +49,13 @@ class SimilarProducts::Query
   #   scored: the score and the tiebreakers of each candidate. `totals` is the number of all sub
   #           categories of the candidate. The index on (product_id, sub_category_id) gives it
   #           without a read of the table.
-  #   top:    the best rows
-  # The uuid is calculated only for the rows in `top`. For all candidates, it is too slow.
+  #   ranked: the candidates with the minimum score
+  #   top:    the requested rows (one page)
+  # The statement always returns one row, also for a page after the last one. Thus, the total
+  # is known in all cases. `ranked` is used two times, so PostgreSQL calculates it one time and
+  # keeps the result.
+  # The uuid is calculated only for the rows in `top`. For all candidates, it is too slow. The
+  # ids are sent as one comma-separated text: a uuid contains no comma.
   def sql
     <<~SQL.squish
       WITH shared AS (
@@ -72,15 +83,18 @@ class SimilarProducts::Query
         CROSS JOIN LATERAL (#{categorical_sql}) attributes
         OFFSET 0
       ),
+      ranked AS (
+        SELECT * FROM scored WHERE scored.score >= #{W::MIN_SCORE}
+      ),
       top AS (
-        SELECT * FROM scored
-        WHERE scored.score >= #{W::MIN_SCORE}
+        SELECT * FROM ranked scored
         ORDER BY #{ORDER}
-        LIMIT #{@limit}
+        LIMIT #{@limit} OFFSET #{@offset}
       )
-      SELECT uuid_generate_v5(uuid_ns_dns(), 'product-' || scored.id::text)::text AS item_id
-      FROM top scored
-      ORDER BY #{ORDER}
+      SELECT (SELECT count(*) FROM ranked) AS total_count,
+             (SELECT string_agg(uuid_generate_v5(uuid_ns_dns(), 'product-' || scored.id::text)::text, ','
+                                ORDER BY #{ORDER})
+              FROM top scored) AS ids
     SQL
   end
 

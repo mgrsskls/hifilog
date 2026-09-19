@@ -325,7 +325,7 @@
 		margin-block: 0;
 	}
 
-	.Data:not(.Data--inline):not(.Data--grid) {
+	.Data:not(.Data--inline):not(.Data--grid):not(.Data--stacked) {
 		display: grid;
 		grid-template-columns: auto 1fr;
 		gap: 0.5em 0;
@@ -336,12 +336,22 @@
 		gap: 1em;
 	}
 
+	/* Label above value, for narrow places like a sidebar. */
+	.Data--stacked {
+		display: grid;
+		gap: 0.125em;
+	}
+
+	.Data--stacked dd:not(:last-child) {
+		margin-block-end: 0.625em;
+	}
+
 	.Data dt {
 		font-weight: 500;
 		color: var(--color-secondary);
 	}
 
-	.Data:not(.Data--inline):not(.Data--grid) dt {
+	.Data:not(.Data--inline):not(.Data--grid):not(.Data--stacked) dt {
 		padding-inline-end: 1rem;
 	}
 

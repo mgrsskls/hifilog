@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update]
-  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog]
+  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog, :similar]
   before_action :set_active_menu
   before_action :find_product, only: [:show]
 
@@ -89,6 +89,22 @@ class ProductsController < ApplicationController
   def changelog
     @product = Product.friendly.find(params[:product_id])
     @versions = filter_versions(@product.versions)
+  end
+
+  # The full, paginated "Similar Products" list (README, "Similar Products"). A variant has no list
+  # of its own, so its show page links here too. The page is noindex: its content is a list of
+  # other catalogue pages, ordered for this product.
+  def similar
+    @product = find_resource(
+      Product.includes(:brand, :sub_categories), :product_id,
+      path_helper: ->(product) { product_similar_path(product_id: product.friendly_id) }
+    )
+    return if @product.nil?
+
+    @products = SimilarProducts.page(product: @product, page: params[:page])
+    @custom_attributes = @product.custom_attributes_resources if @product.custom_attributes&.any?
+
+    page_title("#{I18n.t('similar_products.heading')} — #{@product.display_name}")
   end
 
   private

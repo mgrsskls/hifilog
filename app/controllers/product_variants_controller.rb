@@ -7,9 +7,9 @@ class ProductVariantsController < ApplicationController
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]
   before_action :authenticate_user!, only: [:new, :create, :edit, :update]
-  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog]
+  before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog, :similar]
   before_action :set_active_menu
-  before_action :find_product_and_variant, only: [:show]
+  before_action :find_product_and_variant, only: [:show, :similar]
 
   def show
     @brand = @product.brand
@@ -18,6 +18,16 @@ class ProductVariantsController < ApplicationController
 
     page_title(@product_variant.display_name)
     set_meta_desc
+  end
+
+  # The full, paginated "Similar Products" list of a variant (README, "Similar Products"). The list
+  # is the list of the parent product, because the ranking uses the attributes of the product. The
+  # sidebar shows the variant. Like the product version, the page is noindex.
+  def similar
+    @products = SimilarProducts.page(product: @product, page: params[:page])
+    @custom_attributes = @product.custom_attributes_resources if @product.custom_attributes&.any?
+
+    page_title("#{I18n.t('similar_products.heading')} — #{@product_variant.display_name}")
   end
 
   def new
@@ -99,9 +109,12 @@ class ProductVariantsController < ApplicationController
     @product = Product.includes(:brand, sub_categories: :category).friendly.find(params[:product_id])
     @product_variant = @product.product_variants.friendly.find(params[:id])
 
-    redirect_to_canonical_path(
-      product_variant_path(product_id: @product.friendly_id, id: @product_variant.friendly_id)
-    ) { nil }
+    redirect_to_canonical_path(canonical_variant_path) { nil }
+  end
+
+  def canonical_variant_path
+    ids = { product_id: @product.friendly_id, id: @product_variant.friendly_id }
+    action_name == 'similar' ? product_variant_similar_path(**ids) : product_variant_path(**ids)
   end
 
   def product_variant_params

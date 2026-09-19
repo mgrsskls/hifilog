@@ -255,6 +255,38 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'similar shows the list of the parent product with the variant in the sidebar' do
+    variant = product_variants(:one)
+    product = variant.product
+    add_similar_candidates(product, SimilarProducts::LIMIT + 1)
+
+    get product_variant_similar_url(product_id: product.friendly_id, id: variant.friendly_id)
+
+    assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow'
+    assert_select 'h1', text: variant.display_name
+    assert_select '.IndexPage-header a[href=?]',
+                  product_variant_path(product_id: product.friendly_id, id: variant.friendly_id)
+    assert_select '.EntityList--products > li', minimum: SimilarProducts::LIMIT + 1
+  end
+
+  test 'similar returns 404 for an unknown variant' do
+    get product_variant_similar_url(id: 'no-such-variant', product_id: product_variants(:one).product.friendly_id)
+
+    assert_response :not_found
+  end
+
+  test 'show links to the similar products of the variant' do
+    variant = product_variants(:one)
+    product = variant.product
+    add_similar_candidates(product, SimilarProducts::LIMIT + 1)
+
+    get product_variant_url(product_id: product.friendly_id, id: variant.friendly_id)
+
+    assert_select 'a[href=?]', product_variant_similar_path(product_id: product.friendly_id, id: variant.friendly_id)
+    assert_select 'a[href=?]', product_similar_path(product_id: product.friendly_id), count: 0
+  end
+
   test 'changelog returns 404 for an unknown variant' do
     get product_variant_changelog_url(
       id: 'no-such-variant',
@@ -291,5 +323,15 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     get product_variant_url(product_id: product.friendly_id, id: old_slug)
     assert_response :moved_permanently
     assert_redirected_to product_variant_url(product_id: product.friendly_id, id: product_variant.friendly_id)
+  end
+
+  private
+
+  # More candidates than the block on the show page shows, so that "View all" is rendered.
+  def add_similar_candidates(product, count)
+    token = SecureRandom.hex(4)
+    count.times do |index|
+      Product.create!(name: "Similar #{token} #{index}", brand: brands(:one), sub_categories: product.sub_categories)
+    end
   end
 end

@@ -20,8 +20,12 @@ class SimilarProducts::QueryTest < ActiveSupport::TestCase
   end
 
   # Product ids in rank order.
-  def ranked(source, limit: 10)
-    ids = SimilarProducts::Query.new(product: source, sub_category_ids: source.sub_category_ids, limit:).call
+  def query(source, limit: 10, offset: 0)
+    SimilarProducts::Query.new(product: source, sub_category_ids: source.sub_category_ids, limit:, offset:).call
+  end
+
+  def ranked(source, limit: 10, offset: 0)
+    ids = query(source, limit:, offset:).ids
     product_ids = ProductItem.where(id: ids).pluck(:id, :product_id).to_h
     ids.map { |id| product_ids.fetch(id) }
   end
@@ -140,5 +144,34 @@ class SimilarProducts::QueryTest < ActiveSupport::TestCase
     3.times { |index| product("Candidate #{index}", sub_categories: [@amps]) }
 
     assert_equal 2, ranked(source, limit: 2).size
+  end
+
+  test 'offset returns the next page and the total counts all candidates' do
+    source = product('Source', sub_categories: [@amps], release_year: 2000)
+    candidates = Array.new(5) do |index|
+      product("Candidate #{index}", sub_categories: [@amps], release_year: 2000 + index)
+    end
+
+    assert_equal candidates[2..3].map(&:id), ranked(source, limit: 2, offset: 2)
+    assert_equal 5, query(source, limit: 2, offset: 2).total_count
+  end
+
+  test 'a page after the last one is empty but still has the total' do
+    source = product('Source', sub_categories: [@amps])
+    3.times { |index| product("Candidate #{index}", sub_categories: [@amps]) }
+
+    result = query(source, limit: 2, offset: 10)
+
+    assert_empty result.ids
+    assert_equal 3, result.total_count
+  end
+
+  test 'the total does not count candidates below the minimum score' do
+    others = Array.new(10) { |index| sub_category("Extra #{index}") }
+    source = product('Source', sub_categories: [@amps])
+    product('Match', sub_categories: [@amps])
+    product('Weak', sub_categories: [@amps, *others])
+
+    assert_equal 1, query(source).total_count
   end
 end

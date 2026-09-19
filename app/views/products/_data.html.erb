@@ -1,0 +1,39 @@
+<%# Category, release date, discontinuation and price of a product. Used on the show page and in the
+    sidebar of the "Similar Products" page.
+    product: gives the categories. record: gives the dates and the price. It is the product or one
+    of its variants (a variant has its own dates and price, but the categories of its product). %>
+<% record ||= product %>
+<% css_class ||= "Data" %>
+<% price_footnote ||= false %>
+<dl class="<%= css_class %>">
+  <dt><%= Category.model_name.human %></dt>
+  <dd>
+    <%= sub_category_links(product) %>
+  </dd>
+  <dt><%= Product.human_attribute_name(:release_date) %></dt>
+  <dd>
+    <% if record.release_date.present? %>
+      <time datetime="<%= record.release_date %>"><%= sanitize record.formatted_release_date %></time>
+    <% else %>
+      -
+    <% end %>
+  </dd>
+  <% if record.discontinued? %>
+    <dt><%= t('discontinued') %></dt>
+    <dd>
+      <% if record.discontinued_date.present? %>
+        <time datetime="<%= record.discontinued_date %>"><%= sanitize record.formatted_discontinued_date %></time>
+      <% else %>
+        -
+      <% end %>
+    </dd>
+  <% end %>
+  <dt><%= Product.human_attribute_name(:price) %><% if price_footnote %><sup>1</sup><% end %></dt>
+  <dd>
+    <% if record.price.present? %>
+      <%= display_price(record.price, record.price_currency) %>
+    <% else %>
+      -
+    <% end %>
+  </dd>
+</dl>

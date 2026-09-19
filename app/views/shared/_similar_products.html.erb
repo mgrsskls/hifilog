@@ -1,11 +1,15 @@
 <%# Similar Products: products that fill the same role as this product. See README, "Similar Products". %>
-<%# Renders nothing when no candidate has the minimum score. %>
-<% if products.present? %>
+<%# path: the full list of the product or the variant. %>
+<%# Renders nothing when no candidate has the minimum score. "View all" shows only when the full list has more items. %>
+<% if similar.items.present? %>
   <div class="Product-section Product-section--similarProducts">
-    <h2><%= t('similar_products.heading') %></h2>
+    <%= render "shared/overview/section_heading",
+        heading: t('similar_products.heading'),
+        heading_class: nil,
+        view_all_path: (path if similar.total_count > similar.items.size) %>
 
     <%= render "shared/products_table",
-        products: products,
+        products: similar.items,
         render_completeness: false
     %>
   </div>

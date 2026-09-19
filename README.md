@@ -127,6 +127,22 @@ same role as the entry: other products that a user can compare with it. It is sh
 items, the same number as one group of "Related Products". When no candidate has the minimum
 score, the block is not shown.
 
+When there are more candidates than the block shows, a **"View all"** link opens the full list at
+`/products/:product_id/similar` (`ProductsController#similar`). This page shows all candidates with
+the minimum score, in the same order, with pagination (`SimilarProducts::PER_PAGE`, the Kaminari
+default). It uses the layout of `brands#products` (`shared/index_page`): the sidebar on the left
+shows the product (name, category, dates, price and characteristics), the content on the right
+shows the list. The data list is the partial `products/_data`, which the product show page also
+uses. On viewports narrower than 48rem, only the headline is shown: the product data
+(`.IndexPage-details`) is hidden. The page is `noindex, follow`: its content is a list of other
+catalogue pages.
+
+A variant has its own page at `/products/:product_id/v/:id/similar`
+(`ProductVariantsController#similar`). The list is the same as the list of the parent product,
+because the ranking uses the attributes of the product. The sidebar shows the variant: its name,
+dates and price, with the categories and characteristics of the product. Both pages render
+`shared/_similar_products_page`.
+
 "Similar" and "related" are different questions. A related product connects to the entry (a
 phono stage for a turntable). A similar product replaces it (another turntable).
 
@@ -169,9 +185,11 @@ that each label in the weights exists.
 
 ### Reading path
 
-**`SimilarProducts.for`** is the entry point, called from `ProductCatalogShowService`.
-**`SimilarProducts::Query`** calculates the score of all candidates in one SQL statement and sends
-back only the ids of the best rows:
+**`SimilarProducts.for`** gives the block, called from `ProductCatalogShowService`.
+**`SimilarProducts.page`** gives one page of the full list as a Kaminari array.
+**`SimilarProducts::Query`** calculates the score of all candidates in one SQL statement. It sends
+back only the ids of the requested rows (`LIMIT` and `OFFSET`) and the number of all candidates
+with the minimum score. The block uses this number to decide if it shows "View all":
 
 - The index on `products_sub_categories.sub_category_id` finds the candidates. Thus, the work
   depends on the size of the sub categories of the product, not on the size of the catalogue.
@@ -181,11 +199,15 @@ back only the ids of the best rows:
   time per row.
 - Price bands are compared with limits calculated in Ruby. `log()` on a numeric column is slow.
 - The uuid of a `ProductItem` is calculated only for the rows in the result.
+- The statement always returns one row, also for a page after the last one. Thus, the total is
+  always known.
 
-For reference: 5,000 candidates take approximately 40 ms, 30,000 candidates approximately 180 ms.
+For reference: 5,000 candidates take approximately 60 ms, 30,000 candidates approximately 190 ms.
+A later page costs the same as the first page, because all candidates are scored in each case.
 
-The ranked ids are **cached** for 24 hours. The key contains the product (`cache_key_with_version`),
-its sub category ids and `SimilarProducts::CACHE_VERSION`. The records are loaded on each request,
+The ranked ids and the total are **cached** for 24 hours, one entry for each page. The key contains
+the product (`cache_key_with_version`), its sub category ids, the limit, the offset and
+`SimilarProducts::CACHE_VERSION`. The records are loaded on each request,
 so a changed name or image of a candidate shows immediately. A new or changed candidate gets into
 an existing list when the cache entry expires. When you change the scoring, increase
 `CACHE_VERSION`.
@@ -535,7 +557,7 @@ All six come from **`HomeHighlights`**, which returns plain structs rather than 
 | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | **`ProductFilterService`**, **`BrandFilterService`**                           | Catalog and brand index filtering, sorting and name search, sharing `FilterableService`, `FilterConstants` and `RelevanceOrdering` |
 | **`ProductCatalogShowService`**                                                | Product and variant show-page context                                                                                              |
-| **`SimilarProducts`**, **`SimilarProducts::Query`**                            | "Similar Products" ranking and cache (see [Similar Products](#similar-products))                                                   |
+| **`SimilarProducts`**, **`SimilarProducts::Query`**                            | "Similar Products" ranking, pagination and cache (see [Similar Products](#similar-products))                                       |
 | **`RelatedProducts::Resolver`**, **`RelatedProducts::Query`**                  | "Related Products" targets, gates and candidate fetch (see [Related Products](#related-products))                                  |
 | **`ProductConversionService`**                                                 | Converts a product into a variant of another product and back; never crosses brands                                                |
 | **`CollectionStatusQuery`**                                                    | Owned / previously owned / bookmarked state for a set of ids, in bulk, for the client-side collection buttons                      |

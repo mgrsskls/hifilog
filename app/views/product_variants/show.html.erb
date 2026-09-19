@@ -90,7 +90,7 @@
       </div>
     </div>
 
-    <%= render "shared/similar_products", products: @similar_products %>
+    <%= render "shared/similar_products", similar: @similar_products, path: product_variant_similar_path(product_id: @product.friendly_id, id: @product_variant.friendly_id) %>
 
     <%= render "shared/related_products", groups: @related_products %>
 

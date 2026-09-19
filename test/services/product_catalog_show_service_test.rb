@@ -44,7 +44,8 @@ class ProductCatalogShowServiceTest < ActiveSupport::TestCase
     product_data = ProductCatalogShowService.new(product:).call
     variant_data = ProductCatalogShowService.new(product:, product_variant: product_variants(:one)).call
 
-    assert_equal product_data.fetch(:similar_products).map(&:id), variant_data.fetch(:similar_products).map(&:id)
+    assert_equal product_data.fetch(:similar_products).items.map(&:id),
+                 variant_data.fetch(:similar_products).items.map(&:id)
   end
 
   test 'custom attributes use product custom_attributes_resources' do
