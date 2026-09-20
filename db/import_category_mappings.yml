@@ -1,0 +1,664 @@
+# What a shop's own word means in this catalogue.
+#
+# Written by reading the 1680 distinct category words that 245 shops used in the
+# first markup-only import, biggest first. It is a proposal: read it as a diff
+# and correct it before loading. `rake import:mappings:load` applies it, and
+# `rake import:map` then classifies the candidates that are waiting.
+#
+# Three rules were followed:
+#
+#   * A word is mapped only when it names one sub category and no other.
+#     "Speakers", "Lautsprecher" and "Loudspeakers" are NOT mapped: a shop that
+#     writes only that has floorstanders and bookshelf models under one word,
+#     and guessing would put both in one place. Those wait for the review.
+#   * A word is refused when it names something this catalogue does not hold:
+#     car and marine audio, studio and PA, television, appliances, tools, and
+#     recordings. This is the cheapest decision in the file -- one line removes
+#     a hundred candidates that a person would otherwise refuse by hand.
+#   * A brand's series name ("Sage Series", "Compass Collection") is left alone.
+#     It says nothing about what the product is.
+#
+# Words that were mapped in the first draft and then taken out again, so that
+# nobody puts them back. Each one names more than one sub category, so a
+# mapping would classify hundreds of products silently and wrongly. They are
+# answered per product, not per word:
+#
+#   Amplifiers, Amplifier, Audio Amplifiers  integrated, power, pre, headphone
+#                                            or a receiver
+#   2 Channel Amplifier                      a stereo power amplifier, or a car
+#                                            amplifier
+#   Einbaulautsprecher                       in-wall or in-ceiling
+#   Power Distributors                       a distribution block is not a
+#                                            conditioner, and this catalogue has
+#                                            no sub category for one
+#   Record Cleaning Machines                 no sub category for one
+#   Speakers, Lautsprecher, Loudspeakers     floorstanding or bookshelf
+#   Headphones                               over-ear, on-ear or in-ear
+#   Cables, Kabel, Audio Cable               five kinds of cable
+#   Accessories, Zubehör, Accessoires        stands, spikes, racks, cloths
+#   Wandlautsprecher                         on-wall or in-wall
+#
+# No brand is named on any line, so each applies to every shop that writes the
+# word. Add a brand to a line where one shop means something of its own by it.
+#
+# `sub_categories` is a list because a word can name two things and a product
+# can be two things: a shop's "In-Wall Subwoofers" is both, and so is the
+# product in it.
+---
+# -- Amplifiers ------------------------------------------------------------
+- source_category: Integrated Amplifier
+  sub_categories: [integrated-amplifiers]
+- source_category: Intergrated Amplifier
+  sub_categories: [integrated-amplifiers]
+- source_category: Power amplifiers
+  sub_categories: [power-amplifiers]
+- source_category: Power Amplifier
+  sub_categories: [power-amplifiers]
+- source_category: Stereo Power Amplifier
+  sub_categories: [power-amplifiers]
+- source_category: Preamplifier
+  sub_categories: [pre-amplifiers]
+- source_category: Preamplifiers
+  sub_categories: [pre-amplifiers]
+- source_category: Phono Preamplifiers
+  sub_categories: [phono-pre-amplifiers]
+- source_category: Headphone Amplifier
+  sub_categories: [headphone-amplifiers]
+- source_category: Headphone Amplifiers
+  sub_categories: [headphone-amplifiers]
+- source_category: Receiver
+  sub_categories: [receivers]
+- source_category: Receivers
+  sub_categories: [receivers]
+- source_category: A/V Surround Sound Receiver
+  sub_categories: [receivers]
+
+# -- Analog ----------------------------------------------------------------
+- source_category: Turntable
+  sub_categories: [turntables]
+- source_category: Turntables
+  sub_categories: [turntables]
+- source_category: turntables
+  sub_categories: [turntables]
+- source_category: Plattenspieler
+  sub_categories: [turntables]
+- source_category: Platenspeler
+  sub_categories: [turntables]
+- source_category: Cartridge
+  sub_categories: [cartridges]
+- source_category: Cartridges
+  sub_categories: [cartridges]
+- source_category: Phono Cartridges
+  sub_categories: [cartridges]
+- source_category: Oyster Series Cartridges
+  sub_categories: [cartridges]
+
+# -- Digital ---------------------------------------------------------------
+- source_category: DAC
+  sub_categories: [dacs]
+- source_category: DACs
+  sub_categories: [dacs]
+- source_category: Digital to Analog Audio Converter
+  sub_categories: [dacs]
+- source_category: CD Player
+  sub_categories: [cd-sacd-players]
+
+# -- Loudspeakers ----------------------------------------------------------
+# "Speakers" and its translations are deliberately absent: one word, two
+# sub categories, and no way to tell which from the word alone.
+- source_category: Subwoofer
+  sub_categories: [subwoofers]
+- source_category: Subwoofers
+  sub_categories: [subwoofers]
+- source_category: Bookshelf speakers
+  sub_categories: [bookshelf-standmount-loudspeakers]
+- source_category: Bookshelf Speaker
+  sub_categories: [bookshelf-standmount-loudspeakers]
+- source_category: Floorstanding Speaker
+  sub_categories: [floorstanding-loudspeakers]
+- source_category: Floorstanding speakers
+  sub_categories: [floorstanding-loudspeakers]
+- source_category: Unsichtbare Lautsprecher
+  sub_categories: [in-wall-loudspeakers]
+- source_category: In-Wall
+  sub_categories: [in-wall-loudspeakers]
+- source_category: On Wall
+  sub_categories: [on-wall-loudspeakers]
+
+# -- Headphones ------------------------------------------------------------
+# Plain "Headphones" is not mapped: this catalogue separates over-ear, on-ear
+# and in-ear, and a shop that writes one word sells all three.
+- source_category: On Ear Headphones
+  sub_categories: [on-ear-headphones]
+- source_category: Over Ear Headphones
+  sub_categories: [over-ear-headphones]
+- source_category: Earphones
+  sub_categories: [in-ear-monitors]
+- source_category: Earphones/IEMs
+  sub_categories: [in-ear-monitors]
+- source_category: Earbuds & In Ear Headphones
+  sub_categories: [in-ear-monitors]
+- source_category: Universal In-Ear Monitor
+  sub_categories: [in-ear-monitors]
+- source_category: 有線イヤホン
+  sub_categories: [in-ear-monitors]
+- source_category: ワイヤレスイヤホン
+  sub_categories: [in-ear-monitors]
+
+# -- Cables ----------------------------------------------------------------
+# Plain "Cables", "Kabel" and "Audio Cable" are not mapped: a cable shop sells
+# every kind under one word.
+- source_category: Speaker Cable
+  sub_categories: [loudspeaker-cables]
+- source_category: Speaker Cables
+  sub_categories: [loudspeaker-cables]
+- source_category: Loudspeaker cables
+  sub_categories: [loudspeaker-cables]
+- source_category: Bulk Speaker Cables
+  sub_categories: [loudspeaker-cables]
+- source_category: Interconnects
+  sub_categories: [interconnects]
+- source_category: Interconnect cables
+  sub_categories: [interconnects]
+- source_category: Interconnect Cable
+  sub_categories: [interconnects]
+- source_category: RCA Cable
+  sub_categories: [interconnects]
+- source_category: Digital Cable
+  sub_categories: [digital-cables]
+- source_category: Digital Cables
+  sub_categories: [digital-cables]
+- source_category: USB Cables
+  sub_categories: [digital-cables]
+- source_category: Power Cables
+  sub_categories: [power-cables]
+
+# -- Power -----------------------------------------------------------------
+- source_category: Power Conditioners
+  sub_categories: [power-conditioners]
+- source_category: 'Mains Block: Filter'
+  sub_categories: [power-conditioners]
+- source_category: 'Mains Block: Filter &amp; Surge Protection'
+  sub_categories: [power-conditioners]
+- source_category: 'Mains Block: Filter, Surge Protection &amp; DC-blocker'
+  sub_categories: [power-conditioners]
+
+# -- Accessories -----------------------------------------------------------
+# Plain "Accessories" is the largest word in the data (389) and is not mapped:
+# it covers stands, spikes, racks, cloths and cables at once.
+- source_category: Speaker Stand
+  sub_categories: [loudspeaker-stands]
+- source_category: Speaker Stands
+  sub_categories: [loudspeaker-stands]
+- source_category: Hi-Fi Rack
+  sub_categories: [racks]
+- source_category: ESS Racks
+  sub_categories: [racks]
+- source_category: Spikes
+  sub_categories: [pucks-spikes-absorbers]
+
+# -- Not this catalogue ----------------------------------------------------
+# Car, marine and vehicle audio
+- source_category: Car Entertainment Asia
+  out_of_scope: true
+- source_category: Car Accessories Asia
+  out_of_scope: true
+- source_category: Car Accessories
+  out_of_scope: true
+- source_category: Car Audio
+  out_of_scope: true
+- source_category: Automotive Asia
+  out_of_scope: true
+- source_category: Automotive Speakers
+  out_of_scope: true
+- source_category: Automotive Amplifier
+  out_of_scope: true
+- source_category: automotive amplifier
+  out_of_scope: true
+- source_category: Automotive Subwoofers
+  out_of_scope: true
+- source_category: Motor Vehicle Speakers
+  out_of_scope: true
+- source_category: Marine Speakers
+  out_of_scope: true
+- source_category: Radioodtwarzacze samochodowe
+  out_of_scope: true
+- source_category: Harley Davidson Lid Kit
+  out_of_scope: true
+- source_category: Electric Vehicle Charging Equipment
+  out_of_scope: true
+- source_category: E-Auto laden
+  out_of_scope: true
+# Studio, stage and professional
+- source_category: Studio Monitors
+  out_of_scope: true
+- source_category: DJ speakers
+  out_of_scope: true
+- source_category: Communication Headsets
+  out_of_scope: true
+- source_category: Professional Home Security Europe
+  out_of_scope: true
+- source_category: Professional Security Audio
+  out_of_scope: true
+# Recordings rather than equipment
+- source_category: Music
+  out_of_scope: true
+- source_category: Jazz
+  out_of_scope: true
+- source_category: Blues
+  out_of_scope: true
+- source_category: Rock & Pop
+  out_of_scope: true
+- source_category: Classical Music
+  out_of_scope: true
+- source_category: LPs
+  out_of_scope: true
+- source_category: Free Downloads &amp; Music Samples
+  out_of_scope: true
+# Television, video and computing
+- source_category: Television
+  out_of_scope: true
+- source_category: Television Europe
+  out_of_scope: true
+- source_category: TV &amp; Video
+  out_of_scope: true
+- source_category: Projector
+  out_of_scope: true
+- source_category: Signage
+  out_of_scope: true
+- source_category: Computer
+  out_of_scope: true
+- source_category: Telephone &amp; Fax
+  out_of_scope: true
+# Household appliances, tools, lighting, personal care
+- source_category: 厨房家电 (Kitchen Appliances)
+  out_of_scope: true
+- source_category: Kitchen Appliances Europe
+  out_of_scope: true
+- source_category: Küchenkleingeräte
+  out_of_scope: true
+- source_category: Haushaltskleingeräte
+  out_of_scope: true
+- source_category: Produkty AGD
+  out_of_scope: true
+- source_category: Appliances
+  out_of_scope: true
+- source_category: Home Appliances Europe
+  out_of_scope: true
+- source_category: 生活电器 (Household Appliances)
+  out_of_scope: true
+- source_category: Refrigerator
+  out_of_scope: true
+- source_category: Cooker and Oven
+  out_of_scope: true
+- source_category: Hob
+  out_of_scope: true
+- source_category: Coffee Makers / Grinders
+  out_of_scope: true
+- source_category: Sandwich Makers / Waffles Makers / Grills
+  out_of_scope: true
+- source_category: Irons / Steam Stations / Fabrics Care
+  out_of_scope: true
+- source_category: Air Humidifiers
+  out_of_scope: true
+- source_category: Fans
+  out_of_scope: true
+- source_category: Insect Killer
+  out_of_scope: true
+- source_category: Bathroom Scales
+  out_of_scope: true
+- source_category: Personal Care
+  out_of_scope: true
+- source_category: 个人健康护理 (Health &amp; Beauty)
+  out_of_scope: true
+- source_category: Beauty
+  out_of_scope: true
+- source_category: Hair Clippers / Shavers
+  out_of_scope: true
+- source_category: Haarschneidemaschinen / Herrenrasierer
+  out_of_scope: true
+- source_category: Garden Tools Europe
+  out_of_scope: true
+- source_category: Narzędzia ogrodowe
+  out_of_scope: true
+- source_category: Power Tools Europe
+  out_of_scope: true
+- source_category: Elektronarzędzia
+  out_of_scope: true
+- source_category: Herramientas
+  out_of_scope: true
+- source_category: Home and Garden
+  out_of_scope: true
+- source_category: Heim und Garten
+  out_of_scope: true
+- source_category: Dom
+  out_of_scope: true
+- source_category: Kuchnia
+  out_of_scope: true
+- source_category: LED Bulbs
+  out_of_scope: true
+- source_category: LED-Birnen
+  out_of_scope: true
+- source_category: Oświetlenie LED
+  out_of_scope: true
+- source_category: Batteries Europe
+  out_of_scope: true
+- source_category: Weather stations Europe
+  out_of_scope: true
+- source_category: Stacje pogodowe
+  out_of_scope: true
+- source_category: Pompy ciepła
+  out_of_scope: true
+
+# ---------------------------------------------------------------------------
+# Decisions for one brand's own word, read from the products under it.
+#
+# These were made by looking at the product names in each pair rather than at
+# the word alone: "Speaker" at one brand is a portable Bluetooth box, at
+# another an in-wall driver. A pair whose products are of two kinds is left
+# undecided on purpose and waits for the review -- the same rule as above.
+#
+# Most of the largest pairs are refusals. A hi-fi brand's shop sells its
+# television range, its car radios, its spare grilles and its ear cushions from
+# the same catalogue, and one line keeps each of those out of the queue.
+# ---------------------------------------------------------------------------
+
+# Blaupunkt sells televisions, car radios, kitchen appliances and power strips
+# beside its audio, and what audio it does sell is portable and in-car. The
+# whole brand is answered with one rule rather than with twenty refusals, which
+# would have recorded the same decision as twenty small ones.
+- brand: blaupunkt
+  source_category: '*'
+  out_of_scope: true
+
+# Proton here is a Taiwanese reseller: washing machines and door locks.
+- brand: proton
+  source_category: 大型家電
+  out_of_scope: true
+- brand: proton
+  source_category: 普騰PROTON
+  out_of_scope: true
+
+# Lenco: emergency radios and DAB sets are not hi-fi components; the record
+# players with built-in speakers are turntables.
+- brand: lenco
+  source_category: radios_and_stereo_sets
+  out_of_scope: true
+- brand: lenco
+  source_category: turntables_with_speakers
+  sub_categories: [turntables]
+- brand: lenco
+  source_category: Accessoires
+  out_of_scope: true
+- brand: lenco
+  source_category: accessories
+  out_of_scope: true
+
+# Spare parts, fittings and packaging, sold from the same catalogue as the
+# products. Each of these is a bracket, a grille, a cushion or a port tube.
+- brand: sonance
+  source_category: Professional Series
+  out_of_scope: true
+- brand: sonance
+  source_category: PowerPipe
+  out_of_scope: true
+- brand: cerwin-vega
+  source_category: Clamp Ring
+  out_of_scope: true
+- brand: cerwin-vega
+  source_category: Speaker grill
+  out_of_scope: true
+- brand: koss
+  source_category: Cushions
+  out_of_scope: true
+- brand: ollo-audio
+  source_category: Spare parts
+  out_of_scope: true
+- brand: stillpoints
+  source_category: Adapters
+  out_of_scope: true
+- brand: gr-research
+  source_category: Klipsch Upgrades
+  out_of_scope: true
+- brand: furutech
+  source_category: Component Parts
+  out_of_scope: true
+- brand: furutech
+  source_category: IEC Connectors
+  out_of_scope: true
+- brand: furutech
+  source_category: Bulk Cables
+  out_of_scope: true
+- brand: sophia-electric
+  source_category: Parts & Accessories
+  out_of_scope: true
+- brand: whd
+  source_category: Lautsprecher - Zubehör
+  out_of_scope: true
+# 100 V volume controls are public-address fittings, not home hi-fi.
+- brand: whd
+  source_category: Lautstärkeregler
+  out_of_scope: true
+- brand: ortofon
+  source_category: Styli
+  out_of_scope: true
+- brand: ortofon
+  source_category: Accessories
+  out_of_scope: true
+- brand: final-audio
+  source_category: アクセサリ
+  out_of_scope: true
+- brand: 64-audio
+  source_category: Accessory
+  out_of_scope: true
+- brand: svs
+  source_category: Accessory
+  out_of_scope: true
+- brand: meze-audio
+  source_category: Accesory
+  out_of_scope: true
+- brand: earthquake
+  source_category: Accessories
+  out_of_scope: true
+- brand: pro-ject
+  source_category: Zubehör
+  out_of_scope: true
+
+# Not products at all.
+- brand: audio-art-cable
+  source_category: OPTIONS_HIDDEN_PRODUCT
+  out_of_scope: true
+# Not a condition: these are models Pearl Acoustics no longer makes, listed as a
+# record of what it once sold. The category stays for the review; the state is
+# the point of the word.
+- brand: pearl-acoustics
+  source_category: Selection of Previously Sold Loudspeakers
+  discontinued: true
+- brand: monster-cable
+  source_category: Speaker
+  out_of_scope: true
+
+# Words that do name one thing, read from their products.
+- brand: audeze
+  source_category: Headphone
+  sub_categories: [over-ear-headphones]
+- brand: audio-art-cable
+  source_category: HPX-1
+  sub_categories: [headphone-cables]
+- brand: audio-art-cable
+  source_category: HPX-1SE
+  sub_categories: [headphone-cables]
+- brand: tripowin
+  source_category: Audio Cable
+  sub_categories: [headphone-cables]
+# "Archived" at Shunyata means the products are no longer made. The word says
+# what they are and that they are gone; the shop's availability fields say
+# neither, because an archived product is simply not offered.
+- brand: shunyata-research
+  source_category: Archived Digital Cables
+  sub_categories: [digital-cables]
+  discontinued: true
+- brand: shunyata-research
+  source_category: Archived Power Cables
+  sub_categories: [power-cables]
+  discontinued: true
+- brand: shunyata-research
+  source_category: Archived Power Distributors
+  sub_categories: [power-conditioners]
+  discontinued: true
+# Sonamp and PowerZone are power amplifiers, every one of them.
+- brand: sonance
+  source_category: Amplifiers
+  sub_categories: [power-amplifiers]
+
+# Words that state a state and nothing else. "Archived Audio Cables" holds XLR,
+# RCA and phono leads under one word, so the category stays for the review --
+# but every one of them is discontinued, and that is worth writing once.
+- brand: shunyata-research
+  source_category: Archived Audio Cables
+  discontinued: true
+- brand: totem
+  source_category: Legacy Products
+  discontinued: true
+
+# A word that names two things is not always ambiguous. There are two cases and
+# they need opposite answers:
+#
+#   "Amplifiers"             one of five kinds, and the word does not say which.
+#                            Not mapped: the reviewer decides per product.
+#   "Preamplifiers & Phono"  each product IS both -- a Thivan Labs preamplifier
+#                            has the phono stage inside it. Mapped to both.
+#
+# The test is whether the two are alternatives or a description of one product.
+- brand: thivan-labs
+  source_category: Preamplifiers &amp; Phono
+  sub_categories: [pre-amplifiers, phono-pre-amplifiers]
+# The same shape: one box that is a headphone amplifier and a speaker amplifier.
+- brand: thivan-labs
+  source_category: Headphone &amp; Speaker Amplifier
+  sub_categories: [headphone-amplifiers, integrated-amplifiers]
+# Thivan's own spellings of words already decided for every brand.
+- brand: thivan-labs
+  source_category: Intergrated amplifiers
+  sub_categories: [integrated-amplifiers]
+- brand: thivan-labs
+  source_category: TUBE PREAMPLIFIER
+  sub_categories: [pre-amplifiers]
+- brand: thivan-labs
+  source_category: TUBE PHONO
+  sub_categories: [phono-pre-amplifiers]
+- brand: thivan-labs
+  source_category: RCA CABLES
+  sub_categories: [interconnects]
+- brand: thivan-labs
+  source_category: XLR CABLES
+  sub_categories: [interconnects]
+- brand: thivan-labs
+  source_category: SPEAKER CABLES
+  sub_categories: [loudspeaker-cables]
+
+# Words that state only that the products are gone. The category under them is
+# whatever the brand happened to stop making, so it stays for the review -- but
+# the state is the same wherever the word appears, and it is the one thing no
+# product page carries.
+- source_category: Discontinued Product
+  discontinued: true
+- source_category: Discontinued products
+  discontinued: true
+- source_category: Discontinued models
+  discontinued: true
+- source_category: Discontinued
+  discontinued: true
+
+# Plain words, one meaning each.
+- source_category: Kopfhörerverstärker
+  sub_categories: [headphone-amplifiers]
+- source_category: Stereo Integrated Amplifier
+  sub_categories: [integrated-amplifiers]
+- source_category: DAC Stereo Integrated Amplifier
+  sub_categories: [integrated-amplifiers, dacs]
+- source_category: Audio & Video Receivers
+  sub_categories: [receivers]
+- source_category: Pre-Amplifiers
+  sub_categories: [pre-amplifiers]
+- source_category: Pre-Amplifier
+  sub_categories: [pre-amplifiers]
+- source_category: Stereo Receiver
+  sub_categories: [receivers]
+- source_category: Home Receivers
+  sub_categories: [receivers]
+- source_category: AV Surround Sound Receiver
+  sub_categories: [receivers]
+- source_category: DVD A/V Receiver
+  sub_categories: [receivers]
+
+- source_category: cd_players
+  sub_categories: [cd-sacd-players]
+
+# A soundbar is a product category this catalogue does not hold, and a clock
+# radio is not hi-fi equipment.
+- source_category: Soundbar
+  out_of_scope: true
+- source_category: clock_radios_and_alarm_clocks
+  out_of_scope: true
+
+# The Funk Firm resells Audio-Technica cartridges (AT-VM95SH, AT-OC9XSL) under
+# "Cartridge". None of them is a Funk Firm product.
+- brand: the-funk-firm
+  source_category: Cartridge
+  out_of_scope: true
+
+# HEDD: the HEDDphones are hi-fi headphones and stay. The studio monitors, the
+# subwoofers that go with them, the Atmos and reference studio systems and the
+# mounting gear are studio equipment (confirmed by the owner: keep HEDD, leave
+# out what is only studio gear).
+- brand: hedd
+  source_category: Studio Monitors
+  out_of_scope: true
+- brand: hedd
+  source_category: Subwoofer
+  out_of_scope: true
+- brand: hedd
+  source_category: Atmos Systems
+  out_of_scope: true
+- brand: hedd
+  source_category: Reference Systems
+  out_of_scope: true
+- brand: hedd
+  source_category: Mounting Gear
+  out_of_scope: true
+
+# Arylic files its streamers, Bluetooth receivers and streaming preamplifiers
+# under "Audio & Video Receivers". None of them is an A/V receiver. The two
+# preamplifiers (BP50, S50 Pro+) are corrected one by one in the review.
+- brand: arylic
+  source_category: Audio & Video Receivers
+  sub_categories: [streamers]
+
+# Summit Hi-Fi is a dealer, not a maker. Its shop sells NAD, PSB, SVS, Legacy
+# Audio, NuPrime, Bluesound, projectors and more, and names many of them without
+# the brand ("Metro XD", "PB-2000 Pro"), so no name rule can catch them all.
+- brand: summit-hi-fi
+  source_category: '*'
+  out_of_scope: true
+
+# Siltech makes cables. Its "Subwoofer" category holds subwoofer cables.
+- brand: siltech
+  source_category: Subwoofer
+  sub_categories: [interconnects]
+
+# Ascend Acoustics sells Rythmik subwoofers under "Subwoofer". None of them is
+# an Ascend product, and Rythmik is not a brand in the catalogue yet.
+- brand: ascend-acoustics
+  source_category: Subwoofer
+  out_of_scope: true
+
+# reson makes its own phono cartridges (reca, aciore, etile, mica), and its shop
+# also sells Fyne, Music Hall and other brands under stock codes ("F501S",
+# "mmf 3.3 2Mred", "ERIEMGR"). The shop word "physical" is refused, and the
+# cartridges are classified one by one in db/import_validations.jsonl. A mapping
+# refusal only touches candidates without a sub category, so the classified
+# cartridges stay.
+- brand: reson
+  source_category: physical
+  out_of_scope: true

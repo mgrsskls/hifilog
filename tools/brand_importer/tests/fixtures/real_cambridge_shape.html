@@ -1,0 +1,18 @@
+<!-- The markup shape of a real manufacturer page (cambridgeaudio.com, CXA81 MkII,
+     read on 2026-09-14), reduced to what the importer looks at. It is kept because
+     every part of it broke an assumption that the first version of the extractor
+     made: the version words in the name, the image url as a list, the price of
+     zero with an empty currency, and the article number per offer. -->
+<html><head><title>Cambridge Audio CXA81 Mk II Integrated Stereo Amplifier</title>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Organization","name":"Cambridge Audio International"},
+ {"@type":"Product","name":"CXA81 MKII Black UK/EU",
+  "description":"Cambridge Audio CXA81 MKII Integrated Amplifier Black 230V UK/EU",
+  "image":{"@type":"ImageObject","url":["https://example.test/a.png","https://example.test/b.png"]},
+  "offers":[
+    {"@type":"Offer","availability":"https://schema.org/Discontinued","price":"0.00","priceCurrency":[],"sku":"C11311K"},
+    {"@type":"Offer","availability":"https://schema.org/Discontinued","price":"0.00","priceCurrency":[],"sku":"C11366K"}],
+  "brand":{"@type":"Brand","name":"Cambridge Audio"},
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"17"}}]}
+</script></head><body><h1>CXA81 MkII</h1></body></html>

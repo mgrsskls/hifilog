@@ -605,6 +605,195 @@ The home page is for logged-out visitors only—a signed-in user is redirected t
 
 All six come from **`HomeHighlights`**, which returns plain structs rather than models so the partials carry no model knowledge. Two rules hold for every block: it never orders a large table on an unindexed column (see `AddHomeHighlightIndexes`, and the identifier cache above for the catalog views), and it may return nothing—the template then skips that section rather than render an empty heading. Photos obey the same visibility rule as catalog thumbnails: publicly indexable profiles only, and a photo links to the catalog entry, never to its owner.
 
+## Bulk import from brand websites
+
+`tools/brand_importer/` reads manufacturer websites and writes **candidate**
+products with a source for each field. It is a separate Python tool, not part of
+the application: it is slow, it speaks to the network, and it has to be run again
+and again without a deploy. It never writes to the database.
+
+Two rake tasks are the only connection between the two, and both run in this
+direction only:
+
+- `bin/rails import:brands` writes the brands that have a website, as CSV.
+- `bin/rails import:schema` writes the sub categories and custom attributes as
+  JSON. The importer has **no own list of fields**: an attribute that ActiveAdmin
+  does not define cannot be imported, and an option key that is not offered is
+  refused. Run the task again after a change to the taxonomy or to an attribute.
+
+The output is a candidate per product page, with the source, the confidence and
+the quoted words for every single field. Promotion into `products` is a separate
+decision and is not automatic. See `tools/brand_importer/README.md`.
+
+### Staging (`ImportCandidate`, `ImportCategoryMapping`, `ImportBatch`)
+
+`ImportCandidate` is **not a product**. It is what a page said, with a record of
+which part of that page said it, waiting for a person. Nothing here reaches
+`products` by itself.
+
+Three columns carry the review, and all three are columns rather than
+calculations, because eleven thousand rows cannot be reviewed one form at a
+time:
+
+- `provenance` — source, URL, quoted words and confidence **per field**, so a
+  reviewer sees whether a price was stated by the shop software or read out of a
+  sentence.
+- `score` — how complete and how well sourced the row is. Not a measure of
+  truth: it says where the next minute of reviewing is best spent.
+- `match_keys` — every spelling under which this may already exist, so "is this
+  a duplicate?" is answered on the index instead of asked.
+
+A candidate names sub categories as an **array**, not one. `Product` has always
+been `has_and_belongs_to_many :sub_categories`, and the catalogue needs it: the
+Wisdom Audio SUB1 is a subwoofer and an in-wall loudspeaker. A proposal that
+could hold one would have to be wrong for such a product, and nothing
+downstream could tell. The array is GIN indexed, so "which are classified" and
+"which are subwoofers" are both index reads.
+
+`ImportCategoryMapping` turns a shop's own word into a sub category, one time.
+This is measured rather than assumed: of 10904 candidates from 128 shops, 68%
+carried a shop category, and those were 1039 distinct (brand, word) pairs — one
+decision covering seven products on average. A mapping with no brand answers the
+word everywhere; a mapping with a brand wins over it. `out_of_scope` is a third
+answer, for a shop's "Vinyl" or "Merch", so that a refusal is also made once
+rather than once per run.
+
+After the mappings, `import:map` corrects two things that a shop's word cannot
+know, by the product's own name. A "pre-amplifier" with "phono" in its name
+moves to phono pre-amplifiers. An "interconnect" with a digital word in its
+name (AES/EBU, USB, streaming, Ethernet, HDMI, BNC, coaxial, S/PDIF, TOSLINK,
+optical, digital, I2S) moves to digital cables.
+
+**A verdict of a second reading decides the row.** Each candidate carries its
+verdict in `validation_verdict`. `import:load` rejects every pending row with
+the verdict `out_of_scope`, and writes the reading's note as the
+`decision_note`. `import:map` writes only the rows that are `open_to_mapping`:
+rows with no verdict, or with the verdict `agreed` or `unsure`. The verdicts
+`corrected` and `classified` wrote the sub categories, and `no_category`
+cleared them on purpose, so a mapping does not write over them.
+
+A check can also correct the product name. A shop's title often holds more
+than the name: the brand, the kind of product, a pack size or a slogan
+("F1-8 Standmount Speaker | Hi-Fi" is the F1-8). The check then carries
+`corrected_name` and, where the title held a finish or an edition,
+`corrected_variant`. The `validations` step writes them onto the candidate and
+keeps the shop's title in `source_name`, because the key of the check is made
+from the title.
+The same step clears a model number that only repeats the product name
+(case, spaces and punctuation are ignored), so the name is not stored twice.
+It also marks a candidate as discontinued when the shop's own words say so:
+a category such as "Discontinued models", "Archived Digital Cables" or
+"Legacy Products", or a remark at the end of the shop's title such as
+"- Discontinued", "(DISCONTINUED)" or "– OUT OF PRODUCTION". The state then
+arrives with `import:load` and does not depend on a mapping.
+
+The path from a crawl to the catalogue:
+
+```sh
+rake import:load     # candidates.jsonl -> staging; never touches a decided row;
+                     # rejects the rows read as out of scope
+rake import:map      # applies the mappings to the pending rows open to mapping
+# review in ActiveAdmin: Import -> Import Candidates, and Unmapped categories
+rake import:promote  # writes the approved candidates as products
+```
+
+**A candidate can be edited like a product** before it is approved or
+classified: name, variant, model number, brand, release year, discontinued, DIY
+kit, price, description and sub categories. `import:promote` writes what was
+saved. The importer never fills the description: it is written only by people,
+here. A saved edit sets `edited_at` and `edited_by`, and from then on
+`import:load` and `import:map` leave that row alone, the same as a decided row.
+A correction made by hand is therefore never undone by the next run.
+
+The candidate list is a grid of cards, not a table: a candidate has too many
+fields for one table row. ActiveAdmin 4 has only a table index, so the grid is
+a component of this application, `app/components/index_as_grid.rb`. It keeps
+the batch selection check boxes of ActiveAdmin, and it shows sort links above
+the cards because a grid has no column headers.
+
+The name can be changed in the card itself. The name is an input; a change is
+saved when the input loses focus or Enter is pressed. The input sends one
+`PATCH` to `rename`, which marks the row as edited in the same way as the form.
+The script is `app/assets/javascripts/admin_inline_edit.js`. It is loaded on
+every admin page and acts only on inputs with `data-inline-edit-url`, so another
+index can use it for another field.
+
+**A single candidate can be published at once.** The "Publish" link on a card
+asks with the browser's confirm dialog, approves the candidate and runs the same
+`ImportPromotion` as `import:promote`. If the promotion fails, the candidate
+keeps its earlier status and the reason is shown.
+
+**Approving writes nothing.** `import:promote` is the only thing that creates a
+`Product`, so a failure has one place to be reported and retried. A candidate
+that cannot become a product — no brand in the catalogue, no sub category, a
+price with no currency — stays approved and is named in the output.
+
+### Which environment does what
+
+An import produces two different kinds of thing, and they belong in different
+places:
+
+- **Products are catalogue content.** They belong in production, and only there.
+  Reviewing candidates in development and then moving the products across means
+  moving rows with their ids, slugs, versions and images, which is how a
+  catalogue gets damaged.
+- **Mappings are decisions.** They are small, they never differ between
+  environments, and they are worth keeping for ever. So they travel as a
+  committed file, exactly as `custom_attributes:define` does for attribute
+  definitions.
+
+```sh
+rake import:mappings:export   # decisions in this database -> db/import_category_mappings.yml
+rake import:mappings:load     # the file -> decisions in this database
+```
+
+Brands and sub categories are named by **slug** in that file, never by id: ids
+differ between environments and slugs do not. A slug that does not resolve is
+reported and skipped, because a mapping attached to the wrong sub category
+classifies hundreds of products wrongly and silently.
+
+### What travels, and how
+
+Three kinds of thing come out of an import, and they go to three places:
+
+|                                                                                     | Where it lives                                                   | How it gets to production                                 |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------- |
+| **Decisions** — category mappings, validation verdicts                              | `db/import_category_mappings.yml`, `db/import_validations.jsonl` | committed; deployed with the code                         |
+| **The candidate set** — everything a crawl produced, already classified and checked | `tools/brand_importer/var/candidates.jsonl`                      | copied to the server once, loaded with `rake import:load` |
+| **The crawl itself** — stored pages, extraction and classification caches           | `tools/brand_importer/var/`                                      | never leaves the machine that crawled                     |
+
+The middle row is the one that matters here. `candidates.jsonl` is a plain file
+and does not need to be committed to reach production — it is copied:
+
+```sh
+# on the machine that crawled
+gzip -k tools/brand_importer/var/candidates.jsonl
+scp tools/brand_importer/var/candidates.jsonl.gz you@server:/tmp/
+
+# on the server
+gunzip -c /tmp/candidates.jsonl.gz > tools/brand_importer/var/candidates.jsonl
+rake import:load
+rake import:map
+```
+
+It carries everything the local work put into it: the sub categories the
+classifier proposed, the verdicts of a second reading (`validated_at`,
+`validated_by`, `validation_note`, `validation_verdict`), the warnings, and the provenance of every
+field. `import:load` writes all of that into staging, and it never overwrites a
+row a person has already decided there.
+
+The decisions are committed rather than copied because they are small, they read
+as a diff, and they are the part that keeps paying: a mapping decided today
+classifies the products of every future crawl, on every machine. The crawl
+itself is 8.7 GB of stored pages and is worth nothing once the candidates are
+made — a second crawl remakes it.
+
+The rule that follows: **production owns the review.** Candidates are loaded
+there, decided there, and promoted there. Development is for rehearsing the
+flow on two or three brands, and `rake import:reset[yes]` empties the staging
+tables afterwards so a rehearsal is never mistaken for the real review. It
+refuses to run in production.
+
 ## Cross-cutting concerns
 
 **Service objects** hold orchestration and multi-model queries that belong to neither a model nor a controller:
@@ -664,25 +853,28 @@ Presenters sit beside models and centralize display rules for templates.
 
 ## Quick reference
 
-| Concept                     | Mutable?  | Role                                                  |
-| --------------------------- | --------- | ----------------------------------------------------- |
-| `Category` / `SubCategory`  | Yes       | Taxonomy; scopes catalog and custom attributes        |
-| `Brand`                     | Yes       | Manufacturer; products; bookmarks; search             |
-| `Product`                   | Yes       | Shared catalog identity                               |
-| `ProductVariant`            | Yes       | Variant-specific overrides                            |
-| `ProductItem`               | No (view) | Unified catalog rows                                  |
-| `ContributeProductItem`     | No (view) | Same rows plus completeness/specs, for contribute     |
-| `SearchResult`              | No (view) | Global search rows                                    |
-| `Possession`                | Yes       | Ownership, photos, setups; current vs previous        |
-| `Setup`                     | Yes       | Named public/private gear groupings                   |
-| `CustomProduct`             | Yes       | Off-catalog user gear                                 |
-| `Bookmark` / `BookmarkList` | Yes       | Saved references; optional lists                      |
-| `Event` / `EventAttendee`   | Yes       | Occurrences and RSVPs                                 |
-| `ProductOption`             | Yes       | Spec lines on product or variant                      |
-| `CustomAttribute`           | Yes       | Field definitions; values on `Product`                |
-| `UserActivity`              | Yes       | Social/history feed                                   |
-| `UserFollow`                | Yes       | Follower → followed relationship; drives feed & email |
-| `BrandFollow`               | Yes       | User → brand subscription; public on both sides       |
-| `BrandCatalogEvent`         | No (view) | Products/variants as feed events, by brand and date   |
-| `UserBlock`                 | Yes       | Blocker → blocked; severs follows both ways           |
-| `User`                      | Yes       | Account, visibility, policy acceptance, profile media |
+| Concept                     | Mutable?  | Role                                                               |
+| --------------------------- | --------- | ------------------------------------------------------------------ |
+| `Category` / `SubCategory`  | Yes       | Taxonomy; scopes catalog and custom attributes                     |
+| `Brand`                     | Yes       | Manufacturer; products; bookmarks; search                          |
+| `Product`                   | Yes       | Shared catalog identity                                            |
+| `ProductVariant`            | Yes       | Variant-specific overrides                                         |
+| `ProductItem`               | No (view) | Unified catalog rows                                               |
+| `ContributeProductItem`     | No (view) | Same rows plus completeness/specs, for contribute                  |
+| `SearchResult`              | No (view) | Global search rows                                                 |
+| `Possession`                | Yes       | Ownership, photos, setups; current vs previous                     |
+| `Setup`                     | Yes       | Named public/private gear groupings                                |
+| `CustomProduct`             | Yes       | Off-catalog user gear                                              |
+| `Bookmark` / `BookmarkList` | Yes       | Saved references; optional lists                                   |
+| `Event` / `EventAttendee`   | Yes       | Occurrences and RSVPs                                              |
+| `ProductOption`             | Yes       | Spec lines on product or variant                                   |
+| `CustomAttribute`           | Yes       | Field definitions; values on `Product`                             |
+| `UserActivity`              | Yes       | Social/history feed                                                |
+| `UserFollow`                | Yes       | Follower → followed relationship; drives feed & email              |
+| `BrandFollow`               | Yes       | User → brand subscription; public on both sides                    |
+| `BrandCatalogEvent`         | No (view) | Products/variants as feed events, by brand and date                |
+| `UserBlock`                 | Yes       | Blocker → blocked; severs follows both ways                        |
+| `User`                      | Yes       | Account, visibility, policy acceptance, profile media              |
+| `ImportCandidate`           | Yes       | A statement about a product, per-field provenance, awaits approval |
+| `ImportCategoryMapping`     | Yes       | A shop's word → sub category, decided once                         |
+| `ImportBatch`               | Yes       | One importer run; traces a set of candidates                       |

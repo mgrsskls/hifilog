@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-09-14T00:00:00Z",
+  "sub_categories": [
+    {"slug": "floorstanding-loudspeakers", "identifier": "floorstanding_loudspeakers", "name": "Floorstanding Loudspeakers", "category": "Loudspeakers"},
+    {"slug": "bookshelf-loudspeakers", "identifier": "bookshelf_loudspeakers", "name": "Bookshelf Loudspeakers", "category": "Loudspeakers"},
+    {"slug": "integrated-amplifiers", "identifier": "integrated_amplifiers", "name": "Integrated Amplifiers", "category": "Amplifiers"}
+  ],
+  "custom_attributes": [
+    {"label": "amplifier_output_power", "name": "Output power", "input_type": "number",
+     "units": ["w"], "inputs": ["ohm_8", "ohm_4"], "options": {},
+     "sub_categories": ["integrated-amplifiers"], "option_scopes": {}},
+    {"label": "input_connectors", "name": "Inputs", "input_type": "options", "units": [], "inputs": [],
+     "options": {"1": {"key": "rca", "name": "RCA"}, "2": {"key": "xlr", "name": "XLR"}},
+     "sub_categories": ["integrated-amplifiers"], "option_scopes": {}}
+  ]
+}

@@ -6,6 +6,7 @@ AllCops:
     - config/**/*
     - coverage/**/*
     - db/**/*
+    - lib/tasks/**/*
     - log/**/*
     - node_modules/**/*
     - public/**/*

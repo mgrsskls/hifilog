@@ -16,5 +16,7 @@
     </div>
     <%= render "active_admin/site_footer" %>
   </div>
+  <%# Inline editing in index tables. It acts only on inputs that opt in. %>
+  <%= javascript_include_tag "admin_inline_edit", type: "module" %>
 </body>
 </html>

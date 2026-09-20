@@ -37,6 +37,7 @@ Rails.application.config.assets.precompile += %w(
   users.css
   user_dashboard.css
 
+  admin_inline_edit.js
   amp_to_headphone_calculator.js
   application.js
   delete_form.js

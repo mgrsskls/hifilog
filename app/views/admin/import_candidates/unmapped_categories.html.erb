@@ -1,0 +1,78 @@
+<%# The shop words that no mapping answers yet, biggest first.
+
+    One decision here classifies every candidate that carries the word, in this
+    run and in every later one. In the first full run the two hundred biggest
+    pairs covered 45% of all candidates, which makes this page the cheapest hour
+    of the whole import.
+
+    A word can also be refused. "Vinyl" and "Merch" are decisions too, and are
+    made one time rather than once per run. %>
+
+<div class="mb-8">
+  <h2 class="font-bold text-xl mb-2">Shop categories with no mapping</h2>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    Each row is one decision. It applies to every candidate that carries the
+    word &mdash; in this run and in every later one &mdash; so the largest rows
+    are worth the most. Choose what this catalogue calls it, or say that it
+    names nothing this catalogue holds.
+  </p>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    Hold ctrl or cmd to choose more than one: a word can name two things, and
+    so can a product. A decision made for <b>any brand</b> answers the word
+    wherever it appears.
+    A decision made for one brand wins over it, for the shop that means
+    something of its own by the same word. After deciding, run
+    <code>rake import:map</code> to apply the decisions.
+  </p>
+
+  <% if @pairs.empty? %>
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      Every shop category that candidates carry has a mapping. Candidates
+      without a sub category now state no category at all, and have to be
+      classified by their name.
+    </p>
+  <% else %>
+    <div class="overflow-x-auto">
+      <table class="text-sm w-full">
+        <thead>
+          <tr>
+            <th class="text-left pr-4 pb-2">Brand</th>
+            <th class="text-left pr-4 pb-2">The shop says</th>
+            <th class="text-right pr-4 pb-2">Candidates</th>
+            <th class="text-left pb-2">This catalogue calls it</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pairs.each do |(brand_id, word), count| %>
+            <tr class="border-t border-gray-200 dark:border-gray-700">
+              <td class="pr-4 py-2 whitespace-nowrap">
+                <%= brand_id ? (@brands[brand_id]&.name || brand_id) : 'any brand' %>
+              </td>
+              <td class="pr-4 py-2 font-bold"><%= word %></td>
+              <td class="pr-4 py-2 text-right"><%= count %></td>
+              <td class="py-2">
+                <%= form_tag admin_import_category_mappings_path, method: :post,
+                             class: 'flex flex-wrap items-center gap-2' do %>
+                  <%= hidden_field_tag 'import_category_mapping[brand_id]', brand_id %>
+                  <%= hidden_field_tag 'import_category_mapping[source_category]', word %>
+                  <%# More than one may be chosen: a word can name two things,
+                      and a product can be two things. %>
+                  <%= select_tag 'import_category_mapping[sub_category_ids][]',
+                        options_from_collection_for_select(@sub_categories, :id, :name),
+                        multiple: true, size: 4, class: 'text-sm' %>
+                  <label class="text-sm whitespace-nowrap">
+                    <%= check_box_tag 'import_category_mapping[out_of_scope]', '1' %>
+                    not a product here
+                  </label>
+                  <%= submit_tag 'Save', class: 'cursor-pointer' %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

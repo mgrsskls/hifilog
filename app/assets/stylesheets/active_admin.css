@@ -63,3 +63,14 @@ a {
 		hsl(330, 50%, 45%) var(--perc)
 	);
 }
+
+/* A grid index (app/components/index_as_grid.rb) draws its own card borders.
+   The frame that ActiveAdmin puts around a paginated table would be a box
+   around the boxes, so it is removed here. `overflow: visible` keeps the focus
+   ring of a card from being cut off at the edge. */
+.paginated-collection:has(> .paginated-collection-contents > .index-as-grid) {
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	overflow: visible;
+}

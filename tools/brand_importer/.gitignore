@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+schema/product_schema.json
+var/
