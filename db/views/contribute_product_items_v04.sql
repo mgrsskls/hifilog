@@ -30,9 +30,6 @@
 --
 -- `specs_applicable` / `specs_filled` are exposed so ContributeProductItem.missing_specs can be
 -- exact ("has specs to give and has not given them all") rather than a proxy for an empty JSONB.
---
--- product_series_id / series_name were already columns here going into v04 (see product_items'
--- own series columns) -- carried through unchanged, only completeness/specs_* were replaced.
 SELECT
   uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,
   products.name,
@@ -61,14 +58,11 @@ SELECT
   NULL::text AS variant_name,
   NULL::text AS variant_description,
   NULL::text AS variant_slug,
-  products.product_series_id,
-  product_series.name AS series_name,
   products.specs_applicable,
   products.specs_filled,
   products.completeness
 FROM products
 LEFT JOIN brands ON brands.id = products.brand_id
-LEFT JOIN product_series ON product_series.id = products.product_series_id
 
 UNION ALL
 
@@ -100,12 +94,9 @@ SELECT
   product_variants.name AS variant_name,
   product_variants.description AS variant_description,
   product_variants.slug AS variant_slug,
-  products.product_series_id,
-  product_series.name AS series_name,
   0::bigint AS specs_applicable,
   0::bigint AS specs_filled,
   product_variants.completeness
 FROM product_variants
 JOIN products ON product_variants.product_id = products.id
 LEFT JOIN brands ON brands.id = products.brand_id
-LEFT JOIN product_series ON product_series.id = products.product_series_id

@@ -417,19 +417,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
     t.index ["product_variant_id"], name: "index_product_options_product_variant_id"
   end
 
-  create_table "product_series", force: :cascade do |t|
-    t.bigint "brand_id", null: false
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.citext "name", null: false
-    t.integer "products_count", default: 0, null: false
-    t.citext "slug", null: false
-    t.datetime "updated_at", null: false
-    t.index ["brand_id", "name"], name: "index_product_series_on_brand_id_and_name", unique: true
-    t.index ["brand_id", "slug"], name: "index_product_series_on_brand_id_and_slug", unique: true
-    t.index ["name"], name: "index_product_series_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
-  end
-
   create_table "product_variants", force: :cascade do |t|
     t.virtual "completeness", type: :integer, as: "(round(((100.0 * (((\nCASE\n    WHEN (NULLIF(btrim(description), ''::text) IS NOT NULL) THEN 3\n    ELSE 0\nEND +\nCASE\n    WHEN (release_year IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN ((discontinued IS TRUE) AND (discontinued_year IS NOT NULL)) THEN 1\n    ELSE 0\nEND))::numeric) / ((5 +\nCASE\n    WHEN (discontinued IS TRUE) THEN 1\n    ELSE 0\nEND))::numeric)))::integer", stored: true
     t.datetime "created_at", null: false
@@ -478,11 +465,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
     t.citext "name", null: false
     t.decimal "price", precision: 12, scale: 4
     t.string "price_currency"
-    t.bigint "product_series_id"
     t.integer "release_day"
     t.integer "release_month"
     t.integer "release_year"
-    t.datetime "series_assigned_at"
     t.string "slug", null: false
     t.integer "specs_applicable", default: 0, null: false
     t.integer "specs_filled", default: 0, null: false
@@ -493,7 +478,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
     t.index ["brand_id", "discontinued"], name: "index_products_on_brand_id_and_discontinued"
     t.index ["brand_id", "diy_kit"], name: "index_products_on_brand_id_and_diy_kit"
     t.index ["brand_id", "model_no"], name: "index_products_brand_id_model_no", unique: true
-    t.index ["brand_id", "product_series_id"], name: "index_products_on_brand_id_and_product_series_id"
     t.index ["completeness"], name: "index_products_on_completeness"
     t.index ["created_at"], name: "index_products_on_created_at"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
@@ -502,8 +486,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
     t.index ["model_no", "brand_id"], name: "index_products_on_model_no_and_brand_id", unique: true, where: "(model_no IS NOT NULL)"
     t.index ["model_no"], name: "index_products_on_model_no_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["name"], name: "gin_index_products_on_name", opclass: :gin_trgm_ops, using: :gin
-    t.index ["product_series_id", "release_year", "release_month", "release_day", "id"], name: "index_products_on_series_and_release_date"
-    t.index ["product_series_id", "series_assigned_at"], name: "index_products_on_product_series_id_and_series_assigned_at"
     t.index ["release_year", "release_month", "release_day"], name: "idx_on_release_year_release_month_release_day_0fc6f07e1b"
     t.index ["slug"], name: "index_products_on_slug"
   end
@@ -513,15 +495,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
     t.bigint "sub_category_id", null: false
     t.index ["product_id", "sub_category_id"], name: "idx_on_product_id_sub_category_id_b7601e15e2", unique: true
     t.index ["sub_category_id"], name: "index_products_sub_categories_on_sub_category_id"
-  end
-
-  create_table "series_follows", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "product_series_id", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["product_series_id", "created_at"], name: "index_series_follows_on_product_series_id_and_created_at"
-    t.index ["user_id", "product_series_id"], name: "index_series_follows_on_user_id_and_product_series_id", unique: true
   end
 
   create_table "setup_possessions", force: :cascade do |t|
@@ -660,12 +633,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
   add_foreign_key "possessions", "users"
   add_foreign_key "product_options", "product_variants"
   add_foreign_key "product_options", "products"
-  add_foreign_key "product_series", "brands", on_delete: :cascade
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "brands"
-  add_foreign_key "products", "product_series", on_delete: :nullify
-  add_foreign_key "series_follows", "product_series", on_delete: :cascade
-  add_foreign_key "series_follows", "users", on_delete: :cascade
   add_foreign_key "setup_possessions", "possessions"
   add_foreign_key "setup_possessions", "setups"
   add_foreign_key "setups", "users"
@@ -722,14 +691,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
       NULL::text AS variant_name,
       NULL::text AS variant_description,
       NULL::text AS variant_slug,
-      products.product_series_id,
-      product_series.name AS series_name,
       products.specs_applicable,
       products.specs_filled,
       products.completeness
-     FROM ((products
+     FROM (products
        LEFT JOIN brands ON ((brands.id = products.brand_id)))
-       LEFT JOIN product_series ON ((product_series.id = products.product_series_id)))
   UNION ALL
    SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (product_variants.id)::text)) AS id,
       products.name,
@@ -758,15 +724,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
       product_variants.name AS variant_name,
       product_variants.description AS variant_description,
       product_variants.slug AS variant_slug,
-      products.product_series_id,
-      product_series.name AS series_name,
       (0)::bigint AS specs_applicable,
       (0)::bigint AS specs_filled,
       product_variants.completeness
-     FROM (((product_variants
+     FROM ((product_variants
        JOIN products ON ((product_variants.product_id = products.id)))
-       LEFT JOIN brands ON ((brands.id = products.brand_id)))
-       LEFT JOIN product_series ON ((product_series.id = products.product_series_id)));
+       LEFT JOIN brands ON ((brands.id = products.brand_id)));
   SQL
   create_view "product_items", sql_definition: <<-SQL
       SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,
@@ -795,12 +758,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
       NULL::bigint AS product_variant_id,
       NULL::text AS variant_name,
       NULL::text AS variant_description,
-      NULL::text AS variant_slug,
-      products.product_series_id,
-      product_series.name AS series_name
-     FROM ((products
+      NULL::text AS variant_slug
+     FROM (products
        LEFT JOIN brands ON ((brands.id = products.brand_id)))
-       LEFT JOIN product_series ON ((product_series.id = products.product_series_id)))
   UNION ALL
    SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (product_variants.id)::text)) AS id,
       products.name,
@@ -828,13 +788,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
       product_variants.id AS product_variant_id,
       product_variants.name AS variant_name,
       product_variants.description AS variant_description,
-      product_variants.slug AS variant_slug,
-      products.product_series_id,
-      product_series.name AS series_name
-     FROM (((product_variants
+      product_variants.slug AS variant_slug
+     FROM ((product_variants
        JOIN products ON ((product_variants.product_id = products.id)))
-       LEFT JOIN brands ON ((brands.id = products.brand_id)))
-       LEFT JOIN product_series ON ((product_series.id = products.product_series_id)));
+       LEFT JOIN brands ON ((brands.id = products.brand_id)));
   SQL
   create_view "search_results", sql_definition: <<-SQL
       SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (p.id)::text)) AS id,
@@ -847,12 +804,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
       p.model_no,
       p.slug AS product_slug,
       NULL::text AS product_variant_slug,
-      b.slug AS brand_slug,
-      ps.name AS series_name,
-      ps.slug AS series_slug
-     FROM ((products p
+      b.slug AS brand_slug
+     FROM (products p
        JOIN brands b ON ((b.id = p.brand_id)))
-       LEFT JOIN product_series ps ON ((ps.id = p.product_series_id)))
   UNION ALL
    SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (pv.id)::text)) AS id,
       pv.id AS item_id,
@@ -864,13 +818,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
       pv.model_no,
       p.slug AS product_slug,
       pv.slug AS product_variant_slug,
-      b.slug AS brand_slug,
-      ps.name AS series_name,
-      ps.slug AS series_slug
-     FROM (((product_variants pv
+      b.slug AS brand_slug
+     FROM ((product_variants pv
        JOIN products p ON ((pv.product_id = p.id)))
        JOIN brands b ON ((b.id = p.brand_id)))
-       LEFT JOIN product_series ps ON ((ps.id = p.product_series_id)))
   UNION ALL
    SELECT uuid_generate_v5(uuid_ns_dns(), ('brand-'::text || (b.id)::text)) AS id,
       b.id AS item_id,
@@ -882,49 +833,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
       NULL::text AS model_no,
       NULL::text AS product_slug,
       NULL::text AS product_variant_slug,
-      b.slug AS brand_slug,
-      NULL::citext AS series_name,
-      NULL::citext AS series_slug
-     FROM brands b
-  UNION ALL
-   SELECT uuid_generate_v5(uuid_ns_dns(), ('series-'::text || (ps.id)::text)) AS id,
-      ps.id AS item_id,
-      'ProductSeries'::text AS item_type,
-      NULL::text AS product_name,
-      NULL::text AS product_variant_name,
-      b.name AS brand_name,
-      b.abbreviation AS brand_abbreviation,
-      NULL::text AS model_no,
-      NULL::text AS product_slug,
-      NULL::text AS product_variant_slug,
-      b.slug AS brand_slug,
-      ps.name AS series_name,
-      ps.slug AS series_slug
-     FROM (product_series ps
-       JOIN brands b ON ((b.id = ps.brand_id)));
-  SQL
-  create_view "series_catalog_events", sql_definition: <<-SQL
-      SELECT uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (products.id)::text)) AS id,
-      'product'::text AS source,
-      products.id AS product_id,
-      NULL::bigint AS product_variant_id,
-      products.brand_id,
-      products.product_series_id,
-      products.series_assigned_at AS occurred_at,
-      products.created_at AS listed_at
-     FROM products
-    WHERE ((products.product_series_id IS NOT NULL) AND (products.series_assigned_at IS NOT NULL))
-  UNION ALL
-   SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (product_variants.id)::text)) AS id,
-      'product_variant'::text AS source,
-      product_variants.product_id,
-      product_variants.id AS product_variant_id,
-      products.brand_id,
-      products.product_series_id,
-      GREATEST(product_variants.created_at, products.series_assigned_at) AS occurred_at,
-      product_variants.created_at AS listed_at
-     FROM (product_variants
-       JOIN products ON ((products.id = product_variants.product_id)))
-    WHERE ((products.product_series_id IS NOT NULL) AND (products.series_assigned_at IS NOT NULL));
+      b.slug AS brand_slug
+     FROM brands b;
   SQL
 end
