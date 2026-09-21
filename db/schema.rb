@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_20_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -317,7 +317,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_150000) do
     t.string "warnings", default: [], array: true
     t.index ["brand_id", "source_category"], name: "index_import_candidates_on_brand_id_and_source_category", where: "(source_category IS NOT NULL)"
     t.index ["brand_id", "status"], name: "index_import_candidates_on_brand_id_and_status"
-    t.index ["brand_id"], name: "index_import_candidates_on_brand_id"
     t.index ["brand_slug", "source_url"], name: "index_import_candidates_on_brand_slug_and_source_url", unique: true
     t.index ["import_batch_id"], name: "index_import_candidates_on_import_batch_id"
     t.index ["match_keys"], name: "index_import_candidates_on_match_keys", using: :gin
@@ -339,7 +338,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_150000) do
     t.bigint "sub_category_ids", default: [], null: false, array: true
     t.datetime "updated_at", null: false
     t.index ["brand_id", "source_category"], name: "index_import_category_mappings_on_brand_id_and_source_category", unique: true
-    t.index ["brand_id"], name: "index_import_category_mappings_on_brand_id"
     t.index ["decided_by_id"], name: "index_import_category_mappings_on_decided_by_id"
     t.index ["source_category"], name: "index_import_category_mappings_on_source_category", unique: true, where: "(brand_id IS NULL)"
   end
