@@ -1,4 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+#
+# completeness / specs_applicable / specs_filled are stored columns now (see
+# AddCompletenessToProducts), kept in sync by Product's own save/sub_categories callbacks --
+# callbacks fixtures do not go through. Same reason brands.yml hardcodes products_count. Values
+# here must match what Product#completeness_score / #applicable_highlighted_attributes /
+# #missing_highlighted_attributes compute for this fixture's own fields; CompletenessScoreTest
+# catches drift.
 
 one:
   name: Elise
@@ -7,6 +14,9 @@ one:
   sub_categories:
     - one
   custom_attributes:
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 two:
   name: Atrium Open
@@ -15,6 +25,9 @@ two:
   sub_categories:
     - two
   custom_attributes:
+  completeness: 0
+  specs_applicable: 0
+  specs_filled: 0
 
 diy_kit:
   name: DIY Amp
@@ -24,6 +37,9 @@ diy_kit:
     - two
   diy_kit: true
   custom_attributes:
+  completeness: 0
+  specs_applicable: 0
+  specs_filled: 0
 
 with_custom_attributes:
   name: with_custom_attributes
@@ -42,6 +58,9 @@ with_custom_attributes:
         w: 1
         h: 2
       unit: cm
+  completeness: 38
+  specs_applicable: 1
+  specs_filled: 1
 
 without_custom_attributes:
   name: without_custom_attributes
@@ -50,6 +69,9 @@ without_custom_attributes:
   sub_categories:
     - one
   custom_attributes:
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 with_variants:
   name: Atrium Closed
@@ -58,6 +80,9 @@ with_variants:
   sub_categories:
     - two
   custom_attributes:
+  completeness: 0
+  specs_applicable: 0
+  specs_filled: 0
 
 release_date_ymd:
   name: release_date_ymd
@@ -69,6 +94,9 @@ release_date_ymd:
   release_month: 6
   release_day: 1
   custom_attributes:
+  completeness: 25
+  specs_applicable: 1
+  specs_filled: 0
 
 release_date_ym:
   name: release_date_ym
@@ -79,6 +107,9 @@ release_date_ym:
   release_year: 2020
   release_month: 6
   custom_attributes:
+  completeness: 25
+  specs_applicable: 1
+  specs_filled: 0
 
 release_date_yd:
   name: release_date_yd
@@ -89,6 +120,9 @@ release_date_yd:
   release_year: 2020
   release_day: 1
   custom_attributes:
+  completeness: 25
+  specs_applicable: 1
+  specs_filled: 0
 
 release_date_md:
   name: release_date_md
@@ -99,6 +133,9 @@ release_date_md:
   release_month: 6
   release_day: 1
   custom_attributes:
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 release_date_y:
   name: release_date_y
@@ -108,6 +145,9 @@ release_date_y:
     - one
   release_year: 2020
   custom_attributes:
+  completeness: 25
+  specs_applicable: 1
+  specs_filled: 0
 
 release_date_m:
   name: release_date_m
@@ -117,6 +157,9 @@ release_date_m:
     - one
   release_month: 6
   custom_attributes:
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 release_date_d:
   name: release_date_d
@@ -126,6 +169,9 @@ release_date_d:
     - one
   release_day: 1
   custom_attributes:
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 discontinued:
   name: discontinued
@@ -135,6 +181,9 @@ discontinued:
     - one
   discontinued: true
   custom_attributes:
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 # Related Products fixtures. Sub category one is Headphone Amplifiers, two is Over-Ear Headphones,
 # three is Pre-Amp / Driver Tubes -- a role-adjacent chain in the graph.
@@ -146,6 +195,9 @@ tube_headphone_amp:
     - one
   custom_attributes:
     amplifier_type: "2"
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 solid_state_headphone_amp:
   name: Solid State Headphone Amp
@@ -155,6 +207,9 @@ solid_state_headphone_amp:
     - one
   custom_attributes:
     amplifier_type: "1"
+  completeness: 0
+  specs_applicable: 1
+  specs_filled: 0
 
 driver_tube:
   name: Driver Tube
@@ -163,6 +218,9 @@ driver_tube:
   sub_categories:
     - three
   custom_attributes:
+  completeness: 0
+  specs_applicable: 0
+  specs_filled: 0
 
 wired_headphone:
   name: Wired Headphone
@@ -172,3 +230,6 @@ wired_headphone:
     - two
   custom_attributes:
     headphone_connection_type: "1"
+  completeness: 0
+  specs_applicable: 0
+  specs_filled: 0

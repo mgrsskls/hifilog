@@ -62,16 +62,27 @@ class CustomAttribute < ApplicationRecord
   end.freeze
 
   before_destroy :refuse_destroy_while_graph_references_label
+  before_destroy :remember_sub_category_ids_for_completeness
   # The admin form posts { sub_category_id => [option ids] }. Applied after save rather than on
   # assignment, because a subcategory ticked in the same submit has no join row to write to
   # until the HABTM assignment has been persisted.
   after_save :persist_option_scopes, if: -> { @option_scopes.present? }
   # after_commit ensures the DB transaction is finished before we clear cache
   after_commit :clear_cache
+  # Only `highlighted` and sub_categories affect Product#applicable_highlighted_attributes, so
+  # only those two changes need to fan out to every product they touch (see
+  # Product#recalculate_completeness_for_sub_category!). A pure options/units/label edit does not.
+  after_commit :recompute_products_completeness_for_highlighted_change, on: [:create, :update]
+  after_commit :recompute_products_completeness_after_destroy, on: :destroy
 
   attr_writer :option_scopes
 
-  has_and_belongs_to_many :sub_categories
+  # after_add / after_remove: a sub_categories reassignment writes the join table directly (see
+  # `clear_cache` below for why -- the same reasoning applies to completeness), so it needs its
+  # own hook rather than relying on the after_commit above to catch it.
+  has_and_belongs_to_many :sub_categories,
+                          after_add: :recompute_products_completeness_for_sub_category,
+                          after_remove: :recompute_products_completeness_for_sub_category
   enum :input_type, {
     number: 'number',
     option: 'option',
@@ -559,5 +570,27 @@ class CustomAttribute < ApplicationRecord
   def clear_cache
     Rails.cache.delete('all_custom_attributes')
     self.class.clear_sub_category_scope_cache
+  end
+
+  def recompute_products_completeness_for_sub_category(sub_category)
+    return unless highlighted?
+
+    Product.recalculate_completeness_for_sub_category!(sub_category.id)
+  end
+
+  def recompute_products_completeness_for_highlighted_change
+    return unless saved_change_to_highlighted?
+
+    sub_category_ids.each { |id| Product.recalculate_completeness_for_sub_category!(id) }
+  end
+
+  def remember_sub_category_ids_for_completeness
+    @sub_category_ids_before_destroy = sub_category_ids
+  end
+
+  def recompute_products_completeness_after_destroy
+    return unless highlighted?
+
+    @sub_category_ids_before_destroy.each { |id| Product.recalculate_completeness_for_sub_category!(id) }
   end
 end

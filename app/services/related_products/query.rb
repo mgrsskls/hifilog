@@ -187,18 +187,21 @@ class RelatedProducts::Query
     key = quote(gate.attribute)
     return presence_sql(key) if gate.presence
 
-    # jsonb_typeof normalises the two storage shapes: an `option` attribute stores one id,
-    # an `options` attribute stores an array of them.
-    normalised = "(CASE WHEN jsonb_typeof(base.custom_attributes -> #{key}) = 'array' " \
-                 "THEN base.custom_attributes -> #{key} " \
-                 "ELSE jsonb_build_array(base.custom_attributes -> #{key}) END)"
-    overlap = "jsonb_exists_any(#{normalised}, ARRAY[#{text_list(gate.option_ids)}]::text[])"
+    # Containment (@>) against the raw column, rather than jsonb_exists_any against a
+    # CASE-derived value, so this can use the GIN index on custom_attributes. Checked against
+    # both storage shapes: an `option` attribute stores one id, an `options` attribute stores
+    # an array of them.
+    overlap = gate.option_ids.map do |id|
+      value = quote(id.to_s)
+      "base.custom_attributes @> jsonb_build_object(#{key}, #{value}) " \
+        "OR base.custom_attributes @> jsonb_build_object(#{key}, jsonb_build_array(#{value}))"
+    end.join(' OR ')
 
-    return overlap unless gate.negate
+    return "(#{overlap})" unless gate.negate
 
     # A negative gate must still require the attribute to be present: unfilled is not the same
     # as known-not-to-match, and fails closed (docs §5.4).
-    "jsonb_exists(base.custom_attributes, #{key}) AND NOT #{overlap}"
+    "jsonb_exists(base.custom_attributes, #{key}) AND NOT (#{overlap})"
   end
 
   # Present means: the key exists, is not JSON null, and -- for an `options` attribute, whose
@@ -214,10 +217,6 @@ class RelatedProducts::Query
   # target's sub categories is grouped under.
   def id_array(ids)
     "ARRAY[#{ids.map(&:to_i).join(', ')}]::bigint[]"
-  end
-
-  def text_list(values)
-    values.map { |value| quote(value.to_s) }.join(', ')
   end
 
   def quote(value)

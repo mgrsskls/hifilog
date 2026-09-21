@@ -30,7 +30,9 @@ class Product < ApplicationRecord
   attr_accessor :comment
 
   belongs_to :brand, touch: true
-  has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories
+  has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories,
+                                           after_add: :recalculate_completeness!,
+                                           after_remove: :recalculate_completeness!
   has_many :possessions, dependent: :destroy
   has_many :users, through: :possessions
   has_many :product_variants, dependent: :destroy
@@ -78,6 +80,7 @@ class Product < ApplicationRecord
 
   after_commit :invalidate_cache
   after_commit :update_brand_sub_categories
+  after_commit :recalculate_completeness!, on: [:create, :update]
   after_create_commit :recalculate_brand_products_count
   after_destroy_commit :recalculate_products_count_after_destroy
 
@@ -235,6 +238,38 @@ class Product < ApplicationRecord
     FriendlyId::Slug.create!(
       sluggable_type: 'Product', sluggable_id: id, slug:, created_at: Time.current
     )
+  end
+
+  # Keeps completeness / specs_applicable / specs_filled in step with completeness_score /
+  # applicable_highlighted_attributes / missing_highlighted_attributes -- the view no longer
+  # computes them (see contribute_product_items v04), so this is the only place that does.
+  # update_columns on purpose, same reasoning as Brand#recalculate_products_count!: a plain
+  # #update would re-run every save callback, including this one.
+  #
+  # Fires from three places: an after_commit on this record's own create/update, and after_add /
+  # after_remove on sub_categories -- the association write a plain `product.sub_categories << x`
+  # performs outside of any save, which the after_commit alone would miss. Reset the memoized
+  # applicable_highlighted_attributes first: a sub_categories change invalidates it, and this may
+  # be the same in-memory record whose association just changed.
+  # rubocop:disable Rails/SkipsModelValidations
+  def recalculate_completeness!(*)
+    return unless persisted?
+
+    @applicable_highlighted_attributes = nil
+    applicable = applicable_highlighted_attributes
+    filled = applicable.size - missing_highlighted_attributes.size
+    score = completeness_score
+    return if completeness == score && specs_applicable == applicable.size && specs_filled == filled
+
+    update_columns(completeness: score, specs_applicable: applicable.size, specs_filled: filled)
+  end
+  # rubocop:enable Rails/SkipsModelValidations
+
+  # Recomputes every product in a sub category -- called when a CustomAttribute's `highlighted`
+  # flag or its own sub_categories change, since that widens or narrows every product in the
+  # sub category at once, regardless of whether the product itself changed.
+  def self.recalculate_completeness_for_sub_category!(sub_category_id)
+    joins(:sub_categories).where(sub_categories: { id: sub_category_id }).find_each(&:recalculate_completeness!)
   end
 
   private

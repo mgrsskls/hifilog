@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_075702) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -431,6 +431,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
   end
 
   create_table "product_variants", force: :cascade do |t|
+    t.virtual "completeness", type: :integer, as: "(round(((100.0 * (((\nCASE\n    WHEN (NULLIF(btrim(description), ''::text) IS NOT NULL) THEN 3\n    ELSE 0\nEND +\nCASE\n    WHEN (release_year IS NOT NULL) THEN 2\n    ELSE 0\nEND) +\nCASE\n    WHEN ((discontinued IS TRUE) AND (discontinued_year IS NOT NULL)) THEN 1\n    ELSE 0\nEND))::numeric) / ((5 +\nCASE\n    WHEN (discontinued IS TRUE) THEN 1\n    ELSE 0\nEND))::numeric)))::integer", stored: true
     t.datetime "created_at", null: false
     t.text "description"
     t.boolean "discontinued", null: false
@@ -449,6 +450,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index "uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (id)::text))", name: "index_variants_on_search_uuid"
+    t.index ["completeness"], name: "index_product_variants_on_completeness"
     t.index ["created_at"], name: "index_product_variants_on_created_at"
     t.index ["discontinued"], name: "index_product_variants_on_discontinued"
     t.index ["diy_kit"], name: "index_product_variants_on_diy_kit"
@@ -463,6 +465,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
 
   create_table "products", force: :cascade do |t|
     t.bigint "brand_id", null: false
+    t.integer "completeness", default: 0, null: false
     t.datetime "created_at", null: false
     t.jsonb "custom_attributes"
     t.text "description"
@@ -481,6 +484,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
     t.integer "release_year"
     t.datetime "series_assigned_at"
     t.string "slug", null: false
+    t.integer "specs_applicable", default: 0, null: false
+    t.integer "specs_filled", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "\"left\"((name)::text, 1)", name: "index_products_name_prefix"
     t.index "uuid_generate_v5(uuid_ns_dns(), ('product-'::text || (id)::text))", name: "index_products_on_search_uuid"
@@ -489,6 +494,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
     t.index ["brand_id", "diy_kit"], name: "index_products_on_brand_id_and_diy_kit"
     t.index ["brand_id", "model_no"], name: "index_products_brand_id_model_no", unique: true
     t.index ["brand_id", "product_series_id"], name: "index_products_on_brand_id_and_product_series_id"
+    t.index ["completeness"], name: "index_products_on_completeness"
     t.index ["created_at"], name: "index_products_on_created_at"
     t.index ["custom_attributes"], name: "index_products_on_custom_attributes", using: :gin
     t.index ["discontinued"], name: "index_products_on_discontinued"
@@ -718,46 +724,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
       NULL::text AS variant_slug,
       products.product_series_id,
       product_series.name AS series_name,
-      spec.applicable AS specs_applicable,
-      spec.filled AS specs_filled,
-      (round(((100.0 * ((((
-          CASE
-              WHEN (NULLIF(btrim(products.description), ''::text) IS NOT NULL) THEN 3
-              ELSE 0
-          END +
-          CASE
-              WHEN (products.release_year IS NOT NULL) THEN 2
-              ELSE 0
-          END))::numeric +
-          CASE
-              WHEN (spec.applicable = 0) THEN (0)::numeric
-              ELSE (((2.0 * (spec.filled)::numeric) / (spec.applicable)::numeric) + (
-              CASE
-                  WHEN (spec.filled = spec.applicable) THEN 1
-                  ELSE 0
-              END)::numeric)
-          END) + (
-          CASE
-              WHEN ((products.discontinued IS TRUE) AND (products.discontinued_year IS NOT NULL)) THEN 1
-              ELSE 0
-          END)::numeric)) / ((
-          CASE
-              WHEN (spec.applicable = 0) THEN 5
-              ELSE 8
-          END +
-          CASE
-              WHEN (products.discontinued IS TRUE) THEN 1
-              ELSE 0
-          END))::numeric)))::integer AS completeness
-     FROM (((products
+      products.specs_applicable,
+      products.specs_filled,
+      products.completeness
+     FROM ((products
        LEFT JOIN brands ON ((brands.id = products.brand_id)))
        LEFT JOIN product_series ON ((product_series.id = products.product_series_id)))
-       LEFT JOIN LATERAL ( SELECT count(DISTINCT ca.id) AS applicable,
-              count(DISTINCT ca.id) FILTER (WHERE ((products.custom_attributes ? (ca.label)::text) AND (jsonb_typeof((products.custom_attributes -> (ca.label)::text)) <> 'null'::text) AND ((products.custom_attributes ->> (ca.label)::text) <> ''::text))) AS filled
-             FROM ((custom_attributes ca
-               JOIN custom_attributes_sub_categories casc ON ((casc.custom_attribute_id = ca.id)))
-               JOIN products_sub_categories psc ON ((psc.sub_category_id = casc.sub_category_id)))
-            WHERE (ca.highlighted AND (psc.product_id = products.id))) spec ON (true))
   UNION ALL
    SELECT uuid_generate_v5(uuid_ns_dns(), ('variant-'::text || (product_variants.id)::text)) AS id,
       products.name,
@@ -790,23 +762,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_051636) do
       product_series.name AS series_name,
       (0)::bigint AS specs_applicable,
       (0)::bigint AS specs_filled,
-      (round(((100.0 * (((
-          CASE
-              WHEN (NULLIF(btrim(product_variants.description), ''::text) IS NOT NULL) THEN 3
-              ELSE 0
-          END +
-          CASE
-              WHEN (product_variants.release_year IS NOT NULL) THEN 2
-              ELSE 0
-          END) +
-          CASE
-              WHEN ((product_variants.discontinued IS TRUE) AND (product_variants.discontinued_year IS NOT NULL)) THEN 1
-              ELSE 0
-          END))::numeric) / ((5 +
-          CASE
-              WHEN (product_variants.discontinued IS TRUE) THEN 1
-              ELSE 0
-          END))::numeric)))::integer AS completeness
+      product_variants.completeness
      FROM (((product_variants
        JOIN products ON ((product_variants.product_id = products.id)))
        LEFT JOIN brands ON ((brands.id = products.brand_id)))
