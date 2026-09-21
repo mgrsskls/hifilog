@@ -265,11 +265,24 @@ class Product < ApplicationRecord
   end
   # rubocop:enable Rails/SkipsModelValidations
 
-  # Recomputes every product in a sub category -- called when a CustomAttribute's `highlighted`
+  # Recomputes every product in a sub category -- needed when a CustomAttribute's `highlighted`
   # flag or its own sub_categories change, since that widens or narrows every product in the
   # sub category at once, regardless of whether the product itself changed.
-  def self.recalculate_completeness_for_sub_category!(sub_category_id)
-    joins(:sub_categories).where(sub_categories: { id: sub_category_id }).find_each(&:recalculate_completeness!)
+  #
+  # Runs in SubCategoryCompletenessJob. `start` is the first product id to process; the job
+  # passes its cursor here and gets each product back through the block to advance it.
+  def self.recalculate_completeness_for_sub_category!(sub_category_id, start: nil)
+    joins(:sub_categories).where(sub_categories: { id: sub_category_id }).find_each(start:) do |product|
+      product.recalculate_completeness!
+      yield product if block_given?
+    end
+  end
+
+  # Enqueues one SubCategoryCompletenessJob for each sub category, in one insert. A sub
+  # category can hold thousands of products, so this work must not run in the web request.
+  def self.recalculate_completeness_for_sub_categories_later(sub_category_ids)
+    jobs = sub_category_ids.uniq.map { |id| SubCategoryCompletenessJob.new(id) }
+    ActiveJob.perform_all_later(jobs) if jobs.any?
   end
 
   private

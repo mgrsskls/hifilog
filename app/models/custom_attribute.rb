@@ -70,8 +70,10 @@ class CustomAttribute < ApplicationRecord
   # after_commit ensures the DB transaction is finished before we clear cache
   after_commit :clear_cache
   # Only `highlighted` and sub_categories affect Product#applicable_highlighted_attributes, so
-  # only those two changes need to fan out to every product they touch (see
-  # Product#recalculate_completeness_for_sub_category!). A pure options/units/label edit does not.
+  # only those two changes need to fan out to every product they touch. The fan-out runs in
+  # SubCategoryCompletenessJob, one job per sub category, not in the admin request (see
+  # Product.recalculate_completeness_for_sub_categories_later). A pure options/units/label edit
+  # does not fan out.
   after_commit :recompute_products_completeness_for_highlighted_change, on: [:create, :update]
   after_commit :recompute_products_completeness_after_destroy, on: :destroy
 
@@ -575,13 +577,13 @@ class CustomAttribute < ApplicationRecord
   def recompute_products_completeness_for_sub_category(sub_category)
     return unless highlighted?
 
-    Product.recalculate_completeness_for_sub_category!(sub_category.id)
+    Product.recalculate_completeness_for_sub_categories_later([sub_category.id])
   end
 
   def recompute_products_completeness_for_highlighted_change
     return unless saved_change_to_highlighted?
 
-    sub_category_ids.each { |id| Product.recalculate_completeness_for_sub_category!(id) }
+    Product.recalculate_completeness_for_sub_categories_later(sub_category_ids)
   end
 
   def remember_sub_category_ids_for_completeness
@@ -591,6 +593,6 @@ class CustomAttribute < ApplicationRecord
   def recompute_products_completeness_after_destroy
     return unless highlighted?
 
-    @sub_category_ids_before_destroy.each { |id| Product.recalculate_completeness_for_sub_category!(id) }
+    Product.recalculate_completeness_for_sub_categories_later(@sub_category_ids_before_destroy)
   end
 end

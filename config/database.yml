@@ -25,3 +25,7 @@ test:
 production:
   <<: *default
   database: hifigear_production
+  # Solid Queue runs as threads in the Puma process (see config/puma.rb). Thus the pool must
+  # also hold the connections of the worker threads, the dispatcher and the heartbeats: Puma
+  # threads + 5. A connection opens only when a thread needs it.
+  pool: <%= ENV.fetch("DB_POOL") { ENV.fetch("RAILS_MAX_THREADS", 5).to_i + 5 } %>

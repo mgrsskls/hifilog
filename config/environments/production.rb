@@ -67,9 +67,9 @@ Rails.application.configure do
     config.cache_store = :mem_cache_store, ENV["MEMCACHEDCLOUD_SERVERS"].split(','), { :username => ENV["MEMCACHEDCLOUD_USERNAME"], :password => ENV["MEMCACHEDCLOUD_PASSWORD"] }
   end
 
-  # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "hifi_gear2_production"
+  # Solid Queue keeps its jobs in the primary database. Puma starts its supervisor
+  # (see config/puma.rb and docs/background-jobs.md).
+  config.active_job.queue_adapter = :solid_queue
 
   config.action_mailer.perform_caching = false
 

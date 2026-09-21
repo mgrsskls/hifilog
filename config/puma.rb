@@ -42,6 +42,17 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
+# Start Solid Queue together with Puma. Production always does this. In development, set
+# SOLID_QUEUE_IN_PUMA=1. See docs/background-jobs.md.
+#
+# Async mode: the supervisor, the dispatcher and the worker are threads in the Puma process.
+# The default fork mode starts 3 more Ruby processes, and these do not fit in the 512 MB of
+# the web dyno. The threads use the same connection pool as Puma (see config/database.yml).
+if ENV.fetch("RAILS_ENV", "development") == "production" || ENV["SOLID_QUEUE_IN_PUMA"]
+  plugin :solid_queue
+  solid_queue_mode :async
+end
+
 if ENV['RAILS_ENV'] == 'development'
   key_path = File.expand_path('~/.ssh/localhost.key')
   cert_path = File.expand_path('~/.ssh/localhost.crt')

@@ -584,6 +584,8 @@ Most catalog entries carry little more than a name and a brand, so _incomplete_ 
 
 **The score is computed twice**: once in Ruby for display, and once in SQL (a generated column on `brands`, an expression in the `contribute_product_items` view) so the database can sort and filter on it directly. The two are kept in sync by a dedicated test.
 
+Products store their score in columns. A product save recalculates its own score synchronously. A change to a highlighted custom attribute can change all products in a sub category, so that recalculation runs in the background (`SubCategoryCompletenessJob`, see [Background jobs](#background-jobs)).
+
 ### Contribution queues
 
 **`ContributeController`** is a task board for contributors: lists of entries each missing one specific, named gap. It is read-only and excluded from search indexing—every link leads into the existing brand or product edit forms.
@@ -831,6 +833,10 @@ Controllers keep their shared behaviour in concerns rather than a base class —
 **Statistics** aggregate a user's possessions (current vs previous, costs, duration, categories) for dashboard and profile summaries. In the UI this section is called **Insights**; the code keeps the statistics naming.
 
 **Security:** Rack::Attack throttles on auth, catalog writes, bookmarks, notes, search and follow/block mutations; content security policy; Turnstile bot challenge on registration and password reset.
+
+## Background jobs
+
+**Active Job** with **Solid Queue**. The queue tables are in the primary database, and the Puma plugin runs Solid Queue as threads in the Puma process (async mode: no Redis, no extra process, no extra dyno). The only job at the moment is `SubCategoryCompletenessJob`. Configuration, connection limits and how to add a job: [docs/background-jobs.md](docs/background-jobs.md).
 
 ## Presenters
 

@@ -3,6 +3,8 @@
 require 'test_helper'
 
 class CustomAttributeTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   setup do
     @sub_category = sub_categories(:one)
   end
@@ -411,6 +413,24 @@ class CustomAttributeTest < ActiveSupport::TestCase
       custom_attributes(:three).update!(highlighted: true)
 
       assert_not Rails.cache.exist?('custom_attribute_sub_category_scopes')
+    end
+  end
+
+  # A change of `highlighted` can change the completeness of all products in the attribute's sub
+  # categories. The attribute enqueues that work; it does not do it in the request.
+  test 'a change of highlighted enqueues one completeness job per sub category' do
+    attribute = custom_attributes(:three)
+
+    assert_enqueued_jobs attribute.sub_category_ids.size, only: SubCategoryCompletenessJob do
+      attribute.update!(highlighted: true)
+    end
+  end
+
+  test 'a save without a change of highlighted enqueues no completeness job' do
+    attribute = custom_attributes(:three)
+
+    assert_no_enqueued_jobs only: SubCategoryCompletenessJob do
+      attribute.update!(label: attribute.label)
     end
   end
 

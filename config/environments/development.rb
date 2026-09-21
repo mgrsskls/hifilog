@@ -14,6 +14,10 @@ Rails.application.configure do
   # Do not eager load code on boot.
   config.eager_load = false
 
+  # Jobs run in-process by default. Set SOLID_QUEUE_IN_PUMA=1 to use Solid Queue as in
+  # production (see docs/background-jobs.md).
+  config.active_job.queue_adapter = ENV["SOLID_QUEUE_IN_PUMA"] ? :solid_queue : :async
+
   # Show full error reports.
   config.consider_all_requests_local = true
 

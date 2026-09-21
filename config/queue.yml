@@ -1,0 +1,22 @@
+# Solid Queue processes. See docs/background-jobs.md.
+#
+# The Heroku Postgres plan has a low connection limit. Thus the worker has only 2 threads.
+# The jobs are not urgent, so the worker polls every 2 seconds.
+default: &default
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 500
+  workers:
+    - queues: "*"
+      threads: 2
+      processes: 1
+      polling_interval: 2
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
