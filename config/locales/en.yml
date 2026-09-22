@@ -242,11 +242,14 @@ en:
     incomplete_products:
       heading: Products with missing details
     index:
+      add_brand_body: Know a brand that is not on HiFi Log yet? Add it from scratch.
+      add_brand_heading: Add a brand
+      add_product_body: Cannot find a product? Add it from scratch to an existing brand.
+      add_product_heading: Add a product
       brands_without_products_body: These brands are in our database but no products have been added to them yet.
       incomplete_brands_body: These brands exist but are missing information like release year, description or their country of origin.
       heading: Contribute
       intro: "Every brand and product on <i>HiFi&thinsp;Log</i> was added by hand, so most of them are still missing some information.<br>Want to help us out? Here are some entry points:"
-      outro_html: Nothing here that you know? You can also <a href="%{new_brand_path}"><b>add a brand</b></a> or <a href="%{new_product_path}"><b>add a product</b></a> from scratch.
       incomplete_products_body: These products are missing details like release year, description or other specifications.
   custom_attribute_inputs:
     h: Height

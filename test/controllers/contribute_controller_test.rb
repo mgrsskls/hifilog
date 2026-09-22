@@ -22,6 +22,13 @@ class ContributeControllerTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?]', contribute_incomplete_products_path
   end
 
+  test 'index links to the new brand and new product forms' do
+    get contribute_root_url
+
+    assert_select '.ContributeQueue a[href=?]', new_brand_path
+    assert_select '.ContributeQueue a[href=?]', new_product_path
+  end
+
   test 'brands without products lists only brands with an empty catalogue' do
     empty = empty_brand
 
