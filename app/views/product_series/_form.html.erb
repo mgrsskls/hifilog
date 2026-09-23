@@ -6,26 +6,7 @@
   <%= stylesheet_link_tag "entity_form" %>
 <% end %>
 
-<details class="Instructions">
-  <summary><%= t('product_series.guidelines.summary') %></summary>
-  <div class="Instructions-content Rte">
-    <p>Thank you for contributing to HiFi&thinsp;Log!</p>
-    <ul>
-      <li>A series is a product line that the manufacturer gives a name, for example <i>Heritage</i> by Klipsch or <i>Evolution</i> by Fezz Audio.</li>
-      <li>Do not add the brand name: write <i>Heritage</i>, not <i>Klipsch Heritage</i>.</li>
-      <li>The series name is shown next to the product name. Do not add it to the names of the products in the series: write <i>Omega Lupi</i>, not <i>Evolution Omega Lupi</i>.</li>
-      <li>Do not create a series for one product with more versions (Mk I, Mk II). Add each version as a separate product.</li>
-      <li>Do not create a series for a category, for example "Klipsch speakers".</li>
-      <li>
-        The description field supports Markdown for basic styling:<br>
-        <code><b><%= "**bold text**" %></b></code><br>
-        <code><em><%= "*italic text*" %></em></code><br>
-        <code><%= "- unordered lists" %></code><br>
-        <code><%= "1. ordered lists" %></code>
-      </li>
-    </ul>
-  </div>
-</details>
+<%= render "contribute/guidelines/summary_product_series" %>
 
 <% if series.errors.any? %>
   <%= render "shared/flash_messages", messages: series.errors.map { |error| ["alert", error.full_message] } %>

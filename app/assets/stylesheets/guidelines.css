@@ -1,0 +1,90 @@
+/* Contribution guidelines page (contribute/guidelines). */
+.Guidelines {
+	display: grid;
+	gap: 2rem;
+	align-items: start;
+}
+
+@media (min-width: 48em) {
+	.Guidelines {
+		grid-template-columns: 14rem minmax(0, 48rem);
+	}
+
+	.Guidelines-toc {
+		position: sticky;
+		inset-block-start: calc(var(--header-height) + 2rem);
+	}
+}
+
+.Guidelines-toc {
+	background: var(--color-bg2);
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	padding: 1rem 1.5rem;
+}
+
+.Guidelines-toc ol {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: grid;
+	gap: 0.25rem;
+}
+
+.Guidelines-tocHeading {
+	font-size: 1rem;
+	margin-block: 0 0.5rem;
+}
+
+.Guidelines-content h2 {
+	margin-block-start: 3rem;
+	padding-block-end: 0.5rem;
+	border-block-end: var(--border-light);
+}
+
+.Guidelines-content h3 {
+	margin-block-start: 2rem;
+}
+
+/* Anchor targets: keep some space above the heading when a link jumps to it. */
+.Guidelines-content :is(h2, h3)[id] {
+	scroll-margin-block-start: 1rem;
+}
+
+.Guidelines-content :target {
+	color: var(--color-accent);
+}
+
+.Guidelines-quickStart {
+	background: var(--color-bg2);
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+	padding: 0.5rem 1.5rem 1rem;
+	margin-block: 1.5rem;
+}
+
+.Guidelines-quickStart h2 {
+	margin-block-start: 1rem;
+	border: none;
+	padding: 0;
+}
+
+.Guidelines-tableWrapper {
+	overflow-x: auto;
+}
+
+.Guidelines-decision {
+	inline-size: 100%;
+	border-collapse: collapse;
+}
+
+.Guidelines-decision :is(th, td) {
+	padding: 0.5rem 0.75rem;
+	border: var(--border-light);
+	text-align: start;
+	vertical-align: top;
+}
+
+.Guidelines-decision th {
+	background: var(--color-bg2);
+}

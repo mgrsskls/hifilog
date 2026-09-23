@@ -3,7 +3,7 @@
 </div>
 
 <div class="Rte">
-  <p><%= t('contribute.index.intro').html_safe %></p>
+  <p><%= t('contribute.index.intro', link: contribute_guidelines_path).html_safe %></p>
 </div>
 
 <h2><%= Product.model_name.human(count: 2) %></h2>

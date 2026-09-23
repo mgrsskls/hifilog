@@ -1,0 +1,9 @@
+<%# Guidelines summary for the product series form. %>
+<%= render layout: "contribute/guidelines/summary_box", locals: { summary: t('product_series.guidelines.summary') } do %>
+  <li>A series is a product line that the brand gives a name, for example <i>Heritage</i> by Klipsch or <i>Evolution</i> by Fezz Audio.</li>
+  <li>Do not add the brand name: write <i>Heritage</i>, not <i>Klipsch Heritage</i>.</li>
+  <li>The series name is shown next to the product name. Do not add it to the names of the products in the series: write <i>Omega Lupi</i>, not <i>Evolution Omega Lupi</i>.</li>
+  <li>Do not create a series for one product with more versions (Mk I, Mk II). Add each version as a separate product.</li>
+  <li>Do not create a series for a category, for example "Klipsch speakers". <%= link_to "More", guideline_path(:series), target: "_blank" %></li>
+  <li><%= render "contribute/guidelines/markdown_help" %></li>
+<% end %>

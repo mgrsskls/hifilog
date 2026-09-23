@@ -55,6 +55,9 @@ class SitemapBuilder
       url: about_url
     }
     pages << {
+      url: contribute_guidelines_url
+    }
+    pages << {
       url: calculators_root_url
     }
     pages << {

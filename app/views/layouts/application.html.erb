@@ -435,6 +435,9 @@
                     <%= link_to "About", about_path, "aria-current": params[:controller] == "static" && params[:action] == "about" ? "page" : "false" %>
                   </li>
                   <li>
+                    <%= link_to t('contribute.guidelines.heading'), contribute_guidelines_path, "aria-current": params[:controller] == "contribute" && params[:action] == "guidelines" ? "page" : "false" %>
+                  </li>
+                  <li>
                     <%= link_to "Sitemap", sitemap_path, "aria-current": params[:controller] == "sitemap" && params[:action] == "show" ? "page" : "false" %>
                   </li>
                 <% end %>

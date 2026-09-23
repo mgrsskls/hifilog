@@ -19,7 +19,10 @@
 %>
 
 <div class="Form-field">
-  <%= f.label :name, class: "Form-label" %>
+  <div class="Form-label">
+    <%= f.label :name %>
+    <%= guideline_link(:brand_name, Brand.human_attribute_name(:name)) %>
+  </div>
   <%= f.text_field :name, required: required, placeholder: "e.g. Fezz Audio, DeVORE Fidelity, Bang & Olufsen", data: { brand_name_input: true } %>
   <div class="BrandForm-duplicate" data-brand-duplicate hidden></div>
 </div>
@@ -28,6 +31,7 @@
   <div class="Form-label">
     <%= f.label :abbreviation %>
     <small><i>(<%= t(:optional) %>)</i></small>
+    <%= guideline_link(:brand_abbreviation, Brand.human_attribute_name(:abbreviation)) %>
   </div>
   <%= f.text_field :abbreviation, placeholder: "e.g. B&O, TAD", data: { brand_abbreviation_input: true } %>
   <small>
@@ -40,6 +44,7 @@
   <div class="Form-label">
     <%= f.label :legal_name %>
     <small><i>(<%= t(:optional) %>)</i></small>
+    <%= guideline_link(:brand_legal_name, Brand.human_attribute_name(:legal_name)) %>
   </div>
   <%= f.text_field :legal_name, placeholder: "e.g. Bang & Olufsen AS" %>
   <small>Only if it differs from the brand name. Leave empty otherwise.</small>

@@ -1,0 +1,16 @@
+<%# Short summary of the guidelines above an entry form. Use it as a layout:
+      render layout: "contribute/guidelines/summary_box", locals: { summary: "…" } do
+        <li>…</li>
+      end
+    The block gives the list items. The full rules are on the guidelines page; links open in a new
+    tab, so that the user does not lose the data in the form. %>
+<details class="Instructions">
+  <summary><%= summary %></summary>
+  <div class="Instructions-content Rte">
+    <p>Thank you for contributing to HiFi&thinsp;Log! The most important rules for this form:</p>
+    <ul>
+      <%= yield %>
+    </ul>
+    <p><%= link_to "#{t('guidelines.read_all')} →", contribute_guidelines_path, target: "_blank" %></p>
+  </div>
+</details>

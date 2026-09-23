@@ -1,0 +1,15 @@
+<%# Guidelines summary for brands/new and brands/edit. edit: true adds the rule for the comment. %>
+<% edit ||= false %>
+<%= render layout: "contribute/guidelines/summary_box", locals: { summary: t('guidelines.summary.brand') } do %>
+  <li><b>Search first.</b> Do not add a brand that is already on HiFi&thinsp;Log. <%= link_to "More", guideline_path(:duplicates), target: "_blank" %></li>
+  <li><b>Brand name</b> is the name that the brand uses in its own texts, for example <i>Fezz Audio</i>. Not a shorter form from the logo and not the company name. <%= link_to "More", guideline_path(:brand_name), target: "_blank" %></li>
+  <li><b>Abbreviation</b> only for a short form that is <b>not</b> part of the name: <i>B&amp;O</i> for <i>Bang &amp; Olufsen</i>. <%= link_to "More", guideline_path(:brand_abbreviation), target: "_blank" %></li>
+  <li><b>Registered company name</b> with its legal suffix, for example <i>Bang &amp; Olufsen AS</i>. Leave it empty if it is the same as the brand name.</li>
+  <li>Fields marked "optional" can be filled in later. If you do not know a value, leave it empty.</li>
+  <li>Categories are added automatically from the products of the brand. Select them only for a brand without products.</li>
+  <li>Write the description yourself. Do not copy it from the website of the brand. <%= link_to "More", guideline_path(:descriptions), target: "_blank" %></li>
+  <li><%= render "contribute/guidelines/markdown_help" %></li>
+  <% if edit %>
+    <li>In the comment, write what you changed and where the information comes from. <%= link_to "More", guideline_path(:comments), target: "_blank" %></li>
+  <% end %>
+<% end %>

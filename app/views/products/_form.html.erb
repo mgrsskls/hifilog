@@ -1,35 +1,5 @@
-<% additional_instructions ||= [] %>
-
 <% content_for :guidelines do %>
-  <details class="Instructions">
-    <summary>Product Guidelines</summary>
-    <div class="Instructions-content Rte">
-      <p>Thank you for contributing to HiFi&thinsp;Log!</p>
-      <p>Please read the following instructions to make sure all products are added properly:</p>
-      <ul>
-        <li>Products that you add here should reflect the initial release of a product. You can add subsequent releases to a product after creating the initial release of a product.</li>
-        <li>Please only add the product name, not the brand name, in the field "Name". The brand name will be added automatically.</li>
-        <li>Not all information has to be filled out right away. Fields marked with "optional" can be filled out later.</li>
-        <li>You can assign multiple categories to a product, for example "Over-Ear Headphones" + "Noise Cancelling Headphones".</li>
-        <li>If the product is part of a named product line of the brand (a series, for example <i>Heritage</i> by Klipsch), select or type the series. Do not add the series name to the product name: the series is shown separately. This is optional.</li>
-        <li>If you for example only know the year (or year and month) when a product has been released or discontinued, you can omit the other fields.</li>
-        <li>The description can contain any relevant information that is not covered by the other fields.</li>
-        <li>
-          The description field supports Markdown for basic styling:<br>
-          <code><b><%= "**bold text**" %></b></code><br>
-          <code><em><%= "*italic text*" %></em></code><br>
-          <code><%= "- unordered lists" %></code><br>
-          <code><%= "1. ordered lists" %></code>
-        </li>
-        <li>The price should ideally be the retail price recommended by the manufacturer provided in USD (or alternatively in EUR) to allow better comparisons. If you cannot provide that, you can also add the price in a different currency.</li>
-        <li>If the product comes with different prices due to product versions, please use the lowest price (i.e. the price of the basic / stock version).</li>
-        <% additional_instructions.each do |instruction| %>
-          <li><%= instruction %></li>
-        <% end %>
-      </ul>
-      </ul>
-    </div>
-  </details>
+  <%= render "contribute/guidelines/summary_product", edit: include_comment %>
 <% end %>
 
 <%= render "shared/product_form", f: f, entity: product, include_comment: include_comment, prefix: "product", brand: brand do %>
@@ -120,7 +90,7 @@
         <% end %>
       <% end %>
     </datalist>
-    <small><%= t('product_series.form.hint') %></small>
+    <small><%= t('product_series.form.hint') %> <%= link_to "More", guideline_path(:product_series), target: "_blank" %></small>
   </div>
 
   <h2>Product</h2>
@@ -128,7 +98,10 @@
   <div class="Form-grid u-gap-lg">
     <div>
       <div class="Form-field">
-        <%= f.label :name, class: "Form-label h3" %>
+        <div class="Form-label h3">
+          <%= f.label :name %>
+          <%= guideline_link(:product_name, Product.human_attribute_name(:name)) %>
+        </div>
         <%= f.text_field :name, required: true, placeholder: "e.g. #{['Heresy IV', 'HE-1', 'Ongaku'].sample}", data: { product_name_input: true } %>
         <%# Demonstrates the "product name only, no brand name" convention instead of just
             stating it in a collapsed <details> nobody opens. Also doubles as the warning
@@ -170,7 +143,10 @@
   </div>
 
   <div class="Form-field EntityForm-attributes">
-    <h3><%= SubCategory.human_attribute_name(:custom_attribute_ids) %></h3>
+    <h3>
+      <%= SubCategory.human_attribute_name(:custom_attribute_ids) %>
+      <%= guideline_link(:specifications, SubCategory.human_attribute_name(:custom_attribute_ids)) %>
+    </h3>
     <%#
       The unit radios below are input semantics -- "the number I typed is in this unit" -- and
       the server normalises whatever it receives into the canonical unit. Toggling one without

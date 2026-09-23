@@ -29,6 +29,30 @@ class ContributeControllerTest < ActionDispatch::IntegrationTest
     assert_select '.ContributeQueue a[href=?]', new_product_path
   end
 
+  test 'guidelines can be indexed' do
+    get contribute_guidelines_url
+
+    assert_response :success
+    assert_select 'meta[name="robots"][content=?]', 'noindex, follow', count: 0
+    assert_select 'h1', I18n.t('contribute.guidelines.heading')
+  end
+
+  # GuidelinesHelper#guideline_link builds links from these keys. A key without a section on the
+  # page gives a link that does not go anywhere.
+  test 'guidelines have a section for each key of GuidelinesHelper' do
+    get contribute_guidelines_url
+
+    GuidelinesHelper::GUIDELINE_SECTIONS.each do |section|
+      assert_select "##{section.to_s.dasherize}", { count: 1 }, "No section for :#{section}"
+    end
+  end
+
+  test 'guidelines do not use the category filter' do
+    get contribute_guidelines_url, params: { category: 'does-not-exist' }
+
+    assert_response :success
+  end
+
   test 'brands without products lists only brands with an empty catalogue' do
     empty = empty_brand
 

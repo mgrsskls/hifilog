@@ -1,0 +1,15 @@
+<%# Guidelines summary for the product form. edit: true adds the rule for the comment. %>
+<% edit ||= false %>
+<%= render layout: "contribute/guidelines/summary_box", locals: { summary: t('guidelines.summary.product') } do %>
+  <li><b>Product, version or option?</b> If the specifications are different from an existing product, add a new product. When something is called "Mk II" or has a different impedance, for example, it is a different product, not a different version. Editions with the same specifications are versions; colours and lengths that the buyer selects are options. <%= link_to "Decision guide", guideline_path(:product_or_version), target: "_blank" %></li>
+  <li>A new product describes the <b>first release</b> of the product. Add later editions as versions after you have created the product.</li>
+  <li>Write <b>only the product name</b>: not the brand name and not the series name. They are added automatically. <%= link_to "More", guideline_path(:product_name), target: "_blank" %></li>
+  <li>Fields marked "optional" can be filled in later. If you do not know a value, leave it empty. If you only know the year, leave the day and month empty.</li>
+  <li><b>Specifications:</b> use the values that the brand published. <%= link_to "More", guideline_path(:specifications), target: "_blank" %></li>
+  <li><b>Price:</b> the retail price at release, in the currency in which it was published. Do not convert it. <%= link_to "More", guideline_path(:price), target: "_blank" %></li>
+  <li>Write the description yourself. Do not copy it from the brand or from reviews. <%= link_to "More", guideline_path(:descriptions), target: "_blank" %></li>
+  <li><%= render "contribute/guidelines/markdown_help" %></li>
+  <% if edit %>
+    <li>In the comment, write what you changed and where the information comes from. <%= link_to "More", guideline_path(:comments), target: "_blank" %></li>
+  <% end %>
+<% end %>

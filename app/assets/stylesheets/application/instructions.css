@@ -19,4 +19,27 @@
 
 .Instructions-content {
 	padding-inline: var(--spacing);
+	padding-block-end: var(--spacing);
+}
+
+/* Small "?" link next to a form field. It opens the matching section of the
+   contribution guidelines (GuidelinesHelper#guideline_link). */
+.GuidelineLink {
+	display: inline-grid;
+	place-items: center;
+	inline-size: 1.25rem;
+	block-size: 1.25rem;
+	margin-inline-start: 0.25rem;
+	border: var(--border-medium);
+	border-radius: 50%;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	vertical-align: middle;
+	color: var(--color-accent);
+}
+
+.GuidelineLink:is(:hover, :focus-visible) {
+	background: var(--color-bg2);
 }

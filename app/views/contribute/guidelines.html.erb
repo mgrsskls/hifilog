@@ -1,0 +1,55 @@
+<%# The contribution guidelines. The rules for one topic are in one chapter partial in
+    contribute/guidelines/. The forms show a short summary (contribute/guidelines/_summary_*)
+    and link to the sections here with GuidelinesHelper#guideline_link.
+
+    Each section has a stable id from GuidelinesHelper::GUIDELINE_SECTIONS. The numbers in the
+    headings are for reading only; do not use them in links.
+
+    The page has no database queries. The fragment cache key contains the template digest, which
+    includes the partials, so a change to a partial makes a new cache entry. %>
+<% content_for :css do %>
+  <%= stylesheet_link_tag "guidelines" %>
+<% end %>
+
+<% cache "contribute/guidelines" do %>
+  <div class="Heading">
+    <h1><%= t('contribute.guidelines.heading') %></h1>
+  </div>
+
+  <div class="Guidelines">
+    <nav class="Guidelines-toc" aria-labelledby="guidelines-toc-heading">
+      <h2 id="guidelines-toc-heading" class="Guidelines-tocHeading">Contents</h2>
+      <ol>
+        <li><a href="#quick-start">Quick start</a></li>
+        <li><a href="#general">1. General</a></li>
+        <li><a href="#brands">2. Brands</a></li>
+        <li><a href="#products">3. Products</a></li>
+        <li><a href="#<%= guideline_anchor(:versions) %>">4. Versions</a></li>
+        <li><a href="#<%= guideline_anchor(:options) %>">5. Options</a></li>
+        <li><a href="#<%= guideline_anchor(:series) %>">6. Series</a></li>
+        <li><a href="#<%= guideline_anchor(:specifications) %>">7. Specifications</a></li>
+        <li><a href="#<%= guideline_anchor(:descriptions) %>">8. Descriptions</a></li>
+        <li><a href="#<%= guideline_anchor(:changelog) %>">9. Changes to these guidelines</a></li>
+      </ol>
+    </nav>
+
+    <div class="Guidelines-content Rte">
+      <p>
+        Thank you for contributing to HiFi&thinsp;Log! Every brand and product here was added by
+        people like you. These guidelines help to keep the data correct and consistent, so that
+        everyone can find, filter and compare products.
+      </p>
+
+      <%= render "contribute/guidelines/quick_start" %>
+      <%= render "contribute/guidelines/general" %>
+      <%= render "contribute/guidelines/brands" %>
+      <%= render "contribute/guidelines/products" %>
+      <%= render "contribute/guidelines/versions" %>
+      <%= render "contribute/guidelines/options" %>
+      <%= render "contribute/guidelines/series" %>
+      <%= render "contribute/guidelines/specifications" %>
+      <%= render "contribute/guidelines/descriptions" %>
+      <%= render "contribute/guidelines/changelog" %>
+    </div>
+  </div>
+<% end %>

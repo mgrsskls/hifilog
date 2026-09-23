@@ -1,0 +1,16 @@
+<%# Guidelines summary for the version (product variant) form. edit: true adds the rule for the comment.
+    The rule about specifications is first: it is the only rule here that a later edit can not
+    correct. A variant with other specifications shows the specifications of its product, and
+    nothing in the catalogue shows that this is wrong. %>
+<% edit ||= false %>
+<%= render layout: "contribute/guidelines/summary_box", locals: { summary: t('guidelines.summary.product_variant') } do %>
+  <li><b>A version with different specifications is a new product, not a version.</b> Versions are smaller changes or special editions with the same product name: a finish, a limited edition, a regional model. A product that measures differently needs its own product entry, because versions always show the specifications of their product. When something is called "Mk II" or has a different impedance, for example, it is a different product, not a different version. <%= link_to "Decision guide", guideline_path(:product_or_version), target: "_blank" %></li>
+  <li>Give the version a short name, for example <i>LTD 2024</i> or <i>Update 2024</i>.</li>
+  <li>In the description, write what is different from the product, for example <i>"Available for a limited time in special colours."</i></li>
+  <li>Fields marked "optional" can be filled in later. If you only know the year, leave the day and month empty.</li>
+  <li><b>Price:</b> the retail price at release, in the currency in which it was published. Do not convert it. <%= link_to "More", guideline_path(:price), target: "_blank" %></li>
+  <li><%= render "contribute/guidelines/markdown_help" %></li>
+  <% if edit %>
+    <li>In the comment, write what you changed and where the information comes from. <%= link_to "More", guideline_path(:comments), target: "_blank" %></li>
+  <% end %>
+<% end %>

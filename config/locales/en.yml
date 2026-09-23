@@ -237,6 +237,9 @@ en:
         specs: Specifications
         sub_categories: Categories
         website: Website
+    guidelines:
+      heading: Contribution guidelines
+      meta_description: How to add and edit brands, products, versions, options, series and specifications on HiFi Log, and which sources to use.
     incomplete_brands:
       heading: Brands with missing details
     incomplete_products:
@@ -249,7 +252,7 @@ en:
       brands_without_products_body: These brands are in our database but no products have been added to them yet.
       incomplete_brands_body: These brands exist but are missing information like release year, description or their country of origin.
       heading: Contribute
-      intro: "Every brand and product on <i>HiFi&thinsp;Log</i> was added by hand, so most of them are still missing some information.<br>Want to help us out? Here are some entry points:"
+      intro: 'Every brand and product on <i>HiFi&thinsp;Log</i> was added by hand, so most of them are still missing some information.<br>If you want to help us out, please ensure to <b><a href="%{link}">read the contribution guidelines first</a></b>. They explain what belongs on HiFi Log, which sources to use and how to fill in each field.'
       incomplete_products_body: These products are missing details like release year, description or other specifications.
   custom_attribute_inputs:
     h: Height
@@ -472,6 +475,13 @@ en:
   filter:
     all: All
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
+  guidelines:
+    link_title: 'Guidelines: %{label}'
+    read_all: Read the full contribution guidelines
+    summary:
+      brand: Please read before you add or edit a brand
+      product: Please read before you add or edit a product
+      product_variant: Please read before you add or edit a version
   headings:
     account: Account
     activity: Activity

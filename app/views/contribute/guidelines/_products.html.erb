@@ -1,0 +1,101 @@
+<section aria-labelledby="products">
+  <h2 id="products">3. Products</h2>
+
+  <h3 id="<%= guideline_anchor(:product_or_version) %>">3.1 Product, version, option or series?</h3>
+  <p>
+    This is the most important decision when you add something. Ask these questions in this order.
+    The first answer "yes" tells you what to add.
+  </p>
+  <div class="Guidelines-tableWrapper">
+    <table class="Guidelines-decision">
+      <thead>
+        <tr>
+          <th scope="col">Question</th>
+          <th scope="col">If yes, add a …</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Are the specifications different from an existing product (output power, impedance, frequency response, drivers, circuit)?</td>
+          <td><b>New product.</b> This is also true for a "Mk II", "SE" or "Signature" model with different specifications.</td>
+        </tr>
+        <tr>
+          <td>Are the specifications the same, but it is a separate edition: a limited edition, an anniversary edition, a special finish that was sold for a limited time, or a model number for one region?</td>
+          <td><b><a href="#<%= guideline_anchor(:versions) %>">Version</a></b> of the existing product.</td>
+        </tr>
+        <tr>
+          <td>Can the buyer select it when they buy the product (colour, cable length, plug), and the specifications stay the same?</td>
+          <td><b><a href="#<%= guideline_anchor(:options) %>">Option</a></b> of the product or of the version.</td>
+        </tr>
+        <tr>
+          <td>Does the brand give one name to a group of different products?</td>
+          <td><b><a href="#<%= guideline_anchor(:series) %>">Series.</a></b> Then add each product to the series.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Examples:</p>
+  <ul>
+    <li>An amplifier and its "Mk II" with more output power: <b>two products</b>.</li>
+    <li>Headphones made with 32&nbsp;Ω and with 250&nbsp;Ω impedance: <b>two products</b>.</li>
+    <li>A turntable, and later an anniversary edition of 500 units with the same specifications but a different plinth: <b>one product with one version</b>.</li>
+    <li>Speakers that you can buy in walnut or in black: <b>one product with two options</b>.</li>
+    <li>A cable in 1&nbsp;m, 2&nbsp;m and 3&nbsp;m: <b>one product with three options</b>.</li>
+    <li>Klipsch <i>Heritage</i> (Klipschorn, La Scala, Heresy, Cornwall, …): <b>a series</b> with one product for each model.</li>
+  </ul>
+  <p>
+    Why this matters: versions and options always show the specifications of their product.
+    If you add a product with different specifications as a version, it shows the wrong
+    specifications, and filters find it with the wrong values. This error is not visible
+    anywhere, so it is very difficult to find later.
+  </p>
+
+  <h3 id="<%= guideline_anchor(:product_name) %>">3.2 Name and model number</h3>
+  <ul>
+    <li>Write only the product name. Do not add the brand name: it is added automatically.</li>
+    <li>Write the product name as the brand writes it, with the same capitals and special characters.</li>
+    <li>Do not add the series name: the series is shown separately (see <a href="#<%= guideline_anchor(:product_series) %>">3.4</a>).</li>
+    <li>Do not add words that the brand does not use in the name, like the category: <i>Omega Lupi</i>, not <i>Omega Lupi amplifier</i>.</li>
+    <li>Use the model number field if the brand uses a model code that is different from the name.</li>
+  </ul>
+
+  <h3 id="<%= guideline_anchor(:product_categories) %>">3.3 Categories</h3>
+  <p>
+    You can select more than one category, for example <i>Over-Ear Headphones</i> and
+    <i>Noise Cancelling Headphones</i>. The categories decide which specification fields the form
+    shows.
+  </p>
+
+  <h3 id="<%= guideline_anchor(:product_series) %>">3.4 Series</h3>
+  <p>
+    If the product is part of a named product line of the brand, select the series or type its
+    name to create it. Leave the field empty if the product is not in a series. See
+    <a href="#<%= guideline_anchor(:series) %>">6. Series</a>.
+  </p>
+
+  <h3 id="<%= guideline_anchor(:initial_release) %>">3.5 First release</h3>
+  <p>
+    A new product describes the first release of the product. Add later editions of the same
+    product as <a href="#<%= guideline_anchor(:versions) %>">versions</a> after you have added the product.
+  </p>
+
+  <h3 id="<%= guideline_anchor(:dates) %>">3.6 Release date and discontinuation date</h3>
+  <ul>
+    <li>The release date is the date when the product was first available to buy. It is not the date when it was announced or shown at a trade show.</li>
+    <li>If you only know the year, or the year and the month, leave the other fields empty.</li>
+    <li>A product is discontinued when the brand no longer makes or sells it new.</li>
+  </ul>
+
+  <h3 id="<%= guideline_anchor(:price) %>">3.7 Price</h3>
+  <ul>
+    <li>Enter the retail price that the brand recommended when the product was released.</li>
+    <li>Enter the price in the currency in which it was published. <b>Do not convert it</b> into another currency, and do not adjust it for inflation.</li>
+    <li>If the brand published prices in more than one currency, use the price of its home market.</li>
+    <li>If the product has more than one price because of its options, use the lowest price (the price of the basic version).</li>
+  </ul>
+
+  <h3 id="<%= guideline_anchor(:diy_kit) %>">3.8 DIY kit</h3>
+  <p>
+    Select "Yes" only if the brand sold the product as a kit that the buyer assembles.
+  </p>
+</section>

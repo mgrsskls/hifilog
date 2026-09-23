@@ -10,45 +10,7 @@
     <h1><%= t('brand.new.heading') %></h1>
   </div>
 
-  <details class="Instructions">
-    <summary>Please read before adding a brand</summary>
-    <div class="Instructions-content Rte">
-      <p>Thank you for contributing to HiFi&thinsp;Log!</p>
-      <p>Please read the following instructions to make sure all brands are added properly:</p>
-      <ul>
-        <li>
-          <b>Brand name</b> is how the manufacturer writes it themselves — on the product, the logo, the website header.
-          Not the shortest form and not the registered company name. For example <i>Fezz Audio</i>.
-        </li>
-        <li>
-          <b>Abbreviation</b> is only for brands commonly known by something that is <b>not</b> part of their name —
-          <i>B&amp;O</i> for <i>Bang &amp; Olufsen</i>, <i>AAW</i> for <i>Advanced Acoustic Werkes</i>. It exists so
-          those brands can be found when someone searches for the short form.
-          There is nothing to add for <i>Fezz Audio</i> or <i>DeVORE Fidelity</i>: searching <i>Fezz</i> or
-          <i>DeVORE</i> finds them through the brand name already, so anything already contained in the name is
-          discarded when you save.
-          There is also nothing to add when the brand name <i>is</i> the abbreviation and the letters only stand
-          for something historical — <i>KEF</i> was founded in the <i>Kent Engineering &amp; Foundry</i> buildings,
-          <i>NAD</i> for <i>New Acoustic Dimension</i>. Nobody calls them that, so it is a piece of history rather
-          than a name: leave this field empty and mention it in the description.
-        </li>
-        <li>
-          <b>Registered company name</b> is the legal entity, with its suffix — <i>Bang & Olufsen AS</i>
-          Leave it empty if it would just repeat the brand name.
-        </li>
-        <li>Not all information has to be filled out right away. Fields marked with "optional" can be filled out later.</li>
-        <li>Categories will be automatically assigned to a brand based on the products added to a brand. You can however assign categories to a brand on this page, so categories are already listed for a brand when they do not have products assigned to it yet.</li>
-        <li>The description can contain any relevant information that is not discovered by the other fields.</li>
-        <li>
-          The description field supports Markdown for basic styling:<br>
-          <code><b><%= "**bold text**" %></b></code><br>
-          <code><em><%= "*italic text*" %></em></code><br>
-          <code><%= "- unordered lists" %></code><br>
-          <code><%= "1. ordered lists" %></code>
-        </li>
-      </ul>
-    </div>
-  </details>
+  <%= render "contribute/guidelines/summary_brand" %>
 
   <% if @brand.errors.any? %>
     <%= render "shared/flash_messages", messages: @brand.errors.map { |error| ["alert", error.full_message] } %>

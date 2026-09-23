@@ -25,13 +25,14 @@
           <%= f.label :description do %>
             <%= Product.human_attribute_name(:description) %> <small><i>(optional)</i></small>
           <% end %>
+          <%= guideline_link(:descriptions, Product.human_attribute_name(:description)) %>
         </h3>
         <%= f.text_area :description, hidden: true, "data-note-textarea": true %>
         <%= render "shared/markdown_editor" %>
       </div>
 
       <div class="Form-field">
-        <h3 class="Form-label">Price</h3>
+        <h3 class="Form-label">Price <%= guideline_link(:price, "Price") %></h3>
         <div class="u-flex u-gap-md">
           <div>
             <%= f.label :price, class: "Form-label" do %>
@@ -58,7 +59,7 @@
       </div>
 
       <div class="Form-field">
-        <h3 class="Form-label">Production</h3>
+        <h3 class="Form-label">Production <%= guideline_link(:dates, "Production") %></h3>
         <%= f.label :release_date, class: "Form-label" do %>
           <%= Product.human_attribute_name(:release_date) %> <small><i>(optional)</i></small>
         <% end %>
@@ -128,6 +129,7 @@
       <div class="Form-fieldHeader">
         <h3 class="Form-label">
           <%= t('product.options') %> <small><i>(optional)</i></small>
+          <%= guideline_link(:options, t('product.options')) %>
         </h3>
         <small><button data-dialog="options-dialog" type="button">What are options?</button></small>
       </div>

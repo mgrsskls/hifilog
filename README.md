@@ -153,7 +153,7 @@ Two consequences follow, and neither is a bug:
 - `product_items` projects `products.custom_attributes` onto variant rows as well as product rows. That is correct by construction: a variant shares its parent's specs because it is not allowed to have others. Filtering by a spec therefore returns the product _and_ its variants, which is the right answer.
 - Specs are excluded from a variant's completeness score, because there is nothing for a variant to fill in.
 
-The rule is not enforced anywhere, and it fails quietly when broken: a variant added for a second impedance will display and be filtered under the parent's impedance, and nothing distinguishes that from a correct row. The contribution guidelines state the rule (`app/views/product_variants/_form.html.erb`); the catalogue does not check it.
+The rule is not enforced anywhere, and it fails quietly when broken: a variant added for a second impedance will display and be filtered under the parent's impedance, and nothing distinguishes that from a correct row. The contribution guidelines state the rule (section 3.1 of `/contribute/guidelines`, and first in the summary on the variant form); the catalogue does not check it.
 
 Separating a Mk II into its own product also severs the link to what it replaced — there is no relationship between products today, so the two entries sit unrelated. That is the main pressure to bend the rule, and a lightweight succession link between products would relieve it without giving variants specs of their own.
 
@@ -647,6 +647,10 @@ Products store their score in columns. A product save recalculates its own score
 **`ContributeController`** is a task board for contributors: lists of entries each missing one specific, named gap. It is read-only and excluded from search indexing—every link leads into the existing brand or product edit forms.
 
 Queues exist for brands with no products, brands missing a specific field, and products missing a specific field. All are optionally scoped to a `Category` and ordered by **descending completeness**—the nearly finished entries first, so a contributor is handed a small, finishable job instead of a blank form.
+
+### Contribution guidelines
+
+The rules for contributors are on one page, **`/contribute/guidelines`** (`ContributeController#guidelines`). It is the only indexed page of the controller and it does no database queries. Each chapter is a partial in `app/views/contribute/guidelines/`. The entry forms (brand, product, variant, series) show a short summary from the same folder and link to single sections with **`GuidelinesHelper#guideline_link`**. Section ids come from `GuidelinesHelper::GUIDELINE_SECTIONS` and do not change when sections get new numbers. Details: `docs/contribution-guidelines.md`.
 
 ## Home page
 

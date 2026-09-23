@@ -1,34 +1,5 @@
-<% additional_instructions ||= [] %>
-
 <% content_for :guidelines do %>
-  <details class="Instructions">
-    <summary>Product Version / Update Guidelines</summary>
-    <div class="Instructions-content Rte">
-      <p>Thank you for contributing to HiFi&thinsp;Log!</p>
-      <p>Please read the following instructions to make sure all products are added properly:</p>
-      <ul>
-        <%# First, not last: it is the only one of these that cannot be corrected by editing the
-            entry afterwards. A variant added for a spec difference shows the parent's specs, and
-            nothing in the catalogue marks it as wrong. %>
-        <li><b>A version with different specifications is a new product, not a version / update here.</b> Versions and updates cover smaller changes or special editions sold under the same product name &mdash; a finish, a limited run, a regional model. Anything that measures differently (a "MK II", a second impedance) belongs in its own product entry, because versions always show the specifications of the product they belong to.</li>
-        <li>If possible, please add a short, descriptive name like "LTD 2024" or "Update 2024".</li>
-        <li>Not all information has to be filled out right away. Fields marked with "optional" can be filled out later.</li>
-        <li>If you for example only know the year (or year and month) when an update / a version has been released or discontinued, you can omit the other fields.</li>
-        <li>The description can contain any relevant information that is not covered by the other fields, i.e. more detailed information about this specific version or update as in "Temporarily available in special colors" or similar.</li>
-        <li>
-          The description field supports Markdown for basic styling:<br>
-          <code><b><%= "**bold text**" %></b></code><br>
-          <code><em><%= "*italic text*" %></em></code><br>
-          <code><%= "- unordered lists" %></code><br>
-          <code><%= "1. ordered lists" %></code>
-        </li>
-        <li>The price should ideally be the retail price recommended by the manufacturer provided in USD (or alternatively in EUR) to allow better comparisons. If you cannot provide that, you can also add the price in a different currency.</li>
-        <% additional_instructions.each do |instruction| %>
-          <li><%= instruction %></li>
-        <% end %>
-      </ul>
-    </div>
-  </details>
+  <%= render "contribute/guidelines/summary_product_variant", edit: include_comment %>
 <% end %>
 
 <%= render "shared/product_form", f: f, entity: product_variant, include_comment: include_comment, prefix: "product_variant", brand: brand do %>

@@ -4,6 +4,9 @@
 #
 # These are deliberately noindex — they are a task board, not content. They are also read-only;
 # every link leads into the existing brand / product edit forms.
+#
+# The exception is #guidelines: the contribution guidelines are content, so search engines can
+# index them. The page is static text and does no database queries.
 class ContributeController < ApplicationController
   BRAND_MISSING_FILTERS = %w[
     founded_year description sub_categories country_code discontinued discontinued_year website
@@ -15,11 +18,15 @@ class ContributeController < ApplicationController
                   'contribute_product_items.created_at DESC, LOWER(contribute_product_items.name)'
 
   before_action :set_active_menu
-  before_action :set_noindex_meta_robots
-  before_action :set_category
+  before_action :set_noindex_meta_robots, except: :guidelines
+  before_action :set_category, except: :guidelines
 
   def index
     page_title(t('.heading'))
+  end
+
+  def guidelines
+    page_title(t('.heading'), t('.meta_description'))
   end
 
   def brands_without_products
