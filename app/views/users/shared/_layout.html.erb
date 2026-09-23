@@ -32,7 +32,10 @@
 
       <% if user_signed_in? && current_user != user && !current_user.blocked?(user) %>
         <div class="Profile-follow">
-          <%= render "shared/follow_button", user: current_user, user_follow: user %>
+          <%= render "shared/follow_button",
+              user:,
+              user_follow: current_user.user_follows.find_by(followed_id: user.id)
+            %>
         </div>
       <% end %>
     </div>
