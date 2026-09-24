@@ -74,3 +74,34 @@ a {
 	box-shadow: none;
 	overflow: visible;
 }
+
+/* Change lists on the activity pages (Product & Brand Activities). */
+.AdminActivityChanges {
+	display: grid;
+	gap: 0.25rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.875em;
+}
+
+.AdminActivityChanges del,
+.AdminActivityChanges-before {
+	color: hsl(0, 60%, 40%);
+}
+
+.AdminActivityChanges ins,
+.AdminActivityChanges-after {
+	color: hsl(140, 50%, 28%);
+	text-decoration: none;
+}
+
+.dark .AdminActivityChanges del,
+.dark .AdminActivityChanges-before {
+	color: hsl(0, 80%, 75%);
+}
+
+.dark .AdminActivityChanges ins,
+.dark .AdminActivityChanges-after {
+	color: hsl(140, 50%, 70%);
+}

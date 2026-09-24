@@ -7,6 +7,10 @@ module PaperTrail
 
     include PaperTrail::VersionConcern
 
+    # whodunnit holds the user ID as a string. The preloader casts the values to the type of
+    # users.id, so the admin pages can preload the users of a full page with one query.
+    belongs_to :whodunnit_user, class_name: 'User', foreign_key: :whodunnit, optional: true, inverse_of: false
+
     # simplecov:disable
     def self.ransackable_attributes(_auth_object = nil)
       %w[
