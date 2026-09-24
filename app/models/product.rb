@@ -246,6 +246,15 @@ class Product < ApplicationRecord
       product_series_id_eq
       sub_categories_id
       sub_categories_id_eq
+      completeness_eq
+      completeness_gt
+      completeness_lt
+      specs_applicable_eq
+      specs_applicable_gt
+      specs_applicable_lt
+      specs_filled_eq
+      specs_filled_gt
+      specs_filled_lt
     ]
   end
 

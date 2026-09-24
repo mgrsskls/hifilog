@@ -292,6 +292,7 @@ class Brand < ApplicationRecord
       sub_categories_count_eq
       sub_categories_count_gt
       sub_categories_count_lt
+      product_series_id_eq
     ]
   end
 
