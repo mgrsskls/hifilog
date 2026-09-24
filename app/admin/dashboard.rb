@@ -1,188 +1,233 @@
 # frozen_string_literal: true
+
 ActiveAdmin.register_page "Dashboard" do
   menu false
 
   content title: proc { I18n.t("active_admin.dashboard") } do
-    div class: "flex flex-col gap-8 mb-16" do
-      all_brands_count = Brand.all.count
-      all_products_count = Product.all.count
-      div do
-        dis_continued_brands_count = Brand.where.not(discontinued: nil).count
-        dis_continued_brands_count_percentage = number_to_rounded(dis_continued_brands_count / all_brands_count.to_f * 100, precision: 2)
-        brands_with_products_count = Brand.joins(:products).distinct.count
-        brands_with_products_count_percentage = number_to_rounded(brands_with_products_count / all_brands_count.to_f * 100, precision: 2)
-        brands_with_sub_categories_count = Brand.left_outer_joins(:sub_categories).where.not(sub_categories: { id: nil }).distinct.count
-        brands_with_sub_categories_count_percentage = number_to_rounded(brands_with_sub_categories_count / all_brands_count.to_f * 100, precision: 2)
-        brands_with_country_count = Brand.where.not(country_code: nil).count
-        brands_with_country_count_percentage = number_to_rounded(brands_with_country_count / all_brands_count.to_f * 100, precision: 2)
-        brands_with_website_count = Brand.where.not(website: nil).count
-        brands_with_website_count_percentage = number_to_rounded(brands_with_website_count / all_brands_count.to_f * 100, precision: 2)
-        brands_with_description_count = Brand.where.not(description: nil).count
-        brands_with_description_count_percentage = number_to_rounded(brands_with_description_count / all_brands_count.to_f * 100, precision: 2)
-        brands_with_founded_year_count = Brand.where.not(founded_year: nil).count
-        brands_with_founded_year_count_percentage = number_to_rounded(brands_with_founded_year_count / all_brands_count.to_f * 100, precision: 2)
-        h3 class: "text-xl font-bold mb-2" do
-          "#{all_brands_count} Brands"
-        end
-        dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
-          div class: "AdminDashboardStat", "style": "--val: #{brands_with_sub_categories_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "With Categories"
+    div class: "grid items-start gap-8 mb-16 lg:grid-cols-2" do
+      # Latest user, product and brand activities and sign-ups in one list, newest first. Takes the
+      # newest rows of each table, merges them and keeps the newest of those. The presenters preload
+      # what the sentences need with a fixed number of queries. Sign-ups come straight from the users
+      # table, they are not stored as user activities.
+      div class: "min-w-0" do
+        activities_limit = 15
+        activity_time = ->(record) { record.is_a?(UserActivity) ? record.occurred_at : record.created_at }
+        activities = (
+          UserActivity.order(occurred_at: :desc).limit(activities_limit).to_a +
+          PaperTrail::Version.order(created_at: :desc).limit(activities_limit).to_a +
+          User.order(created_at: :desc).limit(activities_limit).to_a
+        ).sort_by { |record| activity_time.call(record) }.reverse.first(activities_limit)
+        AdminUserActivityPresenter.preload(activities.grep(UserActivity))
+        version_context = AdminVersionActivityPresenter.preload(activities.grep(PaperTrail::Version))
+
+        if activities.empty?
+          para "No activities yet."
+        else
+          table_for activities do
+            column("When") { |record| admin_activity_timestamp(activity_time.call(record)) }
+            column("Activity") do |record|
+              case record
+              when UserActivity
+                AdminUserActivityPresenter.new(record, helpers).sentence
+              when PaperTrail::Version
+                AdminVersionActivityPresenter.new(record, helpers, version_context).sentence
+              when User
+                helpers.safe_join([
+                  helpers.link_to(record.user_name, helpers.admin_user_path(record)),
+                  "signed up",
+                  (helpers.tag.small("(not confirmed yet)") unless record.confirmed_at)
+                ].compact, " ")
+              end
             end
-            dd "#{brands_with_sub_categories_count_percentage}%" do
-              small "(#{brands_with_sub_categories_count})"
-            end
-          end
-          div class: "AdminDashboardStat", "style": "--val: #{brands_with_products_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "With Products"
-            end
-            dd "#{brands_with_products_count_percentage}%" do
-              small "(#{brands_with_products_count})"
-            end
-          end
-          div do
-            dt class: "font-bold text-gray-700" do
-              "Products per Brand"
-            end
-            dd number_to_rounded(all_products_count / all_brands_count .to_f, precision: 2)
           end
         end
-        dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4 mt-4" do
-          div class: "AdminDashboardStat", "style": "--val: #{dis_continued_brands_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "(Dis)continued"
-            end
-            dd "#{dis_continued_brands_count_percentage}%" do
-              small "(#{dis_continued_brands_count})"
-            end
-          end
-          div class: "AdminDashboardStat", "style": "--val: #{brands_with_description_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Description"
-            end
-            dd "#{brands_with_description_count_percentage}%" do
-              small "(#{brands_with_description_count})"
-            end
-          end
-          div class: "AdminDashboardStat", "style": "--val: #{brands_with_founded_year_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Founded Year"
-            end
-            dd "#{brands_with_founded_year_count_percentage}%" do
-              small "(#{brands_with_founded_year_count})"
-            end
-          end
-          div class: "AdminDashboardStat", "style": "--val: #{brands_with_country_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Country"
-            end
-            dd "#{brands_with_country_count_percentage}%" do
-              small "(#{brands_with_country_count})"
-            end
-          end
-          div class: "AdminDashboardStat", "style": "--val: #{brands_with_website_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Website"
-            end
-            dd "#{brands_with_website_count_percentage}%" do
-              small "(#{brands_with_website_count})"
-            end
-          end
+        para class: "mt-4 flex flex-wrap gap-4" do
+          text_node link_to("All user activities", admin_user_activities_path)
+          text_node link_to("All product & brand activities", admin_paper_trail_versions_path)
         end
       end
-      div do
-        avg_brand_completeness = number_to_rounded(Brand.average(:completeness).to_f, precision: 2)
-        avg_product_completeness = number_to_rounded(ContributeProductItem.average(:completeness).to_f, precision: 2)
-        h3 class: "text-xl font-bold mb-2" do
-          "Completeness"
-        end
-        dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
-          div class: "AdminDashboardStat", "style": "--val: #{avg_brand_completeness}" do
-            dt class: "font-bold text-gray-700" do
-              "Brands (average)"
-            end
-            dd "#{avg_brand_completeness}%"
+
+      div class: "flex flex-col gap-8" do
+        all_brands_count = Brand.all.count
+        all_products_count = Product.all.count
+        div do
+          avg_brand_completeness = number_to_rounded(Brand.average(:completeness).to_f, precision: 2)
+          avg_product_completeness = number_to_rounded(ContributeProductItem.average(:completeness).to_f, precision: 2)
+          h3 class: "text-xl font-bold mb-2" do
+            "Completeness"
           end
-          div class: "AdminDashboardStat", "style": "--val: #{avg_product_completeness}" do
-            dt class: "font-bold text-gray-700" do
-              "Products (average)"
+          dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
+            div class: "AdminDashboardStat", "style": "--val: #{avg_brand_completeness}" do
+              dt class: "font-bold text-gray-700" do
+                "Brands (average)"
+              end
+              dd "#{avg_brand_completeness}%"
             end
-            dd "#{avg_product_completeness}%"
-          end
-        end
-      end
-      div do
-        products_with_release_year_count = Product.where.not(release_year: nil).count
-        products_with_release_year_count_percentage = number_to_rounded(products_with_release_year_count / all_products_count.to_f * 100, precision: 2)
-        products_with_description_count = Product.where.not(description: nil).count
-        products_with_description_count_percentage = number_to_rounded(products_with_description_count / all_products_count.to_f * 100, precision: 2)
-        products_with_price_count = Product.where.not(price: nil).count
-        products_with_price_count_percentage = number_to_rounded(products_with_price_count / all_products_count.to_f * 100, precision: 2)
-        h3 class: "text-xl font-bold mb-2" do
-          "#{all_products_count} Products"
-        end
-        dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
-          div class: "AdminDashboardStat", "style": "--val: #{products_with_description_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Description"
-            end
-            dd "#{products_with_description_count_percentage}%" do
-              small "(#{products_with_description_count})"
-            end
-          end
-          div class: "AdminDashboardStat", "style": "--val: #{products_with_release_year_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Released Year"
-            end
-            dd "#{products_with_release_year_count_percentage}%" do
-              small "(#{products_with_release_year_count})"
-            end
-          end
-          div class: "AdminDashboardStat", "style": "--val: #{products_with_price_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Price"
-            end
-            dd "#{products_with_price_count_percentage}%" do
-              small "(#{products_with_price_count})"
+            div class: "AdminDashboardStat", "style": "--val: #{avg_product_completeness}" do
+              dt class: "font-bold text-gray-700" do
+                "Products (average)"
+              end
+              dd "#{avg_product_completeness}%"
             end
           end
         end
-      end
-      div do
-        all_product_variants_count = ProductVariant.all.count
-        product_variants_with_release_year_count = ProductVariant.where.not(release_year: nil).count
-        product_variants_with_release_year_count_percentage = number_to_rounded(product_variants_with_release_year_count / all_product_variants_count.to_f * 100, precision: 2)
-        product_variants_with_description_count = ProductVariant.where.not(description: nil).count
-        product_variants_with_description_count_percentage = number_to_rounded(product_variants_with_description_count / all_product_variants_count.to_f * 100, precision: 2)
-        product_variants_with_price_count = ProductVariant.where.not(price: nil).count
-        product_variants_with_price_count_percentage = number_to_rounded(product_variants_with_price_count / all_product_variants_count.to_f * 100, precision: 2)
-        h3 class: "text-xl font-bold mb-2" do
-          "#{all_product_variants_count} Product Variants"
+        div do
+          dis_continued_brands_count = Brand.where.not(discontinued: nil).count
+          dis_continued_brands_count_percentage = number_to_rounded(dis_continued_brands_count / all_brands_count.to_f * 100, precision: 2)
+          brands_with_products_count = Brand.joins(:products).distinct.count
+          brands_with_products_count_percentage = number_to_rounded(brands_with_products_count / all_brands_count.to_f * 100, precision: 2)
+          brands_with_sub_categories_count = Brand.left_outer_joins(:sub_categories).where.not(sub_categories: { id: nil }).distinct.count
+          brands_with_sub_categories_count_percentage = number_to_rounded(brands_with_sub_categories_count / all_brands_count.to_f * 100, precision: 2)
+          brands_with_country_count = Brand.where.not(country_code: nil).count
+          brands_with_country_count_percentage = number_to_rounded(brands_with_country_count / all_brands_count.to_f * 100, precision: 2)
+          brands_with_website_count = Brand.where.not(website: nil).count
+          brands_with_website_count_percentage = number_to_rounded(brands_with_website_count / all_brands_count.to_f * 100, precision: 2)
+          brands_with_description_count = Brand.where.not(description: nil).count
+          brands_with_description_count_percentage = number_to_rounded(brands_with_description_count / all_brands_count.to_f * 100, precision: 2)
+          brands_with_founded_year_count = Brand.where.not(founded_year: nil).count
+          brands_with_founded_year_count_percentage = number_to_rounded(brands_with_founded_year_count / all_brands_count.to_f * 100, precision: 2)
+          h3 class: "text-xl font-bold mb-2" do
+            "#{all_brands_count} Brands"
+          end
+          dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
+            div class: "AdminDashboardStat", "style": "--val: #{brands_with_sub_categories_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "With Categories"
+              end
+              dd "#{brands_with_sub_categories_count_percentage}%" do
+                small "(#{brands_with_sub_categories_count})"
+              end
+            end
+            div class: "AdminDashboardStat", "style": "--val: #{brands_with_products_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "With Products"
+              end
+              dd "#{brands_with_products_count_percentage}%" do
+                small "(#{brands_with_products_count})"
+              end
+            end
+            div do
+              dt class: "font-bold text-gray-700" do
+                "Products per Brand"
+              end
+              dd number_to_rounded(all_products_count / all_brands_count .to_f, precision: 2)
+            end
+          end
+          dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4 mt-4" do
+            div class: "AdminDashboardStat", "style": "--val: #{dis_continued_brands_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "(Dis)continued"
+              end
+              dd "#{dis_continued_brands_count_percentage}%" do
+                small "(#{dis_continued_brands_count})"
+              end
+            end
+            div class: "AdminDashboardStat", "style": "--val: #{brands_with_description_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Description"
+              end
+              dd "#{brands_with_description_count_percentage}%" do
+                small "(#{brands_with_description_count})"
+              end
+            end
+            div class: "AdminDashboardStat", "style": "--val: #{brands_with_founded_year_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Founded Year"
+              end
+              dd "#{brands_with_founded_year_count_percentage}%" do
+                small "(#{brands_with_founded_year_count})"
+              end
+            end
+            div class: "AdminDashboardStat", "style": "--val: #{brands_with_country_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Country"
+              end
+              dd "#{brands_with_country_count_percentage}%" do
+                small "(#{brands_with_country_count})"
+              end
+            end
+            div class: "AdminDashboardStat", "style": "--val: #{brands_with_website_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Website"
+              end
+              dd "#{brands_with_website_count_percentage}%" do
+                small "(#{brands_with_website_count})"
+              end
+            end
+          end
         end
-        dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
-          div class: "AdminDashboardStat", "style": "--val: #{product_variants_with_description_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Description"
+        div do
+          products_with_release_year_count = Product.where.not(release_year: nil).count
+          products_with_release_year_count_percentage = number_to_rounded(products_with_release_year_count / all_products_count.to_f * 100, precision: 2)
+          products_with_description_count = Product.where.not(description: nil).count
+          products_with_description_count_percentage = number_to_rounded(products_with_description_count / all_products_count.to_f * 100, precision: 2)
+          products_with_price_count = Product.where.not(price: nil).count
+          products_with_price_count_percentage = number_to_rounded(products_with_price_count / all_products_count.to_f * 100, precision: 2)
+          h3 class: "text-xl font-bold mb-2" do
+            "#{all_products_count} Products"
+          end
+          dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
+            div class: "AdminDashboardStat", "style": "--val: #{products_with_description_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Description"
+              end
+              dd "#{products_with_description_count_percentage}%" do
+                small "(#{products_with_description_count})"
+              end
             end
-            dd "#{product_variants_with_description_count_percentage}%" do
-              small "(#{product_variants_with_description_count})"
+            div class: "AdminDashboardStat", "style": "--val: #{products_with_release_year_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Released Year"
+              end
+              dd "#{products_with_release_year_count_percentage}%" do
+                small "(#{products_with_release_year_count})"
+              end
+            end
+            div class: "AdminDashboardStat", "style": "--val: #{products_with_price_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Price"
+              end
+              dd "#{products_with_price_count_percentage}%" do
+                small "(#{products_with_price_count})"
+              end
             end
           end
-          div class: "AdminDashboardStat", "style": "--val: #{product_variants_with_release_year_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Released Year"
-            end
-            dd "#{product_variants_with_release_year_count_percentage}%" do
-              small "(#{product_variants_with_release_year_count})"
-            end
+        end
+        div do
+          all_product_variants_count = ProductVariant.all.count
+          product_variants_with_release_year_count = ProductVariant.where.not(release_year: nil).count
+          product_variants_with_release_year_count_percentage = number_to_rounded(product_variants_with_release_year_count / all_product_variants_count.to_f * 100, precision: 2)
+          product_variants_with_description_count = ProductVariant.where.not(description: nil).count
+          product_variants_with_description_count_percentage = number_to_rounded(product_variants_with_description_count / all_product_variants_count.to_f * 100, precision: 2)
+          product_variants_with_price_count = ProductVariant.where.not(price: nil).count
+          product_variants_with_price_count_percentage = number_to_rounded(product_variants_with_price_count / all_product_variants_count.to_f * 100, precision: 2)
+          h3 class: "text-xl font-bold mb-2" do
+            "#{all_product_variants_count} Product Variants"
           end
-          div class: "AdminDashboardStat", "style": "--val: #{product_variants_with_price_count_percentage}" do
-            dt class: "font-bold text-gray-700" do
-              "Price"
+          dl class: "grid grid-cols-[repeat(auto-fill,_minmax(10rem,_1fr))] gap-4" do
+            div class: "AdminDashboardStat", "style": "--val: #{product_variants_with_description_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Description"
+              end
+              dd "#{product_variants_with_description_count_percentage}%" do
+                small "(#{product_variants_with_description_count})"
+              end
             end
-            dd "#{product_variants_with_price_count_percentage}%" do
-              small "(#{product_variants_with_price_count})"
+            div class: "AdminDashboardStat", "style": "--val: #{product_variants_with_release_year_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Released Year"
+              end
+              dd "#{product_variants_with_release_year_count_percentage}%" do
+                small "(#{product_variants_with_release_year_count})"
+              end
+            end
+            div class: "AdminDashboardStat", "style": "--val: #{product_variants_with_price_count_percentage}" do
+              dt class: "font-bold text-gray-700" do
+                "Price"
+              end
+              dd "#{product_variants_with_price_count_percentage}%" do
+                small "(#{product_variants_with_price_count})"
+              end
             end
           end
         end
