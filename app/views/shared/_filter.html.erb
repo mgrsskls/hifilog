@@ -30,7 +30,7 @@
     <summary class="Filter-label Filter-label--large">
       Assembly
       <% if diy_kit_is_filtered %>
-        <svg aria-label="Filter applied" class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        <%= render "shared/state_icon", aria_label: "Filter applied" %>
       <% end %>
     </summary>
     <ul class="Pagination">
@@ -75,7 +75,7 @@
           <summary class="Filter-label Filter-label--large">
             <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
             <% if is_filtered %>
-              <svg aria-label="Filter applied" class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              <%= render "shared/state_icon", aria_label: "Filter applied" %>
             <% end %>
           </summary>
         <% end %>
@@ -269,7 +269,7 @@
           <summary class="Filter-label Filter-label--large">
             Brands
             <% if brands_are_filtered %>
-              <svg aria-label="Filter applied" class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              <%= render "shared/state_icon", aria_label: "Filter applied" %>
             <% end %>
           </summary>
           <div class="Filter-fieldsetContent">
@@ -322,7 +322,7 @@
 
     <p class="Filter-status<%= " is-active" if filter_applied.any? %>">
       <% if filter_applied.any? %>
-        <svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Filters applied.
+        <%= render "shared/state_icon" %> Filters applied.
       <% else %>
         No filters applied.
       <% end %>

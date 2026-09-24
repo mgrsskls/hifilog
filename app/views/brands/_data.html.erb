@@ -14,8 +14,7 @@
   <dd>
     <div class="u-flex u-alignCenter u-gap-smd">
       <% if brand.country_name.present? %>
-        <img class="Flag" src="/flags/<%= brand.country_code.downcase %>.svg" alt="Flag of <%= brand.country_name %>" title="<%= brand.country_name %>" loading="lazy" width="25">
-        <%= brand.country_name %>
+        <%= render "shared/flag", country_code: brand.country_code, country_name: brand.country_name %>
       <% else %>
         -
       <% end %>

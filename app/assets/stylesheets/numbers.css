@@ -39,16 +39,8 @@ h2 + .DashboardNumbers {
 }
 
 .DashboardNumber {
-	display: flex;
-	justify-content: space-between;
-	border-radius: var(--border-radius);
-	text-decoration: none;
 	padding: 7.5%;
-	background: var(--color-bg2);
-	color: inherit;
 	gap: 1rem;
-	block-size: 100%;
-	box-sizing: border-box;
 	container: number / inline-size;
 }
 

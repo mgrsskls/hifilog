@@ -50,7 +50,7 @@
       <%= f.label :images, class: "h4" do %>Upload photos<% end %>
       <p>Upload photos of your <b><%= item.display_name %></b> and showcase it on your profile.</p>
       <p class="FlashMessage FlashMessage--info">
-        <b>Note:</b> You may be held personally liable for uploading images that infringe the rights of intellectual property owners. Only upload images to which you have the rights or which are available for public use.
+        <%= render "shared/image_liability_notice" %>
       </p>
       <div>
         <%= f.file_field :images, accept: "image/jpeg,image/png,image/gif,image/webp", multiple: true, include_hidden: false %>

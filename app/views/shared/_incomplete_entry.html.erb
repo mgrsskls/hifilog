@@ -11,7 +11,7 @@
     # Editing still requires an account, so send signed-out visitors through sign-in and back.
     target = user_signed_in? ? edit_path : new_user_session_path(redirect: edit_path)
   %>
-  <p class="IncompleteEntry">
+  <p class="IncompleteEntry u-box">
     <%= t('completeness.missing',
           name: record.display_name,
           gaps: gaps.to_sentence(two_words_connector: ' and ', last_word_connector: ' and ')) %>

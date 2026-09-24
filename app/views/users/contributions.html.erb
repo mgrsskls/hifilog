@@ -4,41 +4,28 @@
 <%= render layout: "users/shared/layout", locals: { user: @user, heading: @heading, categories: @categories, sub_category: @sub_category, render_headline: true } do %>
   <div class="DashboardStatsWrapper">
     <div class="DashboardStats">
-      <div class="DashboardNumbersWrapper">
-        <h3><%= Product.model_name.human.pluralize %></h3>
-        <ul class="DashboardNumbers">
-          <li>
-            <div class="DashboardNumber">
-              <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
-              <span class="DashboardNumber-value"><%= @products_created %></span>
-            </div>
-          </li>
-          <li>
-            <div class="DashboardNumber">
-              <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
-              <span class="DashboardNumber-value"><%= @products_edited %></span>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div class="DashboardNumbersWrapper">
-        <h3><%= Brand.model_name.human.pluralize %></h3>
-        <ul class="DashboardNumbers">
-          <li>
-            <div class="DashboardNumber">
-              <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
-              <span class="DashboardNumber-value"><%= @brands_created %></span>
-            </div>
-          </li>
-          <li>
-            <div class="DashboardNumber">
-              <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
-              <span class="DashboardNumber-value"><%= @brands_edited %></span>
-            </div>
-          </li>
-        </ul>
-      </div>
+      <% [
+        { model: Product, created: @products_created, edited: @products_edited },
+        { model: Brand, created: @brands_created, edited: @brands_edited }
+      ].each do |entry| %>
+        <div class="DashboardNumbersWrapper">
+          <h3><%= entry[:model].model_name.human.pluralize %></h3>
+          <ul class="DashboardNumbers">
+            <li>
+              <div class="DashboardNumber u-statCard">
+                <span class="DashboardNumber-heading"><%= t('headings.created') %></span>
+                <span class="DashboardNumber-value"><%= entry[:created] %></span>
+              </div>
+            </li>
+            <li>
+              <div class="DashboardNumber u-statCard">
+                <span class="DashboardNumber-heading"><%= t('headings.edited') %></span>
+                <span class="DashboardNumber-value"><%= entry[:edited] %></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      <% end %>
     </div>
   </div>
 <% end %>

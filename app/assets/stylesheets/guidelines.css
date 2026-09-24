@@ -17,9 +17,6 @@
 }
 
 .Guidelines-toc {
-	background: var(--color-bg2);
-	border: var(--border-light);
-	border-radius: var(--border-radius);
 	padding: 1rem 1.5rem;
 }
 
@@ -56,9 +53,6 @@
 }
 
 .Guidelines-quickStart {
-	background: var(--color-bg2);
-	border: var(--border-light);
-	border-radius: var(--border-radius);
 	padding: 0.5rem 1.5rem 1rem;
 	margin-block: 1.5rem;
 }

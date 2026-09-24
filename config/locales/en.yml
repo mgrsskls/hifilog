@@ -562,6 +562,8 @@ en:
     intro_eq: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     intro_up: <span class="AppName">HiFi&thinsp;Log</span> is a user-driven database with almost <a href="%{products_path}">%{products_count} products</a> by <a href="%{brands_path}">%{brands_count} brands</a>.
     recently_added: Recently added to HiFi Log
+  image_upload:
+    liability_notice: You may be held personally liable for uploading images that infringe the rights of intellectual property owners. Only upload images to which you have the rights or which are available for public use.
   meta_description: "<em>HiFi Log</em> is a user-driven database for hi-fi products and brands. Users can create their own collection and keep track of their past gear."
   newsletter:
     messages:

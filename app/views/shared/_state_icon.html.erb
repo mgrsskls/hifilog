@@ -1,2 +1,4 @@
-<%# The check a state button carries when it is active: bookmarked, following, attending. %>
-<svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+<%# The check a state button carries when it is active: bookmarked, following, attending, filtered.
+    Pass aria_label: to make the icon convey meaning on its own; otherwise it stays aria-hidden. %>
+<% aria_label = local_assigns[:aria_label] %>
+<svg class="IconSymbol IconSymbol--positive" xmlns="http://www.w3.org/2000/svg" viewBox="2 2 20 20" width="24" height="24"<% if aria_label.present? %> aria-label="<%= aria_label %>"<% else %> aria-hidden="true"<% end %>><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.8 2.3 2.2L15 9.7m6 2.3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>

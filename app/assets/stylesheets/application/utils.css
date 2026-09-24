@@ -1,3 +1,20 @@
+.u-box {
+	background: var(--color-bg2);
+	border: var(--border-light);
+	border-radius: var(--border-radius);
+}
+
+.u-statCard {
+	display: flex;
+	justify-content: space-between;
+	border-radius: var(--border-radius);
+	text-decoration: none;
+	background: var(--color-bg2);
+	color: inherit;
+	block-size: 100%;
+	box-sizing: border-box;
+}
+
 .u-container {
 	max-inline-size: 90rem;
 	margin-inline: auto;

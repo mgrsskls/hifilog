@@ -8,9 +8,6 @@
 }
 
 .ContributeQueue {
-	background: var(--color-bg2);
-	border: var(--border-light);
-	border-radius: var(--border-radius);
 	padding: 1.5rem;
 	margin-trim: block;
 

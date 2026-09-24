@@ -62,11 +62,7 @@
 }
 
 .EntityForm summary {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 	padding-block: 0.75em;
-	list-style: none;
 	font-weight: 600;
 }
 

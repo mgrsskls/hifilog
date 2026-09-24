@@ -1,0 +1,11 @@
+<%# Country flag with its name, e.g. next to a brand or event listing.
+    Pass country_name: when the caller already has the display name (e.g. brand.country_name);
+    otherwise it is looked up from country_code. Pass wrap_in_span: true to wrap the name in a
+    <span>, for containers that hide it at narrow widths (see .EntityList-country span). %>
+<% name = local_assigns[:country_name] || country_name_from_country_code(country_code) %>
+<img class="Flag" src="/flags/<%= country_code.downcase %>.svg" alt="Flag of <%= name %>" title="<%= name %>" loading="lazy" width="25">
+<% if local_assigns[:wrap_in_span] %>
+  <span><%= name %></span>
+<% else %>
+  <%= name %>
+<% end %>

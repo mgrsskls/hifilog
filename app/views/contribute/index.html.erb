@@ -9,14 +9,14 @@
 <h2><%= Product.model_name.human(count: 2) %></h2>
 
 <ul class="ContributeQueues">
-  <li class="ContributeQueue">
+  <li class="ContributeQueue u-box">
     <h3 class="ContributeQueue-heading">
       <%= link_to t('contribute.index.add_product_heading'), new_product_path %>
     </h3>
     <p><%= t('contribute.index.add_product_body') %></p>
   </li>
 
-  <li class="ContributeQueue">
+  <li class="ContributeQueue u-box">
     <h3 class="ContributeQueue-heading">
       <%= link_to t('contribute.incomplete_products.heading'), contribute_incomplete_products_path %>
     </h3>
@@ -27,21 +27,21 @@
 <h2><%= Brand.model_name.human(count: 2) %></h2>
 
 <ul class="ContributeQueues">
-  <li class="ContributeQueue">
+  <li class="ContributeQueue u-box">
     <h3 class="ContributeQueue-heading">
       <%= link_to t('contribute.index.add_brand_heading'), new_brand_path %>
     </h3>
     <p><%= t('contribute.index.add_brand_body') %></p>
   </li>
 
-  <li class="ContributeQueue">
+  <li class="ContributeQueue u-box">
     <h3 class="ContributeQueue-heading">
       <%= link_to t('contribute.brands_without_products.heading'), contribute_brands_without_products_path %>
     </h3>
     <p><%= t('contribute.index.brands_without_products_body') %></p>
   </li>
 
-  <li class="ContributeQueue">
+  <li class="ContributeQueue u-box">
     <h3 class="ContributeQueue-heading">
       <%= link_to t('contribute.incomplete_brands.heading'), contribute_incomplete_brands_path %>
     </h3>

@@ -46,4 +46,9 @@ module GuidelinesHelper
             title: t('guidelines.link_title', label:),
             'aria-label': t('guidelines.link_title', label:), rel: 'noopener'
   end
+
+  # Inline text link to a guideline section, used in the form summaries.
+  def guideline_more_link(section, label = 'More')
+    link_to label, guideline_path(section), target: '_blank', rel: 'noopener'
+  end
 end

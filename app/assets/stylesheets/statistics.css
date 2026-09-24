@@ -19,17 +19,9 @@
 }
 
 .StatisticsNumber {
-	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
-	border-radius: var(--border-radius);
-	text-decoration: none;
 	padding: 1rem;
-	background: var(--color-bg2);
-	color: inherit;
 	gap: 0.5rem;
-	block-size: 100%;
-	box-sizing: border-box;
 	line-height: 1.5;
 	font-size: clamp(0.875rem, 5cqi, 1rem);
 }
