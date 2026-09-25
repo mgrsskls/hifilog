@@ -11,7 +11,7 @@
 -- v22 adds brand_abbreviation, so listings can title a product the way the rest of the app
 -- does -- Brand#display_name, i.e. the abbreviation where there is one -- without joining
 -- brands (see ProductItemPresenter#brand_name). It also lets ProductFilterService match
--- "B&O Beolab 90" and "Bang & Olufsen Beolab 90" alike. See the Brand section of README.md.
+-- "B&O Beolab 90" and "Bang & Olufsen Beolab 90" alike. See docs/catalog-model.md, "Brand".
 --
 -- Nullable on purpose: NULL means the brand has no abbreviation, so the reader falls back to
 -- brand_name.

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Tuning values for the "Similar Brands" block. See README, section "Similar Brands".
+# Tuning values for the "Similar Brands" block. See docs/similar-products.md, "Similar Brands".
 #
 # When you change a value, also increase SimilarBrands::CACHE_VERSION. If you do not, cached lists
 # keep the old order until they expire.

@@ -1,0 +1,35 @@
+# Authentication, privacy policy and security
+
+This document describes authentication, the admin scope, the privacy policy gate and the security
+measures. It uses Simplified Technical English (ASD-STE100).
+
+## 1. Authentication and admin
+
+There are two separate scopes:
+
+- **Users** sign in to the site. Devise handles registration, confirmation and lockout. Community
+  members can create and edit catalog entities.
+- **Admin users** sign in to the back office (ActiveAdmin). They can use the full admin interface.
+
+## 2. Privacy policy
+
+The published policy text has two numbers:
+
+- A **version**. A new version needs a new acceptance.
+- A **content revision**. It is for text changes that do not need a new acceptance.
+
+Users store which version they accepted and when.
+
+- The sign-up needs the acceptance.
+- A user with an old version must accept the new version or delete the account before they can use
+  the application.
+- Static and legal pages and account recovery stay available during this gate.
+- The unsubscribe controllers do not use the gate, because the recipient is possibly not signed in
+  (see [users-and-social.md](users-and-social.md#7-unsubscribe-from-emails)).
+
+## 3. Security
+
+- **Rack::Attack** limits the request rate for authentication, catalog writes, bookmarks, notes,
+  search, and follow and block changes.
+- A **content security policy** applies to all pages.
+- A **Turnstile** bot challenge protects registration and password reset.

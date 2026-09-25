@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Splits the jobs `name` + `full_name` were sharing (see the Brand section of README.md):
+# Splits the jobs `name` + `full_name` were sharing (see docs/catalog-model.md, "Brand"):
 #
 #   name          canonical display identity, e.g. "Fezz Audio" -- unchanged here
 #   abbreviation  short form the brand is known by that is NOT part of the name, e.g. "B&O"

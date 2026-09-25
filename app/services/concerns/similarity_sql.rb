@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# SQL parts that SimilarProducts::Query and SimilarBrands::Query both use. See README, sections
-# "Similar Products" and "Similar Brands".
+# SQL parts that SimilarProducts::Query and SimilarBrands::Query both use. See
+# docs/similar-products.md.
 #
 # All methods return SQL text. Values of the source record are put into the SQL as quoted
 # constants, so the statement needs no bind parameters.

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Tuning values for the "Similar Products" block. See README, section "Similar Products".
+# Tuning values for the "Similar Products" block. See docs/similar-products.md.
 #
 # All values are Ruby constants, not database data. Thus, you can review and change them in one
 # file. When you change a value, also increase SimilarProducts::CACHE_VERSION. If you do not,

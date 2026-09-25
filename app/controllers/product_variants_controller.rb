@@ -20,7 +20,7 @@ class ProductVariantsController < ApplicationController
     set_meta_desc
   end
 
-  # The full, paginated "Similar Products" list of a variant (README, "Similar Products"). The list
+  # The full, paginated "Similar Products" list of a variant (docs/similar-products.md). The list
   # is the list of the parent product, because the ranking uses the attributes of the product. The
   # sidebar shows the variant. Like the product version, the page is noindex.
   def similar

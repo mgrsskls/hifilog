@@ -40,7 +40,7 @@ class ProductCatalogShowService
 
   private
 
-  # Products that fill the same role as this entry (README, "Similar Products"). A variant page
+  # Products that fill the same role as this entry (docs/similar-products.md). A variant page
   # shows the list of its parent product.
   def similar_products
     SimilarProducts.for(product: @product)

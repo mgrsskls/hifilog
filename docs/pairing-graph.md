@@ -1,9 +1,11 @@
-# Pairing graph — draft for review
+# Pairing graph
 
-Authoring source for the **Related Products** block on catalogue detail pages. Roles are an **authoring-time** abstraction;
-what ships to the database is a directed subcategory→subcategory pair table generated
-from this file, in the same spirit as `rake custom_attributes:define`: a reviewable
-declaration that materialises into rows, not a second source of truth at runtime.
+Status: implemented. Open questions are in §4 and §6.5. This document is the authoring source for
+the **Related Products** block on catalog detail pages. It records the roles, the edges and the
+reasons for them. For the implementation, see [related-products.md](related-products.md).
+
+Roles are an **authoring-time** abstraction. The graph is Ruby constants in
+`RelatedProducts::Graph`. There is no pair table in the database.
 
 Edges marked **†** are conditional on custom attributes — see §5. An unmarked
 edge always applies.
@@ -17,48 +19,48 @@ belong on a power cable page.
 
 ## 1. Role assignments
 
-All 45 subcategories, one role each.
+Every sub category has exactly one role.
 
-| Role                 | Subcategories (id)                                                           |
-| -------------------- | ---------------------------------------------------------------------------- |
-| `turntable`          | Turntables (17)                                                              |
-| `tonearm`            | Tonearms (18)                                                                |
-| `cartridge`          | Cartridges (13)                                                              |
-| `step_up`            | MC Step-Up Transformers (35)                                                 |
-| `phono_stage`        | Phono Pre-Amplifiers / Stages (2)                                            |
-| `analog_source`      | Tape Decks (139), Tuners (73)                                                |
-| `cd_player`          | CD/SACD Players (15)                                                         |
-| `cd_transport`       | CD Transports (74)                                                           |
-| `streamer`           | Streamers (19)                                                               |
-| `dac`                | Digital Audio Converters (16)                                                |
-| `dap`                | Digital Audio Players (36)                                                   |
-| `switch_box`         | Switches (37)                                                                |
-| `preamp`             | Pre-Amplifiers (1)                                                           |
-| `power_amp`          | Power Amplifiers (4)                                                         |
-| `integrated`         | Integrated Amplifiers (3), Receivers (20)                                    |
-| `headphone_amp`      | Headphone Amplifiers (5)                                                     |
-| `headphone`          | Over-Ear (8), On-Ear (7), In-Ear Monitors (6), Noise Cancelling (9)          |
-| `speaker_floor`      | Floorstanding Loudspeakers (11)                                              |
-| `speaker_standmount` | Bookshelf & Standmount Loudspeakers (10)                                     |
-| `speaker_install`    | Center Channel (21), In-Wall (34), In-Ceiling (33), On-Wall (75)             |
-| `subwoofer`          | Subwoofers (12)                                                              |
-| `cable_speaker`      | Loudspeaker Cables (24)                                                      |
-| `cable_interconnect` | Interconnects (25)                                                           |
-| `cable_phono`        | Phono Cables (76)                                                            |
-| `cable_headphone`    | Headphone Cables (27)                                                        |
-| `cable_digital`      | Digital Cables (28)                                                          |
-| `cable_power`        | Power Cables (26)                                                            |
-| `power_conditioning` | Power Conditioners (32), Power Supplies (40), Step Up/Down Transformers (39) |
-| `tube_power`         | Power Tubes (29)                                                             |
-| `tube_preamp`        | Pre-Amp / Driver Tubes (31)                                                  |
-| `tube_rectifier`     | Rectifier Tubes (30)                                                         |
-| `support_rack`       | Racks (107), Bases (23)                                                      |
-| `support_speaker`    | Loudspeaker Stands (106)                                                     |
-| `support_isolation`  | Pucks, Spikes, Absorbers (22)                                                |
+| Role                 | Subcategories                                                 |
+| -------------------- | ------------------------------------------------------------- |
+| `turntable`          | Turntables                                                    |
+| `tonearm`            | Tonearms                                                      |
+| `cartridge`          | Cartridges                                                    |
+| `step_up`            | MC Step-Up Transformers                                       |
+| `phono_stage`        | Phono Pre-Amplifiers / Stages                                 |
+| `analog_source`      | Tape Decks, Tuners                                            |
+| `cd_player`          | CD/SACD Players                                               |
+| `cd_transport`       | CD Transports                                                 |
+| `streamer`           | Streamers                                                     |
+| `dac`                | Digital Audio Converters                                      |
+| `dap`                | Digital Audio Players                                         |
+| `switch_box`         | Switches                                                      |
+| `preamp`             | Pre-Amplifiers                                                |
+| `power_amp`          | Power Amplifiers                                              |
+| `integrated`         | Integrated Amplifiers, Receivers                              |
+| `headphone_amp`      | Headphone Amplifiers                                          |
+| `headphone`          | Over-Ear, On-Ear, In-Ear Monitors, Noise Cancelling           |
+| `speaker_floor`      | Floorstanding Loudspeakers                                    |
+| `speaker_standmount` | Bookshelf & Standmount Loudspeakers                           |
+| `speaker_install`    | Center Channel, In-Wall, In-Ceiling, On-Wall                  |
+| `subwoofer`          | Subwoofers                                                    |
+| `cable_speaker`      | Loudspeaker Cables                                            |
+| `cable_interconnect` | Interconnects                                                 |
+| `cable_phono`        | Phono Cables                                                  |
+| `cable_headphone`    | Headphone Cables                                              |
+| `cable_digital`      | Digital Cables                                                |
+| `cable_power`        | Power Cables                                                  |
+| `power_conditioning` | Power Conditioners, Power Supplies, Step Up/Down Transformers |
+| `tube_power`         | Power Tubes                                                   |
+| `tube_preamp`        | Pre-Amp / Driver Tubes                                        |
+| `tube_rectifier`     | Rectifier Tubes                                               |
+| `support_rack`       | Racks, Bases                                                  |
+| `support_speaker`    | Loudspeaker Stands                                            |
+| `support_isolation`  | Pucks, Spikes, Absorbers                                      |
 
-34 roles for 45 subcategories. The ratio is poor, which is the point of keeping roles
-out of the runtime schema: they collapse meaningfully only for headphones (4→1),
-speakers (7→4) and a few pairs. The database stores subcategory pairs.
+Most roles hold a single subcategory. Roles collapse meaningfully only for headphones,
+loudspeakers and a few pairs. For this reason, roles exist only in the code
+(`RelatedProducts::Graph`); the database stores neither roles nor subcategory pairs.
 
 ---
 
@@ -198,9 +200,9 @@ should be hand-authored directly.
 roles. The graph decides what is _permitted_; the page decides what is _shown_ — suggest
 a cap of ~4 subcategories per page, ordered by the ranking signal below, 3 products each.
 
-**Ranking is unresolved and unresolvable today.** Ordering within the permitted set
-wants co-occurrence, and the current data (8 setups, 22 setup memberships, 135
-possessions across 37 users) cannot supply it. Until it can, order by subcategory
+**Ranking is unresolved while the data is sparse.** Ordering within the permitted set
+wants co-occurrence, which needs many setups and possessions that share products. Until the data
+can supply it, order by subcategory
 priority declared here plus product completeness, so the block is deterministic and
 never presents one person's system as a trend.
 
@@ -286,16 +288,16 @@ it will happen far more often.
 
 ### 5.3 Gaps — cases that want a gate and have no attribute to gate on
 
-| Edge                                                      | What is missing                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cable_headphone ↔ headphone`                             | No headphone-side connector attribute. `headphone_connection_type` is only wired/wireless, and `headphone_outputs` describes the _amplifier_. Wants e.g. `headphone_cable_connector` on both sides — and the option vocabulary has no `mmcx` or `2_pin` yet, which are the two most common.                                                                                                                                                                                              |
-| `cable_digital ↔ dac, streamer, cd_transport, network`    | Digital Cables has no type attribute. `cable_interconnect_type` is analogue only (rca / xlr / din). Wants `cable_digital_type` (spdif_coaxial, toslink, aes_ebu, i2s, usb_b, usb_c, bnc, hdmi, ethernet) — the option keys already exist.                                                                                                                                                                                                                                                |
-| `cable_speaker ↔ power_amp, integrated, speaker_*`        | `speaker_outputs` exists amp-side (binding posts / Speakon / spring clips); nothing describes the cable's termination. Wants `cable_speaker_termination` (banana, spade, bare wire, Speakon, BFA).                                                                                                                                                                                                                                                                                       |
-| `tube_preamp ↔ dac`                                       | `amplifier_type` is not attached to DACs, so tube-output DACs cannot be identified. Either attach it to `dacs` or leave the edge out; the draft now leaves it out.                                                                                                                                                                                                                                                                                                                       |
-| `cable_power ↔ everything`                                | No inlet type either side (IEC C7 / C13 / C15 / C19). Low value — mismatches here are rare and cheap.                                                                                                                                                                                                                                                                                                                                                                                    |
-| `dac ↔ power_amp`, `dac`/`streamer` ↔ active loudspeakers | Nothing records whether a DAC or streamer has **volume control**. Without it, one that can drive a power amplifier or an active loudspeaker directly is indistinguishable from one that must feed a pre-amplifier first — and the ordinary chain is DAC → pre-amp → power amp. Wants a `volume_control` boolean on `dacs` and `streamers`.                                                                                                                                               |
-| every `cable_interconnect` edge                           | Expressible in principle — `cable_interconnect_type` against `input_connectors` / `output_connectors` — but those two attributes sit at **0–1% coverage**, so the gate closed on every role they apply to while `switches`, which they are not attached to, rendered interconnects _ungated_ through the inapplicability rule. Interconnects appearing only on switch-box pages is worse than not appearing at all, so all of these edges are disabled until connector coverage is real. |
-| `headphone → dac`, `headphone → integrated`               | Expressible, and now gated: these needed the mirror of `source_present`, so a **`target_present`** gate kind was added. `headphone_outputs` coverage is 0%, so the edges are quiet until someone fills the spec.                                                                                                                                                                                                                                                                         |
+| Edge                                                      | What is missing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cable_headphone ↔ headphone`                             | No headphone-side connector attribute. `headphone_connection_type` is only wired/wireless, and `headphone_outputs` describes the _amplifier_. Wants e.g. `headphone_cable_connector` on both sides — and the option vocabulary has no `mmcx` or `2_pin` yet, which are the two most common.                                                                                                                                                                                                    |
+| `cable_digital ↔ dac, streamer, cd_transport, network`    | Digital Cables has no type attribute. `cable_interconnect_type` is analogue only (rca / xlr / din). Wants `cable_digital_type` (spdif_coaxial, toslink, aes_ebu, i2s, usb_b, usb_c, bnc, hdmi, ethernet) — the option keys already exist.                                                                                                                                                                                                                                                      |
+| `cable_speaker ↔ power_amp, integrated, speaker_*`        | `speaker_outputs` exists amp-side (binding posts / Speakon / spring clips); nothing describes the cable's termination. Wants `cable_speaker_termination` (banana, spade, bare wire, Speakon, BFA).                                                                                                                                                                                                                                                                                             |
+| `tube_preamp ↔ dac`                                       | `amplifier_type` is not attached to DACs, so tube-output DACs cannot be identified. Either attach it to `dacs` or leave the edge out; the draft now leaves it out.                                                                                                                                                                                                                                                                                                                             |
+| `cable_power ↔ everything`                                | No inlet type either side (IEC C7 / C13 / C15 / C19). Low value — mismatches here are rare and cheap.                                                                                                                                                                                                                                                                                                                                                                                          |
+| `dac ↔ power_amp`, `dac`/`streamer` ↔ active loudspeakers | Nothing records whether a DAC or streamer has **volume control**. Without it, one that can drive a power amplifier or an active loudspeaker directly is indistinguishable from one that must feed a pre-amplifier first — and the ordinary chain is DAC → pre-amp → power amp. Wants a `volume_control` boolean on `dacs` and `streamers`.                                                                                                                                                     |
+| every `cable_interconnect` edge                           | Expressible in principle — `cable_interconnect_type` against `input_connectors` / `output_connectors` — but while few products have values for those two attributes, the gate closes on every role they apply to while `switches`, which they are not attached to, renders interconnects _ungated_ through the inapplicability rule. Interconnects appearing only on switch-box pages is worse than not appearing at all, so all of these edges are disabled until connector coverage is real. |
+| `headphone → dac`, `headphone → integrated`               | Expressible, and now gated: these needed the mirror of `source_present`, so a **`target_present`** gate kind was added. The edges are quiet for each product until someone fills its `headphone_outputs` value.                                                                                                                                                                                                                                                                                |
 
 Until each gap is filled, the corresponding edge should ship **disabled** rather than
 ungated. An ungated cable suggestion is not a softer version of a gated one; it is a
@@ -351,26 +353,18 @@ links, so the second reader is the one the site is actually built for.
 
 ### 6.2 What the catalogue looks like
 
-|                                                      |                        |
-| ---------------------------------------------------- | ---------------------- |
-| products flagged discontinued                        | 665 of 1,133 — **58%** |
-| median release year (of the 30% that have one)       | 1999                   |
-| products with `release_year`                         | 349 — 30%              |
-| products with `discontinued_year`                    | 193 — 17%              |
-| discontinued products carrying a `discontinued_year` | 193 of 665 — 29%       |
-| brands flagged discontinued                          | 206 of 2,231 — 9%      |
-| brands with `discontinued` **unknown** (null)        | 955 — **42%**          |
+A large part of the catalogue is discontinued, and most products have no `release_year` or
+`discontinued_year`. Many brands have `discontinued` set to unknown (null).
 
 Two conclusions follow, and both rule out the obvious designs.
 
-**Excluding discontinued products removes 58% of the catalogue.** For a block that
+**Excluding discontinued products removes a large part of the catalogue.** For a block that
 is already short of candidates, that is not a refinement, it is a deletion.
 
 **`products.discontinued` cannot assert that something is current.** The column is
 `null: false, default: false`, so `false` means _either_ "confirmed in production"
-_or_ "nobody has said" — there are 0 nulls across 1,133 rows because the schema
-forbids them. `brands.discontinued` is nullable and 42% of brands sit in that
-unknown state, which is the honest distribution. So the product flag can be trusted
+_or_ "nobody has said" — the schema forbids nulls. `brands.discontinued` is nullable
+and many brands sit in that unknown state, which is the honest distribution. So the product flag can be trusted
 when it says **true** and not when it says false, and no rule may depend on "this
 product is current".
 
@@ -405,14 +399,14 @@ suggesting something withdrawn in 1972. That is an _era_ question, and
 `release_year` / `discontinued_year` answer it far better than the flag does —
 overlapping market lifetimes, or a bounded gap between them.
 
-Except that they are only present on 30% and 17% of products. So era is a **ranking
+Except that most products do not have them. So era is a **ranking
 nudge applied where both sides have dates, and silent everywhere else** — never a
-filter, or the 70% with no release year vanish. The consumable exemption in rule 5
+filter, or the products with no release year vanish. The consumable exemption in rule 5
 applies here with more force: NOS tube and vintage cartridge pairings are maximally
 anachronistic and entirely correct.
 
-`discontinued_year` is missing on 472 of the 665 discontinued products, and that gap
-is already one of the contribution queues. Era ranking improves as that queue is
+`discontinued_year` is missing on most discontinued products, and that gap
+is already one of the contribute queues. Era ranking improves as that queue is
 worked, which is the right kind of dependency — it degrades to silence, not to
 wrong answers.
 
@@ -474,7 +468,7 @@ question and the "N people run these together" claim are different questions.
 
 | Signal                          | Kind           | Normalisation                    | Notes                                                     |
 | ------------------------------- | -------------- | -------------------------------- | --------------------------------------------------------- |
-| Co-occurrence in setups         | evidence       | `n/(n+k)`                        | strongest signal, zero coverage today                     |
+| Co-occurrence in setups         | evidence       | `n/(n+k)`                        | strongest signal, needs many shared setups (§7.4)         |
 | Co-occurrence in possessions    | evidence       | `n/(n+k)`, weighted below setups | owning both ≠ using together                              |
 | Owner count of the candidate    | evidence       | percentile within subcategory    | denser than pairwise in principle                         |
 | Bookmark count of the candidate | evidence       | percentile                       | weak intent signal, cheap                                 |
@@ -507,31 +501,31 @@ exist.** `amplifier_output_power` carries `ohm_8` / `ohm_4` facets; loudspeakers
 as a bonus where both sides are populated: wrong physics presented confidently is worse
 than no physics, and an under-powered pairing is a judgement call, not a fact.
 
-### 7.4 What is actually available
+### 7.4 What each signal needs
 
-| Signal                       | Coverage                                                      |
-| ---------------------------- | ------------------------------------------------------------- |
-| Co-occurrence in setups      | 8 setups, 22 memberships — max co-occurrence **1**            |
-| Co-occurrence in possessions | 127 products owned, **max 2 owners**, only 2 products with ≥2 |
-| Owner / bookmark counts      | effectively flat — see above                                  |
-| Has an image                 | 16 of 135 possessions carry a highlighted image               |
-| Price                        | **126 of 1,133 (11%)**, in USD / EUR / GBP with no conversion |
-| Era                          | `release_year` 30%, `discontinued_year` 17% (§6.2)            |
-| Discontinued flag            | 100% populated, but `false` is not assertable (§6.2)          |
-| Completeness                 | 100%, computed in SQL                                         |
-| Same brand                   | 100%                                                          |
-| Subcategory priority         | 100%, declared here                                           |
+| Signal                       | Condition for use                                              |
+| ---------------------------- | -------------------------------------------------------------- |
+| Co-occurrence in setups      | Many setups that share products                                |
+| Co-occurrence in possessions | Many owners per product                                        |
+| Owner / bookmark counts      | Counts that differ between candidates — see above              |
+| Has an image                 | Highlighted images on many possessions                         |
+| Price                        | Prices on many products; stored in several currencies, no FX   |
+| Era                          | `release_year` and `discontinued_year` on many products (§6.2) |
+| Discontinued flag            | Always set, but `false` is not assertable (§6.2)               |
+| Completeness                 | Always available, computed in SQL                              |
+| Same brand                   | Always available                                               |
+| Subcategory priority         | Always available, declared here                                |
 
-Both signals at the top of the proposed list are empty, and so is the obvious
-fallback of candidate popularity. **Today the ordering is subcategory priority, then
-completeness, then a stable tie-break** — and every other signal is a weight sitting
-at zero. That is a reason to build the scorer with the weights externalised, not a
+The ordering does not use the signals at the top of the proposed list, or the obvious
+fallback of candidate popularity, until the data meets these conditions. **The ordering
+is subcategory priority, then completeness, then a stable tie-break** — and every other
+signal is a weight sitting at zero. That is a reason to build the scorer with the weights externalised, not a
 reason to build a simpler scorer.
 
-Price deserves attention before it is usable: three currencies with no FX, and a
+Price deserves attention before it is usable: several currencies with no FX, and a
 vintage catalogue where a 1978 MSRP is not comparable to a 2026 one. Decide whether
 the stored price is nominal-at-release or present-day equivalent before ranking on
-it, or the 58% discontinued half of the catalogue will read as uniformly cheap.
+it, or the discontinued part of the catalogue will read as uniformly cheap.
 
 ### 7.5 Assembly
 
@@ -587,15 +581,15 @@ category needs _edges_, and only code can supply those.
 `power_amp` / `integrated` → loudspeakers, conditioned on `speaker_outputs` being present — was
 removed. Practically every power amplifier, integrated amplifier and receiver has speaker
 terminals, so the predicate was true of almost every member of those sub categories and could
-never exclude a wrong suggestion; meanwhile the attribute was filled on 0 of 267 amplifier
-products, so it hid loudspeakers from every amplifier page. `headphone_outputs` looks similar and
+never exclude a wrong suggestion; at the time of the review, no amplifier product had a value
+for the attribute, so it hid loudspeakers from every amplifier page. `headphone_outputs` looks similar and
 is kept, because it genuinely discriminates: plenty of integrated amplifiers and DACs have no
 headphone socket. The test for a presence gate is whether its predicate is ever false within the
 sub categories it applies to. `speaker_outputs` survives as an attribute — the speaker-cable
 termination gap in §5.3 still wants it.
 
 **Directness.** An edge must not skip a link in the signal chain. The review that produced the two
-new §5.3 rows applied that test to all 35 roles; what survived it, deliberately, is the set of
+new §5.3 rows applied that test to all roles; what survived it, deliberately, is the set of
 edges that are real pairings without being signal connections — a subwoofer beside loudspeakers
 (both connect to the amplifier, not to each other), and the racks, isolation, power cables and
 power conditioning at the tail of every component role. Those sit last in priority and rarely

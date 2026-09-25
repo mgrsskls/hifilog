@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Finds and ranks the brands that are most similar to one brand. The weights are in
-# SimilarBrands::Weights. See README, section "Similar Brands".
+# SimilarBrands::Weights. See docs/similar-products.md, "Similar Brands".
 #
 # Two steps:
 #

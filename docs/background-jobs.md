@@ -59,7 +59,7 @@ After a deploy, look for `R14 (Memory quota exceeded)` in the Heroku logs. If th
 
 ### `SubCategoryCompletenessJob`
 
-Recalculates `completeness`, `specs_applicable` and `specs_filled` of all products in one sub category (see [Completeness](../README.md#completeness-and-contribution-queues)).
+Recalculates `completeness`, `specs_applicable` and `specs_filled` of all products in one sub category (see [completeness.md](completeness.md)).
 
 - **Enqueued by:** `CustomAttribute`, when `highlighted` changes, when the sub categories of a highlighted attribute change, or when a highlighted attribute is destroyed. These changes can change the score of all products in a sub category. Use `Product.recalculate_completeness_for_sub_categories_later(ids)`. It enqueues one job for each sub category, in one insert.
 - **Not enqueued:** a save of one product. `Product#recalculate_completeness!` stays synchronous for that. It is fast, and the score is correct immediately after the save.

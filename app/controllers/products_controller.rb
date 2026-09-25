@@ -93,7 +93,7 @@ class ProductsController < ApplicationController
     @versions = filter_versions(@product.versions)
   end
 
-  # The full, paginated "Similar Products" list (README, "Similar Products"). A variant has no list
+  # The full, paginated "Similar Products" list (docs/similar-products.md). A variant has no list
   # of its own, so its show page links here too. The page is noindex: its content is a list of
   # other catalogue pages, ordered for this product.
   def similar

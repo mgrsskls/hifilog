@@ -115,7 +115,7 @@ a user-driven database for hi-fi products and brands."
     set_meta_desc
   end
 
-  # The full, paginated "Similar Brands" list (README, "Similar Brands"). The page is noindex: its
+  # The full, paginated "Similar Brands" list (docs/similar-products.md, "Similar Brands"). The page is noindex: its
   # content is a list of other catalogue pages, ordered for this brand.
   def similar
     @brand = find_resource(Brand, :brand_id, path_helper: ->(brand) { brand_similar_path(brand) })

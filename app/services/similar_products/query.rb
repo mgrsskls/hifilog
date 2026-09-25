@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Finds and ranks the products that are most similar to one product. The weights are in
-# SimilarProducts::Weights. See README, section "Similar Products".
+# SimilarProducts::Weights. See docs/similar-products.md.
 #
 # The query does all the scoring in the database and sends back only the top rows. It does not
 # load candidates into Ruby.

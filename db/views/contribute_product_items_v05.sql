@@ -9,7 +9,7 @@
 -- batch-loads it for just the paginated page via ContributeProductItem.preload_sub_category_names.
 --
 -- v03 adds brand_abbreviation, mirroring product_items v22, so the contribute queues title
--- products the same way the catalogue does. See the Brand section of README.md.
+-- products the same way the catalogue does. See docs/catalog-model.md, "Brand".
 --
 -- v04 replaces the highlighted-specs LATERAL (which recomputed completeness / specs_applicable /
 -- specs_filled from custom_attributes_sub_categories on every row) with plain reads of the

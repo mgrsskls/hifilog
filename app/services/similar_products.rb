@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # "Similar Products" on catalogue detail pages: products that fill the same role as this product,
-# ranked by sub categories, custom attributes and price band. See README, section
-# "Similar Products".
+# ranked by sub categories, custom attributes and price band. See
+# docs/similar-products.md.
 #
 # A variant page shows the list of its parent product. Variants have no custom attributes of their
 # own, so a list per variant would be almost the same list, with a cache entry for each variant.

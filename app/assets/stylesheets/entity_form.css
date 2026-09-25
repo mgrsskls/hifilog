@@ -238,7 +238,7 @@
 }
 
 /* Brand names: the duplicate warning and the product title
-   preview. See the Brand section of README.md. */
+   preview. See docs/catalog-model.md, "Brand". */
 
 .BrandForm-duplicate {
 	color: var(--color-invalid-copy);

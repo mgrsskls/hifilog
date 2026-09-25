@@ -2,7 +2,7 @@
 
 # "Similar Brands" on brands#show and brands#similar: brands that make the same kind of products,
 # ranked by the profile of their products, their active period, country, price level and
-# attributes. See README, section "Similar Brands".
+# attributes. See docs/similar-products.md, "Similar Brands".
 #
 # The ranked ids are cached, not the records. A product change touches its brand
 # (`belongs_to :brand, touch: true`), so a change of the brand's own products makes a new cache

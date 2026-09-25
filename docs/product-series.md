@@ -228,17 +228,16 @@ same way as the completeness test.
 
 ### 2.8 Existing data
 
-Some products have the series name in the product name today, for example "Evolution Omega Lupi"
-and "Legacy Omega Lupi" of Fezz Audio. Their current slug is `fezz-audio-evolution-omega-lupi`.
-
-Migration for each such product:
+Some products have the series name in the product name, for example "Evolution Omega Lupi" and
+"Legacy Omega Lupi" of Fezz Audio, with the slug `fezz-audio-evolution-omega-lupi`. Migration for
+each such product:
 
 1. Create the series ("Evolution") if it does not exist.
 2. Remove the series name from the product name ("Omega Lupi").
 3. Assign the series.
 
-The new slug is brand + series + name = `fezz-audio-evolution-omega-lupi`. This is the same as
-before, so these products need no redirect. The visible title changes from "Fezz Audio Evolution
+The new slug is brand + series + name = `fezz-audio-evolution-omega-lupi`. This is the same as the
+old slug, so these products need no redirect. The visible title changes from "Fezz Audio Evolution
 Omega Lupi" to "Fezz Audio Omega Lupi" with the subline "Evolution series".
 
 Find the candidates with a rake task, `series:candidates`. It does not change data. It lists, per
@@ -395,8 +394,8 @@ release_month, release_day, id LIMIT n`. The index from [2.2](#22-column-on-prod
 ### 5.3 Similar and related products
 
 No change. The series does not change the score or the candidates of Similar Products or Related
-Products. The README says "the block does not remove products from the same brand, the same product
-family". Change "product family" to "series" there.
+Products. [similar-products.md](similar-products.md#12-candidates) states that the block does not
+remove products of the same series.
 
 ---
 
@@ -686,8 +685,9 @@ These points are not decided. The recommended default is in bold.
 7. Product page facts row, breadcrumb, "More from this series".
 8. Product dialog on the series page.
 9. `search_results` view version.
-10. README: add `ProductSeries` to the mermaid diagram and the quick reference,
-    add a "Product series" section, change "product family" in "Similar Products" to "series".
+10. Documentation: add the product series to the README terms and diagram, and to
+    [catalog-model.md](catalog-model.md). State in [similar-products.md](similar-products.md)
+    that the series does not change the candidates.
 
 ### Tests
 
