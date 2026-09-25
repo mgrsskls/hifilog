@@ -260,8 +260,9 @@ the unique index of [2.7](#27-product-name-title-and-slug) is added.
 
 URL: `/brands/:brand_id/series/:id`, for example `/brands/klipsch/series/heritage`.
 
-Controller: `ProductSeriesController#show`, `#new`, `#create`, `#edit`, `#update`, `#changelog`.
-The edit page also assigns products (see [7.3](#73-assign-products-on-the-edit-page-of-the-series)).
+Controller: `ProductSeriesController#show`, `#new`, `#create`, `#edit`, `#update`, `#changelog`,
+`#assignable_products`, `#assign_products`. The series page also assigns products (see
+[7.3](#73-assign-products-on-the-series-page)).
 
 Lookup: `FriendlyFinder` scoped to the brand. An old slug returns a 301 to the new slug. A slug
 of a different brand returns 404.
@@ -279,7 +280,9 @@ Use the `shared/index_page` layout, as on `brands#products`:
   - Number of products.
   - Categories (links to the brand products page, filtered by the category and the series).
   - Description (Markdown, `formatted_description`).
-  - Meta links: Edit, Changelog, "Add products to this series". Contributors list.
+  - Meta links: Edit, "Add / remove products" (a button that looks like a link and opens the
+    dialog of [7.3](#73-assign-products-on-the-series-page); for signed-out visitors a link to
+    sign-in), Changelog. Contributors list.
 - **Main area:** product table (`shared/products_table`, `hide_brand: true`) of the series.
   Includes variants, as `product_items` rows. Paginated.
 - **Filter:** the same filter partial as `brands#products`, with categories limited to the
@@ -291,8 +294,10 @@ the other index pages.
 
 ### 3.2 Empty series
 
-Show an empty state: "No products have been added to this series yet." With links to "Add products
-to this series" and "Add a new product" (product form with brand and series preselected).
+Show an empty state: "No products have been added to this series yet." With "add products of the
+brand to this series" (opens the dialog of [7.3](#73-assign-products-on-the-series-page); for
+signed-out visitors a link to sign-in) and "Add a new product" (product form with brand and series
+preselected).
 
 ### 3.3 SEO
 
@@ -408,8 +413,8 @@ throttles them with the existing catalog write throttle.
 - Name. Placeholder: "e.g. Heritage". Live preview "Klipsch Heritage", as the product name preview.
   Warning if the name starts with the brand name.
 - Description (optional, Markdown help as in the product form).
-- Optional: "Select the products of the series after saving" → after save, redirect to the product
-  list of the edit page (`#products`).
+- Optional: "Select the products of the series after saving" → after save, redirect to the series
+  page with the dialog open (`#assign-products`).
 
 Guidelines box (`<details class="Instructions">`), in the same style as the product guidelines:
 
@@ -424,7 +429,8 @@ validation error with a link to the existing series.
 
 ### 6.2 Edit
 
-`/brands/:brand_id/series/:id/edit`. Fields: name, description. The brand cannot change.
+`/brands/:brand_id/series/:id/edit`. Fields: name, description. The brand cannot change. The
+products are not on this page (see [7.3](#73-assign-products-on-the-series-page)).
 A name change regenerates the slug. FriendlyId keeps the old slug for a 301.
 
 ### 6.3 Changelog and contributors
@@ -486,23 +492,43 @@ Klipsch Heritage), select the series. This is optional."
 Show the series of the parent product as read-only text: "Series: Heritage (from the product)".
 No input.
 
-### 7.3 Assign products on the edit page of the series
+### 7.3 Assign products on the series page
 
-The edit page of the series (`/brands/:brand_id/series/:id/edit`, sign-in required) has a section
-"Products" below the name and the description. There is no separate page for this.
+The series page (`/brands/:brand_id/series/:id`) has a button "Add / remove products" between
+"Edit" and "Changelog" in the meta links. It looks like a link and opens a dialog
+(`shared/_entity_picker_dialog`, the same component as the product dialog of a setup). Only
+signed-in users get the button and the dialog; signed-out visitors get a link to sign-in that
+returns to `#assign-products`, and that hash opens the dialog. There is no separate page for this.
 
-- A list of the products of the brand, by name, 50 per page, with a search on name and model no.
-  The search field belongs to a separate GET form (`form="series-products-search"`), because a
-  form can not contain a form.
-- Each row has a checkbox. Checked = the product is in this series.
+The dialog has a form of its own (`PATCH /brands/:brand_id/series/:series_id/products`,
+`ProductSeriesController#assign_products`). It changes only the products, not the name or the
+description of the series. The dialog is rendered outside the sidebar, so that it also opens on
+narrow viewports, where the sidebar details are hidden.
+
+- The dialog shows **all** products of the brand, with a checkbox each. Checked = the product is
+  in this series. There is no pagination.
+- The rows load the first time the dialog opens: `GET
+/brands/:brand_id/series/:series_id/products` (`ProductSeriesController#assignable_products`)
+  answers the rows without a layout, and the browser puts them in the list. The series page itself
+  carries no rows, so it stays small for the visitors who do not open the dialog.
+- The order is the products of this series first, then by name. It is the order of the load, so a
+  row does not move when the user removes its check.
+- A field above the list filters the rows **in the browser**. A hidden row keeps its checkbox, so
+  the filter never changes the selection. There is no search on the server.
 - A product in a **different** series shows "now in the <Series>". If the user checks it, the
   product moves to this series.
-- One submit saves the series and the products of the current page, in one transaction. Only the
-  products on the page change (`product_ids[]`), so the user must save before going to another
-  page. The series is saved first, so a new name is already in the slugs of the products that join.
+- A hidden field `products_loaded=1` comes with the rows, and each row has a hidden
+  `product_ids[]`. The submit describes the membership of the loaded rows: a listed product that
+  is not checked is not in the series. A product that is not listed does not change, so a product
+  that joined the series after the dialog loaded (for example through the product form) stays in
+  it. Without `products_loaded` (the user did not open the dialog) the submit changes no product.
 - Each changed product is saved on its own, so that each change is a PaperTrail version with
   `whodunnit`.
-- Limit: max. 100 product changes per submit (Rack::Attack + a server check).
+- Limit: max. 500 product changes per submit (Rack::Attack + a server check). A submit with more
+  changes changes nothing and returns to the series page with an alert. A `GET` of the rows is
+  limited to 60 per minute per IP.
+- After the submit the series page shows the number of changed products, and one line per product
+  that did not change.
 
 **`ProductSeriesAssignment`** does the work of one submit. Two rules keep a submit usable:
 
@@ -658,7 +684,7 @@ These points are not decided. The recommended default is in bold.
 5. Series links on the brand page, brand products filter.
 6. Product form combobox, JSON endpoint, variant read-only field, conversion service rules.
 7. Product page facts row, breadcrumb, "More from this series".
-8. Product list on the edit page of the series.
+8. Product dialog on the series page.
 9. `search_results` view version.
 10. README: add `ProductSeries` to the mermaid diagram and the quick reference,
     add a "Product series" section, change "product family" in "Similar Products" to "series".

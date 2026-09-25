@@ -110,72 +110,163 @@ class ProductSeriesControllerTest < ActionDispatch::IntegrationTest
     edit_brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id, **)
   end
 
-  def update_params(product_ids:, selected_ids:, **attributes)
-    { product_series: { name: @series.name, **attributes }, product_ids:, selected_ids: }
+  # products_loaded says that the dialog had loaded its rows, product_ids lists them (by default
+  # all products of the brand, as the dialog does); see ProductSeriesController#assignment_changes.
+  def assign_params(selected_ids:, products_loaded: '1', product_ids: @brand.products.ids)
+    { products_loaded:, product_ids:, selected_ids: }
   end
 
-  test 'edit lists the products of the brand' do
+  def assignable_products_path
+    brand_series_products_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id)
+  end
+
+  test 'show has a dialog that loads the products of the brand' do
     sign_in users(:one)
     product = create_product(name: 'Listed', series: nil)
 
-    get edit_path(query: product.name)
+    get series_path
 
     assert_response :success
-    assert_select "#products input[type=checkbox][value='#{product.id}']"
-    assert_select "#series-products-query[form='series-products-search']"
+    assert_select ".Entity-metaLinks button[data-dialog='assign-products']"
+    dialog = assert_select("dialog#assign-products[data-picker-src='#{assignable_products_path}']")
+    assert_select dialog, "form[action='#{assignable_products_path}'] input[name=_method][value=patch]"
+    assert_no_match product.name, dialog.to_s
   end
 
-  test 'update saves the series and adds, moves and removes products on the page only' do
+  test 'show sends signed-out visitors to sign-in instead of the dialog' do
+    get series_path
+
+    assert_response :success
+    assert_select 'dialog#assign-products', false
+    assert_select ".Entity-metaLinks a[href='#{new_user_session_path(redirect: "#{@series.path}#assign-products")}']"
+  end
+
+  test 'edit has no products' do
+    sign_in users(:one)
+
+    get edit_path
+
+    assert_response :success
+    assert_select 'dialog#assign-products', false
+  end
+
+  test 'the dialog list has all products of the brand, the products of the series first' do
+    sign_in users(:one)
+    outside = create_product(name: 'Aaa Outside', series: nil)
+    inside = create_product(name: 'Zzz Inside')
+
+    get assignable_products_path
+
+    assert_response :success
+    assert_select "input[type=checkbox][value='#{inside.id}'][checked]"
+    assert_select "input[type=checkbox][value='#{outside.id}']"
+    assert_select "input[type=checkbox][value='#{outside.id}'][checked]", false
+    assert_operator response.body.index(inside.name), :<, response.body.index(outside.name)
+  end
+
+  test 'the dialog list requires sign in' do
+    get assignable_products_path
+
+    assert_redirected_to new_user_session_path
+  end
+
+  test 'update saves the name and the description and changes no product' do
+    sign_in users(:one)
+    product = create_product(name: 'Still In')
+
+    patch series_path, params: { product_series: { name: @series.name, description: 'Only the series' },
+                                 **assign_params(selected_ids: []) }
+
+    assert_redirected_to @series.reload.path
+    assert_equal 'Only the series', @series.description
+    assert_equal @series, product.reload.product_series
+  end
+
+  test 'update with an invalid name renders the edit page' do
+    sign_in users(:one)
+
+    patch series_path, params: { product_series: { name: '' } }
+
+    assert_response :unprocessable_content
+  end
+
+  test 'assign adds, moves and removes products' do
     sign_in users(:one)
     add = create_product(name: 'Add', series: nil)
     move = create_product(name: 'Move', series: product_series(:legacy))
     remove = create_product(name: 'Remove')
-    untouched = create_product(name: 'Untouched')
+    keep = create_product(name: 'Keep')
 
-    patch series_path, params: update_params(product_ids: [add.id, move.id, remove.id],
-                                             selected_ids: [add.id, move.id],
-                                             description: 'With products')
+    patch assignable_products_path, params: assign_params(selected_ids: [add.id, move.id, keep.id])
 
     assert_redirected_to @series.reload.path
-    assert_equal 'With products', @series.description
     assert_equal @series, add.reload.product_series
     assert_equal @series, move.reload.product_series
     assert_nil remove.reload.product_series
-    assert_equal @series, untouched.reload.product_series
+    assert_equal @series, keep.reload.product_series
   end
 
-  test 'update ignores products of other brands' do
+  test 'assign requires sign in' do
+    product = create_product(name: 'Stays')
+
+    patch assignable_products_path, params: assign_params(selected_ids: [])
+
+    assert_redirected_to new_user_session_path
+    assert_equal @series, product.reload.product_series
+  end
+
+  # The dialog had not loaded its rows, so the submit says nothing about the products.
+  test 'assign without products_loaded changes no product' do
+    sign_in users(:one)
+    product = create_product(name: 'Still In')
+
+    patch assignable_products_path, params: assign_params(selected_ids: [], products_loaded: nil)
+
+    assert_redirected_to @series.reload.path
+    assert_equal @series, product.reload.product_series
+  end
+
+  # The product joined the series after the dialog had loaded, so it is not in product_ids.
+  test 'assign keeps a product in the series that the dialog did not list' do
+    sign_in users(:one)
+    listed = create_product(name: 'Listed')
+    joined_later = create_product(name: 'Joined Later')
+
+    patch assignable_products_path, params: assign_params(selected_ids: [], product_ids: [listed.id])
+
+    assert_nil listed.reload.product_series
+    assert_equal @series, joined_later.reload.product_series
+  end
+
+  test 'assign ignores products of other brands' do
     sign_in users(:one)
     other = products(:two)
 
-    patch series_path, params: update_params(product_ids: [other.id], selected_ids: [other.id])
+    patch assignable_products_path, params: assign_params(selected_ids: [other.id])
 
     assert_nil other.reload.product_series
   end
 
-  test 'update leaves a product that can not join the series and saves the rest' do
+  test 'assign leaves a product that can not join the series and saves the rest' do
     sign_in users(:one)
     invalid = create_product(name: 'Evolution Clash', series: nil)
     valid = create_product(name: 'Joins', series: nil)
 
-    patch series_path, params: update_params(product_ids: [invalid.id, valid.id],
-                                             selected_ids: [invalid.id, valid.id],
-                                             description: 'Saved anyway')
+    patch assignable_products_path, params: assign_params(selected_ids: [invalid.id, valid.id])
 
     assert_redirected_to @series.reload.path
-    assert_equal 'Saved anyway', @series.description
     assert_nil invalid.reload.product_series
     assert_equal @series, valid.reload.product_series
     assert_match invalid.name, flash[:alert]
   end
 
-  test 'update leaves a product whose name another product of the brand already has' do
+  test 'assign leaves a product whose name another product of the brand already has' do
     sign_in users(:one)
     in_series = create_product(name: 'Omega Lupi')
     twin = Product.create!(name: in_series.name, brand: @brand, product_series: product_series(:legacy),
                            sub_categories: [sub_categories(:one)])
 
-    patch series_path, params: update_params(product_ids: [twin.id], selected_ids: [twin.id])
+    patch assignable_products_path, params: assign_params(selected_ids: [in_series.id, twin.id])
 
     assert_equal product_series(:legacy), twin.reload.product_series
     assert_match in_series.name, flash[:alert]
@@ -184,15 +275,14 @@ class ProductSeriesControllerTest < ActionDispatch::IntegrationTest
 
   # The two products have the same name, so the end state is valid but every order of the two
   # saves has a moment in which both are in the same group.
-  test 'update moves two products with the same name between two series in one submit' do
+  test 'assign moves two products with the same name between two series in one submit' do
     sign_in users(:one)
     legacy = product_series(:legacy)
     from_series = create_product(name: 'Swap')
     from_legacy = Product.create!(name: from_series.name, brand: @brand, product_series: legacy,
                                   sub_categories: [sub_categories(:one)])
 
-    patch series_path, params: update_params(product_ids: [from_series.id, from_legacy.id],
-                                             selected_ids: [from_legacy.id])
+    patch assignable_products_path, params: assign_params(selected_ids: [from_legacy.id])
 
     assert_redirected_to @series.reload.path
     assert_nil from_series.reload.product_series
@@ -200,15 +290,14 @@ class ProductSeriesControllerTest < ActionDispatch::IntegrationTest
     assert_nil flash[:alert]
   end
 
-  test 'create can continue to the product list of the edit page' do
+  test 'create can continue to the product dialog of the series page' do
     sign_in users(:one)
 
     post brand_series_index_path(brand_id: @brand.friendly_id),
          params: { product_series: { name: 'Signature' }, assign_products: '1' }
 
     series = @brand.product_series.find_by!(name: 'Signature')
-    assert_redirected_to edit_brand_series_path(brand_id: @brand.friendly_id, id: series.friendly_id,
-                                                anchor: 'products')
+    assert_redirected_to "#{series.path}#assign-products"
   end
 
   test 'brand page lists its series' do

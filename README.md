@@ -130,10 +130,13 @@ series is empty. The brand page links the series of the brand and shows the newe
 the brand (8) and of each series (4) (`BrandLatestProducts`; newest release first, then undated products by
 the date they were added), and the brand products page can
 filter by series (`?series=<slug>` or `?series=none`). Signed-in users create and edit series. The
-edit page of a series also lists the products of the brand with a checkbox each (50 per page, with
-a search); one submit saves the series and the checked products in one transaction
-(`ProductSeriesAssignment`: the name clash is looked for in the end state, and a product that can
-not change is reported and left as it is). A product also
+series page has a dialog (`shared/_entity_picker_dialog`, also used by the product dialog of a
+setup) with all products of the brand and a checkbox each. The rows load on the first open
+(`GET /brands/:brand_id/series/:series_id/products`) and a field filters them in the browser,
+so the page has no pagination and no search on the server. One submit
+(`PATCH /brands/:brand_id/series/:series_id/products`) saves the checked products in one
+transaction (`ProductSeriesAssignment`: the name clash is looked for in the
+end state, and a product that can not change is reported and left as it is). A product also
 gets its series in the product form, where one field selects an existing series or creates a new
 one (`Product#product_series_name=`).
 Only admins delete a series; the products keep existing without a series. Series are versioned with

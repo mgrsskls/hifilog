@@ -1,0 +1,36 @@
+<%# The products of the brand as option rows for the dialog of the edit page of a series. A
+    checked box means "in this series". The dialog of the series page loads this partial the first
+    time it opens (ProductSeriesController#assignable_products). See docs/product-series.md,
+    "Assign products on the series page".
+
+    products_loaded tells #assign_products that the dialog had loaded its rows. product_ids[] lists the
+    rows: a listed product that is not checked leaves the series, a product that is not listed
+    (for example one that joined the series after the load) does not change.
+
+    locals: series, products (id, name, model_no and product_series_id only),
+    series_by_id (the series of the brand by id, for the note on a product of another series) %>
+<% if products.empty? %>
+  <%= render "shared/empty_state", message: t('product_series.assign.empty_state') %>
+<% else %>
+  <input type="hidden" name="products_loaded" value="1" autocomplete="off">
+
+  <% products.each do |product| %>
+    <%
+      checked = product.product_series_id == series.id
+      other_series = series_by_id[product.product_series_id] if product.product_series_id != series.id
+    %>
+    <%= hidden_field_tag "product_ids[]", product.id, id: nil, autocomplete: "off" %>
+    <%= render layout: "shared/entity_picker_option",
+               locals: { name: "selected_ids[]", value: product.id, checked:,
+                         id: "series-product-#{product.id}",
+                         filter_text: "#{product.name} #{product.model_no}" } do %>
+      <span>
+        <%= product.name %>
+        <% if product.model_no.present? %><small><%= product.model_no %></small><% end %>
+        <% if other_series %>
+          <small><i><%= t('product_series.assign.currently_in', series: other_series.label) %></i></small>
+        <% end %>
+      </span>
+    <% end %>
+  <% end %>
+<% end %>

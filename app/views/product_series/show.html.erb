@@ -1,3 +1,12 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag "add_entity_dialog" %>
+<% end %>
+<% content_for :js do %>
+  <%= javascript_include_tag "entity_picker_dialog", type: "module" %>
+<% end %>
+<%# Signed-out visitors get links to sign-in instead of the buttons that open the dialog. %>
+<% sign_in_to_assign_path = new_user_session_path(redirect: "#{@series.path}#assign-products") %>
+
 <% content_for :header do %>
   <h1>
     <a href="<%= brand_path(id: @brand.friendly_id) %>">
@@ -20,6 +29,15 @@
     <%= render "shared/entity_meta",
       edit_path: edit_brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id),
       changelog_path: brand_series_changelog_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id),
+      extra_links: capture {
+        tag.li do
+          if user_signed_in?
+            tag.button(t('product_series.assign.open'), type: "button", data: { dialog: "assign-products" })
+          else
+            link_to t('product_series.assign.open'), sign_in_to_assign_path, rel: "nofollow"
+          end
+        end
+      },
       contributors: @contributors,
       separated: false %>
   </div>
@@ -54,11 +72,30 @@
 <%= render "shared/index_page",
   records: @products,
   empty_state_message: t('product_series.empty_state_html',
-    assign_path: edit_brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id, anchor: 'products'),
+    assign_link: if user_signed_in?
+                   tag.button(t('product_series.empty_state_assign'), type: "button", data: { dialog: "assign-products" })
+                 else
+                   link_to t('product_series.empty_state_assign'), sign_in_to_assign_path, rel: "nofollow"
+                 end,
     new_product_path: user_signed_in? ? new_product_target : new_user_session_path(redirect: new_product_target)),
   type: :product,
   table_heading: Product.model_name.human.pluralize
 %>
+
+<%# Outside the sidebar, so that the dialog also opens when the sidebar is hidden. %>
+<% if user_signed_in? %>
+  <%= render "shared/entity_picker_dialog",
+        id: "assign-products",
+        title: t('product_series.assign.dialog_title', series: @series.label),
+        subtitle: t('product_series.assign.dialog_subtitle', brand: @brand.display_name),
+        submit_label: t('product_series.assign.submit'),
+        filter_placeholder: t('product_series.assign.search_placeholder'),
+        src: brand_series_products_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id),
+        form_url: brand_series_products_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id),
+        form_method: :patch,
+        intro: [t('product_series.assign.intro', brand: @brand.display_name, series: @series.label),
+                t('product_series.assign.move_note')] %>
+<% end %>
 
 <%= json_ld_script_tag(product_series_breadcrumb_json_ld(series: @series, canonical_url: @canonical_url)) %>
 <%= json_ld_script_tag(product_series_item_list_json_ld(series: @series, products: @products, canonical_url: @canonical_url)) %>

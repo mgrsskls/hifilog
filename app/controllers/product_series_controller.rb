@@ -7,17 +7,24 @@
 class ProductSeriesController < ApplicationController
   include FilterParamsBuilder
 
-  # Products of the brand per page in the product list of the edit page. Also the upper limit of
-  # product changes per submit.
-  PRODUCTS_PER_PAGE = 50
-  MAX_ASSIGNMENTS_PER_SUBMIT = 100
+  # The dialog of the series page shows all products of the brand, so one submit can change many
+  # of them. The limit keeps one submit small enough for one request.
+  MAX_ASSIGNMENTS_PER_SUBMIT = 500
 
-  before_action :set_paper_trail_whodunnit, only: [:create, :update]
-  before_action :authenticate_user!, only: [:new, :create, :edit, :update]
+  # All products of the brand for the dialog, the products of this series first, then by name.
+  # index_products_on_brand_id_and_product_series_id gives the rows of the brand; the sort is over
+  # these rows only, not over the catalog.
+  ASSIGNABLE_PRODUCTS_ORDER_SQL = 'COALESCE(products.product_series_id = %<series_id>d, FALSE) DESC, ' \
+                                  'LOWER(products.name) ASC, products.id ASC'
+
+  before_action :set_paper_trail_whodunnit, only: [:create, :update, :assign_products]
+  before_action :authenticate_user!, only: [:new, :create, :edit, :update, :assignable_products,
+                                            :assign_products]
   before_action :set_noindex_meta_robots, only: [:new, :edit, :create, :update, :changelog]
   before_action :set_active_menu
   before_action :load_brand
-  before_action :load_series, only: [:show, :edit, :update, :changelog]
+  before_action :load_series, only: [:show, :edit, :update, :changelog, :assignable_products,
+                                     :assign_products]
   before_action :redirect_to_canonical_series_path, only: [:show]
 
   # The series of a brand, for the series field of the product form. Few rows per brand, so the
@@ -59,11 +66,17 @@ class ProductSeriesController < ApplicationController
     page_title(I18n.t('product_series.new.heading', brand: @brand.display_name))
   end
 
-  # The edit page has the name and the description of the series, and the products of the brand
-  # with a checkbox each (see #load_brand_products). One submit saves both.
+  # The name and the description of the series. The products are assigned on the series page
+  # (#assign_products).
   def edit
-    load_brand_products
     page_title(I18n.t('edit_record', name: @series.display_name))
+  end
+
+  # The product rows of the dialog of the series page. No layout: the dialog puts the answer in
+  # its list.
+  def assignable_products
+    render partial: 'product_series/assignable_products', locals: assignable_products_locals,
+           layout: false
   end
 
   def create
@@ -71,7 +84,8 @@ class ProductSeriesController < ApplicationController
 
     if save_series(@series)
       if params[:assign_products].present?
-        redirect_to edit_brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id, anchor: 'products')
+        # The anchor opens the dialog (entity_picker_dialog.js).
+        redirect_to "#{@series.path}#assign-products"
       else
         redirect_to @series.path
       end
@@ -81,23 +95,28 @@ class ProductSeriesController < ApplicationController
     end
   end
 
-  # Saves the series and the product checkboxes of the submitted page (ProductSeriesAssignment).
-  # A product that can not change leaves the others alone: the page reports it and the rest is
-  # saved. Only invalid attributes of the series stop the whole submit.
   def update
+    @series.assign_attributes(series_params)
+
+    if save_series(@series)
+      redirect_to @series.path, notice: I18n.t('product_series.assign.series_saved')
+    else
+      page_title(I18n.t('edit_record', name: @series.display_name))
+      render :edit, status: :unprocessable_content
+    end
+  end
+
+  # Saves the product checkboxes of the dialog of the series page (ProductSeriesAssignment). A
+  # product that can not change leaves the others alone: the page reports it and the rest is
+  # saved. The name and the description of the series do not change here.
+  def assign_products
     changes = assignment_changes
 
     if changes.size > MAX_ASSIGNMENTS_PER_SUBMIT
-      @series.assign_attributes(series_params)
-      @series.errors.add(:base, I18n.t('product_series.assign.too_many', max: MAX_ASSIGNMENTS_PER_SUBMIT))
-      return render_edit_with_errors
+      flash[:alert] = I18n.t('product_series.assign.too_many', max: MAX_ASSIGNMENTS_PER_SUBMIT)
+    else
+      report(ProductSeriesAssignment.new(series: @series, changes:, selected_ids: @selected_ids).call)
     end
-
-    result = ProductSeriesAssignment.new(series: @series, attributes: series_params, changes:,
-                                         selected_ids: @selected_ids).call
-    return render_edit_with_errors unless result.series_saved?
-
-    report(result)
     redirect_to @series.path
   end
 
@@ -170,31 +189,49 @@ class ProductSeriesController < ApplicationController
     SQL
   end
 
-  # The products of the brand for the checkbox list of the edit page, by name, 50 per page, with
-  # an optional search on name and model no. The list shows the brand's products only, so the
-  # query uses index_products_on_brand_id_and_product_series_id's leading column.
-  def load_brand_products
-    @query = params[:query].to_s.strip.presence
-    products = @brand.products.reorder(Arel.sql('LOWER(products.name) ASC, products.id ASC'))
-                     .includes(:product_series)
-    if @query
-      products = products.where('products.name ILIKE :q OR products.model_no ILIKE :q',
-                                q: "%#{Product.sanitize_sql_like(@query)}%")
-    end
-    @products = products.page(params[:page]).per(PRODUCTS_PER_PAGE)
+  # All products of the brand, with only the columns a row shows. The series of the brand are a
+  # hash, so a row of another series needs no query of its own.
+  def assignable_products_locals
+    { series: @series,
+      products: @brand.products
+                      .select(:id, :name, :model_no, :product_series_id)
+                      .reorder(Arel.sql(format(ASSIGNABLE_PRODUCTS_ORDER_SQL, series_id: @series.id)))
+                      .to_a,
+      series_by_id: @brand.product_series.index_by(&:id) }
   end
 
-  # product_ids: the products on the submitted page. selected_ids: the checked ones. Only the
-  # products on the page change, so a submit never touches products the user did not see.
-  # Products of other brands are ignored.
+  # The products whose series the submit changes. product_ids are the rows the dialog had loaded,
+  # selected_ids the checked ones among them; products_loaded says that the dialog had loaded its
+  # list, so an unchecked row leaves the series. Without it the submit changes no product: the user
+  # did not open the dialog. Only the loaded rows change, so a product that joined the series
+  # after the dialog loaded stays in it. Products of other brands are not in the queries.
   def assignment_changes
-    @selected_ids = Array(params[:selected_ids]).to_set(&:to_i)
-    on_page = Array(params[:product_ids]).map(&:to_i).uniq
-    return [] if on_page.empty?
+    @selected_ids = id_param_set(:selected_ids)
+    @listed_ids = id_param_set(:product_ids)
+    @products_loaded = params[:products_loaded] == '1'
+    return [] unless @products_loaded && @listed_ids.any?
 
-    @brand.products.where(id: on_page).to_a.reject do |product|
-      @selected_ids.include?(product.id) == (product.product_series_id == @series.id)
-    end
+    (products_to_join + products_to_leave).sort_by { |product| [product.name.downcase, product.id] }
+  end
+
+  # IS DISTINCT FROM, because "product_series_id != id" is unknown for a product without a series.
+  def products_to_join
+    ids = @selected_ids & @listed_ids
+    return [] if ids.empty?
+
+    @brand.products.where(id: ids.to_a)
+          .where('products.product_series_id IS DISTINCT FROM ?', @series.id).to_a
+  end
+
+  def products_to_leave
+    ids = @listed_ids - @selected_ids
+    return [] if ids.empty?
+
+    @brand.products.where(id: ids.to_a, product_series_id: @series.id).to_a
+  end
+
+  def id_param_set(key)
+    Array(params[key]).filter_map { |id| id.to_s.presence&.to_i }.to_set
   end
 
   # What the submit did: the number of changed products, and one line per product that did not
@@ -212,12 +249,12 @@ class ProductSeriesController < ApplicationController
     # rubocop:enable Rails/ActionControllerFlashBeforeRender
   end
 
-  # The number of changed products, or a plain confirmation when the submit only changed the
-  # series. No notice when nothing was changed and the alert says why: that is not a success.
+  # The number of changed products, or a plain note when nothing changed. No notice when nothing
+  # was changed and the alert says why: that is not a success.
   def notice_for(result)
     return I18n.t('product_series.assign.saved', count: result.changed.size) if result.changed.any?
 
-    I18n.t('product_series.assign.series_saved') if result.skipped.empty?
+    I18n.t('product_series.assign.unchanged') if result.skipped.empty?
   end
 
   def skipped_message(entry)
@@ -238,12 +275,5 @@ class ProductSeriesController < ApplicationController
     return I18n.t('product_series.assign.where_none') if series.nil?
 
     I18n.t('product_series.assign.where_series', series: series.label)
-  end
-
-  # The checkboxes keep what the user checked (@selected_ids), not the saved state.
-  def render_edit_with_errors
-    load_brand_products
-    page_title(I18n.t('edit_record', name: @series.display_name))
-    render :edit, status: :unprocessable_content
   end
 end

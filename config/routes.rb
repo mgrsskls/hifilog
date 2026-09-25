@@ -127,6 +127,10 @@ Rails.application.routes.draw do
     # series. The index answers JSON only: the series field of the product form reads it.
     resources :series, controller: 'product_series', only: [:index, :show, :new, :create, :edit, :update] do
       get 'changelog', action: :changelog
+      # The product rows of the dialog of the series page. The dialog loads them on the first open.
+      get 'products', action: :assignable_products
+      # The submit of that dialog: the products of the series, not its name or description.
+      patch 'products', action: :assign_products
     end
   end
 

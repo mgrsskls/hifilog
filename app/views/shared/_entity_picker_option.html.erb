@@ -1,0 +1,16 @@
+<%# One option row of shared/_entity_picker_dialog. Use it with `render layout:`; the block gives
+    the text of the label. The CSS needs the input directly before the label.
+
+    locals:
+      name:        the name of the checkbox, for example "selected_ids[]"
+      value:       the value of the checkbox
+      checked:     true when the entity is selected
+      id:          the id of the checkbox
+      filter_text: the text the filter field searches in. It is put in lower case. %>
+<div class="AddEntityDialog-option" data-picker-option data-picker-text="<%= filter_text.to_s.downcase %>">
+  <%= check_box_tag name, value, checked, id: %>
+  <label for="<%= id %>">
+    <%= yield %>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="AddEntityDialog-checkmark"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.8 6 6 9-13.6"/></svg>
+  </label>
+</div>

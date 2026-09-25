@@ -1,7 +1,4 @@
-<%# Name and description of a product series. The brand can not change. See docs/product-series.md.
-    extra_fields (optional): more fields inside the form, before the submit button, as captured HTML.
-    The edit page uses it for the products of the brand. %>
-<% extra_fields ||= nil %>
+<%# Name and description of a product series. The brand can not change. See docs/product-series.md. %>
 <% content_for :css do %>
   <%= stylesheet_link_tag "entity_form" %>
 <% end %>
@@ -44,8 +41,6 @@
       </div>
     </div>
   <% end %>
-
-  <%= extra_fields %>
 
   <div class="Form-submit">
     <%= f.submit series.persisted? ? t('product_series.edit.submit') : t('product_series.new.submit'), class: "Button" %>

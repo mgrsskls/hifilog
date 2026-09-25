@@ -472,6 +472,14 @@ en:
       destroyed:
         past: You removed <i>%{name}</i> from your past events.
         upcoming: You no longer attend <i>%{name}</i>.
+  entity_picker:
+    close: Close
+    error: The list could not be loaded. Please close the dialog and try again.
+    filter: Filter the list
+    loading: Loading …
+    no_match: No entry matches.
+    # "{count}" is replaced in the browser (entity_picker_dialog.js), not by I18n.
+    selected: "{count} selected"
   filter:
     all: All
   generic_error_message: An error occured. Please try again. If the problem continues to exist, please contact us via <a href="mailto:info@hifilog.com">info@hifilog.com</a>.
@@ -630,13 +638,18 @@ en:
       view_all: View all %{series} products
     assign:
       currently_in: now in the %{series}
-      empty_state: <p><b>No products match.</b></p>
-      intro: Check the products of %{brand} that are part of the %{series}. Only the products on this page change when you save, so save before you go to another page.
+      dialog_subtitle: All products of %{brand}. Use the filter field to find a product.
+      dialog_title: Products of the %{series}
+      empty_state: <p><b>This brand has no products yet.</b></p>
+      intro: Check the products of %{brand} that are part of the %{series}. A product you do not check is not part of the series.
+      open: Manage products
       move_note: A product can only be in one series. When you check a product that is in a different series, it moves to this series.
       saved:
         one: 1 product was changed.
         other: "%{count} products were changed."
       series_saved: The series has been saved.
+      submit: Save
+      unchanged: No product was changed.
       where_none: with no series
       where_series: in the %{series}
       search_placeholder: Name or model number
@@ -645,7 +658,8 @@ en:
       too_many: Please change at most %{max} products at one time.
     edit:
       submit: Save
-    empty_state_html: <p><b>No products have been added to this series yet.</b></p><p>You can <a href="%{assign_path}" rel="nofollow">add products of the brand to this series</a> or <a href="%{new_product_path}" rel="nofollow">add a new product</a>.</p>
+    empty_state_assign: add products of the brand to this series
+    empty_state_html: <p><b>No products have been added to this series yet.</b></p><p>You can %{assign_link} or <a href="%{new_product_path}" rel="nofollow">add a new product</a>.</p>
     filter:
       none: No series
     form:
@@ -690,6 +704,11 @@ en:
     private_values:
       'no': Public
       'yes': Private
+    products_dialog:
+      filter_placeholder: Name of a product
+      submit: Save
+      subtitle: All products of your collection. Use the filter field to find a product.
+      title: Products of %{name}
     validation:
       private:
         selected: must be selected.

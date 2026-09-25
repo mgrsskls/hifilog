@@ -7,6 +7,7 @@ Rack::Attack.throttled_response_retry_after_header = true
 
 module RackAttackThrottles
   CATALOG_WRITE_PATH = %r{\A/(products|brands)(/|$)}.freeze
+  SERIES_PRODUCTS_PATH = %r{\A/brands/[^/]+/series/[^/]+/products\z}.freeze
 
   module_function
 
@@ -101,6 +102,11 @@ Rack::Attack.throttle('follow_mutations/ip', limit: 60, period: 3600) do |req|
        req.path.start_with?('/brand_follows'))
     req.ip
   end
+end
+
+# 11. Product list of the picker dialog of a product series per IP (a GET for signed-in users)
+Rack::Attack.throttle('series_products/ip', limit: 60, period: 60) do |req|
+  req.ip if req.get? && req.path.match?(RackAttackThrottles::SERIES_PRODUCTS_PATH)
 end
 
 # 6. Search per IP

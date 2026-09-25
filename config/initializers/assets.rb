@@ -42,6 +42,7 @@ Rails.application.config.assets.precompile += %w(
   application.js
   delete_form.js
   entity_form.js
+  entity_picker_dialog.js
   gallery.js
   notes.js
   signed_in.js

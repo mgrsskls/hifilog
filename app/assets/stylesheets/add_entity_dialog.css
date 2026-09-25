@@ -4,6 +4,38 @@
 	max-inline-size: 64rem;
 	max-block-size: calc(100dvb - 4rem);
 	box-sizing: border-box;
+	/* The list scrolls, not the dialog: the heading, the filter and the buttons stay visible. */
+	overflow: hidden;
+}
+
+.AddEntityDialog-form {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	gap: 1rem;
+	block-size: 100%;
+	max-block-size: calc(100dvb - 4rem - (2 * var(--page-spacing)));
+}
+
+.AddEntityDialog-filter input {
+	inline-size: 100%;
+	box-sizing: border-box;
+}
+
+.AddEntityDialog-noMatch,
+.AddEntityDialog-footer {
+	margin: 0;
+}
+
+.AddEntityDialog-footer {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.AddEntityDialog-option[hidden] {
+	display: none;
 }
 
 .AddEntityDialog h2 {
@@ -21,6 +53,11 @@
 	display: grid;
 	gap: 1rem;
 	grid-template-columns: repeat(var(--cols), 1fr);
+	align-content: start;
+	overflow-y: auto;
+	/* Space for the focus outline of the first and the last row. */
+	padding: 0.25rem;
+	margin: -0.25rem;
 }
 
 .AddEntityDialog-option {

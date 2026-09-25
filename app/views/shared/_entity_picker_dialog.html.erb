@@ -1,0 +1,79 @@
+<%# A dialog that picks entities with one checkbox each: the products of a setup
+    (setups#show) and the products of a product series (product_series#show). The caller gives
+    the option rows; see shared/_entity_picker_option. entity_picker_dialog.js loads the rows,
+    filters them and counts the checked ones.
+
+    locals:
+      id:                 the id of the dialog. A button with data-dialog="<id>" opens it.
+      title:              the heading
+      submit_label:       the text of the save button
+      subtitle:           (optional) small text below the heading
+      intro:              (optional) paragraphs of explanation below the heading, an array of strings
+      options:            (optional) the option rows as captured HTML. Without src, the rows must
+                          be here.
+      src:                (optional) the URL of the option rows. The dialog loads them the first
+                          time it opens. Give src or options, not both.
+      filter_placeholder: (optional) the placeholder of the filter field. Without it, the dialog
+                          has no filter field.
+      form_url:           (optional) the dialog gets a form of its own, for example when the
+                          dialog is not inside a form. Without it, the inputs and the save button
+                          belong to the form around the dialog.
+      form_method:        (optional, default :post) the method of that form
+
+    The dialog opens by itself when the URL has "#<id>", for example after sign-in. %>
+<% subtitle = local_assigns[:subtitle] %>
+<% intro = Array(local_assigns[:intro]) %>
+<% options = local_assigns[:options] %>
+<% src = local_assigns[:src] %>
+<% filter_placeholder = local_assigns[:filter_placeholder] %>
+<% form_url = local_assigns[:form_url] %>
+<dialog class="AddEntityDialog" id="<%= id %>" aria-labelledby="<%= id %>-title" data-picker
+        data-picker-src="<%= src %>">
+  <% body = capture do %>
+    <div class="AddEntityDialog-header">
+      <h2 id="<%= id %>-title">
+        <%= title %>
+        <% if subtitle.present? %><small><%= subtitle %></small><% end %>
+      </h2>
+
+      <% intro.each do |paragraph| %>
+        <p><small><%= paragraph %></small></p>
+      <% end %>
+
+      <% if filter_placeholder.present? %>
+        <div class="AddEntityDialog-filter">
+          <label for="<%= id %>-filter" class="u-hiddenVisually"><%= t('entity_picker.filter') %></label>
+          <input type="search" id="<%= id %>-filter" placeholder="<%= filter_placeholder %>"
+                 autocomplete="off" data-picker-filter>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="AddEntityDialog-list" data-picker-list
+         data-picker-loading="<%= t('entity_picker.loading') %>"
+         data-picker-error="<%= t('entity_picker.error') %>"><%= options %></div>
+
+    <p class="AddEntityDialog-noMatch" data-picker-no-match hidden>
+      <small><%= t('entity_picker.no_match') %></small>
+    </p>
+
+    <div class="AddEntityDialog-footer">
+      <small data-picker-count data-picker-count-template="<%= t('entity_picker.selected') %>"></small>
+      <div class="u-flex u-gap-md u-alignCenter">
+        <button type="button" class="Button Button--secondary" data-picker-close>
+          <%= t('entity_picker.close') %>
+        </button>
+        <button type="submit" class="Button"><%= submit_label %></button>
+      </div>
+    </div>
+  <% end %>
+
+  <% if form_url %>
+    <%= form_with url: form_url, method: local_assigns.fetch(:form_method, :post),
+                  class: "AddEntityDialog-form" do %>
+      <%= body %>
+    <% end %>
+  <% else %>
+    <div class="AddEntityDialog-form"><%= body %></div>
+  <% end %>
+</dialog>

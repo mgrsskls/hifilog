@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-# Saves the edit form of a product series: the attributes of the series and the product
-# checkboxes of the submitted page, in one transaction. See docs/product-series.md, "Assign
-# products on the edit page of the series".
+# Saves the product checkboxes of the dialog of a product series page (the rows it had loaded), in
+# one transaction. See docs/product-series.md, "Assign products on the series page".
 #
 # Two rules make the result of a submit independent of the order of the products:
 #
@@ -19,20 +18,15 @@ class ProductSeriesAssignment
   # errors:   the messages of the failed save, or nil
   Skipped = Struct.new(:product, :conflict, :errors, keyword_init: true)
 
-  # series_saved: false when the attributes of the series are invalid; nothing was written then
-  # changed:      the products that changed
-  # skipped:      Skipped entries, in the order of the list
-  Result = Struct.new(:series_saved, :changed, :skipped, keyword_init: true) do
-    def series_saved? = series_saved
-  end
+  # changed: the products that changed
+  # skipped: Skipped entries, in the order of the list
+  Result = Struct.new(:changed, :skipped, keyword_init: true)
 
-  # series:       the ProductSeries of the edit page
-  # attributes:   the submitted attributes of the series
+  # series:       the ProductSeries of the page
   # changes:      the products whose series the submit changes
   # selected_ids: the ids of the checked products (a product not in it leaves the series)
-  def initialize(series:, attributes:, changes:, selected_ids:)
+  def initialize(series:, changes:, selected_ids:)
     @series = series
-    @attributes = attributes
     @changes = changes
     @selected_ids = selected_ids
   end
@@ -40,18 +34,14 @@ class ProductSeriesAssignment
   def call
     changed = []
     skipped = []
-    series_saved = false
 
     ActiveRecord::Base.transaction do
-      raise ActiveRecord::Rollback unless @series.update(@attributes)
-
       planned, skipped = plan
       changed, failed = write(planned)
       skipped += failed
-      series_saved = true
     end
 
-    Result.new(series_saved:, changed:, skipped: skipped.sort_by { |entry| @changes.index(entry.product) || 0 })
+    Result.new(changed:, skipped: skipped.sort_by { |entry| @changes.index(entry.product) || 0 })
   end
 
   private

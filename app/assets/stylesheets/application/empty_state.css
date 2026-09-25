@@ -6,3 +6,8 @@
 	margin-trim: block;
 	text-align: center;
 }
+
+/* A button in the message (for example one that opens a dialog) looks like the links next to it. */
+.EmptyState button {
+	text-decoration: underline;
+}
