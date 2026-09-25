@@ -140,6 +140,11 @@ GEM
       uniform_notifier (~> 1.11)
     childprocess (5.1.0)
       logger (~> 1.5)
+    cloudflare-rails (7.0.0)
+      actionpack (>= 7.2.0, < 8.2.0)
+      activesupport (>= 7.2.0, < 8.2.0)
+      railties (>= 7.2.0, < 8.2.0)
+      zeitwerk (>= 2.5.0)
     cloudflare-turnstile-rails (1.2.0)
       railties (>= 5.0)
     code_analyzer (0.5.5)
@@ -575,6 +580,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   bullet
+  cloudflare-rails
   cloudflare-turnstile-rails
   commonmarker
   country_select
