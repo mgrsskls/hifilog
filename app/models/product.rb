@@ -13,6 +13,8 @@ class Product < ApplicationRecord
   include DatePartsValidatable
   include ReleaseDate
   include DiscontinuedDate
+  include VersionedProductOptions
+  include VersionedSubCategories
 
   extend FriendlyId
 
@@ -26,7 +28,13 @@ class Product < ApplicationRecord
     associated_against: { brand: [:name, :abbreviation], product_series: [:name] }
   )
 
-  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
+  # product_series_ids: the series changelog reads the product versions through this column. See
+  # docs/product-series.md, "Changelog and contributors".
+  # association_changes: the sub categories and the options, which are not columns. The callbacks
+  # are declared after the associations, see below. See docs/catalog-model.md, "Changelog".
+  has_paper_trail on: [], skip: :updated_at, ignore: [:created_at, :id, :slug],
+                  meta: { comment: :comment, product_series_ids: :product_series_ids_for_version,
+                          association_changes: :association_changes_for_version }
   attr_accessor :comment
   # See the uniqueness validation of `name` below and ProductSeriesAssignment.
   attr_accessor :skip_name_uniqueness
@@ -37,6 +45,8 @@ class Product < ApplicationRecord
   belongs_to :product_series, optional: true, touch: true, counter_cache: :products_count,
                               inverse_of: :products
   has_and_belongs_to_many :sub_categories, join_table: :products_sub_categories,
+                                           before_add: :remember_sub_category_ids,
+                                           before_remove: :remember_sub_category_ids,
                                            after_add: :recalculate_completeness!,
                                            after_remove: :recalculate_completeness!
   has_many :possessions, dependent: :destroy
@@ -111,6 +121,17 @@ class Product < ApplicationRecord
   # specs does not pay for a definitions lookup. See CustomAttribute.normalize_units.
   before_save :normalize_custom_attribute_units, if: :custom_attributes_changed?
 
+  # The PaperTrail callbacks, after the associations: the autosave of the options and of the sub
+  # categories runs first, so the version sees them. See VersionedProductOptions.
+  paper_trail.on_create
+  after_update :record_update_version
+  paper_trail.on_destroy
+  # Wraps the destroy callback of PaperTrail, which reads #product_series_ids_for_version. PaperTrail
+  # records a delete before it happens (:after needs belongs_to_required_by_default = false), so
+  # the flag tells a delete from a save. ensure clears it, also for an aborted delete.
+  around_destroy :flag_destroy_for_version, prepend: true
+  # After the create and update callbacks, so the version of this save has the changes.
+  after_save :clear_association_changes
   after_commit :invalidate_cache
   after_commit :update_brand_sub_categories
   after_commit :recalculate_completeness!, on: [:create, :update]
@@ -372,6 +393,22 @@ class Product < ApplicationRecord
 
   private
 
+  # The series of the version: the old and the new series when the save changes it, the current
+  # series when the product is deleted, otherwise nil. PaperTrail writes create and update versions
+  # in after callbacks, so the saved change is the change of this save.
+  def flag_destroy_for_version
+    @destroying_for_version = true
+    yield
+  ensure
+    @destroying_for_version = false
+  end
+
+  def product_series_ids_for_version
+    return [product_series_id].compact.presence if @destroying_for_version
+
+    saved_change_to_product_series_id&.compact.presence
+  end
+
   # A new series has no products yet, so there is nothing to compare with.
   def series_identity_changed?
     return false if skip_name_uniqueness
@@ -495,7 +532,11 @@ class Product < ApplicationRecord
   def update_brand_sub_categories
     return unless brand
 
-    brand.sub_categories << (sub_categories - brand.sub_categories)
+    # Not a version of the brand: the user edited the product, not the brand. See
+    # docs/catalog-model.md, "Changelog".
+    brand.without_sub_category_versioning do
+      brand.sub_categories << (sub_categories - brand.sub_categories)
+    end
     brand.save
   end
 

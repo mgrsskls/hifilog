@@ -97,6 +97,19 @@ module ApplicationHelper
     PaperTrail::Serializers::YAML.load(changes)
   end
 
+  # The column changes and the association changes of a version, in one hash. See
+  # docs/catalog-model.md, "Changelog".
+  def changelog_changes(version)
+    deserialize_changelog(version.object_changes).merge(version.association_changes || {})
+  end
+
+  # The sub categories of a changelog value, by their current name. A deleted sub category shows
+  # as "Deleted", as a deleted brand does.
+  def changelog_sub_category_names(ids)
+    names = SubCategory.where(id: ids).pluck(:id, :name).to_h
+    safe_join(ids.map { |id| names[id] || tag.i('Deleted') }, ', ')
+  end
+
   # The contributors of a catalog entry, from the versions of the entry: each name links to the
   # profile, except for a hidden profile, which shows the name only. With no contributors, the
   # entry came from the site itself.
@@ -132,9 +145,27 @@ module ApplicationHelper
     ProductSeries.find_by(id: series_id)&.name || tag.i('Deleted')
   end
 
+  # What a product version in a series changelog did to the series: :added, :removed or :deleted
+  # (the product was deleted while it was in the series). See docs/product-series.md, "Changelog and contributors".
+  def changelog_series_product_action(version, series)
+    return :deleted if version.event == 'destroy'
+
+    deserialize_changelog(version.object_changes).dig('product_series_id', 1) == series.id ? :added : :removed
+  end
+
+  # A link to the product. A deleted product has no page, so it shows the name that the version
+  # stores: the new name of the change, else the name before the change.
+  def changelog_product_link(version, product)
+    return link_to(product.display_name, product.path) if product
+
+    name = deserialize_changelog(version.object_changes).dig('name', 1) ||
+           deserialize_changelog(version.object)['name']
+    tag.i(name.presence || 'Deleted')
+  end
+
   def filter_versions(versions)
     versions.select do |version|
-      log = deserialize_changelog(version.object_changes)
+      log = changelog_changes(version)
       log_length = log.length
       log_length > 1 || (log_length == 1 && log['slug'].nil?)
     end

@@ -47,8 +47,9 @@ class ProductVariantsController < ApplicationController
 
   def create
     @product = Product.find(params[:product_id])
-    @product_variant = ProductVariant.new(product_variant_params)
-    @product.product_variants << @product_variant
+    # build, not <<: << saves the variant at once, so its create version would come before its
+    # options. The save below creates the variant and its options together.
+    @product_variant = @product.product_variants.build(product_variant_params)
     @brand = @product.brand
     @product_variant.discontinued = @brand.discontinued ? true : product_variant_params[:discontinued]
 
@@ -68,10 +69,11 @@ class ProductVariantsController < ApplicationController
   def update
     @product_variant = ProductVariant.find(params[:id])
 
-    product_options_attributes = params[:product_options_attributes]
-    assign_product_options(@product_variant, product_options_attributes) if product_options_attributes.present?
+    saved = save_with_product_options(@product_variant, params[:product_options_attributes]) do
+      @product_variant.update(product_variant_update_params)
+    end
 
-    if @product_variant.update(product_variant_update_params)
+    if saved
       redirect_to URI.parse(
         product_variant_url(
           product_id: @product_variant.product.friendly_id,
@@ -80,6 +82,7 @@ class ProductVariantsController < ApplicationController
       ).path
     else
       @product = Product.find(@product_variant.product_id)
+      @brand = @product.brand
       render :edit, status: :unprocessable_content
     end
   end

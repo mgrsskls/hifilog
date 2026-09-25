@@ -111,6 +111,18 @@ class AdminActivityPresentersTest < ActiveSupport::TestCase
     assert_equal %w[2 3], [changes.first.before, changes.first.after]
   end
 
+  test 'version: sub categories show by name' do
+    version = PaperTrail::Version.create!(
+      item: products(:one), event: 'update', object_changes: PaperTrail::Serializers::YAML.dump({}),
+      association_changes: { 'sub_category_ids' => [[sub_categories(:one).id], [sub_categories(:two).id]] }
+    )
+
+    context = AdminVersionActivityPresenter.preload([version])
+    change = AdminVersionActivityPresenter.new(version, @view, context).changes.first
+
+    assert_equal [sub_categories(:one).name, sub_categories(:two).name], [change.before, change.after]
+  end
+
   private
 
   def strip(html)

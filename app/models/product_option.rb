@@ -23,6 +23,14 @@ class ProductOption < ApplicationRecord
             uniqueness: { scope: :product_variant_id },
             allow_nil: true
 
+  # The products and variants whose options a save or a delete of this option changes: the old
+  # and the new owner. ActiveAdmin records a version for each of them (see
+  # VersionedProductOptions). Call it before the save.
+  def versioned_owners
+    [Product.find_by(id: product_id_was), ProductVariant.find_by(id: product_variant_id_was),
+     product, product_variant].compact.uniq
+  end
+
   # This is used for dropdowns in active_admin
   # simplecov:disable
   def display_name

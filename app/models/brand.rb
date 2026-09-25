@@ -11,6 +11,7 @@ class Brand < ApplicationRecord
   include DiscontinuedDate
   include DateFromComponents
   include PgSearchByName
+  include VersionedSubCategories
 
   # legal_name is deliberately absent: pg_search concatenates every `against:` column into
   # one string before computing trigram similarity, so a long formulaic value nobody types
@@ -30,7 +31,10 @@ class Brand < ApplicationRecord
   auto_strip_attributes :legal_name, squish: true
   auto_strip_attributes :description
 
-  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug], meta: { comment: :comment }
+  # association_changes: the logo and the sub categories, which are not columns. The callbacks are
+  # declared below. See docs/catalog-model.md, "Changelog".
+  has_paper_trail on: [], skip: :updated_at, ignore: [:created_at, :id, :slug],
+                  meta: { comment: :comment, association_changes: :association_changes_for_version }
   attr_accessor :comment, :remove_logo
 
   extend FriendlyId
@@ -43,6 +47,8 @@ class Brand < ApplicationRecord
   # runs them before there is a row to update. `after_save` catches that case (and any other path
   # that goes through a save), so the two together cover everything AR can do.
   has_and_belongs_to_many :sub_categories,
+                          before_add: :remember_sub_category_ids,
+                          before_remove: :remember_sub_category_ids,
                           after_add: :recalculate_sub_categories_count!,
                           after_remove: :recalculate_sub_categories_count!
 
@@ -98,11 +104,18 @@ class Brand < ApplicationRecord
   before_validation :clear_abbreviation_when_contained_in_name
 
   before_save :clear_logo_when_remove_requested
+  before_save :remember_logo_change
   before_save :touch_updated_at_for_logo_change
 
+  # The PaperTrail callbacks, as AssociationVersioning describes.
+  paper_trail.on_create
+  after_update :record_update_version
+  paper_trail.on_destroy
   after_update :touch_products
   after_update :resync_product_slugs, if: :brand_naming_changed?
   after_destroy :invalidate_cache
+  # After the create and update callbacks, so the version of this save has the changes.
+  after_save :clear_association_changes
   after_save :recalculate_sub_categories_count!
   after_save :invalidate_cache
   after_commit :clear_country_cache
@@ -356,6 +369,26 @@ class Brand < ApplicationRecord
     return if pending_create
 
     self.logo = nil
+  end
+
+  # [old file name, new file name] of the logo, nil for no logo. The version stores the names
+  # only, not the images. Before the save: Active Storage writes the attachment after the save.
+  def remember_logo_change
+    change = attachment_changes['logo']
+    return if change.nil?
+
+    new_blob = change.blob if change.is_a?(ActiveStorage::Attached::Changes::CreateOne)
+    names = [logo_attachment&.blob, new_blob].map { |blob| blob&.filename&.to_s }
+    @logo_change = names if names.any?
+  end
+
+  def versioned_association_changes
+    @logo_change ? super.merge('logo' => @logo_change) : super
+  end
+
+  def clear_association_changes
+    super
+    @logo_change = nil
   end
 
   def touch_updated_at_for_logo_change

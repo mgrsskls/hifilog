@@ -79,6 +79,7 @@ class ProductConversionService
       # at the parent product as well.
       move_dependents(product_id: target_product.id, product_variant_id: variant.id, option_product_id: nil)
       repoint_polymorphic(to: variant)
+      record_conversion_version(variant)
 
       discard_original
       variant
@@ -99,6 +100,7 @@ class ProductConversionService
 
       move_dependents(product_id: product.id, product_variant_id: nil, option_product_id: product.id)
       repoint_polymorphic(to: product)
+      record_conversion_version(product)
 
       discard_original
       product
@@ -139,6 +141,20 @@ class ProductConversionService
                        .update_all(item_type: to.class.name, item_id: to.id)
   end
   # rubocop:enable Rails/SkipsModelValidations
+
+  # One version on the new record, after the history of the original: what it was converted from,
+  # and the options that came along (update_all above writes no version). The target product of
+  # to_variant gets no version: the variant has its own changelog. See docs/catalog-model.md,
+  # "Changelog".
+  def record_conversion_version(record)
+    record.record_version_with('converted_from' => [nil, conversion_source_label])
+  end
+
+  # The original as text, because it is deleted: 'Product "Feliks Audio Elise"' or
+  # 'Variant "Feliks Audio Elise Black"'.
+  def conversion_source_label
+    %(#{@record.is_a?(Product) ? 'Product' : 'Variant'} "#{@record.display_name}")
+  end
 
   # Everything worth keeping has already been moved off the original, so reload before destroying
   # to stop `dependent: :destroy` from acting on the stale in-memory associations. PaperTrail is

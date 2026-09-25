@@ -116,6 +116,59 @@ class ProductSeriesTest < ActiveSupport::TestCase
     assert_equal product, Product.friendly.find(old_slug)
   end
 
+  test 'a delete saves each product, so that the product and the series changelog show the removal' do
+    series = ProductSeries.create!(brand: brands(:one), name: "Removed #{SecureRandom.hex(3)}")
+    product = create_product(name: 'Versioned', series:)
+
+    series.destroy!
+
+    version = product.versions.last
+    assert_equal [series.id, nil], version.changeset['product_series_id']
+    assert_equal [series.id], version.product_series_ids
+  end
+
+  test 'changelog_versions has the versions of the series and of its added and removed products' do
+    series = ProductSeries.create!(brand: brands(:one), name: "Changelog #{SecureRandom.hex(3)}")
+    added = create_product(name: 'Added', series:)
+    moved = create_product(name: 'Moved', series:)
+    moved.update!(product_series: nil)
+    edited = create_product(name: 'Edited', series:)
+    edited.update!(description: 'Not a series change')
+    other = create_product(name: 'Other', series: product_series(:legacy))
+
+    versions = series.changelog_versions.to_a
+    count = ->(product) { versions.count { |version| version.item == product } }
+
+    assert_equal series.versions.first, versions.first
+    assert_equal 1, count.call(added)
+    assert_equal 2, count.call(moved)
+    assert_equal 1, count.call(edited)
+    assert_equal 0, count.call(other)
+  end
+
+  test 'a save after a rolled back delete does not record the series' do
+    series = ProductSeries.create!(brand: brands(:one), name: "Rolled back #{SecureRandom.hex(3)}")
+    product = create_product(name: 'Survivor', series:)
+
+    ActiveRecord::Base.transaction do
+      product.destroy!
+      raise ActiveRecord::Rollback
+    end
+    product.update!(description: 'Saved after the rolled back delete')
+
+    assert_nil product.versions.last.product_series_ids
+    assert_equal 'update', product.versions.last.event
+  end
+
+  test 'a product save touches its brand and series without a version of them' do
+    series = ProductSeries.create!(brand: brands(:one), name: "Touched #{SecureRandom.hex(3)}")
+    product = create_product(name: 'Toucher', series:)
+
+    assert_no_difference [-> { series.versions.count }, -> { series.brand.versions.count }] do
+      product.update!(description: 'Touches the brand and the series')
+    end
+  end
+
   test 'sibling_products are in release order and do not include the product' do
     series = ProductSeries.create!(brand: brands(:one), name: "Siblings #{SecureRandom.hex(3)}")
     later = create_product(name: 'Later', series:, release_year: 2010)

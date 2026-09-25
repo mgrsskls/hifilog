@@ -1,0 +1,16 @@
+<%# A product version in the changelog of a series: the product was added to the series, removed from it, or deleted while it was in the series. %>
+<li class="Changelog-item">
+  <p class="Changelog-itemHeading">
+    <b><%= t("changelog.product_#{changelog_series_product_action(version, series)}") %></b>
+    <%= render "shared/changelog_author", version:, user:, user_fallback: %>
+  </p>
+  <ul>
+    <li><%= changelog_product_link(version, product) %></li>
+  </ul>
+  <% if version.comment.present? %>
+    <div class="Changelog-itemComment Rte">
+      <p><b><%= t('changelog.comment') %>:</b></p>
+      <%= sanitize(simple_format(version.comment.strip), tags: %w(p b i strong em br ul ol li)) %>
+    </div>
+  <% end %>
+</li>

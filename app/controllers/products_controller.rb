@@ -76,10 +76,11 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
 
-    product_options_attributes = params[:product_options_attributes]
-    assign_product_options(@product, product_options_attributes) if product_options_attributes.present?
+    saved = save_with_product_options(@product, params[:product_options_attributes]) do
+      @product.update(product_update_params)
+    end
 
-    if @product.update(product_update_params)
+    if saved
       redirect_to URI.parse(product_url(id: @product.friendly_id)).path
     else
       @categories = Category.includes([:sub_categories])

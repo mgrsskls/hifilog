@@ -28,7 +28,7 @@ This document records the decisions and the design. It uses Simplified Technical
 | 8b  | Disambiguation          | The series shows as a subline under the `<h1>`, in the `<title>` element, and as a label in list rows.                                                                                  |
 | 8c  | Uniqueness              | Name + model no. is unique within **brand + series**. Two "Omega Lupi" are allowed in different series.                                                                                 |
 | 9   | Who can create and edit | **Any signed-in user.** Versioned with PaperTrail. Only admins delete.                                                                                                                  |
-| 10  | Empty series            | An empty series **stays**. Only an admin deletes it. The delete sets the product FK to `NULL`.                                                                                          |
+| 10  | Empty series            | An empty series **stays**. Only an admin deletes it. The delete removes the series from each product.                                                                                   |
 | 11  | Discovery               | Global search, filter on the brand products page, sitemap, JSON-LD.                                                                                                                     |
 | 12  | User features           | **None.** A series can not be bookmarked or followed. A user who follows the brand already gets every new product of the series in the feed. See [10](#10-no-bookmarks-and-no-follows). |
 | 14  | Similar Products        | **No change.** The series does not change the score.                                                                                                                                    |
@@ -436,9 +436,28 @@ A name change regenerates the slug. FriendlyId keeps the old slug for a 301.
 
 - `has_paper_trail` on `ProductSeries`.
 - `/brands/:brand_id/series/:id/changelog` renders `shared/_changelog`.
-- Contributors on the series page: users with versions on the series record.
 - Product changelogs show `product_series_id` changes. The changelog formatter must show the
   series **name**, not the id, for this attribute (same as it must do for `brand_id`).
+
+The series changelog also shows the products that were added to the series or removed from it.
+Each product version gives one entry: "Product added", "Product removed" or "Product deleted"
+(the product was deleted while it was in the series). The entry links to the product. When the
+product is deleted, the entry shows the product name from the version.
+
+- `versions.product_series_ids` (`bigint[]`, GIN index) holds the old and the new series of a
+  product version. `Product` sets it through the PaperTrail `meta` option. The value is `NULL`
+  when the version does not change the series. For a delete, the value is the series of the
+  product.
+- `object_changes` is YAML text. An index can not search it. Thus the column is necessary.
+- `ProductSeries#changelog_versions` reads the versions of the series and the product versions
+  with the series in `product_series_ids`. The query has no condition on the item type: a product
+  that is converted into a variant keeps its versions under the type `ProductVariant`, and its
+  entries must stay in the series changelog. Only product versions set the column.
+- `bin/rails versions:backfill_product_series_ids` fills the column for the versions from before
+  the column existed. Run it one time after the deploy.
+
+Contributors on the series page: the users with versions on the series record, and the users with
+product versions that add a product to the series or remove a product from it.
 
 ### 6.4 Delete
 
@@ -547,16 +566,16 @@ with the checkboxes as the user left them.
 
 ### 7.4 Other flows that change the brand or the product type
 
-| Flow                                                      | Rule                                                                                                        |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Admin changes `brand_id` of a product                     | Clear `product_series_id` if the series is of the old brand. Show a notice.                                 |
-| `ProductConversionService.to_variant` (product → variant) | The product disappears. The variant uses the series of its new parent. Nothing to copy.                     |
-| `ProductConversionService.to_product` (variant → product) | The new product gets the series of the old parent. The brand is the same, so this is valid.                 |
-| Brand is deleted                                          | `dependent: :destroy` on the series. The products are deleted with the brand already.                       |
-| Product is deleted                                        | The counter cache decreases. The series stays.                                                              |
-| Series of a product is set, changed or removed            | The product slug changes. The old slug redirects (301). Variant slugs are nested, so they follow.           |
-| Series is renamed                                         | `Product.resync_slugs_for` on the products of the series (see [2.7](#27-product-name-title-and-slug)).      |
-| Series is deleted (admin)                                 | FK is set to `NULL`, so the slugs lose the series. Resync the slugs of the former products in the same job. |
+| Flow                                                      | Rule                                                                                                   |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Admin changes `brand_id` of a product                     | Clear `product_series_id` if the series is of the old brand. Show a notice.                            |
+| `ProductConversionService.to_variant` (product → variant) | The product disappears. The variant uses the series of its new parent. Nothing to copy.                |
+| `ProductConversionService.to_product` (variant → product) | The new product gets the series of the old parent. The brand is the same, so this is valid.            |
+| Brand is deleted                                          | `dependent: :destroy` on the series. The products are deleted with the brand already.                  |
+| Product is deleted                                        | The counter cache decreases. The series stays.                                                         |
+| Series of a product is set, changed or removed            | The product slug changes. The old slug redirects (301). Variant slugs are nested, so they follow.      |
+| Series is renamed                                         | `Product.resync_slugs_for` on the products of the series (see [2.7](#27-product-name-title-and-slug)). |
+| Series is deleted (admin)                                 | Each product is saved without the series, so that it gets a version. Then the slugs are resynced.      |
 
 ---
 
@@ -568,14 +587,17 @@ with the checkboxes as the user left them.
 
 - `menu priority` next to Products, label "Series".
 - `permit_params :brand_id, :name, :description`.
+- The admin URLs use the id of the series. `ProductSeries#to_param` returns the id, because the
+  slug is unique only within the brand. The public URLs give the brand and the slug explicitly.
 - **Index:** id, name, brand (link), `products_count`, created_at. Links to the public page.
 - **Filters:** brand (select with search), name, `products_count` (range), created_at.
   Remove the filters for `products`, `versions`, `slugs`, `bookmarks`.
 - **Show:** attributes, list of products (link to admin product), PaperTrail versions, link to the
   public page.
 - **Form:** brand (select, only on create), name, description.
-- **Delete:** allowed. The FK sets `products.product_series_id` to `NULL`. Show the number of
-  products in the confirmation text.
+- **Delete:** allowed. Each product of the series is saved with `product_series_id` set to
+  `NULL`, so that the product changelog and the series changelog show the removal. Show the number
+  of products in the confirmation text.
 
 ### 8.2 Product and variant resources
 

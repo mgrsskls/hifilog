@@ -56,8 +56,9 @@ class ProductConversionServiceTest < ActiveSupport::TestCase
 
     variant = ProductConversionService.to_variant(@product, @target)
 
-    # +1: the new variant logs its own create event, on top of the product's history moving over.
-    assert_equal versions + 1, PaperTrail::Version.where(item_type: 'ProductVariant', item_id: variant.id).count
+    # +2: the create event of the new variant and the conversion version, on top of the product's
+    # history moving over.
+    assert_equal versions + 2, PaperTrail::Version.where(item_type: 'ProductVariant', item_id: variant.id).count
     assert_equal 0, PaperTrail::Version.where(item_type: 'Product', item_id: @product.id).count
   end
 
@@ -208,5 +209,29 @@ class ProductConversionServiceTest < ActiveSupport::TestCase
 
     assert_equal series, product.product_series
     assert_includes product.slug, series.name.parameterize
+  end
+
+  test 'the new variant gets a version with the conversion and the options that came along' do
+    label = %(Product "#{@product.display_name}")
+    options = @product.product_options.map(&:display_name).sort
+
+    variant = ProductConversionService.to_variant(@product, @target)
+
+    version = variant.versions.last
+    assert_equal [nil, label], version.association_changes['converted_from']
+    assert_equal [[], options], version.association_changes['product_options']
+  end
+
+  test 'the conversion version of a product in a series is not an entry of the series changelog' do
+    variant = product_variants(:one)
+    series = ProductSeries.create!(brand: variant.product.brand, name: "Series #{SecureRandom.hex(3)}")
+    variant.product.update!(product_series: series)
+
+    label = %(Variant "#{variant.display_name}")
+
+    product = ProductConversionService.to_product(variant, sub_category_ids: variant.product.sub_category_ids)
+
+    assert_equal [nil, label], product.versions.last.association_changes['converted_from']
+    assert_nil product.versions.last.product_series_ids
   end
 end

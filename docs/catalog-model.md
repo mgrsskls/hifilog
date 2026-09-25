@@ -38,7 +38,7 @@ flowchart TB
 | `CustomAttribute`          | Definition of a field for a value of a product. The values are on `Product`.     |
 
 PaperTrail versions products, variants, brands and product series. Per-record changelogs and a
-contributions summary show who edited the catalog.
+contributions summary show who edited the catalog. See [8. Changelog](#8-changelog).
 
 ## 2. Taxonomy
 
@@ -184,3 +184,94 @@ The meta block at the end of the sidebar (completeness prompt, "Edit" and "Chang
 contributors) is one partial, **`shared/_entity_meta`**. The brand, product, variant and product
 series pages use it. `ApplicationHelper#contributor_links` shows the contributors. For a hidden
 profile, it shows the name without a link.
+
+## 8. Changelog
+
+PaperTrail versions products, variants, brands and product series. Each of these entities has a
+changelog page. The page shows the versions of the entity, newest first. The product series
+changelog also shows the products that were added or removed (see
+[product-series.md](product-series.md#63-changelog-and-contributors)).
+
+PaperTrail records only the columns of a model. Some data is in associations:
+
+| Data                                 | Key in `versions.association_changes` |
+| ------------------------------------ | ------------------------------------- |
+| Sub categories of a product or brand | `sub_category_ids`                    |
+| Options of a product or of a variant | `product_options`                     |
+| Logo of a brand                      | `logo`                                |
+| Conversion from a product or variant | `converted_from`                      |
+
+`versions.association_changes` is a JSON column. It has the same form as `object_changes`: one
+key for each association, with the old and the new value. The changelog and the admin activity
+page merge the two columns. The versions from before this column do not have these changes. There
+is no data to backfill.
+
+### 8.1 When the version is recorded
+
+- When only an association changes, no column changes. PaperTrail then does not record an update
+  version. Thus the model records the update version itself (`record_update_version` in
+  `AssociationVersioning`). It forces a version when an association changed.
+- `Brand`, `Product` and `ProductVariant` declare `has_paper_trail on: []` and add the PaperTrail
+  callbacks after their associations. The associations save their new records first, so the
+  create version has the sub categories and the options of the new record.
+- A touch does not record a version. PaperTrail records every touch as a version without changes,
+  and a touch comes from a save of another record: a product touches its brand and its series, a
+  variant touches its product. These versions made the author of the other record a contributor.
+  Thus no model calls `paper_trail.on_touch`, and `ProductSeries` has
+  `on: [:create, :update, :destroy]`.
+- `bin/rails versions:delete_touch_versions` deletes the touch versions from before this change.
+  Run it one time after the deploy.
+- Contributors are the users with versions on the record itself. A product editor is not a
+  contributor of the brand, and a variant editor is not a contributor of the product. The one
+  exception is the product series (see
+  [product-series.md](product-series.md#63-changelog-and-contributors)).
+
+### 8.2 Sub categories
+
+- The value is the list of the sub category ids, sorted. The changelog shows the current names.
+  A deleted sub category shows as "Deleted".
+- A change to the sub categories of a saved product or brand goes to the database at once, before
+  the save. The model keeps the old ids at the first change and writes the change into the version
+  of the next save (`VersionedSubCategories`).
+- A product save adds the sub categories of the product to its brand. This change gets no brand
+  version, because the user did not edit the brand (`without_sub_category_versioning`).
+
+### 8.3 Options
+
+- The value is the list of the options as text, "Option (model no.)", sorted. The text, not the
+  ids: an option has no page, and a deleted option must stay readable in the changelog.
+- The product and variant forms write the options directly, before the save of the product or
+  variant. Before they write, they call `remember_product_options`. The next save compares the
+  options in the database with the kept list.
+- On an update, the option writes and the save are in one transaction
+  (`ProductOptionsAssignable#save_with_product_options`). When the save fails, the options do not
+  change either.
+- On a create, the options are saved together with the new product or variant, so the create
+  version has them.
+- ActiveAdmin saves an option without a save of its product or variant. The ActiveAdmin resource
+  records the version of the old and of the new owner (`record_product_options_version`).
+- A conversion between product and variant moves the options with `update_all`. The conversion
+  version records them (see [8.5](#85-conversion-between-product-and-variant)).
+
+### 8.4 Brand logo
+
+- The value is the file name of the old and of the new logo. `nil` is no logo. Thus a new logo is
+  `[nil, "new.png"]`, a replaced logo is `["old.png", "new.png"]` and a removed logo is
+  `["old.png", nil]`.
+- The version stores the file names only. Active Storage deletes the old image, so the changelog
+  can not show it.
+- Only ActiveAdmin can change the logo.
+
+### 8.5 Conversion between product and variant
+
+`ProductConversionService` creates a new record and deletes the original. The versions of the
+original move to the new record, so the history continues there.
+
+- After the conversion, the new record gets one more version (`record_version_with`). It has
+  `converted_from`, for example `[nil, 'Product "Feliks Audio Elise"']`, and the options that
+  came along. The changelog shows it as one line: "Converted from Product "Feliks Audio Elise"".
+- The value is text, because the original is deleted.
+- The target product of a conversion into a variant gets no version. The variant has its own
+  changelog.
+- The conversion version does not change the series. Thus it is not an entry in the series
+  changelog.

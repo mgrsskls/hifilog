@@ -13,6 +13,7 @@ class ProductVariant < ApplicationRecord
   include DatePartsValidatable
   include ReleaseDate
   include DiscontinuedDate
+  include VersionedProductOptions
 
   extend FriendlyId
 
@@ -25,7 +26,10 @@ class ProductVariant < ApplicationRecord
 
   pg_search_by_name(against: { name: 'A', model_no: 'B' })
 
-  has_paper_trail skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug], meta: { comment: :comment }
+  # association_changes: the options, which are not a column. The callbacks are declared after the
+  # associations, see below. See docs/catalog-model.md, "Changelog".
+  has_paper_trail on: [], skip: [:updated_at, :product_id], ignore: [:created_at, :id, :slug],
+                  meta: { comment: :comment, association_changes: :association_changes_for_version }
   attr_accessor :comment
 
   belongs_to :product, touch: true
@@ -66,7 +70,14 @@ class ProductVariant < ApplicationRecord
   # part of a variant's own completeness.
   COMPLETENESS_WEIGHTS = { description: 3, release_year: 2, discontinued_year: 1 }.freeze
 
+  # The PaperTrail callbacks, after the associations: the autosave of the options runs first, so
+  # the version sees them. See VersionedProductOptions.
+  paper_trail.on_create
+  after_update :record_update_version
+  paper_trail.on_destroy
   before_destroy :remember_brand_id_for_products_count
+  # After the create and update callbacks, so the version of this save has the changes.
+  after_save :clear_association_changes
   after_commit :invalidate_cache
   after_create_commit :recalculate_brand_products_count
   after_destroy_commit :recalculate_remembered_brand_products_count

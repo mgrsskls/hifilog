@@ -3,6 +3,13 @@ ActiveAdmin.register ProductOption do
 
   menu parent: 'Settings'
 
+  # An option is saved here without a save of its product or variant, so the changelog of the
+  # product or variant gets its version here. See docs/catalog-model.md, "Changelog".
+  before_save { |option| @versioned_owners = option.versioned_owners.each(&:remember_product_options) }
+  after_save { |_option| @versioned_owners.each(&:record_product_options_version) }
+  before_destroy { |option| @versioned_owners = option.versioned_owners.each(&:remember_product_options) }
+  after_destroy { |_option| @versioned_owners.each(&:record_product_options_version) }
+
   index do
     selectable_column
     id_column

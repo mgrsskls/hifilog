@@ -27,20 +27,27 @@ class AdminVersionActivityPresenter
 
   # Data for all versions of one page.
   class Context
-    attr_reader :brand_names, :series_names, :custom_attributes
+    attr_reader :brand_names, :series_names, :sub_category_names, :custom_attributes
 
     def initialize(versions)
-      @changesets = versions.to_h { |version| [version.id, parse(version.object_changes)] }
+      @changesets = versions.to_h { |version| [version.id, changeset_of(version)] }
       @brand_names = load_brand_names
       @series_names = load_series_names
+      @sub_category_names = load_sub_category_names
       @custom_attributes = load_custom_attributes
     end
 
     def changeset(version)
-      @changesets.fetch(version.id) { parse(version.object_changes) }
+      @changesets.fetch(version.id) { changeset_of(version) }
     end
 
     private
+
+    # The column changes and the association changes (sub categories). See docs/catalog-model.md,
+    # "Changelog".
+    def changeset_of(version)
+      parse(version.object_changes).merge(version.association_changes || {})
+    end
 
     def parse(yaml)
       return {} if yaml.blank?
@@ -67,6 +74,13 @@ class AdminVersionActivityPresenter
       return {} if ids.empty?
 
       ProductSeries.where(id: ids).pluck(:id, :name).to_h
+    end
+
+    def load_sub_category_names
+      ids = values_of('sub_category_ids').flatten.uniq
+      return {} if ids.empty?
+
+      SubCategory.where(id: ids).pluck(:id, :name).to_h
     end
 
     def load_custom_attributes
@@ -199,15 +213,21 @@ class AdminVersionActivityPresenter
 
   # Returns nil for an empty value, so the change line can say "removed" or show only the new value.
   def format_value(attribute, value, truncate)
-    return if value.nil? || value == ''
+    return if value.nil? || value == '' || value == []
 
     text = case attribute
            when 'brand_id' then @context.brand_names[value] || "##{value} (deleted)"
            when 'product_series_id' then @context.series_names[value] || "##{value} (deleted)"
+           when 'sub_category_ids' then sub_category_names(value)
+           when 'product_options' then value.join(', ')
            when 'country_code' then @view.country_name_from_country_code(value) || value
            else scalar(value)
            end
     truncate ? text.to_s.truncate(truncate) : text.to_s
+  end
+
+  def sub_category_names(ids)
+    ids.map { |id| @context.sub_category_names[id] || "##{id} (deleted)" }.join(', ')
   end
 
   def scalar(value)

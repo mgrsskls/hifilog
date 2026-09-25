@@ -1,0 +1,8 @@
+<%= t('changelog.by') %>
+<% if user %>
+  <%= user.profile_visibility === "hidden" ? user.user_name : link_to(user.user_name, user.profile_path) %>
+<% else %>
+  <%= user_fallback.html_safe %>
+<% end %>
+&mdash;
+<time datetime="<%= format_iso_datetime version.created_at %>"><%= format_datetime(version.created_at).html_safe %></time>

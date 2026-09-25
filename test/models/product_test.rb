@@ -326,4 +326,59 @@ class ProductTest < ActiveSupport::TestCase
 
     assert_equal real_products_count(brand), brand.reload.products_count
   end
+
+  def create_versioned_product
+    Product.create!(name: "Versioned #{SecureRandom.hex(3)}", brand: brands(:one),
+                    sub_categories: [sub_categories(:one)])
+  end
+
+  test 'the create version has the sub categories' do
+    product = create_versioned_product
+
+    assert_equal({ 'sub_category_ids' => [[], [sub_categories(:one).id]] },
+                 product.versions.last.association_changes)
+  end
+
+  test 'a change of only the sub categories creates a version' do
+    product = create_versioned_product
+
+    assert_difference -> { product.versions.count }, 1 do
+      product.update!(sub_category_ids: [sub_categories(:one).id, sub_categories(:two).id])
+    end
+
+    ids = [sub_categories(:one).id, sub_categories(:two).id].sort
+    assert_equal({ 'sub_category_ids' => [[sub_categories(:one).id], ids] }, product.versions.last.association_changes)
+  end
+
+  test 'a column change and a sub category change make one version' do
+    product = create_versioned_product
+
+    assert_difference -> { product.versions.count }, 1 do
+      product.update!(description: 'Changed', sub_category_ids: [sub_categories(:two).id])
+    end
+
+    version = product.versions.last
+    assert_equal [nil, 'Changed'], version.changeset['description']
+    assert_equal [[sub_categories(:one).id], [sub_categories(:two).id]], version.association_changes['sub_category_ids']
+  end
+
+  test 'a save without changes creates no version, and a later save does not repeat the sub categories' do
+    product = create_versioned_product
+    product.update!(sub_category_ids: [sub_categories(:two).id])
+
+    assert_no_difference -> { product.versions.count } do
+      product.update!(sub_category_ids: [sub_categories(:two).id])
+    end
+
+    product.update!(description: 'Only a column')
+    assert_nil product.versions.last.association_changes
+  end
+
+  test 'the create version has the options' do
+    product = Product.create!(name: "Options #{SecureRandom.hex(3)}", brand: brands(:one),
+                              sub_categories: [sub_categories(:one)],
+                              product_options_attributes: [{ option: 'Black' }, { option: 'Walnut', model_no: 'W1' }])
+
+    assert_equal [[], ['Black', 'Walnut (W1)']], product.versions.last.association_changes['product_options']
+  end
 end

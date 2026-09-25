@@ -22,7 +22,10 @@ class ProductSeries < ApplicationRecord
   auto_strip_attributes :name, squish: true
   auto_strip_attributes :description
 
-  has_paper_trail skip: :updated_at, ignore: [:created_at, :id, :slug, :products_count], meta: { comment: :comment }
+  # No :touch: a product save touches its series, and PaperTrail records every touch as a version
+  # without changes. See docs/catalog-model.md, "Changelog".
+  has_paper_trail on: [:create, :update, :destroy], skip: :updated_at,
+                  ignore: [:created_at, :id, :slug, :products_count], meta: { comment: :comment }
   attr_accessor :comment
 
   belongs_to :brand, touch: true
@@ -35,9 +38,10 @@ class ProductSeries < ApplicationRecord
   validate :name_does_not_start_with_brand_name
 
   after_update :resync_product_slugs, if: :saved_change_to_name?
-  # The products lose the series before the row is deleted (dependent: :nullify, which skips
-  # callbacks), so their ids are kept here and their slugs are made again after the commit.
-  before_destroy :remember_product_ids, prepend: true
+  # The products lose the series before the row is deleted. Each product is saved, so that its
+  # changelog and the changelog of the series show the removal. Their ids are kept, and their
+  # slugs are made again after the commit. dependent: :nullify above then has no rows to change.
+  before_destroy :detach_products, prepend: true
   after_destroy_commit :resync_former_product_slugs
 
   # "More from this series" on product pages. Same size as one group of Related Products.
@@ -84,6 +88,14 @@ class ProductSeries < ApplicationRecord
 
   def url
     brand_series_url(brand_id: brand.friendly_id, id: friendly_id)
+  end
+
+  # The versions of the series and the versions of the products that were added to it or removed
+  # from it, oldest first. See docs/product-series.md, "Changelog and contributors".
+  def changelog_versions
+    PaperTrail::Version.where(item_type: 'ProductSeries', item_id: id)
+                       .or(PaperTrail::Version.for_product_series(id))
+                       .order(:created_at, :id)
   end
 
   def stats
@@ -155,6 +167,13 @@ class ProductSeries < ApplicationRecord
     slug.blank? || name_changed?
   end
 
+  # The id, not the slug (FriendlyId's default): the slug is unique only within the brand, so a
+  # URL with the slug alone, as ActiveAdmin builds from to_param, can not find the series. The
+  # public URLs give the brand and the slug explicitly (#path, #url).
+  def to_param
+    id&.to_s
+  end
+
   private
 
   # "Heritage", not "Klipsch Heritage": the brand is shown next to the series everywhere. Checked
@@ -172,8 +191,19 @@ class ProductSeries < ApplicationRecord
     Product.resync_slugs(Product.where(product_series_id: id))
   end
 
-  def remember_product_ids
+  # validate: false, as the dependent: :nullify before it did not validate either: an old product
+  # that fails a validation for another reason must not block the delete. The slug is made again
+  # in #resync_former_product_slugs, because the slug callbacks run in the validation.
+  # ProductSeries.no_touching, because the series is deleted.
+  def detach_products
     @former_product_ids = products.ids
+
+    ProductSeries.no_touching do
+      products.find_each do |product|
+        product.product_series = nil
+        product.save!(validate: false)
+      end
+    end
   end
 
   def resync_former_product_slugs

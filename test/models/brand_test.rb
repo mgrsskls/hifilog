@@ -380,4 +380,47 @@ class BrandTest < ActiveSupport::TestCase
 
     assert_not_includes brand.visible_followers(users(:one)).map(&:user), unconfirmed
   end
+
+  test 'a logo change creates a version with the old and the new file name' do
+    brand = Brand.create!(name: "Logo Brand #{SecureRandom.hex(3)}")
+
+    assert_difference -> { brand.versions.count }, 1 do
+      brand.update!(logo: one_by_one_png_upload(filename: 'first.png'))
+    end
+    assert_equal({ 'logo' => [nil, 'first.png'] }, brand.versions.last.association_changes)
+
+    brand.update!(logo: one_by_one_png_upload(filename: 'second.png'))
+    assert_equal({ 'logo' => %w[first.png second.png] }, brand.versions.last.association_changes)
+
+    brand.update!(remove_logo: '1')
+    assert_equal({ 'logo' => ['second.png', nil] }, brand.versions.last.association_changes)
+  end
+
+  test 'a save without a logo change has no association changes' do
+    brand = Brand.create!(name: "Plain Brand #{SecureRandom.hex(3)}")
+
+    brand.update!(description: 'Changed')
+
+    assert_nil brand.versions.last.association_changes
+  end
+
+  test 'a change of only the sub categories creates a version' do
+    brand = Brand.create!(name: "Categories Brand #{SecureRandom.hex(3)}")
+
+    assert_difference -> { brand.versions.count }, 1 do
+      brand.update!(sub_category_ids: [sub_categories(:one).id])
+    end
+
+    assert_equal({ 'sub_category_ids' => [[], [sub_categories(:one).id]] }, brand.versions.last.association_changes)
+  end
+
+  test 'the sub categories that a product adds to its brand create no brand version' do
+    brand = Brand.create!(name: "Product Brand #{SecureRandom.hex(3)}")
+
+    assert_no_difference -> { brand.versions.count } do
+      Product.create!(name: 'Adds a category', brand:, sub_categories: [sub_categories(:two)])
+    end
+
+    assert_includes brand.reload.sub_category_ids, sub_categories(:two).id
+  end
 end

@@ -146,4 +146,19 @@ class ProductVariantTest < ActiveSupport::TestCase
 
     assert_equal real_products_count(brand), brand.reload.products_count
   end
+
+  test 'a change of only the options creates a version with the old and the new options' do
+    variant = product_variants(:one)
+    before = variant.product_options.map(&:display_name).sort
+
+    variant.remember_product_options
+    variant.product_options.create!(option: 'Added option')
+
+    assert_difference -> { variant.versions.count }, 1 do
+      variant.save!
+    end
+
+    assert_equal [before, (before + ['Added option']).sort],
+                 variant.versions.last.association_changes['product_options']
+  end
 end

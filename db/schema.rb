@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -760,6 +760,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_140000) do
   end
 
   create_table "versions", force: :cascade do |t|
+    t.jsonb "association_changes"
     t.text "comment"
     t.datetime "created_at"
     t.string "event", null: false
@@ -767,9 +768,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_140000) do
     t.string "item_type", null: false
     t.text "object"
     t.text "object_changes"
+    t.bigint "product_series_ids", array: true
     t.string "whodunnit"
     t.index ["created_at"], name: "index_versions_on_created_at"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+    t.index ["product_series_ids"], name: "index_versions_on_product_series_ids", using: :gin
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

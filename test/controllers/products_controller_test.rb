@@ -206,6 +206,49 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'an update of only the options creates a version with the options' do
+    product = products(:one)
+    sign_in users(:one)
+
+    assert_difference -> { product.versions.count }, 1 do
+      patch product_url(id: product.id), params: {
+        product: { name: product.name },
+        product_options_attributes: { 0 => { id: product_options(:one).id, option: 'Renamed' } }
+      }
+    end
+
+    assert_equal [%w[MyString MyString2], %w[MyString2 Renamed]],
+                 product.versions.last.association_changes['product_options']
+
+    get product_changelog_url(product_id: product.reload.friendly_id)
+    assert_select '.Changelog-new', text: /Renamed/
+  end
+
+  test 'a failed update does not change the options' do
+    product = products(:one)
+    sign_in users(:one)
+
+    assert_no_difference -> { product.versions.count } do
+      patch product_url(id: product.id), params: {
+        product: { name: '' },
+        product_options_attributes: { 0 => { id: product_options(:one).id, option: 'Renamed' } }
+      }
+    end
+
+    assert_response :unprocessable_content
+    assert_equal 'MyString', product_options(:one).reload.option
+  end
+
+  test 'changelog shows the sub categories by name' do
+    product = products(:one)
+    product.update!(sub_category_ids: [sub_categories(:two).id])
+
+    get product_changelog_url(product_id: product.friendly_id)
+
+    assert_response :success
+    assert_select '.Changelog-new', text: /#{Regexp.escape(sub_categories(:two).name)}/
+  end
+
   test 'similar lists similar products with pagination and is noindex' do
     source, candidates = similar_products_catalogue(SimilarProducts::PER_PAGE + 1)
 

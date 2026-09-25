@@ -287,6 +287,46 @@ class ProductVariantsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?]', product_similar_path(product_id: product.friendly_id), count: 0
   end
 
+  test 'create writes one version, with the options' do
+    sign_in users(:one)
+
+    post product_product_variants_url(product_id: products(:one).id), params: {
+      product_variant: { name: "With options #{SecureRandom.hex(3)}", discontinued: false },
+      product_options_attributes: { 0 => { option: 'Black', model_no: 'B1' } }
+    }
+
+    variant = ProductVariant.order(:id).last
+    assert_equal 1, variant.versions.count
+    assert_equal [[], ['Black (B1)']], variant.versions.last.association_changes['product_options']
+  end
+
+  test 'a failed update does not change the options' do
+    sign_in users(:one)
+    variant = product_variants(:one)
+    option = variant.product_options.create!(option: 'Kept')
+
+    assert_no_difference -> { variant.versions.count } do
+      patch product_product_variant_url(product_id: variant.product.friendly_id, id: variant.id), params: {
+        product_variant: { name: '', release_year: '' },
+        product_options_attributes: { 0 => { id: option.id, option: 'Renamed' } }
+      }
+    end
+
+    assert_response :unprocessable_content
+    assert_equal 'Kept', option.reload.option
+  end
+
+  test 'changelog shows the conversion from a product' do
+    product = products(:one)
+    variant = ProductConversionService.to_variant(product, products(:without_custom_attributes))
+
+    get product_variant_changelog_url(product_id: variant.product.friendly_id, id: variant.friendly_id)
+
+    assert_response :success
+    label = /#{I18n.t('brand.converted_from')}.*#{Regexp.escape(product.display_name)}/
+    assert_select '.Changelog-item li', text: label
+  end
+
   test 'changelog returns 404 for an unknown variant' do
     get product_variant_changelog_url(
       id: 'no-such-variant',

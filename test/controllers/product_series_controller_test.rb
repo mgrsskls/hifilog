@@ -106,6 +106,55 @@ class ProductSeriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'changelog lists the products that were added and removed' do
+    sign_in users(:one)
+    added = create_product(name: 'Added', series: nil)
+    removed = create_product(name: 'Removed')
+
+    patch assignable_products_path, params: assign_params(selected_ids: [added.id])
+    get brand_series_changelog_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id)
+
+    assert_response :success
+    added_entry = assert_select('.Changelog-item', text: /#{I18n.t('changelog.product_added')}/).to_s
+    assert_match added.name, added_entry
+    removed_entry = assert_select('.Changelog-item', text: /#{I18n.t('changelog.product_removed')}/).to_s
+    assert_match removed.name, removed_entry
+    assert_match users(:one).user_name, removed_entry
+  end
+
+  test 'changelog keeps a product that was converted into a variant' do
+    product = create_product(name: 'Converted')
+    name = product.name
+
+    ProductConversionService.to_variant(product, create_product(name: 'Target', series: nil))
+    get brand_series_changelog_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id)
+
+    assert_response :success
+    assert_select '.Changelog-item', text: /#{I18n.t('changelog.product_added')}.*#{name}/m
+  end
+
+  test 'changelog shows the name of a deleted product' do
+    product = create_product(name: 'Gone')
+    name = product.name
+
+    product.destroy!
+    get brand_series_changelog_path(brand_id: @brand.friendly_id, series_id: @series.friendly_id)
+
+    assert_response :success
+    assert_select '.Changelog-item', text: /#{I18n.t('changelog.product_deleted')}.*#{name}/m
+  end
+
+  test 'a user who assigns products is a contributor of the series' do
+    sign_in users(:one)
+    product = create_product(name: 'Contributed', series: nil)
+    patch assignable_products_path, params: assign_params(selected_ids: [product.id])
+    sign_out users(:one)
+
+    get series_path
+
+    assert_select 'dd', text: /#{users(:one).user_name}/
+  end
+
   def edit_path(**)
     edit_brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id, **)
   end

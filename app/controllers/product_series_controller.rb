@@ -121,7 +121,8 @@ class ProductSeriesController < ApplicationController
   end
 
   def changelog
-    @versions = filter_versions(@series.versions)
+    @versions = filter_versions(@series.changelog_versions)
+    @changelog_products = changelog_products
     page_title("#{I18n.t('headings.changelog')} — #{@series.display_name}")
   end
 
@@ -180,13 +181,24 @@ class ProductSeriesController < ApplicationController
     brand_series_url(brand_id: @brand.friendly_id, id: @series.friendly_id, **opts)
   end
 
+  # The users who edited the series, and the users who added products to it or removed products
+  # from it.
   def contributors
-    User.find_by_sql([<<~SQL.squish, @series.id])
+    User.find_by_sql([<<~SQL.squish, { series_id: @series.id }])
       SELECT DISTINCT users.id, users.user_name, users.profile_visibility
       FROM users
       JOIN versions ON users.id = CAST(versions.whodunnit AS integer)
-      WHERE versions.item_id = ? AND versions.item_type = 'ProductSeries'
+      WHERE (versions.item_id = :series_id AND versions.item_type = 'ProductSeries')
+         OR versions.product_series_ids @> ARRAY[:series_id]::bigint[]
     SQL
+  end
+
+  # { product id => product } for the product versions of the changelog, in one query. A deleted
+  # product, or a product converted into a variant, is not in it; the changelog then takes the name
+  # from the version.
+  def changelog_products
+    ids = @versions.select { |version| version.item_type == 'Product' }.map(&:item_id).uniq
+    Product.where(id: ids).includes(:brand).index_by(&:id)
   end
 
   # All products of the brand, with only the columns a row shows. The series of the brand are a

@@ -24,6 +24,7 @@ en:
         abbreviation: Abbreviation
         legal_name: Company name
         name: Brand name
+        sub_category_ids: Categories
         website: Website
       custom_product:
         description: Description
@@ -53,6 +54,7 @@ en:
         product_series: Series
         product_series_name: Series
         release_date: Released
+        sub_category_ids: Categories
       product_series:
         brand: Brand
         description: Description
@@ -181,8 +183,12 @@ en:
     update:
       label: Edit
   brand:
+    converted_from: Converted from
     founded: Founded
+    logo: Logo
+    product_options: Options
     product_series_id: Series
+    sub_category_ids: Categories
     view_all_products: View all products
     hub:
       browse_heading: Browse by category
@@ -206,6 +212,9 @@ en:
     by: by
     change: Edited
     comment: Comment
+    product_added: Product added
+    product_deleted: Product deleted
+    product_removed: Product removed
   completeness:
     cta: Add the information if you can help out.
     fields:

@@ -17,6 +17,11 @@
         user = version.whodunnit.present? ? User.find_by(id: version.whodunnit) : nil
         user_fallback = version.whodunnit.present? ? "<i>Deleted</i>" : "hifilog.com"
       %>
+      <%# A series changelog also lists the products that were added or removed. See docs/product-series.md, "Changelog and contributors". %>
+      <% if model.is_a?(ProductSeries) && version.product_series_ids.present? %>
+        <%= render "shared/changelog_series_product", version:, series: model, product: (local_assigns.fetch(:products, {})[version.item_id] if version.item_type == "Product"), user:, user_fallback: %>
+        <% next %>
+      <% end %>
       <li class="Changelog-item">
         <p class="Changelog-itemHeading">
           <b>
@@ -26,19 +31,17 @@
             <%= t('changelog.change') %>
           <% end %>
           </b>
-          <%= t('changelog.by') %>
-          <% if user %>
-            <%= user.profile_visibility === "hidden" ? user.user_name : link_to(user.user_name, user.profile_path) %>
-          <% else %>
-            <%= user_fallback.html_safe %>
-          <% end %>
-          &mdash;
-          <time datetime="<%= format_iso_datetime version.created_at %>"><%= format_datetime(version.created_at).html_safe %></time>
+          <%= render "shared/changelog_author", version:, user:, user_fallback: %>
         </p>
 
-          <% changelog = deserialize_changelog(version.object_changes) %>
+          <% changelog = changelog_changes(version) %>
           <ul>
             <% changelog.each do |change| %>
+              <%# A conversion between product and variant: one line, the original is deleted. See docs/catalog-model.md, "Changelog". %>
+              <% if change[0] == "converted_from" %>
+                <li><b><%= t('brand.converted_from') %></b> <%= change[1][1] %></li>
+                <% next %>
+              <% end %>
               <% unless %w[slug products_count].include?(change[0]) %>
                 <% before = capture do %>
                             <% if change[0] == "custom_attributes" %>
@@ -89,6 +92,10 @@
                               <%= changelog_brand_name(change[1][0]) %>
                             <% elsif change[0] == "product_series_id" && change[1][0].present? %>
                               <%= changelog_series_name(change[1][0]) %>
+                            <% elsif change[0] == "sub_category_ids" %>
+                              <%= change[1][0].present? ? changelog_sub_category_names(change[1][0]) : "-" %>
+                            <% elsif change[0] == "product_options" %>
+                              <%= change[1][0].present? ? safe_join(change[1][0], tag.br) : "-" %>
                             <% elsif change[0] == "country_code" && change[1][0].present? %>
                               <%= country_name_from_country_code(change[1][0]) %>
                             <% elsif !change[1][0].nil? %>
@@ -152,6 +159,10 @@
                               <%= changelog_brand_name(change[1][1]) %>
                             <% elsif change[0] == "product_series_id" && change[1][1].present? %>
                               <%= changelog_series_name(change[1][1]) %>
+                            <% elsif change[0] == "sub_category_ids" %>
+                              <%= change[1][1].present? ? changelog_sub_category_names(change[1][1]) : "-" %>
+                            <% elsif change[0] == "product_options" %>
+                              <%= change[1][1].present? ? safe_join(change[1][1], tag.br) : "-" %>
                             <% elsif change[0] == "country_code" && change[1][1].present? %>
                               <%= country_name_from_country_code(change[1][1]) %>
                             <% elsif !change[1][1].nil? %>
