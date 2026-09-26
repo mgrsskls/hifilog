@@ -59,6 +59,11 @@ guidelines do not apply, because a custom product is private to one user.
 A bookmark is a polymorphic saved reference to a `Product`, `ProductVariant`, `Brand` or `Event`.
 It is not ownership. **`BookmarkList`** can group the bookmarks of a user.
 
+A bookmark list contains only the bookmarks of its own user. The bookmark validates this. When a
+user creates or changes a list, the application ignores the bookmark ids of other users. When a
+user deletes a list together with its bookmarks, the application deletes only the bookmarks of
+that user.
+
 A bookmark is not a follow. For brands, see [brand-follows.md](brand-follows.md).
 
 ## 5. Note

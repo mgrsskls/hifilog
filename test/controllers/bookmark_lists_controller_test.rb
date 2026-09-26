@@ -117,6 +117,48 @@ class BookmarkListsControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal @bookmark_list.id, other_bookmark.reload.bookmark_list_id
   end
 
+  test 'create ignores bookmark_ids from other users' do
+    sign_in users(:one)
+    own_bookmark = bookmarks(:with_product_variant)
+    other_bookmark = Bookmark.create!(
+      user: users(:visible),
+      item: products(:one),
+      item_type: 'Product'
+    )
+
+    post bookmark_lists_url, params: {
+      bookmark_list: {
+        name: 'New list',
+        bookmark_ids: [own_bookmark.id, other_bookmark.id]
+      }
+    }
+
+    bookmark_list = users(:one).bookmark_lists.find_by!(name: 'New list')
+    assert_redirected_to dashboard_bookmark_list_url(bookmark_list)
+    assert_equal bookmark_list.id, own_bookmark.reload.bookmark_list_id
+    assert_nil other_bookmark.reload.bookmark_list_id
+  end
+
+  test 'destroy with remove_bookmarks keeps bookmarks of other users' do
+    sign_in users(:one)
+    own_bookmark = bookmarks(:with_product)
+    other_bookmark = Bookmark.create!(
+      user: users(:visible),
+      item: products(:one),
+      item_type: 'Product'
+    )
+    # A list can still hold bookmarks of other users if it was made before create scoped bookmark_ids.
+    other_bookmark.update_columns(bookmark_list_id: @bookmark_list.id) # rubocop:disable Rails/SkipsModelValidations
+
+    assert_difference('Bookmark.count', -1) do
+      delete bookmark_list_url(@bookmark_list, remove_bookmarks: true)
+    end
+
+    assert_match(/One bookmark was removed/, flash[:notice])
+    assert_raises(ActiveRecord::RecordNotFound) { own_bookmark.reload }
+    assert_nil other_bookmark.reload.bookmark_list_id
+  end
+
   test 'destroy keeps bookmarks when remove_bookmarks is not set' do
     sign_in users(:one)
     bookmark = bookmarks(:with_product)

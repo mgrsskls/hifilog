@@ -19,7 +19,7 @@ class BookmarkListsController < ApplicationController
   end
 
   def create
-    @bookmark_list = BookmarkList.new(bookmark_list_params)
+    @bookmark_list = BookmarkList.new(scoped_bookmark_list_params)
     @bookmark_list.user = current_user
 
     if @bookmark_list.save
@@ -53,11 +53,15 @@ class BookmarkListsController < ApplicationController
     @bookmark_list = current_user.bookmark_lists.find(params[:id])
     list_name = @bookmark_list.name
     remove_bookmarks = ActiveModel::Type::Boolean.new.cast(params[:remove_bookmarks])
-    removed_count = remove_bookmarks ? @bookmark_list.bookmarks.count : 0
+    # Scoped to the user and not @bookmark_list.bookmarks: a list can still hold bookmarks of other
+    # users if it was made before create scoped bookmark_ids (docs/collection.md#4-bookmark).
+    # Destroying the list only removes those bookmarks from it.
+    own_bookmarks = current_user.bookmarks.where(bookmark_list: @bookmark_list)
+    removed_count = remove_bookmarks ? own_bookmarks.count : 0
 
     begin
       ActiveRecord::Base.transaction do
-        @bookmark_list.bookmarks.destroy_all if remove_bookmarks
+        own_bookmarks.destroy_all if remove_bookmarks
         @bookmark_list.destroy!
       end
 
