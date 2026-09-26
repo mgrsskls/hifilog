@@ -10,6 +10,9 @@ There are two separate scopes:
 - **Users** sign in to the site. Devise handles registration, confirmation and lockout. Community
   members can create and edit catalog entities.
 - **Admin users** sign in to the back office (ActiveAdmin). They can use the full admin interface.
+  After 10 failed sign-in attempts, the admin account locks for 1 hour. Then it unlocks
+  automatically. There is no unlock email. To unlock an account before that time, use a Rails
+  console.
 
 ## 2. Privacy policy
 

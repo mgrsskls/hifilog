@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 class AdminUser < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # Lockable unlocks after a time only: an unlock email would need its own page, throttle and
+  # mailer view. To unlock earlier, use AdminUser#unlock_access! in a console.
+  # See docs/privacy-auth-security.md#1-authentication-and-admin.
   devise :database_authenticatable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :lockable, unlock_strategy: :time, unlock_in: 1.hour
 
   # simplecov:disable
   def self.ransackable_attributes(_auth_object = nil)
