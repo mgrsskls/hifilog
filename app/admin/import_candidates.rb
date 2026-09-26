@@ -187,32 +187,17 @@ ActiveAdmin.register ImportCandidate do
 
           div class: 'break-words text-sm' do
             if attr_data.is_a?(Hash)
-              unit = attr_data['unit'].presence || active_record.units.first
-              translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present?
-              equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2
+              # Both stated figures, like the product page: the reviewer must see what is
+              # promoted. See docs/custom-attributes.md, "Two units".
+              lines = helpers.custom_attribute_reading_lines(active_record, attr_data)
               qualifier = CustomAttribute.qualifier_label(attr_data)
-              value = attr_data['value']
 
-              if value.is_a?(Hash)
-                value.each do |sub_key, sub_val|
-                  text_node t("custom_attribute_inputs.#{sub_key}")
-                  text_node ": #{number_with_precision(sub_val, precision: 4, strip_insignificant_zeros: true)} "
-                  text_node translated_unit
-                  if equivalent
-                    text_node " / #{number_with_precision(sub_val * equivalent[1], precision: 4, strip_insignificant_zeros: true)} "
-                    text_node t("custom_attribute_units.#{equivalent[0]}").html_safe
-                  end
-                  br
+              if lines.any?
+                lines.each_with_index do |line, index|
+                  br if index.positive?
+                  text_node line
                 end
                 # One condition for the whole entry, so it follows the last input.
-                text_node "(#{qualifier})" if qualifier.present?
-              elsif value.present?
-                text_node "#{number_with_precision(value, precision: 4, strip_insignificant_zeros: true)} "
-                text_node translated_unit
-                if equivalent
-                  text_node " / #{number_with_precision(value * equivalent[1], precision: 4, strip_insignificant_zeros: true)} "
-                  text_node t("custom_attribute_units.#{equivalent[0]}").html_safe
-                end
                 text_node " (#{qualifier})" if qualifier.present?
               else
                 text_node "n/a"

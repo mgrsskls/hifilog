@@ -327,6 +327,8 @@ en:
   custom_attribute_qualifier:
     label: Measured at
     not_stated: Not stated
+  custom_attribute_unit_pair:
+    disagree: These values do not seem to match. Check them against the source.
   # A qualifier says under which condition a number was measured. One definition offers values of
   # one dimension only (see docs/custom-attribute-qualifiers.md, §4.4), so the groups below never
   # mix in one attribute.

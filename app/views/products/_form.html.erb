@@ -148,11 +148,8 @@
       <%= guideline_link(:specifications, SubCategory.human_attribute_name(:custom_attribute_ids)) %>
     </h3>
     <%#
-      The unit radios below are input semantics -- "the number I typed is in this unit" -- and
-      the server normalises whatever it receives into the canonical unit. Toggling one without
-      converting the number therefore redefines the value rather than restating it. This table
-      lets entity_form.js convert the displayed number on toggle, so the control means what it
-      looks like it means and the round trip is lossless. See CustomAttribute::UNIT_EQUIVALENTS.
+      The factors of the unit pairs, for the warning in the unit pair rows (entity_form.js,
+      setupUnitPairWarning). See CustomAttribute::UNIT_EQUIVALENTS.
     %>
     <div class="Options EntityFormAttributes is-light" data-unit-equivalents="<%= CustomAttribute::UNIT_EQUIVALENTS.to_json %>">
       <%#
@@ -189,6 +186,24 @@
                         <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" value="<%= option[0] %>" id="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"<%= " checked" if product.custom_attributes.present? && product.custom_attributes[custom_attribute.label] == option[0] %>>
                       <% end %>
                       <label for="<%= "product[custom_attributes][#{custom_attribute.id}]-#{option[0]}" %>"><%= t("custom_attributes.#{option[1]}") %></label>
+                    </div>
+                  <% end %>
+                </div>
+              <% elsif custom_attribute.unit_pair? %>
+                <% if custom_attribute.inputs.any? %>
+                  <div class="EntityFormAttribute-label">
+                    <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+                  </div>
+                <% else %>
+                  <label for="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" class="EntityFormAttribute-label">
+                    <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
+                  </label>
+                <% end %>
+                <div class="EntityFormAttribute-inputs">
+                  <%= render "products/custom_attribute_unit_pair", custom_attribute:, product: %>
+                  <% if custom_attribute.qualified? %>
+                    <div class="EntityFormAttribute-grid">
+                      <%= render "products/custom_attribute_qualifier", custom_attribute:, product: %>
                     </div>
                   <% end %>
                 </div>

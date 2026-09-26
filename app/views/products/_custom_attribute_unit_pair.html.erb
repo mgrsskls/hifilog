@@ -1,0 +1,53 @@
+<%#
+  An attribute whose two units are a pair (CustomAttribute#unit_pair?) gets one row for each unit,
+  metric first. The contributor fills in the figures the source states: one row or both. Nothing
+  is converted here or on save. See docs/custom-attributes.md, "Two units".
+
+  The first row posts `value` and `unit`, the second `second[value]` and `second[unit]`. When only
+  the second row is filled, CustomAttribute#ordered_entry moves it into `value`.
+
+  entity_form.js shows the warning when both rows are filled and the figures cannot describe the
+  same measurement (setupUnitPairWarning). The contributor can still save: a brand's own figures
+  sometimes disagree.
+%>
+<%#
+  An entry without a unit reads in the definition's first unit, as on the product page
+  (CustomAttributeReading). Without this, both rows would be empty, and saving the form would
+  delete the figure.
+%>
+<% label = custom_attribute.label %>
+<% entry = product.custom_attributes&.dig(label) %>
+<% entry = entry.merge('unit' => custom_attribute.units.first) if entry.is_a?(Hash) && entry['unit'].blank? %>
+<% figures = CustomAttribute.stated_figures(entry) %>
+<div class="EntityFormAttribute-inputs" data-unit-pair>
+  <% custom_attribute.paired_units.each_with_index do |unit, index| %>
+    <% prefix = index.zero? ? "product[custom_attributes][#{label}]" : "product[custom_attributes][#{label}][second]" %>
+    <% translated_unit = safe_unit_entities(t("custom_attribute_units.#{unit}")) %>
+    <div class="EntityFormAttribute-grid" data-unit-pair-row="<%= unit %>">
+      <input type="hidden" name="<%= "#{prefix}[unit]" %>" value="<%= unit %>">
+      <% if custom_attribute.inputs.any? %>
+        <% custom_attribute.inputs.each do |input| %>
+          <% field_id = "product[custom_attributes][#{label}]-value-#{input}-#{unit}" %>
+          <div>
+            <label for="<%= field_id %>" class="Form-label">
+              <%= t("custom_attribute_inputs.#{input}") %>
+            </label>
+            <div class="u-flex u-gap-sm u-alignCenter">
+              <input class="Form-input" type="text" inputmode="number" name="<%= "#{prefix}[value][#{input}]" %>" id="<%= field_id %>" value="<%= figures[unit].is_a?(Hash) ? figures[unit][input] : "" %>" data-input="<%= input %>">
+              <span class="Unit"><%= translated_unit %></span>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <%# The first field keeps the id the attribute label points to. %>
+        <div class="u-flex u-gap-sm u-alignCenter">
+          <input class="Form-input" type="text" inputmode="number" name="<%= "#{prefix}[value]" %>" id="<%= index.zero? ? "product[custom_attributes][#{label}]" : "product[custom_attributes][#{label}]-#{unit}" %>" value="<%= figures[unit] unless figures[unit].is_a?(Hash) %>" aria-label="<%= "#{t("custom_attribute_labels.#{label}")} (#{strip_tags(translated_unit)})" %>">
+          <span class="Unit"><%= translated_unit %></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <p class="EntityFormAttribute-warning" role="status" data-unit-pair-warning hidden>
+    <%= t("custom_attribute_unit_pair.disagree") %>
+  </p>
+</div>

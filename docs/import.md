@@ -104,6 +104,30 @@ brand, the product type, a pack size or a slogan ("F1-8 Standmount Speaker | Hi-
 
   `import:load` then loads the state. It does not depend on a mapping.
 
+### 2.5 Two units
+
+An entry of a definition with a unit pair can hold two stated figures, for example 16 kg and 35 lb
+(see [custom-attributes.md, §4.1](custom-attributes.md#41-stored-figures)). The candidates that were
+loaded before this was possible hold one figure only, but their snippet often states both.
+
+`import:second_figures` adds the second figure to the pending candidates. It reads the snippet in
+`provenance` and no page:
+
+- It adds a figure only when the snippet states the stored figure and exactly one figure (or one set
+  of dimensions) in the other unit. For dimensions, it uses the order of the snippet to find the
+  input of each figure.
+- When the two figures disagree (`CustomAttribute.figures_agree?`), it adds no figure. It adds a
+  warning to the candidate, and the reviewer decides. The snippet does not show which figure is
+  wrong.
+- It does not set `edited_at`, because it is not a change by a person.
+
+Without `APPLY=1`, the task only prints what it would change. It is safe to run two times.
+
+```sh
+bin/rails import:second_figures          # dry run
+bin/rails import:second_figures APPLY=1  # write
+```
+
 ## 3. From a crawl to the catalog
 
 ```sh

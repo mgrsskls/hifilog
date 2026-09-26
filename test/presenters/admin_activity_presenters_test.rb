@@ -111,6 +111,22 @@ class AdminActivityPresentersTest < ActiveSupport::TestCase
     assert_equal %w[2 3], [changes.first.before, changes.first.after]
   end
 
+  # Without the second figure, a change of that figure alone would read the same before and after.
+  test 'version: a change of the second figure alone shows as a change' do
+    custom_attributes(:four).update!(units: %w[lb kg])
+    before = { 'weight' => { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 33, 'unit' => 'lb' } } }
+    after = { 'weight' => { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 34, 'unit' => 'lb' } } }
+    version = PaperTrail::Version.create!(
+      item: products(:one), event: 'update',
+      object_changes: PaperTrail::Serializers::YAML.dump('custom_attributes' => [before.to_json, after.to_json])
+    )
+
+    context = AdminVersionActivityPresenter.preload([version])
+    change = AdminVersionActivityPresenter.new(version, @view, context).changes.first
+
+    assert_equal ['15 kg / 33 lb', '15 kg / 34 lb'], [change.before, change.after]
+  end
+
   test 'version: sub categories show by name' do
     version = PaperTrail::Version.create!(
       item: products(:one), event: 'update', object_changes: PaperTrail::Serializers::YAML.dump({}),

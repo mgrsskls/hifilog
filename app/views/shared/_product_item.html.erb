@@ -45,11 +45,14 @@
                 </li>
               <% end %>
             <% elsif active_record.input_type == 'number' %>
-              <li class="Tag">
-                <% unit = t("custom_attribute_units.#{custom_attribute[1]['unit'].present? ? custom_attribute[1]['unit'] : active_record.units.first}") %>
-                <% qualifier = CustomAttribute.qualifier_label(custom_attribute[1]) %>
-                <%= custom_attribute[1]['value'] %> <%= safe_unit_entities(unit) if unit.present? %><%= " (#{qualifier})" if qualifier.present? %>
-              </li>
+              <%# One figure only, the metric one for a unit pair. See docs/custom-attributes.md, "Two units". %>
+              <% figure = CustomAttributeReading.new(active_record, custom_attribute[1]).primary_figure %>
+              <% if figure %>
+                <li class="Tag">
+                  <% qualifier = CustomAttribute.qualifier_label(custom_attribute[1]) %>
+                  <%= custom_attribute_figure(figure) %><%= " (#{qualifier})" if qualifier.present? %>
+                </li>
+              <% end %>
             <% elsif active_record.input_type == 'options' %>
               <% custom_attribute[1].each do |id| %>
                 <li class="Tag">

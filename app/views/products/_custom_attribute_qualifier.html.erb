@@ -10,9 +10,8 @@
   an entry never carries `"qualifier": ""` -- which is neither a condition nor absent, and which
   every reader of the qualifier would have to special-case.
 
-  No conversion happens when this changes, unlike the unit radios beside it: a different
-  condition is a different measurement, so the number stays as the contributor typed it.
-  entity_form.js converts only controls whose name ends in [unit], so nothing here opts out.
+  No conversion happens when this changes: a different condition is a different measurement, so
+  the number stays as the contributor typed it.
 %>
 <% field_id = "product[custom_attributes][#{custom_attribute.label}]-qualifier" %>
 <div class="EntityFormAttribute-qualifier">

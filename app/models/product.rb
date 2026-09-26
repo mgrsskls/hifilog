@@ -491,7 +491,7 @@ class Product < ApplicationRecord
   def clean_custom_attributes
     pruned = CustomAttribute.prune_unsupported_keys(custom_attributes)
 
-    self.custom_attributes = CustomAttribute.normalize_units(pruned)
+    self.custom_attributes = CustomAttribute.order_figures(pruned)
   end
 
   # Mirrors the SQL in db/views/contribute_product_items_v01.sql: the key must exist and hold

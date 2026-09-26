@@ -349,19 +349,10 @@ class ProductFilterService
     end
   end
 
-  # A submitted range arrives in whichever unit the filter's radio buttons were set to; values
-  # are stored in the metric one. Both ends move through CustomAttribute::UNIT_CONVERSIONS so
-  # adding a convertible unit is one entry there rather than a new branch in every place that
-  # knows about inches.
-  def convert_values(unit, min, max)
-    min = Float(min, exception: false)
-    max = Float(max, exception: false)
-
-    [CustomAttribute.in_canonical_unit(min, unit), CustomAttribute.in_canonical_unit(max, unit)]
-  end
-
-  def convert_unit(unit)
-    CustomAttribute.canonical_unit(unit)
+  # A submitted range as numbers. nil passes through, so a half-filled range ("under 3 kg", no
+  # minimum) stays half-filled rather than becoming 0.
+  def range_numbers(min, max)
+    [Float(min, exception: false), Float(max, exception: false)]
   end
 
   # The measurement condition, as an opt-in facet with two states.
@@ -400,6 +391,8 @@ class ProductFilterService
   end
 
   def filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param)
+    return filter_scope_by_unit_pair(scope, custom_attribute, param) if custom_attribute.unit_pair?
+
     inputs = custom_attribute[:inputs]
     label = custom_attribute[:label]
     param_unit = param[:unit]
@@ -411,7 +404,7 @@ class ProductFilterService
         # Reachable since the qualifier facet exists: ticking a condition alone posts no input keys.
         next if param_input.blank?
 
-        min, max = convert_values(param_unit, param_input[:min], param_input[:max])
+        min, max = range_numbers(param_input[:min], param_input[:max])
 
         if min.present?
           scope = scope.where(
@@ -434,7 +427,7 @@ class ProductFilterService
         )
       end
     else
-      min, max = convert_values(param_unit, param[:min], param[:max])
+      min, max = range_numbers(param[:min], param[:max])
 
       if min.present?
         scope = scope.where("NULLIF(custom_attributes -> ? ->> ?, '')::numeric >= ?", label, 'value',
@@ -448,10 +441,68 @@ class ProductFilterService
     end
 
     if custom_attribute[:units].present? && param_unit.present?
-      unit = convert_unit(param_unit)
-      scope = scope.where('custom_attributes -> ? ->> ? = ?', label, 'unit', unit)
+      scope = scope.where('custom_attributes -> ? ->> ? = ?', label, 'unit', param_unit)
     end
 
     scope
+  end
+
+  # A definition with a unit pair (weight: kg and lb). Each product is compared by its figure in
+  # the unit the visitor selected: the stated one when the entry has it, otherwise the other
+  # figure converted and rounded as the product page shows it. So page and filter agree: "15 kg"
+  # shows as "33 lb" and is found for "up to 33 lb". See docs/custom-attributes.md, "Two units".
+  #
+  # A range without a unit is ignored. The filter form requires a unit once a range is filled, so
+  # only an old link or a crafted URL gets here, and neither unit is a safe guess.
+  def filter_scope_by_unit_pair(scope, custom_attribute, param)
+    unit = param[:unit]
+    return scope unless custom_attribute.units.include?(unit)
+
+    (custom_attribute[:inputs].presence || [nil]).each do |input|
+      range = input ? param[input] : param
+      next if range.blank?
+
+      min, max = range_numbers(range[:min], range[:max])
+      figure = unit_pair_figure_sql(custom_attribute[:label], input, unit)
+
+      scope = scope.where("#{figure} >= ?", min) if min
+      scope = scope.where("#{figure} <= ?", max) if max
+    end
+
+    scope
+  end
+
+  # The figure of one entry (or of one input of it) in `unit`, as SQL. The first stated figure in
+  # `unit` wins; otherwise a stated figure in the other unit is converted. NULL when the entry
+  # states neither.
+  def unit_pair_figure_sql(label, input, unit)
+    other, factor = CustomAttribute.equivalent_unit(unit).then { |pair| [pair[0], 1.0 / pair[1]] }
+    entry = "(custom_attributes -> #{quote(label)})"
+    second = "(#{entry} -> 'second')"
+    number = lambda do |figure|
+      input ? "NULLIF(#{figure} -> 'value' ->> #{quote(input)}, '')" : "NULLIF(#{figure} ->> 'value', '')"
+    end
+
+    'COALESCE(' \
+      "CASE WHEN #{entry} ->> 'unit' = #{quote(unit)} THEN #{number.call(entry)}::numeric END, " \
+      "CASE WHEN #{second} ->> 'unit' = #{quote(unit)} THEN #{number.call(second)}::numeric END, " \
+      "CASE WHEN #{entry} ->> 'unit' = #{quote(other)} THEN #{converted_figure_sql(number.call(entry), factor)} END, " \
+      "CASE WHEN #{second} ->> 'unit' = #{quote(other)} THEN #{converted_figure_sql(number.call(second), factor)} END)"
+  end
+
+  # CustomAttribute.converted_figure in SQL: `text` (a stored number) times `factor`, rounded to
+  # the significant figures of `text`, and to no fewer than MIN_SIGNIFICANT_FIGURES. The two must
+  # agree, or the filter compares a figure that the page does not show.
+  def converted_figure_sql(text, factor)
+    converted = "(#{text}::numeric * #{factor})"
+    digits = "GREATEST(length(ltrim(replace(regexp_replace(ltrim(#{text}, '-'), '\\.0+$', ''), '.', ''), '0')), " \
+             "#{CustomAttribute::MIN_SIGNIFICANT_FIGURES})"
+
+    "(CASE WHEN #{converted} = 0 THEN 0 " \
+      "ELSE ROUND(#{converted}, (#{digits} - 1 - FLOOR(LOG(ABS(#{converted}))))::int) END)"
+  end
+
+  def quote(value)
+    ProductItem.connection.quote(value)
   end
 end

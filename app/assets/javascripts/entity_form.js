@@ -35,7 +35,7 @@ if (form) {
 		});
 	}
 
-	setupUnitConversion(form.querySelector(".EntityFormAttributes"));
+	setupCustomAttributeNumbers(form.querySelector(".EntityFormAttributes"));
 
 	setupProductTitlePreview(form);
 
@@ -138,16 +138,14 @@ function renderAttributeOptions(attribute, checked) {
 }
 
 /**
- * Converts the number shown next to a unit radio when that radio changes.
+ * Normalises the figures a contributor types, and warns when the two rows of a unit pair
+ * disagree.
  *
- * The radios declare the unit the typed number is in, and the server normalises whatever it
- * receives into the canonical one. So switching kg to lb on a value nobody retyped does not
- * relabel it, it redefines it: 0.907185 stops meaning 0.907185 kg and starts meaning 0.907185
- * lb, which is stored as 0.411645 kg. Switching back does not undo that, it converts again, so
- * every toggle loses a little more. Sitting beside the number -- and next to a show page that
- * prints both readings -- the control reads as a display toggle, which is what this makes it.
+ * An attribute whose units are a pair (weight: kg and lb) has one row for each unit. Nothing is
+ * converted: each row holds the figure the source states in that unit, and the server stores
+ * what it receives. See docs/custom-attributes.md, "Two units".
  */
-function setupUnitConversion(container) {
+function setupCustomAttributeNumbers(container) {
 	if (!container) return;
 
 	let equivalents;
@@ -155,7 +153,7 @@ function setupUnitConversion(container) {
 	try {
 		equivalents = JSON.parse(container.dataset.unitEquivalents || "{}");
 	} catch {
-		return;
+		equivalents = {};
 	}
 
 	const decimalSeparator = localeDecimalSeparator();
@@ -172,65 +170,67 @@ function setupUnitConversion(container) {
 		}),
 	);
 
-	container.querySelectorAll(".EntityForm-attribute").forEach((attribute) => {
-		const radios = attribute.querySelectorAll(
-			'input[type="radio"][name$="[unit]"]',
+	container
+		.querySelectorAll("[data-unit-pair]")
+		.forEach((pair) =>
+			setupUnitPairWarning(pair, equivalents, decimalSeparator),
 		);
-
-		if (radios.length < 2) return;
-
-		// The unit in force before the current change, which is the one to convert from.
-		// Empty on a new product where nothing is selected yet: there is nothing to convert.
-		const checked = Array.from(radios).find((radio) => radio.checked);
-		attribute.dataset.unit = checked ? checked.value : "";
-
-		radios.forEach((radio) => {
-			radio.addEventListener("change", () => {
-				convertAttributeValues(
-					attribute,
-					attribute.dataset.unit,
-					radio.value,
-					equivalents,
-					decimalSeparator,
-				);
-
-				attribute.dataset.unit = radio.value;
-			});
-		});
-	});
 }
 
-function convertAttributeValues(
-	attribute,
-	from,
-	to,
-	equivalents,
-	decimalSeparator,
-) {
-	if (!from || from === to) return;
+/**
+ * Shows the warning of a unit pair when both rows hold a figure for the same input and the two
+ * cannot describe the same measurement.
+ *
+ * The rule of CustomAttribute.figures_agree?: a figure stands for half of its last decimal
+ * place in each direction ("0.7 lb" is 0.65 to 0.75 lb), and the two ranges must overlap after
+ * conversion. The contributor can still save: a brand's own figures sometimes disagree.
+ */
+function setupUnitPairWarning(pair, equivalents, decimalSeparator) {
+	const [first, second] = pair.querySelectorAll("[data-unit-pair-row]");
+	const warning = pair.querySelector("[data-unit-pair-warning]");
+	const [unit, factor] = equivalents[second?.dataset.unitPairRow] || [];
 
-	const pair = equivalents[from];
+	if (!first || !warning || unit !== first.dataset.unitPairRow) return;
 
-	// A guard rather than dead code: no definition currently offers two units that are not a
-	// convertible pair, but nothing stops one from doing so, and a measurement condition now
-	// belongs in a qualifier instead (loudspeaker sensitivity used to offer dB@1W/1m and
-	// dB@2.83V/1m as units). Where the two do not convert, switching relabels the number,
-	// because relabelling is all it can honestly mean.
-	if (!pair || pair[0] !== to) return;
+	const update = () => {
+		const firstRanges = figureRanges(first, decimalSeparator);
+		const secondRanges = figureRanges(second, decimalSeparator);
 
-	// Matches both value shapes: `[...][value]` and, for an attribute with inputs, each
-	// `[...][value][w]`. The unit radios end in `[unit]`, so they are not caught here.
-	attribute.querySelectorAll('input[name*="[value]"]').forEach((input) => {
-		const value = parseTypedNumber(input.value, decimalSeparator);
+		warning.hidden = Object.keys(firstRanges).every(
+			(input) =>
+				!(input in secondRanges) ||
+				rangesOverlap(firstRanges[input], secondRanges[input], factor),
+		);
+	};
 
-		if (Number.isNaN(value)) return;
+	pair.addEventListener("change", update);
+	update();
+}
 
-		// Eight decimals, matching CustomAttribute#convert_entry_value. The two have to agree:
-		// the server re-rounds whatever this submits, so a coarser rounding here would come
-		// back as 2.000001 lb for a value typed as 2, and a finer one would drift on the way
-		// back. At eight, toggling is exactly reversible however many times it is done.
-		input.value = String(Number((value * pair[1]).toFixed(8)));
+/**
+ * The range each filled field of a row stands for, keyed by input ("w", "h", "l"), or by
+ * "value" for an attribute without inputs.
+ */
+function figureRanges(row, decimalSeparator) {
+	const ranges = {};
+
+	row.querySelectorAll('input[name*="[value]"]').forEach((input) => {
+		const number = parseTypedNumber(input.value, decimalSeparator);
+
+		if (Number.isNaN(number)) return;
+
+		const decimals = (String(number).split(".")[1] || "").length;
+		const half = 0.5 * 10 ** -decimals;
+
+		ranges[input.dataset.input || "value"] = [number - half, number + half];
 	});
+
+	return ranges;
+}
+
+// `factor` converts the second range into the unit of the first.
+function rangesOverlap([low, high], [otherLow, otherHigh], factor) {
+	return low <= otherHigh * factor && otherLow * factor <= high;
 }
 
 /**

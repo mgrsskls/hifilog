@@ -2,29 +2,12 @@
 
 require 'test_helper'
 
-# The qualifier as the contributor and the visitor meet it: the control in the product form, the
-# reading on the product page, and the one thing that keeps a change of the condition from
-# rewriting the number.
+# The qualifier as the contributor and the visitor meet it: the control in the product form and
+# the reading on the product page.
 class CustomAttributeQualifierTest < ActionDispatch::IntegrationTest
-  ENTITY_FORM_JS = Rails.root.join('app/assets/javascripts/entity_form.js')
-
   setup do
     @definition = custom_attributes(:four)
     @definition.update!(units: %w[kg lb], qualifiers: %w[plus_minus_3_db plus_minus_6_db])
-  end
-
-  # entity_form.js converts the number that is shown when a unit changes, because two units are
-  # two spellings of one value. A condition is not: a figure measured at ±6 dB is a different
-  # measurement, not the same one restated, so the number must stay as it was typed.
-  #
-  # Nothing in the JavaScript opts the qualifier out. The whole protection is the end of one
-  # selector, which is why it is asserted here: widen it to `[name*="unit"]`, or rename the
-  # control, and the converter would start rewriting figures with no error anywhere.
-  test 'the unit converter is bound only to controls whose name ends in unit' do
-    source = ENTITY_FORM_JS.read
-
-    assert_includes source, 'input[type="radio"][name$="[unit]"]'
-    assert_no_match(/querySelectorAll\(\s*['"`][^'"`]*\[qualifier\]/, source)
   end
 
   test 'the product form offers the conditions of the definition and a blank option' do

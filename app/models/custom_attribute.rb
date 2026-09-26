@@ -72,17 +72,15 @@ class CustomAttribute < ApplicationRecord
     physical
   ].freeze
 
-  # Imperial unit => [the metric unit it is stored and compared in, multiplier].
+  # Imperial unit => [its metric counterpart, multiplier].
   #
-  # Filtering compares a submitted range against `custom_attributes -> label ->> 'unit'` after
-  # normalising both sides through this table, so the canonical unit is also the one a value
-  # has to be *stored* in to be findable at all. That is why the table is deliberately short:
-  # a unit only belongs here once something converts to it, and a definition may only offer
-  # two units when those two are a pair listed here.
+  # A definition may offer two units only when they are a pair listed here. An entry then stores
+  # the figures the source states, in the unit it states them in: one in `value`/`unit`, and
+  # optionally the other one in `second`. Display and filter convert on read, only when a figure
+  # is not stated. See docs/custom-attributes.md, "Two units".
   #
-  # `mm` is therefore not paired with `in`: `in` already canonicalises to `cm`, so a definition
-  # offering millimetres and inches would store two incompatible spellings of the same
-  # measurement and match neither filter. Millimetre attributes offer millimetres only.
+  # `mm` is not paired with `in`: `in` already pairs with `cm`, and one unit can have one
+  # counterpart only. Millimetre attributes offer millimetres only.
   #
   # Two readings of one figure that no factor relates are not units at all. dB@1W/1m and
   # dB@2.83V/1m were spelled as units here until VALID_QUALIFIERS existed; they are one unit, dB,
@@ -187,19 +185,115 @@ class CustomAttribute < ApplicationRecord
     end
   end
 
-  # The unit a value in `unit` is stored and compared in. Unconvertible units are their own
-  # canonical form, so callers never have to ask whether a unit is convertible first.
-  def self.canonical_unit(unit)
-    UNIT_CONVERSIONS.dig(unit.to_s, 0) || unit
+  # A converted figure is rounded to the significant figures of the figure it comes from, but to
+  # no fewer than this. "15 kg" has two, so it reads "33 lb"; "0.2 kg" has one, and "0.4 lb"
+  # would be off by 10 %, so it reads "0.44 lb".
+  MIN_SIGNIFICANT_FIGURES = 2
+
+  # The other unit of a pair, or nil when `unit` has no counterpart.
+  def self.partner_unit(unit)
+    UNIT_EQUIVALENTS.dig(unit.to_s, 0)
   end
 
-  # `value` expressed in canonical_unit(unit). nil passes through so a half-filled range
-  # ("under 3 kg", no minimum) stays half-filled rather than becoming 0.
-  def self.in_canonical_unit(value, unit)
-    return value if value.nil?
+  # True for the imperial side of a pair. When an entry states both figures, the imperial one
+  # goes into `second`, so that the same two figures always have the same shape.
+  def self.imperial_unit?(unit)
+    UNIT_CONVERSIONS.key?(unit.to_s)
+  end
 
-    factor = UNIT_CONVERSIONS.dig(unit.to_s, 1)
-    factor ? value * factor : value
+  # [other unit, multiplier] when a unit has a counterpart in the other system, otherwise nil.
+  def self.equivalent_unit(unit)
+    UNIT_EQUIVALENTS[unit.to_s]
+  end
+
+  # The figures an entry states, as unit => value, `value` first. Empty for anything that is not
+  # a number entry with a unit.
+  def self.stated_figures(entry)
+    return {} unless entry.is_a?(Hash)
+
+    [entry, entry['second']].each_with_object({}) do |figure, figures|
+      next unless figure.is_a?(Hash) && figure['unit'].present? && figure_value?(figure['value'])
+
+      figures[figure['unit']] = figure['value']
+    end
+  end
+
+  # How many significant figures a stored number has, never fewer than MIN_SIGNIFICANT_FIGURES.
+  #
+  # Read from the number as stored, so trailing zeros after the decimal point are lost: "15.0"
+  # was saved as 15 and counts two. Zeros at the end of a whole number count: "200" has three.
+  # ProductFilterService#converted_figure_sql does the same in SQL, and the two must agree,
+  # or the filter compares a figure that the page does not show.
+  def self.significant_figures(number)
+    digits = plain_digits(number).delete('.').sub(/\A0+/, '')
+
+    [digits.length, MIN_SIGNIFICANT_FIGURES].max
+  end
+
+  # `number` in `from`'s counterpart unit, rounded as the product page shows it. nil when `from`
+  # has no counterpart.
+  def self.converted_figure(number, from)
+    other, factor = equivalent_unit(from)
+    return if other.nil?
+    return [other, 0.0] if number.zero?
+
+    rounded = BigDecimal((number * factor).to_s).round(
+      significant_figures(number) - 1 - Math.log10((number * factor).abs).floor
+    )
+
+    [other, rounded.to_f]
+  end
+
+  # Whether two stated figures can describe the same measurement.
+  #
+  # A figure stands for a range: half of its last decimal place in each direction. "0.7 lb" is
+  # 0.65 to 0.75 lb, which is 0.295 to 0.340 kg, so "0.3 kg" agrees with it although the two
+  # differ by 5.8 %. A fixed percentage cannot express this: it is too strict for figures with
+  # few digits and too lenient for figures with many. The two agree when the ranges overlap.
+  #
+  # Multi input values agree when every input that both state agrees. entity_form.js applies the
+  # same rule while the contributor types (setupUnitPairWarning).
+  def self.figures_agree?(value, unit, other_value, other_unit)
+    other, factor = equivalent_unit(other_unit)
+    return true unless other == unit.to_s
+
+    if value.is_a?(Hash) && other_value.is_a?(Hash)
+      (value.keys & other_value.keys).all? do |input|
+        numbers_agree?(value[input], other_value[input], factor)
+      end
+    else
+      numbers_agree?(value, other_value, factor)
+    end
+  end
+
+  def self.numbers_agree?(number, other_number, factor)
+    return true unless number.is_a?(Numeric) && other_number.is_a?(Numeric)
+
+    low, high = rounding_range(number)
+    other_low, other_high = rounding_range(other_number).map { |bound| bound * factor }
+
+    low <= other_high && other_low <= high
+  end
+  private_class_method :numbers_agree?
+
+  def self.rounding_range(number)
+    decimals = plain_digits(number).split('.', 2)[1].to_s.length
+    half = 0.5 * (10**-decimals)
+
+    [number - half, number + half]
+  end
+  private_class_method :rounding_range
+
+  # The digits of a number without a sign, exponent or trailing ".0": 15.0 => "15",
+  # 0.0119 => "0.0119", 1.0e-05 => "0.00001".
+  def self.plain_digits(number)
+    BigDecimal(number.to_s).abs.to_s('F').sub(/\.0+\z/, '')
+  end
+  private_class_method :plain_digits
+
+  # Whether a figure holds something: a number, or a hash with at least one input. 0 counts.
+  def self.figure_value?(value)
+    value.is_a?(Hash) ? value.any? : value.present?
   end
 
   # The translated condition of one stored entry, or nil when the entry states none.
@@ -220,15 +314,23 @@ class CustomAttribute < ApplicationRecord
     I18n.t("custom_attribute_qualifiers.#{key}")
   end
 
-  # [other unit, multiplier] when a unit has a counterpart in the other system, otherwise nil.
-  # Display sites use it to render both readings; nil means there is only one reading to show.
-  def self.equivalent_unit(unit)
-    UNIT_EQUIVALENTS[unit.to_s]
+  # Whether this definition offers exactly the two units of one pair. Only then can an entry
+  # state a second figure, and only then do display and filter convert.
+  def unit_pair?
+    units.size == 2 && self.class.partner_unit(units.first) == units.last
   end
 
-  # Removes a `unit` or `qualifier` that the definition does not offer, and a blank one.
+  # The units of the pair, metric first: the order of the rows in the product form, and the
+  # order of `value` and `second` when both are stated.
+  def paired_units
+    return [] unless unit_pair?
+
+    units.sort_by { |unit| self.class.imperial_unit?(unit) ? 1 : 0 }
+  end
+
+  # Removes a `unit`, `qualifier` or `second` that the definition does not offer, and a blank one.
   #
-  # Both are strings the caller chooses, and nothing in the database constrains them. Three write
+  # All three are chosen by the caller, and nothing in the database constrains them. Three write
   # paths can put a wrong one there: the product form permits an open hash, so a stale or crafted
   # submission can name anything; ImportPromotion copies a candidate's specs verbatim, and a
   # candidate extracted before a definition changed still carries the old unit; and the console.
@@ -241,8 +343,8 @@ class CustomAttribute < ApplicationRecord
   # that value arrives on every submit where the condition is unknown; stored, `? 'qualifier'` would
   # report a condition that is not there, and every reader would need a third case.
   #
-  # Runs before normalize_units, so a unit the definition does not offer is dropped rather than
-  # used as the basis of a conversion.
+  # Runs before order_figures, so a second figure the definition cannot have is dropped rather
+  # than moved into `value`.
   def self.prune_unsupported_keys(values)
     return values if values.blank?
 
@@ -259,12 +361,11 @@ class CustomAttribute < ApplicationRecord
 
   # One entry of that hash, with the keys the definition cannot account for removed.
   #
-  # The two keys are treated differently, because "declares none" means different things:
+  # `unit` and `qualifier` are treated differently, because "declares none" means different things:
   #
   #   * A definition with an empty `units` says nothing about units, and the filter says nothing
   #     either -- it applies a unit predicate only `if custom_attribute[:units].present?`. A stored
-  #     unit is therefore not unreachable, so removing it would accomplish nothing and would break
-  #     the normalisation that runs next: `normalize_units` needs the unit to convert from.
+  #     unit is therefore not unreachable, so removing it would accomplish nothing.
   #   * A definition with an empty `qualifiers` asks no question about the condition, so a stored
   #     one is not an answer to anything. It still renders -- `qualifier_label` reads the entry,
   #     not the definition -- so a leftover condition would print on the product page under a
@@ -272,6 +373,9 @@ class CustomAttribute < ApplicationRecord
   #
   # A blank value of either goes in both cases: it is neither a value nor absent, and every reader
   # would need a third case for it.
+  #
+  # `second` stays only when the definition offers a pair and its unit is the counterpart of
+  # `unit`. Anything else would be a second figure that no reader can place.
   def pruned_entry(entry)
     entry = entry.to_unsafe_h if entry.respond_to?(:to_unsafe_h)
     entry = entry.to_h.stringify_keys
@@ -279,50 +383,50 @@ class CustomAttribute < ApplicationRecord
     entry.delete('unit') if entry['unit'].blank? || (units.present? && units.exclude?(entry['unit']))
     entry.delete('qualifier') unless qualifier?(entry['qualifier'])
 
+    second = pruned_second(entry)
+    second ? entry['second'] = second : entry.delete('second')
+
     entry
   end
 
-  # Rewrites a product's whole `custom_attributes` hash so every numeric entry is expressed in
-  # its canonical unit.
+  # Rewrites a product's whole `custom_attributes` hash so that two figures of one quantity
+  # always have the same shape: the metric figure in `value`, the imperial one in `second`.
   #
-  # Filtering compares a submitted range against the stored `unit` string after normalising
-  # the range to the metric side of a pair, so a value stored as `{value: 2, unit: "lb"}` is
-  # not merely awkward -- it is unreachable. No weight filter can ever return it, in either
-  # unit, because nothing converts on read. Normalising on write makes "stored unit" and
-  # "canonical unit" the same thing everywhere downstream, which is what the filter already
-  # assumed.
+  # Without this rule "33 lb, second 15 kg" and "15 kg, second 33 lb" would both be stored, and
+  # the changelog would report a change when a contributor only entered the same figures in the
+  # other order. A figure is never converted here: an entry that states one figure keeps it in
+  # the unit it was stated in.
   #
-  # Idempotent: a canonical unit converts to itself, so re-saving an already normalised
-  # product is a no-op rather than a repeated multiplication.
-  def self.normalize_units(values)
+  # An entry of a number attribute that holds no figure is removed. It can be left over when
+  # prune_unsupported_keys removes a `second` that was the only figure, and stored, it would
+  # read "n/a" and count as filled for the completeness score.
+  #
+  # Idempotent, so re-saving an already ordered product changes nothing.
+  def self.order_figures(values)
     return values if values.blank?
 
     index = all_cached.index_by(&:label)
 
-    values.to_h do |label, entry|
+    values.each_with_object({}) do |(label, entry), ordered|
       definition = index[label]
+      entry = definition.ordered_entry(entry) if definition
+      next if definition&.number_input_type? && entry.is_a?(Hash) && !figure_value?(entry['value'])
 
-      [label, definition ? definition.normalized_entry(entry) : entry]
+      ordered[label] = entry
     end
   end
 
-  # One entry of that hash. Anything this does not recognise -- a non-numeric attribute, a
-  # missing or already-canonical unit, a value that is not a number -- is passed through
-  # untouched rather than guessed at.
-  def normalized_entry(entry)
-    return entry unless number_input_type?
-    return entry unless entry.is_a?(Hash)
+  # One entry of that hash. A second figure without a first one moves into `value`: the product
+  # form sends each unit in its own row, and a contributor may fill in only the imperial row.
+  def ordered_entry(entry)
+    return entry unless number_input_type? && entry.is_a?(Hash)
 
-    unit = entry['unit'].presence || entry[:unit].presence
-    return entry if unit.blank?
+    second = entry['second']
+    return entry unless second.is_a?(Hash)
+    return entry.except('second').merge(second) unless self.class.figure_value?(entry['value'])
+    return entry unless self.class.imperial_unit?(entry['unit'])
 
-    canonical = self.class.canonical_unit(unit)
-    return entry if canonical == unit
-
-    converted = convert_entry_value(entry['value'] || entry[:value], unit)
-    return entry if converted.nil?
-
-    entry.merge('value' => converted, 'unit' => canonical)
+    entry.merge(second).merge('second' => entry.slice('value', 'unit'))
   end
 
   # The definitions in display order: first by the position of the group in DISPLAY_GROUPS, then
@@ -634,37 +738,19 @@ class CustomAttribute < ApplicationRecord
 
   private
 
-  # A `number` attribute holds either a bare number or, when it declares `inputs`, one number
-  # per input. Rounding keeps the stored JSON readable and cannot lose anything a spec sheet
-  # carries -- display already truncates to four places.
-  #
-  # Eight rather than six, because this precision is also what the product form's unit toggle
-  # round-trips through: at six, 2 lb stores as 0.907185 kg and toggling back reads 2.000001,
-  # since 0.907185 kg genuinely is 2.000001 lb. Eight keeps the exact conversion, so the
-  # number a contributor typed is the number they see again. entity_form.js rounds to match.
-  #
-  # All inputs share one `unit`, so a multi-input value is converted all-or-nothing: if any
-  # input is not a number, none of them are, and nil bubbles up to normalized_entry so the
-  # entry -- unit included -- is left exactly as it arrived rather than half-converted under
-  # a unit that no longer matches the input that couldn't be converted.
-  def convert_entry_value(value, unit)
-    case value
-    when Hash, ActionController::Parameters
-      numbers = value.to_h.transform_values { |number| numeric(number) }
-      return nil if numbers.empty? || numbers.value?(nil)
+  # The `second` figure of an entry, reduced to its two keys, or nil when the entry cannot have
+  # one: the definition offers no pair, the unit is not the counterpart of `unit`, or it holds
+  # no figure.
+  def pruned_second(entry)
+    second = entry['second']
+    second = second.to_unsafe_h if second.respond_to?(:to_unsafe_h)
+    return unless unit_pair? && second.is_a?(Hash)
 
-      numbers.transform_values { |number| self.class.in_canonical_unit(number, unit).round(8) }
-    else
-      number = numeric(value)
+    second = second.stringify_keys.slice('value', 'unit')
+    return unless second['unit'] == self.class.partner_unit(entry['unit'])
+    return unless self.class.figure_value?(second['value'])
 
-      number ? self.class.in_canonical_unit(number, unit).round(8) : nil
-    end
-  end
-
-  def numeric(value)
-    return value if value.is_a?(Numeric)
-
-    Float(value.to_s, exception: false)
+    second
   end
 
   # Writes what the admin ticked onto the join rows.

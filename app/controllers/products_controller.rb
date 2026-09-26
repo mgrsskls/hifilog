@@ -213,7 +213,7 @@ class ProductsController < ApplicationController
   # type (boolean / number), dropping entries left blank rather than saving them as 0.
   #
   # One cached lookup for the whole submission rather than a query per key. The definitions are
-  # cached anyway for CustomAttribute.normalize_units, which runs further down the same save, so
+  # cached anyway for CustomAttribute.order_figures, which runs further down the same save, so
   # the per-key find_by was issuing N queries for rows the request had already loaded.
   def coerce_custom_attributes!(custom_attributes)
     return if custom_attributes.blank?
@@ -257,26 +257,43 @@ class ProductsController < ApplicationController
   #
   # entity_form.js normalises the separator before submit (see parseTypedNumber); this is what
   # catches the submission when it has not run.
-  def coerce_number_custom_attribute!(custom_attributes, key, value)
+  #
+  # An attribute with a unit pair sends one row per unit: the first in `value`, the second in
+  # `second`. The entry stays when either row holds a figure; Product#clean_custom_attributes
+  # moves a lone second figure into `value`. See docs/custom-attributes.md, "Two units".
+  #
+  # An entry that is not a hash (a stale or crafted `[weight]=5`) holds no figure the form could
+  # have sent, so it is dropped like a blank one.
+  def coerce_number_custom_attribute!(custom_attributes, key, _value)
     entry = custom_attributes[key]
+    return custom_attributes.delete(key) unless entry.respond_to?(:key?)
 
-    case value['value']
+    second = entry['second']
+
+    coerce_figure!(entry)
+    if second.respond_to?(:key?)
+      coerce_figure!(second)
+      entry.delete('second') unless second.key?('value')
+    end
+
+    custom_attributes.delete(key) unless entry.key?('value') || entry.key?('second')
+  end
+
+  # Casts `figure['value']` in place, and removes it when nothing in it is a number.
+  def coerce_figure!(figure)
+    case figure['value']
     when ActionController::Parameters, Hash
       # Iterates a copy so the original can be deleted from while walking it.
-      value['value'].to_hash.each do |input, submitted|
+      figure['value'].to_hash.each do |input, submitted|
         number = numeric_param(submitted)
 
-        if number.nil?
-          entry['value'].delete(input)
-          custom_attributes.delete(key) if entry['value'].empty?
-        else
-          entry['value'][input] = number
-        end
+        number.nil? ? figure['value'].delete(input) : figure['value'][input] = number
       end
+      figure.delete('value') if figure['value'].empty?
     else
-      number = numeric_param(value['value'])
+      number = numeric_param(figure['value'])
 
-      number.nil? ? custom_attributes.delete(key) : entry['value'] = number
+      number.nil? ? figure.delete('value') : figure['value'] = number
     end
   end
 

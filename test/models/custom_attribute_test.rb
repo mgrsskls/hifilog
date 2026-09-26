@@ -240,21 +240,15 @@ class CustomAttributeTest < ActiveSupport::TestCase
     end
   end
 
-  test 'canonical_unit maps a convertible unit to the one values are stored in' do
-    assert_equal 'cm', CustomAttribute.canonical_unit('in')
-    assert_equal 'kg', CustomAttribute.canonical_unit('lb')
-    assert_equal 'm', CustomAttribute.canonical_unit('ft')
-  end
+  test 'partner_unit and imperial_unit? answer from both sides of a pair' do
+    assert_equal 'lb', CustomAttribute.partner_unit('kg')
+    assert_equal 'kg', CustomAttribute.partner_unit('lb')
+    assert_nil CustomAttribute.partner_unit('ohm')
 
-  test 'canonical_unit leaves an unconvertible unit alone' do
-    assert_equal 'ohm', CustomAttribute.canonical_unit('ohm')
-    assert_equal 'mm', CustomAttribute.canonical_unit('mm')
-  end
-
-  test 'in_canonical_unit converts a value and passes nil through' do
-    assert_in_delta 2.54, CustomAttribute.in_canonical_unit(1, 'in')
-    assert_in_delta 5.0, CustomAttribute.in_canonical_unit(5, 'cm')
-    assert_nil CustomAttribute.in_canonical_unit(nil, 'in')
+    assert CustomAttribute.imperial_unit?('lb')
+    assert CustomAttribute.imperial_unit?('in')
+    assert_not CustomAttribute.imperial_unit?('kg')
+    assert_not CustomAttribute.imperial_unit?(nil)
   end
 
   test 'equivalent_unit answers from both sides of a pair and nil otherwise' do
@@ -271,106 +265,128 @@ class CustomAttributeTest < ActiveSupport::TestCase
     assert_nil CustomAttribute.equivalent_unit('db_1w_1m')
   end
 
-  # Values are only findable under their canonical unit: filtering converts the submitted range
-  # to the metric side of a pair and then matches the stored `unit` string, so anything stored
-  # in pounds or inches is unreachable by any filter until it is rewritten.
-  test 'normalize_units converts a scalar value into its canonical unit' do
-    normalized = CustomAttribute.normalize_units('weight' => { 'value' => 2, 'unit' => 'lb' })
+  test 'unit_pair? is true only for the two units of one pair, and paired_units puts metric first' do
+    definition = custom_attributes(:four)
 
-    assert_in_delta 0.90718474, normalized.dig('weight', 'value'), 0.000001
-    assert_equal 'kg', normalized.dig('weight', 'unit')
+    definition.units = %w[lb kg]
+    assert definition.unit_pair?
+    assert_equal %w[kg lb], definition.paired_units
+
+    definition.units = %w[kg]
+    assert_not definition.unit_pair?
+    assert_empty definition.paired_units
+
+    definition.units = %w[kg in]
+    assert_not definition.unit_pair?
   end
 
-  test 'normalize_units converts every input of a multi input value' do
-    normalized = CustomAttribute.normalize_units(
-      'dimensions' => { 'value' => { 'w' => 2, 'h' => '4' }, 'unit' => 'in' }
+  test 'stated_figures lists value first and ignores blank figures' do
+    entry = { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 33, 'unit' => 'lb' } }
+
+    assert_equal({ 'kg' => 15, 'lb' => 33 }, CustomAttribute.stated_figures(entry))
+    assert_equal({ 'kg' => 15 }, CustomAttribute.stated_figures(entry.merge('second' => { 'unit' => 'lb' })))
+    assert_equal({}, CustomAttribute.stated_figures({ 'value' => 15 }))
+    assert_equal({}, CustomAttribute.stated_figures(nil))
+  end
+
+  # ProductFilterService#converted_figure_sql counts the same way; see its test.
+  test 'significant_figures counts the digits of the stored number, never fewer than two' do
+    assert_equal 2, CustomAttribute.significant_figures(15.0)
+    assert_equal 2, CustomAttribute.significant_figures(0.2)
+    assert_equal 3, CustomAttribute.significant_figures(1.35)
+    assert_equal 3, CustomAttribute.significant_figures(200)
+    assert_equal 3, CustomAttribute.significant_figures(0.0119)
+  end
+
+  test 'converted_figure rounds to the significant figures of the stated figure' do
+    assert_equal ['lb', 33.0], CustomAttribute.converted_figure(15.0, 'kg')
+    assert_equal ['in', 5.9], CustomAttribute.converted_figure(15, 'cm')
+    assert_equal ['lb', 0.44], CustomAttribute.converted_figure(0.2, 'kg')
+    assert_equal ['lb', 2.98], CustomAttribute.converted_figure(1.35, 'kg')
+    assert_equal ['kg', 15.0], CustomAttribute.converted_figure(33, 'lb')
+    assert_equal ['lb', 0.0], CustomAttribute.converted_figure(0, 'kg')
+    assert_nil CustomAttribute.converted_figure(8, 'ohm')
+  end
+
+  test 'figures_agree? compares the rounding ranges of the two figures' do
+    assert CustomAttribute.figures_agree?(15, 'kg', 33, 'lb')
+    # 0.7 lb is 0.65 to 0.75 lb, which reaches 0.3 kg although the two differ by 5.8 %.
+    assert CustomAttribute.figures_agree?(0.3, 'kg', 0.7, 'lb')
+    assert_not CustomAttribute.figures_agree?(15, 'kg', 22, 'lb')
+    assert_not CustomAttribute.figures_agree?(70, 'kg', 165, 'lb')
+
+    assert CustomAttribute.figures_agree?({ 'w' => 43, 'h' => 12 }, 'cm', { 'w' => 17, 'h' => 4.7 }, 'in')
+    assert_not CustomAttribute.figures_agree?({ 'w' => 43, 'h' => 12 }, 'cm', { 'w' => 17, 'h' => 5.7 }, 'in')
+  end
+
+  test 'pruned_entry keeps a second figure in the counterpart unit of a pair' do
+    definition = custom_attributes(:four)
+    definition.units = %w[lb kg]
+    entry = { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 33, 'unit' => 'lb', 'extra' => 1 } }
+
+    assert_equal({ 'value' => 33, 'unit' => 'lb' }, definition.pruned_entry(entry)['second'])
+  end
+
+  test 'pruned_entry drops a second figure the definition cannot place' do
+    definition = custom_attributes(:four)
+    definition.units = %w[lb kg]
+
+    same_unit = { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 15, 'unit' => 'kg' } }
+    blank = { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => '', 'unit' => 'lb' } }
+    assert_not definition.pruned_entry(same_unit).key?('second')
+    assert_not definition.pruned_entry(blank).key?('second')
+
+    definition.units = %w[kg]
+    assert_not definition.pruned_entry(blank.merge('second' => { 'value' => 33, 'unit' => 'lb' })).key?('second')
+  end
+
+  # Metric in `value`, imperial in `second`, so the same two figures always have the same shape
+  # and the changelog shows no change when only their order changed.
+  test 'order_figures puts the metric figure into value' do
+    ordered = CustomAttribute.order_figures(
+      'weight' => { 'value' => 33, 'unit' => 'lb', 'second' => { 'value' => 15, 'unit' => 'kg' }, 'qualifier' => 'x' }
     )
 
-    assert_in_delta 5.08, normalized.dig('dimensions', 'value', 'w')
-    assert_in_delta 10.16, normalized.dig('dimensions', 'value', 'h')
-    assert_equal 'cm', normalized.dig('dimensions', 'unit')
+    assert_equal(
+      { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 33, 'unit' => 'lb' }, 'qualifier' => 'x' },
+      ordered['weight']
+    )
+    assert_equal ordered, CustomAttribute.order_figures(ordered)
   end
 
-  test 'normalize_units is idempotent' do
-    once = CustomAttribute.normalize_units('weight' => { 'value' => 2, 'unit' => 'lb' })
-    twice = CustomAttribute.normalize_units(once)
+  test 'order_figures moves a lone second figure into value' do
+    ordered = CustomAttribute.order_figures(
+      'weight' => { 'unit' => 'kg', 'second' => { 'value' => 33, 'unit' => 'lb' } }
+    )
 
-    assert_equal once, twice
+    assert_equal({ 'value' => 33, 'unit' => 'lb' }, ordered['weight'])
   end
 
-  test 'normalize_units leaves canonical, unconvertible and unrecognised entries alone' do
+  test 'order_figures never converts a figure' do
     values = {
-      'weight' => { 'value' => 3, 'unit' => 'kg' },
-      'nominal_impedance' => { 'value' => 32, 'unit' => 'ohm' },
-      'channel_configuration' => '1',
+      'weight' => { 'value' => 2, 'unit' => 'lb' },
+      'dimensions' => { 'value' => { 'w' => 2, 'h' => 4 }, 'unit' => 'in' },
       'loudspeaker_bi_wiring' => true,
       'no_such_attribute' => { 'value' => 2, 'unit' => 'lb' }
     }
 
-    assert_equal values, CustomAttribute.normalize_units(values)
+    assert_equal values, CustomAttribute.order_figures(values)
   end
 
-  test 'normalize_units passes through an entry with no usable number' do
-    values = { 'weight' => { 'value' => '', 'unit' => 'lb' } }
+  # Left over when prune_unsupported_keys removes a `second` that was the only figure.
+  test 'order_figures removes a number entry that holds no figure' do
+    ordered = CustomAttribute.order_figures(
+      'weight' => { 'unit' => 'kg' },
+      'dimensions' => { 'value' => {}, 'unit' => 'cm' },
+      'loudspeaker_bi_wiring' => false
+    )
 
-    assert_equal values, CustomAttribute.normalize_units(values)
+    assert_equal({ 'loudspeaker_bi_wiring' => false }, ordered)
   end
 
-  # All inputs of a multi input value share one `unit`, so a value where only some inputs are
-  # numeric cannot be converted for those and left alone for the rest -- there is no unit left
-  # to put on the unconverted ones. It must convert none of them, not silently drop the ones
-  # it couldn't convert.
-  test 'normalize_units leaves a multi input value alone when only some inputs are numeric' do
-    values = { 'dimensions' => { 'value' => { 'w' => 2, 'h' => 'unknown' }, 'unit' => 'in' } }
-
-    assert_equal values, CustomAttribute.normalize_units(values)
-  end
-
-  test 'normalize_units tolerates a blank attribute hash' do
-    assert_nil CustomAttribute.normalize_units(nil)
-    assert_empty CustomAttribute.normalize_units({})
-  end
-
-  # The three properties the product form's unit radios depend on. The conversion itself
-  # happens in entity_form.js (setupUnitConversion) and cannot be exercised here -- there are
-  # no system tests -- but the arithmetic it relies on lives in this model, so the invariants
-  # are pinned where they are defined.
-  #
-  # Without them the radios are destructive: they declare the unit of the typed number, the
-  # server normalises whatever arrives, and so toggling kg to lb on a value nobody retyped
-  # rewrites it rather than restating it.
-  test 'converting a value to its equivalent unit and back returns the original' do
-    original = 0.90718474
-
-    other_unit, factor = CustomAttribute.equivalent_unit('kg')
-    displayed = (original * factor).round(6)
-
-    back_unit, back_factor = CustomAttribute.equivalent_unit(other_unit)
-
-    assert_equal 'kg', back_unit
-    assert_in_delta original, (displayed * back_factor).round(6), 0.000001
-  end
-
-  # What the form posts when nothing but the unit radio was touched: the stored number, the
-  # unit it is already in. Re-submitting a product unchanged must not move its values.
-  test 'normalize_units is a no-op on values the form round-trips unchanged' do
-    stored = {
-      'weight' => { 'value' => 0.90718474, 'unit' => 'kg' },
-      'dimensions' => { 'value' => { 'w' => 5.08, 'h' => 10.16 }, 'unit' => 'cm' }
-    }
-
-    assert_equal stored, CustomAttribute.normalize_units(stored)
-  end
-
-  # And what it posts once the JS has converted the number to go with the new radio: the
-  # value comes back in canonical form, once, not twice.
-  test 'normalize_units converts a form submission exactly once' do
-    submitted = { 'weight' => { 'value' => '2', 'unit' => 'lb' } }
-
-    once = CustomAttribute.normalize_units(submitted)
-
-    assert_in_delta 0.90718474, once.dig('weight', 'value'), 0.000001
-    assert_equal once, CustomAttribute.normalize_units(once)
+  test 'order_figures tolerates a blank attribute hash' do
+    assert_nil CustomAttribute.order_figures(nil)
+    assert_empty CustomAttribute.order_figures({})
   end
 
   # An attribute asks one question everywhere it applies, but not every answer applies
@@ -678,7 +694,7 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
   # A definition that declares no units says nothing about them, and neither does the filter, which
   # applies a unit predicate only when the definition has some. Removing the unit here would
-  # accomplish nothing and would stop normalize_units from converting, which ProductTest asserts.
+  # accomplish nothing.
   test 'prune_unsupported_keys keeps a unit when the definition declares none' do
     custom_attributes(:four).update!(units: [], qualifiers: %w[plus_minus_3_db])
 
@@ -717,21 +733,6 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
       assert_equal 'kg', pruned['weight']['unit']
       assert_not pruned['weight'].key?('qualifier')
-    end
-  end
-
-  # normalize_units rewrites value and unit. A condition is neither, and losing it on a unit
-  # conversion would silently turn a ±3 dB figure into an unqualified one.
-  test 'normalize_units keeps a qualifier untouched' do
-    custom_attributes(:four).update!(units: %w[kg lb], qualifiers: %w[plus_minus_3_db])
-
-    with_memory_cache do
-      normalized = CustomAttribute.normalize_units(
-        'weight' => { 'value' => 2, 'unit' => 'lb', 'qualifier' => 'plus_minus_3_db' }
-      )
-
-      assert_equal 'kg', normalized['weight']['unit']
-      assert_equal 'plus_minus_3_db', normalized['weight']['qualifier']
     end
   end
 

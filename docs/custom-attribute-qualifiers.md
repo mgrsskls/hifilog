@@ -207,7 +207,7 @@ its `else` branch meant a line stating **no** reference also came out as `db_1w_
 `(definition.get("units") or [None])[0]` for a figure the language model returned, without reading
 the unit from the text. This path is a fallback and shows no trace in the data checked below. It is
 still wrong, and it is the thing to fix if that path is ever used for a definition with two units —
-`weight` lists lb first, so a kilogramme figure would be stored as pounds and then converted.
+`weight` lists lb first, so a kilogramme figure would be stored as pounds.
 
 **What the production candidates say**, checked against the source snippet each one kept, for the
 three definitions that offer two units:
@@ -272,7 +272,7 @@ correctly and then written it in a spelling the application throws away.
 
 **The lasting protection** against a wrong unit or condition reaching the catalogue is
 `CustomAttribute.prune_unsupported_keys`, called from `Product`'s `before_save` beside
-`normalize_units`. It sits on the model and not in the products controller, because
+`order_figures`. It sits on the model and not in the products controller, because
 `ImportPromotion`, ActiveAdmin, `ProductConversionService` and the console are write paths too, and
 the controller sees none of them. It cannot fix a unit that is wrong but offered — only one the
 definition does not know.
@@ -299,8 +299,9 @@ The key is absent when the condition is not known. An absent key means "not stat
 a default value. A definition must not declare a fallback qualifier, because an assumed condition
 is invented data.
 
-`CustomAttribute.normalize_units` merges only `value` and `unit`, so a qualifier survives it. No
-change is needed there.
+`CustomAttribute.order_figures` moves only `value`, `unit` and `second`, so a qualifier survives it.
+There is one qualifier for the two figures of a unit pair (see
+[custom-attributes.md, §4.1](custom-attributes.md#41-stored-figures)).
 
 ### 4.2 Definition
 
@@ -395,13 +396,11 @@ Nothing in the database constrains `unit` or `qualifier`, and the product form p
   worse than untidy — filtering compares the stored unit string, so the figure becomes unreachable.
 
   A definition that declares **no** units is the exception: it says nothing about units, the filter
-  applies no unit predicate for it, and `normalize_units` needs the stored unit to convert from, so
-  the unit stays. A definition with no qualifiers is not an exception — it asks no question, so a
+  applies no unit predicate for it, so the unit stays. A definition with no qualifiers is not an exception — it asks no question, so a
   stored condition is not an answer to one, and it would still print on the product page.
 
 **It belongs on the model, not in the controller.** `Product` calls it in `before_save`, beside
-`normalize_units` and before it, so an unknown unit is dropped rather than used as the basis of a
-conversion. The controller is the wrong place because it is not the only write path:
+`order_figures` and before it, so an unknown unit is dropped before the figures are ordered. The controller is the wrong place because it is not the only write path:
 `ImportPromotion` copies a candidate's specs verbatim and never renders a form, ActiveAdmin and
 `ProductConversionService` write products too, and so does the console. §3.4 is the case that makes
 this necessary rather than tidy.
@@ -561,14 +560,12 @@ facet for this has no use.
 - **`RelatedProducts::Graph`.** A gate must never read a qualifier. A measurement condition is not
   a fact about compatibility. The guards that protect a gated label and a gated option key need no
   equivalent for qualifiers.
-- **`app/assets/javascripts/entity_form.js`.** The unit radio buttons convert the number that is
-  shown, because two units are two spellings of one value. A change of the qualifier must not
-  convert the number: a different condition is a different measurement, so the number stays as the
-  contributor typed it. The selector for the converter reads
-  `input[type="radio"][name$="[unit]"]`, so a control named `[qualifier]` does not start a
-  conversion and no new code is necessary. **Add a test that keeps this true.** The whole
-  protection is one string at the end of a selector.
-- **Product form.** Add one control beside the unit radio buttons. Its default state is "not
+- **`app/assets/javascripts/entity_form.js`.** A change of the qualifier must not convert the
+  number: a different condition is a different measurement, so the number stays as the contributor
+  typed it. The product form converts no number since each unit of a pair has its own row (see
+  [custom-attributes.md, §4.4](custom-attributes.md#44-product-form)), so nothing needs protection
+  here any more.
+- **Product form.** Add one control beside the unit fields. Its default state is "not
   stated", and that state must be selectable again after a qualifier was set — see §4.7 for what
   the server does with the empty value it posts.
 - **`rake custom_attributes:define`.** Add `qualifiers` to the declaration hash and to the

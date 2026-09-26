@@ -1,7 +1,6 @@
 <%#
-  Unit conversion lives on CustomAttribute (UNIT_EQUIVALENTS), not here: this partial and the
-  product show page each used to carry their own copy, and the two had drifted to different
-  pound factors from each other and from the filter.
+  A number entry reads as on the product page (CustomAttributeReading), second figure included:
+  without it, a change of the second figure alone would read as the same text before and after.
 %>
 <% content_for :css do %>
   <%= stylesheet_link_tag "changelog" %>
@@ -53,24 +52,10 @@
                                       <li>
                                         <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
                                         <% if ca[1].is_a?(Hash) %>
-                                          <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
-                                          <% translated_unit = safe_unit_entities(t("custom_attribute_units.#{unit}")) if unit.present? %>
-                                          <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
+                                          <% lines = custom_attribute_reading_lines(active_record, ca[1]) %>
                                           <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
-                                          <% if ca[1]['value'].is_a?(Hash) %>
-                                            <% ca[1]['value'].each do |v| %>
-                                              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                              <% if equivalent %>
-                                                / <%= number_with_precision(v[1] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
-                                              <% end %>
-                                              <br>
-                                            <% end %>
-                                            <%= "(#{qualifier})" if qualifier.present? %>
-                                          <% elsif ca[1]['value'].present? %>
-                                            <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                            <% if equivalent %>
-                                                / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
-                                            <% end %>
+                                          <% if lines.any? %>
+                                            <%= safe_join(lines, tag.br) %>
                                             <%= "(#{qualifier})" if qualifier.present? %>
                                           <% else %>
                                             n/a
@@ -123,24 +108,10 @@
                                     <li>
                                         <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
                                         <% if ca[1].is_a?(Hash) %>
-                                          <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
-                                          <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
-                                          <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
+                                          <% lines = custom_attribute_reading_lines(active_record, ca[1]) %>
                                           <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
-                                          <% if ca[1]['value'].is_a?(Hash) %>
-                                            <% ca[1]['value'].each do |v| %>
-                                              <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                              <% if equivalent %>
-                                                / <%= number_with_precision(v[1] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
-                                              <% end %>
-                                              <br>
-                                            <% end %>
-                                            <%= "(#{qualifier})" if qualifier.present? %>
-                                          <% elsif ca[1]['value'].present? %>
-                                            <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
-                                            <% if equivalent %>
-                                                / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
-                                            <% end %>
+                                          <% if lines.any? %>
+                                            <%= safe_join(lines, tag.br) %>
                                             <%= "(#{qualifier})" if qualifier.present? %>
                                           <% else %>
                                             n/a

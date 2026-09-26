@@ -116,25 +116,75 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     assert_includes result.products.pluck(:product_id), product.id
   end
 
-  test 'filter applies inch to centimetre conversion for numeric custom attribute' do
+  # A unit pair compares each product by its figure in the selected unit: the stated one, or the
+  # other one converted and rounded as the product page shows it. See docs/custom-attributes.md,
+  # "Two units".
+  test 'a unit pair filter finds a converted figure as the page shows it' do
     product = products(:without_custom_attributes)
+    custom_attributes(:four).update!(units: %w[lb kg])
+    product.update!(custom_attributes: { 'weight' => { 'value' => 15, 'unit' => 'kg' } })
+
+    # 15 kg is 33.07 lb and reads "33 lb".
+    assert_includes weight_filter(max: '33', unit: 'lb'), product.id
+    assert_not_includes weight_filter(max: '32.9', unit: 'lb'), product.id
+  end
+
+  test 'a unit pair filter uses the stated figure in the selected unit' do
+    product = products(:without_custom_attributes)
+    custom_attributes(:four).update!(units: %w[lb kg])
     product.update!(
       custom_attributes: {
-        'weight' => { 'value' => '5.08', 'unit' => 'cm' }
+        'weight' => { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 34, 'unit' => 'lb' } }
       }
     )
 
+    assert_includes weight_filter(min: '34', max: '34', unit: 'lb'), product.id
+    assert_includes weight_filter(min: '15', max: '15', unit: 'kg'), product.id
+    assert_not_includes weight_filter(max: '33', unit: 'lb'), product.id
+  end
+
+  test 'a unit pair filter finds an imperial-only figure in kilograms' do
+    product = products(:without_custom_attributes)
+    custom_attributes(:four).update!(units: %w[lb kg])
+    product.update!(custom_attributes: { 'weight' => { 'value' => 33, 'unit' => 'lb' } })
+
+    # 33 lb is 14.97 kg and reads "15 kg".
+    assert_includes weight_filter(min: '15', max: '15', unit: 'kg'), product.id
+  end
+
+  test 'a unit pair filter ignores a range without a unit' do
+    product = products(:without_custom_attributes)
+    custom_attributes(:four).update!(units: %w[lb kg])
+    product.update!(custom_attributes: { 'weight' => { 'value' => 15, 'unit' => 'kg' } })
+
+    assert_includes weight_filter(max: '1'), product.id
+  end
+
+  test 'a unit pair filter compares each input of a multi input value' do
+    product = products(:without_custom_attributes)
+    product.update!(custom_attributes: { 'dimensions' => { 'value' => { 'w' => 43, 'h' => 12 }, 'unit' => 'cm' } })
+
     custom = {
-      'weight' => ActiveSupport::HashWithIndifferentAccess.new(
-        min: '2',
-        max: '2',
-        unit: 'in'
-      )
+      'dimensions' => ActiveSupport::HashWithIndifferentAccess.new(unit: 'in', w: { max: '17' }, h: { min: '4.7' })
     }
+    ids = ProductFilterService.new(filters: { custom: }, brands: [@brand]).filter.products.pluck(:product_id)
 
-    result = ProductFilterService.new(filters: { custom: }, brands: [@brand]).filter
+    # 43 cm reads "17 in", 12 cm reads "4.7 in".
+    assert_includes ids, product.id
+  end
 
-    assert_includes result.products.pluck(:product_id), product.id
+  # The SQL rounding must match CustomAttribute.converted_figure, or the filter compares a figure
+  # that the page does not show.
+  test 'the SQL conversion rounds like the product page' do
+    service = ProductFilterService.new(filters: {}, brands: [@brand])
+    factor = 1.0 / 0.45359237
+
+    ['15.0', '0.2', '1.35', '200', '0.0119', '14.96850821', '0'].each do |text|
+      sql = service.send(:converted_figure_sql, ProductItem.connection.quote(text), factor)
+      expected = CustomAttribute.converted_figure(Float(text), 'kg').last
+
+      assert_in_delta expected, ProductItem.connection.select_value("SELECT #{sql}").to_f, 1e-9, text
+    end
   end
 
   # Nothing ticked must behave exactly as before the facet existed. Equality the way `unit` is
@@ -244,30 +294,6 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
         w: { min: '9', max: '11' },
         h: { min: '5', max: '30' },
         l: { min: '1', max: '12' }
-      )
-    }
-
-    result = ProductFilterService.new(filters: { custom: }, brands: [@brand]).filter
-
-    assert_includes result.products.pluck(:product_id), product.id
-  end
-
-  test 'filter converts pound filters to stored kilogram values' do
-    product = products(:without_custom_attributes)
-    product.update!(
-      custom_attributes: {
-        # Exactly 2 lb at CustomAttribute::UNIT_CONVERSIONS' factor. The old inline 0.453592
-        # was truncated, so a value stored from an exact conversion fell just under the
-        # minimum this filter computes.
-        'weight' => { 'value' => '0.90718474', 'unit' => 'kg' }
-      }
-    )
-
-    custom = {
-      'weight' => ActiveSupport::HashWithIndifferentAccess.new(
-        min: '2',
-        max: '2',
-        unit: 'lb'
       )
     }
 
@@ -434,5 +460,13 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     ).total_count
 
     assert_operator total, :positive?
+  end
+
+  private
+
+  def weight_filter(**range)
+    custom = { 'weight' => ActiveSupport::HashWithIndifferentAccess.new(range) }
+
+    ProductFilterService.new(filters: { custom: }, brands: [@brand]).filter.products.pluck(:product_id)
   end
 end

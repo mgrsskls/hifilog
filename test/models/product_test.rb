@@ -235,16 +235,32 @@ class ProductTest < ActiveSupport::TestCase
     assert_not_includes product.meta_desc, 'documented on HiFi Log'
   end
 
-  # The filter matches on the stored unit string, so a value saved in pounds would be
-  # unreachable by any weight filter. Normalising on the model rather than in the product form
-  # means ActiveAdmin, ProductConversionService and the console all get it too.
-  test 'saving rewrites a custom attribute value into its canonical unit' do
+  # Figures are stored in the unit the source states them in. Ordering on the model rather than in
+  # the product form means ActiveAdmin, ImportPromotion and the console all get it too. See
+  # docs/custom-attributes.md, "Two units".
+  test 'saving keeps a figure in the unit it was stated in' do
     product = products(:without_custom_attributes)
+    custom_attributes(:four).update!(units: %w[lb kg])
 
-    product.update!(custom_attributes: { 'weight' => { 'value' => 2, 'unit' => 'lb' } })
+    product.update!(custom_attributes: { 'weight' => { 'value' => 33, 'unit' => 'lb' } })
 
-    assert_equal 'kg', product.reload.custom_attributes.dig('weight', 'unit')
-    assert_in_delta 0.90718474, product.custom_attributes.dig('weight', 'value'), 0.000001
+    assert_equal({ 'value' => 33, 'unit' => 'lb' }, product.reload.custom_attributes['weight'])
+  end
+
+  test 'saving puts the metric figure of two stated figures into value' do
+    product = products(:without_custom_attributes)
+    custom_attributes(:four).update!(units: %w[lb kg])
+
+    product.update!(
+      custom_attributes: {
+        'weight' => { 'value' => 33, 'unit' => 'lb', 'second' => { 'value' => 15, 'unit' => 'kg' } }
+      }
+    )
+
+    assert_equal(
+      { 'value' => 15, 'unit' => 'kg', 'second' => { 'value' => 33, 'unit' => 'lb' } },
+      product.reload.custom_attributes['weight']
+    )
   end
 
   test 'saving leaves a value already in its canonical unit untouched' do

@@ -282,4 +282,22 @@ namespace :import do
       end
     end
   end
+
+  # A one-off: pending candidates state both figures of a unit pair in their snippet ("16 kg /
+  # 35 lbs") but store only one. Prints what it would change; APPLY=1 writes it. See
+  # docs/import.md, "Two units".
+  desc 'Add the second stated figure of a unit pair to pending candidates (APPLY=1 to write)'
+  task second_figures: :environment do
+    apply = ENV['APPLY'] == '1'
+    results = ImportCandidateSecondFigures.new.call(apply:)
+
+    results.each do |result|
+      puts format('%<id>8d  %-10<label>s %-8<outcome>s %<detail>s',
+                  id: result.candidate.id, label: result.label, outcome: result.outcome, detail: result.detail)
+    end
+
+    counts = results.map(&:outcome).tally
+    puts "#{counts.fetch(:added, 0)} second figure(s), #{counts.fetch(:conflict, 0)} conflict(s)."
+    puts 'Dry run: nothing was written. Run with APPLY=1 to write.' unless apply
+  end
 end

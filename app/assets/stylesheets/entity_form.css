@@ -171,6 +171,17 @@
 	grid-column: 1 / -1;
 }
 
+/* Two stated figures of a unit pair that disagree. See docs/custom-attributes.md, "Two units". */
+.EntityFormAttribute-warning {
+	color: var(--color-invalid-copy);
+	margin-block: 0;
+	font-size: 0.875rem;
+}
+
+.EntityFormAttribute-warning[hidden] {
+	display: none;
+}
+
 .EntityForm-attribute:not([hidden]) ~ .EntityForm-attribute {
 	border-block-start: var(--border-light);
 }

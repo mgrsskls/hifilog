@@ -517,6 +517,65 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     saved&.destroy
   end
 
+  # A unit pair has one form row for each unit, metric first. See docs/custom-attributes.md,
+  # "Two units".
+  test 'create stores both rows of a unit pair' do
+    saved = create_with_custom_attributes(
+      'Two figures product xyz',
+      'weight' => { 'value' => '15', 'unit' => 'kg', 'second' => { 'value' => '33', 'unit' => 'lb' } }
+    )
+
+    assert_equal({ 'value' => 15.0, 'unit' => 'kg', 'second' => { 'value' => 33.0, 'unit' => 'lb' } },
+                 saved.custom_attributes['weight'])
+  ensure
+    saved&.destroy
+  end
+
+  test 'create stores a figure of the second row alone in value' do
+    saved = create_with_custom_attributes(
+      'Imperial only product xyz',
+      'weight' => { 'value' => '', 'unit' => 'kg', 'second' => { 'value' => '33', 'unit' => 'lb' } },
+      'dimensions' => {
+        'value' => { 'w' => '' }, 'unit' => 'cm', 'second' => { 'value' => { 'w' => '17' }, 'unit' => 'in' }
+      }
+    )
+
+    assert_equal({ 'value' => 33.0, 'unit' => 'lb' }, saved.custom_attributes['weight'])
+    assert_equal({ 'value' => { 'w' => 17.0 }, 'unit' => 'in' }, saved.custom_attributes['dimensions'])
+  ensure
+    saved&.destroy
+  end
+
+  test 'create drops a unit pair whose rows are both empty' do
+    saved = create_with_custom_attributes(
+      'Empty pair product xyz',
+      'weight' => { 'value' => '', 'unit' => 'kg', 'second' => { 'value' => '', 'unit' => 'lb' } }
+    )
+
+    assert_not saved.custom_attributes.key?('weight')
+  ensure
+    saved&.destroy
+  end
+
+  test 'create drops a number attribute that is not sent as a hash' do
+    saved = create_with_custom_attributes('Scalar number product xyz', 'weight' => '5')
+
+    assert_not saved.custom_attributes.key?('weight')
+  ensure
+    saved&.destroy
+  end
+
+  test 'create stores no entry when the only figure is a second figure the definition cannot place' do
+    saved = create_with_custom_attributes(
+      'Misplaced second product xyz',
+      'weight' => { 'value' => '', 'unit' => 'kg', 'second' => { 'value' => '33', 'unit' => 'kg' } }
+    )
+
+    assert_not saved.custom_attributes.key?('weight')
+  ensure
+    saved&.destroy
+  end
+
   test 'create keeps only the readable inputs of a multi input number' do
     brand = brands(:one)
     sub_category = brand.sub_categories.first
@@ -713,5 +772,25 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     create = ->(name) { Product.create!(name: "#{name} #{token}", brand: brands(:one), sub_categories: [sub_category]) }
 
     [create.call('Source'), Array.new(count) { |index| create.call("Candidate #{index}") }]
+  end
+
+  def create_with_custom_attributes(name, custom_attributes)
+    custom_attributes(:four).update!(units: %w[lb kg])
+    brand = brands(:one)
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name:,
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [brand.sub_categories.first.id],
+        custom_attributes:,
+        product_options_attributes: {}
+      }
+    }
+
+    Product.find_by!(name:)
   end
 end

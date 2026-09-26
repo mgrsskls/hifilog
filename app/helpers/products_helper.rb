@@ -17,6 +17,21 @@ module ProductsHelper
     category&.sub_category_ids
   end
 
+  # The lines of a number entry as HTML: "Width: 43 cm / 17 in", or "15 kg / 33 lb". See
+  # CustomAttributeReading.
+  def custom_attribute_reading_lines(definition, entry)
+    CustomAttributeReading.new(definition, entry).lines.map do |line|
+      text = safe_join(line.figures.map { |figure| custom_attribute_figure(figure) }, ' / ')
+      line.input ? safe_join([t("custom_attribute_inputs.#{line.input}"), ': ', text]) : text
+    end
+  end
+
+  def custom_attribute_figure(figure)
+    return figure.number if figure.unit.blank?
+
+    safe_join([figure.number, ' ', safe_unit_entities(t("custom_attribute_units.#{figure.unit}"))])
+  end
+
   def products_index_item_list_json_ld(products:, canonical_url: nil)
     product_items_item_list_json_ld(products:, name: products_index_item_list_name, canonical_url:)
   end

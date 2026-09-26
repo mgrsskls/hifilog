@@ -112,44 +112,145 @@ data, so a test checks them.
 The filter applies its own minimum and maximum for each facet. Thus, the three shapes work in the
 same way.
 
-## 4. Units and conversion
+## 4. Two units
 
-Two units on one definition mean _the same quantity in the other system_. The filter and the
-display convert between the two.
+Two units on one definition are two systems for the same quantity, for example `kg` and `lb`, or
+`cm` and `in`.
 
 - **`CustomAttribute::UNIT_CONVERSIONS`** is the only table of the unit pairs and their factors.
-- `UNIT_EQUIVALENTS` gives the reverse direction. Thus, the display can show the two values from
-  each side.
-- A definition can have two units only when the pair is in the table. Add a unit to the table only
-  when a conversion to it is necessary.
+- `UNIT_EQUIVALENTS` gives the reverse direction.
+- A definition can have two units only when the two are a pair in the table
+  (`CustomAttribute#unit_pair?`). Add a unit to the table only when a conversion to it is
+  necessary.
 
 Two readings that no factor relates are not two units. `loudspeaker_sensitivity` had dB@1W/1m and
 dB@2.83V/1m as units until qualifiers existed. It now has one unit, dB, and the drive reference is
 a qualifier (see §5). Put a second reading of one figure in `qualifiers`, never in `units`.
 
-The display and `entity_form.js` still test that a pair is in the table before they convert. That
-test is a guard, not a special case for one attribute: where two units do not convert, the display
-shows one value only and the form relabels the number instead of converting it.
+### 4.1 Stored figures
 
-### 4.1 Values are normalised on write
+An entry stores **the figures that the source states, in the unit of the source**. The application
+does not convert a figure when it writes it.
 
-**Reads do not convert. Thus, writes normalise the values.** `Product` calls
-`CustomAttribute.normalize_units` before save. After that, the stored unit is always the canonical
-unit. The filter normalises the submitted range and then compares it with the stored `unit`
-string. The normalisation is in the model and not in the product form. Thus, ActiveAdmin,
-`ProductConversionService` and the console also normalise. The migration
-`NormalizeStoredCustomAttributeUnits` changed the older values one time.
+```jsonc
+"weight": { "value": 15, "unit": "kg" }
+"weight": { "value": 33, "unit": "lb" }
+"weight": { "value": 15, "unit": "kg", "second": { "value": 33, "unit": "lb" } }
+"dimensions": {
+  "value": { "w": 43, "h": 12, "l": 35 }, "unit": "cm",
+  "second": { "value": { "w": 17, "h": 4.7, "l": 13.8 }, "unit": "in" }
+}
+```
 
-### 4.2 Units in the product form
+- `value` and `unit` hold one stated figure. `second` holds the figure in the other unit of the
+  pair, when the source states it too.
+- When the source states both figures, the metric figure is in `value` and the imperial figure is
+  in `second`. Thus, the same two figures always have the same shape, and the changelog does not
+  show a change when a contributor enters the same figures in a different order.
+- An entry with one figure keeps it in its unit, also when that unit is imperial.
+- A qualifier applies to the entry, so there is one qualifier for the two figures.
 
-The unit radio buttons in the product form set **the unit of the typed number**. They are not a
-display preference. When the user selects a different unit, `entity_form.js` converts the number.
-When the two units are not a pair, it only changes the label.
+`Product` calls `CustomAttribute.prune_unsupported_keys` and then `CustomAttribute.order_figures`
+before save:
+
+- `prune_unsupported_keys` removes a `second` when the definition has no unit pair, when its unit
+  is not the other unit of `unit`, or when it holds no figure.
+- `order_figures` moves the metric figure into `value`. When an entry has a `second` but no
+  `value`, it moves `second` into `value`. It removes an entry that holds no figure after these
+  steps. Such an entry shows "n/a" and counts as filled for the completeness score.
+
+These steps are in the model and not in the product form. Thus, ActiveAdmin, `ImportPromotion`,
+`ProductConversionService` and the console write the same shape.
+
+Before figures were stored in the unit of the source, the application converted each figure into
+the metric unit on save. The migration `RestoreStatedImperialFigures` put back the imperial figures
+that were converted in this way. It finds them because the conversion is an exact multiplication:
+14.96850821 kg is exactly 33 lb. It restores an entry when both conditions are true:
+
+- The metric figure has more decimals than a brand states in that unit: more than three for `kg`,
+  more than one for `cm`, more than two for `m`.
+- Converted back, it gives an imperial figure with at most two decimals.
+
+The first condition protects a stated figure that is by chance an exact conversion: 127 cm is
+exactly 50 in, but it has no decimals. The threshold depends on the unit because the factors
+differ: every pound figure becomes a long number in kilograms, but a whole inch figure becomes a
+centimetre figure with two decimals at most (17 in is 43.18 cm).
+
+An entry without a unit reads in the first unit of the definition, on the product page and in the
+product form.
+
+### 4.2 Display
+
+`CustomAttributeReading` gives the reading of an entry. All display sites use it: the product page,
+the product card, the changelog, the admin activity list and the import candidate view.
+
+- A stated figure is shown as stored.
+- When the definition has a unit pair and the entry states one figure only, the other figure
+  follows, converted.
+- A converted figure is rounded to the significant figures of the stated figure, but to no fewer
+  than two (`CustomAttribute::MIN_SIGNIFICANT_FIGURES`). Thus, a conversion is not more precise than
+  its source.
+
+| Stored              | Shown             |
+| ------------------- | ----------------- |
+| 15 kg               | 15 kg / 33 lb     |
+| 33 lb               | 33 lb / 15 kg     |
+| 15 kg, second 34 lb | 15 kg / 34 lb     |
+| 1.35 kg             | 1.35 kg / 2.98 lb |
+| 0.2 kg              | 0.2 kg / 0.44 lb  |
+| 15 cm               | 15 cm / 5.9 in    |
+
+The significant figures come from the stored number. Zeros after the decimal point are lost when a
+figure is stored, so "15.0" counts two significant figures.
+
+The product card has space for one figure. It shows the metric figure, stated or converted. Thus,
+a list never shows "15 kg" next to "33 lb".
+
+The changelog and the admin activity list show the second figure too. Without it, a change of the
+second figure alone shows the same text before and after the change.
+
+### 4.3 Filtering
+
+The visitor selects a unit and a range. The filter compares each product with its figure in the
+selected unit:
+
+1. The stated figure in that unit, from `value` or `second`.
+2. If there is none, the figure in the other unit, converted and rounded like on the product page.
+
+Thus, the product page and the filter agree: "15 kg" shows as "33 lb" and the filter "up to 33 lb"
+finds it. `ProductFilterService#converted_figure_sql` does the rounding in SQL. It must count the
+significant figures in the same way as `CustomAttribute.significant_figures`. A test compares the
+two.
+
+A range needs a unit. The unit radio buttons in the filter become required when the visitor types
+a range. The server ignores a range without a unit, because neither unit is a safe guess. This
+applies to old links and to changed URLs.
+
+The comparison is a calculation for each row, like all range filters. The GIN index on
+`products.custom_attributes` cannot serve it. An expression index for each attribute and unit is
+possible later.
+
+### 4.4 Product form
+
+For a definition with a unit pair, the product form shows one row for each unit, the metric row
+first. The contributor fills in the rows for the figures that the source states: one row or both.
+The form has no unit radio buttons for these definitions, and it converts nothing.
+
+When both rows hold a figure, `entity_form.js` shows a warning if the two figures cannot describe
+the same measurement. The rule is in `CustomAttribute.figures_agree?`:
+
+- A figure stands for a range: half of its last decimal place in each direction. "0.7 lb" is 0.65
+  to 0.75 lb, which is 0.295 to 0.340 kg.
+- The two figures agree when their ranges overlap after conversion. Thus, "0.3 kg" agrees with
+  "0.7 lb", although the two differ by 5.8 %.
+
+A fixed percentage cannot do this: it is too strict for figures with few digits and too lenient for
+figures with many digits. The contributor can save with the warning, because the figures of a
+brand sometimes disagree.
 
 `parseTypedNumber` reads the typed numbers, not `parseFloat`. It finds the decimal separator and
 does not cut the number. The controller parses the number again on the server, for the case when
-the JavaScript did not run. The unit radio buttons of the filter sidebar are different: those
-numbers are the query of the visitor, not a stored value.
+the JavaScript did not run.
 
 ## 5. Qualifiers
 
@@ -202,21 +303,18 @@ tighter condition — see [contribution-guidelines.md](contribution-guidelines.m
 
 `unit` and `qualifier` are strings that the caller chooses, and nothing in the database constrains
 them. `CustomAttribute.prune_unsupported_keys` therefore removes a blank value and a value that the
-definition does not declare. `Product` calls it in `before_save`, beside `normalize_units` and
-before it, so a unit the definition does not offer is dropped and not used as the basis of a
-conversion.
+definition does not declare. `Product` calls it in `before_save`, before `order_figures` (§4.1).
 
 "Declares none" means different things for the two keys, so they are treated differently:
 
 - A definition with **no units** says nothing about units, and the filter says nothing either: it
   applies a unit predicate only when the definition has some. A stored unit is therefore kept. To
-  remove it would accomplish nothing and would stop the normalisation, which needs the unit to
-  convert from.
+  remove it would accomplish nothing.
 - A definition with **no qualifiers** asks no question about the condition, so a stored condition is
   not an answer. It is removed. It would otherwise still show on the product page, because the
   display reads the entry and not the definition.
 
-It is on the model and not in the products controller, for the same reason as the normalisation:
+It is on the model and not in the products controller, for the same reason as `order_figures`:
 every write path lands here — the product form, ActiveAdmin, `ImportPromotion`,
 `ProductConversionService` and the console. An import candidate is the case that makes this
 necessary rather than tidy: it holds the specs the extractor wrote, `ImportPromotion` copies them
@@ -228,8 +326,8 @@ would report a condition that is not there and every reader would need a third c
 ### 5.4 Filtering
 
 The qualifier is a facet that the visitor selects, with two states. Nothing selected adds no
-condition to the query. Equality, as for the unit, would give almost no results: a value cannot be
-normalised into a condition that nobody measured, and the coverage is low. One or more selected
+condition to the query. Equality would give almost no results: a value cannot be changed into a
+condition that nobody measured, and the coverage is low. One or more selected
 conditions give an `OR` of `@>` containment tests, which the GIN index on
 `products.custom_attributes` can use.
 

@@ -274,22 +274,14 @@ class AdminVersionActivityPresenter
     end
   end
 
+  # The second figure is part of the reading (CustomAttributeReading): without it, a change of
+  # the second figure alone would read as the same value before and after.
   def measured_value(definition, value)
-    unit = value['unit'].presence || definition&.units&.first
-    unit_text = I18n.t("custom_attribute_units.#{unit}", default: unit.to_s) if unit.present?
-    inner = value['value']
-
-    text = if inner.is_a?(Hash)
-             inner.map do |key, number|
-               "#{I18n.t("custom_attribute_inputs.#{key}", default: key)}: #{number(number)}"
-             end.join(', ')
-           elsif inner.present?
-             number(inner)
-           else
-             'n/a'
-           end
-    # Unit texts can contain an HTML entity (&ohm;).
-    reading = [text, unit_text].compact.join(' ').gsub('&ohm;', 'Ω')
+    lines = CustomAttributeReading.new(definition, value).lines.map do |line|
+      text = line.figures.map { |figure| figure_text(figure) }.join(' / ')
+      line.input ? "#{I18n.t("custom_attribute_inputs.#{line.input}", default: line.input)}: #{text}" : text
+    end
+    reading = lines.any? ? lines.join(', ') : 'n/a'
 
     # Without the condition, a change of the condition alone reads as the same value before and
     # after, so the row looks like a change that did not happen.
@@ -302,7 +294,11 @@ class AdminVersionActivityPresenter
     key ? I18n.t("custom_attributes.#{key}", default: key) : id.to_s
   end
 
-  def number(value)
-    @view.number_with_precision(value, precision: 4, strip_insignificant_zeros: true)
+  def figure_text(figure)
+    return figure.number if figure.unit.blank?
+
+    # Unit texts can contain an HTML entity (&ohm;).
+    unit = I18n.t("custom_attribute_units.#{figure.unit}", default: figure.unit.to_s).gsub('&ohm;', 'Ω')
+    "#{figure.number} #{unit}"
   end
 end

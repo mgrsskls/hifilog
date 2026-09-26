@@ -19,6 +19,7 @@ import "./_search.js";
 	const sortSelect = document.querySelector("#sort-select");
 	const selectCategory = document.querySelector(".SelectCategory");
 	const searchFilterForm = document.getElementById("search-filter");
+	const filterUnits = document.querySelectorAll("[data-filter-units]");
 
 	if (profileMenu) {
 		const mq = window.matchMedia("(width < 48rem)");
@@ -78,6 +79,26 @@ import "./_search.js";
 
 	eventsFilter.forEach((filter) => {
 		filter.addEventListener("change", onEventsFilterChange);
+	});
+
+	// A unit pair needs a unit once a range is filled. See docs/custom-attributes.md, "Two units".
+	filterUnits.forEach((units) => {
+		const ranges = units
+			.closest(".Filter-fieldset")
+			.querySelectorAll(".Filter-input");
+		const radios = units.querySelectorAll('[type="radio"]');
+		const update = () => {
+			const filled = Array.from(ranges).some(
+				(input) => input.value.trim() !== "",
+			);
+
+			radios.forEach((radio) => {
+				radio.required = filled;
+			});
+		};
+
+		ranges.forEach((input) => input.addEventListener("input", update));
+		update();
 	});
 
 	if (headerToggle) {

@@ -124,7 +124,12 @@
           </ul>
         <% elsif custom_attribute.input_type.present? %>
           <% if custom_attribute.units.present? && custom_attribute.units.length > 1 %>
-            <div class="Filter-units u-flex u-alignCenter u-gap-md u-mb-sm">
+            <%#
+              A unit pair compares each product in the selected unit, so a range needs one:
+              application.js makes the radios required once a range is filled, and the server
+              ignores a range without a unit. See docs/custom-attributes.md, "Two units".
+            %>
+            <div class="Filter-units u-flex u-alignCenter u-gap-md u-mb-sm"<%= " data-filter-units" if custom_attribute.unit_pair? %>>
               <% custom_attribute.units.each do |unit| %>
                 <div class="u-flex u-alignCenter u-gap-sm">
                   <input
