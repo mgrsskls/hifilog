@@ -40,5 +40,8 @@ Users store which version they accepted and when.
   custom product and product option names. An admin session has full access, thus HTML in such a
   name must not become markup. The admin code does not mark a string that contains such a name as
   HTML safe. It builds markup with `safe_join` and `tag`, which escape the name.
+- **Uploads**: the images of possessions and custom products and the avatar accept only JPEG,
+  WebP, PNG and GIF files. An image can be 10 MB at most, an avatar 5 MB. The model validates
+  this when a record is created and when it changes.
 - A **content security policy** applies to all pages.
 - A **Turnstile** bot challenge protects registration and password reset.

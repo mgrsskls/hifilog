@@ -107,6 +107,18 @@ class UserTest < ActiveSupport::TestCase
     user.avatar.purge if user.avatar.attached?
   end
 
+  test 'rejects non image avatar types on a new user' do
+    user = User.new(email: 'new-avatar@example.com', user_name: 'new_avatar', password: 'passwordpassword')
+    user.avatar.attach(
+      io: StringIO.new('not an image'),
+      filename: 'note.txt',
+      content_type: 'text/plain'
+    )
+
+    assert_not user.valid?
+    assert user.errors[:avatar_content_type].present?
+  end
+
   test 'rejects avatar files larger than five megabytes on update' do
     user = users(:one)
     user.avatar.attach(

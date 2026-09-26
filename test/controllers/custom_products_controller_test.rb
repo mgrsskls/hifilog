@@ -206,6 +206,36 @@ class CustomProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
   end
 
+  test 'create rejects a file that is not an image and stores nothing' do
+    sign_in users(:one)
+    page = Rack::Test::UploadedFile.new(StringIO.new('<html><body>page</body></html>'), 'text/html',
+                                        original_filename: 'page.html')
+
+    assert_no_difference(['CustomProduct.count', 'ActiveStorage::Blob.count']) do
+      post custom_products_url, params: {
+        custom_product: { name: 'Upload on create', sub_category_ids: [sub_categories(:one).id], images: [page] }
+      }
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test 'create keeps an image' do
+    sign_in users(:one)
+    pixel = Base64.decode64(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+    )
+    photo = Rack::Test::UploadedFile.new(StringIO.new(pixel), 'image/png', original_filename: 'photo.png')
+
+    assert_difference('CustomProduct.count') do
+      post custom_products_url, params: {
+        custom_product: { name: 'Image on create', sub_category_ids: [sub_categories(:one).id], images: [photo] }
+      }
+    end
+
+    assert_equal ['image/png'], CustomProduct.last.images.map(&:content_type)
+  end
+
   test 'update clears highlighted image when flagged for removal' do
     custom_product = custom_products(:three)
     pixel = Base64.decode64(

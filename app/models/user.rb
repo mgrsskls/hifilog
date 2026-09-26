@@ -84,7 +84,7 @@ class User < ApplicationRecord
   validates :reset_password_token, uniqueness: true, allow_nil: true
   validates :unlock_token, uniqueness: true, allow_nil: true
   validates :user_name, presence: true, uniqueness: { case_sensitive: false }
-  validate :validate_avatar_content_type, :validate_avatar_file_size, on: :update
+  validate :validate_avatar_content_type, :validate_avatar_file_size
 
   after_commit :invalidate_cache
   after_commit :record_profile_image_upload_activities, on: :update

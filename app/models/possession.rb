@@ -57,7 +57,7 @@ class Possession < ApplicationRecord
     attachable.variant :large, resize_to_limit: [1200, 1200], format: :webp
   end
 
-  validate :validate_image_content_type, :validate_image_file_size, on: :update
+  validate :validate_image_content_type, :validate_image_file_size
 
   attr_accessor :delete_image
 

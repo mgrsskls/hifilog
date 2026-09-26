@@ -49,6 +49,30 @@ class ImageTest < ActiveSupport::TestCase
     assert custom_product.errors[:image_file_size].any?
   end
 
+  test 'validates the images of a new custom product' do
+    custom_product = users(:one).custom_products.new(name: 'New with upload', sub_categories: [sub_categories(:one)])
+    custom_product.images.attach(
+      io: StringIO.new('<html><body>page</body></html>'),
+      filename: 'page.html',
+      content_type: 'text/html'
+    )
+
+    assert_not custom_product.valid?
+    assert custom_product.errors[:image_content_type].any?
+  end
+
+  test 'validates the images of a new possession' do
+    possession = Possession.new(user: users(:visible), product: products(:one))
+    possession.images.attach(
+      io: StringIO.new('<html><body>page</body></html>'),
+      filename: 'page.html',
+      content_type: 'text/html'
+    )
+
+    assert_not possession.valid?
+    assert possession.errors[:image_content_type].any?
+  end
+
   test 'mirrors validations on Possession updates' do
     possession = possessions(:current_product)
     possession.images.purge if possession.images.attached?

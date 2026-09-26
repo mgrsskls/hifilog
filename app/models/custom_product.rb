@@ -21,7 +21,7 @@ class CustomProduct < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :user }
   validates :slug, presence: true, uniqueness: { scope: :user }
   validates :sub_categories, presence: true
-  validate :validate_image_content_type, :validate_image_file_size, on: :update
+  validate :validate_image_content_type, :validate_image_file_size
 
   after_commit :record_custom_product_user_activity, on: :create
   after_commit :create_owner_possession, on: :create
