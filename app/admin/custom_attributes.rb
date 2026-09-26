@@ -1,7 +1,7 @@
 ActiveAdmin.register CustomAttribute do
   # option_scopes is { sub_category_id => [option ids] }, so its keys are ids rather than a
   # fixed list -- `{}` is how strong parameters permits a hash whose keys are not known ahead.
-  permit_params :label, :highlighted, :input_type, :options_editor,
+  permit_params :label, :highlighted, :input_type, :options_editor, :display_group, :display_position,
                 units: [], inputs: [], qualifiers: [], sub_category_ids: [],
                 options_attributes: [:key, :value],
                 option_scopes: {}
@@ -14,6 +14,15 @@ ActiveAdmin.register CustomAttribute do
     f.inputs do
       f.input :label
       f.input :highlighted
+      # Where the attribute shows on the product page, in the product form and in the filter:
+      # first by group, then by position inside the group. See docs/custom-attributes.md,
+      # "Display order".
+      f.input :display_group, as: :select, include_blank: false,
+                              collection: CustomAttribute::DISPLAY_GROUPS.map { |group|
+                                [t("custom_attribute_groups.#{group}"), group]
+                              }
+      f.input :display_position,
+              hint: "Lower numbers show first in the group. Leave gaps (10, 20, 30) to add attributes later."
       f.inputs do
         f.input :input_type, as: :radio, collection: CustomAttribute.input_types.keys
       end
@@ -92,6 +101,8 @@ ActiveAdmin.register CustomAttribute do
 
     column :input_type
     column "Key spec", :highlighted
+    column "Group", sortable: :display_group, &:display_group_name
+    column "Position", :display_position
 
     # What the product form will actually render: the choices for an option type, the units and
     # fields for a measurement. A boolean has neither, and shows nothing.
@@ -181,6 +192,8 @@ ActiveAdmin.register CustomAttribute do
       row :label
       row :input_type
       row :highlighted
+      row("Group", &:display_group_name)
+      row :display_position
       row "Options" do |custom_attribute|
         next unless custom_attribute.options.present?
 

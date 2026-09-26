@@ -7,13 +7,21 @@
   A qualifier, where the entry has one, follows the reading in parentheses. There is one for
   the whole entry, so a multi-input value carries it once, after the last input.
 %>
+<%#
+  The rows follow the display order of the definitions (CustomAttribute.group_for_display), not
+  the key order of the product's jsonb. Each group gets a heading and its own list. A group
+  without a value on this product is not shown. See docs/custom-attributes.md, "Display order".
+%>
 <% css_class ||= "Data" %>
-<div class="Entity-section">
-  <h2>Characteristics</h2>
-  <dl class="<%= css_class %>">
-    <% Array(attributes).sort.each do |ca| %>
-      <% active_record = custom_attributes[ca[0]] %>
-      <% if active_record.present? %>
+<% values = attributes.to_h %>
+<% definitions = (custom_attributes || {}).values_at(*values.keys).compact %>
+<div class="Entity-section Specifications">
+  <h2>Specifications</h2>
+  <% CustomAttribute.group_for_display(definitions).each do |group, group_definitions| %>
+    <h3><%= t("custom_attribute_groups.#{group}") %></h3>
+    <dl class="<%= css_class %>">
+      <% group_definitions.each do |active_record| %>
+        <% ca = [active_record.label, values[active_record.label]] %>
         <dt><%= t("custom_attribute_labels.#{ca[0]}") %></dt>
         <dd>
           <% if ca[1].is_a?(Hash) %>
@@ -50,6 +58,6 @@
           <% end %>
         </dd>
       <% end %>
-    <% end %>
-  </dl>
+    </dl>
+  <% end %>
 </div>

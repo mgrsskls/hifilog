@@ -52,7 +52,8 @@
 
 <% custom_attributes_html = capture do %>
   <% if custom_attributes&.any? %>
-    <% custom_attributes.order(:label).each do |custom_attribute| %>
+    <%# Display order, without group headings: see docs/custom-attributes.md, "Display order". %>
+    <% CustomAttribute.sort_for_display(custom_attributes).each do |custom_attribute| %>
       <%
         param = params.dig(:products, custom_attribute.label)
 

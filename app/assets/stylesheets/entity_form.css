@@ -109,6 +109,29 @@
 	display: grid;
 }
 
+/* One group for each custom attribute display group. It passes the grid of
+   .EntityFormAttributes to its attributes, so the labels of all groups stay in one column. */
+.EntityFormAttributes-group {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+}
+
+/* No visible attribute for the selected sub categories: hide the group with its heading. */
+.EntityFormAttributes-group:not(:has(.EntityForm-attribute:not([hidden]))) {
+	display: none;
+}
+
+.EntityFormAttributes-group:has(.EntityForm-attribute:not([hidden]))
+	~ .EntityFormAttributes-group {
+	margin-block-start: 1.5rem;
+}
+
+.EntityFormAttributes-groupHeading {
+	grid-column: 1 / -1;
+	color: var(--color-secondary);
+}
+
 .EntityForm-attribute {
 	padding-block: 1rem;
 	grid-column: 1 / -1;

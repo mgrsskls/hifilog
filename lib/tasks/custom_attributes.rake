@@ -43,6 +43,8 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     label: 'amplifier_output_power',
     input_type: 'number',
     highlighted: false,
+    display_group: 'performance',
+    display_position: 10,
     units: %w[w],
     # Power is quoted per load impedance. Two rather than three: 2 ohms is a niche
     # specification, and once this is highlighted every field is one more blank a contributor
@@ -59,6 +61,8 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     label: 'headphone_amplifier_output_power',
     input_type: 'number',
     highlighted: false,
+    display_group: 'performance',
+    display_position: 20,
     units: %w[w],
     # Separate from the above rather than one attribute offering all five impedances:
     # `inputs` is what the product form renders as fields, and a power amplifier has no
@@ -93,6 +97,8 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     label: 'input_connectors',
     input_type: 'options',
     highlighted: false,
+    display_group: 'connectivity',
+    display_position: 10,
     options: %w[rca xlr usb_b usb_c spdif_coaxial toslink aes_ebu i2s bnc hdmi_arc ethernet bluetooth],
     sub_categories: %w[
       integrated-amplifiers pre-amplifiers power-amplifiers receivers
@@ -124,6 +130,8 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     label: 'output_connectors',
     input_type: 'options',
     highlighted: false,
+    display_group: 'connectivity',
+    display_position: 20,
     options: %w[rca xlr spdif_coaxial toslink aes_ebu i2s bnc hdmi],
     sub_categories: %w[
       pre-amplifiers phono-pre-amplifiers dacs cd-sacd-players
@@ -150,6 +158,8 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     label: 'headphone_outputs',
     input_type: 'options',
     highlighted: false,
+    display_group: 'connectivity',
+    display_position: 40,
     options: %w[jack_3_5mm jack_4_4mm jack_6_35mm xlr_4pin],
     sub_categories: %w[
       headphone-amplifiers daps dacs cd-sacd-players integrated-amplifiers receivers
@@ -169,6 +179,8 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     label: 'speaker_outputs',
     input_type: 'options',
     highlighted: false,
+    display_group: 'connectivity',
+    display_position: 30,
     options: %w[binding_posts speakon spring_clips],
     sub_categories: %w[power-amplifiers integrated-amplifiers receivers]
   }
@@ -197,6 +209,8 @@ namespace :custom_attributes do
     record.assign_attributes(
       input_type: declaration[:input_type],
       highlighted: declaration[:highlighted],
+      display_group: declaration[:display_group],
+      display_position: declaration[:display_position],
       units: declaration[:units] || [],
       inputs: declaration[:inputs] || [],
       qualifiers: declaration[:qualifiers] || []
@@ -312,6 +326,8 @@ namespace :custom_attributes do
       persisted: record.persisted?,
       input_type: record.input_type,
       highlighted: record.highlighted,
+      display_group: record.display_group,
+      display_position: record.display_position,
       units: record.units.to_a.sort,
       inputs: record.inputs.to_a.sort,
       qualifiers: record.qualifiers.to_a.sort,

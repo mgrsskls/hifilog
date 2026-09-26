@@ -47,6 +47,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'nominal_impedance',
       highlighted: false,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'boolean'
     )
 
@@ -62,6 +64,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'no_such_label_in_the_locale_file',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'boolean'
     )
 
@@ -94,6 +98,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'nominal_impedance',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'option',
       options: { '1' => 'solid_state', '2' => 'not_a_translated_option' }
     )
@@ -109,6 +115,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'nominal_impedance',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'option',
       options: { '1' => 'not_a_translated_option' }.to_json
     )
@@ -144,6 +152,47 @@ class CustomAttributeTest < ActiveSupport::TestCase
     end
 
     assert_empty untranslated
+  end
+
+  test 'every display group has a custom_attribute_groups translation' do
+    untranslated = CustomAttribute::DISPLAY_GROUPS.reject do |group|
+      I18n.exists?("custom_attribute_groups.#{group}")
+    end
+
+    assert_empty untranslated
+  end
+
+  test 'requires a known display group and an integer display position' do
+    record = custom_attributes(:one)
+    record.display_group = 'acoustics'
+    record.display_position = nil
+
+    assert_not record.valid?
+    assert_includes record.errors.attribute_names, :display_group
+    assert_includes record.errors.attribute_names, :display_position
+  end
+
+  test 'sort_for_display orders by group, then position, then label' do
+    physical = CustomAttribute.new(label: 'weight', display_group: 'physical', display_position: 10)
+    design_late = CustomAttribute.new(label: 'assembly', display_group: 'design', display_position: 20)
+    design_early = CustomAttribute.new(label: 'cartridge_type', display_group: 'design', display_position: 10)
+    tie = CustomAttribute.new(label: 'amplifier_type', display_group: 'design', display_position: 20)
+    performance = CustomAttribute.new(label: 'nominal_impedance', display_group: 'performance', display_position: 5)
+
+    sorted = CustomAttribute.sort_for_display([physical, design_late, performance, tie, design_early])
+
+    assert_equal %w[cartridge_type amplifier_type assembly nominal_impedance weight], sorted.map(&:label)
+  end
+
+  test 'group_for_display returns only groups that have definitions, in group order' do
+    weight = CustomAttribute.new(label: 'weight', display_group: 'physical', display_position: 20)
+    dimensions = CustomAttribute.new(label: 'dimensions', display_group: 'physical', display_position: 10)
+    assembly = CustomAttribute.new(label: 'assembly', display_group: 'design', display_position: 10)
+
+    grouped = CustomAttribute.group_for_display([weight, assembly, dimensions])
+
+    assert_equal %w[design physical], grouped.map(&:first)
+    assert_equal %w[dimensions weight], grouped.last.last.map(&:label)
   end
 
   test 'every valid qualifier has a custom_attribute_qualifiers translation' do
@@ -481,6 +530,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'headphone_sensitivity',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'number',
       units: %w[km]
     )
@@ -494,6 +545,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'loudspeaker_recommended_amplifier_power',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'number',
       inputs: %w[width]
     )
@@ -515,6 +568,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'loudspeaker_recommended_amplifier_power',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'number',
       inputs: %w[ohm_8 ohm_4],
       units: %w[w]
@@ -529,6 +584,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'frequency_response_range',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'number',
       units: ['cm', nil, '', 'in'],
       inputs: ['w', '', nil],
@@ -546,6 +603,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'frequency_response_range',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'number',
       qualifiers: %w[at_midnight]
     )
@@ -564,6 +623,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'frequency_response_range',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'number',
       units: %w[hz],
       qualifiers: %w[plus_minus_3_db]
@@ -680,6 +741,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'cartridge_type',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'option',
       options: parsed.to_json
     )
@@ -694,6 +757,8 @@ class CustomAttributeTest < ActiveSupport::TestCase
     record = CustomAttribute.new(
       label: 'loudspeaker_bi_amping',
       highlighted: true,
+      display_group: 'design',
+      display_position: 10,
       input_type: 'boolean',
       options: nil
     )
@@ -824,6 +889,15 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
     assert_kind_of Array, list
     assert_equal CustomAttribute.count, list.size
+  end
+
+  # Records cached before a migration do not have the new columns. See CustomAttribute.all_cached_key.
+  test 'the all_cached key changes when the columns change' do
+    fewer_columns = Class.new(CustomAttribute) do
+      def self.column_names = super - ['display_group']
+    end
+
+    assert_not_equal CustomAttribute.all_cached_key, fewer_columns.all_cached_key
   end
   # RelatedProducts::Graph names attributes and option keys as Ruby constants, so nothing in the
   # database can enforce the reference. These guards refuse the edits that would break it.

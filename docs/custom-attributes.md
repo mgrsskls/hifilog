@@ -2,7 +2,7 @@
 
 Custom attributes are the fields for the technical values of a product: weight, impedance, driver type and
 so on. This document describes definitions and values, the naming rules, translations, units,
-qualifiers and the bulk definition task. It uses Simplified Technical English (ASD-STE100).
+qualifiers, the options, the display order and the bulk definition task. It uses Simplified Technical English (ASD-STE100).
 
 For the difference between an attribute and a product option, see
 [catalog-model.md](catalog-model.md#61-option-or-custom-attribute).
@@ -10,8 +10,10 @@ For the difference between an attribute and a product option, see
 ## 1. Definitions and values
 
 **Definitions** (`CustomAttribute`) are reusable fields. They are attached to sub categories. A
-definition has a label, an input type, options, units, qualifiers and a "highlighted" flag. The
-application caches all definitions.
+definition has a label, an input type, options, units, qualifiers, a "highlighted" flag, a
+display group and a display position (see [8. Display order](#8-display-order)). The application
+caches all definitions. The cache key contains the column names of the table, so after a migration
+the application does not use definitions that were cached with the old columns.
 
 **Values** are stored on the product as a set of key/value pairs. The key is the label of the
 attribute. Variants do not store values. Where the application shows attributes for a variant, it
@@ -98,8 +100,8 @@ This gives a deploy order: **deploy the translation before you create the attrib
 `available_option_keys` has the same order: it gives the admin a datalist of the keys that the
 locale file has.
 
-`VALID_UNITS` and `VALID_INPUTS` also need translations. They are constants, not data, so a test
-checks them.
+`VALID_UNITS`, `VALID_INPUTS` and `DISPLAY_GROUPS` also need translations. They are constants, not
+data, so a test checks them.
 
 **`inputs`** are named facets of one measurement with one unit:
 
@@ -272,3 +274,44 @@ The task is not a second source of truth. Two rules make sure of this:
   form, which can show the counts.
 - **Sub categories are identified by slug. When a slug is not found, the run stops.** The task
   must not attach a definition to fewer sub categories than intended.
+
+## 8. Display order
+
+The product page, the product form and the filter sidebar show custom attributes in the same
+order. The order does not come from the values of the product. It comes from two fields of the
+definition:
+
+- **`display_group`**: one of `CustomAttribute::DISPLAY_GROUPS`. The order of this list is the
+  order of the groups. The groups are `design`, `performance`, `connectivity` and `physical`.
+- **`display_position`**: an integer. It sets the order in the group. A lower number shows first.
+  Use gaps (10, 20, 30), so that you can add an attribute between two others without a change to
+  the others.
+
+When two definitions have the same group and position, the label sets the order. Both fields are
+mandatory. Set them in ActiveAdmin.
+
+`CustomAttribute.sort_for_display` sorts a list of definitions. `CustomAttribute.group_for_display`
+also splits the list into groups. It does not return a group that has no definitions. The sort
+runs in Ruby, not in SQL, because the order of the groups is in code. All callers have the
+definitions in memory already, so the sort does not add a query.
+
+The places show the groups differently:
+
+| Place                                                | Group headings                                                                             |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Product page, product variant page, similar products | Yes. A group without a value on the product is not shown.                                  |
+| Product form                                         | Yes. A group is hidden when none of its attributes applies to the selected sub categories. |
+| Filter sidebar                                       | No. Only the order.                                                                        |
+
+### 8.1 Add a group
+
+1. Add the key to `CustomAttribute::DISPLAY_GROUPS`, at the position where the group must show.
+2. Add the translation under `custom_attribute_groups` in the locale file. A test makes sure that
+   each group has a translation.
+3. Deploy. Then move the attributes to the new group in ActiveAdmin.
+
+When you remove a group, move its attributes to a different group first. The validation refuses
+a definition with a group that is not in the list.
+
+The bulk definition task (see [7. Create definitions in bulk](#7-create-definitions-in-bulk)) also
+declares the group and the position. When you run it, it sets these two fields again.

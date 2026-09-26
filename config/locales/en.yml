@@ -63,7 +63,7 @@ en:
         name: Name
         private: Visibility
       sub_category:
-        custom_attribute_ids: Properties
+        custom_attribute_ids: Specifications
       user:
         email: Email
         password: Password
@@ -279,6 +279,12 @@ en:
     ohm_300: Into 300 Ω
     ohm_600: Into 600 Ω
     w: Width
+  # Headings for CustomAttribute::DISPLAY_GROUPS on the product page and in the product form.
+  custom_attribute_groups:
+    connectivity: Connectivity
+    design: Design
+    performance: Performance
+    physical: Physical
   custom_attribute_labels:
     amplifier_output_power: Output power (into speakers)
     amplifier_type: Amplifier type

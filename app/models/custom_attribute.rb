@@ -59,6 +59,19 @@ class CustomAttribute < ApplicationRecord
     drive_1w_1m drive_283v_1m
   ].freeze
 
+  # The groups that the product page, the product form and the filter use to show custom
+  # attributes. The order of this list is the order of the groups. Inside a group,
+  # `display_position` sets the order. See docs/custom-attributes.md, "Display order".
+  #
+  # Each entry needs a `custom_attribute_groups` translation, because the product page and the
+  # product form show the group name with `t()` and no default. CustomAttributeTest asserts it.
+  DISPLAY_GROUPS = %w[
+    design
+    performance
+    connectivity
+    physical
+  ].freeze
+
   # Imperial unit => [the metric unit it is stored and compared in, multiplier].
   #
   # Filtering compares a submitted range against `custom_attributes -> label ->> 'unit'` after
@@ -127,6 +140,8 @@ class CustomAttribute < ApplicationRecord
   # would now refuse to save: any of them opened in ActiveAdmin could only be saved by ticking
   # Highlighted. `inclusion` is the idiom that separates "false" from "unanswered".
   validates :highlighted, inclusion: { in: [true, false] }
+  validates :display_group, presence: true, inclusion: { in: DISPLAY_GROUPS }
+  validates :display_position, presence: true, numericality: { only_integer: true }
   validate :units_must_be_valid
   validate :inputs_must_be_valid
   validate :qualifiers_must_be_valid
@@ -310,10 +325,45 @@ class CustomAttribute < ApplicationRecord
     entry.merge('value' => converted, 'unit' => canonical)
   end
 
+  # The definitions in display order: first by the position of the group in DISPLAY_GROUPS, then
+  # by `display_position`. The label is the last tie-breaker, so that the order is stable when two
+  # definitions have the same position.
+  #
+  # The sort runs in Ruby and not in SQL. The group order is in code, so SQL would need a CASE
+  # expression. There are only a few definitions, and all callers have them in memory already
+  # (all_cached, or the definitions of one product or one sub category).
+  def self.sort_for_display(definitions)
+    definitions.sort_by(&:display_sort_key)
+  end
+
+  # The same order, as [[group, [definitions]], ...]. Groups without definitions are not in the
+  # result, so a view does not show an empty heading.
+  def self.group_for_display(definitions)
+    sort_for_display(definitions).chunk_while { |a, b| a.display_group == b.display_group }
+                                 .map { |chunk| [chunk.first.display_group, chunk] }
+  end
+
+  def display_sort_key
+    [DISPLAY_GROUPS.index(display_group) || DISPLAY_GROUPS.size, display_position.to_i, label.to_s]
+  end
+
+  def display_group_name
+    I18n.t("custom_attribute_groups.#{display_group}")
+  end
+
   def self.all_cached
-    Rails.cache.fetch('all_custom_attributes') do
+    Rails.cache.fetch(all_cached_key) do
       all.to_a # .to_a executes the query and stores the array
     end
+  end
+
+  # The cache holds complete records, so the key contains the column names. A migration that adds
+  # a column writes with SQL and does not run clear_cache. Records that were cached before the
+  # migration do not have the new column and return nil for it. With the columns in the key, the
+  # first read after a schema change goes to a new entry. This is also true in production, where
+  # the cache stays through a deploy and old dynos can fill the old key during the release phase.
+  def self.all_cached_key
+    "all_custom_attributes/#{Digest::SHA256.hexdigest(column_names.join(','))[0, 12]}"
   end
 
   # { attribute_id => { sub_category_id => ["1", "2"] } }, where an empty array means every
@@ -696,7 +746,7 @@ class CustomAttribute < ApplicationRecord
   # CustomAttributeSubCategory: `attribute.sub_categories = [...]` inserts and deletes join rows
   # directly, so the join model's own callback never runs for them.
   def clear_cache
-    Rails.cache.delete('all_custom_attributes')
+    Rails.cache.delete(self.class.all_cached_key)
     self.class.clear_sub_category_scope_cache
   end
 
