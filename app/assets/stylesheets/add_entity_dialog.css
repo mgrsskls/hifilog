@@ -7,11 +7,9 @@
 }
 
 .AddEntityDialog-form {
-	display: grid;
-	grid-template-rows: auto minmax(0, 1fr) auto;
+	display: flex;
+	flex-direction: column;
 	gap: 1rem;
-	block-size: 100%;
-	max-block-size: calc(100dvb - 4rem - (2 * var(--page-spacing)));
 }
 
 .AddEntityDialog-filter input {
