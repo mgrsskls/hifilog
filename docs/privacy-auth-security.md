@@ -46,4 +46,7 @@ Users store which version they accepted and when.
   record, so the application does not use the direct upload endpoint of Active Storage. That
   endpoint needs no sign-in, thus the application answers it with 404.
 - A **content security policy** applies to all pages.
-- A **Turnstile** bot challenge protects registration and password reset.
+- A **Turnstile** bot challenge protects registration, sign-in, password reset, and the forms that
+  send the confirmation and unlock emails again. At sign-in, the challenge is checked before Devise
+  reads the form. Thus, a failed challenge does not check the password and does not count toward
+  the lockout. The admin login has no Turnstile.
