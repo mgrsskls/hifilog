@@ -33,6 +33,8 @@ Users store which version they accepted and when.
 ## 3. Security
 
 - **Rack::Attack** limits the request rate for authentication, catalog writes, bookmarks, notes,
-  search, and follow and block changes.
+  search, and follow and block changes. Rails sends a path with a format suffix to the same
+  action, for example `/user/sign_in.json` and `/user/sign_in`. Thus, Rack::Attack removes the
+  format suffix before it compares a path, and the two paths share one limit.
 - A **content security policy** applies to all pages.
 - A **Turnstile** bot challenge protects registration and password reset.
