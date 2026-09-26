@@ -135,9 +135,11 @@ active.
 - **`RelatedProducts.for`** is the entry point. `ProductCatalogShowService` calls it.
 - **`Resolver`** changes the source product into ordered targets with resolved gates.
 - **`Query`** gets the candidates, selects the strongest sub category of each target, and assembles
-  the groups in one round trip. It is a `UNION ALL` of one bounded subquery for each target over
-  `contribute_product_items`, which has the completeness expression. The gates become SQL from
-  `Resolver::Gate`. They are not encoded as JSONB.
+  the groups in one round trip. It is a `UNION ALL` of one bounded subquery for each target. Each
+  subquery starts from the products in the target's sub categories and reads the stored
+  completeness of products and product variants. It does not use a catalogue view. The item ids
+  must be equal to the ids of the `product_items` view, because the items are loaded from that
+  view. The gates become SQL from `Resolver::Gate`. They are not encoded as JSONB.
 
 **Nothing is cached.** A cached block would need invalidation for each edit to each product in a
 target sub category.

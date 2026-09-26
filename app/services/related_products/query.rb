@@ -79,8 +79,8 @@ class RelatedProducts::Query
   end
 
   # Presentation reuses the catalogue row presenter, so paths, thumbnails and dates behave as
-  # they do in every listing. ProductItem and ContributeProductItem share the id expression, so
-  # the ids the query returns address ProductItem rows directly.
+  # they do in every listing. target_sql builds item_id with the product_items view's id
+  # expression, so the ids the query returns address ProductItem rows directly.
   def load_items(item_ids)
     return {} if item_ids.empty?
 
@@ -132,34 +132,41 @@ class RelatedProducts::Query
 
   # ------------------------------------------------------------------------------ SQL
 
+  # Driven by products_sub_categories filtered to the target's sub categories, the selective
+  # predicate; DISTINCT ON keeps one sub category per product, the first in declared order.
+  # Reads products and product_variants directly, not a catalogue view, so no branch pays for
+  # the view's UNION ALL. item_id must therefore repeat the id expression of the product_items
+  # view: ProductItem addresses rows by it, and a mismatch would silently empty every group
+  # (QueryTest covers both shapes).
+  #
+  # `base.discontinued` sits inside the LATERAL rather than in its ON clause: there it becomes a
+  # one-time filter, so the variant lookup runs only for discontinued candidates. In the ON
+  # clause it is checked only after the lookup has run for every candidate.
   def target_sql(target, index)
     <<~SQL.squish
       SELECT #{index} AS group_ord,
              msc.sub_category_id AS sub_category_id,
-             COALESCE(sv.id, base.id) AS item_id,
+             COALESCE(sv.id, uuid_generate_v5(uuid_ns_dns(), 'product-' || base.id::text)) AS item_id,
              COALESCE(sv.completeness, base.completeness) AS sort_completeness,
              #{discontinued_sort_term(target)} AS sort_discontinued,
-             hashtext(#{quote(source_hash_key)} || '-' || base.product_id::text) AS sort_hash
-      FROM contribute_product_items base
-      JOIN LATERAL (
-        SELECT psc.sub_category_id
+             hashtext(#{quote(source_hash_key)} || '-' || base.id::text) AS sort_hash
+      FROM (
+        SELECT DISTINCT ON (psc.product_id) psc.product_id, psc.sub_category_id
         FROM products_sub_categories psc
-        WHERE psc.product_id = base.product_id
-          AND psc.sub_category_id = ANY(#{id_array(target.sub_category_ids)})
-        ORDER BY array_position(#{id_array(target.sub_category_ids)}, psc.sub_category_id)
-        LIMIT 1
-      ) msc ON TRUE
+        WHERE psc.sub_category_id = ANY(#{id_array(target.sub_category_ids)})
+        ORDER BY psc.product_id, array_position(#{id_array(target.sub_category_ids)}, psc.sub_category_id)
+      ) msc
+      JOIN products base ON base.id = msc.product_id
       LEFT JOIN LATERAL (
-        SELECT v.id, v.completeness, v.discontinued
-        FROM contribute_product_items v
-        WHERE v.item_type = 'ProductVariant'
-          AND v.product_id = base.product_id
+        SELECT uuid_generate_v5(uuid_ns_dns(), 'variant-' || v.id::text) AS id, v.completeness, v.discontinued
+        FROM product_variants v
+        WHERE base.discontinued
+          AND v.product_id = base.id
           AND v.discontinued = false
         ORDER BY v.completeness DESC, v.id
         LIMIT 1
-      ) sv ON base.discontinued
-      WHERE base.item_type = 'Product'
-        AND base.product_id <> #{@product.id.to_i}
+      ) sv ON TRUE
+      WHERE base.id <> #{@product.id.to_i}
         #{gate_conditions(target)}
       ORDER BY sort_completeness DESC, sort_discontinued ASC, sort_hash ASC
       LIMIT #{FETCH_PER_GROUP}
