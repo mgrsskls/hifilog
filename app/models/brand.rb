@@ -473,7 +473,7 @@ class Brand < ApplicationRecord
 
     return nil unless is_country_name_present || is_founded_year_present || is_discontinued_year_present || any_sub_categories_present
 
-    sub_categories = self.sub_categories.sort_by(&:category).map { |cat| cat.name.downcase }
+    sub_categories = self.sub_categories.sort_by(&:category_id).map { |cat| cat.name.downcase }
 
     str = "<i>#{seo_name}</i> #{discontinued? ? 'was' : 'is'} an audio brand"
 
