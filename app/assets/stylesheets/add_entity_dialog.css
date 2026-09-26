@@ -4,8 +4,6 @@
 	max-inline-size: 64rem;
 	max-block-size: calc(100dvb - 4rem);
 	box-sizing: border-box;
-	/* The list scrolls, not the dialog: the heading, the filter and the buttons stay visible. */
-	overflow: hidden;
 }
 
 .AddEntityDialog-form {
@@ -54,8 +52,6 @@
 	gap: 1rem;
 	grid-template-columns: repeat(var(--cols), 1fr);
 	align-content: start;
-	overflow-y: auto;
-	/* Space for the focus outline of the first and the last row. */
 	padding: 0.25rem;
 	margin: -0.25rem;
 }
