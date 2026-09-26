@@ -1,8 +1,11 @@
 <%#
   A second reading is shown only when the definition offers two units *and* the two are a
-  convertible pair (CustomAttribute::UNIT_EQUIVALENTS). Two units are not always a pair:
-  loudspeaker_sensitivity offers dB@1W/1m and dB@2.83V/1m, which are two different
-  measurements rather than two spellings of one, and there is no factor between them.
+  convertible pair (CustomAttribute::UNIT_EQUIVALENTS). The pair test is a guard, not a special
+  case for one attribute: no definition offers two unconvertible units any more, because a
+  measurement condition belongs in a qualifier. loudspeaker_sensitivity was the one that did.
+
+  A qualifier, where the entry has one, follows the reading in parentheses. There is one for
+  the whole entry, so a multi-input value carries it once, after the last input.
 %>
 <% css_class ||= "Data" %>
 <div class="Entity-section">
@@ -17,6 +20,7 @@
             <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
             <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
             <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
+            <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
             <% if ca[1]['value'].is_a?(Hash) %>
               <% ca[1]['value'].each do |v| %>
                 <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
@@ -25,11 +29,13 @@
                 <% end %>
                 <br>
               <% end %>
+              <%= "(#{qualifier})" if qualifier.present? %>
             <% elsif ca[1]['value'].present? %>
               <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
               <% if equivalent %>
                 / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= t("custom_attribute_units.#{equivalent[0]}").html_safe %>
               <% end %>
+              <%= "(#{qualifier})" if qualifier.present? %>
             <% else %>
               n/a
             <% end %>

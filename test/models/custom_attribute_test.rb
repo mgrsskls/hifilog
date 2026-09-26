@@ -146,6 +146,41 @@ class CustomAttributeTest < ActiveSupport::TestCase
     assert_empty untranslated
   end
 
+  test 'every valid qualifier has a custom_attribute_qualifiers translation' do
+    untranslated = CustomAttribute::VALID_QUALIFIERS.reject do |qualifier|
+      I18n.exists?("custom_attribute_qualifiers.#{qualifier}")
+    end
+
+    assert_empty untranslated
+  end
+
+  # These three units are not offered by any definition any more: dB@1W/1m and dB@2.83V/1m became
+  # qualifiers of `loudspeaker_sensitivity`, and dB/mW will go the same way. They must stay in the
+  # locale file regardless. `_changelog.html.erb` and `AdminVersionActivityPresenter` render the
+  # unit of an older PaperTrail version, so a tidy-up that removes these keys prints "translation
+  # missing" in the history of every product that carried one.
+  test 'the units that became qualifiers keep their translations' do
+    %w[db_1w_1m db_283v_1m db_mw].each do |unit|
+      assert I18n.exists?("custom_attribute_units.#{unit}"), "custom_attribute_units.#{unit} is gone"
+    end
+  end
+
+  # The rule the sensitivity migration restored: two readings of one figure that no factor relates
+  # are not two units, they are one unit and two qualifiers. Only the definitions of this
+  # environment are checked, so this guards the fixtures rather than production data -- but it is
+  # the rule a new definition is most likely to break.
+  test 'no definition offers two units that cannot convert into each other' do
+    CustomAttribute.where(input_type: 'number').find_each do |definition|
+      next unless definition.units.size == 2
+
+      pair = CustomAttribute.equivalent_unit(definition.units.first)
+
+      assert_equal definition.units.last, pair&.first,
+                   "#{definition.label} offers #{definition.units.join(' and ')}, which do not " \
+                   'convert. A second reading of one figure belongs in qualifiers.'
+    end
+  end
+
   # A convertible unit that is not offerable is a factor nothing can reach; a unit pair whose
   # canonical half is missing would let a definition offer two units that filtering then
   # normalises to a unit no product stores.
@@ -496,13 +531,147 @@ class CustomAttributeTest < ActiveSupport::TestCase
       highlighted: true,
       input_type: 'number',
       units: ['cm', nil, '', 'in'],
-      inputs: ['w', '', nil]
+      inputs: ['w', '', nil],
+      qualifiers: ['plus_minus_3_db', '', nil]
     )
 
     record.sub_categories << @sub_category
     assert record.valid?, record.errors.full_messages.to_sentence
     assert_equal %w[cm in], record.units.sort
     assert_equal ['w'], record.inputs
+    assert_equal ['plus_minus_3_db'], record.qualifiers
+  end
+
+  test 'qualifiers_must_be_valid rejects unknown qualifiers' do
+    record = CustomAttribute.new(
+      label: 'frequency_response_range',
+      highlighted: true,
+      input_type: 'number',
+      qualifiers: %w[at_midnight]
+    )
+
+    record.sub_categories << @sub_category
+    assert_not record.valid?
+    assert_match(/contain invalid values/, record.errors[:qualifiers].join(' '))
+    assert_empty record.errors[:units]
+    assert_empty record.errors[:inputs]
+  end
+
+  # Same rule as units and inputs: the product form branches on the configuration rather than on
+  # the input type, so a condition left behind by a type change would be offered for a value that
+  # is no longer a measurement.
+  test 'switching away from number clears qualifiers' do
+    record = CustomAttribute.new(
+      label: 'frequency_response_range',
+      highlighted: true,
+      input_type: 'number',
+      units: %w[hz],
+      qualifiers: %w[plus_minus_3_db]
+    )
+    record.sub_categories << @sub_category
+    record.save!
+
+    record.input_type = 'boolean'
+
+    assert record.valid?, record.errors.full_messages.to_sentence
+    assert_empty record.qualifiers
+  end
+
+  test 'qualified? is true only for a number attribute that offers conditions' do
+    record = CustomAttribute.new(label: 'frequency_response_range', highlighted: true, input_type: 'number')
+
+    assert_not record.qualified?
+
+    record.qualifiers = %w[plus_minus_3_db]
+
+    assert record.qualified?
+    assert record.qualifier?('plus_minus_3_db')
+    assert_not record.qualifier?('plus_minus_6_db')
+    assert_not record.qualifier?('')
+    assert_not record.qualifier?(nil)
+  end
+
+  test 'qualifier_label translates a stored entry and answers nil without one' do
+    entry = { 'value' => 20, 'unit' => 'hz', 'qualifier' => 'plus_minus_3_db' }
+
+    assert_equal I18n.t('custom_attribute_qualifiers.plus_minus_3_db'), CustomAttribute.qualifier_label(entry)
+    assert_nil CustomAttribute.qualifier_label({ 'value' => 20, 'unit' => 'hz' })
+    assert_nil CustomAttribute.qualifier_label({ 'value' => 20, 'qualifier' => '' })
+    assert_nil CustomAttribute.qualifier_label(nil)
+    assert_nil CustomAttribute.qualifier_label('20')
+  end
+
+  test 'prune_unsupported_keys drops a unit and a condition the definition does not offer' do
+    custom_attributes(:four).update!(units: %w[kg lb], qualifiers: %w[plus_minus_3_db])
+
+    with_memory_cache do
+      pruned = CustomAttribute.prune_unsupported_keys(
+        'weight' => { 'value' => 2, 'unit' => 'furlong', 'qualifier' => 'thd_1_percent' }
+      )
+
+      assert_equal 2, pruned['weight']['value']
+      assert_not pruned['weight'].key?('unit')
+      assert_not pruned['weight'].key?('qualifier')
+    end
+  end
+
+  # A definition that declares no units says nothing about them, and neither does the filter, which
+  # applies a unit predicate only when the definition has some. Removing the unit here would
+  # accomplish nothing and would stop normalize_units from converting, which ProductTest asserts.
+  test 'prune_unsupported_keys keeps a unit when the definition declares none' do
+    custom_attributes(:four).update!(units: [], qualifiers: %w[plus_minus_3_db])
+
+    with_memory_cache do
+      pruned = CustomAttribute.prune_unsupported_keys(
+        'weight' => { 'value' => 2, 'unit' => 'lb', 'qualifier' => 'thd_1_percent' }
+      )
+
+      assert_equal 'lb', pruned['weight']['unit']
+      assert_not pruned['weight'].key?('qualifier')
+    end
+  end
+
+  # The opposite for a condition: no declared qualifiers means the definition asks no question, so
+  # a stored answer is not one. It would still render, because qualifier_label reads the entry.
+  test 'prune_unsupported_keys drops a condition when the definition declares none' do
+    custom_attributes(:four).update!(units: %w[kg lb], qualifiers: [])
+
+    with_memory_cache do
+      pruned = CustomAttribute.prune_unsupported_keys(
+        'weight' => { 'value' => 2, 'unit' => 'kg', 'qualifier' => 'plus_minus_3_db' }
+      )
+
+      assert_equal 'kg', pruned['weight']['unit']
+      assert_not pruned['weight'].key?('qualifier')
+    end
+  end
+
+  test 'prune_unsupported_keys keeps what the definition offers and drops blanks' do
+    custom_attributes(:four).update!(units: %w[kg lb], qualifiers: %w[plus_minus_3_db])
+
+    with_memory_cache do
+      pruned = CustomAttribute.prune_unsupported_keys(
+        'weight' => { 'value' => 2, 'unit' => 'kg', 'qualifier' => '' }
+      )
+
+      assert_equal 'kg', pruned['weight']['unit']
+      assert_not pruned['weight'].key?('qualifier')
+    end
+  end
+
+  # normalize_units rewrites value and unit. A condition is neither, and losing it on a unit
+  # conversion would silently turn a ±3 dB figure into an unqualified one.
+  test 'normalize_units keeps a qualifier untouched' do
+    custom_attributes(:four).update!(units: %w[kg lb], qualifiers: %w[plus_minus_3_db])
+
+    with_memory_cache do
+      normalized = CustomAttribute.normalize_units(
+        'weight' => { 'value' => 2, 'unit' => 'lb', 'qualifier' => 'plus_minus_3_db' }
+      )
+
+      assert_equal 'kg', normalized['weight']['unit']
+      assert_equal 'plus_minus_3_db', normalized['weight']['qualifier']
+    end
   end
 
   test 'before_save parses options when options is JSON string' do

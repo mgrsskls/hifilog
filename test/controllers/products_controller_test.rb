@@ -424,6 +424,99 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     saved&.destroy
   end
 
+  # The qualifier control offers "not stated" as an empty option, so an empty string arrives on
+  # every submit where the condition is unknown. Stored, it would be neither a condition nor
+  # absent, and the "not stated" filter -- which asks whether the key exists -- would not find the
+  # row.
+  test 'create stores a stated condition and drops a blank one' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+    custom_attributes(:four).update!(qualifiers: %w[plus_minus_3_db])
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Qualifier product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'weight' => { 'value' => '3', 'qualifier' => 'plus_minus_3_db' },
+          'dimensions' => { 'value' => { 'w' => '10' }, 'unit' => 'cm', 'qualifier' => '' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    saved = Product.find_by!(name: 'Qualifier product xyz')
+
+    assert_equal 'plus_minus_3_db', saved.custom_attributes.dig('weight', 'qualifier')
+    assert_not saved.custom_attributes['dimensions'].key?('qualifier')
+  ensure
+    saved&.destroy
+  end
+
+  # A condition the definition does not offer is dropped the way an unknown label is dropped: it
+  # is invisible in the data and would only surface as a missing translation on the product page.
+  test 'create drops a condition the definition does not offer' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+    custom_attributes(:four).update!(qualifiers: %w[plus_minus_3_db])
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Unknown qualifier product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'weight' => { 'value' => '3', 'qualifier' => 'thd_1_percent' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    saved = Product.find_by!(name: 'Unknown qualifier product xyz')
+
+    assert_in_delta 3.0, saved.custom_attributes.dig('weight', 'value')
+    assert_not saved.custom_attributes['weight'].key?('qualifier')
+  ensure
+    saved&.destroy
+  end
+
+  # The same gap `unit` has always had: `custom_attributes: {}` permits any key inside an entry,
+  # so a stale or crafted form could store a unit the definition does not offer -- which filtering
+  # then never matches, because it compares the stored unit string.
+  test 'create drops a unit the definition does not offer' do
+    brand = brands(:one)
+    sub_category = brand.sub_categories.first
+
+    sign_in users(:one)
+
+    post products_url, params: {
+      product: {
+        name: 'Unknown unit product xyz',
+        brand_id: brand.id,
+        discontinued: false,
+        sub_category_ids: [sub_category.id],
+        custom_attributes: {
+          'dimensions' => { 'value' => { 'w' => '10' }, 'unit' => 'furlong' }
+        },
+        product_options_attributes: {}
+      }
+    }
+
+    saved = Product.find_by!(name: 'Unknown unit product xyz')
+
+    assert_in_delta 10.0, saved.custom_attributes.dig('dimensions', 'value', 'w')
+    assert_not saved.custom_attributes['dimensions'].key?('unit')
+  ensure
+    saved&.destroy
+  end
+
   test 'create keeps only the readable inputs of a multi input number' do
     brand = brands(:one)
     sub_category = brand.sub_categories.first

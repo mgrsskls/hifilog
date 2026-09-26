@@ -58,7 +58,9 @@
 
         if param.present?
           if custom_attribute.inputs.any?
-            is_filtered = param.except(:unit).values.flat_map { |g| g.values }.any? { |v| v.present? }
+            # :qualifier holds an array, so it cannot go through the per-input walk below.
+            is_filtered = param.except(:unit, :qualifier).values.flat_map { |g| g.values }.any? { |v| v.present? }
+            is_filtered ||= param[:qualifier].present?
           elsif custom_attribute.input_type == 'number'
             is_filtered = param.values.any? { |v| v.present? }
           elsif custom_attribute.input_type == 'boolean'
@@ -175,8 +177,30 @@
                   </div>
                 </div>
               <% end %>
+              <% if custom_attribute.qualified? %>
+                <% selected_qualifiers = Array(params.dig(:products, custom_attribute.label, :qualifier)) %>
+                <div class="Filter-section">
+                  <span class="Filter-label"><%= t("custom_attribute_qualifier.label") %></span>
+                  <ul class="Pagination">
+                    <% custom_attribute.qualifiers.each do |qualifier| %>
+                      <li class="Pagination-item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="products[<%= custom_attribute.label %>][qualifier][]"
+                            value="<%= qualifier %>"
+                            <%= ' checked aria-current="true"'.html_safe if selected_qualifiers.include?(qualifier) %>
+                          >
+                          <%= t("custom_attribute_qualifiers.#{qualifier}") %>
+                        </label>
+                      </li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
               </div>
             <% else %>
+              <div class="u-flex u-flexColumn u-gap-md">
               <div class="u-flex u-gap-md u-alignCenter">
                 <div class="u-flex u-gap-sm u-alignCenter">
                   <label for="<%= "#{custom_attribute.label}-min" %>">Min.</label>
@@ -206,6 +230,28 @@
                     </span>
                   <% end %>
                 </div>
+              </div>
+              <% if custom_attribute.qualified? %>
+                <% selected_qualifiers = Array(params.dig(:products, custom_attribute.label, :qualifier)) %>
+                <div class="Filter-section">
+                  <span class="Filter-label"><%= t("custom_attribute_qualifier.label") %></span>
+                  <ul class="Pagination">
+                    <% custom_attribute.qualifiers.each do |qualifier| %>
+                      <li class="Pagination-item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="products[<%= custom_attribute.label %>][qualifier][]"
+                            value="<%= qualifier %>"
+                            <%= ' checked aria-current="true"'.html_safe if selected_qualifiers.include?(qualifier) %>
+                          >
+                          <%= t("custom_attribute_qualifiers.#{qualifier}") %>
+                        </label>
+                      </li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
               </div>
             <% end %>
           <% end %>

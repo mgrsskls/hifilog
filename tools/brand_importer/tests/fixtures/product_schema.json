@@ -8,6 +8,7 @@
   "custom_attributes": [
     {"label": "amplifier_output_power", "name": "Output power", "input_type": "number",
      "units": ["w"], "inputs": ["ohm_8", "ohm_4"], "options": {},
+     "qualifiers": {"thd_0_1_percent": "At 0.1% THD", "thd_1_percent": "At 1% THD"},
      "sub_categories": ["integrated-amplifiers"], "option_scopes": {}},
     {"label": "input_connectors", "name": "Inputs", "input_type": "options", "units": [], "inputs": [],
      "options": {"1": {"key": "rca", "name": "RCA"}, "2": {"key": "xlr", "name": "XLR"}},

@@ -182,23 +182,24 @@ before it goes into the catalog.
 
 ## Documentation
 
-| Topic                                                           | Document                                                            |
-| --------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Categories, brands, products, product variants, product options | [catalog-model.md](docs/catalog-model.md)                           |
-| Product series                                                  | [product-series.md](docs/product-series.md)                         |
-| Custom attributes                                               | [custom-attributes.md](docs/custom-attributes.md)                   |
-| Catalog lists, filters and search                               | [catalog-listing-and-search.md](docs/catalog-listing-and-search.md) |
-| Similar Products and Similar Brands                             | [similar-products.md](docs/similar-products.md)                     |
-| Related Products                                                | [related-products.md](docs/related-products.md)                     |
-| Related Products: pairing graph (authoring source)              | [pairing-graph.md](docs/pairing-graph.md)                           |
-| Possessions, setups, bookmarks, notes, statistics               | [collection.md](docs/collection.md)                                 |
-| Users, profiles, events, following and blocking                 | [users-and-social.md](docs/users-and-social.md)                     |
-| Following brands                                                | [brand-follows.md](docs/brand-follows.md)                           |
-| User activity                                                   | [user-activity.md](docs/user-activity.md)                           |
-| Completeness and the Contribute section                         | [completeness.md](docs/completeness.md)                             |
-| Guidelines for contributors                                     | [contribution-guidelines.md](docs/contribution-guidelines.md)       |
-| Home page                                                       | [home-page.md](docs/home-page.md)                                   |
-| Bulk import from brand websites                                 | [import.md](docs/import.md)                                         |
-| Authentication, privacy policy and security                     | [privacy-auth-security.md](docs/privacy-auth-security.md)           |
-| Services, controller concerns, presenters, caching              | [code-structure.md](docs/code-structure.md)                         |
-| Background jobs                                                 | [background-jobs.md](docs/background-jobs.md)                       |
+| Topic                                                           | Document                                                              |
+| --------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Categories, brands, products, product variants, product options | [catalog-model.md](docs/catalog-model.md)                             |
+| Product series                                                  | [product-series.md](docs/product-series.md)                           |
+| Custom attributes                                               | [custom-attributes.md](docs/custom-attributes.md)                     |
+| Custom attribute qualifiers (design reasons)                    | [custom-attribute-qualifiers.md](docs/custom-attribute-qualifiers.md) |
+| Catalog lists, filters and search                               | [catalog-listing-and-search.md](docs/catalog-listing-and-search.md)   |
+| Similar Products and Similar Brands                             | [similar-products.md](docs/similar-products.md)                       |
+| Related Products                                                | [related-products.md](docs/related-products.md)                       |
+| Related Products: pairing graph (authoring source)              | [pairing-graph.md](docs/pairing-graph.md)                             |
+| Possessions, setups, bookmarks, notes, statistics               | [collection.md](docs/collection.md)                                   |
+| Users, profiles, events, following and blocking                 | [users-and-social.md](docs/users-and-social.md)                       |
+| Following brands                                                | [brand-follows.md](docs/brand-follows.md)                             |
+| User activity                                                   | [user-activity.md](docs/user-activity.md)                             |
+| Completeness and the Contribute section                         | [completeness.md](docs/completeness.md)                               |
+| Guidelines for contributors                                     | [contribution-guidelines.md](docs/contribution-guidelines.md)         |
+| Home page                                                       | [home-page.md](docs/home-page.md)                                     |
+| Bulk import from brand websites                                 | [import.md](docs/import.md)                                           |
+| Authentication, privacy policy and security                     | [privacy-auth-security.md](docs/privacy-auth-security.md)             |
+| Services, controller concerns, presenters, caching              | [code-structure.md](docs/code-structure.md)                           |
+| Background jobs                                                 | [background-jobs.md](docs/background-jobs.md)                         |

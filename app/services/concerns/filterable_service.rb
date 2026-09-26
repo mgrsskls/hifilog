@@ -62,6 +62,9 @@ module FilterableService
           {
             custom_attribute[:label] => [
               :unit,
+              # An array of ticked conditions. Unpermitted, the facet would be dropped here and do
+              # nothing, with no error anywhere.
+              { qualifier: [] },
               custom_attribute[:inputs].map do |input|
                 { input => [:min, :max] }
               end
@@ -69,7 +72,7 @@ module FilterableService
           }
         elsif custom_attribute[:input_type] == 'number'
           {
-            custom_attribute[:label] => [:min, :max, :unit]
+            custom_attribute[:label] => [:min, :max, :unit, { qualifier: [] }]
           }
         elsif custom_attribute[:input_type] == 'boolean'
           custom_attribute[:label]

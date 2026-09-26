@@ -35,6 +35,30 @@ class CustomAttribute < ApplicationRecord
     ohm_32 ohm_300 ohm_600
   ].freeze
 
+  # The condition under which a number was measured. A third axis beside `units` and `inputs`,
+  # and not a variant of either: a unit rescales the number, an input gives one number per facet,
+  # a qualifier says what the one number means. ±3 dB and ±6 dB are not two readings of one
+  # figure and not two facets a product has at once -- they are two different claims.
+  #
+  # Always optional. A source often states no condition at all, and an absent qualifier means
+  # exactly that. Nothing here is ever assumed as a default, because an assumed condition is
+  # invented data.
+  #
+  # Each entry needs a `custom_attribute_qualifiers` translation, for the same reason units and
+  # inputs do: every render site calls `t()` with no default. CustomAttributeTest asserts it.
+  #
+  # One definition offers values of ONE dimension, because an entry holds one qualifier. A list
+  # mixing tolerance with "both channels driven" could not be stored: both are true of one
+  # figure. The order inside a group is the order the filter offers, from the tightest claim to
+  # the loosest, which is what a later "or better" filter would read.
+  VALID_QUALIFIERS = %w[
+    plus_minus_1_db plus_minus_2_db plus_minus_3_db plus_minus_6_db
+    minus_3_db minus_6_db minus_10_db
+    thd_0_1_percent thd_1_percent thd_10_percent
+    distance_1m distance_2m
+    drive_1w_1m drive_283v_1m
+  ].freeze
+
   # Imperial unit => [the metric unit it is stored and compared in, multiplier].
   #
   # Filtering compares a submitted range against `custom_attributes -> label ->> 'unit'` after
@@ -46,6 +70,10 @@ class CustomAttribute < ApplicationRecord
   # `mm` is therefore not paired with `in`: `in` already canonicalises to `cm`, so a definition
   # offering millimetres and inches would store two incompatible spellings of the same
   # measurement and match neither filter. Millimetre attributes offer millimetres only.
+  #
+  # Two readings of one figure that no factor relates are not units at all. dB@1W/1m and
+  # dB@2.83V/1m were spelled as units here until VALID_QUALIFIERS existed; they are one unit, dB,
+  # measured under two conditions. A second unit that cannot convert belongs in `qualifiers`.
   UNIT_CONVERSIONS = {
     'in' => ['cm', 2.54],
     'ft' => ['m', 0.3048],
@@ -101,6 +129,7 @@ class CustomAttribute < ApplicationRecord
   validates :highlighted, inclusion: { in: [true, false] }
   validate :units_must_be_valid
   validate :inputs_must_be_valid
+  validate :qualifiers_must_be_valid
   validate :label_must_be_translated
   validate :option_values_must_be_translated
   # RelatedProducts::Graph names attributes and option keys as Ruby constants, so the database
@@ -114,6 +143,7 @@ class CustomAttribute < ApplicationRecord
   before_validation do
     self.units = units.compact_blank if units.is_a?(Array)
     self.inputs = inputs.compact_blank if inputs.is_a?(Array)
+    self.qualifiers = qualifiers.compact_blank if qualifiers.is_a?(Array)
   end
 
   # Exactly one shape of extra configuration applies per input type. Anything left over
@@ -129,6 +159,7 @@ class CustomAttribute < ApplicationRecord
       unless number_input_type?
         self.units = []
         self.inputs = []
+        self.qualifiers = []
       end
     end
   end
@@ -156,10 +187,84 @@ class CustomAttribute < ApplicationRecord
     factor ? value * factor : value
   end
 
+  # The translated condition of one stored entry, or nil when the entry states none.
+  #
+  # One method for all five display sites -- the characteristics list, the product card, the
+  # changelog, the admin activity list and the import candidate view -- because a qualifier that
+  # is rendered in four of them and forgotten in the fifth is the failure that is hardest to see:
+  # the changelog would then show the same text before and after a change of the condition alone.
+  #
+  # `t` without a default, like every other custom attribute translation, so a key with nothing
+  # behind it is loud instead of silent.
+  def self.qualifier_label(entry)
+    return unless entry.is_a?(Hash)
+
+    key = entry['qualifier'].presence || entry[:qualifier].presence
+    return if key.blank?
+
+    I18n.t("custom_attribute_qualifiers.#{key}")
+  end
+
   # [other unit, multiplier] when a unit has a counterpart in the other system, otherwise nil.
   # Display sites use it to render both readings; nil means there is only one reading to show.
   def self.equivalent_unit(unit)
     UNIT_EQUIVALENTS[unit.to_s]
+  end
+
+  # Removes a `unit` or `qualifier` that the definition does not offer, and a blank one.
+  #
+  # Both are strings the caller chooses, and nothing in the database constrains them. Three write
+  # paths can put a wrong one there: the product form permits an open hash, so a stale or crafted
+  # submission can name anything; ImportPromotion copies a candidate's specs verbatim, and a
+  # candidate extracted before a definition changed still carries the old unit; and the console.
+  #
+  # A wrong value is invisible in the data and surfaces only as a missing translation on the
+  # product page, or as a figure no filter can reach -- filtering compares the stored unit string
+  # against what the definition offers.
+  #
+  # Blank goes too. The product form's condition control offers "not stated" as an empty option, so
+  # that value arrives on every submit where the condition is unknown; stored, `? 'qualifier'` would
+  # report a condition that is not there, and every reader would need a third case.
+  #
+  # Runs before normalize_units, so a unit the definition does not offer is dropped rather than
+  # used as the basis of a conversion.
+  def self.prune_unsupported_keys(values)
+    return values if values.blank?
+
+    index = all_cached.index_by(&:label)
+
+    values.to_h do |label, entry|
+      definition = index[label]
+      next [label, entry] unless definition&.number_input_type?
+      next [label, entry] unless entry.is_a?(Hash)
+
+      [label, definition.pruned_entry(entry)]
+    end
+  end
+
+  # One entry of that hash, with the keys the definition cannot account for removed.
+  #
+  # The two keys are treated differently, because "declares none" means different things:
+  #
+  #   * A definition with an empty `units` says nothing about units, and the filter says nothing
+  #     either -- it applies a unit predicate only `if custom_attribute[:units].present?`. A stored
+  #     unit is therefore not unreachable, so removing it would accomplish nothing and would break
+  #     the normalisation that runs next: `normalize_units` needs the unit to convert from.
+  #   * A definition with an empty `qualifiers` asks no question about the condition, so a stored
+  #     one is not an answer to anything. It still renders -- `qualifier_label` reads the entry,
+  #     not the definition -- so a leftover condition would print on the product page under a
+  #     definition whose form no longer offers it.
+  #
+  # A blank value of either goes in both cases: it is neither a value nor absent, and every reader
+  # would need a third case for it.
+  def pruned_entry(entry)
+    entry = entry.to_unsafe_h if entry.respond_to?(:to_unsafe_h)
+    entry = entry.to_h.stringify_keys
+
+    entry.delete('unit') if entry['unit'].blank? || (units.present? && units.exclude?(entry['unit']))
+    entry.delete('qualifier') unless qualifier?(entry['qualifier'])
+
+    entry
   end
 
   # Rewrites a product's whole `custom_attributes` hash so every numeric entry is expressed in
@@ -435,6 +540,27 @@ class CustomAttribute < ApplicationRecord
     # :inputs, not :units. The admin form renders each error beside its own field, so this
     # reported a bad input against the units checkboxes -- pointing at the group that was fine.
     errors.add(:inputs, "contain invalid values: #{invalid.join(', ')}") if invalid.any?
+  end
+
+  def qualifiers_must_be_valid
+    return if qualifiers.blank?
+
+    invalid = qualifiers.compact_blank - VALID_QUALIFIERS
+
+    errors.add(:qualifiers, "contain invalid values: #{invalid.join(', ')}") if invalid.any?
+  end
+
+  # True when this definition records a measurement condition at all. Every surface that renders
+  # or filters a qualifier asks this first, so none of them repeats the `number` test.
+  def qualified?
+    number_input_type? && qualifiers.present?
+  end
+
+  # Whether `key` is a condition this definition offers. The write path drops anything else, the
+  # way an unknown label is dropped: a value no definition knows can be displayed, filtered or
+  # scored by nothing.
+  def qualifier?(key)
+    key.present? && qualifiers.include?(key.to_s)
   end
 
   # simplecov:disable

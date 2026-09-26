@@ -156,7 +156,7 @@ def parse_frequency(value: str) -> Optional[dict]:
     return {"value": {"min": _tidy(low_value), "max": _tidy(high_value)}, "unit": "hz"}
 
 
-def parse_sensitivity(value: str, headphone: Optional[bool]) -> Optional[Tuple[str, dict]]:
+def parse_sensitivity(raw_label: str, value: str, headphone: Optional[bool]) -> Optional[Tuple[str, dict]]:
     """ "95 dB / 1W / 1 m", "88 dB (2.83 V/1 m)", "105 dB/mW" """
     if re.search(rf"(?i){NUMBER}\s*(?:db)?\s*(?:/|-|–|to|bis|or)\s*{NUMBER}\s*db|up to|bis zu|max", value):
         # "98/102 dB", "93 to 98 dB", "up to 101 dB": a range or a limit.
@@ -181,7 +181,41 @@ def parse_sensitivity(value: str, headphone: Optional[bool]) -> Optional[Tuple[s
         key = "loudspeaker_sensitivity"
         # "2.83 V" and the rounded "2.8 V" both mean 1 W into 8 ohms, measured
         # as a voltage; the catalogue keeps it apart from the 1 W figure.
-        unit = "db_283v_1m" if re.search(r"2[.,]83?v", lowered) else "db_1w_1m"
+        #
+        # The reference is as often in the label as in the value --
+        # "Sensitivity (2.83Vrms/1m): 84dB" -- so both sides are read for it.
+        # Only this test reads the label: the mW branch above and the range
+        # guards stay on the value, where a stray word in a label cannot
+        # change what number is stored.
+        #
+        # A line that states both, "97dB SPL @ 1W/1m (using input 2.83 rmsV)",
+        # keeps the 1 W reading. The two are the same measurement into 8 ohms,
+        # and the sheet's own headline is the better answer than a guess about
+        # which half it meant.
+        reference = f"{raw_label} {value}".lower().replace(" ", "")
+        watt = re.search(r"1w|db/w/m", reference)
+        voltage = re.search(r"2[.,]83?v", reference) and not watt
+        # The drive reference is a QUALIFIER, not a unit. It was spelled as a unit until the
+        # catalogue had qualifiers: dB@1W/1m and dB@2.83V/1m are one unit, dB, measured two ways,
+        # and a definition may offer two units only when a factor converts between them. Emitting
+        # the old spelling now would lose the condition in silence -- `loudspeaker_sensitivity`
+        # offers `db` alone, so CustomAttribute.prune_unsupported_keys drops anything else on
+        # promotion. See docs/custom-attribute-qualifiers.md §3.
+        #
+        # THREE outcomes, not two. "89 dB" states no reference at all, and most sheets do not: of
+        # 157 production candidates written by the old code, 23 named 1 W and 134 named nothing.
+        # The old `else "db_1w_1m"` gave all 157 the same answer, which made the catalogue claim a
+        # measurement condition nobody published -- and a filter on "At 1 W / 1 m" would then
+        # return them. A qualifier is optional by construction, so the honest third outcome is to
+        # leave the key out.
+        if not _in_range(key, amount):
+            return None
+        entry = {"value": _tidy(amount), "unit": "db"}
+        if voltage:
+            entry["qualifier"] = "drive_283v_1m"
+        elif watt:
+            entry["qualifier"] = "drive_1w_1m"
+        return key, entry
     if not _in_range(key, amount):
         return None
     return key, {"value": _tidy(amount), "unit": unit}
@@ -339,7 +373,7 @@ def read_specs(text: str, sub_categories: List[str], applies) -> Dict[str, Tuple
                 parsed = parse_frequency(value)
                 result = (key, parsed) if parsed else None
             elif key == "sensitivity":
-                result = parse_sensitivity(value, headphone)
+                result = parse_sensitivity(raw_label, value, headphone)
             elif key in ("nominal_impedance", "loudspeaker_minimum_impedance"):
                 parsed = parse_impedance(value, key)
                 result = (key, parsed) if parsed else None

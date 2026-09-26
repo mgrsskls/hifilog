@@ -88,6 +88,12 @@ list without a filter.
 The custom attribute filters use the definitions that apply to the current category. See
 [custom-attributes.md](custom-attributes.md).
 
+A `number` attribute that declares qualifiers also has a **"Measured at"** facet with two states.
+Nothing selected adds no condition to the query, so a specification with few recorded conditions
+filters as before. One or more selected conditions give an `OR` of `@>` containment tests, which the
+GIN index on `products.custom_attributes` can use, and each excludes the products that record no
+condition. See [custom-attributes.md, §5.4](custom-attributes.md#54-filtering).
+
 ## 7. Global search (`SearchResult`)
 
 `SearchResult` is a union of products, variants, brands and product series. Each row has the same

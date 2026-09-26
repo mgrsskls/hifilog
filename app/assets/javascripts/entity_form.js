@@ -211,10 +211,11 @@ function convertAttributeValues(
 
 	const pair = equivalents[from];
 
-	// Two units on one attribute are not always a convertible pair: loudspeaker sensitivity
-	// offers dB@1W/1m and dB@2.83V/1m, which are two different measurements with no factor
-	// between them. Switching those relabels the number, because relabelling is all it can
-	// honestly mean.
+	// A guard rather than dead code: no definition currently offers two units that are not a
+	// convertible pair, but nothing stops one from doing so, and a measurement condition now
+	// belongs in a qualifier instead (loudspeaker sensitivity used to offer dB@1W/1m and
+	// dB@2.83V/1m as units). Where the two do not convert, switching relabels the number,
+	// because relabelling is all it can honestly mean.
 	if (!pair || pair[0] !== to) return;
 
 	// Matches both value shapes: `[...][value]` and, for an attribute with inputs, each

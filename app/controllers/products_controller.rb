@@ -223,7 +223,9 @@ class ProductsController < ApplicationController
     discard_unknown_custom_attributes!(custom_attributes, definitions)
 
     custom_attributes.each do |key, value|
-      case definitions.fetch(key).input_type
+      definition = definitions.fetch(key)
+
+      case definition.input_type
       when 'boolean'
         custom_attributes[key] = ActiveModel::Type::Boolean.new.cast(value)
       when 'number'

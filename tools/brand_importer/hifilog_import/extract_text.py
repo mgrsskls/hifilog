@@ -120,6 +120,16 @@ class Schema:
                 line += f" number in {units}"
                 if inputs:
                     line += f", one value per: {inputs}"
+                # The condition a sheet quotes the figure under, as the words a sheet prints:
+                # "20 Hz - 20 kHz (+/-3 dB)". Optional, and a guess is worse than nothing, so the
+                # wording says so.
+                qualifiers = attribute.get("qualifiers") or {}
+                if qualifiers:
+                    names = ", ".join(str(name) for name in qualifiers.values())
+                    line += (
+                        f", optionally measured at one of: {names}"
+                        " (only when the source states it)"
+                    )
             options = attribute.get("options") or {}
             if options:
                 keys = ", ".join(
@@ -307,6 +317,41 @@ def apply_text_extraction(
     return bool(candidate.name)
 
 
+def match_qualifier(definition: dict, value) -> Optional[str]:
+    """The condition key for what an extraction states, or None.
+
+    The extractor works from a sheet written for people, so it answers with the printed wording
+    ("+/-3 dB"). Only a value the definition offers is kept: a condition no definition knows can
+    be displayed, filtered or scored by nothing, and an invented one would look like a measurement
+    nobody made.
+    """
+    if not isinstance(value, dict):
+        return None
+
+    submitted = value.get("qualifier")
+    if submitted is None:
+        return None
+
+    submitted = str(submitted).strip().casefold()
+    if not submitted:
+        return None
+
+    for key, name in (definition.get("qualifiers") or {}).items():
+        if submitted in (str(key).casefold(), str(name).strip().casefold()):
+            return key
+    return None
+
+
+def with_qualifier(entry: dict, qualifier: Optional[str]) -> dict:
+    """Adds the condition, and leaves the key out when there is none.
+
+    Absent means "not stated". An empty string would be neither a condition nor absent.
+    """
+    if qualifier:
+        entry["qualifier"] = qualifier
+    return entry
+
+
 def _clean_attribute(definition: dict, value: Any) -> Any:
     """Keep an attribute value only in the shape the catalogue can store."""
     input_type = definition.get("input_type")
@@ -329,14 +374,21 @@ def _clean_attribute(definition: dict, value: Any) -> Any:
     if input_type == "number":
         unit = (definition.get("units") or [None])[0]
         inputs = definition.get("inputs") or []
+        qualifier = match_qualifier(definition, value)
         if inputs and isinstance(value, dict):
             numbers = {
                 key: parse_price(item)
                 for key, item in value.items()
                 if key in inputs and parse_price(item) is not None
             }
-            return {"value": numbers, "unit": unit} if numbers else None
+            if not numbers:
+                return None
+            return with_qualifier({"value": numbers, "unit": unit}, qualifier)
+        if isinstance(value, dict):
+            value = value.get("value")
         number = parse_price(value)
-        return {"value": number, "unit": unit} if number is not None else None
+        if number is None:
+            return None
+        return with_qualifier({"value": number, "unit": unit}, qualifier)
 
     return None

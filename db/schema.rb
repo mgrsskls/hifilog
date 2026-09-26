@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_26_091337) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_26_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -201,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_26_091337) do
     t.string "inputs", default: [], array: true
     t.string "label", null: false
     t.jsonb "options"
+    t.string "qualifiers", default: [], array: true
     t.string "units", default: [], array: true
     t.index ["label"], name: "index_custom_attributes_on_label", unique: true
   end

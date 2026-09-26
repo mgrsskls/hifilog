@@ -48,6 +48,11 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     # specification, and once this is highlighted every field is one more blank a contributor
     # is scored against.
     inputs: %w[ohm_8 ohm_4],
+    # The distortion the figure is quoted at, which is what makes two power ratings comparable
+    # or not. One dimension only, so "both channels driven" is deliberately absent: an entry
+    # holds one qualifier, and both are true of one figure. Ordered from the tightest claim to
+    # the loosest.
+    qualifiers: %w[thd_0_1_percent thd_1_percent thd_10_percent],
     sub_categories: %w[integrated-amplifiers power-amplifiers receivers]
   },
   {
@@ -59,6 +64,7 @@ CUSTOM_ATTRIBUTE_DEFINITIONS = [
     # `inputs` is what the product form renders as fields, and a power amplifier has no
     # business being asked for its output into 300 ohms.
     inputs: %w[ohm_32 ohm_300],
+    qualifiers: %w[thd_0_1_percent thd_1_percent thd_10_percent],
     sub_categories: %w[headphone-amplifiers daps]
   },
   # One list per direction, not one per direction and signal type.
@@ -192,7 +198,8 @@ namespace :custom_attributes do
       input_type: declaration[:input_type],
       highlighted: declaration[:highlighted],
       units: declaration[:units] || [],
-      inputs: declaration[:inputs] || []
+      inputs: declaration[:inputs] || [],
+      qualifiers: declaration[:qualifiers] || []
     )
 
     assign_options(record, declaration[:options])
@@ -307,6 +314,7 @@ namespace :custom_attributes do
       highlighted: record.highlighted,
       units: record.units.to_a.sort,
       inputs: record.inputs.to_a.sort,
+      qualifiers: record.qualifiers.to_a.sort,
       options: record.options,
       sub_category_ids: record.sub_category_ids.sort
     }

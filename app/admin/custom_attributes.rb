@@ -2,7 +2,7 @@ ActiveAdmin.register CustomAttribute do
   # option_scopes is { sub_category_id => [option ids] }, so its keys are ids rather than a
   # fixed list -- `{}` is how strong parameters permits a hash whose keys are not known ahead.
   permit_params :label, :highlighted, :input_type, :options_editor,
-                units: [], inputs: [], sub_category_ids: [],
+                units: [], inputs: [], qualifiers: [], sub_category_ids: [],
                 options_attributes: [:key, :value],
                 option_scopes: {}
 
@@ -40,6 +40,11 @@ ActiveAdmin.register CustomAttribute do
         end
         f.inputs do
           f.input :inputs, as: :check_boxes, collection: CustomAttribute::VALID_INPUTS
+        end
+        # Tick values of ONE dimension only: an entry stores one qualifier, so a definition that
+        # offered a tolerance and "both channels driven" together could record neither pair.
+        f.inputs do
+          f.input :qualifiers, as: :check_boxes, collection: CustomAttribute::VALID_QUALIFIERS
         end
       end
 
@@ -109,6 +114,11 @@ ActiveAdmin.register CustomAttribute do
               "<li>#{t("custom_attribute_inputs.#{input}")}</li>"
             end.join
           }</ol>".html_safe
+        end
+        if custom_attribute.qualifiers.any?
+          parts << "<b>Conditions:</b> #{custom_attribute.qualifiers.map do |qualifier|
+            t("custom_attribute_qualifiers.#{qualifier}")
+          end.join(' / ')}".html_safe
         end
         safe_join(parts, tag.br)
       end
@@ -199,6 +209,11 @@ ActiveAdmin.register CustomAttribute do
       end
       row :units
       row :inputs
+      # The conditions the definition offers, translated as the product form offers them: the keys
+      # alone do not say whether "±3 dB" or "at 1% THD" was ticked.
+      row :qualifiers do |custom_attribute|
+        custom_attribute.qualifiers.map { |qualifier| t("custom_attribute_qualifiers.#{qualifier}") }.join(", ")
+      end
       row :sub_categories do |custom_attribute|
         custom_attribute.sub_categories.map(&:name).join(", ")
       end

@@ -218,6 +218,11 @@
                   <% end %>
                 </div>
               <% end %>
+              <% if custom_attribute.qualified? %>
+                <div class="EntityFormAttribute-grid">
+                  <%= render "products/custom_attribute_qualifier", custom_attribute:, product: %>
+                </div>
+              <% end %>
             </div>
           <% elsif custom_attribute.input_type == 'boolean' %>
           <div class="EntityFormAttribute-label">
@@ -258,6 +263,11 @@
                       </label>
                     </div>
                   <% end %>
+                </div>
+              <% end %>
+              <% if custom_attribute.qualified? %>
+                <div class="EntityFormAttribute-grid">
+                  <%= render "products/custom_attribute_qualifier", custom_attribute:, product: %>
                 </div>
               <% end %>
             </div>

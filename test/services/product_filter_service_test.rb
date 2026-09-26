@@ -137,6 +137,57 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     assert_includes result.products.pluck(:product_id), product.id
   end
 
+  # Nothing ticked must behave exactly as before the facet existed. Equality the way `unit` is
+  # compared would drop every figure whose condition nobody recorded, which is most of them.
+  test 'an empty qualifier facet adds no condition' do
+    product = products(:without_custom_attributes)
+    custom_attributes(:four).update!(qualifiers: %w[plus_minus_3_db plus_minus_6_db])
+    product.update!(custom_attributes: { 'weight' => { 'value' => '5.0' } })
+
+    custom = {
+      'weight' => ActiveSupport::HashWithIndifferentAccess.new(min: '1', max: '10', qualifier: [])
+    }
+
+    result = ProductFilterService.new(filters: { custom: }, brands: [@brand]).filter
+
+    assert_includes result.products.pluck(:product_id), product.id
+  end
+
+  test 'a ticked qualifier keeps only the products measured that way' do
+    custom_attributes(:four).update!(qualifiers: %w[plus_minus_3_db plus_minus_6_db])
+    matching = products(:without_custom_attributes)
+    matching.update!(custom_attributes: { 'weight' => { 'value' => '5.0', 'qualifier' => 'plus_minus_3_db' } })
+    other = products(:with_custom_attributes)
+    other.update!(custom_attributes: { 'weight' => { 'value' => '5.0', 'qualifier' => 'plus_minus_6_db' } })
+
+    custom = {
+      'weight' => ActiveSupport::HashWithIndifferentAccess.new(qualifier: ['plus_minus_3_db'])
+    }
+
+    ids = ProductFilterService.new(filters: { custom: }, brands: [@brand]).filter.products.pluck(:product_id)
+
+    assert_includes ids, matching.id
+    assert_not_includes ids, other.id
+  end
+
+  # Deliberate, and the behaviour most likely to be read as a bug: a ticked condition means
+  # "measured this way", so a figure whose condition nobody recorded is not a match. The facet has
+  # no "not stated" option to soften this -- a visitor who wants the looser answer ticks nothing,
+  # which returns a superset. See docs/custom-attribute-qualifiers.md, §5.2.
+  test 'a ticked qualifier excludes a product that records no condition' do
+    custom_attributes(:four).update!(qualifiers: %w[plus_minus_3_db])
+    unqualified = products(:without_custom_attributes)
+    unqualified.update!(custom_attributes: { 'weight' => { 'value' => '5.0' } })
+
+    custom = {
+      'weight' => ActiveSupport::HashWithIndifferentAccess.new(qualifier: ['plus_minus_3_db'])
+    }
+
+    ids = ProductFilterService.new(filters: { custom: }, brands: [@brand]).filter.products.pluck(:product_id)
+
+    assert_not_includes ids, unqualified.id
+  end
+
   test 'filter applies brand_filters country to product results' do
     result = ProductFilterService.new(
       filters: {},

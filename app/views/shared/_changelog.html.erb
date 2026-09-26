@@ -56,6 +56,7 @@
                                           <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
                                           <% translated_unit = safe_unit_entities(t("custom_attribute_units.#{unit}")) if unit.present? %>
                                           <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
+                                          <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
                                           <% if ca[1]['value'].is_a?(Hash) %>
                                             <% ca[1]['value'].each do |v| %>
                                               <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
@@ -64,11 +65,13 @@
                                               <% end %>
                                               <br>
                                             <% end %>
+                                            <%= "(#{qualifier})" if qualifier.present? %>
                                           <% elsif ca[1]['value'].present? %>
                                             <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
                                             <% if equivalent %>
                                                 / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
                                             <% end %>
+                                            <%= "(#{qualifier})" if qualifier.present? %>
                                           <% else %>
                                             n/a
                                           <% end %>
@@ -123,6 +126,7 @@
                                           <% unit = ca[1]['unit'].present? ? ca[1]['unit'] : active_record.units.first %>
                                           <% translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present? %>
                                           <% equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2 %>
+                                          <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
                                           <% if ca[1]['value'].is_a?(Hash) %>
                                             <% ca[1]['value'].each do |v| %>
                                               <%= t("custom_attribute_inputs.#{v[0]}") %>: <%= number_with_precision(v[1], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
@@ -131,11 +135,13 @@
                                               <% end %>
                                               <br>
                                             <% end %>
+                                            <%= "(#{qualifier})" if qualifier.present? %>
                                           <% elsif ca[1]['value'].present? %>
                                             <%= number_with_precision(ca[1]['value'], precision: 4, strip_insignificant_zeros: true) %> <%= translated_unit %>
                                             <% if equivalent %>
                                                 / <%= number_with_precision(ca[1]['value'] * equivalent[1], precision: 4, strip_insignificant_zeros: true) %> <%= safe_unit_entities(t("custom_attribute_units.#{equivalent[0]}")) %>
                                             <% end %>
+                                            <%= "(#{qualifier})" if qualifier.present? %>
                                           <% else %>
                                             n/a
                                           <% end %>

@@ -115,11 +115,12 @@ class Product < ApplicationRecord
   before_validation :clear_product_series_of_other_brand, prepend: true, if: -> { persisted? && brand_id_changed? }
   before_validation :assign_product_series_from_name, prepend: true, if: -> { @product_series_name_assigned }
   after_validation :merge_new_product_series_errors
-  # Every write path lands here -- the product form, ActiveAdmin, ProductConversionService, the
-  # console -- so units are normalised on the model rather than in the controller that happens
-  # to do the type coercion. Guarded on the change so an ordinary save that never touched the
-  # specs does not pay for a definitions lookup. See CustomAttribute.normalize_units.
-  before_save :normalize_custom_attribute_units, if: :custom_attributes_changed?
+  # Every write path lands here -- the product form, ActiveAdmin, ImportPromotion,
+  # ProductConversionService, the console -- so specs are cleaned on the model rather than in the
+  # controller that happens to do the type coercion. Guarded on the change so an ordinary save that
+  # never touched the specs does not pay for a definitions lookup. Pruning runs before
+  # normalisation, for the reason in CustomAttribute.prune_unsupported_keys.
+  before_save :clean_custom_attributes, if: :custom_attributes_changed?
 
   # The PaperTrail callbacks, after the associations: the autosave of the options and of the sub
   # categories runs first, so the version sees them. See VersionedProductOptions.
@@ -487,8 +488,10 @@ class Product < ApplicationRecord
     end
   end
 
-  def normalize_custom_attribute_units
-    self.custom_attributes = CustomAttribute.normalize_units(custom_attributes)
+  def clean_custom_attributes
+    pruned = CustomAttribute.prune_unsupported_keys(custom_attributes)
+
+    self.custom_attributes = CustomAttribute.normalize_units(pruned)
   end
 
   # Mirrors the SQL in db/views/contribute_product_items_v01.sql: the key must exist and hold

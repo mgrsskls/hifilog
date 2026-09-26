@@ -314,6 +314,38 @@ en:
     turntable_drive_type: Drive type
     turntable_operation_type: Operation type
     weight: Weight
+  # Chrome for the qualifier controls. `label` names both the product form control and the filter
+  # facet; `not_stated` is the product form only -- the filter has no such option, because a
+  # visitor who wants the looser answer selects nothing. The values are under
+  # custom_attribute_qualifiers.
+  custom_attribute_qualifier:
+    label: Measured at
+    not_stated: Not stated
+  # A qualifier says under which condition a number was measured. One definition offers values of
+  # one dimension only (see docs/custom-attribute-qualifiers.md, §4.4), so the groups below never
+  # mix in one attribute.
+  custom_attribute_qualifiers:
+    # Tolerance, for frequency_response_range. Two-sided first, then the one-sided roll-off
+    # points that loudspeakers and above all subwoofers quote.
+    plus_minus_1_db: ±1 dB
+    plus_minus_2_db: ±2 dB
+    plus_minus_3_db: ±3 dB
+    plus_minus_6_db: ±6 dB
+    minus_3_db: −3 dB
+    minus_6_db: −6 dB
+    minus_10_db: −10 dB
+    # Distortion, for the two output power definitions.
+    thd_0_1_percent: At 0.1% THD
+    thd_1_percent: At 1% THD
+    thd_10_percent: At 10% THD
+    # Distance, for loudspeaker_peak_spl.
+    distance_1m: At 1 m
+    distance_2m: At 2 m
+    # Drive reference, for loudspeaker_sensitivity. These were two units until the qualifier
+    # existed; they are one unit, dB, measured two ways. Keep db_1w_1m and db_283v_1m under
+    # custom_attribute_units: the changelog renders the units of older versions.
+    drive_1w_1m: At 1 W / 1 m
+    drive_283v_1m: At 2.83 V / 1 m
   custom_attribute_units:
     a: A
     bit: bit

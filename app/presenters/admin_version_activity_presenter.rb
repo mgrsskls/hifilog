@@ -289,7 +289,12 @@ class AdminVersionActivityPresenter
              'n/a'
            end
     # Unit texts can contain an HTML entity (&ohm;).
-    [text, unit_text].compact.join(' ').gsub('&ohm;', 'Ω')
+    reading = [text, unit_text].compact.join(' ').gsub('&ohm;', 'Ω')
+
+    # Without the condition, a change of the condition alone reads as the same value before and
+    # after, so the row looks like a change that did not happen.
+    qualifier = CustomAttribute.qualifier_label(value)
+    qualifier.present? ? "#{reading} (#{qualifier})" : reading
   end
 
   def option_name(definition, id)

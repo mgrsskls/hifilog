@@ -297,7 +297,8 @@ class ProductFilterService
 
       scope = case custom_attribute[:input_type]
               when 'number'
-                filter_scope_by_numeric_custom_attribute(scope, custom_attribute, value)
+                scope = filter_scope_by_numeric_custom_attribute(scope, custom_attribute, value)
+                filter_scope_by_qualifier(scope, custom_attribute, value[:qualifier])
               when 'boolean'
                 scope.where('(custom_attributes ->> :label) = (:value)', label: label,
                                                                          value: value == '1' ? 'true' : 'false')
@@ -363,6 +364,41 @@ class ProductFilterService
     CustomAttribute.canonical_unit(unit)
   end
 
+  # The measurement condition, as an opt-in facet with two states.
+  #
+  # Nothing ticked leaves the scope untouched: an entry with no condition recorded is not an entry
+  # that fails the test, it is one that was never asked, and coverage starts near zero. Equality
+  # the way `unit` is compared would therefore return almost nothing.
+  #
+  # A ticked condition means "measured this way", and nothing else. There is deliberately no "not
+  # stated" option. It would express one further query -- this condition, or none recorded -- which
+  # ticking nothing already answers with a superset, and it is the one branch a containment test
+  # cannot serve, so every query would have mixed an indexed test with an unindexed one.
+  #
+  # Containment rather than `->> 'qualifier' = ?`, because the GIN index on
+  # products.custom_attributes serves `@>` and cannot serve a comparison through `->>`. Several
+  # ticked conditions are an OR of containment tests, which the index still serves.
+  #
+  # A row holding no value for the attribute matches nothing here, which is correct: the facet
+  # needs no separate test for the label.
+  def filter_scope_by_qualifier(scope, custom_attribute, submitted)
+    label = custom_attribute[:label]
+    selected = Array(submitted).compact_blank & Array(custom_attribute[:qualifiers])
+    return scope if selected.empty?
+
+    conditions = selected.map do |qualifier|
+      json = { label => { 'qualifier' => qualifier } }.to_json
+
+      # A named bind, never a `?` placeholder: `?` is also the jsonb "has key" operator, and a
+      # positional placeholder would consume it. Passing a hash makes Rails substitute names only.
+      ProductItem.send(:sanitize_sql_array, ['custom_attributes @> :json', { json: }])
+    end
+
+    # Parenthesised as one condition: the conditions are OR'd, and the range filters around them
+    # are AND'd.
+    scope.where("(#{conditions.join(' OR ')})")
+  end
+
   def filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param)
     inputs = custom_attribute[:inputs]
     label = custom_attribute[:label]
@@ -371,6 +407,10 @@ class ProductFilterService
     if inputs.present?
       inputs.each do |input|
         param_input = param[input]
+        # Absent when the visitor set the unit or the condition but typed no range for this input.
+        # Reachable since the qualifier facet exists: ticking a condition alone posts no input keys.
+        next if param_input.blank?
+
         min, max = convert_values(param_unit, param_input[:min], param_input[:max])
 
         if min.present?

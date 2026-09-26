@@ -268,6 +268,32 @@ class SchemaLimitsTest(unittest.TestCase):
             {"value": {"ohm_8": 88.0}, "unit": "w"},
         )
 
+    def test_a_stated_condition_is_stored_as_its_key(self):
+        answer = {
+            "is_product": True,
+            "name": "Model 88",
+            "attributes": {"amplifier_output_power": {"ohm_8": 88, "qualifier": "At 1% THD"}},
+            "evidence": {"name": "Model 88", "amplifier_output_power": "88 watts per channel into 8 ohms"},
+        }
+        apply_text_extraction(self.candidate, answer, self.page, "u", SCHEMA)
+        self.assertEqual(
+            self.candidate.custom_attributes["amplifier_output_power"],
+            {"value": {"ohm_8": 88.0}, "unit": "w", "qualifier": "thd_1_percent"},
+        )
+
+    def test_a_condition_the_definition_does_not_offer_is_dropped(self):
+        answer = {
+            "is_product": True,
+            "name": "Model 88",
+            "attributes": {"amplifier_output_power": {"ohm_8": 88, "qualifier": "At 10% THD"}},
+            "evidence": {"name": "Model 88", "amplifier_output_power": "88 watts per channel into 8 ohms"},
+        }
+        apply_text_extraction(self.candidate, answer, self.page, "u", SCHEMA)
+        self.assertEqual(
+            self.candidate.custom_attributes["amplifier_output_power"],
+            {"value": {"ohm_8": 88.0}, "unit": "w"},
+        )
+
     def test_an_unknown_attribute_is_refused(self):
         answer = {
             "is_product": True,
@@ -1021,7 +1047,8 @@ class SpecsTest(unittest.TestCase):
         values = self.read(self.ZETH)
         self.assertEqual(values["frequency_response_range"],
                          {"value": {"min": 40, "max": 20000}, "unit": "hz"})
-        self.assertEqual(values["loudspeaker_sensitivity"], {"value": 95, "unit": "db_1w_1m"})
+        self.assertEqual(values["loudspeaker_sensitivity"],
+                         {"value": 95, "unit": "db", "qualifier": "drive_1w_1m"})
         self.assertEqual(values["dimensions"], {"value": {"w": 33, "h": 108, "l": 25}, "unit": "cm"})
         self.assertEqual(values["weight"], {"value": 32, "unit": "kg"})
 
@@ -1032,9 +1059,47 @@ class SpecsTest(unittest.TestCase):
     def test_dimensions_without_an_order_are_left_out(self):
         self.assertNotIn("dimensions", self.read("Dimensions: 33 x 108 x 25 cm"))
 
-    def test_a_voltage_sensitivity_keeps_its_unit(self):
+    # Most sheets state no reference: 134 of 157 production candidates named none. Writing
+    # "At 1 W / 1 m" for those would claim a condition nobody published, and a filter on that
+    # condition would then return them. A qualifier is optional, so the key is left out.
+    def test_a_sensitivity_with_no_reference_gets_no_qualifier(self):
+        values = self.read("Sensitivity: 89 dB")
+        self.assertEqual(values["loudspeaker_sensitivity"], {"value": 89, "unit": "db"})
+
+    def test_spl_alone_is_not_a_reference(self):
+        values = self.read("Sensitivity: 89dB SPL")
+        self.assertEqual(values["loudspeaker_sensitivity"], {"value": 89, "unit": "db"})
+
+    def test_a_watt_reference_is_kept(self):
+        values = self.read("Wirkungsgrad: 90 dB/W/m")
+        self.assertEqual(values["loudspeaker_sensitivity"],
+                         {"value": 90, "unit": "db", "qualifier": "drive_1w_1m"})
+
+    # The drive reference is a qualifier, not a unit: the definition offers `db` alone, so the old
+    # spelling would be dropped on promotion and the condition lost without a warning.
+    def test_a_voltage_sensitivity_becomes_a_qualifier(self):
         values = self.read("Sensitivity: 93 dB (2,8 V / 1 m)")
-        self.assertEqual(values["loudspeaker_sensitivity"], {"value": 93, "unit": "db_283v_1m"})
+        self.assertEqual(values["loudspeaker_sensitivity"],
+                         {"value": 93, "unit": "db", "qualifier": "drive_283v_1m"})
+
+    # The reference is as often in the label as in the value. Seven of 197 production candidates
+    # were stored as 1 W / 1 m for this reason alone.
+    def test_a_voltage_reference_in_the_label_is_read(self):
+        values = self.read("Sensitivity (2.83Vrms/1m): 84dB")
+        self.assertEqual(values["loudspeaker_sensitivity"],
+                         {"value": 84, "unit": "db", "qualifier": "drive_283v_1m"})
+
+    def test_a_voltage_reference_in_a_translated_label_is_read(self):
+        values = self.read("Rendement (2.83V): 96dB")
+        self.assertEqual(values["loudspeaker_sensitivity"],
+                         {"value": 96, "unit": "db", "qualifier": "drive_283v_1m"})
+
+    # 2.83 V into 8 ohms IS 1 W, so a sheet stating both is not in conflict with itself. The
+    # headline reading is kept rather than guessing which half was meant.
+    def test_a_line_stating_both_references_keeps_the_watt_reading(self):
+        values = self.read("Efficiency: 97dB SPL @ 1W/1m (using input 2.83 rmsV)")
+        self.assertEqual(values["loudspeaker_sensitivity"],
+                         {"value": 97, "unit": "db", "qualifier": "drive_1w_1m"})
 
     def test_two_values_for_one_attribute_are_left_out(self):
         values = self.read(

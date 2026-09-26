@@ -62,6 +62,12 @@ namespace :import do
         input_type: attribute.input_type,
         units: attribute.units,
         inputs: attribute.inputs,
+        # The conditions this specification may be quoted under, each with the words a person
+        # reads on a sheet -- "±3 dB", "At 1% THD" -- because that string is what the extractor
+        # has to recognise in the source text. The key is what an import writes.
+        qualifiers: attribute.qualifiers.to_h do |qualifier|
+          [qualifier, I18n.t("custom_attribute_qualifiers.#{qualifier}", default: qualifier)]
+        end,
         # { option id => i18n key }, with the English label beside each key for the same
         # reason. The id is the part a product stores.
         options: (attribute.options || {}).transform_values do |key|

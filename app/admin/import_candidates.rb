@@ -190,6 +190,7 @@ ActiveAdmin.register ImportCandidate do
               unit = attr_data['unit'].presence || active_record.units.first
               translated_unit = t("custom_attribute_units.#{unit}").html_safe if unit.present?
               equivalent = CustomAttribute.equivalent_unit(unit) if active_record.units.size == 2
+              qualifier = CustomAttribute.qualifier_label(attr_data)
               value = attr_data['value']
 
               if value.is_a?(Hash)
@@ -203,6 +204,8 @@ ActiveAdmin.register ImportCandidate do
                   end
                   br
                 end
+                # One condition for the whole entry, so it follows the last input.
+                text_node "(#{qualifier})" if qualifier.present?
               elsif value.present?
                 text_node "#{number_with_precision(value, precision: 4, strip_insignificant_zeros: true)} "
                 text_node translated_unit
@@ -210,6 +213,7 @@ ActiveAdmin.register ImportCandidate do
                   text_node " / #{number_with_precision(value * equivalent[1], precision: 4, strip_insignificant_zeros: true)} "
                   text_node t("custom_attribute_units.#{equivalent[0]}").html_safe
                 end
+                text_node " (#{qualifier})" if qualifier.present?
               else
                 text_node "n/a"
               end

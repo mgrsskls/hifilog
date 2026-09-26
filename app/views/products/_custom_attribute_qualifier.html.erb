@@ -1,0 +1,31 @@
+<%#
+  The condition a figure was measured under -- see docs/custom-attribute-qualifiers.md.
+
+  A select rather than radio buttons, for two reasons. The list runs to seven values for a
+  tolerance, which is long for a radio row. And the blank option can be chosen again after a
+  value was set, which a radio group cannot do: "not stated" has to stay reachable, because a
+  contributor who learns that a source states no condition must be able to say so.
+
+  The blank option posts an empty string. The controller removes the key rather than storing it, so
+  an entry never carries `"qualifier": ""` -- which is neither a condition nor absent, and which
+  every reader of the qualifier would have to special-case.
+
+  No conversion happens when this changes, unlike the unit radios beside it: a different
+  condition is a different measurement, so the number stays as the contributor typed it.
+  entity_form.js converts only controls whose name ends in [unit], so nothing here opts out.
+%>
+<% field_id = "product[custom_attributes][#{custom_attribute.label}]-qualifier" %>
+<div class="EntityFormAttribute-qualifier">
+  <label for="<%= field_id %>" class="Form-label">
+    <%= t("custom_attribute_qualifier.label") %>
+  </label>
+  <select class="Form-input" name="<%= "product[custom_attributes][#{custom_attribute.label}][qualifier]" %>" id="<%= field_id %>">
+    <option value=""><%= t("custom_attribute_qualifier.not_stated") %></option>
+    <% selected = product.custom_attributes&.dig(custom_attribute.label, 'qualifier') %>
+    <% custom_attribute.qualifiers.each do |qualifier| %>
+      <option value="<%= qualifier %>"<%= " selected" if qualifier == selected %>>
+        <%= t("custom_attribute_qualifiers.#{qualifier}") %>
+      </option>
+    <% end %>
+  </select>
+</div>

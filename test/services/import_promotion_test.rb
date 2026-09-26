@@ -50,6 +50,38 @@ class ImportPromotionTest < ActiveSupport::TestCase
     assert_predicate record, :imported?
   end
 
+  # A candidate holds whatever the extractor wrote, and the extractor writes the first unit of a
+  # definition for every figure it reads. A candidate from before a definition changed therefore
+  # carries a unit that definition no longer offers. Promotion copies the specs verbatim and never
+  # sees the product form, so the cleaning has to sit on the model -- see
+  # CustomAttribute.prune_unsupported_keys. Without it the new product holds a unit no filter can
+  # reach.
+  test 'a unit the definition no longer offers does not reach the product' do
+    custom_attributes(:four).update!(units: %w[db], qualifiers: %w[drive_1w_1m])
+    record = candidate(custom_attributes: { 'weight' => { 'value' => 88, 'unit' => 'db_1w_1m' } })
+
+    assert_predicate ImportPromotion.call(record), :success?
+
+    entry = record.reload.product.custom_attributes['weight']
+
+    assert_equal 88, entry['value']
+    assert_not entry.key?('unit')
+  end
+
+  test 'a condition the definition offers survives promotion' do
+    custom_attributes(:four).update!(units: %w[db], qualifiers: %w[drive_1w_1m])
+    record = candidate(
+      custom_attributes: { 'weight' => { 'value' => 88, 'unit' => 'db', 'qualifier' => 'drive_1w_1m' } }
+    )
+
+    assert_predicate ImportPromotion.call(record), :success?
+
+    entry = record.reload.product.custom_attributes['weight']
+
+    assert_equal 'db', entry['unit']
+    assert_equal 'drive_1w_1m', entry['qualifier']
+  end
+
   test 'every sub category of the candidate reaches the product' do
     # A product can be two things at once, and both must arrive.
     record = candidate(sub_category_ids: [sub_categories(:one).id, sub_categories(:two).id])
