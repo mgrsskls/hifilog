@@ -418,6 +418,16 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_select '.AvatarPreview'
   end
 
+  test 'index ignores filter params that are not nested' do
+    get brands_url(brands: 'foo', products: 'foo')
+    assert_response :success
+  end
+
+  test 'products ignores filter params that are not nested' do
+    get brand_products_url(brands(:one).friendly_id, products: 'foo')
+    assert_response :success
+  end
+
   private
 
   # A source brand and `count` candidate brands with one product each in a sub category of their

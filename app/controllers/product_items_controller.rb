@@ -4,6 +4,7 @@ class ProductItemsController < ApplicationController
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
+  include FilterParamsSanitizer
   include CategoryPathFromSegments
 
   before_action :set_active_menu

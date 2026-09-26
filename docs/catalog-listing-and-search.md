@@ -80,6 +80,11 @@ entries, use `CacheService.newest_product_item_refs`:
 of the catalog and brand index pages. They share `FilterableService`, `FilterConstants` and
 `RelevanceOrdering`. The controller concern `FilterParamsBuilder` builds the filter parameters.
 
+The filter parameters `brands` and `products` are nested, for example `products[query]`. Crawlers
+sometimes send them as one value, for example `products=x`. The controller concern
+`FilterParamsSanitizer` removes such a value before the action starts. The page then shows the
+list without a filter.
+
 The custom attribute filters use the definitions that apply to the current category. See
 [custom-attributes.md](custom-attributes.md).
 

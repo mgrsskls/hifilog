@@ -4,6 +4,7 @@ class BrandsController < ApplicationController
   include FilterableService
   include FriendlyFinder
   include FilterParamsBuilder
+  include FilterParamsSanitizer
   include CategoryPathFromSegments
 
   before_action :set_paper_trail_whodunnit, only: [:create, :update]

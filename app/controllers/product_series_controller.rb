@@ -6,6 +6,7 @@
 # list the product form reads) and brand_series_path (one series).
 class ProductSeriesController < ApplicationController
   include FilterParamsBuilder
+  include FilterParamsSanitizer
 
   # The dialog of the series page shows all products of the brand, so one submit can change many
   # of them. The limit keeps one submit small enough for one request.

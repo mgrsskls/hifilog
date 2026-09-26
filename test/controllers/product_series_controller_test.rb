@@ -402,4 +402,9 @@ class ProductSeriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'a[href=?]', series_path
   end
+
+  test 'show ignores filter params that are not nested' do
+    get brand_series_path(brand_id: @brand.friendly_id, id: @series.friendly_id, products: 'foo')
+    assert_response :success
+  end
 end

@@ -225,4 +225,9 @@ class ProductItemsControllerTest < ActionDispatch::IntegrationTest
     assert_select '.CatalogueHub', count: 0
     assert_select '.EntityList--products'
   end
+
+  test 'index ignores filter params that are not nested' do
+    get products_url(products: 'foo', brands: 'foo')
+    assert_response :success
+  end
 end
