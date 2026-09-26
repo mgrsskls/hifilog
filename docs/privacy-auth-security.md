@@ -42,6 +42,8 @@ Users store which version they accepted and when.
   HTML safe. It builds markup with `safe_join` and `tag`, which escape the name.
 - **Uploads**: the images of possessions and custom products and the avatar accept only JPEG,
   WebP, PNG and GIF files. An image can be 10 MB at most, an avatar 5 MB. The model validates
-  this when a record is created and when it changes.
+  this when a record is created and when it changes. The forms send the files together with the
+  record, so the application does not use the direct upload endpoint of Active Storage. That
+  endpoint needs no sign-in, thus the application answers it with 404.
 - A **content security policy** applies to all pages.
 - A **Turnstile** bot challenge protects registration and password reset.

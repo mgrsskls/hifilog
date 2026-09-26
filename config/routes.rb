@@ -188,6 +188,11 @@ Rails.application.routes.draw do
     get '/resistors-for-amplifier-to-headphone-adapter', to: 'static#amp_to_headphone_calculator', **html_only
   end
 
+  # Active Storage draws its routes after these, so this route comes first. Its direct upload
+  # endpoint needs no sign-in, and the application does not use it (the forms upload files with
+  # the record). See docs/privacy-auth-security.md#3-security.
+  post '/rails/active_storage/direct_uploads', to: 'application#not_found', as: false
+
   get '/', to: 'application#not_found', via: [:post, :put, :patch, :delete, :options]
   get '*url', to: 'application#not_found', via: :all, constraints: lambda { |req| !req.path.start_with?('/rails/') }
 end
