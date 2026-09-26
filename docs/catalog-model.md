@@ -61,6 +61,10 @@ A sub category has a `slug` and an `identifier`:
 logo. A brand links to sub categories and has many products. Users can bookmark and follow a
 brand (see [brand-follows.md](brand-follows.md)).
 
+The website of a brand must be a full `http` or `https` address with a dot in the host. The brand
+page shows the website as a link. Thus, a value with another scheme, for example `javascript:`,
+must never get into the database.
+
 ### 3.1 Three names
 
 A brand has three names. Each name has one function:

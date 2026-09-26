@@ -21,6 +21,22 @@ class BrandTest < ActiveSupport::TestCase
     assert brand2.errors[:name].any?
   end
 
+  test 'website must be an http or https address' do
+    brand = brands(:one)
+
+    ['javascript:alert(1)//', 'data:text/html,<b>x</b>', 'Orpheus Loudspeakers', 'example.com',
+     'https://localhost', 'https://exa mple.com'].each do |website|
+      brand.website = website
+      assert_not brand.valid?, website
+      assert brand.errors[:website].any?, website
+    end
+
+    ['https://www.example.com', 'http://example.com/about?lang=en', 'https://backesmüller.de'].each do |website|
+      brand.website = website
+      assert brand.valid?, website
+    end
+  end
+
   test 'country_code_has_allowed_value validation' do
     brand = Brand.new(name: 'Test Brand', country_code: 'INVALID')
     assert_not brand.valid?

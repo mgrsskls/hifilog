@@ -72,6 +72,10 @@ class Brand < ApplicationRecord
   validates :country_code,
             inclusion: { in: ->(_) { ISO3166::Country.all.map(&:alpha2) } },
             allow_nil: true
+  # An http or https address with a dot in the host, because the brand page links it
+  # (docs/catalog-model.md#3-brand). Other schemes, such as javascript:, must never become a link.
+  # A pattern and not URI.parse: URI.parse rejects hosts with non-ASCII letters (backesmüller.de).
+  validates :website, format: { with: %r{\Ahttps?://[^\s/?#]+\.[^\s/?#]+(?:[/?#]\S*)?\z}i }, allow_nil: true
 
   validate :validate_logo_content_type
   validate :validate_logo_file_size

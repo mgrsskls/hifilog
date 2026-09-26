@@ -205,6 +205,27 @@ class BrandsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to brand_url(id: name.parameterize)
   end
 
+  test 'update rejects a website that is not an http or https address' do
+    brand = brands(:one)
+    sign_in users(:one)
+
+    patch brand_url(brand), params: { brand: { website: 'javascript:alert(document.cookie)//' } }
+
+    assert_response :unprocessable_content
+    assert_nil brand.reload.website
+  end
+
+  test 'show links an http or https website' do
+    brand = brands(:one)
+    brand.update!(website: 'https://www.example.com')
+
+    get brand_url(id: brand.friendly_id)
+
+    assert_response :success
+    assert response.body.include?('href="https://www.example.com?utm_source=hifilog.com&amp;utm_medium=referral"'),
+           'the website is not a link'
+  end
+
   test 'changelog' do
     get brand_changelog_url(brand_id: brands(:one).friendly_id)
     assert_select 'meta[name="robots"][content=?]', 'noindex, follow'

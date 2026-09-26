@@ -127,6 +127,8 @@ en:
             logo:
               invalid_content_type: must be JPG, PNG, GIF, or WebP.
               too_large: must be 5 MB or smaller.
+            website:
+              invalid: must be a full address that starts with http:// or https://, for example https://www.example.com
         product:
           attributes:
             name:
