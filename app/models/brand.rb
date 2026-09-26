@@ -230,12 +230,13 @@ class Brand < ApplicationRecord
   FOLLOWERS_PREVIEW_LIMIT = 12
 
   # Followers the viewer is allowed to see, newest follow first. Served by
-  # brand_follows (brand_id, created_at).
+  # brand_follows (brand_id, created_at). eager_load (not includes) folds the user,
+  # avatar attachment and blob into the same query as the join/filter, instead of a
+  # redundant second round trip for users already matched by that join.
   def visible_followers(viewer)
     brand_follows
-      .joins(:user)
+      .eager_load(user: { avatar_attachment: :blob })
       .merge(User.listable_for(viewer))
-      .includes(user: { avatar_attachment: :blob })
       .order(created_at: :desc)
   end
 

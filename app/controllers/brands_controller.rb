@@ -90,7 +90,6 @@ a user-driven database for hi-fi products and brands."
   end
 
   def show
-    @brand = Brand.with_attached_logo.includes(sub_categories: [:category]).friendly.find(params[:id])
     brand_id = @brand.id
 
     @contributors = User.find_by_sql(["
@@ -221,7 +220,8 @@ a user-driven database for hi-fi products and brands."
   end
 
   def find_brand
-    @brand = find_resource(Brand, :id, path_helper: ->(brand) { brand_path(brand) })
+    @brand = Brand.includes(logo_attachment: :blob, sub_categories: [:category]).friendly.find(params[:id])
+    redirect_to_canonical_path(brand_path(@brand)) { @brand }
   end
 
   def set_active_menu
@@ -335,7 +335,7 @@ a user-driven database for hi-fi products and brands."
   end
 
   def load_brand_for_products_page
-    @brand = Brand.with_attached_logo.friendly.find(params[:brand_id])
+    @brand = Brand.includes(logo_attachment: :blob).friendly.find(params[:brand_id])
   end
 
   def redirect_legacy_brand_products_category_query
