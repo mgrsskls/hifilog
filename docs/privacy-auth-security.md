@@ -36,5 +36,9 @@ Users store which version they accepted and when.
   search, and follow and block changes. Rails sends a path with a format suffix to the same
   action, for example `/user/sign_in.json` and `/user/sign_in`. Thus, Rack::Attack removes the
   format suffix before it compares a path, and the two paths share one limit.
+- **ActiveAdmin** shows the names that users write as text. This applies to product, brand,
+  custom product and product option names. An admin session has full access, thus HTML in such a
+  name must not become markup. The admin code does not mark a string that contains such a name as
+  HTML safe. It builds markup with `safe_join` and `tag`, which escape the name.
 - A **content security policy** applies to all pages.
 - A **Turnstile** bot challenge protects registration and password reset.

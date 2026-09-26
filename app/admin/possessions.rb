@@ -9,16 +9,19 @@ ActiveAdmin.register Possession do
   index do
     selectable_column
     id_column
+    # Users write these names, so they go through safe_join and tag, which escape them
+    # (docs/privacy-auth-security.md#3-security).
     column "Product" do |entity|
-      "#{
-        if entity.custom_product.present?
-          CustomProductPresenter.new(entity.custom_product).display_name
-        elsif entity.product_variant.present?
-          entity.product_variant.display_name
-        else
-          entity.product.display_name
-        end
-      }#{"<br><small>#{entity.product_option.option}</small>" if entity.product_option.present?}".html_safe
+      name = if entity.custom_product.present?
+               CustomProductPresenter.new(entity.custom_product).display_name
+             elsif entity.product_variant.present?
+               entity.product_variant.display_name
+             else
+               entity.product.display_name
+             end
+      next name if entity.product_option.blank?
+
+      safe_join([name, tag.br, tag.small(entity.product_option.option)])
     end
     column :user
     column "Created", sortable: :created_at do |entity|

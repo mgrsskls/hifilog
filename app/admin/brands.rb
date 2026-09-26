@@ -97,7 +97,7 @@ ActiveAdmin.register Brand do
         f.fieldset do
           f.legend class: "font-bold text-xl" do "Categories" end
           Category.all.each do |category|
-            f.input :sub_category_ids, label: "<b>#{category.name}</b>".html_safe, as: :check_boxes, collection: category.sub_categories
+            f.input :sub_category_ids, label: tag.b(category.name), as: :check_boxes, collection: category.sub_categories
           end
         end
       end
