@@ -5,6 +5,15 @@ Rails.application.configure do
 
   routes.default_url_options = { host: "https://www.hifilog.com" }
 
+  # Host Authorization: Rails answers 403 for a Host or X-Forwarded-Host header that is not in this
+  # list, so a request cannot put another host into the URLs that the app builds from the request
+  # (docs/privacy-auth-security.md#3-security). ALLOWED_HOSTS is comma-separated, for example
+  # "www.hifilog.com,hifilog.com". An empty list turns the check off, so the app must not boot
+  # without hosts: ENV.fetch raises for a missing variable, and the raise below for an empty one.
+  allowed_hosts = ENV.fetch("ALLOWED_HOSTS").split(",").map(&:strip).compact_blank
+  raise "ALLOWED_HOSTS contains no host" if allowed_hosts.empty?
+  config.hosts = allowed_hosts
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 

@@ -45,6 +45,12 @@ Users store which version they accepted and when.
   this when a record is created and when it changes. The forms send the files together with the
   record, so the application does not use the direct upload endpoint of Active Storage. That
   endpoint needs no sign-in, thus the application answers it with 404.
+- **Host Authorization**: in production, Rails answers 403 when the `Host` or `X-Forwarded-Host`
+  header of a request contains a host that is not in the `ALLOWED_HOSTS` environment variable (a
+  comma-separated list). Rails builds absolute URLs from the request host, for example canonical
+  links, structured data and the sitemap. Without this check, a request could put any host into
+  these URLs. An empty list turns the check off. Thus, the application does not boot without
+  `ALLOWED_HOSTS` or with an empty value.
 - A **content security policy** applies to all pages.
 - A **Turnstile** bot challenge protects registration, sign-in, password reset, and the forms that
   send the confirmation and unlock emails again. At sign-in, the challenge is checked before Devise
