@@ -541,9 +541,9 @@ it, or the discontinued part of the catalogue will read as uniformly cheap.
 Do not score at request time.
 
 Everything product-level — completeness, owner count, image presence, price band, era,
-discontinued — is stable between writes and belongs in precomputed columns or the
-existing catalogue views, alongside the completeness expression that already lives in
-`contribute_product_items`.
+discontinued — is stable between writes and belongs in precomputed columns, like the
+completeness score that products and product variants already store (see
+[completeness.md §1.3](completeness.md#13-when-the-score-of-products-changes)).
 
 Only three terms depend on the pair, and all three are cheap: same brand is an
 equality, price proximity is arithmetic on two precomputed bands, and co-occurrence is

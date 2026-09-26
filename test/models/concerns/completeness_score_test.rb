@@ -2,12 +2,16 @@
 
 require 'test_helper'
 
-# The completeness score exists twice: in Ruby (Completeness#completeness_score, used for the
-# prompts) and in SQL (a generated column on brands, an expression in the contribute_product_items
-# view, used for sorting). Nothing stops the two from drifting apart except this test.
+# The completeness score of brands and product variants exists twice: in Ruby
+# (Completeness#completeness_score, used for the prompts) and in SQL (a generated column on each
+# table, used for sorting). Nothing stops the two from drifting apart except this test. Products
+# have no SQL copy: Product#recalculate_completeness! stores the Ruby score, so for them this test
+# checks that the fixtures' stored values still match Ruby. Product and variant rows are read
+# through contribute_product_items, which only passes the stored columns through.
 #
-# If you change a weight, change it in all three places: the concern or model, the brands
-# migration, and db/views/contribute_product_items_vNN.sql.
+# If you change a brand or variant weight, change it in the concern or model and in a migration
+# that redefines that table's generated column. If you change a product weight, update the
+# fixtures and run `rake completeness:backfill_products`.
 class CompletenessScoreTest < ActiveSupport::TestCase
   def product_item_for(product)
     ContributeProductItem.find_by(product_id: product.id, item_type: 'Product')

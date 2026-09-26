@@ -30,8 +30,9 @@
 -- product_items, so every later `update_view :product_items` would have to drop and recreate
 -- this view too. ContributeProductItemTest asserts the two column lists stay in step.
 --
--- The weights must stay in step with Completeness::WEIGHTS and the per-model overrides in Ruby
--- (Product, ProductVariant). CompletenessScoreTest asserts the two agree for every fixture row.
+-- Since v04 `completeness` only passes the stored columns through, so no weights live here. They
+-- live in Ruby (Completeness::WEIGHTS and the Product / ProductVariant overrides) and in the
+-- product_variants generated column. CompletenessScoreTest asserts they agree for every fixture row.
 --
 -- `specs_applicable` / `specs_filled` are exposed so ContributeProductItem.missing_specs can be
 -- exact ("has specs to give and has not given them all") rather than a proxy for an empty JSONB.

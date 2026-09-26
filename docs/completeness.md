@@ -29,13 +29,15 @@ number of places that use the field.
 
 ### 1.2 Two calculations
 
-**The application calculates the score two times:**
+**The application calculates the score of brands and product variants two times:**
 
 - In Ruby, for the display.
-- In SQL, so that the database can sort and filter on the score: a generated column on `brands` and
-  an expression in the `contribute_product_items` view.
+- In SQL, as a generated column, so that the database can sort and filter on the score.
 
 A test makes sure that the two calculations give the same result.
+
+Products calculate their score only in Ruby. They store the result in columns, so that the database
+can sort and filter on it (see [1.3](#13-when-the-score-of-products-changes)).
 
 ### 1.3 When the score of products changes
 
