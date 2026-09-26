@@ -51,6 +51,11 @@ Users store which version they accepted and when.
   links, structured data and the sitemap. Without this check, a request could put any host into
   these URLs. An empty list turns the check off. Thus, the application does not boot without
   `ALLOWED_HOSTS` or with an empty value.
+- **Malformed parameters**: every paginated list reads `page` as one value, and the search reads
+  `query` as one value. A request can send them as a list or a hash, for example `page[]=1`. The
+  application removes such a value, and the request continues as if the value was not sent: a list
+  shows its first page, and the search asks for a query. Before, such a value caused an error
+  (500).
 - A **content security policy** applies to all pages.
 - A **Turnstile** bot challenge protects registration, sign-in, password reset, and the forms that
   send the confirmation and unlock emails again. At sign-in, the challenge is checked before Devise

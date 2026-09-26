@@ -4,6 +4,13 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   include SafeRedirect
 
+  # Query parameters that the application reads as one value: page in every paginated list, query
+  # in the search. A crafted page[]=1 or query[a]=x arrives as an array or a hash, and Kaminari or a
+  # String method raises on it. Such a value is removed, so the request continues as if it was not
+  # sent (docs/privacy-auth-security.md#3-security).
+  SCALAR_PARAMS = [:page, :query].freeze
+
+  before_action :drop_non_scalar_params
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :set_footer_data
   before_action :require_privacy_policy_acceptance!, if: :privacy_policy_enforcement_needed?
@@ -102,6 +109,13 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def drop_non_scalar_params
+    SCALAR_PARAMS.each do |key|
+      value = params[key]
+      params.delete(key) if value.is_a?(Array) || value.is_a?(ActionController::Parameters)
+    end
+  end
 
   def privacy_policy_enforcement_needed?
     user_signed_in? && !current_user.privacy_policy_current? && request.format.html?
