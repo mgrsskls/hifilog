@@ -62,6 +62,7 @@ class Possession < ApplicationRecord
   attr_accessor :delete_image
 
   validates :custom_product_id, uniqueness: true, allow_nil: true
+  validate :custom_product_belongs_to_user
   validates :price_purchase, absence: true, if: :gift?
   validates :price_purchase_currency, absence: true, if: :gift?
 
@@ -130,6 +131,16 @@ class Possession < ApplicationRecord
   # simplecov:enable
 
   private
+
+  # A custom product is private to its user, so only that user can have it in a collection
+  # (docs/collection.md#3-custom-product). PossessionsController looks it up in the custom products
+  # of the user already; this check also covers the console and ActiveAdmin.
+  def custom_product_belongs_to_user
+    return if custom_product.blank?
+    return if custom_product.user_id == user_id
+
+    errors.add(:custom_product, :invalid)
+  end
 
   def clear_purchase_price_when_gift
     return unless gift?

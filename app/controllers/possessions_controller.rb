@@ -49,7 +49,7 @@ class PossessionsController < ApplicationController
 
     @product = Product.find(id) if id.present?
     @product_variant = ProductVariant.find(product_variant_id) if product_variant_id.present?
-    @custom_product = CustomProduct.find(custom_product_id) if custom_product_id.present?
+    @custom_product = current_user.custom_products.find(custom_product_id) if custom_product_id.present?
 
     @active_possession = Possession.new(
       user: current_user,

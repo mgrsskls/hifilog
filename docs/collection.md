@@ -50,8 +50,10 @@ activity feed.
 ## 3. Custom product
 
 A custom product is gear that a user defines outside the shared catalog. It has categories, images
-and exactly one linked **possession**. It does not use `Product`, `ProductVariant`, `ProductItem`
-or custom attributes. The custom product form has its own help text. The catalog contribution
+and at most one linked **possession**. The application creates this possession together with the
+custom product. The user can remove it from the collection and add it again later. Only the user
+who created the custom product can have it in a collection. It does not use `Product`,
+`ProductVariant`, `ProductItem` or custom attributes. The custom product form has its own help text. The catalog contribution
 guidelines do not apply, because a custom product is private to one user.
 
 ## 4. Bookmark

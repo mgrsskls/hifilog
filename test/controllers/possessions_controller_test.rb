@@ -80,6 +80,34 @@ class PossessionsControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
+  test 'cannot add the custom product of another user' do
+    sign_in users(:visible)
+
+    assert_no_difference('Possession.count') do
+      post possessions_url(custom_product_id: custom_products(:three).id)
+    end
+    assert_response :not_found
+  end
+
+  test 'the owner can add a custom product back after removing it' do
+    owner = users(:one)
+    custom_product = custom_products(:three)
+    custom_product.create_possession!(user: owner)
+
+    sign_in owner
+    delete possession_url(custom_product.reload.possession)
+    sign_out owner
+
+    sign_in users(:visible)
+    post possessions_url(custom_product_id: custom_product.id)
+    sign_out users(:visible)
+
+    sign_in owner
+    assert_difference('owner.possessions.count') do
+      post possessions_url(custom_product_id: custom_product.id)
+    end
+  end
+
   test 'adding an incomplete product to the collection nudges for the missing details' do
     user = users(:one)
     product = products(:two)

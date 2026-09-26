@@ -18,6 +18,19 @@ class PossessionTest < ActiveSupport::TestCase
     assert_nil possession.brand
   end
 
+  test 'custom product of another user is invalid' do
+    possession = Possession.new(user: users(:visible), custom_product: custom_products(:three))
+
+    assert_not possession.valid?
+    assert possession.errors[:custom_product].any?
+  end
+
+  test 'custom product of the same user is valid' do
+    possession = Possession.new(user: users(:one), custom_product: custom_products(:three))
+
+    assert possession.valid?
+  end
+
   test 'duration for current possession' do
     possession = possessions(:current_product)
     possession.update!(period_from: 30.days.ago)
