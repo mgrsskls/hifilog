@@ -437,9 +437,6 @@
                   <li>
                     <%= link_to t('contribute.guidelines.heading'), contribute_guidelines_path, "aria-current": params[:controller] == "contribute" && params[:action] == "guidelines" ? "page" : "false" %>
                   </li>
-                  <li>
-                    <%= link_to "Sitemap", sitemap_path, "aria-current": params[:controller] == "sitemap" && params[:action] == "show" ? "page" : "false" %>
-                  </li>
                 <% end %>
                 <li>
                   <%= link_to "Calculators", calculators_root_path, "aria-current": @active_menu == :calculators ? (params[:action] == "calculators" ? "page" : "true") : "false" %>

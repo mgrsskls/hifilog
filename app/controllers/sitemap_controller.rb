@@ -8,10 +8,6 @@ class SitemapController < ApplicationController
         @pages = builder.pages
         @sitemap_root_lastmod = builder.root_lastmod
       end
-      format.html do
-        @brands = Brand.includes(products: :product_variants)
-                       .order('lower(name)')
-      end
     end
   end
 end

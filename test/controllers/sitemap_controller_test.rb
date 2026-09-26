@@ -3,13 +3,9 @@
 require 'test_helper'
 
 class SitemapControllerTest < ActionDispatch::IntegrationTest
-  test 'html renders sitemap hierarchy' do
+  test 'html format renders 404' do
     get sitemap_path
-    assert_response :success
-
-    assert_select 'h1', 'Sitemap'
-    assert_select 'ul > li' # brands
-    assert_select 'a[href^="/brands/"]'
+    assert_response :not_found
   end
 
   test 'xml lists confirmed visible profiles only' do

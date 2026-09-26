@@ -15,6 +15,9 @@ class ApplicationController < ActionController::Base
   # route) has no matching template rather than no matching route, so it raises
   # this instead of ActionController::RoutingError.
   rescue_from ActionView::MissingTemplate, with: :not_found
+  # Requesting a route without any of its respond_to formats (e.g. /sitemap
+  # without .xml) raises this instead of ActionController::RoutingError.
+  rescue_from ActionController::UnknownFormat, with: :not_found
 
   helper_method :current_user,
                 :products_count,
