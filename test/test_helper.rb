@@ -6,6 +6,12 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 
+# Cloudflare's public Turnstile test keys; this secret always passes. Set here, so that no test
+# depends on an .env file (CI has none). A test that needs a failed challenge sets the always-fail
+# secret 2x0000000000000000000000000000000AA and restores these keys in its teardown.
+Cloudflare::Turnstile::Rails.configuration.site_key = '1x00000000000000000000AA'
+Cloudflare::Turnstile::Rails.configuration.secret_key = '1x0000000000000000000000000000000AA'
+
 module TestSupportHelpers
   ONE_BY_ONE_PNG = Base64.decode64(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
