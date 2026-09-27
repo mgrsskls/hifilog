@@ -52,11 +52,14 @@ class CustomAttribute < ApplicationRecord
   # figure. The order inside a group is the order the filter offers, from the tightest claim to
   # the loosest, which is what a later "or better" filter would read.
   VALID_QUALIFIERS = %w[
-    plus_minus_1_db plus_minus_2_db plus_minus_3_db plus_minus_6_db
+    plus_minus_1_db plus_minus_2_db plus_minus_3_db plus_minus_4_db plus_minus_6_db
     minus_3_db minus_6_db minus_10_db
     thd_0_1_percent thd_1_percent thd_10_percent
     distance_1m distance_2m
     drive_1w_1m drive_283v_1m
+    drive_1mw drive_1v
+    velocity_5_cms velocity_3_54_cms
+    frequency_10hz frequency_100hz
   ].freeze
 
   # The groups that the product page, the product form and the filter use to show custom

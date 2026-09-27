@@ -286,13 +286,18 @@ en:
     performance: Performance
     physical: Physical
   custom_attribute_labels:
+    amplifier_class: Amplifier class
     amplifier_output_power: Output power (into speakers)
     amplifier_type: Amplifier type
     assembly: Assembly
     cable_interconnect_type: Type
+    cartridge_compliance: Compliance
+    cartridge_output_voltage: Output voltage
     cartridge_type: Type
     channel_configuration: Channel configuration
     dimensions: Dimensions
+    dsd_support: DSD support
+    effective_mass: Effective mass
     frequency_response_range: Frequency Response Range
     headphone_amplifier_output_power: Output power (into headphones)
     headphone_connection_type: Connection
@@ -316,10 +321,16 @@ en:
     nominal_impedance: Nominal Impedance
     output_connectors: Outputs
     speaker_outputs: Speaker outputs
+    streaming_protocols: Streaming protocols
+    stylus_shape: Stylus shape
     supported_cartridge_types: Supported cartridge types
+    tape_head_configuration: Head configuration
+    tracking_force: Tracking force
     turntable_drive_type: Drive type
     turntable_operation_type: Operation type
+    turntable_speeds: Speeds
     weight: Weight
+    woofer_size: Woofer size
   # Chrome for the qualifier controls. `label` names both the product form control and the filter
   # facet; `not_stated` is the product form only -- the filter has no such option, because a
   # visitor who wants the looser answer selects nothing. The values are under
@@ -345,6 +356,7 @@ en:
     plus_minus_1_db: ±1 dB
     plus_minus_2_db: ±2 dB
     plus_minus_3_db: ±3 dB
+    plus_minus_4_db: ±4 dB
     plus_minus_6_db: ±6 dB
     minus_3_db: −3 dB
     minus_6_db: −6 dB
@@ -361,6 +373,16 @@ en:
     # custom_attribute_units: the changelog renders the units of older versions.
     drive_1w_1m: 1 W / 1 m
     drive_283v_1m: 2.83 V / 1 m
+    # Drive reference, for headphone_sensitivity. dB/mW was a unit until this qualifier existed. Keep
+    # db_mw under custom_attribute_units: the changelog renders the units of older versions.
+    drive_1mw: 1 mW
+    drive_1v: 1 V
+    # Stylus velocity, for cartridge_output_voltage.
+    velocity_5_cms: 5 cm/s
+    velocity_3_54_cms: 3.54 cm/s
+    # Test frequency, for cartridge_compliance.
+    frequency_10hz: 10 Hz
+    frequency_100hz: 100 Hz
   custom_attribute_units:
     a: A
     bit: bit
@@ -397,6 +419,7 @@ en:
     4_way: 4-way (and above)
     active: Active
     aes_ebu: AES/EBU
+    airplay: AirPlay
     amt_tweeter: AMT Tweeter
     automatic: Automatic
     balanced_armature: Balanced armature
@@ -404,17 +427,25 @@ en:
     binding_posts: Binding posts
     bluetooth: Bluetooth
     bnc: BNC
+    chromecast: Chromecast
+    class_a: Class A
+    class_ab: Class AB
+    class_d: Class D
     closed_back: Closed-back
     coaxial: Coaxial
+    conical: Conical
     din: DIN
     direct-drive: Direct Drive
     dual-mono: Dual-Mono
     dynamic: Dynamic
     electrostatic: Electrostatic
+    elliptical: Elliptical
     ethernet: Ethernet
     full_range: Full-Range
     hdmi: HDMI
     hdmi_arc: HDMI ARC
+    heads_2: 2 heads
+    heads_3: 3 heads
     horn_loaded: Horn-loaded
     hybrid: Hybrid
     hybrid_driver: Hybrid (dynamic + balanced armature)
@@ -424,6 +455,7 @@ en:
     jack_3_5mm: 3.5 mm jack
     jack_4_4mm: 4.4 mm jack (Pentaconn)
     jack_6_35mm: 6.35 mm jack
+    line_contact: Line contact
     manual: Manual
     mc: MC
     mi: MI (Moving Iron)
@@ -434,6 +466,7 @@ en:
     open_back: Open-back
     open_baffle: Open Baffle
     optical: Optical
+    other: Other
     passive: Passive
     passive_radiator: Passive Radiator
     planar_magnetic: Planar Magnetic
@@ -441,17 +474,25 @@ en:
     rca: RCA
     ribbon: Ribbon
     ribbon_tweeter: Ribbon Tweeter
+    roon_ready: Roon Ready
+    rpm_33: 33⅓ rpm
+    rpm_45: 45 rpm
+    rpm_78: 78 rpm
     sealed: Sealed
     semi_automatic: Semi-Automatic
     semi_open: Semi-open
+    shibata: Shibata
     solid_state: Solid State
     spdif_coaxial: S/PDIF Coaxial
     speakon: Speakon
+    spotify_connect: Spotify Connect
     spring_clips: Spring clips
     stereo: Stereo
+    tidal_connect: Tidal Connect
     toslink: TOSLINK (optical)
     transmission_line: Transmission Line
     tube: Tube
+    upnp_dlna: UPnP / DLNA
     usb_b: USB Type-B
     usb_c: USB Type-C
     wired: Wired

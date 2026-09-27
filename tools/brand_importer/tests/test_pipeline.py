@@ -1122,7 +1122,17 @@ class SpecsTest(unittest.TestCase):
         self.assertNotIn("amplifier_output_power",
                          self.read("Power Output: 120 watts into 4Ω or 8Ω", ("integrated-amplifiers",)))
 
-    def test_headphone_sensitivity_needs_milliwatts(self):
+    def test_headphone_sensitivity_keeps_its_drive_reference(self):
         values = self.read("Sensitivity: 93 dB/mW", ("over-ear-headphones",))
-        self.assertEqual(values["headphone_sensitivity"], {"value": 93, "unit": "db_mw"})
-        self.assertEqual(self.read("Sensitivity: 110 dB/V", ("over-ear-headphones",)), {})
+        self.assertEqual(values["headphone_sensitivity"],
+                         {"value": 93, "unit": "db", "qualifier": "drive_1mw"})
+        values = self.read("Sensitivity: 110 dB/V", ("over-ear-headphones",))
+        self.assertEqual(values["headphone_sensitivity"],
+                         {"value": 110, "unit": "db", "qualifier": "drive_1v"})
+        values = self.read("Sensitivity: 108 dB (1 kHz/1 Vrms)", ("in-ear-monitors",))
+        self.assertEqual(values["headphone_sensitivity"],
+                         {"value": 108, "unit": "db", "qualifier": "drive_1v"})
+
+    def test_headphone_sensitivity_needs_a_drive_reference(self):
+        # "102 dB" can be per mW or per V, and for a low impedance headphone the two are far apart.
+        self.assertEqual(self.read("Sensitivity: 102 dB", ("over-ear-headphones",)), {})

@@ -172,9 +172,20 @@ def parse_sensitivity(raw_label: str, value: str, headphone: Optional[bool]) -> 
     if headphone is None:
         headphone = "mw" in lowered
     if headphone:
-        if "mw" not in lowered or "db/v" in lowered:
+        # The drive reference is a QUALIFIER, as for loudspeakers below: one unit, dB, specified
+        # at 1 mW or at 1 V. The two do not convert without the impedance of the product, and for
+        # a 32 ohm IEM they are about 15 dB apart. See docs/custom-attribute-qualifiers.md §3.3.
+        #
+        # Unlike a loudspeaker figure, a headphone figure that names no reference is left out:
+        # "102 dB" can be either reference, and the difference is too large to store it unqualified.
+        milliwatt = "mw" in lowered
+        volt = re.search(r"(?<![\d.,])1v(?:rms)?\b|/v(?:rms)?\b", lowered)
+        if milliwatt == bool(volt):
             return None
-        key, unit = "headphone_sensitivity", "db_mw"
+        key = "headphone_sensitivity"
+        if not _in_range(key, amount):
+            return None
+        return key, {"value": _tidy(amount), "unit": "db", "qualifier": "drive_1mw" if milliwatt else "drive_1v"}
     else:
         if "mw" in lowered:
             return None
@@ -216,9 +227,6 @@ def parse_sensitivity(raw_label: str, value: str, headphone: Optional[bool]) -> 
         elif watt:
             entry["qualifier"] = "drive_1w_1m"
         return key, entry
-    if not _in_range(key, amount):
-        return None
-    return key, {"value": _tidy(amount), "unit": unit}
 
 
 # "4-8 Ω", "4 or 8 Ohm", "> 4 ohm": a range, a choice or a limit, and not the

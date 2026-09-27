@@ -32,9 +32,9 @@ same numbers in the same unit, and the two facets can then not be compared.
 
 Use a prefix only when two categories use the same word for different things:
 
-- **Different unit**: `headphone_sensitivity` (dB/mW) and `loudspeaker_sensitivity` (dB, with the
-  drive reference in a qualifier). These values cannot be compared, so they must not share a range
-  filter.
+- **Different conditions**: `headphone_sensitivity` (dB at 1 mW or 1 V) and
+  `loudspeaker_sensitivity` (dB at 1 W / 1 m or 2.83 V / 1 m). The unit is the same, but the drive
+  references are different. These values cannot be compared, so they must not share a range filter.
 - **Different option set**: headphone enclosures (open, semi, closed) and loudspeaker enclosures
   (sealed, ported, …).
 - **Different question**: `cartridge_type` asks what a thing _is_. `supported_cartridge_types`
@@ -488,3 +488,33 @@ a definition with a group that is not in the list.
 
 The bulk definition task (see [7. Create definitions in bulk](#7-create-definitions-in-bulk)) also
 declares the group and the position. When you run it, it sets these two fields again.
+
+## 9. Which specifications to add
+
+Each definition adds a field to the product form and a facet to the filter. Too many fields make
+the form slow to complete and the filter hard to use. Thus, add a definition only when it passes
+all three tests:
+
+1. **Most products of its sub categories state it**, also discontinued products. A field that is
+   empty on most products does not help the filter, and it decreases the completeness score when it
+   is highlighted.
+2. **Its values can be compared between brands.** When each brand measures under its own
+   conditions, a value only looks precise. A qualifier can hold one condition (see
+   [5.2](#52-one-dimension-for-each-definition)), not three.
+3. **Users filter or compare by it, or it shows if two products operate together.** Examples of the
+   second case are the compliance of a cartridge and the effective mass of a tonearm, and the output
+   voltage of a cartridge and the gain of a phono stage.
+
+Specifications that sources state often, but that fail a test:
+
+| Specification                                                           | Test that fails                                                                       |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Signal-to-noise ratio, THD, dynamic range, channel separation, damping  | 2. Each brand uses its own reference level, power or bandwidth.                       |
+| Crossover frequency, enclosure material, port position, driver material | 3. Few users filter by them.                                                          |
+| Wow and flutter, rumble, battery life, Bluetooth codecs, tube types     | 1 or 2. They apply to few sub categories, or the sources state them in too many ways. |
+
+Add a specification when the sources start to state it often. The import candidates show this: count
+the specification labels of the sources that do not map to a definition.
+
+A new definition starts with `highlighted` set to false. Set it to true in a separate change,
+because the completeness score of all products in its sub categories changes at the same time.

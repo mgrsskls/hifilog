@@ -1,7 +1,7 @@
 # Custom attribute qualifiers
 
-Status: **implemented.** `loudspeaker_sensitivity` is migrated (§3). `headphone_sensitivity` keeps
-its single unit until a dB/V value has to be recorded, and §3.3 says why. This document holds the
+Status: **implemented.** `loudspeaker_sensitivity` (§3) and `headphone_sensitivity` (§3.3) are
+migrated. This document holds the
 reasons for the design and the decisions behind it. For the mechanism as it works now, see
 [custom-attributes.md, §5](custom-attributes.md#5-qualifiers).
 
@@ -193,19 +193,37 @@ The migration must also do these things:
   leaves it unqualified, and the condition is entered by hand in the product form if a source
   states one.
 
-### 3.3 Why `headphone_sensitivity` is not migrated
+### 3.3 `headphone_sensitivity`
 
-`headphone_sensitivity` looks like the same case, and it is not, because it declares `db_mw`
-**only**. The other convention in use is dB per volt, which does not convert to dB per milliwatt
-without the impedance of the product — but no stored value uses it, so nothing is wrong today.
+`headphone_sensitivity` had the same problem in a different form. It declared the unit `db_mw`
+only, so the drive reference was part of the unit. The other reference in use is 1 V (dB/V). Many
+brands, for example Sennheiser and most brands of in-ear monitors, state only dB/V, so the importer
+could not record their figures.
 
-The pair test in the display path and in `entity_form.js` reads `units.size == 2`, so a definition
-with one unit never reaches it. Migrating `loudspeaker_sensitivity` alone therefore removed the
-whole problem. To migrate `headphone_sensitivity` as well would be to invent a qualifier dimension
-that no value uses.
+The two references do not convert without the impedance of the product:
 
-Do it when a dB/V value has to be recorded, not before. The change is then the same shape as §3.2:
-one unit `db`, two qualifiers, and a rewrite of the stored entries from `db_mw`.
+```
+dB/V = dB/mW + 10 * log10(1000 / Z)
+```
+
+For a 300 Ω headphone, the dB/V figure is approximately 5 dB higher. For a 32 Ω in-ear monitor, it
+is approximately 15 dB higher. Thus the two figures must not share a filter range without the
+condition.
+
+The migration `AddSpecificationCustomAttributes` gives the definition one unit, `db`, and two
+qualifiers, `drive_1mw` and `drive_1v`. It is the same shape as §3.2, with one difference in the
+evidence:
+
+- **A stored `db_mw` is evidence of the 1 mW reference.** The product form offered no other unit,
+  and the importer wrote `db_mw` only when the source line said mW. Thus each `db_mw` entry gets the
+  unit `db` and the qualifier `drive_1mw`. No snippet test is necessary.
+- **An entry with no unit gets no qualifier.** It states no reference.
+
+The importer now writes `drive_1mw` or `drive_1v`. A headphone figure that names no reference is
+left out, not stored unqualified: the difference between the two references is too large (§3.4).
+
+Keep the `db_mw` translation under `custom_attribute_units`. The changelog shows the units of older
+versions.
 
 ### 3.4 Where an imported unit comes from
 
@@ -264,7 +282,9 @@ anything else on promotion, and nothing sets a qualifier in its place. In the ad
 would still look right, because the old unit translations stay in `en.yml` for the changelog (§3.2).
 The figure would reach the catalogue, the condition would not, and no warning anywhere.
 
-The `headphone_sensitivity` branch keeps `db_mw` as a unit: that definition is not migrated (§3.3).
+The `headphone_sensitivity` branch writes the unit `db` and the qualifier `drive_1mw` or
+`drive_1v`. It does not write a figure that names no reference, because "102 dB" can be either
+reference, and the two can be 15 dB apart (§3.3).
 
 **It now reads the label as well as the value.** The reference is as often in the label, and only
 the value side was searched:
@@ -496,16 +516,21 @@ needs no extra test for the label.
 
 Each list holds one dimension only, as §4.4 requires.
 
-| Label                              | Dimension       | Qualifiers                                       |
-| ---------------------------------- | --------------- | ------------------------------------------------ |
-| `frequency_response_range`         | tolerance       | ±1 dB, ±2 dB, ±3 dB, ±6 dB, −3 dB, −6 dB, −10 dB |
-| `loudspeaker_sensitivity`          | drive reference | 1 W / 1 m, 2.83 V / 1 m — done, see §3           |
-| `headphone_sensitivity`            | drive reference | per mW, per V — not yet, see §3.3                |
-| `amplifier_output_power`           | distortion      | 0.1% THD, 1% THD, 10% THD                        |
-| `headphone_amplifier_output_power` | distortion      | the same as above                                |
-| `loudspeaker_peak_spl`             | distance        | 1 m, 2 m                                         |
+| Label                              | Dimension       | Qualifiers                                              |
+| ---------------------------------- | --------------- | ------------------------------------------------------- |
+| `frequency_response_range`         | tolerance       | ±1 dB, ±2 dB, ±3 dB, ±4 dB, ±6 dB, −3 dB, −6 dB, −10 dB |
+| `loudspeaker_sensitivity`          | drive reference | 1 W / 1 m, 2.83 V / 1 m — done, see §3                  |
+| `headphone_sensitivity`            | drive reference | 1 mW, 1 V — done, see §3.3                              |
+| `amplifier_output_power`           | distortion      | 0.1% THD, 1% THD, 10% THD                               |
+| `headphone_amplifier_output_power` | distortion      | the same as above                                       |
+| `loudspeaker_peak_spl`             | distance        | 1 m, 2 m                                                |
+| `cartridge_output_voltage`         | stylus velocity | 5 cm/s, 3.54 cm/s                                       |
+| `cartridge_compliance`             | test frequency  | 10 Hz, 100 Hz                                           |
 
-Six of the definitions that exist today need this. Two of those six are the repair in §3.
+Eight definitions use this. Two of them are the repair in §3. The last two had qualifiers from the
+start, as §6.2 requires.
+
+±4 dB is in the list because Klipsch states it for all of its Heritage loudspeakers.
 
 Two values are out of scope because they are a second dimension, not because they have no use:
 
@@ -549,8 +574,11 @@ Most of the value of the mechanism is in specifications that the catalog does no
 these are added later, each one needs a qualifier from the start:
 
 signal-to-noise ratio (A-weighted or unweighted — often 10 dB apart), total harmonic distortion,
-wow and flutter (WRMS, DIN or JIS), rumble, channel separation, dynamic range, cartridge output
-voltage (at 5 cm/s or at 3.54 cm/s), battery life (noise cancelling on or off).
+wow and flutter (WRMS, DIN or JIS), rumble, channel separation, dynamic range, battery life (noise
+cancelling on or off).
+
+`cartridge_output_voltage` and `cartridge_compliance` were on this list. They now exist, with their
+qualifiers (§6.1).
 
 ### 6.3 Do not add a qualifier to these
 
@@ -617,8 +645,8 @@ today and each one needs the qualifier:
    two in §3. Read the sub categories of `frequency_response_range` first.
 6. Done: `loudspeaker_sensitivity` moved from units to qualifiers, by the migration of §3.2. There
    was no special case to delete in the display path — the pair test there is generic, and only the
-   comments named sensitivity as the reason for it. `headphone_sensitivity` is still to do, when a
-   dB/V value needs recording (§3.3).
+   comments named sensitivity as the reason for it. `headphone_sensitivity` followed in the same
+   way (§3.3).
 
 ---
 
