@@ -1,0 +1,88 @@
+<%
+  sub_categories = SubCategory.includes(:category).to_a.sort_by { |s| [s.category.name, s.name] }
+  linked = custom_attribute.sub_category_ids.to_set
+  current = if custom_attribute.persisted?
+    CustomAttributeSubCategory.where(custom_attribute_id: custom_attribute.id).pluck(:sub_category_id, :units).to_h
+  else
+    {}
+  end
+  # After a failed save, the form shows what the admin ticked, not what is stored.
+  submitted = custom_attribute.unit_scopes || {}
+  unit_name = ->(unit) { t("custom_attribute_units.#{unit}").html_safe }
+%>
+
+<%#
+  The units of each sub category, a selection of the units above. See docs/custom-attributes.md,
+  "Units per sub category". Each linked sub category needs at least one unit: there is no default
+  (CustomAttribute#sub_category_units_must_be_chosen).
+
+  The table has a row for every sub category and a column for every unit. admin_custom_attributes.js
+  shows the rows of the categories ticked below and the columns of the units ticked above, so a
+  category ticked in the same submit gets its units in the same submit. The server ignores the
+  rows of categories that are not ticked and the units that are not ticked above.
+%>
+<fieldset class="mb-8" data-unit-scopes>
+  <legend class="font-bold text-xl">Units per category</legend>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    Tick the units that each category offers, from the units above. A category needs at least one
+    unit. Tick one unit or one pair (for example kg and lb) when you can: with other combinations,
+    contributors must choose a unit. Use another size when the values of a category have a
+    different scale &mdash; a cartridge weighs grams, a loudspeaker kilograms.
+  </p>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    Stored values keep their unit when you change the units of a category. To convert them into the
+    new units, run <code>bin/rails custom_attributes:convert_units LABEL=<%= custom_attribute.label %></code>
+    (a dry run), then again with <code>APPLY=1</code>.
+  </p>
+
+  <p class="text-sm text-gray-600 dark:text-gray-400" data-unit-scopes-empty<%= " hidden" if custom_attribute.units.any? && linked.any? %>>
+    Tick units above and categories below.
+  </p>
+
+  <div class="overflow-x-auto">
+    <table class="text-sm" data-unit-scopes-table<%= " hidden" if custom_attribute.units.empty? || linked.empty? %>>
+      <thead>
+        <tr>
+          <th class="text-left pr-4 pb-2">Category</th>
+          <% CustomAttribute::VALID_UNITS.each do |unit| %>
+            <th class="px-2 pb-2 font-normal whitespace-nowrap" data-unit-column="<%= unit %>"<%= " hidden" if custom_attribute.units.exclude?(unit) %>><%= unit_name.call(unit) %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <%# Ticks or unticks a unit in every visible row. Not submitted: it has no name. %>
+        <tr class="border-b">
+          <th class="text-left pr-4 py-1 whitespace-nowrap"><i>All categories</i></th>
+          <% CustomAttribute::VALID_UNITS.each do |unit| %>
+            <td class="px-2 py-1 text-center" data-unit-column="<%= unit %>"<%= " hidden" if custom_attribute.units.exclude?(unit) %>>
+              <input type="checkbox" data-unit-scopes-all="<%= unit %>" aria-label="<%= "#{unit} for all categories" %>">
+            </td>
+          <% end %>
+        </tr>
+        <% sub_categories.each do |sub_category| %>
+          <% ticked = submitted.key?(sub_category.id.to_s) ? Array(submitted[sub_category.id.to_s]) : current[sub_category.id].to_a %>
+          <tr data-unit-scopes-row="<%= sub_category.id %>"<%= " hidden" unless linked.include?(sub_category.id) %>>
+            <th class="text-left pr-4 py-1 font-normal whitespace-nowrap">
+              <%= sub_category.category.name %> / <b><%= sub_category.name %></b>
+              <%# Keeps the key present when every box is unticked, so "no unit" is submitted and reported. %>
+              <input type="hidden" name="custom_attribute[unit_scopes][<%= sub_category.id %>][]" value="">
+            </th>
+            <% CustomAttribute::VALID_UNITS.each do |unit| %>
+              <td class="px-2 py-1 text-center" data-unit-column="<%= unit %>"<%= " hidden" if custom_attribute.units.exclude?(unit) %>>
+                <input
+                  type="checkbox"
+                  name="custom_attribute[unit_scopes][<%= sub_category.id %>][]"
+                  value="<%= unit %>"
+                  aria-label="<%= "#{unit} for #{sub_category.name}" %>"
+                  <%= "checked" if ticked.include?(unit) %>
+                >
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</fieldset>

@@ -11,13 +11,11 @@
   sometimes disagree.
 %>
 <%#
-  An entry without a unit reads in the definition's first unit, as on the product page
-  (CustomAttributeReading). Without this, both rows would be empty, and saving the form would
-  delete the figure.
+  `entry` comes from CustomAttribute#entry_in_own_units. An entry without a unit reads in the
+  definition's first unit there, as on the product page (CustomAttributeReading). Without this,
+  both rows would be empty, and saving the form would delete the figure.
 %>
 <% label = custom_attribute.label %>
-<% entry = product.custom_attributes&.dig(label) %>
-<% entry = entry.merge('unit' => custom_attribute.units.first) if entry.is_a?(Hash) && entry['unit'].blank? %>
 <% figures = CustomAttribute.stated_figures(entry) %>
 <div class="EntityFormAttribute-inputs" data-unit-pair>
   <% custom_attribute.paired_units.each_with_index do |unit, index| %>
@@ -27,7 +25,7 @@
       <input type="hidden" name="<%= "#{prefix}[unit]" %>" value="<%= unit %>">
       <% if custom_attribute.inputs.any? %>
         <% custom_attribute.inputs.each do |input| %>
-          <% field_id = "product[custom_attributes][#{label}]-value-#{input}-#{unit}" %>
+          <% field_id = "product[custom_attributes][#{id_label}]-value-#{input}-#{unit}" %>
           <div>
             <label for="<%= field_id %>" class="Form-label">
               <%= t("custom_attribute_inputs.#{input}") %>
@@ -41,7 +39,7 @@
       <% else %>
         <%# The first field keeps the id the attribute label points to. %>
         <div class="u-flex u-gap-sm u-alignCenter">
-          <input class="Form-input" type="text" inputmode="number" name="<%= "#{prefix}[value]" %>" id="<%= index.zero? ? "product[custom_attributes][#{label}]" : "product[custom_attributes][#{label}]-#{unit}" %>" value="<%= figures[unit] unless figures[unit].is_a?(Hash) %>" aria-label="<%= "#{t("custom_attribute_labels.#{label}")} (#{strip_tags(translated_unit)})" %>">
+          <input class="Form-input" type="text" inputmode="number" name="<%= "#{prefix}[value]" %>" id="<%= index.zero? ? "product[custom_attributes][#{id_label}]" : "product[custom_attributes][#{id_label}]-#{unit}" %>" value="<%= figures[unit] unless figures[unit].is_a?(Hash) %>" aria-label="<%= "#{t("custom_attribute_labels.#{label}")} (#{strip_tags(translated_unit)})" %>">
           <span class="Unit"><%= translated_unit %></span>
         </div>
       <% end %>

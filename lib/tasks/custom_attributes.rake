@@ -225,6 +225,9 @@ namespace :custom_attributes do
 
     action = before[:persisted] ? :updated : :created
 
+    # A declaration has units for the attribute, not for each sub category: a sub category without
+    # units gets all of them. See docs/custom-attributes.md, "Units per sub category".
+    record.tick_all_units_where_missing
     return [declaration[:label], :invalid, record.errors.full_messages] unless record.save
 
     # After the save: the join rows do not exist until the HABTM assignment above is written,
@@ -372,3 +375,24 @@ namespace :custom_attributes do
   end
 end
 # rubocop:enable Metrics/BlockLength
+
+namespace :custom_attributes do
+  # Run after a change of the units per sub category in ActiveAdmin. Prints what it would change;
+  # APPLY=1 writes it. LABEL=weight limits it to one attribute. See docs/custom-attributes.md,
+  # "Units per sub category".
+  desc 'Convert stored figures into the units of their sub category (APPLY=1 to write, LABEL=weight for one attribute)'
+  task convert_units: :environment do
+    apply = ENV['APPLY'] == '1'
+    labels = ENV['LABEL'].presence&.split(',')
+    results = SubCategoryUnitConversion.new(labels:).call(apply:)
+
+    results.each do |result|
+      puts format('%<id>8d  %-40<name>s %-12<label>s %<before>s -> %<after>s',
+                  id: result.product.id, name: result.product.name.truncate(38), label: result.label,
+                  before: result.before.to_json, after: result.after.to_json)
+    end
+
+    puts "#{results.size} figure(s) #{apply ? 'converted' : 'to convert'}."
+    puts 'Dry run: nothing was written. Run with APPLY=1 to write.' unless apply
+  end
+end

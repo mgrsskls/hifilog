@@ -100,12 +100,26 @@ class CustomAttribute < ApplicationRecord
     acc[to] = [from, 1.0 / factor]
   end.freeze
 
+  # Smaller unit => [a larger unit of the same system, multiplier].
+  #
+  # Not a pair: a pair is one quantity in two systems, and an entry can state both figures. A
+  # scale is one system at another size. A sub category can offer the small unit in place of the
+  # definition's units -- cartridges weigh grams, loudspeakers kilograms -- and the filter of a
+  # page that shows both converts with this table. See docs/custom-attributes.md, "Units per sub
+  # category".
+  UNIT_SCALES = {
+    'g' => ['kg', 0.001]
+  }.freeze
+
   before_destroy :refuse_destroy_while_graph_references_label
   before_destroy :remember_sub_category_ids_for_completeness
   # The admin form posts { sub_category_id => [option ids] }. Applied after save rather than on
   # assignment, because a subcategory ticked in the same submit has no join row to write to
   # until the HABTM assignment has been persisted.
   after_save :persist_option_scopes, if: -> { @option_scopes.present? }
+  # { sub_category_id => [units] }, from the same admin form and for the same reason. Also runs
+  # when the units change, because a unit removed from the definition leaves every sub category.
+  after_save :persist_unit_scopes, if: -> { @unit_scopes.present? || saved_change_to_units? }
   # after_commit ensures the DB transaction is finished before we clear cache
   after_commit :clear_cache
   # Only `highlighted` and sub_categories affect Product#applicable_highlighted_attributes, so
@@ -117,6 +131,8 @@ class CustomAttribute < ApplicationRecord
   after_commit :recompute_products_completeness_after_destroy, on: :destroy
 
   attr_writer :option_scopes
+  # Read by the admin form, to show the ticked units again after a failed save.
+  attr_accessor :unit_scopes
 
   # after_add / after_remove: a sub_categories reassignment writes the join table directly (see
   # `clear_cache` below for why -- the same reasoning applies to completeness), so it needs its
@@ -141,6 +157,7 @@ class CustomAttribute < ApplicationRecord
   validates :display_group, presence: true, inclusion: { in: DISPLAY_GROUPS }
   validates :display_position, presence: true, numericality: { only_integer: true }
   validate :units_must_be_valid
+  validate :sub_category_units_must_be_chosen
   validate :inputs_must_be_valid
   validate :qualifiers_must_be_valid
   validate :label_must_be_translated
@@ -328,6 +345,135 @@ class CustomAttribute < ApplicationRecord
     units.sort_by { |unit| self.class.imperial_unit?(unit) ? 1 : 0 }
   end
 
+  # The multiplier that converts a figure in `from` into `to`, through UNIT_SCALES and
+  # UNIT_CONVERSIONS. nil when no factor relates the two units.
+  def self.conversion_factor(from, to)
+    from = from.to_s
+    to = to.to_s
+    return if from.blank? || to.blank?
+    return 1.0 if from == to
+
+    from_base, from_factor = base_unit(from)
+    to_base, to_factor = base_unit(to)
+    return unless from_base == to_base
+
+    from_factor / to_factor
+  end
+
+  # [the unit that the tables convert `unit` to, multiplier]. A unit that no table converts is
+  # its own base.
+  def self.base_unit(unit)
+    UNIT_SCALES[unit] || UNIT_CONVERSIONS[unit] || [unit, 1.0]
+  end
+  private_class_method :base_unit
+
+  # `number` in `from` converted into `to`, rounded to the significant figures of `number`, but
+  # to no fewer than MIN_SIGNIFICANT_FIGURES. nil when no factor relates the two units.
+  def self.figure_in(number, from, to)
+    factor = conversion_factor(from, to)
+    return if factor.nil?
+    return number if from.to_s == to.to_s
+    return 0.0 if number.zero?
+
+    converted = number * factor
+    BigDecimal(converted.to_s).round(significant_figures(number) - 1 - Math.log10(converted.abs).floor).to_f
+  end
+
+  # The units that `sub_category_id` offers: the units that an admin ticked on the link. A link
+  # without units falls back to all units of the definition. The admin form requires units for
+  # each sub category, but a link written by another path has none: the Sub Category admin, the
+  # bulk definition task or a HABTM assignment in the console.
+  def units_in(sub_category_id)
+    self.class.sub_category_units_cached.dig(id, sub_category_id.to_i).presence || units
+  end
+
+  # The units for a product in `sub_category_ids`: the units of the first of these sub categories,
+  # in menu order, that this attribute applies to. The product form picks the same sub category
+  # in entity_form.js, because it lists the sub categories in menu order. `ranks` is
+  # sub_category_menu_ranks, passed in by a caller that asks for many products.
+  def units_for(sub_category_ids, ranks: self.class.sub_category_menu_ranks)
+    first = applicable_sub_category_ids(sub_category_ids).min_by do |sub_category_id|
+      ranks.fetch(sub_category_id, Float::INFINITY)
+    end
+
+    first ? units_in(first) : units
+  end
+
+  # The units for a list page that shows `sub_category_ids`: all units that one of them offers,
+  # in the order of the definition. The filter converts between them.
+  def filter_units_for(sub_category_ids)
+    offered = applicable_sub_category_ids(sub_category_ids).flat_map { |id| units_in(id) }.uniq
+    return units if offered.empty?
+
+    units & offered
+  end
+
+  # [[units, sub category ids], ...]: the sub categories of this attribute, grouped by the units
+  # that they offer. The product form renders the fields once for each group. The largest group is
+  # first, so that its fields keep the ids that do not depend on the units.
+  def unit_variants
+    cached_sub_category_ids.group_by { |sub_category_id| units_in(sub_category_id) }
+                           .sort_by { |variant_units, ids| [-ids.size, variant_units] }
+  end
+
+  # Whether the definition offers both units of at least one pair. Only then can an entry state a
+  # second figure, and only then does the product page show a converted figure.
+  def offers_pair?
+    units.any? { |unit| partner_offered?(unit) }
+  end
+
+  # Whether the definition offers the other unit of `unit`'s pair.
+  def partner_offered?(unit)
+    partner = self.class.partner_unit(unit)
+    partner.present? && units.include?(partner)
+  end
+
+  # A read-only copy of this definition that offers `other_units`. All code that reads `units`
+  # -- unit_pair?, the product form, the filter -- then works for one sub category without a
+  # second code path. `base_units` keeps the units of the definition.
+  def with_units(other_units)
+    return self if other_units == units
+
+    copy = dup
+    copy.id = id
+    copy.units = other_units
+    copy.instance_variable_set(:@base_units, units)
+    copy.readonly!
+    copy
+  end
+
+  def base_units
+    @base_units || units
+  end
+
+  # A stored entry as the product form shows it for these units. An entry without a unit reads in
+  # the first unit of the definition, as on the product page. An entry in a unit that these units
+  # do not offer is converted into the first of them, when a factor relates the two: a cartridge
+  # weight that was entered as 0.0065 kg shows as 6.5 g, and saving the form stores 6.5 g.
+  def entry_in_own_units(entry)
+    return entry unless entry.is_a?(Hash)
+
+    unit = entry['unit'].presence || base_units.first
+    entry = entry.merge('unit' => unit) if unit
+    target = units.first
+    return entry if units.empty? || units.include?(unit) || self.class.conversion_factor(unit, target).nil?
+
+    value = entry['value']
+    convert = ->(number) { number.is_a?(Numeric) ? self.class.figure_in(number, unit, target) : number }
+    converted = value.is_a?(Hash) ? value.transform_values(&convert) : convert.call(value)
+    entry.except('second').merge('value' => converted, 'unit' => target)
+  end
+
+  # Whether the filter must compare figures in one selected unit: the definition offers more than
+  # one unit and a factor relates each of them to the first, or it offers other units than the
+  # definition, so that entries in the units of the definition must be converted.
+  def converted_filter?
+    return false if units.empty?
+    return false unless units.all? { |unit| self.class.conversion_factor(units.first, unit) }
+
+    units.size > 1 || units != base_units
+  end
+
   # Removes a `unit`, `qualifier` or `second` that the definition does not offer, and a blank one.
   #
   # All three are chosen by the caller, and nothing in the database constrains them. Three write
@@ -489,8 +635,29 @@ class CustomAttribute < ApplicationRecord
     end
   end
 
+  # { attribute_id => { sub_category_id => ["g"] } }, only for the links where an admin set units.
+  # Plain data, like sub_category_scopes_cached, and cleared with it.
+  def self.sub_category_units_cached
+    Rails.cache.fetch('custom_attribute_sub_category_units') do
+      CustomAttributeSubCategory
+        .where('cardinality(units) > 0')
+        .pluck(:custom_attribute_id, :sub_category_id, :units)
+        .each_with_object({}) do |(attribute_id, sub_category_id, units), acc|
+        (acc[attribute_id] ||= {})[sub_category_id] = units
+      end
+    end
+  end
+
   def self.clear_sub_category_scope_cache
     Rails.cache.delete('custom_attribute_sub_category_scopes')
+    Rails.cache.delete('custom_attribute_sub_category_units')
+  end
+
+  # { sub_category_id => position } in the order of the menu: the columns, then the categories,
+  # then the sub categories. The product form lists the sub categories in this order.
+  def self.sub_category_menu_ranks
+    CacheService.menu_categories.values.flatten.flat_map(&:sub_categories)
+                .each_with_index.to_h { |sub_category, index| [sub_category.id, index] }
   end
 
   # The subcategories this attribute applies to, from the cached map rather than a query per
@@ -682,7 +849,12 @@ class CustomAttribute < ApplicationRecord
     cleaned_units = units.compact_blank
     invalid = cleaned_units - VALID_UNITS
 
-    errors.add(:units, "contain invalid values: #{invalid.join(', ')}") if invalid.any?
+    return errors.add(:units, "contain invalid values: #{invalid.join(', ')}") if invalid.any?
+
+    # All units of a definition measure one quantity, so that the filter of a page with two sub
+    # categories can compare their figures. See docs/custom-attributes.md, "Units per sub category".
+    unrelated = cleaned_units.reject { |unit| self.class.conversion_factor(cleaned_units.first, unit) }
+    errors.add(:units, "do not convert to #{cleaned_units.first}: #{unrelated.join(', ')}") if unrelated.any?
   end
 
   def inputs_must_be_valid
@@ -736,7 +908,38 @@ class CustomAttribute < ApplicationRecord
   end
   # simplecov:enable
 
+  # Ticks all units of the definition for each sub category that has none of them yet, for the
+  # next save. For the bulk definition task, which declares units for the attribute but not for
+  # each sub category. A link that stores only units the declaration removed counts as missing:
+  # when a declaration switches from mm to cm, a link with ['mm'] gets ['cm'] instead of an error.
+  def tick_all_units_where_missing
+    return if units.blank?
+
+    stored = stored_sub_category_units
+    self.unit_scopes = sub_category_ids.reject { |sub_category_id| stored.fetch(sub_category_id, []).intersect?(units) }
+                                       .to_h { |sub_category_id| [sub_category_id.to_s, units] }
+  end
+
+  # The unit an entry is stored in, as every reader sees it: its own unit, or the first unit of
+  # the definition. The product form marks the block of fields that offers this unit.
+  def stored_unit(entry)
+    return unless entry.is_a?(Hash)
+
+    entry['unit'].presence || base_units.first
+  end
+
   private
+
+  # { sub_category_id => units } as stored on the links.
+  def stored_sub_category_units
+    return {} unless persisted?
+
+    CustomAttributeSubCategory.where(custom_attribute_id: id).pluck(:sub_category_id, :units).to_h
+  end
+
+  def applicable_sub_category_ids(sub_category_ids)
+    Array(sub_category_ids).map(&:to_i) & cached_sub_category_ids
+  end
 
   # The `second` figure of an entry, reduced to its two keys, or nil when the entry cannot have
   # one: the definition offers no pair, the unit is not the counterpart of `unit`, or it holds
@@ -744,7 +947,7 @@ class CustomAttribute < ApplicationRecord
   def pruned_second(entry)
     second = entry['second']
     second = second.to_unsafe_h if second.respond_to?(:to_unsafe_h)
-    return unless unit_pair? && second.is_a?(Hash)
+    return unless partner_offered?(entry['unit']) && second.is_a?(Hash)
 
     second = second.stringify_keys.slice('value', 'unit')
     return unless second['unit'] == self.class.partner_unit(entry['unit'])
@@ -778,6 +981,52 @@ class CustomAttribute < ApplicationRecord
 
       link.update!(option_ids: ids) unless link.option_ids.to_set == ids.to_set
     end
+  end
+
+  # Writes the units the admin ticked for each sub category onto the join rows. A unit that the
+  # definition no longer offers leaves every row, also a row that is not in the params.
+  #
+  # A sub category that is not in the params keeps its units: it was not on the form. The Sub
+  # Category admin, for example, links an attribute without units.
+  def persist_unit_scopes
+    submitted = @unit_scopes || {}
+    @unit_scopes = nil
+
+    CustomAttributeSubCategory.where(custom_attribute_id: id).find_each do |link|
+      row_units = sub_category_units_after_save(link.sub_category_id, link.units, submitted)
+      link.update!(units: row_units) unless link.units == row_units
+    end
+  end
+
+  # The units of one row after this save: the ticked units, or the stored ones when the row is not
+  # in the params, reduced to the units of the definition.
+  def sub_category_units_after_save(sub_category_id, stored_units, submitted)
+    key = sub_category_id.to_s
+    row_units = submitted.key?(key) ? Array(submitted[key]).map(&:to_s) : stored_units
+
+    units & row_units
+  end
+
+  # Each sub category of a definition with units needs at least one of them. There is no default:
+  # the admin decides for each sub category. The error also shows when the only ticked unit of a
+  # row is removed from the definition. See docs/custom-attributes.md, "Units per sub category".
+  #
+  # Checked here and not on CustomAttributeSubCategory, so a missing unit is a form error on
+  # `units` and not an exception in after_save. Only when the admin form sends the table
+  # (`unit_scopes`): a save from the console or a task does not choose units, and a link without
+  # units falls back to all units of the definition (units_in).
+  def sub_category_units_must_be_chosen
+    return if units.blank? || unit_scopes.nil?
+
+    submitted = @unit_scopes || {}
+    stored = stored_sub_category_units
+    missing = sub_category_ids.select do |sub_category_id|
+      sub_category_units_after_save(sub_category_id, stored.fetch(sub_category_id, []), submitted).empty?
+    end
+    return if missing.empty?
+
+    names = SubCategory.where(id: missing).pluck(:name).sort
+    errors.add(:units, "need at least one unit ticked for each category: #{names.join(', ')}")
   end
 
   # `options` is only guaranteed to be a Hash after before_save; validation can still see the

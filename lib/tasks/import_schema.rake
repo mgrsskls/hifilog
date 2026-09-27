@@ -51,7 +51,7 @@ namespace :import do
       scopes = CustomAttributeSubCategory
                .where(custom_attribute_id: attribute.id)
                .includes(:sub_category)
-               .to_h { |join| [join.sub_category.slug, join.option_ids] }
+               .to_a
 
       {
         label: attribute.label,
@@ -73,8 +73,11 @@ namespace :import do
         options: (attribute.options || {}).transform_values do |key|
           { key: key, name: I18n.t("custom_attributes.#{key}", default: key) }
         end,
-        sub_categories: scopes.keys.sort,
-        option_scopes: scopes.compact_blank
+        sub_categories: scopes.map { |join| join.sub_category.slug }.sort,
+        option_scopes: scopes.to_h { |join| [join.sub_category.slug, join.option_ids] }.compact_blank,
+        # The units a sub category offers in place of `units`: a cartridge states its weight in
+        # grams. See docs/custom-attributes.md, "Units per sub category".
+        unit_scopes: scopes.to_h { |join| [join.sub_category.slug, join.units] }.compact_blank
       }
     end
 

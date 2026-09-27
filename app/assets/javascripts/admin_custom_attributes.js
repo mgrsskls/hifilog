@@ -128,3 +128,92 @@ if (inputTypeInputs.length > 0) {
 
 	renderFieldGroups();
 }
+
+// The units of each category, a selection of the units of the attribute. The table has a row
+// for every category and a column for every unit. It shows the rows of the categories ticked
+// below and the columns of the units ticked above, so that a category ticked in this submit
+// gets its units in this submit. See docs/custom-attributes.md, "Units per sub category".
+const unitScopes = document.querySelector("[data-unit-scopes]");
+
+if (unitScopes) {
+	const table = unitScopes.querySelector("[data-unit-scopes-table]");
+	const empty = unitScopes.querySelector("[data-unit-scopes-empty]");
+	const unitInputs = document.querySelectorAll(
+		'input[name="custom_attribute[units][]"]',
+	);
+	const categoryInputs = document.querySelectorAll(
+		'input[name="custom_attribute[sub_category_ids][]"]',
+	);
+
+	function renderUnitScopes() {
+		const units = Array.from(unitInputs)
+			.filter((input) => input.checked)
+			.map((input) => input.value);
+		const categories = Array.from(categoryInputs)
+			.filter((input) => input.checked)
+			.map((input) => input.value);
+
+		unitScopes.querySelectorAll("[data-unit-column]").forEach((cell) => {
+			cell.hidden = !units.includes(cell.dataset.unitColumn);
+		});
+
+		unitScopes.querySelectorAll("[data-unit-scopes-row]").forEach((row) => {
+			row.hidden = !categories.includes(row.dataset.unitScopesRow);
+		});
+
+		const hasRows = units.length > 0 && categories.length > 0;
+
+		table.hidden = !hasRows;
+		empty.hidden = hasRows;
+
+		renderAllCategories();
+	}
+
+	// "All categories" shows whether every visible row, some rows or no row has the unit.
+	function renderAllCategories() {
+		const rows = unitScopes.querySelectorAll(
+			"[data-unit-scopes-row]:not([hidden])",
+		);
+
+		unitScopes.querySelectorAll("[data-unit-scopes-all]").forEach((all) => {
+			const ticked = Array.from(rows).filter(
+				(row) =>
+					row.querySelector(
+						`input[type="checkbox"][value="${all.dataset.unitScopesAll}"]`,
+					)?.checked,
+			).length;
+
+			all.checked = rows.length > 0 && ticked === rows.length;
+			all.indeterminate = ticked > 0 && ticked < rows.length;
+		});
+	}
+
+	// Ticks or unticks one unit in every visible row.
+	unitScopes.querySelectorAll("[data-unit-scopes-all]").forEach((all) => {
+		all.addEventListener("change", () => {
+			unitScopes
+				.querySelectorAll("[data-unit-scopes-row]:not([hidden])")
+				.forEach((row) => {
+					const input = row.querySelector(
+						`input[type="checkbox"][value="${all.dataset.unitScopesAll}"]`,
+					);
+
+					if (input) input.checked = all.checked;
+				});
+
+			renderAllCategories();
+		});
+	});
+
+	[...unitInputs, ...categoryInputs].forEach((input) => {
+		input.addEventListener("change", renderUnitScopes);
+	});
+
+	unitScopes
+		.querySelectorAll('[data-unit-scopes-row] input[type="checkbox"]')
+		.forEach((input) => {
+			input.addEventListener("change", renderAllCategories);
+		});
+
+	renderUnitScopes();
+}

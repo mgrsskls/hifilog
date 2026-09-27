@@ -81,7 +81,8 @@ import "./_search.js";
 		filter.addEventListener("change", onEventsFilterChange);
 	});
 
-	// A unit pair needs a unit once a range is filled. See docs/custom-attributes.md, "Two units".
+	// Units that convert need a unit once a range is filled. See docs/custom-attributes.md,
+	// "Two units" and "Units per sub category".
 	filterUnits.forEach((units) => {
 		const ranges = units
 			.closest(".Filter-fieldset")

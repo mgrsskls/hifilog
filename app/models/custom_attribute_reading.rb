@@ -3,8 +3,8 @@
 # How one entry of a number attribute reads: a line for each input (or one line), and on each
 # line the figures in the order they are shown.
 #
-# A stated figure is shown as stored. When the definition offers a unit pair and the entry states
-# only one of the two figures, the other one follows, converted and rounded to the significant
+# A stated figure is shown as stored. When the definition offers both units of the pair and the
+# entry states only one of the two figures, the other one follows, converted and rounded to the significant
 # figures of the stated one (CustomAttribute.converted_figure). "15 kg" reads "15 kg / 33 lb",
 # "15 kg, second 33 lb" reads the same, and "33 lb" reads "33 lb / 15 kg".
 #
@@ -53,11 +53,12 @@ class CustomAttributeReading
   def figures(input)
     stated = stated_numbers(input)
     shown = stated.map { |unit, number| Figure.new(number: format(number), unit:) }
-    return shown unless @definition&.unit_pair? && stated.size == 1
+    return shown unless @definition && stated.size == 1
 
     unit, number = stated.first
+    return shown unless @definition.partner_offered?(unit)
+
     other, converted = CustomAttribute.converted_figure(number, unit)
-    return shown if other.nil? || @definition.units.exclude?(other)
 
     shown << Figure.new(number: format(converted), unit: other)
   end

@@ -55,6 +55,10 @@
     <%# Display order, without group headings: see docs/custom-attributes.md, "Display order". %>
     <% CustomAttribute.sort_for_display(custom_attributes).each do |custom_attribute| %>
       <%
+        # The units of all sub categories of the page: a category page with loudspeakers and
+        # cartridges offers kg, lb and g. See docs/custom-attributes.md, "Units per sub category".
+        custom_attribute = custom_attribute.with_units(custom_attribute.filter_units_for(local_assigns[:option_scope_ids])) if local_assigns[:option_scope_ids]
+
         param = params.dig(:products, custom_attribute.label)
 
         if param.present?
@@ -125,11 +129,11 @@
         <% elsif custom_attribute.input_type.present? %>
           <% if custom_attribute.units.present? && custom_attribute.units.length > 1 %>
             <%#
-              A unit pair compares each product in the selected unit, so a range needs one:
+              Units that convert compare each product in the selected unit, so a range needs one:
               application.js makes the radios required once a range is filled, and the server
               ignores a range without a unit. See docs/custom-attributes.md, "Two units".
             %>
-            <div class="Filter-units u-flex u-alignCenter u-gap-md u-mb-sm"<%= " data-filter-units" if custom_attribute.unit_pair? %>>
+            <div class="Filter-units u-flex u-alignCenter u-gap-md u-mb-sm"<%= " data-filter-units" if custom_attribute.converted_filter? %>>
               <% custom_attribute.units.each do |unit| %>
                 <div class="u-flex u-alignCenter u-gap-sm">
                   <input

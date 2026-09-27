@@ -284,7 +284,11 @@ class ProductFilterService
 
   def apply_custom_filters(scope, options)
     custom_attributes = options[:custom_attributes]
-    custom_attribute_records = CustomAttribute.where(label: custom_attributes.deep_dup.to_hash.pluck(0))
+    # With the units of the page's sub categories (CustomAttribute#filter_units_for), as the filter
+    # form offers them.
+    custom_attribute_records = CustomAttribute.where(label: custom_attributes.deep_dup.to_hash.pluck(0)).map do |record|
+      page_sub_category_ids ? record.with_units(record.filter_units_for(page_sub_category_ids)) : record
+    end
 
     custom_attributes.each do |param|
       custom_attribute = custom_attribute_records.detect { |record| record.label == param.first }
@@ -391,7 +395,7 @@ class ProductFilterService
   end
 
   def filter_scope_by_numeric_custom_attribute(scope, custom_attribute, param)
-    return filter_scope_by_unit_pair(scope, custom_attribute, param) if custom_attribute.unit_pair?
+    return filter_scope_by_converted_units(scope, custom_attribute, param) if custom_attribute.converted_filter?
 
     inputs = custom_attribute[:inputs]
     label = custom_attribute[:label]
@@ -447,23 +451,27 @@ class ProductFilterService
     scope
   end
 
-  # A definition with a unit pair (weight: kg and lb). Each product is compared by its figure in
-  # the unit the visitor selected: the stated one when the entry has it, otherwise the other
-  # figure converted and rounded as the product page shows it. So page and filter agree: "15 kg"
-  # shows as "33 lb" and is found for "up to 33 lb". See docs/custom-attributes.md, "Two units".
+  # A definition with units that convert: a unit pair (weight: kg and lb), or the units of the
+  # page's sub categories (kg, lb and g on a page with loudspeakers and cartridges). Each product
+  # is compared by its figure in the unit the visitor selected: the stated one when the entry has
+  # it, otherwise a stated figure in another unit, converted and rounded as the product page shows
+  # it. So page and filter agree: "15 kg" shows as "33 lb" and is found for "up to 33 lb". See
+  # docs/custom-attributes.md, "Two units" and "Units per sub category".
   #
-  # A range without a unit is ignored. The filter form requires a unit once a range is filled, so
-  # only an old link or a crafted URL gets here, and neither unit is a safe guess.
-  def filter_scope_by_unit_pair(scope, custom_attribute, param)
-    unit = param[:unit]
-    return scope unless custom_attribute.units.include?(unit)
+  # A page that offers one unit only compares in that unit, and the filter form shows no unit
+  # choice. Otherwise a range without a unit is ignored. The filter form requires a unit once a
+  # range is filled, so only an old link or a crafted URL gets here, and no unit is a safe guess.
+  def filter_scope_by_converted_units(scope, custom_attribute, param)
+    units = custom_attribute.units
+    unit = units.one? ? units.first : param[:unit]
+    return scope unless units.include?(unit)
 
     (custom_attribute[:inputs].presence || [nil]).each do |input|
       range = input ? param[input] : param
       next if range.blank?
 
       min, max = range_numbers(range[:min], range[:max])
-      figure = unit_pair_figure_sql(custom_attribute[:label], input, unit)
+      figure = converted_figure_in_unit_sql(custom_attribute, input, unit)
 
       scope = scope.where("#{figure} >= ?", min) if min
       scope = scope.where("#{figure} <= ?", max) if max
@@ -472,22 +480,34 @@ class ProductFilterService
     scope
   end
 
-  # The figure of one entry (or of one input of it) in `unit`, as SQL. The first stated figure in
-  # `unit` wins; otherwise a stated figure in the other unit is converted. NULL when the entry
-  # states neither.
-  def unit_pair_figure_sql(label, input, unit)
-    other, factor = CustomAttribute.equivalent_unit(unit).then { |pair| [pair[0], 1.0 / pair[1]] }
+  # The figure of one entry (or of one input of it) in `unit`, as SQL. A stated figure in `unit`
+  # wins; otherwise a stated figure in another unit of the definition is converted. NULL when the
+  # entry states none of them.
+  def converted_figure_in_unit_sql(custom_attribute, input, unit)
+    label = custom_attribute[:label]
     entry = "(custom_attributes -> #{quote(label)})"
     second = "(#{entry} -> 'second')"
     number = lambda do |figure|
       input ? "NULLIF(#{figure} -> 'value' ->> #{quote(input)}, '')" : "NULLIF(#{figure} ->> 'value', '')"
     end
 
-    'COALESCE(' \
-      "CASE WHEN #{entry} ->> 'unit' = #{quote(unit)} THEN #{number.call(entry)}::numeric END, " \
-      "CASE WHEN #{second} ->> 'unit' = #{quote(unit)} THEN #{number.call(second)}::numeric END, " \
-      "CASE WHEN #{entry} ->> 'unit' = #{quote(other)} THEN #{converted_figure_sql(number.call(entry), factor)} END, " \
-      "CASE WHEN #{second} ->> 'unit' = #{quote(other)} THEN #{converted_figure_sql(number.call(second), factor)} END)"
+    others = (custom_attribute.base_units | custom_attribute.units) - [unit]
+    conversions = others.filter_map do |other|
+      factor = CustomAttribute.conversion_factor(other, unit)
+      [other, factor] if factor
+    end
+
+    cases = [entry, second].map do |figure|
+      "CASE WHEN #{figure} ->> 'unit' = #{quote(unit)} THEN #{number.call(figure)}::numeric END"
+    end
+    conversions.each do |other, factor|
+      [entry, second].each do |figure|
+        cases << "CASE WHEN #{figure} ->> 'unit' = #{quote(other)} " \
+                 "THEN #{converted_figure_sql(number.call(figure), factor)} END"
+      end
+    end
+
+    "COALESCE(#{cases.join(', ')})"
   end
 
   # CustomAttribute.converted_figure in SQL: `text` (a stored number) times `factor`, rounded to
@@ -500,6 +520,13 @@ class ProductFilterService
 
     "(CASE WHEN #{converted} = 0 THEN 0 " \
       "ELSE ROUND(#{converted}, (#{digits} - 1 - FLOOR(LOG(ABS(#{converted}))))::int) END)"
+  end
+
+  # The sub categories of the page, whose units the filter offers. nil without a category.
+  def page_sub_category_ids
+    return @page_sub_category_ids if defined?(@page_sub_category_ids)
+
+    @page_sub_category_ids = @sub_category ? [@sub_category.id] : @category&.sub_category_ids
   end
 
   def quote(value)

@@ -162,6 +162,29 @@
           <h4 class="EntityFormAttributes-groupHeading" id="custom-attribute-group-<%= group %>"><%= t("custom_attribute_groups.#{group}") %></h4>
           <% group_definitions.each do |custom_attribute| %>
             <%#
+              A number attribute whose sub categories offer different units renders its fields
+              once for each group of units (CustomAttribute#unit_variants). entity_form.js shows
+              the group of the first ticked sub category. See docs/custom-attributes.md, "Units
+              per sub category".
+            %>
+            <% variants = custom_attribute.number_input_type? ? custom_attribute.unit_variants : [] %>
+            <% if variants.size > 1 %>
+              <%#
+                The block that offers the stored unit. entity_form.js keeps it enabled when no ticked
+                sub category applies, so the figure is submitted unchanged, like the hidden fields of
+                every other attribute.
+              %>
+              <% stored_unit = custom_attribute.stored_unit(product.custom_attributes&.dig(custom_attribute.label)) %>
+              <% keeper = variants.index { |variant_units, _| variant_units.include?(stored_unit) } || 0 %>
+              <% variants.each_with_index do |(variant_units, variant_ids), index| %>
+                <div class="EntityForm-attribute" data-sub-category-ids="<%= variant_ids %>" data-unit-variant="<%= custom_attribute.label %>"<%= " data-unit-variant-keeps-value" if index == keeper %> hidden>
+                  <%= render "products/custom_attribute_number", custom_attribute: custom_attribute.with_units(variant_units), product:,
+                                                                 id_label: index.zero? ? custom_attribute.label : "#{custom_attribute.label}-#{variant_units.join('-')}" %>
+                </div>
+              <% end %>
+              <% next %>
+            <% end %>
+            <%#
               cached_sub_category_ids, not sub_category_ids: this renders every attribute on every
               form load, and the association would be one query each.
             %>
@@ -189,64 +212,6 @@
                     </div>
                   <% end %>
                 </div>
-              <% elsif custom_attribute.unit_pair? %>
-                <% if custom_attribute.inputs.any? %>
-                  <div class="EntityFormAttribute-label">
-                    <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
-                  </div>
-                <% else %>
-                  <label for="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" class="EntityFormAttribute-label">
-                    <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
-                  </label>
-                <% end %>
-                <div class="EntityFormAttribute-inputs">
-                  <%= render "products/custom_attribute_unit_pair", custom_attribute:, product: %>
-                  <% if custom_attribute.qualified? %>
-                    <div class="EntityFormAttribute-grid">
-                      <%= render "products/custom_attribute_qualifier", custom_attribute:, product: %>
-                    </div>
-                  <% end %>
-                </div>
-              <% elsif custom_attribute.inputs.any? %>
-                <div class="EntityFormAttribute-label">
-                  <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
-                </div>
-                <div class="EntityFormAttribute-inputs">
-                  <div class="EntityFormAttribute-grid">
-                    <% custom_attribute.inputs.each do |input| %>
-                      <div>
-                        <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-value-#{input}" %>" class="Form-label">
-                          <%= t("custom_attribute_inputs.#{input}") %>
-                        </label>
-                        <div class="u-flex u-gap-sm u-alignCenter">
-                          <input class="Form-input" type="text" inputmode="number" name="<%= "product[custom_attributes][#{custom_attribute.label}][value][#{input}]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-value-#{input}" %>" value="<%= product.custom_attributes&.dig(custom_attribute.label, 'value').present? ? product.custom_attributes.dig(custom_attribute.label, 'value', input) : "" %>">
-                          <% if custom_attribute.units.size == 1 %>
-                            <span class="Unit">
-                              <%= t("custom_attribute_units.#{custom_attribute.units.first}").html_safe %>
-                            </span>
-                          <% end %>
-                        </div>
-                      </div>
-                    <% end %>
-                  </div>
-                  <% if custom_attribute.units.size > 1 %>
-                    <div class="EntityFormAttributes-units u-flex u-gap-md u-alignCenter">
-                      <% custom_attribute.units.each do |unit| %>
-                        <div class="u-flex u-gap-sm u-alignCenter">
-                          <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= unit %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
-                          <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>">
-                            <%= t("custom_attribute_units.#{unit}").html_safe %>
-                          </label>
-                        </div>
-                      <% end %>
-                    </div>
-                  <% end %>
-                  <% if custom_attribute.qualified? %>
-                    <div class="EntityFormAttribute-grid">
-                      <%= render "products/custom_attribute_qualifier", custom_attribute:, product: %>
-                    </div>
-                  <% end %>
-                </div>
               <% elsif custom_attribute.input_type == 'boolean' %>
               <div class="EntityFormAttribute-label">
                 <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
@@ -262,38 +227,7 @@
                 </div>
               </div>
               <% else %>
-                <label for="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" class="EntityFormAttribute-label">
-                  <%= t("custom_attribute_labels.#{custom_attribute.label}") %>
-                </label>
-                <div class="EntityFormAttribute-inputs">
-                  <div class="EntityFormAttribute-grid">
-                    <div class="u-flex u-gap-sm u-alignCenter">
-                      <input class="Form-input" type="text" inputmode="number" name="<%= "product[custom_attributes][#{custom_attribute.label}][value]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]" %>" value="<%= product.custom_attributes.present? && product.custom_attributes[custom_attribute.label] ? product.custom_attributes[custom_attribute.label]['value'] : '' %>">
-                      <% if custom_attribute.units.size == 1 %>
-                        <span class="Unit">
-                          <%= t("custom_attribute_units.#{custom_attribute.units.first}").html_safe %>
-                        </span>
-                      <% end %>
-                    </div>
-                  </div>
-                  <% if custom_attribute.units.size > 1 %>
-                    <div class="u-flex u-gap-md u-alignCenter">
-                      <% custom_attribute.units.each do |unit| %>
-                        <div class="u-flex u-gap-sm u-alignCenter">
-                          <input type="radio" name="<%= "product[custom_attributes][#{custom_attribute.label}][unit]" %>" id="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>" value="<%= unit %>"<%= " checked" if product.custom_attributes.present? && unit == product.custom_attributes.dig(custom_attribute.label, 'unit') %>>
-                          <label for="<%= "product[custom_attributes][#{custom_attribute.label}]-#{unit}" %>">
-                            <%= t("custom_attribute_units.#{unit}").html_safe %>
-                          </label>
-                        </div>
-                      <% end %>
-                    </div>
-                  <% end %>
-                  <% if custom_attribute.qualified? %>
-                    <div class="EntityFormAttribute-grid">
-                      <%= render "products/custom_attribute_qualifier", custom_attribute:, product: %>
-                    </div>
-                  <% end %>
-                </div>
+                <%= render "products/custom_attribute_number", custom_attribute: custom_attribute.with_units(variants.first&.first || custom_attribute.units), product:, id_label: custom_attribute.label %>
               <% end %>
             </div>
           <% end %>

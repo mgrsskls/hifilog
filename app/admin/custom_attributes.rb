@@ -4,7 +4,7 @@ ActiveAdmin.register CustomAttribute do
   permit_params :label, :highlighted, :input_type, :options_editor, :display_group, :display_position,
                 units: [], inputs: [], qualifiers: [], sub_category_ids: [],
                 options_attributes: [:key, :value],
-                option_scopes: {}
+                option_scopes: {}, unit_scopes: {}
 
   config.filters = false
 
@@ -55,15 +55,18 @@ ActiveAdmin.register CustomAttribute do
         f.inputs do
           f.input :qualifiers, as: :check_boxes, collection: CustomAttribute::VALID_QUALIFIERS
         end
-      end
-
-      f.div class: "mb-8" do
-        f.fieldset do
-          f.legend class: "font-bold text-xl" do "Categories" end
-          Category.all.each do |category|
-            f.input :sub_category_ids, label: tag.b(category.name), as: :check_boxes, collection: category.sub_categories
+        f.div class: "mb-8" do
+          f.fieldset do
+            f.legend class: "font-bold text-xl" do "Categories" end
+            Category.all.each do |category|
+              f.input :sub_category_ids, label: tag.b(category.name), as: :check_boxes, collection: category.sub_categories
+            end
           end
         end
+        f.template.render(
+          partial: "admin/custom_attributes/unit_scopes",
+          locals: { custom_attribute: f.object }
+        )
       end
     end
     f.submit
@@ -143,6 +146,7 @@ ActiveAdmin.register CustomAttribute do
     # so the list reads the same here as on the product form.
     column "Applies to" do |custom_attribute|
       scopes = CustomAttribute.sub_category_scopes_cached.fetch(custom_attribute.id, {})
+      unit_scopes = CustomAttribute.sub_category_units_cached.fetch(custom_attribute.id, {})
       options = custom_attribute.options || {}
 
       safe_join(
@@ -160,11 +164,17 @@ ActiveAdmin.register CustomAttribute do
                        .html_safe
               end
 
+            # The units of the sub category. A link without units shows none: it falls back to all units.
+            own_units = unit_scopes[sub_category.id]
+            units = own_units && tag.div(own_units.map { |unit| t("custom_attribute_units.#{unit}") }.join(" / ").html_safe,
+                                         class: "ms-3")
+
             tag.li(
               safe_join([
                 tag.b(sub_category.name),
-                tag.div(offered)
-              ])
+                tag.div(offered),
+                units
+              ].compact)
             )
           end
 
@@ -221,6 +231,14 @@ ActiveAdmin.register CustomAttribute do
         end
       end
       row :units
+      row "Units per category" do |custom_attribute|
+        unit_scopes = CustomAttribute.sub_category_units_cached.fetch(custom_attribute.id, {})
+        next if unit_scopes.empty?
+
+        custom_attribute.sub_categories.select { |sub_category| unit_scopes.key?(sub_category.id) }.map do |sub_category|
+          "#{sub_category.name}: #{unit_scopes[sub_category.id].join(', ')}"
+        end.join("; ")
+      end
       row :inputs
       # The conditions the definition offers, translated as the product form offers them: the keys
       # alone do not say whether "±3 dB" or "at 1% THD" was ticked.

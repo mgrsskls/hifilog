@@ -462,7 +462,54 @@ class ProductFilterServiceTest < ActiveSupport::TestCase
     assert_operator total, :positive?
   end
 
+  # Units per sub category: a page with loudspeakers (kg) and cartridges (g) compares both in the
+  # selected unit. See docs/custom-attributes.md, "Units per sub category".
+  test 'a category filter compares grams and kilograms in the selected unit' do
+    cartridge, loudspeaker = gram_and_kilogram_products
+
+    assert_includes category_weight_filter(max: '10', unit: 'g'), cartridge.id
+    assert_not_includes category_weight_filter(max: '10', unit: 'g'), loudspeaker.id
+    assert_includes category_weight_filter(max: '1', unit: 'kg'), cartridge.id
+    assert_includes category_weight_filter(min: '15000', unit: 'g'), loudspeaker.id
+  end
+
+  test 'a sub category filter with one unit compares in that unit without a unit param' do
+    cartridge, = gram_and_kilogram_products
+    custom = { 'weight' => ActiveSupport::HashWithIndifferentAccess.new(max: '7') }
+    cartridges = SubCategory.find_by!(name: 'Cartridges')
+
+    ids = ProductFilterService.new(filters: { custom: }, brands: [@brand], sub_category: cartridges)
+                              .filter.products.pluck(:product_id)
+
+    assert_includes ids, cartridge.id
+  end
+
   private
+
+  def gram_and_kilogram_products
+    weight = custom_attributes(:four)
+    weight.update!(units: %w[lb kg g])
+    cartridges = SubCategory.create!(name: 'Cartridges', category: @category)
+    weight.sub_categories << cartridges
+    links = CustomAttributeSubCategory.where(custom_attribute: weight)
+    links.where.not(sub_category: cartridges).find_each { |link| link.update!(units: %w[lb kg]) }
+    links.find_by!(sub_category: cartridges).update!(units: %w[g])
+
+    cartridge = products(:without_custom_attributes)
+    cartridge.update!(sub_categories: [cartridges],
+                      custom_attributes: { 'weight' => { 'value' => 6.5, 'unit' => 'g' } })
+    loudspeaker = products(:one)
+    loudspeaker.update!(custom_attributes: { 'weight' => { 'value' => 15, 'unit' => 'kg' } })
+
+    [cartridge, loudspeaker]
+  end
+
+  def category_weight_filter(**range)
+    custom = { 'weight' => ActiveSupport::HashWithIndifferentAccess.new(range) }
+
+    ProductFilterService.new(filters: { custom: }, brands: [@brand], category: @category)
+                        .filter.products.pluck(:product_id)
+  end
 
   def weight_filter(**range)
     custom = { 'weight' => ActiveSupport::HashWithIndifferentAccess.new(range) }

@@ -119,9 +119,11 @@ Two units on one definition are two systems for the same quantity, for example `
 
 - **`CustomAttribute::UNIT_CONVERSIONS`** is the only table of the unit pairs and their factors.
 - `UNIT_EQUIVALENTS` gives the reverse direction.
-- A definition can have two units only when the two are a pair in the table
-  (`CustomAttribute#unit_pair?`). Add a unit to the table only when a conversion to it is
-  necessary.
+- The units of a definition are all units that its sub categories can offer, for example kg, lb
+  and g for weight. They must convert to each other. Each sub category offers a selection of them
+  (see [4.5 Units per sub category](#45-units-per-sub-category)). A sub category that offers the
+  two units of a pair (`CustomAttribute#unit_pair?`) gets the two rows of the product form. Add a
+  unit to the table only when a conversion to it is necessary.
 
 Two readings that no factor relates are not two units. `loudspeaker_sensitivity` had dB@1W/1m and
 dB@2.83V/1m as units until qualifiers existed. It now has one unit, dB, and the drive reference is
@@ -153,8 +155,8 @@ does not convert a figure when it writes it.
 `Product` calls `CustomAttribute.prune_unsupported_keys` and then `CustomAttribute.order_figures`
 before save:
 
-- `prune_unsupported_keys` removes a `second` when the definition has no unit pair, when its unit
-  is not the other unit of `unit`, or when it holds no figure.
+- `prune_unsupported_keys` removes a `second` when the definition does not offer the other unit of
+  `unit`, when its unit is not that unit, or when it holds no figure.
 - `order_figures` moves the metric figure into `value`. When an entry has a `second` but no
   `value`, it moves `second` into `value`. It removes an entry that holds no figure after these
   steps. Such an entry shows "n/a" and counts as filled for the completeness score.
@@ -185,8 +187,8 @@ product form.
 the product card, the changelog, the admin activity list and the import candidate view.
 
 - A stated figure is shown as stored.
-- When the definition has a unit pair and the entry states one figure only, the other figure
-  follows, converted.
+- When the definition offers both units of the pair and the entry states one figure only, the
+  other figure follows, converted.
 - A converted figure is rounded to the significant figures of the stated figure, but to no fewer
   than two (`CustomAttribute::MIN_SIGNIFICANT_FIGURES`). Thus, a conversion is not more precise than
   its source.
@@ -232,9 +234,9 @@ possible later.
 
 ### 4.4 Product form
 
-For a definition with a unit pair, the product form shows one row for each unit, the metric row
-first. The contributor fills in the rows for the figures that the source states: one row or both.
-The form has no unit radio buttons for these definitions, and it converts nothing.
+For a sub category that offers a unit pair, the product form shows one row for each unit, the
+metric row first. The contributor fills in the rows for the figures that the source states: one
+row or both. The form has no unit radio buttons for these sub categories, and it converts nothing.
 
 When both rows hold a figure, `entity_form.js` shows a warning if the two figures cannot describe
 the same measurement. The rule is in `CustomAttribute.figures_agree?`:
@@ -251,6 +253,79 @@ brand sometimes disagree.
 `parseTypedNumber` reads the typed numbers, not `parseFloat`. It finds the decimal separator and
 does not cut the number. The controller parses the number again on the server, for the case when
 the JavaScript did not run.
+
+### 4.5 Units per sub category
+
+The values of one attribute can have a very different scale in two sub categories. A loudspeaker
+weighs many kilograms, but a cartridge weighs a few grams. Each sub category thus offers its own
+selection of the units of the definition. The product form of a cartridge asks for grams, and the
+contributor does not select a unit.
+
+- The units are on the link between the attribute and the sub category (`units` on
+  `CustomAttributeSubCategory`). They are a selection of the units of the definition, in the
+  order of the definition.
+- An admin ticks them in ActiveAdmin, in the table "Units per category" of the attribute. The
+  table has a row for each category ticked in the form and a column for each unit ticked above.
+  The row "All categories" ticks a unit in all rows.
+- **There is no default.** Each sub category needs at least one unit, or the form refuses the save
+  (`CustomAttribute#sub_category_units_must_be_chosen`). The admin decides which combination makes
+  sense. One unit or one pair is best: with other combinations, the contributor must select a unit.
+- When an admin removes a unit from the definition, the unit also leaves each sub category. If a
+  sub category then has no unit, the form refuses the save.
+- The rule applies to the admin form only. Other paths write links without units: the Sub
+  Category admin, a HABTM assignment in the console. A link without units falls back to all units
+  of the definition (`CustomAttribute#units_in`). The bulk definition task gives all units of the
+  definition to each sub category without units (`CustomAttribute#tick_all_units_where_missing`).
+- `CustomAttribute::UNIT_SCALES` holds the factors between two sizes of one system, for example g
+  and kg. `CustomAttribute.conversion_factor` uses this table and `UNIT_CONVERSIONS` together.
+  Thus, g also converts to lb.
+- A scale is not a pair. An entry in grams holds one figure, and the product page shows no
+  converted figure for it. An entry in kilograms shows the figure in pounds when the definition
+  offers lb (`CustomAttribute#partner_offered?`), also for a sub category that offers kg only.
+
+The migration `FillUnitsOfCustomAttributesSubCategories` gave each existing link the units of its
+attribute, so that nothing changed for contributors.
+
+The stored figure follows [4.1 Stored figures](#41-stored-figures): an entry in grams stores
+`{ "value": 6.5, "unit": "g" }`. When a sub category offers one unit only and it is not the only
+unit of the definition, the product form posts the unit too. Without the unit, the entry would read
+in the first unit of the definition.
+
+**Product form.** The form renders the fields of the attribute one time for each group of sub
+categories with the same units (`CustomAttribute#unit_variants`). `entity_form.js` shows the group
+of the first ticked sub category, in menu order, and disables the fields of the other groups. Thus,
+a product in two sub categories with different units has one set of fields. When the stored figure
+is in a unit that the group does not offer, the form shows it converted
+(`CustomAttribute#entry_in_own_units`). For example, a cartridge weight that was entered as
+0.0065 kg shows as 6.5 g, and a save stores 6.5 g.
+
+**Filter.** A list page offers the units of all its sub categories
+(`CustomAttribute#filter_units_for`). A category page with loudspeakers and cartridges offers kg,
+lb and g. The filter compares each product in the selected unit, as in
+[4.3 Filtering](#43-filtering), and converts from each other unit of the definition. A page with
+one unit, for example the cartridges page, compares in that unit and shows no unit choice.
+
+**Convert stored figures.** A change of the units of a sub category does not change the stored
+figures. A headphone weight stored as 0.35 kg still shows as "0.35 kg / 0.77 lb" on the product
+page, and only the product form shows 350 g. `bin/rails custom_attributes:convert_units` converts
+each entry whose unit is not a unit of the product's sub category (`SubCategoryUnitConversion`):
+
+- The units come from the first sub category in menu order (`CustomAttribute#units_for`), as in the
+  product form.
+- The entry gets the first of these units, converted and rounded like in the product form. A second
+  figure goes, because the new unit has no pair.
+- The task writes without PaperTrail, because the measurement does not change. It touches the
+  product to clear the caches.
+
+Without `APPLY=1`, the task only prints what it would change. `LABEL=weight` limits it to one
+attribute. It is safe to run two times.
+
+```sh
+bin/rails custom_attributes:convert_units LABEL=weight          # dry run
+bin/rails custom_attributes:convert_units LABEL=weight APPLY=1  # write
+```
+
+`bin/rails import:schema` exports the units of each sub category as `unit_scopes`.
 
 ## 5. Qualifiers
 

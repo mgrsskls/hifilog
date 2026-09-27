@@ -949,4 +949,196 @@ class CustomAttributeTest < ActiveSupport::TestCase
 
     assert_predicate attribute, :valid?
   end
+
+  # Units per sub category. See docs/custom-attributes.md, "Units per sub category".
+
+  test 'conversion_factor relates units through the scale and the pair tables' do
+    assert_in_delta 0.001, CustomAttribute.conversion_factor('g', 'kg')
+    assert_in_delta 1000.0, CustomAttribute.conversion_factor('kg', 'g')
+    assert_in_delta 0.001 / 0.45359237, CustomAttribute.conversion_factor('g', 'lb')
+    assert_in_delta 1.0, CustomAttribute.conversion_factor('kg', 'kg')
+    assert_nil CustomAttribute.conversion_factor('g', 'cm')
+  end
+
+  test 'figure_in rounds to the significant figures of the stated figure' do
+    assert_in_delta 6.5, CustomAttribute.figure_in(0.0065, 'kg', 'g')
+    assert_in_delta 0.0065, CustomAttribute.figure_in(6.5, 'g', 'kg')
+    assert_nil CustomAttribute.figure_in(6.5, 'g', 'cm')
+  end
+
+  test 'a sub category offers its own units, and the filter of a page offers the units of all' do
+    weight, cartridges = weight_with_gram_sub_category
+
+    assert_equal %w[g], weight.units_in(cartridges.id)
+    assert_equal %w[lb kg], weight.units_in(sub_categories(:one).id)
+    assert_equal %w[lb kg g], weight.filter_units_for([sub_categories(:one).id, cartridges.id])
+    assert_equal %w[g], weight.filter_units_for([cartridges.id])
+    assert_equal [%w[lb kg], %w[g]], weight.unit_variants.map(&:first)
+  end
+
+  test 'units_for uses the units of the first sub category in menu order' do
+    weight, cartridges = weight_with_gram_sub_category
+    ranks = { cartridges.id => 0, sub_categories(:one).id => 1 }
+
+    assert_equal %w[g], weight.units_for([sub_categories(:one).id, cartridges.id], ranks:)
+    assert_equal %w[lb kg], weight.units_for([sub_categories(:one).id], ranks:)
+    assert_equal %w[lb kg g], weight.units_for([sub_categories(:three).id], ranks:)
+  end
+
+  # A link written by another path than the admin form, for example the Sub Category admin.
+  test 'a sub category without units falls back to all units of the definition' do
+    weight, cartridges = weight_with_gram_sub_category
+    CustomAttributeSubCategory.find_by!(custom_attribute: weight, sub_category: cartridges).update!(units: [])
+
+    assert_equal %w[lb kg g], weight.units_in(cartridges.id)
+  end
+
+  test 'with_units returns a read-only copy that keeps the units of the definition' do
+    weight, = weight_with_gram_sub_category
+    copy = weight.with_units(%w[g])
+
+    assert_equal weight.id, copy.id
+    assert_equal %w[g], copy.units
+    assert_equal %w[lb kg g], copy.base_units
+    assert_predicate copy, :readonly?
+    assert_same weight, weight.with_units(%w[lb kg g])
+  end
+
+  test 'converted_filter? is true for units that convert and for other units than the definition' do
+    weight, = weight_with_gram_sub_category
+
+    assert_predicate weight, :converted_filter?
+    assert_predicate weight.with_units(%w[g]), :converted_filter?
+    assert_not custom_attributes(:four).tap { |definition| definition.units = %w[kg] }.converted_filter?
+  end
+
+  test 'offers_pair? and partner_offered? read the units of the definition' do
+    weight, = weight_with_gram_sub_category
+
+    assert_predicate weight, :offers_pair?
+    assert weight.partner_offered?('kg')
+    assert_not weight.partner_offered?('g')
+    assert_not weight.with_units(%w[g]).offers_pair?
+  end
+
+  test 'entry_in_own_units converts a figure into the units of the sub category' do
+    weight, = weight_with_gram_sub_category
+    grams = weight.with_units(%w[g])
+
+    assert_equal({ 'value' => 6.5, 'unit' => 'g' }, grams.entry_in_own_units({ 'value' => 0.0065, 'unit' => 'kg' }))
+    assert_equal({ 'value' => 6.5, 'unit' => 'g' }, grams.entry_in_own_units({ 'value' => 6.5, 'unit' => 'g' }))
+    # Without a unit, the entry reads in the first unit of the definition.
+    assert_equal({ 'value' => 15, 'unit' => 'lb' }, weight.entry_in_own_units({ 'value' => 15 }))
+  end
+
+  test 'prune_unsupported_keys keeps a unit of the definition that only a sub category offers' do
+    weight_with_gram_sub_category
+
+    pruned = CustomAttribute.prune_unsupported_keys('weight' => { 'value' => 6.5, 'unit' => 'g' })
+
+    assert_equal 'g', pruned.dig('weight', 'unit')
+  end
+
+  test 'the units of a sub category are units of the definition' do
+    weight, cartridges = weight_with_gram_sub_category
+    link = CustomAttributeSubCategory.find_by!(custom_attribute: weight, sub_category: cartridges)
+
+    link.units = %w[cm]
+    assert_not link.valid?
+    assert_match(/are not units of the attribute: cm/, link.errors[:units].join)
+
+    link.units = %w[nope]
+    assert_not link.valid?
+    assert_match(/invalid values: nope/, link.errors[:units].join)
+  end
+
+  test 'the admin form stores the ticked units of each sub category' do
+    weight, cartridges = weight_with_gram_sub_category
+
+    weight.update!(unit_scopes: {
+                     cartridges.id.to_s => ['', 'g', 'kg'],
+                     sub_categories(:one).id.to_s => ['', 'kg', 'lb'],
+                     sub_categories(:two).id.to_s => ['', 'kg']
+                   })
+
+    # In the order of the definition.
+    assert_equal %w[kg g], weight.units_in(cartridges.id)
+    assert_equal %w[lb kg], weight.units_in(sub_categories(:one).id)
+    assert_equal %w[kg], weight.units_in(sub_categories(:two).id)
+  end
+
+  test 'the admin form requires a unit for each sub category' do
+    weight, cartridges = weight_with_gram_sub_category
+
+    weight.unit_scopes = { cartridges.id.to_s => [''] }
+
+    assert_not weight.valid?
+    assert_match(/need at least one unit ticked for each category: Cartridges/, weight.errors[:units].join)
+  end
+
+  test 'a unit removed from the definition leaves the sub categories' do
+    weight, cartridges = weight_with_gram_sub_category
+
+    weight.update!(units: %w[lb kg])
+
+    assert_equal %w[lb kg], weight.units_in(sub_categories(:one).id)
+    assert_empty CustomAttributeSubCategory.find_by!(custom_attribute: weight, sub_category: cartridges).units
+  end
+
+  test 'the admin form refuses to remove the only unit of a sub category' do
+    weight, cartridges = weight_with_gram_sub_category
+
+    weight.assign_attributes(units: %w[lb kg], unit_scopes: { cartridges.id.to_s => ['', 'g'] })
+
+    assert_not weight.valid?
+    assert_match(/Cartridges/, weight.errors[:units].join)
+  end
+
+  test 'the units of a definition convert to each other' do
+    definition = custom_attributes(:four)
+
+    definition.units = %w[lb kg g]
+    assert_predicate definition, :valid?
+
+    definition.units = %w[kg cm]
+    assert_not definition.valid?
+    assert_match(/do not convert to kg: cm/, definition.errors[:units].join)
+  end
+
+  # The bulk definition task switches the units, for example from mm to cm.
+  test 'tick_all_units_where_missing ticks all units for a sub category that keeps none of its units' do
+    weight, cartridges = weight_with_gram_sub_category
+
+    weight.units = %w[lb kg]
+    weight.tick_all_units_where_missing
+    weight.save!
+
+    assert_equal %w[lb kg], weight.units_in(cartridges.id)
+    assert_equal %w[lb kg], weight.units_in(sub_categories(:one).id)
+  end
+
+  test 'tick_all_units_where_missing ticks all units for the sub categories without units' do
+    weight, cartridges = weight_with_gram_sub_category
+    CustomAttributeSubCategory.find_by!(custom_attribute: weight, sub_category: sub_categories(:one)).update!(units: [])
+
+    weight.tick_all_units_where_missing
+    weight.save!
+
+    assert_equal %w[lb kg g], weight.units_in(sub_categories(:one).id)
+    assert_equal %w[g], weight.units_in(cartridges.id)
+  end
+
+  private
+
+  def weight_with_gram_sub_category
+    weight = custom_attributes(:four)
+    weight.update!(units: %w[lb kg g])
+    cartridges = SubCategory.create!(name: 'Cartridges', category: categories(:one))
+    weight.sub_categories << cartridges
+    links = CustomAttributeSubCategory.where(custom_attribute: weight)
+    links.where.not(sub_category: cartridges).find_each { |link| link.update!(units: %w[lb kg]) }
+    links.find_by!(sub_category: cartridges).update!(units: %w[g])
+
+    [weight, cartridges]
+  end
 end

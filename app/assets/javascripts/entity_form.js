@@ -105,9 +105,46 @@ function renderCustomAttributes(attributes, inputs) {
 	attributes.forEach((attribute) => {
 		const applicable = JSON.parse(attribute.dataset.subCategoryIds);
 
+		if (attribute.dataset.unitVariant) {
+			renderUnitVariant(attribute, attributes, checked);
+			return;
+		}
+
 		attribute.hidden = !checked.some((id) => applicable.includes(id));
 
 		if (!attribute.hidden) renderAttributeOptions(attribute, checked);
+	});
+}
+
+/**
+ * A number attribute whose sub categories offer different units has one block of fields for each
+ * group of units, with the same field names. The block of the first ticked sub category that the
+ * attribute applies to is shown: a cartridge asks for its weight in grams, a loudspeaker in
+ * kilograms. The sub categories are listed in menu order, so "first" means first in the menu.
+ *
+ * The fields of the other blocks are disabled, so the browser does not submit them.
+ */
+function renderUnitVariant(attribute, attributes, checked) {
+	const variants = Array.from(attributes).filter(
+		(other) => other.dataset.unitVariant === attribute.dataset.unitVariant,
+	);
+	const first = checked.find((id) =>
+		variants.some((variant) =>
+			JSON.parse(variant.dataset.subCategoryIds).includes(id),
+		),
+	);
+	const applicable = JSON.parse(attribute.dataset.subCategoryIds);
+
+	attribute.hidden = first === undefined || !applicable.includes(first);
+
+	// When no ticked sub category applies, the block with the stored unit stays enabled, although
+	// hidden. The controller replaces all custom attributes, so a figure that is not submitted is
+	// deleted. The hidden fields of every other attribute are submitted in the same way.
+	const keepsValue =
+		first === undefined && "unitVariantKeepsValue" in attribute.dataset;
+
+	attribute.querySelectorAll("input, select").forEach((field) => {
+		field.disabled = attribute.hidden && !keepsValue;
 	});
 }
 

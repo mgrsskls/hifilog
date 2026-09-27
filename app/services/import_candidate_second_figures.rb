@@ -24,7 +24,7 @@ class ImportCandidateSecondFigures
 
   def initialize(scope: ImportCandidate.where(status: 'pending'))
     @scope = scope
-    @definitions = CustomAttribute.all_cached.select(&:unit_pair?).index_by(&:label)
+    @definitions = CustomAttribute.all_cached.select(&:offers_pair?).index_by(&:label)
   end
 
   # Every candidate entry that would change, with what happens to it. Writes only with apply: true.
@@ -47,6 +47,7 @@ class ImportCandidateSecondFigures
   def result_for(candidate, label, definition)
     entry = candidate.custom_attributes&.dig(label)
     return unless entry.is_a?(Hash) && entry['second'].nil? && definition.units.include?(entry['unit'])
+    return unless definition.partner_offered?(entry['unit'])
 
     snippet = candidate.provenance.dig("custom_attributes.#{label}", 'snippet').to_s
     other_unit = CustomAttribute.partner_unit(entry['unit'])
