@@ -81,6 +81,30 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal ['New (first-hand)', 'Second-hand', 'B-stock'], labels
   end
 
+  test 'changelog_custom_attribute_changes splits the changed, the removed and the added custom attributes' do
+    before = { 'channel_configuration' => '1', 'turntable_drive_type' => '1', 'amplifier_type' => '1' }.to_json
+    after = { 'channel_configuration' => '1', 'turntable_drive_type' => '2', 'loudspeaker_bi_wiring' => true }.to_json
+
+    changes = changelog_custom_attribute_changes([before, after])
+
+    assert_equal({ before: { 'turntable_drive_type' => '1', 'amplifier_type' => '1' },
+                   after: { 'turntable_drive_type' => '2', 'amplifier_type' => nil },
+                   added: { 'loudspeaker_bi_wiring' => true } },
+                 changes.except(:definitions))
+    assert_equal custom_attributes(:two), changes[:definitions]['turntable_drive_type']
+  end
+
+  # Old versions have keys by custom attribute id ("1") or by a label that was renamed later.
+  test 'changelog_custom_attribute_changes leaves out keys with no custom attribute' do
+    before = { '1' => '1' }.to_json
+    after = { '1' => '1', 'enclosure_type' => '1', 'channel_configuration' => '2' }.to_json
+
+    changes = changelog_custom_attribute_changes([before, after])
+
+    assert_equal({ before: {}, after: {}, added: { 'channel_configuration' => '2' } }, changes.except(:definitions))
+    assert_equal %w[channel_configuration], changes[:definitions].keys
+  end
+
   test 'changelog_brand_name resolves an existing brand' do
     brand = brands(:one)
 

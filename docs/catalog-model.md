@@ -279,3 +279,23 @@ original move to the new record, so the history continues there.
   changelog.
 - The conversion version does not change the series. Thus it is not an entry in the series
   changelog.
+
+### 8.6 Custom attributes
+
+All custom attributes of a record are in one column. Thus a version has the old and the new value
+of all custom attributes, also when only one custom attribute changed.
+
+- The changelog shows only the custom attributes that changed
+  (`ApplicationHelper#changelog_custom_attribute_changes`).
+- A custom attribute that was not set before shows under "Added", with no old value.
+- A custom attribute that was removed shows "-" as the new value.
+- Old versions can have keys that are not a current label: the custom attribute id (from before
+  custom attributes had a label) or a label that was renamed later. The changelog does not show
+  these keys.
+
+### 8.7 Display rules
+
+- A value that was not set before shows under "Added", with no "From" and "To". This applies
+  also to the create version.
+- The changelog does not show a version that has no change to show and no comment. An example is
+  a version that changed only custom attribute keys that the changelog does not show.

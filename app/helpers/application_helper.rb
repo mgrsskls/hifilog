@@ -103,6 +103,27 @@ module ApplicationHelper
     deserialize_changelog(version.object_changes).merge(version.association_changes || {})
   end
 
+  # The custom attributes of a changelog value that changed: the ones that were set before, with the
+  # old and the new value, and the ones that were added. A removed custom attribute has nil as the
+  # new value. A key with no custom attribute definition (an old id key or a renamed label) is left
+  # out. `definitions` has the custom attribute of each label, for the display. See
+  # docs/catalog-model.md, "8.6 Custom attributes".
+  def changelog_custom_attribute_changes(values)
+    before, after = values.map { |value| value.present? ? JSON.parse(value) : {} }
+    definitions = CustomAttribute.where(label: before.keys | after.keys).index_by(&:label)
+    before = before.slice(*definitions.keys)
+    after = after.slice(*definitions.keys)
+    changed = after.keys.reject { |label| before[label] == after[label] }
+    added = changed - before.keys
+    removed = before.keys - after.keys
+    {
+      before: before.slice(*(changed - added), *removed),
+      after: after.slice(*(changed - added)).merge(removed.index_with(nil)),
+      added: after.slice(*added),
+      definitions:
+    }
+  end
+
   # The sub categories of a changelog value, by their current name. A deleted sub category shows
   # as "Deleted", as a deleted brand does.
   def changelog_sub_category_names(ids)

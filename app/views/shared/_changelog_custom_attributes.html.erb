@@ -1,0 +1,38 @@
+<%#
+  The custom attributes of one changelog value, sorted by label. "-" for none, and "-" as the value
+  of a removed custom attribute. `definitions` has the custom attribute of each label.
+  A number entry reads as on the product page (CustomAttributeReading), second figure included:
+  without it, a change of the second figure alone would read as the same text before and after.
+%>
+<% if attributes.present? %>
+<ul>
+  <% attributes.sort.each do |ca| %>
+    <% active_record = definitions[ca[0]] %>
+    <li>
+      <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
+      <% if ca[1].nil? %>
+        -
+      <% elsif ca[1].is_a?(Hash) %>
+        <% lines = custom_attribute_reading_lines(active_record, ca[1]) %>
+        <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
+        <% if lines.any? %>
+          <%= safe_join(lines, tag.br) %>
+          <%= "(#{qualifier})" if qualifier.present? %>
+        <% else %>
+          n/a
+        <% end %>
+      <% elsif ca[1].is_a?(Array) %>
+        <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
+      <% else %>
+        <% if active_record[:input_type] == 'boolean' %>
+          <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
+        <% else %>
+          <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
+        <% end %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+<% else %>
+-
+<% end %>

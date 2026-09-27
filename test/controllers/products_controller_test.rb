@@ -249,6 +249,61 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_select '.Changelog-new', text: /#{Regexp.escape(sub_categories(:two).name)}/
   end
 
+  test 'changelog shows only the custom attributes that changed' do
+    product = products(:with_custom_attributes)
+    product.update!(custom_attributes: product.custom_attributes.merge('channel_configuration' => '2'))
+
+    get product_changelog_url(product_id: product.friendly_id)
+
+    assert_response :success
+    assert_select '.Changelog-old', text: /Stereo/i
+    assert_select '.Changelog-new', text: /Dual-Mono/i
+    assert_select '.Changelog-old, .Changelog-new', text: /Drive type/i, count: 0
+  end
+
+  test 'changelog shows the custom attributes that were not set before as added' do
+    product = products(:without_custom_attributes)
+    product.update!(custom_attributes: { 'channel_configuration' => '1' })
+
+    get product_changelog_url(product_id: product.friendly_id)
+
+    assert_response :success
+    assert_select 'dt', text: I18n.t('changelog.added')
+    assert_select 'dt', text: I18n.t('changelog.before'), count: 0
+    assert_select '.Changelog-new', text: /Stereo/i
+  end
+
+  test 'changelog shows a removed custom attribute as "-" next to a changed one' do
+    product = products(:without_custom_attributes)
+    product.update!(custom_attributes: { 'channel_configuration' => '1', 'turntable_drive_type' => '1' })
+    product.update!(custom_attributes: { 'channel_configuration' => '2' })
+
+    get product_changelog_url(product_id: product.friendly_id)
+
+    assert_select '.Changelog-new li', text: /Drive type:\s+-/
+    assert_select '.Changelog-new li', text: /Dual-Mono/i
+  end
+
+  test 'changelog shows a value that was not set before as added' do
+    product = products(:one)
+    product.update!(price: 100, price_currency: 'USD')
+
+    get product_changelog_url(product_id: product.friendly_id)
+
+    assert_select 'li', text: /Price\s+#{I18n.t('changelog.added')}\s+100/
+    assert_select 'dt', text: I18n.t('changelog.before'), count: 0
+  end
+
+  test 'changelog does not show a version with only custom attributes that no longer exist' do
+    product = products(:without_custom_attributes)
+    product.versions.create!(event: 'update', object_changes: { 'custom_attributes' => [nil, '{"1":"1"}'] }.to_yaml)
+
+    get product_changelog_url(product_id: product.friendly_id)
+
+    assert_response :success
+    assert_select '.Changelog-item', count: 0
+  end
+
   test 'similar lists similar products with pagination and is noindex' do
     source, candidates = similar_products_catalogue(SimilarProducts::PER_PAGE + 1)
 

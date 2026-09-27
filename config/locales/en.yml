@@ -209,6 +209,7 @@ en:
       link: Add Brand
       submit: Submit
   changelog:
+    added: Added
     after: To
     before: From
     by: by

@@ -1,7 +1,3 @@
-<%#
-  A number entry reads as on the product page (CustomAttributeReading), second figure included:
-  without it, a change of the second figure alone would read as the same text before and after.
-%>
 <% content_for :css do %>
   <%= stylesheet_link_tag "changelog" %>
 <% end %>
@@ -21,61 +17,18 @@
         <%= render "shared/changelog_series_product", version:, series: model, product: (local_assigns.fetch(:products, {})[version.item_id] if version.item_type == "Product"), user:, user_fallback: %>
         <% next %>
       <% end %>
-      <li class="Changelog-item">
-        <p class="Changelog-itemHeading">
-          <b>
-          <% if version.event == "create" %>
-            <b><%= t('headings.created') %></b>
-          <% else %>
-            <%= t('changelog.change') %>
-          <% end %>
-          </b>
-          <%= render "shared/changelog_author", version:, user:, user_fallback: %>
-        </p>
-
-          <% changelog = changelog_changes(version) %>
-          <ul>
-            <% changelog.each do |change| %>
+          <% items = [] %>
+          <% changelog_changes(version).each do |change| %>
               <%# A conversion between product and variant: one line, the original is deleted. See docs/catalog-model.md, "Changelog". %>
               <% if change[0] == "converted_from" %>
-                <li><b><%= t('brand.converted_from') %></b> <%= change[1][1] %></li>
+                <% items << capture do %><li><b><%= t('brand.converted_from') %></b> <%= change[1][1] %></li><% end %>
                 <% next %>
               <% end %>
               <% unless %w[slug products_count].include?(change[0]) %>
+                <% custom_attribute_changes = changelog_custom_attribute_changes(change[1]) if change[0] == "custom_attributes" %>
                 <% before = capture do %>
                             <% if change[0] == "custom_attributes" %>
-                              <% if change[1][0].present? %>
-                                <ul>
-                                  <% JSON.parse(change[1][0]).sort.each do |ca| %>
-                                    <% active_record = CustomAttribute.find_by(label: ca[0]) %>
-                                    <% if active_record.present? %>
-                                      <li>
-                                        <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
-                                        <% if ca[1].is_a?(Hash) %>
-                                          <% lines = custom_attribute_reading_lines(active_record, ca[1]) %>
-                                          <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
-                                          <% if lines.any? %>
-                                            <%= safe_join(lines, tag.br) %>
-                                            <%= "(#{qualifier})" if qualifier.present? %>
-                                          <% else %>
-                                            n/a
-                                          <% end %>
-                                        <% elsif ca[1].is_a?(Array) %>
-                                          <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
-                                        <% else %>
-                                          <% if active_record[:input_type] == 'boolean' %>
-                                            <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
-                                          <% else %>
-                                            <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
-                                          <% end %>
-                                        <% end %>
-                                      </li>
-                                    <% end %>
-                                  <% end unless change[1][0].nil? %>
-                                </ul>
-                              <% else %>
-                                -
-                              <% end %>
+                              <%= render "shared/changelog_custom_attributes", attributes: custom_attribute_changes[:before], definitions: custom_attribute_changes[:definitions] %>
                             <% elsif change[0] == "brand_id" && change[1][0].present? %>
                               <%= changelog_brand_name(change[1][0]) %>
                             <% elsif change[0] == "product_series_id" && change[1][0].present? %>
@@ -100,38 +53,7 @@
                 <% end %>
                 <% after = capture do %>
                             <% if change[0] == "custom_attributes" %>
-                              <% if change[1][1].present? %>
-                                <ul>
-                                  <% JSON.parse(change[1][1]).sort.each do |ca| %>
-                                    <% active_record = CustomAttribute.find_by(label: ca[0]) %>
-                                    <% if active_record.present? %>
-                                    <li>
-                                        <b><%= t("custom_attribute_labels.#{ca[0]}") %>:</b><br>
-                                        <% if ca[1].is_a?(Hash) %>
-                                          <% lines = custom_attribute_reading_lines(active_record, ca[1]) %>
-                                          <% qualifier = CustomAttribute.qualifier_label(ca[1]) %>
-                                          <% if lines.any? %>
-                                            <%= safe_join(lines, tag.br) %>
-                                            <%= "(#{qualifier})" if qualifier.present? %>
-                                          <% else %>
-                                            n/a
-                                          <% end %>
-                                        <% elsif ca[1].is_a?(Array) %>
-                                          <%= ca[1].map { |id| t("custom_attributes.#{active_record.options[id.to_s]}") }.join(", ") %>
-                                        <% else %>
-                                          <% if active_record[:input_type] == 'boolean' %>
-                                            <%= t("custom_attributes.#{ca[1] ? 'yes' : 'no'}") %>
-                                          <% else %>
-                                            <%= t("custom_attributes.#{active_record.options[ca[1].to_s]}") %>
-                                          <% end %>
-                                        <% end %>
-                                      </li>
-                                    <% end %>
-                                  <% end unless change[1][1].nil? %>
-                                </ul>
-                              <% else %>
-                                -
-                              <% end %>
+                              <%= render "shared/changelog_custom_attributes", attributes: custom_attribute_changes[:after], definitions: custom_attribute_changes[:definitions] %>
                             <% elsif change[0] == "brand_id" && change[1][1].present? %>
                               <%= changelog_brand_name(change[1][1]) %>
                             <% elsif change[0] == "product_series_id" && change[1][1].present? %>
@@ -154,21 +76,59 @@
                               -
                             <% end %>
                 <% end %>
-                <% unless before.strip == "-" && after.strip == "-" %>
+                <%#
+                  A value that was not set before shows as "Added", with no "From". For custom
+                  attributes, only the ones that were not set before. See docs/catalog-model.md,
+                  "8.7 Display rules".
+                %>
+                <% if change[0] == "custom_attributes" %>
+                  <% added = render("shared/changelog_custom_attributes", attributes: custom_attribute_changes[:added], definitions: custom_attribute_changes[:definitions]) if custom_attribute_changes[:added].present? %>
+                <% elsif before.strip == "-" && after.strip != "-" %>
+                  <% added, after = after, "-" %>
+                <% else %>
+                  <% added = nil %>
+                <% end %>
+                <% unless before.strip == "-" && after.strip == "-" && added.blank? %>
+                  <% items << capture do %>
                   <li>
                       <b><%= t('brand.' + change[0]) %></b>
                       <dl>
-                            <dt><%= t('changelog.before') %></dt>
-                            <dd class="Changelog-old"><%= before %></dd>
+                            <% unless before.strip == "-" && after.strip == "-" %>
+                              <dt><%= t('changelog.before') %></dt>
+                              <dd class="Changelog-old"><%= before %></dd>
 
-                            <dt><%= t('changelog.after') %></dt>
-                            <dd class="Changelog-new"><%= after %></dd>
+                              <dt><%= t('changelog.after') %></dt>
+                              <dd class="Changelog-new"><%= after %></dd>
+                            <% end %>
+
+                            <% if added.present? %>
+                              <dt><%= t('changelog.added') %></dt>
+                              <dd class="Changelog-new"><%= added %></dd>
+                            <% end %>
                       </dl>
                   </li>
+                  <% end %>
                 <% end %>
               <% end %>
-            <% end %>
-          </ul>
+          <% end %>
+
+      <%# A version with no change to show and no comment is left out. See docs/catalog-model.md, "8.7 Display rules". %>
+      <% next if items.empty? && version.comment.blank? %>
+      <li class="Changelog-item">
+        <p class="Changelog-itemHeading">
+          <b>
+          <% if version.event == "create" %>
+            <b><%= t('headings.created') %></b>
+          <% else %>
+            <%= t('changelog.change') %>
+          <% end %>
+          </b>
+          <%= render "shared/changelog_author", version:, user:, user_fallback: %>
+        </p>
+
+          <% if items.any? %>
+            <ul><%= safe_join(items) %></ul>
+          <% end %>
 
         <% if version.comment.present? %>
           <div class="Changelog-itemComment Rte">
