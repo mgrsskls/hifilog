@@ -236,7 +236,8 @@ class AdminVersionActivityPresenter
     when false then 'No'
     when Time, DateTime, ActiveSupport::TimeWithZone then value.strftime('%d.%m.%Y %H:%M')
     when Date then value.strftime('%d.%m.%Y')
-    when BigDecimal, Float then number(value)
+    # Prices have a scale of 4, so 4 digits keep the value exact.
+    when BigDecimal, Float then @view.number_with_precision(value, precision: 4, strip_insignificant_zeros: true)
     else value.to_s
     end
   end

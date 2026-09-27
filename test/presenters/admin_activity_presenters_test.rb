@@ -127,6 +127,18 @@ class AdminActivityPresentersTest < ActiveSupport::TestCase
     assert_equal ['15 kg / 33 lb', '15 kg / 34 lb'], [change.before, change.after]
   end
 
+  test 'version: decimal values show as plain numbers' do
+    version = PaperTrail::Version.create!(
+      item: products(:one), event: 'update',
+      object_changes: PaperTrail::Serializers::YAML.dump('price' => [BigDecimal('1299.5'), BigDecimal('1499')])
+    )
+
+    context = AdminVersionActivityPresenter.preload([version])
+    change = AdminVersionActivityPresenter.new(version, @view, context).changes.first
+
+    assert_equal ['1299.5', '1499'], [change.before, change.after]
+  end
+
   test 'version: sub categories show by name' do
     version = PaperTrail::Version.create!(
       item: products(:one), event: 'update', object_changes: PaperTrail::Serializers::YAML.dump({}),
