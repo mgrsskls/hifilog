@@ -77,6 +77,20 @@ knows how units work can read this without more explanation.
 Do not use `condition`. In this application, "condition" is about the state of a used item.
 Do not use `tolerance`. It fits ±3 dB and nothing else in the list in §6.
 
+#### Label in the user interface
+
+The product form and the filter show the label **"Specified at"**, with the qualifier after it:
+"Specified at ±3 dB", "Specified at 1% THD", "Specified at 1 m".
+
+Do not use "Measured at" or "Measurement condition". These fit a drive reference and a distance,
+which are settings of the test. They do not fit a tolerance or a distortion limit, because these
+are part of the claim: the range that stays within ±3 dB, the power until distortion reaches 1%.
+"Specified" fits all of them.
+
+The label holds the preposition, so a qualifier value holds none. Write "1% THD", not "At 1% THD".
+If not, the form shows "Specified at At 1% THD". The display places of §7.1 put the value in
+parentheses after the reading, for example "100 W (1% THD)", and need no preposition either.
+
 ### 2.3 Rejected alternatives
 
 - **More `inputs`.** Frequency response at ±3 dB and at ±6 dB as two facets. This is wrong by the
@@ -241,7 +255,7 @@ elif watt:
 The third outcome is the one the old code did not have. `"89 dB"` states no reference, and most
 sheets do not — in the production candidates the large majority name none. `else "db_1w_1m"` gave
 every one of them the same answer, so the catalogue claimed a measurement condition nobody
-published, and a filter on "At 1 W / 1 m" would have returned them. A qualifier is optional by
+published, and a filter on "1 W / 1 m" would have returned them. A qualifier is optional by
 construction, so the honest answer is to leave the key out.
 
 Leaving it as a unit would have lost the condition **in silence**, which is the worst shape of this
@@ -485,11 +499,11 @@ Each list holds one dimension only, as §4.4 requires.
 | Label                              | Dimension       | Qualifiers                                       |
 | ---------------------------------- | --------------- | ------------------------------------------------ |
 | `frequency_response_range`         | tolerance       | ±1 dB, ±2 dB, ±3 dB, ±6 dB, −3 dB, −6 dB, −10 dB |
-| `loudspeaker_sensitivity`          | drive reference | at 1 W / 1 m, at 2.83 V / 1 m — done, see §3     |
+| `loudspeaker_sensitivity`          | drive reference | 1 W / 1 m, 2.83 V / 1 m — done, see §3           |
 | `headphone_sensitivity`            | drive reference | per mW, per V — not yet, see §3.3                |
-| `amplifier_output_power`           | distortion      | at 0.1% THD, at 1% THD, at 10% THD               |
+| `amplifier_output_power`           | distortion      | 0.1% THD, 1% THD, 10% THD                        |
 | `headphone_amplifier_output_power` | distortion      | the same as above                                |
-| `loudspeaker_peak_spl`             | distance        | at 1 m, at 2 m                                   |
+| `loudspeaker_peak_spl`             | distance        | 1 m, 2 m                                         |
 
 Six of the definitions that exist today need this. Two of those six are the repair in §3.
 

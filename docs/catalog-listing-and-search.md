@@ -88,7 +88,7 @@ list without a filter.
 The custom attribute filters use the definitions that apply to the current category. See
 [custom-attributes.md](custom-attributes.md).
 
-A `number` attribute that declares qualifiers also has a **"Measured at"** facet with two states.
+A `number` attribute that declares qualifiers also has a **"Specified at"** facet with two states.
 Nothing selected adds no condition to the query, so a specification with few recorded conditions
 filters as before. One or more selected conditions give an `OR` of `@>` containment tests, which the
 GIN index on `products.custom_attributes` can use, and each excludes the products that record no

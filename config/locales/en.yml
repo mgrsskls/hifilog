@@ -324,14 +324,21 @@ en:
   # facet; `not_stated` is the product form only -- the filter has no such option, because a
   # visitor who wants the looser answer selects nothing. The values are under
   # custom_attribute_qualifiers.
+  #
+  # "Specified at", not "Measured at": a tolerance or a distortion limit is part of the claim, not a
+  # setting of the test, and "specified" covers both. The label carries the preposition, so the
+  # values below carry none -- see docs/custom-attribute-qualifiers.md, §2.2.
   custom_attribute_qualifier:
-    label: Measured at
+    label: Specified at
     not_stated: Not stated
   custom_attribute_unit_pair:
     disagree: These values do not seem to match. Check them against the source.
-  # A qualifier says under which condition a number was measured. One definition offers values of
+  # A qualifier says under which condition a number was specified. One definition offers values of
   # one dimension only (see docs/custom-attribute-qualifiers.md, §4.4), so the groups below never
   # mix in one attribute.
+  #
+  # No leading "At": each value follows the label "Specified at" in the form and the filter, and
+  # stands in parentheses after the reading on the product page -- "100 W (1% THD)".
   custom_attribute_qualifiers:
     # Tolerance, for frequency_response_range. Two-sided first, then the one-sided roll-off
     # points that loudspeakers and above all subwoofers quote.
@@ -343,17 +350,17 @@ en:
     minus_6_db: −6 dB
     minus_10_db: −10 dB
     # Distortion, for the two output power definitions.
-    thd_0_1_percent: At 0.1% THD
-    thd_1_percent: At 1% THD
-    thd_10_percent: At 10% THD
+    thd_0_1_percent: 0.1% THD
+    thd_1_percent: 1% THD
+    thd_10_percent: 10% THD
     # Distance, for loudspeaker_peak_spl.
-    distance_1m: At 1 m
-    distance_2m: At 2 m
+    distance_1m: 1 m
+    distance_2m: 2 m
     # Drive reference, for loudspeaker_sensitivity. These were two units until the qualifier
     # existed; they are one unit, dB, measured two ways. Keep db_1w_1m and db_283v_1m under
     # custom_attribute_units: the changelog renders the units of older versions.
-    drive_1w_1m: At 1 W / 1 m
-    drive_283v_1m: At 2.83 V / 1 m
+    drive_1w_1m: 1 W / 1 m
+    drive_283v_1m: 2.83 V / 1 m
   custom_attribute_units:
     a: A
     bit: bit
