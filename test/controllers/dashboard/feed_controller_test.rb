@@ -27,7 +27,9 @@ class Dashboard::FeedControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'feed paginates at fifty rows per page' do
-    user = users(:one)
+    # users(:without_anything) follows no brand, so the feed holds exactly the rows created here
+    # -- no Feliks Audio brand_catalog_events riding along to shift the page boundary.
+    user = users(:without_anything)
     sign_in user
 
     51.times do |index|
@@ -46,9 +48,7 @@ class Dashboard::FeedControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_feed_path(page: 2)
     assert_response :success
-    # 52 rows total: the 51 created here, plus the brand_follows fixture's Feliks Audio catalog
-    # entry riding along on users(:one)'s feed.
-    assert_select '.Feed-item', count: 2
+    assert_select '.Feed-item', count: 1
   end
   test 'a followed brand with a logo shows the logo instead of the verb icon' do
     user = users(:one)
